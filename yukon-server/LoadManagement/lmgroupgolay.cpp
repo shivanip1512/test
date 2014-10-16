@@ -51,8 +51,7 @@ CtiRequestMsg* CtiLMGroupGolay::createTimeRefreshRequestMsg(LONG refreshRate, LO
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -74,8 +73,7 @@ CtiRequestMsg* CtiLMGroupGolay::createTimeRefreshRequestMsg(LONG refreshRate, LO
   --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupGolay::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() << " - createSmartCycleRequestMsg() not implemented for golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    CTILOG_WARN(dout, "createSmartCycleRequestMsg() not implemented for golay LM Groups");
     return NULL;
 }
 
@@ -87,8 +85,7 @@ CtiRequestMsg* CtiLMGroupGolay::createSmartCycleRequestMsg(LONG percent, LONG pe
   --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupGolay::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() << " - createTrueCycleRequestMsg() not implemented for golay LM Groups " << __FILE__ << " at:" << __LINE__ << endl;
+    CTILOG_WARN(dout, "createTrueCycleRequestMsg() not implemented for golay LM Groups");
     return NULL;
 }
 
@@ -104,8 +101,7 @@ CtiRequestMsg* CtiLMGroupGolay::createRotationRequestMsg(LONG sendRate, LONG she
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -130,8 +126,7 @@ CtiRequestMsg* CtiLMGroupGolay::createMasterCycleRequestMsg(LONG offTime, LONG p
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,

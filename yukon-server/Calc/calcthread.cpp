@@ -61,8 +61,7 @@ CtiCalculateThread::~CtiCalculateThread( void )
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 };
 
@@ -78,8 +77,7 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, const Cti
         CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&hashKey));
         if( _CALC_DEBUG & CALC_DEBUG_POINTDATA )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - Point Data ID: " << changedID << " Val: " << newValue << " Time: " << newTime.asString() << " Quality: " << newQuality << endl;
+            CTILOG_DEBUG(dout, "Point Data ID: "<< changedID <<" Val: "<< newValue <<" Time: "<< newTime <<" Quality: "<< newQuality);
         }
 
         if( pointPtr != rwnil )
@@ -112,20 +110,17 @@ void CtiCalculateThread::pointChange( long changedID, double newValue, const Cti
         {
             if( changedID != ThreadMonitor.getPointIDFromOffset(ThreadMonitor.Calc) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Unable to find point id from offset "<< ThreadMonitor.Calc);
             }
             else if( _CALC_DEBUG & CALC_DEBUG_POINTDATA )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Recieved thread monitor update." << endl;
+                CTILOG_DEBUG(dout, "Received thread monitor update.");
             }
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -141,8 +136,7 @@ void CtiCalculateThread::pointSignal( long changedID, unsigned newTags )
         CtiPointStoreElement* pointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&hashKey));
         if( _CALC_DEBUG & CALC_DEBUG_POINTDATA )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - Point Data ID: " << changedID << " Tags: " << newTags << endl;
+            CTILOG_DEBUG(dout, "Point Data ID: "<< changedID <<" Tags: "<< newTags);
         }
 
         if( pointPtr != rwnil)
@@ -155,8 +149,7 @@ void CtiCalculateThread::pointSignal( long changedID, unsigned newTags )
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -240,8 +233,7 @@ void CtiCalculateThread::periodicThread( void )
                 {
                     if(_CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " ### Calculation of point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0))." << endl;
+                        CTILOG_DEBUG(dout, "Calculation of point "<< calcPoint->getPointId() <<" was invalid (ex. div by zero or sqrt(<0)).");
                     }
 
                     calcQuality = NonUpdatedQuality;
@@ -257,8 +249,7 @@ void CtiCalculateThread::periodicThread( void )
 
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " PeriodCalc setting Calc Point ID: " << pointId << " to New Value: " << newPointValue << endl;
+                    CTILOG_DEBUG(dout, "PeriodCalc setting Calc Point ID: "<< pointId <<" to New Value: "<< newPointValue);
                 }
             }
 
@@ -272,8 +263,7 @@ void CtiCalculateThread::periodicThread( void )
 
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime( ) << "  periodicThread posting a message - took " << (clock( ) - now) << " ticks" << endl;
+                    CTILOG_DEBUG(dout, "periodicThread posting a message - took "<< (clock( ) - now) <<" ticks");
                 }
             }
             else
@@ -284,15 +274,11 @@ void CtiCalculateThread::periodicThread( void )
             newTime = tempTime;
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " periodicThread interrupted. TID: " << rwThreadId() << endl;
-        }
+        CTILOG_INFO(dout, "periodicThread interrupted.");
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -375,8 +361,7 @@ void CtiCalculateThread::onUpdateThread( void )
                     {
                         if(_CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ### Calculation of point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0))." << endl;
+                            CTILOG_DEBUG(dout, "Calculation of point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0)).");
                         }
 
                         calcQuality = NonUpdatedQuality;
@@ -389,9 +374,8 @@ void CtiCalculateThread::onUpdateThread( void )
                     {
                         if( _CALC_DEBUG & CALC_DEBUG_POINTDATA_QUALITY )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Calc point " << calcPoint->getPointId() << " calculation result is attempting to move backward in time." << endl;
-                            dout << CtiTime() << "   Update type may be inappropriate for the component device/points." << endl;
+                            CTILOG_DEBUG(dout, "Calc point "<< calcPoint->getPointId() <<" calculation result is attempting to move backward in time." <<
+                                    endl << "Update type may be inappropriate for the component device/points.");
                         }
                         calcTime = CtiTime();
                     }
@@ -421,8 +405,7 @@ void CtiCalculateThread::onUpdateThread( void )
                                 {
                                     if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " - New Point Data message for Calc Point Id: " << recalcPointID << " New Demand Avg Value: " << recalcValue << endl;
+                                        CTILOG_DEBUG(dout, "New Point Data message for Calc Point Id: "<< recalcPointID <<" New Demand Avg Value: "<< recalcValue);
                                     }
                                     pData = CTIDBG_new CtiPointDataMsg(recalcPointID, recalcValue, calcQuality, InvalidPointType);  // Use InvalidPointType so dispatch solves the Analog/Status nature by itself
                                     pData->setTime(calcPointPtr->getPointCalcWindowEndTime());
@@ -432,18 +415,12 @@ void CtiCalculateThread::onUpdateThread( void )
                             }
                             else
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Error Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Calc Point " << calcPoint->getPointId() << endl;
-                                }
+                                CTILOG_ERROR(dout, "componentPointPtr is Null, Calc Point "<< calcPoint->getPointId());
                             }
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** CONFIG ERROR **** Demand Average points require a point to be identified (no pre-push).  Point ID " << calcPoint->getPointId() << endl;
-                            }
+                            CTILOG_ERROR(dout, "CONFIG INVALID: Demand Average points require a point to be identified (no pre-push).  Point ID "<< calcPoint->getPointId());
                         }
                     }
                     else
@@ -462,8 +439,7 @@ void CtiCalculateThread::onUpdateThread( void )
 
                     if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " onUpdateThread setting Calc Point ID: " << recalcPointID << " to New Value: " << recalcValue << endl;
+                        CTILOG_DEBUG(dout, "onUpdateThread setting Calc Point ID: "<< recalcPointID <<" to New Value: "<< recalcValue);
                     }
                 }
             }
@@ -479,8 +455,7 @@ void CtiCalculateThread::onUpdateThread( void )
                 //    earlier earned me a touch of the deadlock.
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime( ) << "  onUpdateThread posting a message" << endl;
+                    CTILOG_DEBUG(dout, "onUpdateThread posting a message");
                 }
             }
             else
@@ -489,15 +464,11 @@ void CtiCalculateThread::onUpdateThread( void )
             }
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " onUpdateThread interrupted. TID: " << rwThreadId() << endl;
-        }
+        CTILOG_INFO(dout, "onUpdateThread interrupted.");
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -526,10 +497,7 @@ void CtiCalculateThread::historicalThread( void )
         strcpy(var, "CALC_HISTORICAL_FREQUENCY_IN_SECONDS");
         if( 0 != (frequencyInSeconds = gConfigParms.getValueAsInt(var,0)) )
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << CtiNumStr(frequencyInSeconds).toString() << endl;
-            }
+            CTILOG_INFO(dout, var <<":  "<< frequencyInSeconds);
         }
         else
         {
@@ -539,10 +507,7 @@ void CtiCalculateThread::historicalThread( void )
         strcpy(var, "CALC_HISTORICAL_INITIAL_DAYS_CALCULATED");
         if( 0 != (initialDays = gConfigParms.getValueAsInt(var,0)) )
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << CtiNumStr(initialDays).toString() << endl;
-            }
+            CTILOG_INFO(dout, var << ":  " << initialDays);
         }
         else
         {
@@ -579,10 +544,8 @@ void CtiCalculateThread::historicalThread( void )
             if( interrupted )
                 continue;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Historical Calculation beginning." << endl;
-            }
+            CTILOG_INFO(dout, "Historical Calculation beginning.");
+
             start = start.now();
 
             pChg = CTIDBG_new CtiMultiMsg;
@@ -656,8 +619,7 @@ void CtiCalculateThread::historicalThread( void )
                             //even if we were invalid, we need to move on and try the next time, otherwise we will constantly retry
                             if(_CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " ### Calculation of historical point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0))." << endl;
+                                CTILOG_DEBUG(dout, "Calculation of historical point "<< calcPoint->getPointId() <<" was invalid (ex. div by zero or sqrt(<0)).");
                             }
 
                             calcQuality = NonUpdatedQuality;
@@ -676,8 +638,7 @@ void CtiCalculateThread::historicalThread( void )
 
                         if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " HistoricCalc setting Calc Point ID: " << pointID << " to New Value: " << newPointValue << endl;
+                            CTILOG_DEBUG(dout, "HistoricCalc setting Calc Point ID: "<< pointID <<" to New Value: "<< newPointValue);
                         }
                     }
                 }
@@ -708,8 +669,7 @@ void CtiCalculateThread::historicalThread( void )
 
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime( ) << "  historical posting a message" << endl;
+                    CTILOG_DEBUG(dout, "historical posting a message");
                 }
             }
             else
@@ -717,22 +677,15 @@ void CtiCalculateThread::historicalThread( void )
                 delete pChg;
             }
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Historical Calculation completed in "<< start.now().seconds()-start.seconds() << " seconds" << endl;
-                dout << CtiTime() << " Next calculation is at " << nextCalcTime << endl;
-            }
+            CTILOG_INFO(dout, "Historical Calculation completed in "<< start.now().seconds()-start.seconds() << " seconds" <<
+                    endl << "Next calculation is at "<< nextCalcTime);
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " historical interrupted. TID: " << rwThreadId() << endl;
-        }
+        CTILOG_INFO(dout, "historical interrupted.");
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -772,12 +725,8 @@ void CtiCalculateThread::baselineThread( void )
         strcpy(var, "CALC_BASELINE_INITIAL_DAYS_CALCULATED");
         if( 30 != (initialDays = gConfigParms.getValueAsInt(var,30)) )
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << CtiNumStr(initialDays).toString() << endl;
-            }
+            CTILOG_INFO(dout, var <<":  "<< initialDays);
         }
-
 
         while( !interrupted )
         {
@@ -809,10 +758,8 @@ void CtiCalculateThread::baselineThread( void )
             if( interrupted )
                 continue;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Baseline Calculation beginning." << endl;
-            }
+            CTILOG_INFO(dout, "Baseline Calculation beginning.");
+
             start = start.now();
 
             pChg = CTIDBG_new CtiMultiMsg;
@@ -860,8 +807,7 @@ void CtiCalculateThread::baselineThread( void )
 
                 if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime( ) << " Baseline beginning for " << pointID << " with baseline: " << baselineID << " and percent: " << baselinePercentID << endl;
+                    CTILOG_DEBUG(dout, "Baseline beginning for "<< pointID <<" with baseline: "<< baselineID <<" and percent: "<< baselinePercentID);
                 }
 
                 if( (dbTimeMapIter = dbTimeMap.find( pointID )) != dbTimeMap.end() )//Entry is in the database
@@ -870,8 +816,7 @@ void CtiCalculateThread::baselineThread( void )
                     lastTime = CtiTime::CtiTime(lastTime.date(),0,0,0);
                     if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime( ) << "  lastTime for " << pointID << " is " << lastTime << endl;
+                        CTILOG_DEBUG(dout, "lastTime for "<< pointID <<" is "<< lastTime);
                     }
                 }
                 else
@@ -882,8 +827,7 @@ void CtiCalculateThread::baselineThread( void )
 
                     if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime( ) << "  lastTime for " << pointID << " is " << lastTime << endl;
+                        CTILOG_DEBUG(dout, "lastTime for "<< pointID <<" is "<< lastTime);
                     }
                 }
 
@@ -901,15 +845,13 @@ void CtiCalculateThread::baselineThread( void )
                     else
                     {
                         //This is really odd
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " No baseline data found for point: "<< pointID << " trying next point" << endl;
+                        CTILOG_INFO(dout, "No baseline data found for point: "<< pointID <<" trying next point");
                         continue;//move on to next point
                     }
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " No baseline ID found for point: "<< pointID << " trying next point" << endl;
+                    CTILOG_INFO(dout, "No baseline ID found for point: "<< pointID <<" trying next point");
                     continue;//move on to another point
                 }
 
@@ -943,8 +885,7 @@ void CtiCalculateThread::baselineThread( void )
                         //we are checking to see if we have a time that is far enough along to do a full calc
                         if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime( ) << " Baseline not enough time to calculate on. " << __FILE__ << __LINE__ << endl;
+                            CTILOG_DEBUG(dout, "Baseline not enough time to calculate");
                         }
                         break;
                     }
@@ -965,8 +906,7 @@ void CtiCalculateThread::baselineThread( void )
                         {
                             if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime( ) << " Today is a holiday. " << curTime.date() << endl;
+                                CTILOG_DEBUG(dout, "Today is a holiday. "<< curTime.date());
                             }
                             curTime.addDays(-1);
                             continue;//while loop
@@ -977,8 +917,7 @@ void CtiCalculateThread::baselineThread( void )
                         {
                             if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime( ) << " Today is a excluded. " << curTime.date() << endl;
+                                CTILOG_DEBUG(dout, "Today is a excluded. "<< curTime.date());
                             }
                             curTime.addDays(-1);
                             continue;
@@ -987,8 +926,7 @@ void CtiCalculateThread::baselineThread( void )
                         {
                             if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime( ) << " Today is a curtailed date. " << curTime.date() << endl;
+                                CTILOG_DEBUG(dout, "Today is a curtailed date. " << curTime.date());
                             }
                             curTime.addDays(-1);
                             continue;
@@ -1002,8 +940,7 @@ void CtiCalculateThread::baselineThread( void )
                                 //If data is ok, store data and decrement day
                                 if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime( ) << " Today was ACCEPTED. " << curTime.date() << endl;
+                                    CTILOG_DEBUG(dout, "Today was ACCEPTED. "<< curTime.date());
                                 }
                                 dayValues.push_back(results);
                             }
@@ -1011,8 +948,7 @@ void CtiCalculateThread::baselineThread( void )
                             {
                                 if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime( ) << " Today was NOT accepted. " << curTime.date() << endl;
+                                    CTILOG_DEBUG(dout, "Today was NOT accepted. "<< curTime.date());
                                 }
                             }
                             curTime.addDays(-1);
@@ -1047,8 +983,7 @@ void CtiCalculateThread::baselineThread( void )
 
                             if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime( ) << "  Sending to point id " << pointID << " and time " << pointTime << endl;
+                                CTILOG_DEBUG(dout, "Sending to point id "<< pointID <<" and time "<< pointTime);
                             }
                         }
                         else if( (iter = unlistedPoints.find(pointID)) != unlistedPoints.end() )
@@ -1057,8 +992,7 @@ void CtiCalculateThread::baselineThread( void )
 
                             if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime( ) << "  Sending to point id " << pointID << " and time " << pointTime << endl;
+                                CTILOG_DEBUG(dout, "Sending to point id "<< pointID <<" and time "<< pointTime);
                             }
                         }
                         else
@@ -1067,8 +1001,7 @@ void CtiCalculateThread::baselineThread( void )
 
                             if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime( ) << "  Sending to point id " << pointID << " and time " << pointTime << endl;
+                                CTILOG_DEBUG(dout, "Sending to point id "<< pointID <<" and time "<< pointTime);
                             }
                         }
 
@@ -1100,8 +1033,7 @@ void CtiCalculateThread::baselineThread( void )
 
                 if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime( ) << "  historical posting a message" << endl;
+                    CTILOG_DEBUG(dout, "historical posting a message");
                 }
             }
             else
@@ -1109,22 +1041,15 @@ void CtiCalculateThread::baselineThread( void )
                 delete pChg;
             }
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Baseline Calculation completed in "<< start.now().seconds()-start.seconds() << " seconds" << endl;
-                dout << CtiTime() << " Next calculation is at " << nextCalcTime << endl;
-            }
+            CTILOG_INFO(dout, "Baseline Calculation completed in "<< start.now().seconds()-start.seconds() <<" seconds"<<
+                    endl << "Next calculation is at "<< nextCalcTime);
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " historical interrupted. TID: " << rwThreadId() << endl;
-        }
+        CTILOG_INFO(dout, "historical interrupted.");
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1178,54 +1103,34 @@ void CtiCalculateThread::joinThreads(  )
 
     if(RW_THR_COMPLETED != _periodicThreadFunc.join( 30000 ))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " periodicThread did not shutdown gracefully.  Will attempt a forceful shutdown." << endl;
-        }
+        CTILOG_ERROR(dout, "periodicThread did not shutdown gracefully.  Will attempt a forceful shutdown.");
         _periodicThreadFunc.terminate();
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " periodicThread shutdown correctly." << endl;
-        }
+        CTILOG_INFO(dout, "periodicThread shutdown correctly.");
     }
 
     if(RW_THR_COMPLETED != _onUpdateThreadFunc.join( 30000 ))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " onUpdateThread did not shutdown gracefully.  Will attempt a forceful shutdown." << endl;
-        }
-
+        CTILOG_ERROR(dout, "onUpdateThread did not shutdown gracefully.  Will attempt a forceful shutdown.");
         _onUpdateThreadFunc.terminate();
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " onUpdateThread shutdown correctly." << endl;
-        }
+        CTILOG_INFO(dout, "onUpdateThread shutdown correctly.");
     }
 
     if( _runCalcHistorical )
     {
         if(RW_THR_COMPLETED != _historicalThreadFunc.join( 30000 ))
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " historicalThread did not shutdown gracefully.  Will attempt a forceful shutdown." << endl;
-            }
-
+            CTILOG_ERROR(dout, "historicalThread did not shutdown gracefully.  Will attempt a forceful shutdown.");
             _historicalThreadFunc.terminate();
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " historicalThread shutdown correctly." << endl;
-            }
+            CTILOG_INFO(dout, "historicalThread shutdown correctly.");
         }
     }
 
@@ -1233,19 +1138,12 @@ void CtiCalculateThread::joinThreads(  )
     {
         if(RW_THR_COMPLETED != _baselineThreadFunc.join( 30000 ))
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " baselineThread did not shutdown gracefully.  Will attempt a forceful shutdown." << endl;
-            }
-
+            CTILOG_ERROR(dout, "baselineThread did not shutdown gracefully.  Will attempt a forceful shutdown.");
             _baselineThreadFunc.terminate();
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " baselineThread shutdown correctly." << endl;
-            }
+            CTILOG_INFO(dout, "baselineThread shutdown correctly.");
         }
     }
     return;
@@ -1257,44 +1155,27 @@ void CtiCalculateThread::interruptThreads( CtiCalcThreadInterruptReason reason )
 
     if( RW_THR_TIMEOUT == _periodicThreadFunc.requestInterrupt( 5000 ) )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Unable to interrupt the periodicThread. Calc may become unstable!" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to interrupt the periodicThread. Calc may become unstable!");
     }
 
     if( RW_THR_TIMEOUT == _onUpdateThreadFunc.requestInterrupt( 5000 ) )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Unable to interrupt the onUpdateThread. Calc may become unstable!" << endl;
-        }
+        CTILOG_ERROR(dout,"Unable to interrupt the onUpdateThread. Calc may become unstable!");
     }
 
     if( _runCalcHistorical && RW_THR_TIMEOUT == _historicalThreadFunc.requestInterrupt( 5000 ) )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Unable to interrupt the historicalThread. Calc may become unstable!" << endl;
-        }
+        CTILOG_ERROR(dout,"Unable to interrupt the historicalThread. Calc may become unstable!");
     }
 
     if( _runCalcBaseline && RW_THR_TIMEOUT == _baselineThreadFunc.requestInterrupt( 5000 ) )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Unable to interrupt the baselineThread. Calc may become unstable!" << endl;
-        }
+        CTILOG_ERROR(dout,"Unable to interrupt the baselineThread. Calc may become unstable!");
     }
 
     if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " CalcThreads interrupted"<< endl;
+        CTILOG_DEBUG(dout, "CalcThreads interruption attempt completed");
     }
 
 }
@@ -1318,17 +1199,11 @@ void CtiCalculateThread::resumeThreads(  )
     }
     catch(RWTHRIllegalUsage &msg)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << msg.why() <<  " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_EXCEPTION_ERROR(dout, msg);
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1356,9 +1231,8 @@ bool CtiCalculateThread::appendPoint( long pointid, string &updatetype, int upda
         break;
     default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << __FILE__ << " (" << __LINE__ << ") Attempt to insert unknown CtiCalc point type \"" << updatetype
-            << "\", value \"" << newPoint->getUpdateType() << "\";  aborting point insert" << endl;
+           CTILOG_ERROR(dout, "Attempt to insert unknown CtiCalc point type \""<< updatetype<< "\", "
+                   "value \""<< newPoint->getUpdateType() <<"\";  aborting point insert");
         }
 
         delete newPoint;
@@ -1405,8 +1279,7 @@ void CtiCalculateThread::appendPointComponent( long pointID, string &componentTy
     }
     else if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << __FILE__ << " (" << __LINE__ << ") Can't find calc point \"" << pointID << "\" in either point collection (historical point?)" << endl;
+        CTILOG_DEBUG(dout, "Can't find calc point \""<< pointID <<"\" in either point collection (historical point?)");
         return;
     }
 
@@ -1604,10 +1477,7 @@ void CtiCalculateThread::clearAndDestroyPointMaps()
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1657,8 +1527,7 @@ void CtiCalculateThread::removePointStoreObject( const long aPointID )
     }
     else if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << __FILE__ << " (" << __LINE__ << ") Can't find calc point \"" << aPointID << "\" in either point collection (historical point?)" << endl;
+        CTILOG_DEBUG(dout, "Can't find calc point \""<< aPointID <<"\" in either point collection (historical point?)");
         return;
     }
 
@@ -1711,8 +1580,7 @@ void CtiCalculateThread::sendConstants()
                 else
                 {
                     calcValid = false;
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** Point " << pointId << " constant not in pointstore" << endl;
+                    CTILOG_ERROR(dout, "Point "<< pointId <<" constant not in pointstore");
                 }
             }
 
@@ -1720,8 +1588,7 @@ void CtiCalculateThread::sendConstants()
             {
                 if(_CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " ### Calculation of point " << calcPoint->getPointId() << " was invalid (ex. div by zero or sqrt(<0))." << endl;
+                    CTILOG_DEBUG(dout, "Calculation of point "<< calcPoint->getPointId() <<" was invalid (ex. div by zero or sqrt(<0)).");
                 }
 
                 calcQuality = NonUpdatedQuality;
@@ -1734,10 +1601,7 @@ void CtiCalculateThread::sendConstants()
 
             pMultiMsg->getData( ).push_back( pointData );
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " sendConstants() setting Calc Point ID: " << pointId << " to CONSTANT Value: " << pointValue << endl;
-            }
+            CTILOG_INFO(dout, "Setting Calc Point ID: "<< pointId <<" to CONSTANT Value: "<< pointValue);
         }
     }
 
@@ -1756,10 +1620,7 @@ void CtiCalculateThread::sendConstants()
 
 void CtiCalculateThread::sendUserQuit( const std::string & who )
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << who << " has asked for shutdown."<< endl;
-    }
+    CTILOG_INFO(dout, who <<" has asked for shutdown.");
     UserQuit = TRUE;
 }
 
@@ -1794,16 +1655,9 @@ void CtiCalculateThread::getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMa
         }
 
     }
-    catch( RWxmsg &msg )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception while reading calc last updated time from database: " << msg.why( ) << endl;
-        exit( -1 );
-    }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -1876,16 +1730,9 @@ void CtiCalculateThread::getHistoricalTableData(CtiCalc *calcPoint, CtiTime &las
         }
 
     }
-    catch( RWxmsg &msg )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception while reading calc last updated time from database: " << msg.why( ) << endl;
-        exit( -1 );
-    }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1928,16 +1775,9 @@ void CtiCalculateThread::getHistoricalTableSinglePointData(long calcPoint, CtiTi
             }
 
         }
-        catch( RWxmsg &msg )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Exception while reading calc last updated time from database: " << msg.why( ) << endl;
-            exit( -1 );
-        }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 }
@@ -1972,8 +1812,7 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
             writer << iter->first << iter->second;
             if( ! Cti::Database::executeCommand( writer, __FILE__, __LINE__ ))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - error while inserting in CalcHistoricalUpdatedTime **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Failed to insert in CalcHistoricalUpdatedTime");
                 break;
             }
         }
@@ -1990,8 +1829,7 @@ void CtiCalculateThread::updateCalcHistoricalLastUpdatedTime(PointTimeMap &unlis
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -2025,16 +1863,9 @@ void CtiCalculateThread::getCalcBaselineMap(PointBaselineMap &pointBaselineMap)
         }
 
     }
-    catch( RWxmsg &msg )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception while reading calc last updated time from database: " << msg.why( ) << endl;
-        exit( -1 );
-    }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -2074,16 +1905,9 @@ void CtiCalculateThread::getBaselineMap(BaselineMap &baselineMap)
         }
 
     }
-    catch( RWxmsg &msg )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception while reading calc last updated time from database: " << msg.why( ) << endl;
-        exit( -1 );
-    }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -2118,16 +1942,9 @@ void CtiCalculateThread::getCurtailedDates(DatesSet &curtailedDates, long pointI
         }
 
     }
-    catch( RWxmsg &msg )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception while reading calc last updated time from database: " << msg.why( ) << endl;
-        exit( -1 );
-    }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -2191,8 +2008,7 @@ bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTab
         {
             if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " No data found at all for day. " << curTime.date() << endl;
+                CTILOG_DEBUG(dout, "No data found at all for day. "<< curTime.date());
             }
             retVal = false;
             break; //break out of the for loop. no point in continuing.
@@ -2203,8 +2019,7 @@ bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTab
     {
         if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " Percent processing beginning on day " << curTime.date() << endl;
+            CTILOG_DEBUG(dout, "Percent processing beginning on day " << curTime.date());
         }
         HourlyValues percentResults;
         float decimalPercent = (float)percent/100;
@@ -2216,8 +2031,7 @@ bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTab
             {
                 if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << " Baseline Percent Failed, percent, results, percentResults: " << decimalPercent << " " << results[i] << " " << percentResults[i] << endl;
+                    CTILOG_DEBUG(dout, "Baseline Percent Failed, percent, results, percentResults: "<< decimalPercent <<" "<< results[i] <<" "<< percentResults[i]);
                 }
                 retVal = false;
             }

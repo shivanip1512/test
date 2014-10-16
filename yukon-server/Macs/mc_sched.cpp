@@ -73,8 +73,7 @@ ostream& operator<<( ostream& ostrm, CtiMCSchedule& sched )
 {
     if( !sched.checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< sched.getScheduleID() <<")");
     }
 
     ostrm << " Schedule ID:       " << sched.getScheduleID() << endl;
@@ -121,8 +120,7 @@ ostream& operator<<( ostream& ostrm, CtiMCSchedule& sched )
 
     if( !sched.checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< sched.getScheduleID() <<")");
     }
 
     return ostrm;
@@ -165,8 +163,7 @@ bool CtiMCSchedule::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if( !checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
     }
 
     bool ret = false;
@@ -184,8 +181,7 @@ bool CtiMCSchedule::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( !checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
     }
 
     return ret;
@@ -196,8 +192,7 @@ bool CtiMCSchedule::Update()
     bool ret = false;
     if( !checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
     }
 
     if( getScheduleID() != 0 )
@@ -223,18 +218,17 @@ bool CtiMCSchedule::Update()
 
     if( !checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
     }
 
     return ret;
 }
 
 bool CtiMCSchedule::Insert()
-{   if( !checkSchedule() )
+{
+    if( !checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
     }
 
     if( getScheduleID() == 0 )
@@ -247,8 +241,7 @@ bool CtiMCSchedule::Insert()
         }
         else
         {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_ERROR(dout, "Invalid Connection to Database");
 
             return false;
         }
@@ -263,10 +256,8 @@ bool CtiMCSchedule::Insert()
     else
     {
         setScheduleID(0);//This guy is screwed up. Next time we will try to get him a new ID.
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << "**** Checkpoint **** There was probably an ID conflict, this is bad. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+
+        CTILOG_WARN(dout, "There was probably an ID conflict, this is bad.");
     }
 
     if( ret && isSimpleSchedule() )
@@ -282,8 +273,7 @@ bool CtiMCSchedule::Insert()
 
     if( !checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
     }
 
     return ret;
@@ -293,8 +283,7 @@ bool CtiMCSchedule::Delete()
 {
     if( !checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
     }
 
     bool ret = true;
@@ -318,8 +307,7 @@ bool CtiMCSchedule::Delete()
 
     if( !checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
     }
 
     return ret;
@@ -338,14 +326,12 @@ bool CtiMCSchedule::operator==(const CtiMCSchedule& ref) const
 {
     if( !checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
     }
 
     if( !ref.checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule ref is invalid");
     }
 
     return (getScheduleID() == ref.getScheduleID());
@@ -355,14 +341,12 @@ CtiMCSchedule& CtiMCSchedule::operator=(const CtiMCSchedule& ref)
 {
     if( !checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
     }
 
     if( !ref.checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule ref is invalid ("<< ref.getScheduleID() <<")");
     }
 
     _current_start_time = ref._current_start_time;
@@ -380,14 +364,12 @@ CtiMCSchedule& CtiMCSchedule::operator=(const CtiMCSchedule& ref)
 
     if( !checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
     }
 
     if( !ref.checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule ref is invalid ("<< ref.getScheduleID() <<")");
     }
 
     return *this;
@@ -397,8 +379,7 @@ CtiMessage* CtiMCSchedule::replicateMessage() const
 {
     if( !checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
     }
 
     CtiMCSchedule* aCopy = new CtiMCSchedule();
@@ -406,14 +387,12 @@ CtiMessage* CtiMCSchedule::replicateMessage() const
 
     if( !checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< getScheduleID() <<")");
     }
 
     if( !aCopy->checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule copy is invalid");
     }
 
     return aCopy;
@@ -949,14 +928,15 @@ bool CtiMCSchedule::checkSchedule() const
 
 bool CtiMCSchedule::checkField(const string& fld, const string& val) const
 {
-
     for( int i = 0; i < fld.length(); i++ )
+    {
         if( fld[i] <= 0 || fld[i] >= 128 )
         {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << "CORRUPT FIELD: " << fld << " len: " << fld.length() << " value is: " << val << endl;
+            CTILOG_ERROR(dout, "CORRUPT FIELD: "<< fld <<" len: "<< fld.length() <<" value is: "<< val);
+
             return false;
         }
+    }
 
     return true;
 }

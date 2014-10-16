@@ -106,346 +106,325 @@ std::set<long> CtiPointManager::refreshList(LONG pntID, LONG paoID, CtiPointType
 
     CtiTime start, stop;
 
-    try
-    {
-        {   // Make sure all objects that that store results
+    {   // Make sure all objects that that store results
+        start = start.now();
+        if(pntID == 0 && paoID == 0)
+        {
+            coll_type::writer_lock_guard_t guard(getLock());
+
+            // Reset everyone's Updated flag.
+            _smartMap.apply(ApplyPointResetUpdated, NULL);
+
+        }
+        if((stop = stop.now()).seconds() - start.seconds() > 5 )
+        {
+            CTILOG_INFO(dout, (stop.seconds() - start.seconds()) <<" seconds for ApplyPointResetUpdated");
+        }
+
+        if(pntType == InvalidPointType || pntType == SystemPointType)
+        {
             start = start.now();
-            if(pntID == 0 && paoID == 0)
+            if(DebugLevel & 0x00010000)
             {
-                coll_type::writer_lock_guard_t guard(getLock());
+                CTILOG_DEBUG(dout, "Looking for System Points");
+            }
 
-                // Reset everyone's Updated flag.
-                _smartMap.apply(ApplyPointResetUpdated, NULL);
+            string sql = CtiPointBase().getSQLCoreStatement() + " WHERE upper (PT.pointtype) = 'SYSTEM'";
 
+            if( pntID != 0 )
+            {
+                sql += " AND PT.pointid = ?";
+            }
+            if( paoID != 0 )
+            {
+                sql += " AND PT.paobjectid = ?";
+            }
+
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection, sql);
+
+            if( pntID != 0 )
+            {
+                rdr << pntID;
+            }
+            if( paoID != 0 )
+            {
+                rdr << paoID;
+            }
+
+            rdr.execute();
+
+            if( ! rdr.isValid() )
+            {
+                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+            }
+            else if( DebugLevel & 0x00010000 )
+            {
+                CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
+            }
+
+            refreshPoints(pointIdsFound, rdr);
+            if(DebugLevel & 0x00010000)
+            {
+                CTILOG_DEBUG(dout, "Done Looking for System Points");
             }
             if((stop = stop.now()).seconds() - start.seconds() > 5 )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for ApplyPointResetUpdated" << endl;
+                CTILOG_INFO(dout, (stop.seconds() - start.seconds()) <<" seconds for System Devices");
             }
+        }
 
-            if(pntType == InvalidPointType || pntType == SystemPointType)
+        if(pntType == InvalidPointType || pntType == StatusOutputPointType ||
+           pntType == StatusPointType )
+        {
+            start = start.now();
+
+            if(DebugLevel & 0x00010000)
             {
-                start = start.now();
-                if(DebugLevel & 0x00010000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for System Points" << endl;
-                }
-
-                string sql = CtiPointBase().getSQLCoreStatement() + " WHERE upper (PT.pointtype) = 'SYSTEM'";
-
-                if( pntID != 0 )
-                {
-                    sql += " AND PT.pointid = ?";
-                }
-                if( paoID != 0 )
-                {
-                    sql += " AND PT.paobjectid = ?";
-                }
-
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader rdr(connection, sql);
-
-                if( pntID != 0 )
-                {
-                    rdr << pntID;
-                }
-                if( paoID != 0 )
-                {
-                    rdr << paoID;
-                }
-
-                rdr.execute();
-
-                if(DebugLevel & 0x00010000 || !rdr.isValid())
-                {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
-                }
-                refreshPoints(pointIdsFound, rdr);
-                if(DebugLevel & 0x00010000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for System Points" << endl;
-                }
-                if((stop = stop.now()).seconds() - start.seconds() > 5 )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for System Devices " << endl;
-                }
+                CTILOG_DEBUG(dout, "Looking for Status/Control");
             }
 
-            if(pntType == InvalidPointType || pntType == StatusOutputPointType ||
-               pntType == StatusPointType )
+            string sql =
+                CtiPointStatus::getSQLCoreStatement() +
+                " WHERE"
+                    " (upper (PT.pointtype) = 'STATUS' OR upper (PT.pointtype) = 'CALCSTATUS')";
+
+            if( pntID != 0 )
             {
-                start = start.now();
-
-                if(DebugLevel & 0x00010000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Status/Control" << endl;
-                }
-
-                string sql =
-                    CtiPointStatus::getSQLCoreStatement() +
-                    " WHERE"
-                        " (upper (PT.pointtype) = 'STATUS' OR upper (PT.pointtype) = 'CALCSTATUS')";
-
-                if( pntID != 0 )
-                {
-                    sql += " AND PT.pointid = ?";
-                }
-                if( paoID != 0 )
-                {
-                    sql += " AND PT.paobjectid = ?";
-                }
-
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader rdr(connection, sql);
-
-                if( pntID != 0 )
-                {
-                    rdr << pntID;
-                }
-                if( paoID != 0 )
-                {
-                    rdr << paoID;
-                }
-
-                rdr.execute();
-
-                if(DebugLevel & 0x00010000 || !rdr.isValid())
-                {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
-                }
-                refreshPoints(pointIdsFound, rdr);
-                if(DebugLevel & 0x00010000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for Status/Control" << endl;
-                }
-                if((stop = stop.now()).seconds() - start.seconds() > 5 )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Status/Control " << endl;
-                }
+                sql += " AND PT.pointid = ?";
             }
-
-            if(pntType == InvalidPointType || pntType == AnalogOutputPointType ||
-               pntType == AnalogPointType )
+            if( paoID != 0 )
             {
-                start = start.now();
-
-                if(DebugLevel & 0x00010000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Analogs" << endl;
-                }
-
-                string sql = CtiPointAnalog::getSQLCoreStatement();
-
-                if( pntID && paoID )
-                {
-                    sql += " WHERE PT.pointid = ? AND PT.paobjectid = ?";
-                }
-                else if( pntID )
-                {
-                    sql += " WHERE PT.pointid = ?";
-                }
-                else if( paoID )
-                {
-                    sql += " WHERE PT.paobjectid = ?";
-                }
-
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader rdr(connection, sql);
-
-                if( pntID != 0 )
-                {
-                    rdr << pntID;
-                }
-                if( paoID != 0 )
-                {
-                    rdr << paoID;
-                }
-
-                rdr.execute();
-
-                if(DebugLevel & 0x00010000 || !rdr.isValid())
-                {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
-                }
-                refreshPoints(pointIdsFound, rdr);
-                if(DebugLevel & 0x00010000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Analogs" << endl;
-                }
-                if((stop = stop.now()).seconds() - start.seconds() > 5 )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Analogs " << endl;
-                }
+                sql += " AND PT.paobjectid = ?";
             }
 
-            if(pntType == InvalidPointType || pntType == DemandAccumulatorPointType ||
-               pntType == PulseAccumulatorPointType )
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection, sql);
+
+            if( pntID != 0 )
             {
-                start = start.now();
-
-                if(DebugLevel & 0x00010000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Accum" << endl;
-                }
-                /* Go after the accumulator points! */
-                string sql = CtiPointAccumulator().getSQLCoreStatement();
-
-                if( pntID != 0 )
-                {
-                    sql += " AND PT.pointid = ?";
-                }
-                if( paoID != 0 )
-                {
-                    sql += " AND PT.paobjectid = ?";
-                }
-
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader rdr(connection, sql);
-
-                if( pntID != 0 )
-                {
-                    rdr << pntID;
-                }
-                if( paoID != 0 )
-                {
-                    rdr << paoID;
-                }
-
-                rdr.execute();
-                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(rdr.isValid() ? 0 : 1))
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << rdr.asString() << endl;
-                }
-
-                refreshPoints(pointIdsFound, rdr);
-                if(DebugLevel & 0x00010000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Accum" << endl;
-                }
-                if((stop = stop.now()).seconds() - start.seconds() > 5 )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Accumulators " << endl;
-                }
+                rdr << pntID;
             }
-
-            if(pntType == InvalidPointType || pntType == CalculatedPointType ||
-               pntType == CalculatedStatusPointType )
+            if( paoID != 0 )
             {
-                start = start.now();
-
-                if(DebugLevel & 0x00010000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CALC" << endl;
-                }
-
-                string sql = CtiPointNumeric::getSQLCoreStatement() +
-                             " AND (upper (PT.pointtype) = 'CALCULATED' OR upper (PT.pointtype) = 'CALCANALOG')";
-
-                if(pntID != 0)
-                {
-                    sql += " AND PT.pointid = ?";
-                }
-                if(paoID != 0)
-                {
-                    sql += " AND PT.paobjectid = ?";
-                }
-
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader rdr(connection, sql);
-
-                if(pntID != 0)
-                {
-                    rdr << pntID;
-                }
-                if(paoID != 0)
-                {
-                    rdr << paoID;
-                }
-
-                rdr.execute();
-
-                if(DebugLevel & 0x00010000 || !rdr.isValid())
-                {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
-                }
-                refreshPoints(pointIdsFound, rdr);
-                if(DebugLevel & 0x00010000)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for CALC" << endl;
-                }
-                if((stop = stop.now()).seconds() - start.seconds() > 5 )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Calc points " << endl;
-                }
+                rdr << paoID;
             }
 
-            // Now I need to check for any Point removals based upon the
-            // Updated Flag being NOT set
+            rdr.execute();
 
-            if(pntID == 0 && paoID == 0 && !pointIdsFound.empty())
+            if( ! rdr.isValid() )
             {
-                coll_type::writer_lock_guard_t guard(getLock());
-
-                while( pTempCtiPoint = _smartMap.find(isPointNotUpdated, NULL) )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Evicting " << pTempCtiPoint->getName() << " from list" << endl;
-                    }
-
-                    erase(pTempCtiPoint->getPointID());
-                }
+                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
             }
-        }   // Temporary results are destroyed to free the connection
+            else if( DebugLevel & 0x00010000 )
+            {
+                CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
+            }
 
-        if( paoID )
+            refreshPoints(pointIdsFound, rdr);
+            if(DebugLevel & 0x00010000)
+            {
+                CTILOG_DEBUG(dout, "Done Looking for Status/Control");
+            }
+            if((stop = stop.now()).seconds() - start.seconds() > 5 )
+            {
+                CTILOG_INFO(dout, (stop.seconds() - start.seconds()) <<" seconds for Status/Control");
+            }
+        }
+
+        if(pntType == InvalidPointType || pntType == AnalogOutputPointType ||
+           pntType == AnalogPointType )
+        {
+            start = start.now();
+
+            if(DebugLevel & 0x00010000)
+            {
+                CTILOG_DEBUG(dout, "Looking for Analogs");
+            }
+
+            string sql = CtiPointAnalog::getSQLCoreStatement();
+
+            if( pntID && paoID )
+            {
+                sql += " WHERE PT.pointid = ? AND PT.paobjectid = ?";
+            }
+            else if( pntID )
+            {
+                sql += " WHERE PT.pointid = ?";
+            }
+            else if( paoID )
+            {
+                sql += " WHERE PT.paobjectid = ?";
+            }
+
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection, sql);
+
+            if( pntID != 0 )
+            {
+                rdr << pntID;
+            }
+            if( paoID != 0 )
+            {
+                rdr << paoID;
+            }
+
+            rdr.execute();
+
+            if( ! rdr.isValid() )
+            {
+                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+            }
+            else if( DebugLevel & 0x00010000 )
+            {
+                CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
+            }
+
+            refreshPoints(pointIdsFound, rdr);
+            if(DebugLevel & 0x00010000)
+            {
+                CTILOG_DEBUG(dout, "DONE Looking for Analogs");
+            }
+            if((stop = stop.now()).seconds() - start.seconds() > 5 )
+            {
+                CTILOG_INFO(dout, (stop.seconds() - start.seconds()) <<" seconds for Analogs");
+            }
+        }
+
+        if(pntType == InvalidPointType || pntType == DemandAccumulatorPointType ||
+           pntType == PulseAccumulatorPointType )
+        {
+            start = start.now();
+
+            if(DebugLevel & 0x00010000)
+            {
+                CTILOG_DEBUG(dout, "Looking for Accum");
+            }
+            /* Go after the accumulator points! */
+            string sql = CtiPointAccumulator().getSQLCoreStatement();
+
+            if( pntID != 0 )
+            {
+                sql += " AND PT.pointid = ?";
+            }
+            if( paoID != 0 )
+            {
+                sql += " AND PT.paobjectid = ?";
+            }
+
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection, sql);
+
+            if( pntID != 0 )
+            {
+                rdr << pntID;
+            }
+            if( paoID != 0 )
+            {
+                rdr << paoID;
+            }
+
+            rdr.execute();
+            if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(rdr.isValid() ? 0 : 1))
+            {
+                CTILOG_DEBUG(dout, "DB read: "<< rdr.asString());
+            }
+
+            refreshPoints(pointIdsFound, rdr);
+            if(DebugLevel & 0x00010000)
+            {
+                CTILOG_DEBUG(dout, "DONE Looking for Accum");
+            }
+            if((stop = stop.now()).seconds() - start.seconds() > 5 )
+            {
+                CTILOG_INFO(dout, (stop.seconds() - start.seconds()) <<" seconds for Accumulators");
+            }
+        }
+
+        if(pntType == InvalidPointType || pntType == CalculatedPointType ||
+           pntType == CalculatedStatusPointType )
+        {
+            start = start.now();
+
+            if(DebugLevel & 0x00010000)
+            {
+                CTILOG_DEBUG(dout, "Looking for CALC");
+            }
+
+            string sql = CtiPointNumeric::getSQLCoreStatement() +
+                         " AND (upper (PT.pointtype) = 'CALCULATED' OR upper (PT.pointtype) = 'CALCANALOG')";
+
+            if(pntID != 0)
+            {
+                sql += " AND PT.pointid = ?";
+            }
+            if(paoID != 0)
+            {
+                sql += " AND PT.paobjectid = ?";
+            }
+
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection, sql);
+
+            if(pntID != 0)
+            {
+                rdr << pntID;
+            }
+            if(paoID != 0)
+            {
+                rdr << paoID;
+            }
+
+            rdr.execute();
+
+            if( ! rdr.isValid() )
+            {
+                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+            }
+            else if( DebugLevel & 0x00010000 )
+            {
+                CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
+            }
+
+            refreshPoints(pointIdsFound, rdr);
+            if(DebugLevel & 0x00010000)
+            {
+                CTILOG_DEBUG(dout, "DONE Looking for CALC");
+            }
+            if((stop = stop.now()).seconds() - start.seconds() > 5 )
+            {
+                CTILOG_INFO(dout, (stop.seconds() - start.seconds()) <<" seconds for Calc points");
+            }
+        }
+
+        // Now I need to check for any Point removals based upon the
+        // Updated Flag being NOT set
+
+        if(pntID == 0 && paoID == 0 && !pointIdsFound.empty())
         {
             coll_type::writer_lock_guard_t guard(getLock());
 
-            _paoids_loaded.insert((const long)paoID);
-        }
-        else if( !pntID )
-        {
-            coll_type::writer_lock_guard_t guard(getLock());
+            while( pTempCtiPoint = _smartMap.find(isPointNotUpdated, NULL) )
+            {
+                CTILOG_INFO(dout, "Evicting "<< pTempCtiPoint->getName() <<" from list");
 
-            //  paoid == 0 and pntid == 0 means all points were loaded
-            _all_paoids_loaded = true;
+                erase(pTempCtiPoint->getPointID());
+            }
         }
+    }   // Temporary results are destroyed to free the connection
 
-    }
-    catch(RWExternalErr e )
+    if( paoID )
     {
-        //Make sure the list is cleared
-        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Attempting to clear point list..." << endl;}
+        coll_type::writer_lock_guard_t guard(getLock());
 
-        ClearList();
+        _paoids_loaded.insert((const long)paoID);
+    }
+    else if( !pntID )
+    {
+        coll_type::writer_lock_guard_t guard(getLock());
 
-        { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "getPoints:  " << e.why() << endl;}
-        RWTHROW(e);
-
+        //  paoid == 0 and pntid == 0 means all points were loaded
+        _all_paoids_loaded = true;
     }
 
     return pointIdsFound;
@@ -549,15 +528,14 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
             string loggedSQLcalc   = ss_calc  .str();
             string loggedSQLstatus = ss_status.str();
             string loggedSQLsystem = ss_system.str();
-            {
 
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << loggedSQLaccum  << endl;
-                dout << loggedSQLanalog << endl;
-                dout << loggedSQLcalc   << endl;
-                dout << loggedSQLstatus << endl;
-                dout << loggedSQLsystem << endl;
-            }
+            CTILOG_DEBUG(dout,
+                    endl << loggedSQLaccum  <<
+                    endl << loggedSQLanalog <<
+                    endl << loggedSQLcalc   <<
+                    endl << loggedSQLstatus <<
+                    endl << loggedSQLsystem
+                    );
         }
 
         std::set<long> pointIdsFound;  //  placeholder
@@ -606,13 +584,13 @@ CtiPointBase* PointFactory(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_FACTORY)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Creating a Point of type " << rwsType << endl;
+        CTILOG_DEBUG(dout, "Creating a Point of type "<< rwsType);
     }
     const CtiPointType_t PtType = resolvePointType(rwsType);
 
     if(getDebugLevel() & DEBUGLEVEL_FACTORY)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "  Is point a pseudo point? " << rwsPseudo << endl;
+        CTILOG_DEBUG(dout, "Is point a pseudo point? "<< rwsPseudo);
     }
 
     const bool PseudoPt = ciStringEqual(rwsPseudo, "y");
@@ -659,7 +637,7 @@ CtiPointBase* PointFactory(Cti::RowReader &rdr)
         }
         default:
         {
-            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Unknown point type!" << endl;}
+            CTILOG_ERROR(dout, "Unknown point type! ("<< PtType <<")");
             break;
         }
     }
@@ -808,10 +786,7 @@ CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname
 
     if(_smartMap.entries() == 0)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " There are no entries in the point manager list" << endl;
-        }
+        CTILOG_ERROR(dout, "There are no entries in the point manager list");
     }
 
     {
@@ -847,8 +822,7 @@ CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device ID: " << p->getDeviceID() << " : " << p->getName() << " point is non-updated" << endl;
+                    CTILOG_WARN(dout, "Device ID: "<< p->getDeviceID() <<" : "<< p->getName()<<" point is non-updated");
                 }
             }
         }
@@ -914,8 +888,7 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
     {
         if( DebugLevel & 0x00010000 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " refreshing points for paoid " << pao << endl;
+            CTILOG_DEBUG(dout, "refreshing points for paoid "<< pao);
         }
 
         refreshList(0, pao);
@@ -942,8 +915,7 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Device ID: " << p->getDeviceID() << " : " << p->getName() << " point is non-updated" << endl;
+                        CTILOG_WARN(dout, "Device ID: "<< p->getDeviceID() <<" : "<< p->getName()<<" point is non-updated");
                     }
                 }
             }
@@ -986,8 +958,7 @@ CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT O
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device ID: " << p->getDeviceID() << " : " << p->getName() << " point is non-updated" << endl;
+                    CTILOG_WARN(dout, "Device ID: "<< p->getDeviceID() <<" : "<< p->getName()<<" point is non-updated");
                 }
             }
         }
@@ -1017,18 +988,13 @@ void CtiPointManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
         {
             if(trycount++ > 6)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint: Unable to lock point mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  CtiPointManger::apply " << endl;
-                }
+                CTILOG_ERROR(dout, "Unable to lock point mutex");
+
                 break;
             }
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock point mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << static_cast<string>(getLock()) << " Faddr: 0x" << applyFun << endl;
-            }
+            CTILOG_WARN(dout, "Unable to lock point mutex.  Will retry.. Last Acquired By TID: "<< static_cast<string>(getLock()) <<" Faddr: 0x"<< applyFun);
+
             guard.tryAcquire(30000);
         }
         #endif
@@ -1037,8 +1003,7 @@ void CtiPointManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1119,8 +1084,7 @@ void CtiPointManager::processExpired()
 
     if( !expired_pointids.empty() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " CtiPointManager::processExpired() - expiring " << expired_pointids.size() << " points" << endl;
+        CTILOG_WARN(dout, "expiring "<< expired_pointids.size() <<" points");
     }
 
     //  erase all expired points

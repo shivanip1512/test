@@ -208,13 +208,6 @@ ULONG Mct31xDevice::calcNextLPScanTime( void )
         }
     }
 
-/*
-    if( getMCTDebugLevel(MCTDebug_LoadProfile) )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << getName() << "'s next Load Profile request at " << CtiTime(nextTime) << endl;
-    }
-*/
     return _nextLPScanTime;
 }
 
@@ -292,9 +285,9 @@ void Mct31xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
 
                     if( isDebugLudicrous() )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
+                        CTILOG_DEBUG(dout, "command string check for device \""<< getName() <<"\":"<<
+                                endl << tmpOutMess->Request.CommandStr
+                                );
                     }
 
                     outList.push_back(tmpOutMess);
@@ -304,8 +297,7 @@ void Mct31xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
                 {
                     if( isDebugLudicrous() )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_DEBUG(dout, "LP scan too early for device \""<< getName() <<"\", aborted");
                     }
                 }
             }
@@ -327,10 +319,10 @@ bool Mct31xDevice::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 
     if( isDebugLudicrous() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - LP parse value check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "parse.getiValue(\"scan_loadprofile_block\",   0) = " << parse.getiValue("scan_loadprofile_block", 0) << endl;
-        dout << "parse.getiValue(\"scan_loadprofile_channel\", 0) = " << parse.getiValue("scan_loadprofile_channel", 0) << endl;
+        CTILOG_DEBUG(dout,
+                endl <<"parse.getiValue(\"scan_loadprofile_block\",   0) = "<< parse.getiValue("scan_loadprofile_block", 0) <<
+                endl <<"parse.getiValue(\"scan_loadprofile_channel\", 0) = "<< parse.getiValue("scan_loadprofile_channel", 0)
+                );
     }
 
     if( (lpBlockAddress = parse.getiValue("scan_loadprofile_block",   0)) &&
@@ -360,10 +352,7 @@ bool Mct31xDevice::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Improperly formed LP request discarded for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;;
-        }
+        CTILOG_ERROR(dout, "Improperly formed LP request discarded for \""<< getName() <<"\"");
 
         retVal = false;
     }
@@ -410,10 +399,7 @@ YukonError_t Mct31xDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser
 
             if( itr == ResetCommandsByIedType.end() )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Invalid IED type " << iedtype << " on device \'" << getName() << "\' **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid IED type "<< iedtype <<" on device \""<< getName() <<"\"");
 
                 return ClientErrors::MissingConfig;
             }
@@ -483,8 +469,7 @@ YukonError_t Mct31xDevice::ModelDecode(const INMESS &InMessage, const CtiTime Ti
 
                 if(status)  //  FIX - OR these or something, we should be smarter
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - status scan error codes for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "status scan error codes for device \""<< getName() <<"\"");
                 }
 
                 status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);
@@ -528,8 +513,7 @@ YukonError_t Mct31xDevice::ModelDecode(const INMESS &InMessage, const CtiTime Ti
 
             if( status )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - errors on Inherited::ModelDecode for device \"" + getName() + "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "errors on Inherited::ModelDecode for device \"" + getName() + "\"");
             }
             break;
         }
@@ -555,22 +539,12 @@ YukonError_t Mct31xDevice::decodeStatus(const INMESS &InMessage, const CtiTime T
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Status Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Status Decode for \""<< getName() <<"\"");
     }
 
     setScanFlag(ScanRateGeneral, false);  //resetScanFlag(ScanPending);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-        }
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     //  the only status points we really care about - comm status is handled higher up by porter
@@ -582,10 +556,7 @@ YukonError_t Mct31xDevice::decodeStatus(const INMESS &InMessage, const CtiTime T
 
             if( Value == STATE_INVALID )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - status == INVALID for device \"" << getName() << "\", offset " << i << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "status is INVALID for device \""<< getName() <<"\", offset " << i);
             }
             else
             {
@@ -640,18 +611,10 @@ YukonError_t Mct31xDevice::decodeGetStatusIED(const INMESS &InMessage, const Cti
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** IED GetStatus Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "IED GetStatus Decode for \""<< getName() <<"\"");
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int i;
@@ -868,8 +831,7 @@ YukonError_t Mct31xDevice::decodeGetStatusIED(const INMESS &InMessage, const Cti
 
                     default:
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "unhandled IED type "<< getIEDPort().getIEDType() <<" for device \""<< getName() <<"\"");
                     }
                 }
 
@@ -880,8 +842,7 @@ YukonError_t Mct31xDevice::decodeGetStatusIED(const INMESS &InMessage, const Cti
 
             default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unhandled IM->Sequence " << InMessage.Sequence << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "unhandled IM->Sequence "<< InMessage.Sequence << " for device \"" << getName() << "\"");
             }
         }
     }
@@ -906,18 +867,10 @@ YukonError_t Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const Cti
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** IED GetConfig Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "IED GetConfig Decode for \""<< getName() <<"\"");
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     switch( InMessage.Sequence )
@@ -1050,8 +1003,7 @@ YukonError_t Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const Cti
 
                     default:
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "unhandled IED type "<< getIEDPort().getIEDType() <<" for device \""<< getName() <<"\"");
                     }
                 }
 
@@ -1119,8 +1071,7 @@ YukonError_t Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const Cti
 
                 default:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "unhandled IED type "<< getIEDPort().getIEDType() <<" for device \""<< getName() <<"\"");
                 }
             }
 
@@ -1139,8 +1090,7 @@ YukonError_t Mct31xDevice::decodeGetConfigIED(const INMESS &InMessage, const Cti
 
         default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - unhandled IM->Sequence " << InMessage.Sequence << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "unhandled IM->Sequence "<< InMessage.Sequence <<" for device \"" << getName() << "\"");
         }
     }
 
@@ -1173,18 +1123,10 @@ YukonError_t Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiT
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** IED GetValue Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "IED GetValue Decode for \""<< getName() <<"\"");
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int i;
@@ -1295,8 +1237,7 @@ YukonError_t Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiT
                 }
                 default:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "unhandled IED type "<< getIEDPort().getIEDType() <<" for device \""<< getName() <<"\"");
                 }
             }
 
@@ -1353,8 +1294,7 @@ YukonError_t Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiT
                 }
                 default:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "unhandled IED type "<< getIEDPort().getIEDType() <<" for device \""<< getName() <<"\"");
                 }
             }
 
@@ -1618,8 +1558,7 @@ YukonError_t Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiT
 
                 default:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "unhandled IED type "<< getIEDPort().getIEDType() <<" for device \""<< getName() <<"\"");
                 }
             }
         }
@@ -1714,8 +1653,7 @@ YukonError_t Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiT
 
                 default:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "unhandled IED type "<< getIEDPort().getIEDType() <<" for device \""<< getName() <<"\"");
                 }
             }
 
@@ -1793,10 +1731,7 @@ YukonError_t Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiT
 
                 default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "unhandled IED type "<< getIEDPort().getIEDType() <<" for device \""<< getName() <<"\"");
 
                     pPoint.reset();  //  we can't do a point update - we don't know how to interpret the data
                     Value  = 0.0;
@@ -1900,10 +1835,7 @@ YukonError_t Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiT
 
                 default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - unhandled IED type " << getIEDPort().getIEDType() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "unhandled IED type "<< getIEDPort().getIEDType() <<" for device \""<< getName() <<"\"");
 
                     pPoint.reset();  //  we can't do a point update - we don't know how to interpret the data
                     Value  = 0.0;
@@ -1939,19 +1871,18 @@ YukonError_t Mct31xDevice::decodeGetValueIED(const INMESS &InMessage, const CtiT
                 {
                     if( !datestamp.isValid() || !timestamp.isValid() )
                     {
+                        std::ostringstream logMessage;
+
+                        //  code BL346H is really just the word "bleagh," placed there at the request of CGP and BA
+                        logMessage <<"invalid time on device \""<< getName() <<"\", code BL346H"<<
+                                endl <<"data:"<< std::hex << std::setfill('0');
+
+                        for( int j = 0; j < 13; j++ )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            //  code BL346H is really just the word "bleagh," placed there at the request of CGP and BA
-                            dout << CtiTime() << " **** Checkpoint - invalid time on device \"" << getName() << "\", code BL346H **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << CtiTime() << " data: ";
-
-                            for( int j = 0; j < 13; j++ )
-                            {
-                                dout << std::hex << (int)DSt->Message[j] << " ";
-                            }
-
-                            dout << endl;
+                            logMessage <<" "<< std::setw(2) << (int)DSt->Message[j];
                         }
+
+                        CTILOG_ERROR(dout, logMessage);
                     }
 
                     //  don't send a pointdata msg, it's uninitialized and doesn't matter
@@ -2010,18 +1941,10 @@ YukonError_t Mct31xDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiT
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Accumulator Decode for \""<< getName() <<"\"");
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     decodeAccumulators(accums, 3, InMessage.Buffer.DSt.Message);
@@ -2097,21 +2020,12 @@ YukonError_t Mct31xDevice::decodeGetValueDemand(const INMESS &InMessage, const C
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Demand Decode for \""<< getName() <<"\"");
     }
 
     setScanFlag(ScanRateIntegrity, false);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-        }
-
-        return ClientErrors::MemoryAccess;
-    }
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     demand_rate = getDemandInterval();
 
@@ -2184,10 +2098,8 @@ YukonError_t Mct31xDevice::decodeGetValueDemand(const INMESS &InMessage, const C
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - No demand accumulators defined in DB for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "No demand accumulators defined in DB for \""<< getName() <<"\"");
+
             delete ReturnMsg;
         }
     }
@@ -2210,21 +2122,13 @@ YukonError_t Mct31xDevice::decodeGetValuePeak(const INMESS &InMessage, const Cti
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Min/Max On/Off-Peak Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Min/Max On/Off-Peak Decode for \""<< getName() <<"\"");
     }
 
     resetScanFlag(ScanRateGeneral);
 
     /* this means we are getting NON-demand accumulator points */
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     for( int i = 0; i < 6; i++ )
@@ -2300,18 +2204,10 @@ YukonError_t Mct31xDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Load Profile Scan Decode for \"" << getName() << "\"");
     }
 
-    if((return_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    return_msg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     return_msg->setUserMessageId(InMessage.Return.UserID);
 
     if( (retrieved_channel   = parse.getiValue("scan_loadprofile_channel", 0)) &&
@@ -2319,8 +2215,10 @@ YukonError_t Mct31xDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
     {
         if( isDebugLudicrous() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - retrieved_channel " << retrieved_channel << ", retrieved_block_num " << retrieved_block_num << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout,
+                    endl <<"retrieved_channel   = "<< retrieved_channel <<
+                    endl <<"retrieved_block_num = "<< retrieved_block_num
+                    );
         }
 
         retrieved_block_num--;
@@ -2363,27 +2261,29 @@ YukonError_t Mct31xDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
             {
                 if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - attempt to decode current load profile block for \"" << getName() << "\" - aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << InMessage.Return.CommandStr << endl;
+                    CTILOG_DEBUG(dout, "attempt to decode current load profile block for \""<< getName() <<"\" - aborting decode"<<
+                            endl <<"commandstr = "<< InMessage.Return.CommandStr
+                            );
                 }
 
                 result_string = "Attempt to decode current load profile block for \"" + getName() + "\" - aborting decode ";
             }
             else if( retrieved_block_start < _lastLPTime[retrieved_channel - 1] )
             {
+                result_string  = "Block < lastLPTime for device \"" + getName() + "\" - aborting decode";
+
                 if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << InMessage.Return.CommandStr << endl;
-                    dout << "retrieved_block_num = " << retrieved_block_num << endl;
-                    dout << "retrieved_channel = " << retrieved_channel << endl;
-                    dout << "retrieved_block_start = " << retrieved_block_start << endl;
-                    dout << "_lastLPTime = " << _lastLPTime[retrieved_channel - 1] << endl;
+                    CTILOG_DEBUG(dout, result_string <<
+                            endl <<"commandstr            = "<< InMessage.Return.CommandStr <<
+                            endl <<"retrieved_block_num   = "<< retrieved_block_num <<
+                            endl <<"retrieved_channel     = "<< retrieved_channel <<
+                            endl <<"retrieved_block_start = "<< retrieved_block_start <<
+                            endl <<"_lastLPTime           = "<< _lastLPTime[retrieved_channel - 1]
+                            );
                 }
 
-                result_string  = "Block < lastLPTime for device \"" + getName() + "\" - aborting decode";
+
             }
             else
             {
@@ -2427,11 +2327,11 @@ YukonError_t Mct31xDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
 
                     if( isDebugLudicrous() )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "value = " << value << endl;
-                        dout << "interval_offset = " << interval_offset << endl;
-                        dout << "timestamp = " << CtiTime(timestamp) << endl;
+                        CTILOG_DEBUG(dout, "load profile debug for \""<< getName() <<"\""<<
+                                endl <<"value           = "<< value <<
+                                endl <<"interval_offset = "<< interval_offset <<
+                                endl <<"timestamp       = "<< CtiTime(timestamp)
+                                );
                     }
 
                     point_data->setTime(timestamp);
@@ -2449,14 +2349,11 @@ YukonError_t Mct31xDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage.Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
         result_string  = "scan_loadprofile tokens not found in command string \"";
         result_string += InMessage.Return.CommandStr;
         result_string += "\" - cannot proceed with decode, aborting";
+
+        CTILOG_ERROR(dout, result_string);
     }
 
     return_msg->setResultString(result_string);
@@ -2480,15 +2377,19 @@ void Mct31xDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 
         if( isDebugLudicrous() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - in Mct31xDevice::DecodeDatabaseReader for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Default data class: " << _iedPort.getDefaultDataClass() << endl;
-            dout << "Default data offset: " << _iedPort.getDefaultDataOffset() << endl;
-            dout << "Device ID: " << _iedPort.getDeviceID() << endl;
-            dout << "IED Scan Rate: " << _iedPort.getIEDScanRate() << endl;
-            dout << "IED Type: " << _iedPort.getIEDType() << endl;
-            dout << "Password: " << _iedPort.getPassword() << endl;
-            dout << "Real Time Scan Flag: " << _iedPort.getRealTimeScanFlag() << endl;
+            Cti::FormattedList itemList;
+
+            itemList.add("Default data class")  << _iedPort.getDefaultDataClass();
+            itemList.add("Default data offset") << _iedPort.getDefaultDataOffset();
+            itemList.add("Device ID")           << _iedPort.getDeviceID();
+            itemList.add("IED Scan Rate")       << _iedPort.getIEDScanRate();
+            itemList.add("IED Type")            << _iedPort.getIEDType();
+            itemList.add("Password")            << _iedPort.getPassword();
+            itemList.add("Real Time Scan Flag") << _iedPort.getRealTimeScanFlag();
+
+            CTILOG_DEBUG(dout, "DB read for \""<< getName() <<"\""<<
+                    itemList
+                    );
         }
     }
 }

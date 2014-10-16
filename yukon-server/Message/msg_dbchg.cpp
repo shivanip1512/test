@@ -19,7 +19,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include <rw\thr\mutex.h>
 #include <rw/collect.h>
 
-
 #include "collectable.h"
 #include "msg_dbchg.h"
 #include "dlldefs.h"
@@ -36,16 +35,18 @@ CtiMessage* CtiDBChangeMsg::replicateMessage() const
    return( (CtiMessage*)ret );
 }
 
-void CtiDBChangeMsg::dump() const
+std::string CtiDBChangeMsg::toString() const
 {
-   Inherited::dump();
+   Cti::FormattedList itemList;
 
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   dout << " Object Id:          " << _id           << endl;
-   dout << " Object Database:    " << _database     << endl;
-   dout << " Object Category:    " << _category     << endl;
-   dout << " Object Type:        " << _objecttype   << endl;
-   dout << " Type of Change:     " << _typeofchange << endl;
+   itemList <<"CtiDBChangeMsg";
+   itemList.add("Object Id")       << _id;
+   itemList.add("Object Database") << _database;
+   itemList.add("Object Category") << _category;
+   itemList.add("Object Type")     << _objecttype;
+   itemList.add("Type of Change")  << _typeofchange;
+
+   return (Inherited::toString() += itemList.toString());
 }
 
 CtiDBChangeMsg::CtiDBChangeMsg(LONG id,INT database, string category, string objecttype, INT typeofchange) :

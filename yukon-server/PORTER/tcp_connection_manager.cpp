@@ -157,7 +157,7 @@ void TcpConnectionManager::checkPendingConnectionBlock(vector<pending_map::itera
 
     if( ready_count == SOCKET_ERROR )
     {
-        Connections::TcpSocketStream::reportSocketError("select", __FUNCTION__, __FILE__, __LINE__);
+        CTILOG_ERROR(dout, Connections::TcpSocketStream::formatSocketError("select", WSAGetLastError()));
 
         ready_count = 0;
     }
@@ -256,7 +256,7 @@ void TcpConnectionManager::readCandidateSockets(id_set &ready, id_set &errors, v
     {
         if( ready_count == SOCKET_ERROR )
         {
-            Connections::TcpSocketStream::reportSocketError("select", __FUNCTION__, __FILE__, __LINE__);
+            CTILOG_ERROR(dout, Connections::TcpSocketStream::formatSocketError("select", WSAGetLastError()));
         }
 
         return;

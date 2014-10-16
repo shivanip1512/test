@@ -180,15 +180,6 @@ void CtiTableSASimpleGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
         std::pair< int, int > golay_address = CtiProtocolSA3rdParty::parseGolayAddress(_operationalAddress.data());
 
         _function = golay_address.second;
-
-        #if 0
-        string padded_address = CtiNumStr(golay_address.first).zpad(6);
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Golay Opaddr: " << _operationalAddress << " == " << padded_address << " Function " << golay_address.second << endl;
-        }
-        #endif
     }
 }
 
@@ -202,13 +193,6 @@ string CtiTableSASimpleGroup::getGolayOperationalAddress() const
         std::pair< int, int > golay_address = CtiProtocolSA3rdParty::parseGolayAddress(_operationalAddress.data());
 
         opAddr = CtiNumStr(golay_address.first).zpad(6);    // This is the opAddr BASE string
-
-        #if 0
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Golay Opaddr: " << _operationalAddress << " == " << golay_address.first << " Function " << golay_address.second << endl;
-        }
-        #endif
     }
 
     return opAddr;

@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pao_lite
-*
-* Date:   8/15/2008
-*
-* Author: Jess Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pao.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2008/10/28 19:21:40 $
-*
-* Copyright (c) 2008 Cooper Industries. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"
@@ -79,8 +64,7 @@ void CtiTblPAOLite::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["paobjectid"] >> _paObjectID;
@@ -99,12 +83,15 @@ void CtiTblPAOLite::DecodeDatabaseReader(Cti::RowReader &rdr)
     _disableFlag = ((rwsTemp == "y") ? true : false);
 }
 
-void CtiTblPAOLite::DumpData()
+std::string CtiTblPAOLite::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << endl;
-    dout << "PAO Id                                      : " << _paObjectID << endl;
-    dout << "Name                                        : " << _name << endl;
-    dout << "Class                                       : " << _class << endl;
-    dout << "Type                                        : " << _type << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTblPAOLite";
+    itemList.add("PAO Id") << _paObjectID;
+    itemList.add("Name")   << _name;
+    itemList.add("Class")  << _class;
+    itemList.add("Type")   << _type;
+
+    return itemList.toString();
 }

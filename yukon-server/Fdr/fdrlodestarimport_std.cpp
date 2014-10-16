@@ -364,8 +364,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         //_snprintf(keyString,80,"%s %d %s %s",tokenStrPartCID,_stdLsChannel,getDriveAndPath(),getFileName());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: Looking for CUST_ID/CHANNEL keyString: " <<keyString << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: Looking for CUST_ID/CHANNEL keyString : "<< keyString);
                         }
                         bool pointFound = findTranslationNameInList(string(keyString), getReceiveFromList(), point);
                         if( pointFound )
@@ -373,18 +372,15 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                             _pointId = point.getPointID();
                             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " STD: PointID "<<_pointId<< " found in TranslationTable" <<endl;
+                                CTILOG_DEBUG(dout, "STD: PointID "<< _pointId <<" found in TranslationTable");
                             }
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Translation for Customer Id: " << _stdLsCustomerIdentifier <<
-                                    " and Channel: " << _stdLsChannel << " from file " << getFileInfoList()[fileIndex].getLodeStarFileName() <<
-                                    " was not found" << endl;
-                            }
+                            CTILOG_ERROR(dout, "Translation for Customer Id: "<< _stdLsCustomerIdentifier <<
+                                    " and Channel: "<< _stdLsChannel <<" from file "<< getFileInfoList()[fileIndex].getLodeStarFileName() <<
+                                    " was not found");
+
                             CHAR tempIdStr[80];
                             CHAR tempChanStr[80];
                             string desc = string ("Lodestar point is not listed in the translation table");
@@ -428,38 +424,37 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         tempCharPtr += 2;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: IntervalsPerHour " <<_stdLsIntervalsPerHour<< endl;
-                            dout << CtiTime() << " STD: SecondsPerInterval " <<_stdLsSecondsPerInterval<< endl;
+                            Cti::FormattedList loglist;
+                            loglist.add("STD: IntervalsPerHour")   << _stdLsIntervalsPerHour;
+                            loglist.add("STD: SecondsPerInterval") << _stdLsSecondsPerInterval;
+
+                            CTILOG_DEBUG(dout, loglist);
                         }
+
                         string stdLsDSTFlag = "Y";
                         //Now we can convert the
                         _stdLsStartTime = ForeignToYukonTime(tempStartTimeStr, stdLsDSTFlag[0]);
                         if( _stdLsStartTime == PASTDATE )
                         {
                             headerRecordValidFlag = false;
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Could not parse Lodestar start timestamp: " << tempString1 << " for Customer Identifier: " << _stdLsCustomerIdentifier << endl;
-                            }
+                            CTILOG_ERROR(dout, "Could not parse Lodestar start timestamp: "<< tempString1 <<" for Customer Identifier: "<< _stdLsCustomerIdentifier);
                         }
 
                         _stdLsStopTime = ForeignToYukonTime(tempStopTimeStr, stdLsDSTFlag[0]);
                         if( _stdLsStopTime == PASTDATE )
                         {
                             headerRecordValidFlag = false;
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Could not parse Lodestar stop timestamp: " << tempString1 << " for Customer Identifier: " << _stdLsCustomerIdentifier << endl;
-                            }
+                            CTILOG_ERROR(dout, "Could not parse Lodestar stop timestamp: "<< tempString1 <<" for Customer Identifier: "<< _stdLsCustomerIdentifier);
                         }
                         _stdLsExpectedNumEntries = (_stdLsStopTime.seconds() - _stdLsStartTime.seconds() + getSubtractValue())/_stdLsSecondsPerInterval;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: StartTime: " <<_stdLsStartTime << "..."<<endl;
-                            dout << CtiTime() << " STD: StopTime: " <<_stdLsStopTime << "..."<<endl;
-                            dout << CtiTime() << " STD: Num Of Entries Expected: " <<_stdLsExpectedNumEntries << "..."<<endl;
+                            Cti::FormattedList loglist;
+                            loglist.add("STD: StartTime")               <<_stdLsStartTime;
+                            loglist.add("STD: StopTime")                <<_stdLsStopTime;
+                            loglist.add("STD: Num Of Entries Expected") <<_stdLsExpectedNumEntries;
+
+                            CTILOG_DEBUG(dout, loglist);
                         }
                         break;
                     }
@@ -471,8 +466,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         tempCharPtr += 2;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: UnitOfMeasure: " <<_stdLsUnitOfMeasure << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: UnitOfMeasure : "<< _stdLsUnitOfMeasure);
                         }
                         break;
                     }
@@ -484,8 +478,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         tempCharPtr += 1;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: AltFormat: " <<_stdLsAltFormat << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: AltFormat : "<< _stdLsAltFormat);
                         }
                         break;
                     }
@@ -504,8 +497,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         _stdLsFiller = (string) tempTest;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: Filler: " <<_stdLsFiller << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: Filler : "<< _stdLsFiller);
                         }
                         break;
                     }
@@ -519,8 +511,7 @@ bool CtiFDR_StandardLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
     catch(...)
     {
         headerRecordValidFlag = false;
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( headerRecordValidFlag && isFirstHeaderFlag )
@@ -581,8 +572,7 @@ bool CtiFDR_StandardLodeStar::decodeSecondHeaderRecord(string& aLine)
                         _stdLsMeterStartReading = (atof(tempTest)) *(10e-2);                        tempCharPtr += 7;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: MeterStartReading: " <<_stdLsMeterStartReading << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: MeterStartReading : "<< _stdLsMeterStartReading);
                         }
                         break;
                     }
@@ -594,8 +584,7 @@ bool CtiFDR_StandardLodeStar::decodeSecondHeaderRecord(string& aLine)
                         tempCharPtr += 7;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: MeterStopReading: " <<_stdLsMeterStopReading << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: MeterStopReading : "<< _stdLsMeterStopReading);
                         }
                         break;
                     }
@@ -607,8 +596,7 @@ bool CtiFDR_StandardLodeStar::decodeSecondHeaderRecord(string& aLine)
                         tempCharPtr += 15;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: MeterMultiplier: " <<_stdLsMeterMultiplier << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: MeterMultiplier : "<< _stdLsMeterMultiplier);
                         }
                         break;
                     }
@@ -621,8 +609,7 @@ bool CtiFDR_StandardLodeStar::decodeSecondHeaderRecord(string& aLine)
                         tempCharPtr += 15;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: PulseMultiplier: " <<_stdLsPulseMultiplier << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: PulseMultiplier : "<< _stdLsPulseMultiplier);
                         }
                         break;
                     }
@@ -634,8 +621,7 @@ bool CtiFDR_StandardLodeStar::decodeSecondHeaderRecord(string& aLine)
                         tempCharPtr += 16;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: MeterOffset: " <<_stdLsMeterOffset << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: MeterOffset : "<< _stdLsMeterOffset);
                         }
                         break;
                     }
@@ -647,8 +633,7 @@ bool CtiFDR_StandardLodeStar::decodeSecondHeaderRecord(string& aLine)
                         tempCharPtr += 16;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: PulseOffset: " <<_stdLsPulseOffset << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: PulseOffset : "<< _stdLsPulseOffset);
                         }
                         break;
                     }
@@ -661,8 +646,7 @@ bool CtiFDR_StandardLodeStar::decodeSecondHeaderRecord(string& aLine)
     catch(...)
     {
         headerRecordValidFlag = false;
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( headerRecordValidFlag && isSecondHeaderFlag )
@@ -723,8 +707,7 @@ bool CtiFDR_StandardLodeStar::decodeThirdHeaderRecord(string& aLine)
                         tempCharPtr += 40;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: Descriptor: " <<_stdLsDescriptor << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: Descriptor : " <<_stdLsDescriptor);
                         }
                         break;
                     }
@@ -736,8 +719,7 @@ bool CtiFDR_StandardLodeStar::decodeThirdHeaderRecord(string& aLine)
                         tempCharPtr += 15;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: AltPulseMultiplier: " <<_stdLsAltPulseMultiplier << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: AltPulseMultiplier : "<<_stdLsAltPulseMultiplier);
                         }
                         break;
                     }
@@ -749,8 +731,7 @@ bool CtiFDR_StandardLodeStar::decodeThirdHeaderRecord(string& aLine)
                         tempCharPtr += 9;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: Population: " <<_stdLsPopulation << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: Population : " <<_stdLsPopulation);
                         }
                         break;
                     }
@@ -762,8 +743,7 @@ bool CtiFDR_StandardLodeStar::decodeThirdHeaderRecord(string& aLine)
                         tempCharPtr += 12;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: Weight: " <<_stdLsWeight << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: Weight : " <<_stdLsWeight);
                         }
                         break;
                     }
@@ -777,8 +757,7 @@ bool CtiFDR_StandardLodeStar::decodeThirdHeaderRecord(string& aLine)
     catch(...)
     {
         headerRecordValidFlag = false;
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( headerRecordValidFlag && isThirdHeaderFlag )
@@ -846,8 +825,7 @@ bool CtiFDR_StandardLodeStar::decodeFourthHeaderRecord(string& aLine)
                         _stdLsDescriptor = (string) tempTest;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: Descriptor: " <<_stdLsDescriptor << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: Descriptor : " <<_stdLsDescriptor);
                         }
                         break;
                     }
@@ -865,8 +843,7 @@ bool CtiFDR_StandardLodeStar::decodeFourthHeaderRecord(string& aLine)
                         _stdLsFiller = (string) tempTest;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " STD: Filler: " <<_stdLsFiller << "..."<<endl;
+                            CTILOG_DEBUG(dout, "STD: Filler : " <<_stdLsFiller);
                         }
                         break;
                     }
@@ -880,8 +857,7 @@ bool CtiFDR_StandardLodeStar::decodeFourthHeaderRecord(string& aLine)
     catch(...)
     {
         headerRecordValidFlag = false;
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( headerRecordValidFlag && isFourthHeaderFlag )
@@ -1020,8 +996,7 @@ bool CtiFDR_StandardLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
     catch(...)
     {
         dataRecordValidFlag = false;
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( dataRecordValidFlag && isDataRecordFlag )

@@ -1,12 +1,12 @@
 #pragma once
 
-#include <string>
-
 #include "ctitime.h"
 #include "ctidbgmem.h" // defines CTIDBG_new
 #include "collectable.h"
-
+#include "loggable.h"
 #include "dlldefs.h"
+
+#include <string>
 
 class CtiMessage;    // Forward reference...
 
@@ -19,7 +19,7 @@ typedef std::vector<CtiMessage*> CtiMultiMsg_vec;
  *  DERIVED classes MUST DECLARE AND DEFINE THEMSELVES COLLECTIBLE!
  *
  ******************************************************************************/
-class IM_EX_MSG CtiMessage
+class IM_EX_MSG CtiMessage : public Cti::Loggable
 {
 public:
     DECLARE_COLLECTABLE( CtiMessage )
@@ -39,6 +39,8 @@ protected:
     *   location as the message goes through the machinery on the server....
     */
    void  *ConnectionHandle;
+
+   static std::string formatMessageName(const std::string &name);
 
 public:
 
@@ -76,7 +78,7 @@ public:
    // Adjust the time to now.
    void resetTime();
 
-   virtual void dump() const;
+   virtual std::string toString() const override;
    std::string typeString() const;
 
    virtual bool isValid();

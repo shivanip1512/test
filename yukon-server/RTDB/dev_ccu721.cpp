@@ -113,8 +113,7 @@ YukonError_t Ccu721Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &pa
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "GeneralScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString(newParse.getCommandStr());
@@ -393,10 +392,7 @@ YukonError_t Ccu721Device::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *d
     {
         if( !_queued_outmessages.insert(OutMessage).second )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - " << __FUNCTION__ << " - unable to insert duplicate OM pointer (" << OutMessage << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unable to insert duplicate OM pointer (" << OutMessage << ")");
 
             return ClientErrors::MemoryAccess;
         }
@@ -714,8 +710,7 @@ void Ccu721Device::writeDLCMessage( byte_buffer_t &buf, const OUTMESS *om )
         case BWORD:  writeBWord(buf, om->Buffer.BSt);  break;
         default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Protocol::Klondike::writeDLCMessage() : unhandled word type (" << (om->EventCode & (AWORD | BWORD)) << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "unhandled word type (" << (om->EventCode & (AWORD | BWORD)) << ")");
         }
     }
 }
@@ -834,8 +829,7 @@ YukonError_t Ccu721Device::decodeDWords(const unsigned char *input, const unsign
 {
     if( input_length % DWORDLEN )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Devices::CCU721::decodeDWords() : input_length % DWORDLEN > 0 : " << input_length << " : \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_WARN(dout, "input_length % DWORDLEN > 0 : " << input_length << " : \"" << getName() << "\"");
     }
 
     const unsigned char *input_itr = input;

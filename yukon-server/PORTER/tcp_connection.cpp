@@ -32,7 +32,7 @@ TcpSocketStream::~TcpSocketStream()
 {
     if( s != INVALID_SOCKET && closesocket(s) )
     {
-        reportSocketError("closesocket", __FUNCTION__, __FILE__, __LINE__);
+        CTILOG_ERROR(dout, formatSocketError("closesocket", WSAGetLastError()));
     }
 }
 
@@ -42,7 +42,8 @@ void TcpSocketStream::createSocket(int af, int type, int protocol)
 
     if( s == INVALID_SOCKET)
     {
-        int error = reportSocketError("socket", __FUNCTION__, __FILE__, __LINE__);
+        const int error = WSAGetLastError();
+        CTILOG_ERROR(dout, formatSocketError("socket", error));
 
         throw cannot_open_socket(error);
     }
@@ -50,11 +51,12 @@ void TcpSocketStream::createSocket(int af, int type, int protocol)
     unsigned long nonblocking = 1;
     if( ioctlsocket(s, FIONBIO, &nonblocking) )
     {
-        int error = reportSocketError("ioctlsocket", __FUNCTION__, __FILE__, __LINE__);
+        const int error = WSAGetLastError();
+        CTILOG_ERROR(dout, formatSocketError("ioctlsocket", error));
 
         if( closesocket(s) )
         {
-            reportSocketError("ioctlsocket", __FUNCTION__, __FILE__, __LINE__);
+            CTILOG_ERROR(dout, formatSocketError("closesocket", WSAGetLastError()));
         }
 
         throw cannot_set_nonblocking(error);
@@ -73,14 +75,9 @@ bool TcpSocketStream::is_in(const fd_set *fds) const
 }
 
 
-int TcpSocketStream::reportSocketError(const string winsock_function_name, const char *method_name, const char *file, const int line)
+std::string TcpSocketStream::formatSocketError(const string& winsock_function_name, int error)
 {
-    int error = WSAGetLastError();
-
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << CtiTime() << " **** Checkpoint - " << winsock_function_name << "() returned (" << error << ") in " << method_name << "() **** " << file << " (" << line << ")" << endl;
-
-    return error;
+    return Cti::StreamBuffer() << winsock_function_name <<"() returned error "<< error <<" -> "<< Cti::getSystemErrorMessage(error);
 }
 
 
@@ -91,11 +88,7 @@ PendingTcpConnection::PendingTcpConnection(const InactiveSocketStream &inactive)
     Cti::AddrInfo pAddrInfo = Cti::makeTcpClientSocketAddress(address.ip, address.port);
     if( ! pAddrInfo )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FUNCTION__ << " cannot resolve IP \"" << address.ip << ":" << address.port << "\""
-                    " (getaddrinfo failed with error: " << pAddrInfo.getError() << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Cannot resolve IP \""<< address.ip <<":"<< address.port <<" (getaddrinfo() failed with error: "<< pAddrInfo.getError() <<")");
 
         throw cannot_connect(pAddrInfo.getError());
     }
@@ -104,11 +97,10 @@ PendingTcpConnection::PendingTcpConnection(const InactiveSocketStream &inactive)
 
     if( connect(sock(), pAddrInfo->ai_addr, pAddrInfo->ai_addrlen) == SOCKET_ERROR )
     {
-        int error = WSAGetLastError();
-
+        const int error = WSAGetLastError();
         if( error != WSAEWOULDBLOCK )
         {
-            reportSocketError("connect", __FUNCTION__, __FILE__, __LINE__);
+            CTILOG_ERROR(dout, formatSocketError("connect", error));
             throw cannot_connect(error);
         }
     }
@@ -124,21 +116,21 @@ EstablishedTcpConnection::EstablishedTcpConnection(PendingTcpConnection &p) :
     int socket_write_timeout = gConfigParms.getValueAsInt("PORTER_SOCKET_WRITE_TIMEOUT", 5);
     if( setsockopt(sock(), SOL_SOCKET, SO_SNDTIMEO, reinterpret_cast<char *>(&socket_write_timeout), sizeof(socket_write_timeout)) )
     {
-        reportSocketError("setsockopt", __FUNCTION__, __FILE__, __LINE__);
+        CTILOG_ERROR(dout, formatSocketError("setsockopt", WSAGetLastError()));
     }
 
     //  Turn on the keepalive timer
     int keepalive_timer = 1;
     if( setsockopt(sock(), SOL_SOCKET, SO_KEEPALIVE, reinterpret_cast<char *>(&keepalive_timer), sizeof(keepalive_timer)) )
     {
-        reportSocketError("setsockopt", __FUNCTION__, __FILE__, __LINE__);
+        CTILOG_ERROR(dout, formatSocketError("setsockopt", WSAGetLastError()));
     }
 
     //  enable a hard close - erases all pending outbound data, sends a reset to the other side
     linger l = {1, 0};
     if( setsockopt(sock(), SOL_SOCKET, SO_LINGER, reinterpret_cast<char *>(&l), sizeof(l)) )
     {
-        reportSocketError("setsockopt", __FUNCTION__, __FILE__, __LINE__);
+        CTILOG_ERROR(dout, formatSocketError("setsockopt", WSAGetLastError()));
     }
 }
 
@@ -147,18 +139,19 @@ EstablishedTcpConnection::~EstablishedTcpConnection()
 {
     if( shutdown(sock(), 2) )  //  SD_BOTH
     {
-        reportSocketError("shutdown", __FUNCTION__, __FILE__, __LINE__);
+        CTILOG_ERROR(dout, formatSocketError("shutdown", WSAGetLastError()));
     }
 }
 
 
 int EstablishedTcpConnection::send(const bytes &data) const
 {
-    int bytes_sent = ::send(sock(), &data.front(), data.size(), 0);
+    int bytes_sent = ::send(sock(), reinterpret_cast<const char*>(&data.front()), data.size(), 0);
 
     if( bytes_sent == SOCKET_ERROR )
     {
-        int error = reportSocketError("send", __FUNCTION__, __FILE__, __LINE__);
+        const int error = WSAGetLastError();
+        CTILOG_ERROR(dout, formatSocketError("send", error));
 
         throw write_error(error);
     }
@@ -173,7 +166,8 @@ void EstablishedTcpConnection::recv()
 
     if( ioctlsocket(sock(), FIONREAD, &bytes_available) )
     {
-        int error = reportSocketError("ioctlsocket", __FUNCTION__, __FILE__, __LINE__);
+        const int error = WSAGetLastError();
+        CTILOG_ERROR(dout, formatSocketError("ioctlsocket", error));
 
         throw read_error(error);
     }
@@ -196,7 +190,8 @@ void EstablishedTcpConnection::recv()
 
     if( bytes_read == SOCKET_ERROR )
     {
-        int error = reportSocketError("recv", __FUNCTION__, __FILE__, __LINE__);
+        const int error = WSAGetLastError();
+        CTILOG_ERROR(dout, formatSocketError("recv", error));
 
         throw read_error(error);
     }

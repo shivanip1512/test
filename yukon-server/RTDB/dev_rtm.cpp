@@ -39,8 +39,7 @@ YukonError_t CtiDeviceRTM::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &pa
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "GeneralScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString("scan general");
@@ -104,10 +103,7 @@ YukonError_t CtiDeviceRTM::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
                 }
                 default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Invalid scan type \"" << parse.getiValue("scantype") << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Invalid scan type \""<< parse.getiValue("scantype") <<"\" for device \""<< getName() <<"\"");
 
                     nRet = ClientErrors::NoMethodForExecuteRequest;
                     retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
@@ -248,37 +244,24 @@ YukonError_t CtiDeviceRTM::ErrorDecode(const INMESS &InMessage, const CtiTime Ti
     YukonError_t retCode = ClientErrors::None;
 
     CtiCommandParser  parse(InMessage.Return.CommandStr);
-    CtiPointDataMsg  *commFailed;
-    CtiPointSPtr     commPoint;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "ErrorDecode for device "<< getName() <<" in progress");
 
     resetScanFlag();
 
-    CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+    CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
-    if(pMsg != NULL)
-    {
-        pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
-        pMsg->insert(CtiCommandMsg::OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-        pMsg->insert(getID());          // The id (device or point which failed)
-        pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
+    pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
+    pMsg->insert(CtiCommandMsg::OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+    pMsg->insert(getID());          // The id (device or point which failed)
+    pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-        pMsg->insert(
-                InMessage.ErrorCode
-                    ? InMessage.ErrorCode
-                    : ClientErrors::GeneralScanAborted);
+    pMsg->insert(
+            InMessage.ErrorCode
+                ? InMessage.ErrorCode
+                : ClientErrors::GeneralScanAborted);
 
-        retList.push_back( pMsg );
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    retList.push_back( pMsg );
 
     return retCode;
 }
@@ -353,8 +336,7 @@ YukonError_t CtiDeviceRTM::generate(CtiXfer &xfer)
         }
         default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - unknown state in CtiDeviceRTM::generate() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "unknown state \""<< _state <<"\" for device \"" << getName() << "\"");
         }
     }
 
@@ -429,19 +411,13 @@ YukonError_t CtiDeviceRTM::decode(CtiXfer &xfer, YukonError_t status)
                     {
                         _state = State_Complete;
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - No code length for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "No code length for device \""<< getName() <<"\"");
                     }
                     else if( _code_len > 200 || _code_len <= 0 )
                     {
                         _state = State_Complete;
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - invalid code length (" <<_code_len << ") for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "Invalid code length ("<< _code_len <<") for device \""<< getName() <<"\"");
                     }
                     else
                     {
@@ -514,14 +490,12 @@ YukonError_t CtiDeviceRTM::decode(CtiXfer &xfer, YukonError_t status)
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - unknown code received by device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "TMS_UNKNOWN: Unknown code received by device \""<< getName() <<"\"");
                     }
                 }
                 else if( tms_result == TMS_EXCEPTION )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - error in CtiProtocolSA3rdParty::procTMSmsg() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "TMS_EXCEPTION");
                 }
 
                 if( tms_result == TMS_EMPTY )
@@ -543,8 +517,7 @@ YukonError_t CtiDeviceRTM::decode(CtiXfer &xfer, YukonError_t status)
             }
             default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unknown state in CtiDeviceRTM::decode() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "unknown state \""<< _state <<"\" for device \"" << getName() << "\"");
             }
         }
     }

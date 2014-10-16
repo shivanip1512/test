@@ -64,9 +64,7 @@ DebugTimer::DebugTimer(const string &action, bool print, double timeout) :
 
     if( _print )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-        dout << formatSystemTime(_start) << " " << _action << " / start" << endl;
+        CTILOG_DEBUG(dout, formatSystemTime(_start) << " " << _action << " / start");
     }
 }
 
@@ -81,9 +79,7 @@ DebugTimer::~DebugTimer()
 
     if( _print || duration >= _timeout )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-        dout << formatSystemTime(end) << " " << _action << " / complete, took " << setprecision(3) << duration << " seconds" << endl;
+        CTILOG_DEBUG(dout, formatSystemTime(end) << " " << _action << " / complete, took " << setprecision(3) << duration << " seconds");
     }
 }
 

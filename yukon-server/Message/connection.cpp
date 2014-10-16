@@ -84,12 +84,12 @@ void CtiConnection::start()
 
         if( ! isConnectionUsable() )
         {
-            logStatus( __FUNCTION__, "connection has error status");
+            CTILOG_ERROR(dout, who() <<" - connection has error status");
         }
     }
     catch(...)
     {
-        logException( __FILE__, __LINE__);
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - Error starting connection");
 
         throw;
     }
@@ -104,9 +104,9 @@ void CtiConnection::threadInitiate()
     {
         _outthread.start();
     }
-    catch(const RWxmsg& x)
+    catch(...)
     {
-        logException( __FILE__, __LINE__, typeid(x).name(), x.why() );
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout,  who() <<" - Error starting thread");
     }
 }
 
@@ -163,7 +163,7 @@ void CtiConnection::outThreadFunc()
                     {
                         _valid = false; //sending data failed
 
-                        logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
+                        CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - Error while attempting to send message");
                     }
                 }
             }
@@ -188,7 +188,7 @@ void CtiConnection::outThreadFunc()
     {
         _valid = false;
 
-        logException( __FILE__, __LINE__);
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - Unexpected exception caught");
 
         throw; // Let the higher powers handle this crap!
     }
@@ -207,7 +207,7 @@ void CtiConnection::sendMessage( const CtiMessage& msg )
 
     if( msgType.empty() )
     {
-        logStatus( __FUNCTION__, string("message \"") + typeid(msg).name() + "\" not registered with factory." );
+        CTILOG_ERROR(dout, who() << " - message \"" << typeid(msg).name() << "\" not registered with factory." );
         return;
     }
 
@@ -252,7 +252,7 @@ void CtiConnection::receiveAllMessages()
     }
     catch( cms::CMSException& e )
     {
-        logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
+        CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - Error while attempting to receive all messages");
     }
 }
 
@@ -280,10 +280,8 @@ void CtiConnection::onMessage( const cms::Message* message )
     // check for any deserialize failure
     if( !omsg.get() )
     {
-        logStatus( __FUNCTION__, "message: \"" + message->getCMSType() + "\" cannot be deserialized." );
-
+        CTILOG_ERROR(dout, who() << " - message: \"" << message->getCMSType() << "\" cannot be deserialized.");
         triggerReconnect();
-
         return;
     }
 
@@ -291,29 +289,28 @@ void CtiConnection::onMessage( const cms::Message* message )
     omsg->setConnectionHandle( (void*)this );
 
     // write incoming message to _inQueue
-    if( _inQueue )
+    if( !_inQueue )
     {
-        try
-        {
-            if( _inQueue->isFull() )
-            {
-                logStatus( __FUNCTION__, "queue is full. Will BLOCK. It allows " + CtiNumStr(_inQueue->size()) + " entries." );
-            }
-        }
-        catch(...)
-        {
-            logException( __FILE__, __LINE__ );
-        }
-
-        // Refresh the time...
-        _lastInQueueWrite = _lastInQueueWrite.now();
-
-        writeIncomingMessageToQueue( omsg.release() );
+        CTILOG_ERROR(dout, who() << " - _inQueue is NULL.");
+        return;
     }
-    else
+
+    try
     {
-        logStatus( __FUNCTION__, "_inQueue is NULL.");
+        if( _inQueue->isFull() )
+        {
+            CTILOG_WARN(dout, who() << " - queue is full. Will BLOCK. It allows " << _inQueue->size() << " entries.");
+        }
     }
+    catch(...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - Error calling _inQueue->isFull()");
+    }
+
+    // Refresh the time...
+    _lastInQueueWrite = _lastInQueueWrite.now();
+
+    writeIncomingMessageToQueue( omsg.release() );
 }
 
 /**
@@ -324,7 +321,7 @@ void CtiConnection::onAdvisoryMessage( const cms::Message* message )
 {
     if( message->getCMSType() != "Advisory" )
     {
-        logStatus( __FUNCTION__, "received unexpected message: \"" + message->getCMSType() + "\" is not \"Advisory\"." );
+        CTILOG_ERROR(dout, who() << " - received unexpected message: \"" << message->getCMSType() << "\" is not \"Advisory\".");
     }
 
     triggerReconnect();
@@ -371,7 +368,7 @@ void CtiConnection::cleanConnection()
         }
         catch(...)
         {
-            logException( __FILE__, __LINE__ );
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - Unexpected exception while cleaning connection");
         }
         _inQueue = 0;
     }
@@ -382,7 +379,7 @@ void CtiConnection::cleanConnection()
     }
     catch(...)
     {
-        logException( __FILE__, __LINE__, "", "error cleaning the outbound queue for connection." );
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - Unexpected exception while clearing outbound message queue");
     }
 }
 
@@ -403,7 +400,7 @@ void CtiConnection::close()
         _closed         = true;
         _noLongerViable = true;
 
-        logStatus( __FUNCTION__, "closing connection." );
+        CTILOG_INFO(dout, who() << " - closing connection");
 
         if( !_connectCalled )
         {
@@ -422,8 +419,11 @@ void CtiConnection::close()
         // We want the outQueue/OutThread to flush itself.
         while( _valid && (entries = _outQueue.entries()) && (elapsedMillis = timer.elapsed()) < _termDuration.milliseconds() )
         {
-            logDebug( __FUNCTION__, "waiting for outbound Queue to flush " + CtiNumStr(entries) + " entries." );
-
+            if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
+            {
+                CTILOG_DEBUG(dout, who() << " - waiting for outbound Queue to flush " << entries << " entries");
+            }
+            
             // sleep for 100 ms or less
             Sleep( std::min<DWORD>( 100, _termDuration.milliseconds() - elapsedMillis ));
         }
@@ -450,11 +450,14 @@ void CtiConnection::close()
 
         releaseResources();
 
-        logDebug( __FUNCTION__, "has closed." );
+        if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
+        {
+            CTILOG_DEBUG(dout, who() << " - has closed.");
+        }
     }
     catch(...)
     {
-        logException( __FILE__, __LINE__ );
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - Unexpected exception during connection close");
     }
 }
 
@@ -471,20 +474,21 @@ int CtiConnection::WriteConnQue( CtiMessage *QEnt, unsigned timeoutMillis )
 
     if( ! isConnectionUsable() )
     {
-        logStatus( __FUNCTION__, "connection error, message was NOT able to be queued." );
+        CTILOG_ERROR(dout, who() <<" - connection error, message was NOT able to be queued.");
         return ClientErrors::Abnormal;
     }
 
     if( _outQueue.isFull() )
     {
-        logStatus( __FUNCTION__, "queue is full. Will BLOCK." );
+        CTILOG_WARN(dout, who() << " - queue is full. Will BLOCK.");
     }
 
     if( timeoutMillis > 0 )
     {
         if( !_outQueue.putQueue( msg.get(), timeoutMillis ) )
         {
-            logStatus( __FUNCTION__, "message was NOT able to be queued within " + CtiNumStr(timeoutMillis) + " millis" );
+            CTILOG_ERROR(dout, who() << " - message was NOT able to be queued within " << timeoutMillis << " millis" );
+
             return ClientErrors::QueueWrite;
         }
 
@@ -568,7 +572,10 @@ bool CtiConnection::isConnectionUsable()
 
             if( ! _outthread.isRunning() )
             {
-                logDebug( __FUNCTION__, "has exited." + string(_dontReconnect?"":" May restart."));
+                if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
+                {
+                    CTILOG_DEBUG(dout, who() << " - has exited." << (_dontReconnect?"":" May restart."));
+                }
 
                 if( ! _dontReconnect )
                 {
@@ -591,7 +598,7 @@ bool CtiConnection::isConnectionUsable()
     }
     catch(...)
     {
-        logException( __FILE__, __LINE__ );
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - Unexpected exception while verifying the connection");
 
         Sleep(5000);
 
@@ -658,7 +665,11 @@ void CtiConnection::checkInterruption()
     }
     catch( WorkerThread::Interrupted& )
     {
-        logDebug( __FUNCTION__, "Connection Thread Interrupted.");
+        if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
+        {
+            CTILOG_DEBUG(dout, who() << " - Connection Thread Interrupted.");
+        }
+
         forceTermination();
     }
 }
@@ -676,7 +687,11 @@ void CtiConnection::checkInterruption( const Chrono &duration )
     }
     catch( WorkerThread::Interrupted& )
     {
-        logDebug( __FUNCTION__, "Connection Thread Interrupted.");
+        if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
+        {
+            CTILOG_DEBUG(dout, who() << " - Connection Thread Interrupted.");
+        }
+
         forceTermination();
     }
 }
@@ -813,57 +828,6 @@ bool CtiConnection::valid() const
 void CtiConnection::messagePeek( const CtiMessage& msg )
 {
     // Implemented only in CtiClientConnection
-}
-
-/**
- * log status
- * @param funcName function name that will appear in the log
- * @param note additional detail to log
- */
-void CtiConnection::logStatus( string funcName, string note ) const
-{
-    string whoStr = who();
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << funcName << " : " << whoStr << " " << note << endl;
-    }
-}
-
-/**
- * log debug
- * @param funcName function name that will appear in the log
- * @param note additional detail to log
- */
-void CtiConnection::logDebug( string funcName, string note ) const
-{
-    if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
-    {
-        logStatus( funcName, note );
-    }
-}
-
-/**
- * log exception
- * @param fileName file name
- * @param line line number
- * @param exceptionName exception name
- * @param note additional detail to log
- */
-void CtiConnection::logException( string fileName, int line, string exceptionName, string note ) const
-{
-    string whoStr = who();
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << whoStr << " " << fileName << " (" << line << ") ";
-
-        if(!exceptionName.empty())
-            dout << " " << exceptionName;
-
-        if(!note.empty())
-            dout << " : " << note;
-
-        dout << endl;
-    }
 }
 
 /**

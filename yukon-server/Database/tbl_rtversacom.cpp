@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_rtversacom
-*
-* Date:   8/23/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_rtversacom.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/07/19 19:02:01 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dbaccess.h"
@@ -39,16 +24,20 @@ CtiTableVersacomRoute::~CtiTableVersacomRoute()
 {
 }
 
-void CtiTableVersacomRoute::DumpData()
+std::string CtiTableVersacomRoute::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << " Route ID                                   " << RouteID << endl;
-    dout << " Utility ID                                 " << UtilityID << endl;
-    dout << " Section                                    " << Section << endl;
-    dout << " Class                                      " << Class << endl;
-    dout << " Division                                   " << Division << endl;
-    dout << " Bus                                        " << Bus << endl;
-    dout << " Amp                                        " << Amp << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTableVersacomRoute";
+    itemList.add("Route ID")   << RouteID;
+    itemList.add("Utility ID") << UtilityID;
+    itemList.add("Section")    << Section;
+    itemList.add("Class")      << Class;
+    itemList.add("Division")   << Division;
+    itemList.add("Bus")        << Bus;
+    itemList.add("Amp")        << Amp;
+
+    return itemList.toString();
 }
 
 INT CtiTableVersacomRoute::getUtilityID() const
@@ -176,8 +165,7 @@ void CtiTableVersacomRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["routeid"]          >> RouteID;

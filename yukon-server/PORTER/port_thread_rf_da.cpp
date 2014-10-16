@@ -55,10 +55,7 @@ void PortRfDaThread(void *pid)
 
         rf_da.run();
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Shutdown PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
-        }
+        CTILOG_INFO(dout, "Shutdown PortThread for port: "<< setw(4) << Port->getPortID() <<" / "<< Port->getName());
     }
 }
 
@@ -94,22 +91,12 @@ void RfDaPortHandler::receiveConfirm(Messaging::Rfn::E2eMessenger::Confirm msg)
     //  ideally this would report any errors back to the unsolicited handler and update the timeout if the packet was sent successfully
 }
 
-
 YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
 {
     if( gConfigParms.isTrue("PORTER_RFDA_DEBUG") )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Cti::Porter::RfDaPortHandler::sendOutbound() - sending packet to "
-                          << describeDeviceAddress(dr.device->getID()) << " "
-                          << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-        for( int offset = 0; offset < dr.xfer.getOutCount(); offset++ )
-        {
-            dout << " " << CtiNumStr(dr.xfer.getOutBuffer()[offset]).hex().zpad(2).toString();
-        }
-
-        dout << endl;
+        CTILOG_DEBUG(dout, "sending packet to "<< describeDeviceAddress(dr.device->getID()) <<" "<<
+                endl << arrayToRange(dr.xfer.getOutBuffer(), dr.xfer.getOutCount()));
     }
 
     Messaging::Rfn::E2eMessenger::Request msg;
@@ -174,8 +161,7 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
     {
         if( ! recentIndications.empty() && gConfigParms.isTrue("PORTER_RFDA_DEBUG") )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::RfDaPortHandler::collectInbounds - _device_id not set, logging packets " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "_device_id not set, logging packets");
         }
 
         for each( const Messaging::Rfn::E2eMessenger::Indication & ind in recentIndications )
@@ -191,17 +177,13 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
 
     if( ! dr || ! dr->device )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Cti::Porter::RfDaPortHandler::collectInbounds - can't find device with ID (" << *_device_id << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
+        CTILOG_ERROR(dout, "can't find device with ID ("<< *_device_id <<")");
         return false;
     }
 
     if( dr->device->isInhibited() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Cti::Porter::RfDaPortHandler::collectInbounds - device \"" << dr->device->getName() << "\" is inhibited, discarding packets " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
+        CTILOG_ERROR(dout, "device \""<< dr->device->getName() <<"\" is inhibited, discarding packets");
         return false;
     }
 
@@ -210,8 +192,7 @@ bool RfDaPortHandler::collectInbounds( const MillisecondTimer & timer, const uns
     {
         if( gConfigParms.isTrue("PORTER_RFDA_DEBUG") )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::RfDaPortHandler::collectInbounds - new inbound for \"" << ind.rfnIdentifier << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "new inbound for \""<< ind.rfnIdentifier <<"\"");
         }
 
         rf_packet *p = new rf_packet;

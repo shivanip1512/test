@@ -59,8 +59,7 @@ void CtiDeviceGroupMCT::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 
     _lmGroupMCT.DecodeDatabaseReader(rdr);
@@ -93,9 +92,7 @@ LONG CtiDeviceGroupMCT::getAddress() const
 
             if( !address )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "MCT Load Group \"" << getName() << "\" has unique address 0, aborting command" << endl;
+                CTILOG_ERROR(dout, "MCT Load Group \""<< getName() <<"\" has unique address 0, aborting command");
             }
 
             break;
@@ -103,9 +100,7 @@ LONG CtiDeviceGroupMCT::getAddress() const
 
         default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Unknown/bad address level specifier (" << _lmGroupMCT.getAddressLevel() << ") in CtiDeviceGroupMCT::getAddress() for MCT loadgroup \"" << getName() << "\"" << endl;
+            CTILOG_ERROR(dout, "Unknown/bad address level specifier ("<< _lmGroupMCT.getAddressLevel() <<") in CtiDeviceGroupMCT::getAddress() for MCT loadgroup \""<< getName() <<"\"");
         }
     }
 
@@ -134,11 +129,8 @@ YukonError_t CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandP
         }
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unsupported command to MCT loadgroup \"" << getName( ) << "\". Command = " << parse.getCommand( ) << endl;
-            }
+            CTILOG_ERROR(dout, "Unsupported command to MCT loadgroup \""<< getName( ) <<"\". Command = "<< parse.getCommand());
+
             nRet = ClientErrors::NoMethod;
 
             break;
@@ -147,11 +139,7 @@ YukonError_t CtiDeviceGroupMCT::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandP
 
     if( nRet )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " Couldn't come up with an operation for MCT loadgroup \"" << getName( ) << "\"" << endl;
-            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
-        }
+        CTILOG_ERROR(dout, "Couldn't come up with an operation for MCT loadgroup \""<< getName( ) <<"\"");
 
         resultString = "NoMethod or invalid command.";
         retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
@@ -337,11 +325,7 @@ YukonError_t CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandP
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "No relays selected for control (" << _lmGroupMCT.getRelays() << ") in MCT load group \"" << getName() << "\", cannot shed" << endl;
-                    }
+                    CTILOG_ERROR(dout, "No relays selected for control ("<< _lmGroupMCT.getRelays() <<") in MCT load group \""<< getName() <<"\", cannot shed");
                 }
             }
         }

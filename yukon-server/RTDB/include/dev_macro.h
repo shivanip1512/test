@@ -37,7 +37,7 @@ public:
 
     CtiDeviceMacro( );
 
-    virtual void DumpData( void );
+    virtual std::string toString() const override;
 
     void clearDeviceList( void );
     CtiDeviceMacro &addDevice( CtiDeviceSPtr toAdd );

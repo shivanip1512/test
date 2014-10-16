@@ -154,10 +154,8 @@ YukonError_t CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
                             errRet->setResultString(resultString);
                             errRet->setStatus(ClientErrors::BadRoute);
                             retList.push_back(errRet);
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Route not found. id: " << OutMessage->Request.RouteID << endl;
-                            }
+
+                            CTILOG_ERROR(dout, resultString);
                         }
                     }
                 }
@@ -167,10 +165,9 @@ YukonError_t CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
                     errRet->setResultString(resultString);
                     errRet->setStatus(ClientErrors::UnsupportedDevice);
                     retList.push_back(errRet);
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Unknown device type for broadcast." << endl;
-                    }
+
+                    CTILOG_ERROR(dout, resultString);
+
                     break;
                 }
             }
@@ -230,10 +227,8 @@ YukonError_t CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
                 case ProtocolFisherPierceType:
                 default:
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Protocol type " << iTemp << endl;
-                        }
+                        CTILOG_ERROR(dout, "Invalid PutConfig Protocol type ("<< iTemp <<")");
+
                         break;
                     }
                 }
@@ -447,10 +442,7 @@ YukonError_t CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
                                 OutMessage = NULL;
                             }
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << resultString << endl;
-                            }
+                            CTILOG_ERROR(dout, resultString);
                         }
                     }
 
@@ -467,10 +459,8 @@ YukonError_t CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
             case ProtocolFisherPierceType:
             default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Control type " << iTemp << endl;
-                    }
+                    CTILOG_ERROR(dout, "Invalid Control Protocol Type ("<< iTemp <<")");
+
                     break;
                 }
             }
@@ -569,10 +559,8 @@ YukonError_t CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
             case ProtocolSA305Type:
             default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") PutConfig type " << iTemp << endl;
-                    }
+                    CTILOG_ERROR(dout, "Invalid PutStatus Protocol Type ("<< iTemp <<")");
+
                     break;
                 }
             }
@@ -608,39 +596,26 @@ YukonError_t CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
         {
             if( (Route = getRoute(pReq->RouteId())) )
             {
-                OUTMESS *NewOMess = CTIDBG_new OUTMESS(*OutMessage); // Construct and copy.
+                OUTMESS *NewOMess = new OUTMESS(*OutMessage); // Construct and copy.
+
+                if( parse.getiValue("type") == ProtocolEmetconType
+                      && Route->getType() == RouteTypeVersacom )
+                {
+                    OutMessage->EventCode |= ENCODED;    // Set this so that versacom works
+                }
+
+                Route->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
 
                 if(NewOMess)
                 {
-                    if( parse.getiValue("type") == ProtocolEmetconType
-                          && Route->getType() == RouteTypeVersacom )
+                    if(isDebugLudicrous())
                     {
-                        OutMessage->EventCode |= ENCODED;    // Set this so that versacom works
+                        CTILOG_DEBUG(dout, "Route "<< Route->getName() <<" did not clean up his mess");
                     }
 
-                    Route->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
-
-                    if(NewOMess)
-                    {
-                        if(isDebugLudicrous())
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  Route " << Route->getName() << " did not clean up his mess." << endl;
-                        }
-                        delete NewOMess;
-                        NewOMess = 0;
-                    }
+                    delete NewOMess;
+                    NewOMess = 0;
                 }
-                else
-                {
-                    status = ClientErrors::MemoryAccess;
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-
             }
             else
             {
@@ -718,29 +693,17 @@ YukonError_t CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
                                         OutMessage->EventCode |= ENCODED;    // Set this so that versacom works
                                     }
 
-                                    OUTMESS *NewOMess = CTIDBG_new OUTMESS(*OutMessage); // Construct and copy.
+                                    OUTMESS *NewOMess = new OUTMESS(*OutMessage); // Construct and copy.
 
-                                    if(NewOMess)
-                                    {
-                                        Route->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
-                                    }
-                                    else
-                                    {
-                                        status = ClientErrors::MemoryAccess;
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Memory error " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                        }
-                                    }
+                                    Route->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
 
                                     if(NewOMess)
                                     {
                                         if(isDebugLudicrous())
                                         {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                            dout << "  Route " << Route->getName() << " did not clean up his mess." << endl;
+                                            CTILOG_DEBUG(dout, "Route "<< Route->getName() <<" did not clean up his mess");
                                         }
+
                                         delete NewOMess;
                                         NewOMess = 0;
                                     }
@@ -758,11 +721,9 @@ YukonError_t CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
             }
-
         }
     }
 

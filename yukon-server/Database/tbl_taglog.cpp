@@ -221,13 +221,6 @@ CtiTableTagLog& CtiTableTagLog::setUserName(const string& str)          // VC(60
 }
 CtiTableTagLog& CtiTableTagLog::setActionStr(const string& str)         // VC(20)
 {
-#if 0
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << " Action String is " << str << endl;
-    }
-#endif
     _actionStr = str;
     return *this;
 }
@@ -253,24 +246,23 @@ CtiTableTagLog& CtiTableTagLog::setTaggedForStr(const string& str)
     return *this;
 }
 
-void CtiTableTagLog::dump()
+std::string CtiTableTagLog::toString() const
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+    Cti::FormattedList itemList;
 
-        dout << "getLogId()           "  << getLogId() << endl;
-        dout << "getInstanceId()      "  << getInstanceId() << endl;
-        dout << "getPointId()         "  << getPointId() << endl;
-        dout << "getTagId()           "  << getTagId() << endl;
+    itemList <<"CtiTableTagLog";
+    itemList.add("getLogId()")          << getLogId();
+    itemList.add("getInstanceId()")     << getInstanceId();
+    itemList.add("getPointId()")        << getPointId();
+    itemList.add("getTagId()")          << getTagId();
+    itemList.add("getUserName()")       << getUserName();
+    itemList.add("getActionStr()")      << getActionStr();
+    itemList.add("getDescriptionStr()") << getDescriptionStr();
+    itemList.add("getTagTime()")        << getTagTime();
+    itemList.add("getReferenceStr()")   << getReferenceStr();
+    itemList.add("getTaggedForStr()")   << getTaggedForStr();
 
-        dout << "getUserName()        "  << getUserName() << endl;
-        dout << "getActionStr()       "  << getActionStr() << endl;
-        dout << "getDescriptionStr()  "  << getDescriptionStr() << endl;
-
-        dout << "getTagTime()         "  << getTagTime() << endl;
-        dout << "getReferenceStr()    "  << getReferenceStr() << endl;
-        dout << "getTaggedForStr()    "  << getTaggedForStr() << endl;
-    }
+    return itemList.toString();
 }
 
 int CtiTableTagLog::getLastMaxInstanceId()
@@ -299,8 +291,7 @@ int CtiTableTagLog::getMaxInstanceId()
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 
@@ -333,8 +324,7 @@ int CtiTableTagLog::getNextLogId()
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 

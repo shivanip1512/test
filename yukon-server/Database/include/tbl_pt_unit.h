@@ -1,11 +1,6 @@
 #pragma once
 
 #include "row_reader.h"
-
-#include <limits.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
-
 #include "dlldefs.h"
 #include "dllbase.h"
 #include "dbmemobject.h"
@@ -13,10 +8,15 @@
 #include "resolvers.h"
 #include "desolvers.h"
 #include "yukon.h"
-
+#include "loggable.h"
 #include "tbl_unitmeasure.h"
 
-class IM_EX_CTIYUKONDB CtiTablePointUnit : public CtiMemDBObject, private boost::noncopyable
+#include <limits.h>
+#include <rw/thr/recursiv.h>
+#include <rw/thr/monitor.h>
+
+
+class IM_EX_CTIYUKONDB CtiTablePointUnit : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -59,6 +59,6 @@ public:
    CtiTableUnitMeasure& getUnitMeasure();
 
    void                 DecodeDatabaseReader(Cti::RowReader &rdr);
-   void                 dump() const;
+   virtual std::string toString() const override;
    static std::string     getTableName();
 };

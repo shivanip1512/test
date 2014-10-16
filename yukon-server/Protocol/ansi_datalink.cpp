@@ -140,22 +140,6 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
    BYTE junk[2048];
 
    memcpy (junk, xfer.getInBuffer(),xfer.getInCountActual());
-
-
-   {
-       CtiLockGuard< CtiLogger > doubt_guard( dout );
-       dout << CtiTime::now() << " xfer in buffer in dissamble packetTable 14 got here " << endl << " --";
-   }
-
-   for (int x=0;x < xfer.getInCountActual();x++)
-   {
-       CtiLockGuard< CtiLogger > doubt_guard( dout );
-       dout << junk[x] << " ";
-   }
-   {
-       CtiLockGuard< CtiLogger > doubt_guard( dout );
-       dout << endl;
-   }
 */
    /*************************************
    * if this is anything but 0, we need to ask again
@@ -241,8 +225,7 @@ bool CtiANSIDatalink::continueBuildingPacket( CtiXfer &xfer, int aCommStatus )
 
               if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
               {
-                  CtiLockGuard< CtiLogger > doubt_guard( dout );
-                  dout <<CtiTime::now() << "  ** DEBUG **** _packetBytesReceived " <<_packetBytesReceived <<endl;
+                  CTILOG_DEBUG(dout, "_packetBytesReceived "<<_packetBytesReceived);
               }
               if(( _currentPacket != NULL ) && ( _packetBytesReceived < 511 ))
               {
@@ -640,7 +623,7 @@ void CtiANSIDatalink::buildWriteRequest(  CtiXfer &xfer, USHORT dataSize, short 
    data[3] = dataCount.ch[1];
    data[4] = dataCount.ch[0];
 
-   if (aTableID == Cti::Protocols::Ansi::Focus_SetLpReadControl || 
+   if (aTableID == Cti::Protocols::Ansi::Focus_SetLpReadControl ||
        aTableID == Cti::Protocols::Ansi::Sentinel_BatteryLifeRequest)
    {
        //BYTEULONG lid;
@@ -1046,11 +1029,11 @@ bool CtiANSIDatalink::compareToggleByte(BYTE toggleByte)
     bool match = getToggleByte() == (toggleByte & 0x20);
     if (shouldToggleMatch())
     {
-        return match; 
+        return match;
     }
     else
     {
-        return !match; 
+        return !match;
     }
 }
 bool CtiANSIDatalink::shouldToggleMatch()

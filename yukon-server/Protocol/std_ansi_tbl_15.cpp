@@ -41,7 +41,6 @@
 #include "logger.h"
 #include "std_ansi_tbl_15.h"
 
-
 using std::endl;
 using std::string;
 //=========================================================================================================================================
@@ -252,86 +251,89 @@ bool CtiAnsiTable15::getSet2AppliedFlag(int index )
 //=========================================================================================================================================
 void CtiAnsiTable15::printResult( const string& deviceName )
 {
-    int integer;
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "==================== "<<deviceName<<"  Std Table 15 ========================" << endl;
-    }
+    Cti::StreamBuffer outLog;
+
+    outLog << endl << formatTableName(deviceName +" Std Table 15");
 
     switch( _RawConstantsSelector )
-   {
-   case 0:
-      {
+    {
+    case 0:
+        {
 //         memcpy( _constants_table, dataBlob, sizeof( _constants_table ));
-      }
-      break;
+        }
+        break;
 
-   case 1:
-      {
+    case 1:
+        {
 //         memcpy( _constants_table, dataBlob, sizeof( _constants_table ));
-      }
-      break;
+        }
+        break;
 
-   case 2:
-      {
-          {
-              CtiLockGuard< CtiLogger > doubt_guard( dout );
-              dout << "       Multiplier Offset ";
-          }
-          if ( _SetOnePresentFlag )
-          {
-              CtiLockGuard< CtiLogger > doubt_guard( dout );
-              dout << "set1_applied_flag  ratio1_f1  ratio1_p1 ";
-          }
-          if ( _SetTwoPresentFlag )
-          {
-              CtiLockGuard< CtiLogger > doubt_guard( dout );
-              dout << "set2_applied_flag  ratio2_f1  ratio2_p1 ";
-          }
-         for( int index = 0; index < _NumberConstantsEntries; index++ )
-         {
-              {
-                  CtiLockGuard< CtiLogger > doubt_guard( dout );
-                  dout << endl << "ELTRC CONSTS RCD "<<index<<":";
-                  dout << "  "<<_constants_table[index].electric_constants.multiplier;
-              }
-              if (!_NoOffsetFlag)
-              {
-                  CtiLockGuard< CtiLogger > doubt_guard( dout );
-                  dout << "   "<< _constants_table[index].electric_constants.offset;
-              }
-              if( _SetOnePresentFlag )
-              {
-                  CtiLockGuard< CtiLogger > doubt_guard( dout );
-                  dout << "   "<<getSet1AppliedFlag(index);
-                  dout << "   "<< _constants_table[index].electric_constants.set1_constants.ratio_f1;
-                  dout << "   "<< _constants_table[index].electric_constants.set1_constants.ratio_p1;
-              }
-              if( _SetTwoPresentFlag )
-              {
-                  CtiLockGuard< CtiLogger > doubt_guard( dout );
-                  dout << "   "<<getSet2AppliedFlag(index);
-                  dout << "   "<< _constants_table[index].electric_constants.set2_constants.ratio_f1;
-                  dout << "   "<< _constants_table[index].electric_constants.set2_constants.ratio_p1;
-              }
-          }
-      }
-      break;
+    case 2:
+        {
+            Cti::FormattedTable table;
 
-   default:
-      {
+            unsigned column = 0;
+            table.setCell(0, column++) << "ELTRC CONSTS RCD";
+            table.setCell(0, column++) << "Multiplier";
+            table.setCell(0, column++) << "Offset";
+
+            if( _SetOnePresentFlag )
+            {
+                table.setCell(0, column++) << "set1_applied_flag";
+                table.setCell(0, column++) << "ratio1_f1";
+                table.setCell(0, column++) << "ratio1_p1";
+            }
+
+            if( _SetTwoPresentFlag )
+            {
+                table.setCell(0, column++) << "set2_applied_flag";
+                table.setCell(0, column++) << "ratio2_f1";
+                table.setCell(0, column++) << "ratio2_p1";
+            }
+
+            for( int index = 0; index < _NumberConstantsEntries; index++ )
+            {
+                column = 0;
+                const unsigned row=index+1;
+
+                table.setCell(row, column++) << index;
+                table.setCell(row, column++) << _constants_table[index].electric_constants.multiplier;
+
+                if( _NoOffsetFlag )
+                {
+                    table.setCell(row, column++) << "no offset";
+                }
+                else
+                {
+                    table.setCell(row, column++) << _constants_table[index].electric_constants.offset;
+                }
+
+                if( _SetOnePresentFlag )
+                {
+                    table.setCell(row, column++) << getSet1AppliedFlag(index);
+                    table.setCell(row, column++) << _constants_table[index].electric_constants.set1_constants.ratio_f1;
+                    table.setCell(row, column++) << _constants_table[index].electric_constants.set1_constants.ratio_p1;
+                }
+
+                if( _SetTwoPresentFlag )
+                {
+                    table.setCell(row, column++) << getSet2AppliedFlag(index);
+                    table.setCell(row, column++) << _constants_table[index].electric_constants.set2_constants.ratio_f1;
+                    table.setCell(row, column++) << _constants_table[index].electric_constants.set2_constants.ratio_p1;
+                }
+            }
+
+            outLog << table;
+        }
+        break;
+
+    default:
+        {
          //3-255 are reserved
-      }
-      break;
-   }
+        }
+    }
 
-
+    CTILOG_INFO(dout, outLog);
 }
 

@@ -87,114 +87,28 @@ CtiAnsiTable11& CtiAnsiTable11::operator=(const CtiAnsiTable11& aRef)
 //=========================================================================================================================================
 void CtiAnsiTable11::printResult( const string& deviceName )
 {
-    int integer;
-    string string1,string2;
-    bool flag;
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    flag = getRawPFExcludeFlag();
-    string1 = getResolvedPFExcludeFlag();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 11 ========================" << endl;
-        dout << "   Power Fail Exclude Flag: " << string1 << " (" << flag <<")" << endl;
-    }
+    itemList.add("Power Fail Exclude Flag")          << getResolvedPFExcludeFlag()     <<" ("<< getRawPFExcludeFlag()     <<")";
+    itemList.add("Reset Exclude Flag")               << getResolvedResetExcludeFlag()  <<" ("<< getRawResetExcludeFlag()  <<")";
+    itemList.add("Block Demand Flag")                << getResolvedBlockDemandFlag()   <<" ("<< getRawBlockDemandFlag()   <<")";
+    itemList.add("Sliding Demand Flag")              << getResolvedSlidingDemandFlag() <<" ("<< getRawSlidingDemandFlag() <<")";
+    itemList.add("Thermal Demand Flag")              << getResolvedThermalDemandFlag() <<" ("<< getRawThermalDemandFlag() <<")";
+    itemList.add("Set1 Present Flag")                << getResolvedSetOnePresentFlag() <<" ("<< getRawSetOnePresentFlag() <<")";
+    itemList.add("Set2 Present Flag")                << getResolvedSetTwoPresentFlag() <<" ("<< getRawSetTwoPresentFlag() <<")";
+    itemList.add("No Offset Flag")                   << getResolvedNoOffsetFlag()      <<" ("<< getRawNoOffsetFlag()      <<")";
+    itemList.add("Number of UOM Entries")            << getNumberUOMEntries();
+    itemList.add("Number of Demand Control Entries") << getNumberDemandControlEntries();
+    itemList.add("Data Control Length")              << getDataControlLength();
+    itemList.add("Number of Data Control Entries")   << getNumberDataControlEntries();
+    itemList.add("Number of Constants Entries")      << getNumberConstantsEntries();
+    itemList.add("Constants Selectors")              << getResolvedConstantsSelector() <<" ("<< getRawConstantsSelector() <<")";
+    itemList.add("Number of Sources")                << getNumberSources();
 
-    flag = getRawResetExcludeFlag();
-    string1 = getResolvedResetExcludeFlag();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Reset Exclude Flag: " << string1 << " (" << flag <<")" << endl;
-    }
-
-    flag = getRawBlockDemandFlag();
-    string1 = getResolvedBlockDemandFlag();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Block Demand Flag: " << string1 << " (" << flag <<")" << endl;
-    }
-
-    flag = getRawSlidingDemandFlag();
-    string1 = getResolvedSlidingDemandFlag();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Sliding Demand Flag: " << string1 << " (" << flag <<")" << endl;
-    }
-
-    flag = getRawThermalDemandFlag();
-    string1 = getResolvedThermalDemandFlag();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Thermal Demand Flag: " << string1 << " (" << flag <<")" << endl;
-    }
-
-    flag = getRawSetOnePresentFlag();
-    string1 = getResolvedSetOnePresentFlag();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Set1 Present Flag: " << string1 << " (" << flag <<")" << endl;
-    }
-
-    flag = getRawSetTwoPresentFlag();
-    string1 = getResolvedSetTwoPresentFlag();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Set2 Present Flag: " << string1 << " (" << flag <<")" << endl;
-    }
-
-    flag = getRawNoOffsetFlag();
-    string1 = getResolvedNoOffsetFlag();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   No Offset Flag: " << string1 << " (" << flag <<")" << endl;
-    }
-
-    integer = getNumberUOMEntries();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Number of UOM Entries: " << integer << endl;
-    }
-
-    integer = getNumberDemandControlEntries();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Number of Demand Control Entries: " << integer << endl;
-    }
-
-    integer =  getDataControlLength() ;
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Data Control Length: " << integer << endl;
-    }
-    integer =  getNumberDataControlEntries();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Number of Data Control Entries: " << integer << endl;
-    }
-
-    integer = getNumberConstantsEntries();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Number of Constants Entries: " << integer << endl;
-    }
-    string1 = getResolvedConstantsSelector();
-    integer = getRawConstantsSelector();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Constants Selectors: " << string1 << " (" << integer <<")" << endl;
-    }
-
-    integer = getNumberSources();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Number of Sources: " << integer << endl;
-    }
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 11") <<
+            itemList
+            );
 }
 
 //=========================================================================================================================================

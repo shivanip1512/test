@@ -236,10 +236,7 @@ CtiIONValue *CtiIONValue::restoreObject( const unsigned char *buf, unsigned long
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown ionClass ("<< ionClass <<")");
 
             pos = len;
         }

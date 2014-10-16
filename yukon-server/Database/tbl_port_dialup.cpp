@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_port_dialup
-*
-* Date:   8/28/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_dialup.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "tbl_port_dialup.h"
@@ -122,24 +107,23 @@ string CtiTablePortDialup::getSQLCoreStatement()
 
 void CtiTablePortDialup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-   {
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE)
-      {
-          CtiLockGuard<CtiLogger> logger_guard(dout);
-          dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      }
+    rdr["modemtype"]              >> _modemType;
+    rdr["initializationstring"]   >> _modemInitString;
+    rdr["prefixnumber"]           >> _prefixString;
+    rdr["suffixnumber"]           >> _suffixString;
 
-      rdr["modemtype"]              >> _modemType;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Modem Type           = " << _modemType << endl; }
+    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
+    {
+        Cti::FormattedList itemList;
 
-      rdr["initializationstring"]   >> _modemInitString;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Modem Init String    = " << _modemInitString << endl; }
+        itemList.add("Modem Type")        << _modemType;
+        itemList.add("Modem Init String") << _modemInitString;
+        itemList.add("Prefix String")     << _prefixString;
+        itemList.add("Suffix String")     << _suffixString;
 
-      rdr["prefixnumber"]           >> _prefixString;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Prefix String        = " << _prefixString << endl; }
-
-      rdr["suffixnumber"]           >> _suffixString;
-      if(getDebugLevel() & DEBUGLEVEL_DATABASE) { CtiLockGuard<CtiLogger> logger_guard(dout); dout << " Suffix String        = " << _suffixString << endl; }
-   }
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName() <<
+                itemList
+                );
+    }
 }
 

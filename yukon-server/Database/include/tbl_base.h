@@ -12,7 +12,7 @@
  *  he could also be known as CtiTableDevice
  *----------------------------------------------------------------------------------------*/
 
-class IM_EX_CTIYUKONDB CtiTableDeviceBase : public CtiMemDBObject, private boost::noncopyable
+class IM_EX_CTIYUKONDB CtiTableDeviceBase : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -43,6 +43,6 @@ public:
     bool  getRadioDelay() const;
     bool  useRadioDelays() const;
     static std::string getTableName();
-    virtual void DumpData();
+    virtual std::string toString() const override;
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 };

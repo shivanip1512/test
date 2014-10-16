@@ -27,12 +27,9 @@ CtiPortShare::CtiPortShare(CtiPortSPtr myPort, INT listenPort) :
    if( _shutdownEvent == (HANDLE)NULL )
    {
        const char* message = "Couldn't create _shutdownEvent event!";
-
-       {
-           CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << CtiTime() << message << endl;
-       }
-
+       
+       CTILOG_ERROR(dout, message);
+       
        throw std::runtime_error(message);
    }
 }
@@ -147,17 +144,12 @@ void CtiPortShare::createNexus(const string &nexusName)
 
    if( isDebugLudicrous() )
    {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-       dout << "  Presenting port " << _internalPort << " for connection " << endl;
+       CTILOG_DEBUG(dout, "Presenting port "<< _internalPort <<" for connection");
    }
 
    if( ! ListenNexus.create(_internalPort) )
    {
-       {
-           CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << CtiTime() << " Could not create a NEXUS for " << nexusName << endl;
-       }
+       CTILOG_ERROR(dout, "Could not create a listener for "<< nexusName);
        return;
    }
 
@@ -168,8 +160,7 @@ void CtiPortShare::createNexus(const string &nexusName)
    {
        if( ! isSet(SHUTDOWN) )
        {
-           CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << CtiTime() << " Error establishing Nexus to InThread for " << nexusName << endl;
+           CTILOG_ERROR(dout, "Could not establish connection for in/outthread connection"<< nexusName);
        }
        return;
    }
@@ -177,8 +168,7 @@ void CtiPortShare::createNexus(const string &nexusName)
    // Someone has connected to us.. or there was an error
    if( isDebugLudicrous() )
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " closing listener nexus for in/outthread connection " << nexusName << endl;
+       CTILOG_DEBUG(dout, "closing listener for in/outthread connection "<< nexusName);
    }
 
    ListenNexus.close();  // Don't need this anymore.
@@ -186,10 +176,7 @@ void CtiPortShare::createNexus(const string &nexusName)
    // Someone has connected to us..
    if( _internalNexus.isValid() )
    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Closing the internal port_shr nexus. Will recreate." << endl;
-        }
+        CTILOG_INFO(dout, "Closing the internal port_shr connection. Will recreate.");
         _internalNexus.close();
    }
 
@@ -207,17 +194,14 @@ void CtiPortShare::connectNexus()
 
     if( isDebugLudicrous() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "  Attempting connection on port " << _internalPort << endl;
+        CTILOG_DEBUG(dout, "Attempting connection on port "<< _internalPort);
     }
 
     while( ! isSet(CtiThread::SHUTDOWN) && ! _returnNexus.open("localhost", _internalPort, Cti::StreamSocketConnection::ReadAny) )
     {
         if( ! (attempt++ % 15) ) // print every 15 seconds
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port Sharing IP interface is having issues " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_WARN(dout, "Port Sharing IP interface is having issues");
         }
 
         CTISleep(1000L);

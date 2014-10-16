@@ -72,10 +72,7 @@ YukonError_t RDSTransmitter::recvCommRequest( OUTMESS *OutMessage )
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - invalid OutMessage in RDSTransmitter::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "NULL OutMessage");
 
         retVal = ClientErrors::Memory;
     }
@@ -238,8 +235,7 @@ unsigned RDSTransmitter::calculateSleepDelay()  // time in milliseconds!!
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** Checkpoint **** Invalid groups per second value" << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Invalid groups per second value");
     }
     return delay;
 }
@@ -253,8 +249,7 @@ void RDSTransmitter::delay()
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** Checkpoint **** Invalid groups per second value" << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Invalid groups per second value");
     }
 }
 
@@ -546,10 +541,7 @@ YukonError_t RDSTransmitter::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
     }
     case ControlRequest:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Unexpected ControlRequest command");
         }
     case GetStatusRequest:
     case LoopbackRequest:
@@ -682,10 +674,7 @@ void RDSTransmitter::printAcknowledgmentError(unsigned char error)
         }
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << errorText << endl;
-    }
+    CTILOG_ERROR(dout, errorText);
 }
 
 // This is a CCITT CRC initialized with 0xFFFF and inverted at the end.
@@ -732,8 +721,7 @@ void RDSTransmitter::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 }
 

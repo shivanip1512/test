@@ -4,19 +4,20 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>
-#include <limits.h>
-
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
-
 #include "dbmemobject.h"
 #include "row_reader.h"
+#include "loggable.h"
+
+#include <windows.h>
+#include <limits.h>
+#include <rw/thr/recursiv.h>
+#include <rw/thr/monitor.h>
+#include <rw/thr/recursiv.h>
+#include <rw/thr/monitor.h>
+
 
 //This is the lite version of CtiTblPAO. The only string stored by this object is the name.
-class IM_EX_CTIYUKONDB CtiTblPAOLite : public CtiMemDBObject, private boost::noncopyable
+class IM_EX_CTIYUKONDB CtiTblPAOLite : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -56,7 +57,7 @@ public:
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    virtual void DumpData();
+    virtual std::string toString() const override;
 };
 
 inline bool CtiTblPAOLite::isInhibited() const { return _disableFlag; }

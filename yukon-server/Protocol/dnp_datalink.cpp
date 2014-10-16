@@ -51,10 +51,8 @@ DatalinkLayer &DatalinkLayer::operator=(const DatalinkLayer &aRef)
 {
     if( this != &aRef )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        //TODO: Remove this log or make this class non-copyable
+        CTILOG_TRACE(dout, "inside "<<__FUNCTION__);
     }
 
     return *this;
@@ -98,10 +96,7 @@ void DatalinkLayer::setToOutput( unsigned char *buf, unsigned int len )
         _io_state       = State_IO_Failed;
         _control_state  = State_Control_Ready;
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_WARN(dout, "len > DatalinkPacket::PayloadLengthMax or buf is NULL");
     }
     else
     {
@@ -183,10 +178,7 @@ YukonError_t DatalinkLayer::generate( CtiXfer &xfer )
 
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unhandled state " << _io_state << " in Cti::Protocol::DNP::Datalink::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "unhandled state "<< _io_state);
                 //  fall through
             }
             case State_IO_Failed:
@@ -227,8 +219,7 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
             {
                 if( isDebugLudicrous() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unexpected error " << status << " on port **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, "unexpected error "<< status <<" on port");
                 }
             }
         }
@@ -243,10 +234,7 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
         {
             if( !_dl_confirm )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - datalink control message received, but DL confirm is not enabled for this devicetype **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_WARN(dout, "datalink control message received, but DL confirm is not enabled for this devicetype");
             }
 
             //  TODO:  since status should always be NORMAL here, should i remove it as a parameter to this function?
@@ -367,10 +355,7 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
 
                 default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "unhandled state "<< _io_state);
 
                     break;
                 }
@@ -573,10 +558,7 @@ bool DatalinkLayer::processControl( const DatalinkLayer::packet_t &packet )
 
                             default:
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
+                                CTILOG_INFO(dout, "packet.header.fmt.control.p.functionCode = "<< packet.header.fmt.control.p.functionCode);
 
                                 _control_state = State_Control_Ready;
 
@@ -621,10 +603,7 @@ bool DatalinkLayer::processControl( const DatalinkLayer::packet_t &packet )
 
                         default:
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_INFO(dout, "packet.header.fmt.control.p.functionCode = "<< packet.header.fmt.control.p.functionCode);
 
                             break;
                         }
@@ -654,22 +633,13 @@ bool DatalinkLayer::processControl( const DatalinkLayer::packet_t &packet )
                         default:
                         {
                             //  try again... ?
-
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-
-                            break;
+                            CTILOG_INFO(dout, "packet.header.fmt.control.s.functionCode = "<< packet.header.fmt.control.p.functionCode);
                         }
                     }
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_INFO(dout, "packet.header.fmt.control.s.dfc = "<< packet.header.fmt.control.s.dfc)
 
                     _control_state = State_Control_Request_LinkStatus_Out;
                 }
@@ -758,14 +728,9 @@ YukonError_t DatalinkLayer::generateControl( CtiXfer &xfer )
         case State_Control_Ready:
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unhandled state " << _control_state << " in Cti::Protocol::DNP::Datalink::generateControl() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unhandled state "<< _control_state);
 
             retVal = ClientErrors::Abnormal;
-
-            break;
         }
     }
 
@@ -897,13 +862,7 @@ YukonError_t DatalinkLayer::decodeControl( CtiXfer &xfer, YukonError_t status )
             case State_Control_Ready:
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "unhandled state = " << _control_state << endl;
-                }
-
-                break;
+                CTILOG_ERROR(dout, "unhandled state "<< _control_state);
             }
         }
     }
@@ -1158,11 +1117,7 @@ void DatalinkLayer::putPacketPayload( const DatalinkLayer::packet_t &packet, uns
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Buffer passed to putPayload() is NULL... ?" << endl;
-        }
+        CTILOG_ERROR(dout, "Buffer passed to putPayload() is NULL... ?");
 
         *len = 0;
     }

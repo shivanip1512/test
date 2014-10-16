@@ -4,23 +4,27 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>
 #include "ctitime.h"
 
 #include "CServiceConfig.h"
 #include "id_macs.h"
 #include "mc_svc.h"
 #include "ctibase.h"
+#include "connection_base.h"
+#include "logManager.h"
 
+#include <windows.h>
+#include <rw/toolpro/winsock.h>
 #include <iostream>
 #include <iterator>
 #include <vector>
 #include <algorithm>
-
 #include <crtdbg.h>
 
-#include "connection_base.h"
-// Close all yukon messaging connections when this object is destroyed
+// Shutdown logging when this object is destroyed
+Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
+
+// Close all messaging connections when this object is destroyed
 Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
 using namespace std;
@@ -44,6 +48,15 @@ int main(int argc, char* argv[] )
         exit(-1);
     }
 
+    // Initialize the global logger
+    doutManager.setOwnerInfo     ( CompileInfo );
+    doutManager.setOutputFile    ( "macs" );
+    doutManager.setOutputPath    ( gLogDirectory );
+    doutManager.setRetentionDays ( gLogRetention );
+    doutManager.setToStdOut      ( true );
+
+    doutManager.start();
+
     // Hack to detect whether we are running as a service
     // or in a console
     if( Cti::setConsoleTitle(CompileInfo) )
@@ -53,7 +66,7 @@ int main(int argc, char* argv[] )
             //Process command line
             if (strcmp(argv[1], "-install") == 0)
             {
-                cout << CtiTime()  << " - Installing as a service..." << endl;
+                CTILOG_INFO(dout, "Installing as a service...");
                 CServiceConfig si(szName, szDisplay);
                 si.Install(SERVICE_WIN32_OWN_PROCESS,
                            SERVICE_DEMAND_START,
@@ -64,7 +77,7 @@ int main(int argc, char* argv[] )
             }
             else if (strcmp(argv[1], "-auto") == 0)
             {
-                cout << CtiTime()  << " - Installing as a service..." << endl;
+                CTILOG_INFO(dout, "Installing as a service...");
                 CServiceConfig si(szName, szDisplay);
                 si.Install(SERVICE_WIN32_OWN_PROCESS,
                            SERVICE_AUTO_START,
@@ -76,7 +89,7 @@ int main(int argc, char* argv[] )
             else
             if ( strcmp(argv[1], "-remove" ) == 0 )
             {
-                cout << CtiTime()  << " - Removing service..." << endl;
+                CTILOG_INFO(dout, "Removing service...");
                 CServiceConfig si(szName, szDisplay);
                 si.Remove();
                 return 0;

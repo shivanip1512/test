@@ -30,7 +30,7 @@
 #include "ctibase.h"
 
 
-class IM_EX_CTIYUKONDB CtiTableMacroRoute : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableMacroRoute : public CtiMemDBObject, public Cti::Loggable
 {
 
 protected:
@@ -51,7 +51,7 @@ public:
 
    CtiTableMacroRoute& operator=(const CtiTableMacroRoute& aRef);
 
-   void DumpData();
+   virtual std::string toString() const override;
 
    LONG getRouteID() const;
    CtiTableMacroRoute& setRouteID( const LONG aRouteID );

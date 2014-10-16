@@ -84,7 +84,6 @@ public:
     bool setSuccessPercentPointId(long tempPointId, long tempPointOffset);
     CtiCCOperationStats& createPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 
-    void printOpStats();
     bool isDirty();
     void dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime& currentDateTime);
 

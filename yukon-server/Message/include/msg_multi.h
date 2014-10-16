@@ -40,6 +40,6 @@ public:
    virtual CtiMessage& setConnectionHandle(void *p);
    virtual void* getConnectionHandle() const;
 
-   virtual void dump() const;
+   virtual std::string toString() const override;
 
 };

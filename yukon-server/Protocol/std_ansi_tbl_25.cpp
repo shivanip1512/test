@@ -35,6 +35,7 @@
 #include "precompiled.h"
 
 #include "logger.h"
+#include "ctitime.h"
 #include "std_ansi_tbl_25.h"
 
 using std::string;
@@ -79,32 +80,26 @@ CtiAnsiTable25& CtiAnsiTable25::operator=(const CtiAnsiTable25& aRef)
    }
    return *this;
 }
-void CtiAnsiTable25::printResult( const string& deviceName)
+void CtiAnsiTable25::printResult(const string& deviceName)
 {
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
+    if( _dateTimeFieldFlag )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 25 ========================" << endl;
+        itemList.add("End Date Time") << CtiTime(_endDateTime);
     }
 
-    if (_dateTimeFieldFlag)
+    if( _seasonInfoFieldFlag )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "**End Date Time:  "<< CtiTime(_endDateTime).asString()<<endl;
+        itemList.add("Season") << _season;
     }
-    if (_seasonInfoFieldFlag)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "**Season:  "<< (int)_season<<endl;
-    }
-    _prevDemandResetData->printResult(deviceName);
+
+    _prevDemandResetData->appendResult(itemList);
+
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 25") <<
+            itemList
+            );
 }
 
 

@@ -101,7 +101,7 @@ public:
 
    CtiPointDataMsg& setTimeWithMillis(const CtiTime& aTime, const unsigned millis);
 
-   virtual void dump() const;
+   virtual std::string toString() const override;
 
    virtual bool isValid();
    static unsigned int getInstanceCount() { return _instanceCount; }

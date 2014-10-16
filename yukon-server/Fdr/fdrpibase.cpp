@@ -91,15 +91,13 @@ CtiFDRPiBase* CtiFDRPiBase::createInstance()
   string tempStr = gConfigParms.getValueAsString( KEY_FLAVOR, "POLL" );
   if (tempStr == "POLL")
   {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << CtiTime::now() << " FDRPI: Instantiating POLL flavor of FDRPI" << endl;
-    return new CtiFDRPiPoll();
+      CTILOG_INFO(dout, "Instantiating POLL flavor of FDRPI");
+      return new CtiFDRPiPoll();
   }
   else
   {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << CtiTime::now() << " FDRPI: Instantiating NOTIFY flavor of FDRPI" << endl;
-    return new CtiFDRPiNotify();
+      CTILOG_INFO(dout, "Instantiating NOTIFY flavor of FDRPI");
+      return new CtiFDRPiNotify();
   }
 }
 
@@ -118,8 +116,7 @@ bool CtiFDRPiBase::tryPrimaryConnection()
 {
   if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
   {
-    CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Attempting connect to primary PI server: " << getPrimaryNodeName() << endl;
+      CTILOG_DEBUG(dout, "Attempting connect to primary PI server: " << getPrimaryNodeName());
   }
 
   int32 err = piut_setservernode(getPrimaryNodeName().c_str());
@@ -127,10 +124,8 @@ bool CtiFDRPiBase::tryPrimaryConnection()
   {
     if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
     {
-      std::string piError = getPiErrorDescription(err, "piut_setservernode");
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to set server node, piut_setservernode returned "
-        << piError << endl;
+        const std::string piError = getPiErrorDescription(err, "piut_setservernode");
+        CTILOG_DEBUG(dout, logNow() <<"Unable to set server node, piut_setservernode returned " << piError);
     }
     setConnected( false );
     return false;
@@ -180,8 +175,7 @@ bool CtiFDRPiBase::trySecondaryConnection()
 
   if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
   {
-    CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Attempting connect to secondary PI server: " << getCurrentNodeName() << endl;
+      CTILOG_DEBUG(dout, logNow() <<"Attempting connect to secondary PI server: "<< getCurrentNodeName());
   }
 
   int err = piut_setservernode(getCurrentNodeName().c_str());
@@ -189,11 +183,11 @@ bool CtiFDRPiBase::trySecondaryConnection()
   {
     if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
     {
-      std::string piError = getPiErrorDescription(err, "piut_setservernode");
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to set server node, piut_setservernode returned "
-        << piError << endl;
+        const std::string piError = getPiErrorDescription(err, "piut_setservernode");
+
+        CTILOG_DEBUG(dout, logNow() <<"Unable to set server node, piut_setservernode returned "<< piError);
     }
+
     setConnected( false );
 
     // We failed to connect to this secondary. Increment the failure count.
@@ -202,9 +196,9 @@ bool CtiFDRPiBase::trySecondaryConnection()
     // Have we failed to connect enough times that it merits trying a new node?
     if( _connectionFailureCount >= FailureThreshold )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Attempts to connect to PI server " << getCurrentNodeName()
-        << " have failed. Attempting a node switch." << endl;
+        CTILOG_ERROR(dout, logNow() <<"Attempts to connect to PI server "<< getCurrentNodeName()
+                <<" have failed. Attempting a node switch.");
+
       _currentNodeIndex = (_currentNodeIndex + 1) % _serverNodeNames.size();
       _connectionFailureCount = 0;
     }
@@ -263,11 +257,8 @@ bool CtiFDRPiBase::serverNodeLogin()
   {
     if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
     {
-      std::string piError = getPiErrorDescription(err, "piut_login");
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to login to PI server, piut_login returned "
-        << piError
-        << ", valid = " << valid << endl;
+        const std::string piError = getPiErrorDescription(err, "piut_login");
+        CTILOG_DEBUG(dout, logNow() <<"Unable to login to PI server, piut_login returned"<< piError <<", valid = "<< valid);
     }
     setConnected( false );
     return false;
@@ -276,8 +267,7 @@ bool CtiFDRPiBase::serverNodeLogin()
   {
     if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Login succesful, access level: " << valid << endl;
+        CTILOG_DEBUG(dout, logNow() <<"Login successful, access level: "<< valid);
     }
     return testConnection();
   }
@@ -295,8 +285,7 @@ bool CtiFDRPiBase::testConnection()
   {
     if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Connection test passed, setting connected " << endl;
+        CTILOG_DEBUG(dout, logNow() <<"Connection test passed, setting connected");
     }
     setConnected( true );
   }
@@ -304,8 +293,7 @@ bool CtiFDRPiBase::testConnection()
   {
     if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Connection test failed, forcing disconnect " << endl;
+        CTILOG_DEBUG(dout, logNow() <<"Connection test failed, forcing disconnect");
     }
     setConnected( false );
     piut_disconnect();
@@ -319,10 +307,9 @@ void CtiFDRPiBase::setConnected( bool conn )
   if(_connected != conn)
   {
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
-     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Setting PI " << (conn?"":"dis") << "connected" << endl;
-     }
+    {
+        CTILOG_DEBUG(dout, logNow() <<"Setting PI "<< (conn?"":"dis") << "connected");
+    }
     _connected = conn;
   }
 }
@@ -343,14 +330,11 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPointSPtr ctiPoint)
   int err = getPiPointIdFromTag(tagName,piId);
   if (err != 0)
   {
-    //if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
-    {
-      std::string piError = getPiErrorDescription(err, "pipt_findpoint");
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to find PI tag '" << tagName <<
-        "' for point " << info.ctiPoint->getPointID() <<
-        ", pipt_findpoint returned " << piError << endl;
-    }
+      const std::string piError = getPiErrorDescription(err, "pipt_findpoint");
+      CTILOG_ERROR(dout, logNow() <<"Unable to find PI tag '"<< tagName <<
+              "' for point "<< info.ctiPoint->getPointID() <<
+              ", pipt_findpoint returned "<< piError);
+
     return;
   }
   info.piPointId = piId;
@@ -360,10 +344,9 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPointSPtr ctiPoint)
   if (err != 0) {
     if( isDebugLevel( MIN_DETAIL_FDR_DEBUGLEVEL ) )
     {
-      std::string piError = getPiErrorDescription(err, "pipt_pointtype");
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to get PI point type for tag " << tagName
-        << ", pipt_pointtype returned " << piError << endl;
+        const std::string piError = getPiErrorDescription(err, "pipt_pointtype");
+        CTILOG_DEBUG(dout, logNow() <<"Unable to get PI point type for tag "<< tagName <<
+                ", pipt_pointtype returned "<< piError);
     }
     return;
   }
@@ -372,20 +355,20 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPointSPtr ctiPoint)
   {
     if (info.ctiPoint->getPointType() != AnalogPointType)
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Incompatible type for point " << info.ctiPoint->getPointID()
-        << "; expected AnalogPointType, got " << info.ctiPoint->getPointType() << endl;
-      return;
+        CTILOG_ERROR(dout, logNow() <<"Incompatible type for point "<< info.ctiPoint->getPointID() <<
+                "; expected AnalogPointType, got "<< info.ctiPoint->getPointType());
+
+        return;
     }
   }
   else if (info.piType == PI_DIGITAL_POINT)
   {
     if (info.ctiPoint->getPointType() != StatusPointType)
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Incompatible type for point " << info.ctiPoint->getPointID()
-        << "; expected StatusPointType, got " << info.ctiPoint->getPointType() << endl;
-      return;
+        CTILOG_ERROR(dout, logNow() <<"Incompatible type for point " << info.ctiPoint->getPointID() <<
+                "; expected StatusPointType, got "<< info.ctiPoint->getPointType());
+
+        return;
     }
 
     // Get offset needed to decode value
@@ -394,11 +377,11 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPointSPtr ctiPoint)
     if (err != 0) {
       if( isDebugLevel( MIN_DETAIL_FDR_DEBUGLEVEL ) )
       {
-        std::string piError = getPiErrorDescription(err, "pipt_digpointers");
-        CtiLockGuard<CtiLogger> doubt_guard( dout );
-        logNow() << "Unable to get digital offset for tag " << tagName
-          << ", pipt_digpointers returned " << piError << endl;
+          const std::string piError = getPiErrorDescription(err, "pipt_digpointers");
+          CTILOG_ERROR(dout, logNow() <<"Unable to get digital offset for tag "<< tagName <<
+                  ", pipt_digpointers returned "<< piError);
       }
+
       return;
     }
     info.digitalOffset = digcode;
@@ -408,8 +391,7 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPointSPtr ctiPoint)
   {
     if( isDebugLevel( MIN_DETAIL_FDR_DEBUGLEVEL ) )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unknown type " << info.piType << " for tag " << tagName << endl;
+        CTILOG_DEBUG(dout, logNow() <<"Unknown type "<< info.piType <<" for tag "<< tagName);
     }
     return;
   }
@@ -418,8 +400,7 @@ void CtiFDRPiBase::processNewPoint(CtiFDRPointSPtr ctiPoint)
 
   if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
   {
-    CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Added point " << info.ctiPoint->getPointID() << " and tag " << tagName << endl;
+      CTILOG_DEBUG(dout, logNow() <<"Added point "<< info.ctiPoint->getPointID() <<" and tag "<< tagName);
   }
 
 }
@@ -489,10 +470,9 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
   if (errorcode != 0) {
     if( isDebugLevel( MIN_DETAIL_FDR_DEBUGLEVEL ) )
     {
-      std::string piError = getPiErrorDescription(errorcode);
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to use value from Pi for point " << info.ctiPoint->getPointID()
-        << ", error code " << piError << endl;
+        const std::string piError = getPiErrorDescription(errorcode);
+        CTILOG_DEBUG(dout, logNow() <<"Unable to use value from Pi for point "<< info.ctiPoint->getPointID() <<
+                ", error code "<< piError);
     }
     handleNonUpdate(info.ctiPoint, timestamp_utc);
   }
@@ -500,9 +480,8 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
   {
     if( isDebugLevel( MAJOR_DETAIL_FDR_DEBUGLEVEL ) )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Handling PI_REAL_POINT update for " << info.ctiPoint->getPointID()
-        << ", rval=" << rval <<", UTC timestamp="<<timestamp_utc<<", Local TimeStamp="<< CtiTime(timestamp_utc)<< endl;
+        CTILOG_DEBUG(dout, logNow() <<"Handling PI_REAL_POINT update for "<< info.ctiPoint->getPointID() <<
+                ", rval="<< rval <<", UTC timestamp="<< timestamp_utc <<", Local TimeStamp="<< CtiTime(timestamp_utc));
     }
     handleUpdate(info.ctiPoint, rval, timestamp_utc);
   }
@@ -510,9 +489,8 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
   {
     if( isDebugLevel( MAJOR_DETAIL_FDR_DEBUGLEVEL ) )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Handling PI_INTEGER_POINT update for " << info.ctiPoint->getPointID()
-        << ", ival=" << ival <<", UTC timestamp="<<timestamp_utc<<", Local TimeStamp="<< CtiTime(timestamp_utc)<< endl;
+        CTILOG_DEBUG(dout, logNow() <<"Handling PI_INTEGER_POINT update for "<< info.ctiPoint->getPointID() <<
+                ", ival="<< ival <<", UTC timestamp="<<timestamp_utc<<", Local TimeStamp="<< CtiTime(timestamp_utc));
     }
     handleUpdate(info.ctiPoint, ival, timestamp_utc);
   }
@@ -534,9 +512,8 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
       {
         char buf[80] = "";
         pipt_digstate(istat, buf, 80);
-        CtiLockGuard<CtiLogger> doubt_guard( dout );
-        logNow() << "Got not-good status for point " << info.ctiPoint->getPointID()
-          << ", state=" << buf << endl;
+        CTILOG_DEBUG(dout, logNow() <<"Got not-good status for point "<< info.ctiPoint->getPointID() <<
+                ", state="<< buf);
       }
       handleNonUpdate(info.ctiPoint, timestamp_utc);
     }
@@ -546,11 +523,10 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
       {
         char buf[80] = "";
         pipt_digstate(istat, buf, 80);
-        CtiLockGuard<CtiLogger> doubt_guard( dout );
-        logNow() << "Handling PI_DIGITAL_POINT update for " << info.ctiPoint->getPointID()
-          << ", rval=" << rval << ", istat=" << istat << ", state=" << state
-          << ", offset=" << info.digitalOffset << ", lastIndex=" << info.digitalLastIndex
-          << "digstate=" << buf <<", UTC timestamp="<<timestamp_utc<<", Local TimeStamp="<< CtiTime(timestamp_utc)<< endl;
+        CTILOG_DEBUG(dout, logNow() <<"Handling PI_DIGITAL_POINT update for "<< info.ctiPoint->getPointID() <<
+                ", rval="<< rval <<", istat="<< istat <<", state="<< state <<
+                ", offset="<< info.digitalOffset <<", lastIndex="<< info.digitalLastIndex <<
+                "digstate="<< buf <<", UTC timestamp="<<timestamp_utc<<", Local TimeStamp="<< CtiTime(timestamp_utc));
       }
       handleUpdate(info.ctiPoint, state, timestamp_utc);
     }
@@ -561,9 +537,8 @@ void CtiFDRPiBase::handlePiUpdate(const PiPointInfo info,
     {
       char buf[80] = "";
       pipt_digstate(istat, buf, 80);
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Got not-good status for point " << info.ctiPoint->getPointID()
-        << "; rval=" << rval << ", state=" << buf << endl;
+      CTILOG_DEBUG(dout, logNow() <<"Got not-good status for point "<< info.ctiPoint->getPointID() <<
+              "; rval="<< rval <<", state="<< buf);
     }
     handleNonUpdate(info.ctiPoint, timestamp_utc);
   }
@@ -594,16 +569,21 @@ void CtiFDRPiBase::readThisConfig()
 
   if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
   {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << "----------------FDRPiBase Configs------------------------------" << endl;
-    dout << "  " << KEY_SERVER_NODE_NAME << (isCollectiveConnection() ? "S: " : ": ");
-    for(int i = 0; i < _serverNodeNames.size(); i++)
-    {
-      dout << _serverNodeNames[i] << ((i + 1 < _serverNodeNames.size()) ? ", " : "\n");
-    }
-    dout << "  " << KEY_SERVER_USERNAME << ": " << _serverUsername << endl;
-    dout << "  " << KEY_SERVER_PASSWORD << ": " << _serverPassword << endl;
-    dout << endl;
+      Cti::FormattedList loglist;
+
+      {
+          Cti::StreamBufferSink& logNames = loglist.add(std::string(KEY_SERVER_NODE_NAME) + (isCollectiveConnection() ? "S" : ""));
+          for(int i=0; i < _serverNodeNames.size(); i++)
+          {
+              logNames << (i ? ", ":"") << _serverNodeNames[i];
+          }
+      }
+
+      loglist.add(KEY_SERVER_USERNAME) << _serverUsername;
+      loglist.add(KEY_SERVER_PASSWORD) << _serverPassword;
+
+      CTILOG_DEBUG(dout, "FDRPiBase Configs"<<
+              loglist);
   }
 
 }

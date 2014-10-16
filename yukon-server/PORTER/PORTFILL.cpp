@@ -131,10 +131,8 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
                     case TYPE_TCU5000:
                     case TYPE_TCU5500:
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
-                            }
+                            CTILOG_INFO(dout, "Filler message on route "<< Route->getName() <<" for transmitter "<< TransmitterDevice->getName());
+
                             CtiDeviceTCU *xcu = (CtiDeviceTCU *)TransmitterDevice.get();
 
                             // In the beginning (6/25/01) NONE will send a filler message.
@@ -181,8 +179,7 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -226,10 +223,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                     switch(TransmitterDevice->getType())
                     {
                     case TYPE_SNPP:
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " SNPP filler. PORTFILL.CPP" << endl;
-                        }
+                        CTILOG_INFO(dout, "SNPP filler");
                         break;
                     case TYPE_WCTP:
                         {
@@ -239,10 +233,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                             {
                                 if(gsUID != 0)
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " VERSACOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
-                                    }
+                                    CTILOG_INFO(dout, "VERSACOM Filler message on route "<< Route->getName() <<" for transmitter "<< TransmitterDevice->getName());
 
                                     OutMessage.DeviceID = tapTRX->getID();
                                     OutMessage.TargetID = tapTRX->getID();
@@ -328,10 +319,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
                                 if(gsSPID != 0)
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " EXPRESSCOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
-                                    }
+                                    CTILOG_INFO(dout, "EXPRESSCOM Filler message on route "<< Route->getName() <<" for transmitter "<< TransmitterDevice->getName());
 
                                     CtiCommandParser parse( "putconfig xcom sync" );
                                     CtiProtocolExpresscom  xcom;
@@ -397,10 +385,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
                             {
                                 if(gsUID != 0)
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " VERSACOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
-                                    }
+                                    CTILOG_INFO(dout, "VERSACOM Filler message on route "<< Route->getName() <<" for transmitter "<< TransmitterDevice->getName());
 
                                     OutMessage.DeviceID = tapTRX->getID();
                                     OutMessage.TargetID = tapTRX->getID();
@@ -486,10 +471,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 
                                 if(gsSPID != 0)
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " EXPRESSCOM Filler message on route " << Route->getName() << " for transmitter " << TransmitterDevice->getName() << endl;
-                                    }
+                                    CTILOG_INFO(dout, "EXPRESSCOM Filler message on route "<< Route->getName() <<" for transmitter "<< TransmitterDevice->getName());
 
                                     CtiCommandParser parse( "putconfig xcom sync" );
                                     CtiProtocolExpresscom  xcom;
@@ -558,8 +540,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 
@@ -572,10 +553,7 @@ void FillerThread (PVOID Arg)
 {
     ULONG FillerRate = {300L};
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Filler Thread Starting as TID: " << CurrentTID() << endl;
-    }
+    CTILOG_INFO(dout, "FillerThread started");
 
     /* First try to get the utility ID */
     if( !(gConfigParms.getValueAsString("PORTER_VERSACOM_UTILID")).empty() )
@@ -583,10 +561,7 @@ void FillerThread (PVOID Arg)
         if( !(gsUID = atoi(gConfigParms.getValueAsString("PORTER_VERSACOM_UTILID").c_str())) )
         {
             // We have no joy in mudville.
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Filler Thread found no PORTER_VERSACOM_UTILID cparm.  Exiting." << endl;
-            }
+            CTILOG_ERROR(dout, "FillerThread found no PORTER_VERSACOM_UTILID cparm. Exiting.");
             return;
         }
     }
@@ -601,10 +576,7 @@ void FillerThread (PVOID Arg)
         else
         {
             gsSPID = 0;     // disable the Expresscom fill messages.
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Invalid value for PORTER_EXPRESSCOM_SPID cparm.  Disabling Expresscom fill messages." << endl;
-            }
+            CTILOG_WARN(dout, "Invalid value for PORTER_EXPRESSCOM_SPID cparm. Disabling Expresscom fill messages.");
         }
     }
 
@@ -658,10 +630,8 @@ void FillerThread (PVOID Arg)
                 continue;
             }
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Sending Filler Messages " << endl;
-            }
+            CTILOG_INFO(dout, "Sending Filler Messages");
+
             /* Send filler messages */
             PortManager.apply( applySendFiller, (void*)0);
             PortManager.apply( applySendFillerPage, (void*)0 );
@@ -674,9 +644,11 @@ void WriteMessageToPorter(OUTMESS *&OutMessage)
 {
     /* Now add it to the collection of outbound messages */
     // In the beginning (6/25/01) ALL will send a sync message.
-    if(OutMessage && PortManager.writeQueue(OutMessage))
+
+    if( OutMessage && PortManager.writeQueue(OutMessage))
     {
-        printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
+        CTILOG_ERROR(dout, "Could not write command to port queue for Port "<< OutMessage->Port);
+
         delete (OutMessage);
         OutMessage = 0;
     }

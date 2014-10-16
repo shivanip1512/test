@@ -5,6 +5,11 @@ using namespace std;
 
 #include "dllbase.h"
 #include "thread.h"
+#include "logger.h"
+#include "win_helper.h"
+
+using Cti::getSystemErrorMessage;
+
 
 CtiThread::CtiThread() :
 _thread_handle(0)
@@ -39,23 +44,8 @@ void CtiThread::start()
 
       if( ! _thread_handle )
       {
-         LPVOID lpMsgBuf;
-         FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-                        NULL,
-                        GetLastError(),
-                        MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-                        (LPTSTR) &lpMsgBuf,
-                        0,
-                        NULL
-                      );
-         {
-            // RWMutexLock::LockGuard  guard(coutMux);
-            cerr << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            cerr << "   " << (LPCTSTR)lpMsgBuf << endl;
-         }
-
-         // Free the buffer.
-         LocalFree( lpMsgBuf );
+          const DWORD err = GetLastError();
+          CTILOG_ERROR(dout, "_beginthreadex() failed with error code " << err <<" -> "<< getSystemErrorMessage(err));
       }
    }
 }

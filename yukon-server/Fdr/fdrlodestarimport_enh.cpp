@@ -399,8 +399,7 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         _snprintf(keyString,80,"%s %d %s %s",_lsCustomerIdentifier.c_str(),_lsChannel, t1.c_str(), t2.c_str());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: Looking for CUST_ID/CHANNEL keyString: " <<keyString << "..."<<endl;
+                            CTILOG_DEBUG(dout, "ENH: Looking for CUST_ID/CHANNEL keyString : "<< keyString);
                         }
                         bool pointFound = findTranslationNameInList(string(keyString), getReceiveFromList(), point);
                         if( pointFound )
@@ -408,16 +407,13 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                             _pointId = point.getPointID();
                             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " ENH: PointID "<<_pointId<< " found in TranslationTable" <<endl;
+                                CTILOG_DEBUG(dout, "ENH: PointID "<< _pointId <<" found in TranslationTable");
                             }
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Translation for Customer Id: " << _lsCustomerIdentifier << " and Channel: " << _lsChannel << " from file " << getFileInfoList()[fileIndex].getLodeStarFileName() << " was not found" << endl;
-                            }
+                            CTILOG_ERROR(dout, "Translation for Customer Id: "<< _lsCustomerIdentifier <<" and Channel: "<< _lsChannel <<" from file "<< getFileInfoList()[fileIndex].getLodeStarFileName() <<" was not found");
+
                             CHAR tempIdStr[80];
                             CHAR tempChanStr[80];
                             string desc = string ("Lodestar point is not listed in the translation table");
@@ -453,26 +449,22 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
                         if( _lsStartTime == PASTDATE )
                         {
                             headerRecordValidFlag = false;
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Could not parse Lodestar start timestamp: " << tempString1 << " for Customer Identifier: " << _lsCustomerIdentifier << endl;
-                            }
+                            CTILOG_ERROR(dout, "Could not parse Lodestar start timestamp: "<< tempString1 <<" for Customer Identifier: "<< _lsCustomerIdentifier);
                         }
 
                         _lsStopTime = ForeignToYukonTime(tempStopTimeStr, _lsDSTFlag[0]);
                         if( _lsStopTime == PASTDATE )
                         {
                             headerRecordValidFlag = false;
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Could not parse Lodestar stop timestamp: " << tempString1 << " for Customer Identifier: " << _lsCustomerIdentifier << endl;
-                            }
+                            CTILOG_ERROR(dout, "Could not parse Lodestar stop timestamp: "<< tempString1 <<" for Customer Identifier: "<< _lsCustomerIdentifier);
                         }
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: StartTime: " <<_lsStartTime << "..."<<endl;
-                            dout << CtiTime() << " ENH: StopTime: " <<_lsStopTime << "..."<<endl;
+                            Cti::FormattedList loglist;
+                            loglist.add("ENH: StartTime") << _lsStartTime;
+                            loglist.add("ENH: StopTime")  << _lsStopTime;
+
+                            CTILOG_DEBUG(dout, loglist);
                         }
                         break;
                     }
@@ -490,8 +482,7 @@ bool CtiFDR_EnhancedLodeStar::decodeFirstHeaderRecord(string& aLine, int fileInd
     catch(...)
     {
         headerRecordValidFlag = false;
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( headerRecordValidFlag && isFirstHeaderFlag )
@@ -552,8 +543,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
                         _lsMeterStartReading = atof(tempString1.c_str());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: MeterStartReading: " <<_lsMeterStartReading << "..."<<endl;
+                            CTILOG_DEBUG(dout, "ENH: MeterStartReading : "<< _lsMeterStartReading);
                         }
                         break;
                     }
@@ -562,8 +552,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
                         _lsMeterStopReading = atof(tempString1.c_str());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: MeterStopReading: " <<_lsMeterStopReading << "..."<<endl;
+                            CTILOG_DEBUG(dout, "ENH: MeterStopReading : "<< _lsMeterStopReading);
                         }
                         break;
                     }
@@ -572,8 +561,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
                         _lsMeterMultiplier = atof(tempString1.c_str());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: MeterMultiplier: " <<_lsMeterMultiplier << "..."<<endl;
+                            CTILOG_DEBUG(dout, "ENH: MeterMultiplier : "<< _lsMeterMultiplier);
                         }
                         break;
                     }
@@ -583,8 +571,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
                         _lsMeterOffset = atof(tempString1.c_str());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: MeterOffset: " <<_lsMeterOffset << "..."<<endl;
+                            CTILOG_DEBUG(dout, "ENH: MeterOffset : "<< _lsMeterOffset);
                         }
                         break;
                     }
@@ -593,8 +580,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
                         _lsPulseMultiplier = atof(tempString1.c_str());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: PulseMultiplier: " <<_lsPulseMultiplier << "..."<<endl;
+                            CTILOG_DEBUG(dout, "ENH: PulseMultiplier : "<< _lsPulseMultiplier);
                         }
                         break;
                     }
@@ -603,8 +589,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
                         _lsPulseOffset = atof(tempString1.c_str());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: PulseOffset: " <<_lsPulseOffset << "..."<<endl;
+                            CTILOG_DEBUG(dout, "ENH: PulseOffset : " <<_lsPulseOffset);
                         }
                         break;
                     }
@@ -614,9 +599,11 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
                         _lsExpectedNumEntries = (_lsStopTime.seconds() -  _lsStartTime.seconds() + getSubtractValue())/_lsSecondsPerInterval;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: SecondsPerInterval: " <<_lsSecondsPerInterval << "..."<<endl;
-                            dout << CtiTime() << " ENH: Num Of Entries Expected: " <<_lsExpectedNumEntries << "..."<<endl;
+                            Cti::FormattedList loglist;
+                            loglist.add("ENH: SecondsPerInterval")      << _lsSecondsPerInterval;
+                            loglist.add("ENH: Num Of Entries Expected") << _lsExpectedNumEntries;
+
+                            CTILOG_DEBUG(dout, loglist);
                         }
                         break;
                     }
@@ -625,8 +612,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
                         _lsUnitOfMeasure = atol(tempString1.c_str());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: UnitOfMeasure: " <<_lsUnitOfMeasure << "..."<<endl;
+                            CTILOG_DEBUG(dout, "ENH: UnitOfMeasure : " <<_lsUnitOfMeasure);
                         }
                         break;
                     }
@@ -635,8 +621,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
                         _lsBasicUnitCode = atol(tempString1.c_str());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: BasicUnitCode: " <<_lsBasicUnitCode << "..."<<endl;
+                            CTILOG_DEBUG(dout, "ENH: BasicUnitCode : " <<_lsBasicUnitCode);
                         }
                         break;
                     }
@@ -645,8 +630,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
                         _lsTimeZone = atol(tempString1.c_str());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: TimeZone: " <<_lsTimeZone << "..."<<endl;
+                            CTILOG_DEBUG(dout, "ENH: TimeZone : " <<_lsTimeZone);
                         }
                         break;
                     }
@@ -655,8 +639,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
                         _lsPopulation = atof(tempString1.c_str());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: Population: " <<_lsPopulation << "..."<<endl;
+                            CTILOG_DEBUG(dout, "ENH: Population : " <<_lsPopulation);
                         }
                         break;
                     }
@@ -665,8 +648,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
                         _lsWeight = atof(tempString1.c_str());
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: Weight: " <<_lsWeight << "..."<<endl;
+                            CTILOG_DEBUG(dout, "ENH: Weight : " <<_lsWeight);
                         }
                         break;
                     }
@@ -679,8 +661,7 @@ bool CtiFDR_EnhancedLodeStar::decodeSecondHeaderRecord(string& aLine)
     catch(...)
     {
         headerRecordValidFlag = false;
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( headerRecordValidFlag && isSecondHeaderFlag )
@@ -739,8 +720,7 @@ bool CtiFDR_EnhancedLodeStar::decodeThirdHeaderRecord(string& aLine)
                         _lsDescriptor = tempString1;
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ENH: Descriptor: " <<_lsDescriptor << "..."<<endl;
+                            CTILOG_DEBUG(dout, "ENH: Descriptor : " <<_lsDescriptor);
                         }
                         break;
                     }
@@ -753,8 +733,7 @@ bool CtiFDR_EnhancedLodeStar::decodeThirdHeaderRecord(string& aLine)
     catch(...)
     {
         headerRecordValidFlag = false;
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( headerRecordValidFlag && isThirdHeaderFlag )
@@ -815,8 +794,7 @@ bool CtiFDR_EnhancedLodeStar::decodeFourthHeaderRecord(string& aLine)
                             _lsTimeStamp = ForeignToYukonTime(tempString1,'A');
                             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " ENH: TimeStamp: " <<_lsTimeStamp << "..."<<endl;
+                                CTILOG_DEBUG(dout, "ENH: TimeStamp : "<<_lsTimeStamp);
                             }
                         }
                         break;
@@ -828,8 +806,7 @@ bool CtiFDR_EnhancedLodeStar::decodeFourthHeaderRecord(string& aLine)
                             _lsOrigin = tempString1;
                             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " ENH: Origin: " <<_lsOrigin << "..."<<endl;
+                                CTILOG_DEBUG(dout, "ENH: Origin : "<<_lsOrigin);
                             }
                         }
                         break;
@@ -843,8 +820,7 @@ bool CtiFDR_EnhancedLodeStar::decodeFourthHeaderRecord(string& aLine)
     catch(...)
     {
         headerRecordValidFlag = false;
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( headerRecordValidFlag && isFourthHeaderFlag )
@@ -930,10 +906,7 @@ bool CtiFDR_EnhancedLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
                     {
                         pointData->setTime(CtiTime(CtiDate(1,1,1990)));
                         dataRecordValidFlag = false;
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Could not parse optional interval start timestamp: " << tempString1 << " for Point Id: " << _pointId << endl;
-                        }
+                        CTILOG_ERROR(dout, "Could not parse optional interval start timestamp: "<< tempString1 <<" for Point Id: "<< _pointId);
                     }
                     else
                     {
@@ -954,8 +927,7 @@ bool CtiFDR_EnhancedLodeStar::decodeDataRecord(string& aLine, CtiMultiMsg* multi
     catch(...)
     {
         dataRecordValidFlag = false;
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( dataRecordValidFlag && isDataRecordFlag )

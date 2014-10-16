@@ -12,51 +12,21 @@ using std::string;
 using std::endl;
 
 namespace Cti {
-
 namespace {
 
 std::string getErrorMessage(int error)
 {
-    std::ostringstream desc;
-    desc << "Error " << error << " -> " << getSystemErrorMessage(error);
-    return desc.str();
+    return StreamBuffer() <<"Error "<< error <<" -> "<< getSystemErrorMessage(error);
 }
 
 std::string getErrorMessage(const SOCKET s, int error)
 {
-    std::ostringstream desc;
-    desc << "Socket " << s << ", Error " << error << " -> " << getSystemErrorMessage(error);
-    return desc.str();
+    return StreamBuffer() <<"Socket "<< s <<", Error "<< error <<" -> "<< getSystemErrorMessage(error);
 }
 
-void logError(const char *label, int line, const std::string &desc)
+std::string millisToStr(const unsigned long millis)
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << CtiTime() << " **** ERROR **** " << label << " (" << line << "): " << desc << endl;
-}
-
-void logErrorAndThrowException(const char *label, int line, const std::string &desc)
-{
-    logError(label, line, desc);
-    throw StreamConnectionException(desc);
-}
-
-void logWarning(const char *label, int line, const std::string &desc)
-{
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << CtiTime() << " **** WARNING **** " << label << " (" << line << "): " << desc << endl;
-}
-
-template<typename Type>
-std::string millisToStr(Type val)
-{
-    return boost::lexical_cast<string>(val) + (val == 1 ? " millisecond" : " milliseconds");
-}
-
-template<typename Type>
-std::string bytesToStr(Type val)
-{
-    return boost::lexical_cast<string>(val) + (val == 1 ? "-byte" : "-bytes");
+    return StreamBuffer() << millis << (millis == 1 ? " millisecond" : " milliseconds");
 }
 
 } // namespace anonymous
@@ -113,7 +83,7 @@ void StreamSocketConnection::close()
             if( error != WSANOTINITIALISED &&  // Not initialized
                 error != WSAENOTCONN )         // Not connected
             {
-                logError(__FILE__, __LINE__, getErrorMessage(_socket, error));
+                CTILOG_ERROR(dout, getErrorMessage(_socket, error));
             }
         }
 
@@ -123,7 +93,7 @@ void StreamSocketConnection::close()
             const int error = WSAGetLastError();
             if( error != WSANOTINITIALISED ) // Not initialized
             {
-                logError(__FILE__, __LINE__, getErrorMessage(_socket, error));
+                CTILOG_ERROR(dout, getErrorMessage(_socket, error));
             }
         }
 
@@ -140,7 +110,7 @@ bool StreamSocketConnection::open(const std::string &zServer, unsigned short nPo
 {
     if( isValid() )
     {
-        logWarning(__FILE__, __LINE__," Socket is being re-opened without being closed first. Closing now..");
+        CTILOG_WARN(dout, "Socket is being re-opened without being closed first. Closing now..");
         close(); // this will interrupt any blocked read
     }
 
@@ -153,7 +123,7 @@ bool StreamSocketConnection::open(const std::string &zServer, unsigned short nPo
     AddrInfo addrInfo = makeTcpClientSocketAddress(zServer, nPort);
     if( ! addrInfo )
     {
-        logError(__FILE__, __LINE__, getErrorMessage(addrInfo.getError()));
+        CTILOG_ERROR(dout, getErrorMessage(addrInfo.getError()));
         return false;
     }
 
@@ -163,7 +133,7 @@ bool StreamSocketConnection::open(const std::string &zServer, unsigned short nPo
     _socket = ::socket(addrInfo->ai_family, addrInfo->ai_socktype, addrInfo->ai_protocol);
     if( _socket == INVALID_SOCKET )
     {
-        logError(__FILE__, __LINE__, getErrorMessage(WSAGetLastError()));
+        CTILOG_ERROR(dout, getErrorMessage(WSAGetLastError()));
         return false;
     }
 
@@ -171,7 +141,7 @@ bool StreamSocketConnection::open(const std::string &zServer, unsigned short nPo
     if( ::connect(_socket, addrInfo->ai_addr, addrInfo->ai_addrlen) == SOCKET_ERROR )
     {
         // FIXME: should we be reporting any errors?
-        // reportError(__FILE__, __LINE__, getErrorMessage(WSAGetLastError());
+        // getErrorMessage(WSAGetLastError();
         close();
         return false;
     }
@@ -180,7 +150,7 @@ bool StreamSocketConnection::open(const std::string &zServer, unsigned short nPo
     bool keepAlive = true;
     if( ::setsockopt(_socket, SOL_SOCKET, SO_KEEPALIVE, (char*)&keepAlive, sizeof(bool)) == SOCKET_ERROR )
     {
-        logError(__FILE__, __LINE__, getErrorMessage(_socket, WSAGetLastError()));
+        CTILOG_ERROR(dout, getErrorMessage(_socket, WSAGetLastError()));
         close();
         return false;
     }
@@ -189,7 +159,7 @@ bool StreamSocketConnection::open(const std::string &zServer, unsigned short nPo
     unsigned long nonBlocking = 1;
     if( ::ioctlsocket(_socket, FIONBIO, &nonBlocking) == SOCKET_ERROR )
     {
-        logError(__FILE__, __LINE__, getErrorMessage(_socket, WSAGetLastError()));
+        CTILOG_ERROR(dout, getErrorMessage(_socket, WSAGetLastError()));
         close();
         return false;
     }
@@ -208,7 +178,9 @@ size_t StreamSocketConnection::write(const void *buf, int len, const Chrono& tim
 
     if( ! isValid() )
     {
-        logErrorAndThrowException(__FILE__, __LINE__, "Write attempted to an invalid socket handle");
+        const char* desc = "Write attempted to an invalid socket handle";
+        CTILOG_ERROR(dout, desc);
+        throw StreamConnectionException(desc);
     }
 
     try
@@ -231,19 +203,17 @@ size_t StreamSocketConnection::write(const void *buf, int len, const Chrono& tim
                 const int error = WSAGetLastError();
                 if( error != WSAEWOULDBLOCK )
                 {
-                    std::string desc = getErrorMessage(sock, error);
+                    const std::string desc = getErrorMessage(sock, error);
+                    CTILOG_ERROR(dout, desc);
                     close();
-                    logErrorAndThrowException(__FILE__, __LINE__, desc);
+                    throw StreamConnectionException(desc);
                 }
 
                 // if the timeout is zero, there's no reason to wait
                 if( remainingMillis )
                 {
-                    std::string desc;
-                    desc += "Outbound socket stream connection to " + *Name.get() + " is full, will wait "
-                         + (timeout ? string("up to ") + millisToStr(remainingMillis) : string("forever")) + " to retry";
-
-                    logWarning(__FILE__, __LINE__, desc);
+                    CTILOG_WARN(dout, "Outbound socket stream connection to "<< *Name.get() <<" is full, will wait "<<
+                            (timeout ? string("up to ") + millisToStr(remainingMillis) : string("forever"))<< " to retry");
 
                     // log every 5 seconds or less
                     const unsigned long waitMillis = std::min(remainingMillis, 5000ul);
@@ -261,9 +231,7 @@ size_t StreamSocketConnection::write(const void *buf, int len, const Chrono& tim
 
             if( bytesToSend > 10000 )
             {
-                std::string desc;
-                desc += "Outbound socket stream connection write : " + bytesToStr(bytesToSend) + " remaining";
-                logWarning(__FILE__, __LINE__, desc);
+                CTILOG_WARN(dout, "Outbound socket stream connection write:"<< bytesToSend << (bytesToSend == 1 ?" byte":" bytes") <<" remaining");
             }
 
             // update the remaining time
@@ -280,17 +248,18 @@ size_t StreamSocketConnection::write(const void *buf, int len, const Chrono& tim
 
         if( bytesToSend )
         {
-            std::string desc;
-            desc += " Outbound socket stream connection to " + *Name.get() + " could not be written. " + bytesToStr(bytesToSend) + " unwritten.";
-            logError(__FILE__, __LINE__, desc);
+            CTILOG_ERROR(dout, "Outbound socket stream connection to "<<
+                    *Name.get() <<" could not be written. "<< bytesToSend << (bytesToSend == 1 ?" byte":" bytes") <<" unwritten.");
         }
 
         return bytesWritten;
     }
     catch( const SocketException& ex )
     {
+        CTILOG_EXCEPTION_ERROR(dout, ex);
         close();
-        logErrorAndThrowException(__FILE__, __LINE__, ex.what());
+        throw StreamConnectionException(ex.what());
+
     }
     catch( const StreamConnectionException & )
     {
@@ -298,8 +267,10 @@ size_t StreamSocketConnection::write(const void *buf, int len, const Chrono& tim
     }
     catch(...)
     {
+        const char* desc = "Unhandled exception caught";
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, desc);
         close();
-        logErrorAndThrowException(__FILE__, __LINE__, "Unhandled exception caught");
+        throw StreamConnectionException(desc);
     }
 }
 
@@ -312,7 +283,9 @@ size_t StreamSocketConnection::read(void *buf, int len, const Chrono& timeout, c
 
     if( ! isValid() )
     {
-        logErrorAndThrowException(__FILE__, __LINE__, "Read attempted on an invalid socket handle");
+        const char* desc = "Read attempted on an invalid socket handle";
+        CTILOG_ERROR(dout, desc);
+        throw StreamConnectionException(desc);
     }
 
     return readFromSocket(buf, len, timeout, hAbort, MessageRead);
@@ -327,7 +300,9 @@ size_t StreamSocketConnection::peek(void *buf, int len)
 
     if( ! isValid() )
     {
-        logErrorAndThrowException(__FILE__, __LINE__, "Peek attempted on an invalid socket handle");
+        const char* desc = "Peek attempted on an invalid socket handle";
+        CTILOG_ERROR(dout, desc);
+        throw StreamConnectionException(desc);
     }
 
     return readFromSocket(buf, len, Chrono::milliseconds(0), NULL, MessagePeek);
@@ -365,8 +340,9 @@ size_t StreamSocketConnection::readFromSocket(void *buf, int len, const Chrono& 
                     if( error != WSAEWOULDBLOCK )
                     {
                         const std::string desc = getErrorMessage(sock, error);
+                        CTILOG_ERROR(dout, desc);
                         close();
-                        logErrorAndThrowException(__FILE__, __LINE__, desc);
+                        throw StreamConnectionException(desc);
                     }
 
                     // blocking read detected, resize the read buffer
@@ -376,8 +352,10 @@ size_t StreamSocketConnection::readFromSocket(void *buf, int len, const Chrono& 
                 {
                     if( _readBuffer.empty() || _connectionMode == ReadExactly )
                     {
+                        const char* desc = "Connection has been gracefully closed";
+                        CTILOG_ERROR(dout, desc);
                         close();
-                        logErrorAndThrowException(__FILE__, __LINE__, "Connection has been gracefully closed");
+                        throw StreamConnectionException(desc);
                     }
 
                     _readBuffer.resize(offset);
@@ -428,8 +406,9 @@ size_t StreamSocketConnection::readFromSocket(void *buf, int len, const Chrono& 
     }
     catch( const SocketException &ex )
     {
+        CTILOG_EXCEPTION_ERROR(dout, ex);
         close();
-        logErrorAndThrowException(__FILE__, __LINE__, ex.what());
+        throw StreamConnectionException(ex.what());
     }
     catch( const StreamConnectionException & )
     {
@@ -437,8 +416,10 @@ size_t StreamSocketConnection::readFromSocket(void *buf, int len, const Chrono& 
     }
     catch(...)
     {
+        const char* desc = "Unhandled exception caught";
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, desc);
         close();
-        logErrorAndThrowException(__FILE__, __LINE__, "Unhandled exception caught");
+        throw StreamConnectionException(desc);
     }
 }
 
@@ -462,8 +443,9 @@ void StreamSocketConnection::flushInput()
             if( error != WSAEWOULDBLOCK )
             {
                 const std::string desc = getErrorMessage(sock, error);
+                CTILOG_ERROR(dout, desc);
                 close();
-                logErrorAndThrowException(__FILE__, __LINE__, desc);
+                throw StreamConnectionException(desc);
             }
 
             // wsock network buffer appears to be empty
@@ -472,8 +454,10 @@ void StreamSocketConnection::flushInput()
 
         if( ! bytesRead )
         {
+            const char* desc = "Connection has been gracefully closed";
+            CTILOG_ERROR(dout, desc);
             close();
-            logErrorAndThrowException(__FILE__, __LINE__, "Connection has been gracefully closed");
+            throw StreamConnectionException(desc);
         }
     }
 

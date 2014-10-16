@@ -47,8 +47,7 @@ CtiMultiMsg* CtiMultiWrapper::getMulti()
    }
    catch(...)
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+       CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
    }
 
    return _pMulti;

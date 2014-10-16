@@ -1,14 +1,15 @@
 #pragma once
 
-#include <set>
-
-#include <rw/thr/recursiv.h>
-
 #include "dlldefs.h"
 #include "yukon.h"
 #include "row_reader.h"
+#include "loggable.h"
 
-class IM_EX_CTIYUKONDB CtiTableNotificationGroup
+#include <set>
+#include <rw/thr/recursiv.h>
+
+
+class IM_EX_CTIYUKONDB CtiTableNotificationGroup : public Cti::Loggable
 {
 protected:
 
@@ -46,7 +47,7 @@ public:
 
    bool isDirty() const;
 
-   void dump() const;
+   virtual std::string toString() const override;
 
    static std::string getTableName();
    virtual bool Restore();

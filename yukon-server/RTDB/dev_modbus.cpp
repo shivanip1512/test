@@ -48,8 +48,7 @@ YukonError_t ModbusDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &pa
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "GeneralScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString("scan general");
@@ -74,8 +73,7 @@ YukonError_t ModbusDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "IntegrityScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString("scan integrity");
@@ -111,20 +109,14 @@ YukonError_t ModbusDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
             {
                 case ScanRateGeneral:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - General scan not defined for Modbus device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "General scan not defined for Modbus device \"" << getName() << "\"");
 
                     break;
                 }
 
                 case ScanRateAccum:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - Accumulator scanrates not defined for Modbus device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Accumulator scanrates not defined for Modbus device \"" << getName() << "\"");
 
                     break;
                 }
@@ -149,10 +141,7 @@ YukonError_t ModbusDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
         case LoopbackRequest:
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - command type \"" << parse.getCommand() << "\" not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "command type \"" << parse.getCommand() << "\" not found");
         }
     }
 
@@ -234,11 +223,7 @@ YukonError_t ModbusDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::sendCommRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
+        CTILOG_ERROR(dout, "NULL OutMessage");
         retVal = ClientErrors::Memory;
     }
 
@@ -312,8 +297,8 @@ YukonError_t ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
                             }
                             default:
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - An unexpected point (PID: "<<PointRecord->getPointID()<<") was seen " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                CTILOG_ERROR(dout, "An unexpected point (PID: "<< PointRecord->getPointID() <<") was seen");
+
                                 break;
                             }
                         }
@@ -322,10 +307,7 @@ YukonError_t ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
                 }
                 catch (...)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - An exception was thrown " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
                     _modbus.clearPoints();
                     retVal = ClientErrors::Unknown;
@@ -336,18 +318,14 @@ YukonError_t ModbusDevice::recvCommRequest( OUTMESS *OutMessage )
 
             default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - invalid command in Modbus::recvCommRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Invalid command = "<< _porter_info.protocol_command);
             }
         }
 
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - invalid OutMessage in Modbus::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "NULL OutMessage");
 
         retVal = ClientErrors::Memory;
     }
@@ -404,10 +382,7 @@ YukonError_t ModbusDevice::sendCommResult(INMESS &InMessage)
         //  make sure we complain about it so we know the magnitude of the problem when people bring it up...
         //    one possible alternative is to send multple InMessages across with the string data - although,
         //    considering that the largest message I saw was on the order of 60k, sending 15 InMessages is not very appealing
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Info - result_string.size = " << result_string.size() << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_WARN(dout, "result_string.size = " << result_string.size() << " for device \"" << getName() << "\" will be cropped");
 
         string cropped("\n---cropped---");
 
@@ -554,10 +529,7 @@ YukonError_t ModbusDevice::ResultDecode(const INMESS &InMessage, const CtiTime T
         //  safety first
         if( InMessage.InLength > sizeof(InMessage.Buffer.InMessage) )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint InMessage.InLength > sizeof(InMessage.Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "InMessage.InLength > sizeof(InMessage.Buffer.InMessage) for device \""<< getName() <<"\" ("<< InMessage.InLength <<" > "<< sizeof(InMessage.Buffer.InMessage) <<")");
 
             length = sizeof(InMessage.Buffer.InMessage);
         }
@@ -604,48 +576,21 @@ YukonError_t ModbusDevice::ResultDecode(const INMESS &InMessage, const CtiTime T
 
 YukonError_t ModbusDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    CtiCommandParser  parse(InMessage.Return.CommandStr);
-    CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                              string(InMessage.Return.CommandStr),
-                                              string(),
-                                              InMessage.ErrorCode,
-                                              InMessage.Return.RouteID,
-                                              InMessage.Return.RetryMacroOffset,
-                                              InMessage.Return.Attempt,
-                                              InMessage.Return.GrpMsgID,
-                                              InMessage.Return.UserID);
-    CtiPointDataMsg  *commFailed;
-    CtiPointSPtr     commPoint;
+    CTILOG_INFO(dout, "ErrorDecode for device "<< getName() <<" in progress");
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
-    }
+    CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
-    if( pPIL != NULL )
-    {
-        CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
+    pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
+    pMsg->insert(CtiCommandMsg::OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
+    pMsg->insert(getID());          // The id (device or point which failed)
+    pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
 
-        if(pMsg != NULL)
-        {
-            pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
-            pMsg->insert(CtiCommandMsg::OP_DEVICEID);      // This device failed.  OP_POINTID indicates a point fail situation.  defined in msg_cmd.h
-            pMsg->insert(getID());          // The id (device or point which failed)
-            pMsg->insert(ScanRateInvalid);  // One of ScanRateGeneral,ScanRateAccum,ScanRateStatus,ScanRateIntegrity, or if unknown -> ScanRateInvalid defined in yukon.h
+    pMsg->insert(
+            InMessage.ErrorCode
+                ? InMessage.ErrorCode
+                : ClientErrors::GeneralScanAborted);
 
-            pMsg->insert(
-                    InMessage.ErrorCode
-                        ? InMessage.ErrorCode
-                        : ClientErrors::GeneralScanAborted);
-
-            retList.push_back( pMsg );
-        }
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    retList.push_back( pMsg );
 
     return ClientErrors::None;
 }
@@ -682,8 +627,7 @@ void ModbusDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 
    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
    {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       CTILOG_DEBUG(dout, "Decoding DB reader");
    }
 
    _modbus.setAddresses(_modbus_address.getSlaveAddress());

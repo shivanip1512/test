@@ -86,44 +86,18 @@ CtiAnsiTable01::~CtiAnsiTable01()
 //=========================================================================================================================================
 void CtiAnsiTable01::printResult(const string& deviceName )
 {
-    int integer;
-    string string1,string2;
-    bool flag;
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    string2 = getRawManufacturer();
-    string1 = getResolvedManufacturer();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "==================== "<<deviceName<<"  Std Table 1 =========================" << endl;
-        dout << "   Manufacturer: " << string1 << " (" << string2 <<")" << endl;
-    }
+    itemList.add("Manufacturer")  << getResolvedManufacturer() <<" ("<< getRawManufacturer() <<")";
+    itemList.add("Model")         << getResolvedModel()        <<" ("<< getRawModel()        <<")";
+    itemList.add("Serial Number") << getResolvedSerialNumber() <<" ("<< getRawSerialNumber() <<")";
+    itemList.add("FW Version")    << getFWVersionNumber();
+    itemList.add("FW Revision")   << getFWRevisionNumber();
 
-    string2 = getRawModel();
-    string1 = getResolvedModel();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Model: " << string1 << " (" << string2 <<")" << endl;
-    }
-
-    string2 = getRawSerialNumber();
-    string1 = getResolvedSerialNumber();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Model: " << string1 << " (" << string2 <<")" << endl;
-    }
-
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   FW Version: " << getFWVersionNumber() << endl;
-        dout << "   FW Revision: " << getFWRevisionNumber() << endl;
-    }
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 1") <<
+            itemList
+            );
 }
 
 //=========================================================================================================================================

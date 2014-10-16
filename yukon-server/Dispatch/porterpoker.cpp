@@ -25,6 +25,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "numstr.h"
 #include "pt_accum.h"
 #include "amq_constants.h"
+#include "logManager.h"
 
 BOOL           bQuit = FALSE;
 
@@ -55,61 +56,61 @@ BOOL MyCtrlHandler(DWORD fdwCtrlType)
 
 void main(int argc, char **argv)
 {
-    dout.start();     // fire up the logger thread
-    dout.setOutputPath(gLogDirectory.c_str());
-    dout.setRetentionLength(gLogRetention);
-    dout.setOutputFile(argv[0]);
-    dout.setToStdOut(true);
-    dout.setWriteInterval(0);
+    // fire up the logger thread
+    doutManager.setOutputPath    ( gLogDirectory );
+    doutManager.setRetentionDays ( gLogRetention );
+    doutManager.setOutputFile    ( argv[0] );
+    doutManager.setToStdOut      ( true );
+    doutManager.start();
 
-    /*
-    dout << "Alt - C     Reset (cold start) all CCU 711's in system" << endl;
-    dout << "Alt - D     Send Emetcon \"Doubles\" to field devices" << endl;
-    dout << "Alt - E     Trace error communications only" << endl;
-    dout << "Alt - F     Toggle trace filtering off, or reload from environment." << endl;
-    dout << "             PORTER_TRACE_PORT    " << endl;
-    dout << "             PORTER_TRACE_REMOTE  " << endl;
-    dout << "Alt - H     This help screen" << endl;
-    dout << "Alt - L     Toggle printer logging" << endl;
-    dout << "Alt - P     Purge all port queues. (Careful)" << endl;
-    dout << "Alt - Q     Display port queue counts / stats" << endl;
-    dout << "Alt - R     Download all CCU Default Routes" << endl;
-    dout << "Alt - S     Issue a system wide timesync" << endl;
-    dout << "Alt - T     Trace all communications" << endl;
-    dout << "Alt - V     Issue Device DBChange" << endl;
-    dout << "Alt - W     Issue Point DBChange" << endl;
-    */
+/*
+    CTILOG_INFO(dout,
+            endl <<"Alt - C     Reset (cold start) all CCU 711's in system"<<
+            endl <<"Alt - D     Send Emetcon \"Doubles\" to field devices"<<
+            endl <<"Alt - E     Trace error communications only"<<
+            endl <<"Alt - F     Toggle trace filtering off, or reload from environment."<<
+            endl <<"             PORTER_TRACE_PORT"<<
+            endl <<"             PORTER_TRACE_REMOTE"<<
+            endl <<"Alt - H     This help screen"<<
+            endl <<"Alt - L     Toggle printer logging"<<
+            endl <<"Alt - P     Purge all port queues. (Careful)"<<
+            endl <<"Alt - Q     Display port queue counts / stats"<<
+            endl <<"Alt - R     Download all CCU Default Routes"<<
+            endl <<"Alt - S     Issue a system wide timesync"<<
+            endl <<"Alt - T     Trace all communications"<<
+            endl <<"Alt - V     Issue Device DBChange"<<
+            endl <<"Alt - W     Issue Point DBChange"
+            );
+*/
 
 
     if(argc < 3)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl;
-            dout << endl;
-            dout << "Arg 1:  DISPATCH.EXE server machine name" << endl;
-            dout << "Arg 2:  Command to request of porter " << endl;
-            dout << endl;
-            dout << "         0x74 - Trace all communications" << endl;
-            dout << "         0x65 - Trace error communications only" << endl;
-            dout << "         0x72 - Download all CCU Default Routes" << endl;
-            dout << "         0x64 - Send Emetcon \"Doubles\" to field devices" << endl;
-//             dout << "         0x66" << endl; // Not available!
-            dout << "         0x6d - Dump memory (if compiled in)" << endl;
-            dout << "         0x6c - Toggle printer logging" << endl;
-            dout << "         0x63 - Reset (cold start) all CCU 711's in system" << endl;
-            dout << "         0x6b - Reset the PIL interface" << endl;
-            dout << "         0x73 - Timesync all syncable devices" << endl;
-            dout << "         0x70 - Purge port queues" << endl;
-            dout << "         0x71 - Print port queue information" << endl;
-            dout << "         0x01 0xXXXXXXXX - Set Porter's PorterDebugLevel" << endl;
-            dout << "         0x02 0xXXXXXXXX - Set Porter's DBDEBUGLEVEL" << endl;
-            dout << "         0x03 0xXXXXXXXX - Send DISPATCH a device DBChange" << endl;
-            dout << "         0x04 0xXXXXXXXX - Send DISPATCH a point DBChange" << endl;
-            dout << "         0x05 0xXXXXXXXX - Send DISPATCH a config config DBChange" << endl;
-            dout << "         0x06 0xXXXXXXXX - Send DISPATCH a config device DBChange" << endl;
-            dout << "         0x07 (0x01 analog 0x02 status) 0xXXXXXXXXX Send 25k messages to pointid 0xXXXXXX " << endl;
-        }
+        CTILOG_INFO(dout,
+            endl <<
+            endl <<
+            endl <<"Arg 1:  DISPATCH.EXE server machine name"<<
+            endl <<"Arg 2:  Command to request of porter"<<
+            endl <<
+            endl <<"         0x74 - Trace all communications"<<
+            endl <<"         0x65 - Trace error communications only"<<
+            endl <<"         0x72 - Download all CCU Default Routes"<<
+            endl <<"         0x64 - Send Emetcon \"Doubles\" to field devices"<<
+            endl <<"         0x6d - Dump memory (if compiled in)"<<
+            endl <<"         0x6c - Toggle printer logging"<<
+            endl <<"         0x63 - Reset (cold start) all CCU 711's in system"<<
+            endl <<"         0x6b - Reset the PIL interface"<<
+            endl <<"         0x73 - Timesync all syncable devices"<<
+            endl <<"         0x70 - Purge port queues"<<
+            endl <<"         0x71 - Print port queue information"<<
+            endl <<"         0x01 0xXXXXXXXX - Set Porter's PorterDebugLevel"<<
+            endl <<"         0x02 0xXXXXXXXX - Set Porter's DBDEBUGLEVEL"<<
+            endl <<"         0x03 0xXXXXXXXX - Send DISPATCH a device DBChange"<<
+            endl <<"         0x04 0xXXXXXXXX - Send DISPATCH a point DBChange"<<
+            endl <<"         0x05 0xXXXXXXXX - Send DISPATCH a config config DBChange"<<
+            endl <<"         0x06 0xXXXXXXXX - Send DISPATCH a config device DBChange"<<
+            endl <<"         0x07 (0x01 analog 0x02 status) 0xXXXXXXXXX Send 25k messages to pointid 0xXXXXXX"
+            );
     }
 
     if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE))
@@ -199,27 +200,22 @@ void main(int argc, char **argv)
                     {
                         analogOrStat = strtoul(argv[3], &pch, 0);
                         pointID = strtoul(argv[4], &pch, 0);
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "pt id " << pointID << " analogStuff " << analogOrStat << endl;
-                        }
+
+                        CTILOG_INFO(dout, "pt id "<< pointID <<" analogStuff "<< analogOrStat);
+
                         for( int i=0; i<=25000; i++ )
                         {
                             CtiPointDataMsg *pData = new CtiPointDataMsg(pointID, i, NormalQuality, analogOrStat == 0x01 ? AnalogPointType : StatusPointType);
                             Connect.WriteConnQue(pData);
                             if( i%1000 == 0 )
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << i <<" messages sent" << endl;
-                                }
+                                CTILOG_INFO(dout, i <<" messages sent");
                             }
                         }
                     }
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Entering 25 second sleep to help prevent Dispatch Purge" << endl;
-                    }
+
+                    CTILOG_INFO(dout, "Entering 25 second sleep to help prevent Dispatch Purge");
+
                     Sleep(25000);
                 }
             }
@@ -235,28 +231,12 @@ void main(int argc, char **argv)
 
             Sleep(2500);
         }
-        catch(RWxmsg &msg)
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << msg.why() << endl;
-            }
-        }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
     }
-
-
-    // Make sure all the logs get output and done!
-    dout.interrupt(CtiThread::SHUTDOWN);
-    dout.join();
-
 
     exit(0);
 }

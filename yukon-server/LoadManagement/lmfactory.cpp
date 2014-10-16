@@ -34,8 +34,7 @@ CtiLMGroupPtr CtiLMGroupFactory::createLMGroup(Cti::RowReader &rdr)
 
     if(rdr["category"].isNull() || rdr["type"].isNull())
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " - " << "No paotype available in the given Reader:" << endl;
+        CTILOG_INFO(dout, "No paotype available in the given Reader:");
         return CtiLMGroupPtr();
     }
 
@@ -88,10 +87,7 @@ CtiLMGroupPtr CtiLMGroupFactory::createLMGroup(Cti::RowReader &rdr)
         lm_group = CTIDBG_new CtiLMGroupMacro(rdr);
         break;
     default:
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " **Checkpoint** " <<  "Invalid paotype: " << paotype << __FILE__ << "(" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "Invalid paotype: " << paotype);
     break;
     }
     return CtiLMGroupPtr(lm_group);

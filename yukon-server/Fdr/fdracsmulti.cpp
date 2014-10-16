@@ -31,6 +31,7 @@
 // this class header
 #include "fdracsmulti.h"
 #include "std_helper.h"
+#include "win_helper.h"
 
 using std::string;
 using std::endl;
@@ -98,13 +99,8 @@ int CtiFDRAcsMulti::readConfig()
     setTimeSyncVariation(gConfigParms.getValueAsInt(KEY_TIMESYNC_VARIATION, 30));
     if (getTimeSyncVariation() < 5)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Max time sync variation of "
-                << getTimeSyncVariation()
-                << " second(s) is invalid, defaulting to 5 seconds"
-                << endl;
-        }
+        CTILOG_WARN(dout, logNow() <<"Max time sync variation of "<< getTimeSyncVariation() <<" second(s) is invalid, defaulting to 5 seconds");
+
         // default to 5 seconds
         setTimeSyncVariation(5);
     }
@@ -153,9 +149,7 @@ int CtiFDRAcsMulti::readConfig()
                 _serverNameLookup[serverAddress] = serverName;
                 if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << "Added server mapping: " << serverAddress
-                        << " -> " << serverName << endl;
+                    CTILOG_DEBUG(dout, logNow() <<"Added server mapping: "<< serverAddress <<" -> "<< serverName);
                 }
             }
         }
@@ -164,41 +158,21 @@ int CtiFDRAcsMulti::readConfig()
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "----------------FDR-ACS Configs------------------------------" << endl;
-        dout << "  " << KEY_LISTEN_PORT_NUMBER << ": "
-            << getPortNumber() << endl;
+        Cti::FormattedList loglist;
+        loglist.add(KEY_LISTEN_PORT_NUMBER)     << getPortNumber();
+        loglist.add(KEY_TIMESTAMP_WINDOW)       << getTimestampReasonabilityWindow();
+        loglist.add(KEY_DB_RELOAD_RATE)         << getReloadRate();
+        loglist.add(KEY_QUEUE_FLUSH_RATE)       << getQueueFlushRate();
+        loglist.add(KEY_OUTBOUND_SEND_RATE)     << getOutboundSendRate();
+        loglist.add(KEY_OUTBOUND_SEND_INTERVAL) << getOutboundSendInterval();
+        loglist.add(KEY_TIMESYNC_VARIATION)     << getTimeSyncVariation();
+        loglist.add(KEY_POINT_TIME_VARIATION)   << getPointTimeVariation();
+        loglist.add(KEY_LINK_TIMEOUT)           << getLinkTimeout();
+        loglist.add(KEY_TIMESYNC_UPDATE)        << (bool)shouldUpdatePCTime();
+        loglist.add(KEY_DEBUG_MODE)             << (bool)isInterfaceInDebugMode();
 
-        dout << "  " << KEY_TIMESTAMP_WINDOW << ": "
-            << getTimestampReasonabilityWindow() << endl;
-
-        dout << "  " << KEY_DB_RELOAD_RATE << ": "
-            << getReloadRate() << endl;
-
-        dout << "  " << KEY_QUEUE_FLUSH_RATE << ": "
-            << getQueueFlushRate() << "       second(s)" << endl;
-
-        dout << "  " << KEY_OUTBOUND_SEND_RATE << ": "
-            << getOutboundSendRate() << endl;
-
-        dout << "  " << KEY_OUTBOUND_SEND_INTERVAL << ": "
-            << getOutboundSendInterval() << "       second(s)" << endl;
-
-        dout << "  " << KEY_TIMESYNC_VARIATION << ": "
-            << getTimeSyncVariation() << "       second(s)" << endl;
-
-        dout << "  " << KEY_POINT_TIME_VARIATION << ": "
-            << getPointTimeVariation() << "       second(s)" << endl;
-
-        dout << "  " << KEY_LINK_TIMEOUT << ": "
-            << getLinkTimeout() << "       second(s)" << endl;
-
-        dout << "  " << KEY_TIMESYNC_UPDATE << ": "
-            << (shouldUpdatePCTime() ? "TRUE" : "FALSE") << endl;
-
-        dout << "  " << KEY_DEBUG_MODE << ": "
-            << (isInterfaceInDebugMode() ? "TRUE" : "FALSE") << endl;
-
+        CTILOG_INFO(dout, "FDR-ACS Configs"<<
+                loglist);
     }
     return true;
 }
@@ -209,10 +183,9 @@ CtiFDRClientServerConnectionSPtr CtiFDRAcsMulti::createNewConnection(SOCKET newS
 
     if( getpeername(newSocket, &peerAddr._addr.sa, &peerAddr._addrlen) == SOCKET_ERROR )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "CtiFDRAcsMulti::createNewConnection - getpeername() has failed" << endl;
-        }
+        const DWORD error = WSAGetLastError();
+        CTILOG_ERROR(dout, "getpeername() failed with error code: "<< error <<" / "<< Cti::getSystemErrorMessage(error));
+
         return CtiFDRClientServerConnectionSPtr();
     }
 
@@ -252,9 +225,8 @@ bool CtiFDRAcsMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bo
 
         if (remoteNumber.empty() || pointNumber.empty() || categoryCode.empty())
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Unable to add destination " << pointDestination
-                << " because one of the fields was blank" << endl;
+            CTILOG_ERROR(dout, logNow() <<"Unable to add destination "<< pointDestination <<" because one of the fields was blank");
+
             return false;
         }
 
@@ -291,8 +263,8 @@ void CtiFDRAcsMulti::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint,
 
         if (remoteNumber.empty() || pointNumber.empty() || categoryCode.empty())
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Unable to remove destination " << pointDestination << " because one of the fields was blank" << endl;
+            CTILOG_ERROR(dout, logNow() <<"Unable to remove destination "<< pointDestination <<" because one of the fields was blank");
+
             return;
         }
 
@@ -361,9 +333,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
 
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << "New Analog/Calculated value " << point.getValue() << " from "
-                        << point << " queued to " << acsId << endl;
+                    CTILOG_DEBUG(dout, logNow() <<"New Analog/Calculated value "<< point.getValue() << " from "<< point <<" queued to "<< acsId);
                 }
 
                 break;
@@ -388,9 +358,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
 
                         if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "Invalid control state of " << point.getValue()
-                                << " for " << point << endl;
+                            CTILOG_DEBUG(dout, logNow() <<"Invalid control state of "<< point.getValue() <<" for "<< point);
                         }
                     }
                     else
@@ -399,11 +367,8 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
 
                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "New Control State "
-                                << (point.getValue() == STATE_OPENED ? "OPEN" : "CLOSE")
-                                << " (" << ptr->Control.Value << ") from "
-                                << point << " queued to " << acsId << endl;
+                            CTILOG_DEBUG(dout, logNow() <<"New Control State "<< (point.getValue() == STATE_OPENED ? "OPEN" : "CLOSE") <<
+                                    " ("<< ptr->Control.Value <<") from "<< point <<" queued to "<< acsId);
                         }
                     }
                 }
@@ -421,9 +386,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
 
                         if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "State " << point.getValue()
-                                << " is invalid for " << point << endl;
+                            CTILOG_DEBUG(dout, logNow() <<"State "<< point.getValue() <<" is invalid for "<< point);
                         }
                     }
                     else
@@ -432,11 +395,8 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
 
                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            logNow() << "New Status Value "
-                                << (point.getValue() == STATE_OPENED ? "OPEN" : "CLOSE")
-                                << " (" << ptr->Control.Value << ") from "
-                                << point << " queued to " << acsId << endl;
+                            CTILOG_DEBUG(dout, logNow() <<"New Status Value "<< (point.getValue() == STATE_OPENED ? "OPEN" : "CLOSE") <<
+                                    " ("<< ptr->Control.Value <<") from "<< point <<" queued to "<< acsId);
                         }
                     }
                 }
@@ -552,11 +512,8 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection* connec
     timestamp = ForeignToYukonTime (acsData->TimeStamp,true);
     if (timestamp == PASTDATE)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Time sync request was invalid: "
-                <<  acsData->TimeStamp << endl;
-        }
+        CTILOG_ERROR(dout, logNow() <<"Time sync request was invalid: "<< acsData->TimeStamp);
+
         return false;
     }
 
@@ -620,39 +577,27 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection* connec
                     action += timestamp.asString();
                     logEvent (desc,action,true);
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Request from " << connection
-                            << " to change PC time to " << timestamp.asString()
-                            << " has been processed" << endl;
-                    }
+                    CTILOG_INFO(dout, logNow() <<"Request from "<< connection <<" to change PC time to "<<
+                            timestamp <<" has been processed");
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Unable to process time change (A)";
-                    }
+                    CTILOG_ERROR(dout, logNow() <<"Unable to process time change (A)");
+
                     retVal = false;
                 }
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << "Unable to process time change (B)";
-                }
+                CTILOG_ERROR(dout, logNow() <<"Unable to process time change (B)");
+
                 retVal = false;
             }
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                logNow() << " Time change requested from " << connection
-                    << " of " << timestamp.asString() << " is outside standard +/-30 minutes"
-                    << endl;
-            }
+            CTILOG_ERROR(dout, logNow() <<"Time change requested from "<< connection <<" of "<<
+                    timestamp <<" is outside standard +/-30 minutes");
         }
     }
 

@@ -1,8 +1,5 @@
 #pragma once
 
-#include <limits.h>
-
-
 #include "ctibase.h"
 #include "dlldefs.h"
 #include "dbmemobject.h"
@@ -11,9 +8,12 @@
 #include "ctitime.h"
 #include "row_reader.h"
 #include "database_connection.h"
+#include "loggable.h"
+
+#include <limits.h>
 
 
-class IM_EX_CTIYUKONDB CtiTablePointDispatch : public CtiMemDBObject, private boost::noncopyable
+class IM_EX_CTIYUKONDB CtiTablePointDispatch : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -97,5 +97,5 @@ public:
 
     UINT getStaleCount() const;
 
-    virtual void dump();
+    virtual std::string toString() const override;
 };

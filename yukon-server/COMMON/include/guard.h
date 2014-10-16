@@ -2,6 +2,7 @@
 
 #include "utility.h"
 #include "dlldefs.h"
+#include "logger.h"
 
 #include <iostream>
 #include <sstream>
@@ -19,7 +20,8 @@ public:
         static bool hasDumped = false;
         while(!(_acquired = _res.acquire(900000)))
         {
-            std::cerr << " guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID() << std::endl;
+            CTILOG_WARN(dout, "guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID());
+
             if( !hasDumped )
             {
                 hasDumped = true;
@@ -72,7 +74,8 @@ public:
         static bool hasDumped = false;
         while(!(_acquired = _res.acquireRead(900000)))
         {
-            std::cerr << " guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID() << std::endl;
+            CTILOG_WARN(dout, "guard is unable to lock resource FOR thread id: " << GetCurrentThreadId() << " resource is owned by " << _res.lastAcquiredByTID());
+
             if( !hasDumped )
             {
                 hasDumped = true;

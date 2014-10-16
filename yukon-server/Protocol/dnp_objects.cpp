@@ -49,10 +49,7 @@ Object::~Object()
 
 int Object::restore(const unsigned char *buf, int len )
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
 
     return len;
 }
@@ -60,10 +57,9 @@ int Object::restore(const unsigned char *buf, int len )
 
 int Object::restoreBits( const unsigned char *buf, int bitoffset, int len )
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    // FIXME is this unimplemented ?
+
+    CTILOG_ERROR(dout, "function unimplemented");
 
     return (len * 8) - bitoffset;
 }
@@ -99,10 +95,7 @@ int Object::getVariation(void) const
 
 CtiPointDataMsg *Object::getPoint( const TimeCTO *cto ) const
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
 
     return NULL;
 }
@@ -158,15 +151,9 @@ void ObjectBlock::init( QualifierType type, int group, int variation )
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unsupported qualifier type " << type << endl;
-            }
+            CTILOG_ERROR(dout, "Unsupported qualifier type "<< type);
 
             _qualifier = type;
-
-            break;
         }
     }
 }
@@ -223,11 +210,10 @@ bool ObjectBlock::addObject( const Object *object )
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - attempt to insert mismatched group and variation into an object block **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << CtiTime() << " **** current: (" << _group << ", " << _variation << ")  attempted: (" << object->getGroup() << ", " << object->getVariation() << ") ****" << endl;
-                    }
+                    CTILOG_ERROR(dout,
+                            endl <<" attempt to insert mismatched group and variation into an object block"<<
+                            endl <<" current: ("<< _group <<", "<< _variation <<")  attempted: ("<< object->getGroup() <<", "<< object->getVariation() <<")"
+                            );
                 }
 
                 break;
@@ -238,12 +224,7 @@ bool ObjectBlock::addObject( const Object *object )
             case ShortIndex_ShortQty:
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - attempt to use invalid qualifier (" << _qualifier << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                break;
+                CTILOG_ERROR(dout, "attempt to use invalid qualifier ("<< _qualifier <<")");
             }
         }
     }
@@ -285,11 +266,10 @@ bool ObjectBlock::addObjectIndex( const Object *object, int index )
                     }
                     else
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - attempt to insert mismatched group and variation into an object block **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << CtiTime() << " **** current: (" << _group << ", " << _variation << ")  attempted: (" << object->getGroup() << ", " << object->getVariation() << ") ****" << endl;
-                        }
+                        CTILOG_ERROR(dout,
+                                endl <<" attempt to insert mismatched group and variation into an object block"<<
+                                endl <<" current: ("<< _group <<", "<< _variation <<")  attempted: ("<< object->getGroup() <<", "<< object->getVariation() <<")"
+                                );
                     }
 
                     break;
@@ -297,21 +277,13 @@ bool ObjectBlock::addObjectIndex( const Object *object, int index )
 
                 default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - attempt to use invalid qualifier (" << _qualifier << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    break;
+                    CTILOG_ERROR(dout, "attempt to use invalid qualifier ("<< _qualifier <<")");
                 }
             }
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - invalid index (" << index << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "invalid index ("<< index <<")" );
         }
     }
 
@@ -351,32 +323,27 @@ bool ObjectBlock::addObjectRange( Object *objectArray, const unsigned start, con
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - attempt to insert mismatched group and variation into an object block **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << CtiTime() << " **** current: (" << _group << ", " << _variation << ")  attempted: (" << object->getGroup() << ", " << object->getVariation() << ") ****" << endl;
+                        CTILOG_ERROR(dout,
+                                endl <<"attempt to insert mismatched group and variation into an object block"<<
+                                endl <<"current: ("<< _group <<", "<< _variation <<")  attempted: ("<< object->getGroup() <<", "<< object->getVariation() <<")"
+                                );
 
                         success = false;
+
+                        // FIXME: is there a break from for loop missing here?
                     }
                 }
-
-                break;
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - null object array (" << _qualifier << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-                break;
-            }
-        }
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - attempt to use invalid qualifier (" << _qualifier << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "null object array ("<< _qualifier <<")");
             }
 
             break;
+        }
+        default:
+        {
+            CTILOG_ERROR(dout, "attempt to use invalid qualifier ("<< _qualifier <<")");
         }
     }
 
@@ -468,12 +435,7 @@ unsigned ObjectBlock::getSerializedLen( void ) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
+            CTILOG_ERROR(dout, "attempt to use invalid qualifier ("<< _qualifier <<")");
         }
     }
 
@@ -560,12 +522,7 @@ unsigned ObjectBlock::serialize( unsigned char *buf ) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
+            CTILOG_ERROR(dout, "attempt to use invalid qualifier ("<< _qualifier <<")");
         }
     }
 
@@ -657,10 +614,7 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
 
             case NoIndex_NoRange:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Invalid qualifier block type " << static_cast<unsigned>(buf[pos]) << " for response **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid qualifier block type NoIndex_NoRange for response");
 
                 pos = len;
                 break;
@@ -668,13 +622,9 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
 
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Unknown qualifier block type " << static_cast<unsigned>(buf[pos]) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Unknown qualifier block type "<< _qualifier);
 
                 pos = len;
-                break;
             }
         }
 
@@ -710,8 +660,7 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
                 {
                     if( isDebugLudicrous() )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_DEBUG(dout, "NoIndex_ByteQty or NoIndex_ShortQty");
                     }
 
                     idx = 0 + qty_restored;
@@ -757,10 +706,7 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - error restoring object at pos " << pos << "/" << len << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "error restoring object at pos = "<< pos <<", len = "<< len);
 
                 pos = len;
             }
@@ -819,10 +765,7 @@ int ObjectBlock::restoreObject( const unsigned char *buf, int len, Object *&obj 
 
     if( !obj )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - unhandled object type (" << _group << "), variation (" << _variation << "), aborting processing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "unhandled object type ("<< _group <<"), variation ("<< _variation <<"), aborting processing");
 
         lenUsed = len;
     }
@@ -866,10 +809,7 @@ int ObjectBlock::restoreBitObject( const unsigned char *buf, int bitoffset, int 
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - unhandled object type (" << _group << "), variation (" << _variation << "), aborting processing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "unhandled object type ("<< _group <<"), variation ("<< _variation <<"), aborting processing");
 
         bitpos = len * 8;
     }

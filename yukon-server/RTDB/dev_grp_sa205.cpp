@@ -98,8 +98,7 @@ void CtiDeviceGroupSA205::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
     _loadGroup.DecodeDatabaseReader(rdr);
 }
@@ -143,15 +142,11 @@ YukonError_t CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommand
         }
         else if(now < _onePeriodLeft)
         {
-            {
-                CtiLockGuard<CtiLogger> slog_guard(slog);
-                slog << CtiTime() << " " << getName() << " Terminate control needed.  Setting the cycle counts to zero to end the control within the next period." << endl;
-            }
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << " Terminate control needed.  Setting the cycle counts to zero to end the control within the next period." << endl;
-                dout << CtiTime() << " " << getName() << " Last interval of previous control begins at... " << _onePeriodLeft << endl;
-            }
+            CTILOG_INFO(slog, getName() <<" Terminate control needed. Setting the cycle counts to zero to end the control within the next period.");
+
+            CTILOG_INFO(dout, getName() <<" Terminate control needed. Setting the cycle counts to zero to end the control within the next period. "
+                    "Last interval of previous control begins at... "<< _onePeriodLeft
+                    );
 
             control = true; // Cause the protocol's function to remain a control type command, (not restore).
             parse.setValue("cycle_count", 0);       // Do a repeat of the last control but with 0 counts!
@@ -181,14 +176,10 @@ YukonError_t CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommand
         parse.setValue("cycle_count", 0);
 
         resultString = CtiTime().asString() + " " + getName() + " is within the  graceful restore period.  No action is required to terminate the cycling. Use \"abrupt\" to force command.";
-        {
-            CtiLockGuard<CtiLogger> slog_guard(slog);
-            slog << resultString << endl;
-        }
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << resultString << endl;
-        }
+
+        CTILOG_INFO(slog, resultString);
+
+        CTILOG_INFO(dout, resultString);
 
         nRet = ClientErrors::BadParameter;
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
@@ -251,10 +242,7 @@ YukonError_t CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommand
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** No method / Bad syntax for " << parse.getCommandStr() << endl;;
-        }
+        CTILOG_ERROR(dout, "No method / Bad syntax for "<< parse.getCommandStr());
 
         return nRet;
     }
@@ -324,10 +312,7 @@ YukonError_t CtiDeviceGroupSA205::ExecuteRequest(CtiRequestMsg *pReq, CtiCommand
             OutMessage = NULL;
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << resultString << endl;
-        }
+        CTILOG_ERROR(dout, resultString);
     }
 
     return nRet;

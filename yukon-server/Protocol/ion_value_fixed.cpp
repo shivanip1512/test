@@ -68,7 +68,9 @@ unsigned char CtiIONValueFixed::getFixedIONClassType( void ) const
 {
     unsigned char retVal;
 
-    switch( getFixedType() )
+    const FixedTypes fixedType = getFixedType();
+
+    switch( fixedType )
     {
         case Fixed_Char:        retVal = IONClass_Char;         break;
         case Fixed_Time:        retVal = IONClass_Time;         break;
@@ -78,14 +80,9 @@ unsigned char CtiIONValueFixed::getFixedIONClassType( void ) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown fixed type = "<< fixedType);
 
             retVal = 0xff;
-
-            break;
         }
     }
 
@@ -213,10 +210,7 @@ CtiIONValue *CtiIONValueFixed::restoreFixed( unsigned char ionClass, unsigned ch
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown ionClass = "<< ionClass);
 
             itemLength = len - pos;
         }

@@ -138,21 +138,22 @@ BOOL  CtiVanGoghConnectionManager::isRegForChangeType(int type) const
 
 void CtiVanGoghConnectionManager::reportRegistration() const
 {
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
+   Cti::FormattedList itemList;
 
-   dout << "Status      " << (getStatus() ? "YES" : "NO ") << endl;
-   dout << "Analog      " << (getAnalog() ? "YES" : "NO ") << endl;
-   dout << "Accums      " << (getAccumulator() ? "YES" : "NO ") << endl;
-   dout << "Calc        " << (getCalculated() ? "YES" : "NO ") << endl;
-   dout << "Event       " << (getEvent() ? "YES" : "NO ") << endl;
-   dout << "Alarm       " << (getAlarm() ? "YES" : "NO ") << endl;
+   itemList.add("Status") << (bool)getStatus();
+   itemList.add("Analog") << (bool)getAnalog();
+   itemList.add("Accums") << (bool)getAccumulator();
+   itemList.add("Calc")   << (bool)getCalculated();
+   itemList.add("Event")  << (bool)getEvent();
+   itemList.add("Alarm")  << (bool)getAlarm();
+
+   CTILOG_INFO(dout, itemList);
 }
 
 CtiVanGoghConnectionManager::CtiVanGoghConnectionManager( CtiListenerConnection &listenerConn, Que_t *MainQueue_) :
    _blank(0),
    CtiConnectionManager(listenerConn, MainQueue_)
 {
-   // cout << "**** Connection Manager!!! *****" << endl;
 }
 
 CtiVanGoghConnectionManager::~CtiVanGoghConnectionManager()

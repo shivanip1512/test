@@ -75,10 +75,7 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Invalid Update Type: " << updateType << endl;
-        }
+        CTILOG_ERROR(dout, "Invalid Update Type: "<< updateType);
         _valid = FALSE;
     }
 
@@ -188,16 +185,12 @@ double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcVali
 
             if( calcPointPtr != rwnil)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Start Value:" << calcPointPtr->getPointValue() << endl;
+                CTILOG_INFO(dout, "Calc Point ID:"<< _pointId <<"; Start Value:"<< calcPointPtr->getPointValue());
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Not found" << endl;
+                CTILOG_ERROR(dout, "Calc Point ID:"<< _pointId <<"; Not found");
             }
-
-
         }
         _stack.clear();     // Start with a blank stack.
         push( retVal );     // Prime the stack with a zero value (should effectively clear it).
@@ -228,24 +221,18 @@ double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcVali
         if( !_valid )   //  NOT valid - actually, you should never get here, because the ready( ) back in CalcThread should
         {
             //    detect that you're invalid, and reject you with a "not ready" then.
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << __FILE__ << " (" << __LINE__ << ")  ERROR - attempt to calculate invalid point \"" << _pointId << "\" - returning 0.0" << endl;
+            CTILOG_WARN(dout, "Attempt to calculate invalid point \""<< _pointId <<"\" - returning 0.0");
             retVal = 0.0;
         }
 
         if( _CALC_DEBUG & CALC_DEBUG_POSTCALC_VALUE )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - CtiCalc::calculate(); Calc Point ID:" << _pointId << "; Return Value:" << retVal << endl;
+            CTILOG_DEBUG(dout, "Calc Point ID:"<< _pointId <<"; Return Value:"<< retVal);
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION in calculate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "    Calc Point ID " << _pointId << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Calc Point ID "<< _pointId);
     }
     return retVal;
 }
@@ -267,10 +254,7 @@ double CtiCalc::pop( void )
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ERROR - attempt to pop from empty stack in point \"" << _pointId << "\" - returning 0.0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "attempt to pop from empty stack in point \""<< _pointId <<"\" - returning 0.0 ");
         val = 0.0;
     }
     return val;
@@ -296,8 +280,7 @@ BOOL CtiCalc::ready( void )
             setNextInterval(getUpdateInterval());       // It is not valid, do not harp about it so often!
             isReady = FALSE;
 
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " - CtiCalc::ready( ) - Point " << _pointId << " is INVALID." << endl;
+            CTILOG_ERROR(dout, "Point "<< _pointId <<" is INVALID.");
         }
         else
         {
@@ -363,10 +346,7 @@ BOOL CtiCalc::ready( void )
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return isReady;
@@ -558,10 +538,11 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
                 {//is the last point data received in the average or not
                     if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << endl;
-                        dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
-                        dout << "Current Point Calc Window End Time: " << calcPointPtr->getPointCalcWindowEndTime().asString() << endl;
+                        Cti::FormattedList loglist;
+                        loglist.add("Current Component Point Time")       << componentPointPtr->getPointTime();
+                        loglist.add("Current Point Calc Window End Time") << calcPointPtr->getPointCalcWindowEndTime();
+
+                        CTILOG_DEBUG(dout, loglist);
                     }
                     double currentCalcPointValue = calcPointPtr->getPointValue();
 
@@ -571,13 +552,15 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
 
                     if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Current Calc Point Value: " << currentCalcPointValue << endl;
-                        //dout << "Current Total: " << currentTotal << endl;
-                        dout << "Updates In Current Avg: " << updatesInCurrentAvg << endl;
-                        dout << "Component Point Value: " << componentPointValue << endl;
-                        dout << "New Calc Point Value: " << retVal << endl;
-                        dout << "Will Send point change at: " << calcPointPtr->getPointCalcWindowEndTime() << endl;
+                        Cti::FormattedList loglist;
+                        loglist.add("Current Calc Point Value")  << currentCalcPointValue;
+                        //loglist.add("Current Total")             << currentTotal;
+                        loglist.add("Updates In Current Avg")    << updatesInCurrentAvg;
+                        loglist.add("Component Point Value")     << componentPointValue;
+                        loglist.add("New Calc Point Value")      << retVal;
+                        loglist.add("Will Send point change at") << calcPointPtr->getPointCalcWindowEndTime();
+
+                        CTILOG_DEBUG(dout, loglist);
                     }
                 }
                 else
@@ -588,15 +571,17 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
                         updatesInCurrentAvg = 1;
                         if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << "***********NEW DEMAND AVERAGE BEGUN**************: " << endl;
-                            //dout << "Current Component Point Time: " << componentPointPtr->getPointTime().asString() << endl;
-                            dout << "Current Point Calc Window End Time: " << calcPointPtr->getPointCalcWindowEndTime().asString() << endl;
-                            //dout << "Seconds Since Previous Point Time: " << componentPointPtr->getSecondsSincePreviousPointTime() << endl;
-                            dout << "New Initial Demand Avg: " << retVal << endl;
-                            dout << "Updates In Current Avg: " << updatesInCurrentAvg << endl;
-                            dout << "Previous demand average has a timestamp of: " << calcPointPtr->getPointCalcWindowEndTime() << endl;
-                            dout << "Next demand average will have timestamp of: " << CtiTime(calcPointPtr->getPointCalcWindowEndTime().seconds()+secondsInAvg) << endl;
+                            Cti::FormattedList loglist;
+                            loglist <<"NEW DEMAND AVERAGE BEGUN";
+                            //loglist.add("Current Component Point Time: "              << componentPointPtr->getPointTime().asString();
+                            loglist.add("Current Point Calc Window End Time")         << calcPointPtr->getPointCalcWindowEndTime();
+                            //loglist.add("Seconds Since Previous Point Time")          << componentPointPtr->getSecondsSincePreviousPointTime();
+                            loglist.add("New Initial Demand Avg")                     << retVal;
+                            loglist.add("Updates In Current Avg")                     << updatesInCurrentAvg;
+                            loglist.add("Previous demand average has a timestamp of") << calcPointPtr->getPointCalcWindowEndTime();
+                            loglist.add("Next demand average will have timestamp of") << CtiTime(calcPointPtr->getPointCalcWindowEndTime().seconds()+secondsInAvg);
+
+                            CTILOG_DEBUG(dout, loglist);
                         }
                     }
                     else
@@ -605,8 +590,7 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
                         updatesInCurrentAvg = 1;
                         if( _CALC_DEBUG & CALC_DEBUG_DEMAND_AVG )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " - Calc Point Id: " << getPointId() << " Demand Avg Reset!" << endl;
+                            CTILOG_DEBUG(dout, "Calc Point Id: "<< getPointId() <<" Demand Avg Reset!");
                         }
                     }
                     calcPointPtr->setPointCalcWindowEndTime(nextScheduledTimeAlignedOnRate(currenttime, secondsInAvg));
@@ -618,11 +602,7 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  Failed point: " << getPointId() << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed point: "<< getPointId());
     }
 
     return retVal;

@@ -98,7 +98,7 @@ public:
        }
        else
        {
-           std::cout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
+           CTILOG_WARN(dout, "Could not find ID " << id << " in map");
        }
 
        return status;

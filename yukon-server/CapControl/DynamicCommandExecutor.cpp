@@ -37,8 +37,7 @@ void DynamicCommandExecutor::execute()
         {
             if (_CC_DEBUG & CC_DEBUG_EXTENDED)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - DynamicCommandExecutor: UNDEFINED COMMAND: Command Type: " << commandType << std::endl;
+                CTILOG_DEBUG(dout, "DynamicCommandExecutor: UNDEFINED COMMAND: Command Type: " << commandType);
             }
             break;
         }
@@ -71,8 +70,7 @@ bool DynamicCommandExecutor::executePointResponseDeltaUpdate()
     {
         if (_CC_DEBUG & CC_DEBUG_EXTENDED)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - DynamicCommandExecutor: EXCEPTION: Point Response Update improperly formated." << std::endl;
+            CTILOG_DEBUG(dout, "DynamicCommandExecutor: EXCEPTION: Point Response Update improperly formated.");
         }
         return false;
     }
@@ -104,8 +102,7 @@ bool DynamicCommandExecutor::executePointResponseDeltaUpdate()
         {
             if (_CC_DEBUG & CC_DEBUG_EXTENDED)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - DynamicCommandExecutor: EXCEPTION: Point Response Update failed. Invalid CapBank Id" << std::endl;
+                CTILOG_DEBUG(dout, "DynamicCommandExecutor: EXCEPTION: Point Response Update failed. Invalid CapBank Id");
             }
             return false;
         }
@@ -116,8 +113,7 @@ bool DynamicCommandExecutor::executePointResponseDeltaUpdate()
         }
         catch (NotFoundException& e)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - DynamicCommandExecutor: EXCEPTION: Point Response Update failed. Not Found: " << pointId << std::endl;
+            CTILOG_ERROR(dout, "DynamicCommandExecutor: EXCEPTION: Point Response Update failed. Not Found: " << pointId);
 
             return false;
         }
@@ -127,8 +123,7 @@ bool DynamicCommandExecutor::executePointResponseDeltaUpdate()
 
     if (_CC_DEBUG & CC_DEBUG_EXTENDED)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - DynamicCommandExecutor: Point Response Update successful." << std::endl;
+        CTILOG_DEBUG(dout, "DynamicCommandExecutor: Point Response Update successful.");
     }
     return true;
 }

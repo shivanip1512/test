@@ -275,9 +275,7 @@ void MctDevice::decodeReadDataForKey(const CtiTableDynamicPaoInfo::PaoInfoKeys k
 {
     if( end <= begin )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - end <= begin in MctDevice::decodeReadDataForKey()"
-                             " for device  \"" << getName() << "\" (begin - end = " << static_cast<int>(begin - end) << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "unexpected end <= begin for device  \"" << getName() << "\" (begin - end = " << static_cast<int>(begin - end) << ")");
 
         return;
     }
@@ -512,8 +510,7 @@ YukonError_t MctDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse
     {
         if( getMCTDebugLevel(DebugLevel_Scanrates) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "GeneralScan for \"" << getName() << "\"");
         }
 
 
@@ -539,8 +536,7 @@ YukonError_t MctDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse
             delete OutMessage;
             OutMessage = NULL;
 
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Command lookup failed **** " << getName() << ".  Device Type " << desolveDeviceType(getType()) << endl;
+            CTILOG_ERROR(dout, "Command lookup failed for Device "<< getName() <<" (Device Type "<< desolveDeviceType(getType()) <<")");
 
             status = ClientErrors::NoMethod;
         }
@@ -562,8 +558,7 @@ YukonError_t MctDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &par
     {
         if( getMCTDebugLevel(DebugLevel_Scanrates) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Demand/IEDScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "Demand/IEDScan for \""<< getName() <<"\"");
         }
 
         if(getOperation(EmetconProtocol::Scan_Integrity, OutMessage->Buffer.BSt))
@@ -589,9 +584,7 @@ YukonError_t MctDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &par
 
             status = ClientErrors::NoMethod;
 
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Device " << getName() << endl;
+            CTILOG_ERROR(dout, "Command lookup failed for Device "<< getName());
         }
     }
 
@@ -610,8 +603,7 @@ YukonError_t MctDevice::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &p
     {
         if( getMCTDebugLevel(DebugLevel_Scanrates) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** AccumulatorScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "AccumulatorScan for \"" << getName() << "\"");
         }
 
         if(getOperation(EmetconProtocol::Scan_Accum, OutMessage->Buffer.BSt))
@@ -636,9 +628,7 @@ YukonError_t MctDevice::AccumulatorScan(CtiRequestMsg *pReq, CtiCommandParser &p
             delete OutMessage;
             OutMessage = NULL;
 
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Device " << getName() << endl;
+            CTILOG_ERROR(dout, "Command lookup failed for Device "<< getName());
 
             status = ClientErrors::NoMethod;
         }
@@ -660,8 +650,7 @@ YukonError_t MctDevice::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &p
     {
         if( getMCTDebugLevel(DebugLevel_Scanrates) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** LoadProfileScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "LoadProfileScan for \""<< getName() <<"\"");
         }
 
         if(getOperation(EmetconProtocol::Scan_LoadProfile, OutMessage->Buffer.BSt))
@@ -690,9 +679,7 @@ YukonError_t MctDevice::LoadProfileScan(CtiRequestMsg *pReq, CtiCommandParser &p
             delete OutMessage;
             OutMessage = NULL;
 
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Device " << getName() << endl;
+            CTILOG_ERROR(dout, "Command lookup failed for Device "<< getName());
 
             status = ClientErrors::NoMethod;
         }
@@ -716,9 +703,7 @@ YukonError_t MctDevice::ResultDecode(const INMESS &InMessage, const CtiTime Time
 
     if( status == ClientErrors::NoMethodForResultDecode )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
+        CTILOG_ERROR(dout, "No result decode method, IM->Sequence = "<< InMessage.Sequence <<" for "<< getName());
     }
 
     if( InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Read ||
@@ -808,10 +793,7 @@ YukonError_t MctDevice::ModelDecode(const INMESS &InMessage, const CtiTime TimeN
         }
         case EmetconProtocol::GetConfig_Model:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unhandled GetConfig_Model **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unhandled GetConfig_Model");
 
             break;
         }
@@ -911,7 +893,7 @@ YukonError_t MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeN
     YukonError_t retCode = ClientErrors::None;
 
     CtiCommandParser  parse(InMessage.Return.CommandStr);
-    CtiReturnMsg     *retMsg = CTIDBG_new CtiReturnMsg(getID(),
+    CtiReturnMsg     *retMsg = new CtiReturnMsg(getID(),
                                                 string(InMessage.Return.CommandStr),
                                                 string(),
                                                 InMessage.ErrorCode,
@@ -921,150 +903,139 @@ YukonError_t MctDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeN
                                                 InMessage.Return.GrpMsgID,
                                                 InMessage.Return.UserID);
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "ErrorDecode for device "<< getName() <<" in progress");
 
-    if( retMsg != NULL )
+    if( parse.getCommand() == ScanRequest )  //  we only plug values for failed scans
     {
-        if( parse.getCommand() == ScanRequest )  //  we only plug values for failed scans
+        switch( parse.getiValue("scantype") )
         {
-            switch( parse.getiValue("scantype") )
+            case ScanRateGeneral:
+            case ScanRateStatus:
             {
-                case ScanRateGeneral:
-                case ScanRateStatus:
+                //  implemented as the same scan
+                switch( getType() )
                 {
-                    //  implemented as the same scan
-                    switch( getType() )
-                    {
-                        case TYPEMCT310:
-                        case TYPEMCT310ID:
-                        case TYPEMCT310IDL:
-                        case TYPEMCT310IL:
-                        case TYPEMCT318:
-                        case TYPEMCT318L:
-                        case TYPEMCT360:
-                        case TYPEMCT370:
-                            insertPointFail( InMessage, retMsg, ScanRateStatus, 8, StatusPointType );
-                            insertPointFail( InMessage, retMsg, ScanRateStatus, 7, StatusPointType );
-                            insertPointFail( InMessage, retMsg, ScanRateStatus, 6, StatusPointType );
-                            insertPointFail( InMessage, retMsg, ScanRateStatus, 5, StatusPointType );
+                    case TYPEMCT310:
+                    case TYPEMCT310ID:
+                    case TYPEMCT310IDL:
+                    case TYPEMCT310IL:
+                    case TYPEMCT318:
+                    case TYPEMCT318L:
+                    case TYPEMCT360:
+                    case TYPEMCT370:
+                        insertPointFail( InMessage, retMsg, ScanRateStatus, 8, StatusPointType );
+                        insertPointFail( InMessage, retMsg, ScanRateStatus, 7, StatusPointType );
+                        insertPointFail( InMessage, retMsg, ScanRateStatus, 6, StatusPointType );
+                        insertPointFail( InMessage, retMsg, ScanRateStatus, 5, StatusPointType );
 
-                        case TYPEMCT250:
-                            insertPointFail( InMessage, retMsg, ScanRateStatus, 4, StatusPointType );
-                            insertPointFail( InMessage, retMsg, ScanRateStatus, 3, StatusPointType );
-                            insertPointFail( InMessage, retMsg, ScanRateStatus, 2, StatusPointType );
-                            insertPointFail( InMessage, retMsg, ScanRateStatus, 1, StatusPointType );
+                    case TYPEMCT250:
+                        insertPointFail( InMessage, retMsg, ScanRateStatus, 4, StatusPointType );
+                        insertPointFail( InMessage, retMsg, ScanRateStatus, 3, StatusPointType );
+                        insertPointFail( InMessage, retMsg, ScanRateStatus, 2, StatusPointType );
+                        insertPointFail( InMessage, retMsg, ScanRateStatus, 1, StatusPointType );
 
-                        default:
-                            ;
-                    }
-
-                    resetForScan(ScanRateGeneral);
-
-                    break;
+                    default:
+                        ;
                 }
 
-                case ScanRateAccum:
+                resetForScan(ScanRateGeneral);
+
+                break;
+            }
+
+            case ScanRateAccum:
+            {
+                switch( getType() )
                 {
-                    switch( getType() )
-                    {
-                        case TYPEMCT360:
-                        case TYPEMCT370:
-                        case TYPEMCT318:
-                        case TYPEMCT318L:
-                            insertPointFail( InMessage, retMsg, ScanRateAccum, 3, PulseAccumulatorPointType );
-                            insertPointFail( InMessage, retMsg, ScanRateAccum, 2, PulseAccumulatorPointType );
-                        default:
-                            insertPointFail( InMessage, retMsg, ScanRateAccum, 1, PulseAccumulatorPointType );
-                    }
-
-                    resetForScan(ScanRateAccum);
-
-                    break;
+                    case TYPEMCT360:
+                    case TYPEMCT370:
+                    case TYPEMCT318:
+                    case TYPEMCT318L:
+                        insertPointFail( InMessage, retMsg, ScanRateAccum, 3, PulseAccumulatorPointType );
+                        insertPointFail( InMessage, retMsg, ScanRateAccum, 2, PulseAccumulatorPointType );
+                    default:
+                        insertPointFail( InMessage, retMsg, ScanRateAccum, 1, PulseAccumulatorPointType );
                 }
 
-                case ScanRateIntegrity:
+                resetForScan(ScanRateAccum);
+
+                break;
+            }
+
+            case ScanRateIntegrity:
+            {
+                switch( getType() )
                 {
-                    switch( getType() )
-                    {
-                        case TYPEMCT360:
-                        case TYPEMCT370:
-                            //  insert the pointfails for the demand/KVAR/KVA points
-                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 10, AnalogPointType );
-                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 20, AnalogPointType );
-                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 30, AnalogPointType );
+                    case TYPEMCT360:
+                    case TYPEMCT370:
+                        //  insert the pointfails for the demand/KVAR/KVA points
+                        insertPointFail( InMessage, retMsg, ScanRateIntegrity, 10, AnalogPointType );
+                        insertPointFail( InMessage, retMsg, ScanRateIntegrity, 20, AnalogPointType );
+                        insertPointFail( InMessage, retMsg, ScanRateIntegrity, 30, AnalogPointType );
 
-                            //  insert the pointfails for the voltage points
-                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, Mct31xDevice::MCT360_IED_VoltsPhaseA_PointOffset, AnalogPointType );
-                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, Mct31xDevice::MCT360_IED_VoltsPhaseB_PointOffset, AnalogPointType );
-                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, Mct31xDevice::MCT360_IED_VoltsPhaseC_PointOffset, AnalogPointType );
-                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, Mct31xDevice::MCT360_IED_VoltsNeutralCurrent_PointOffset, AnalogPointType );
+                        //  insert the pointfails for the voltage points
+                        insertPointFail( InMessage, retMsg, ScanRateIntegrity, Mct31xDevice::MCT360_IED_VoltsPhaseA_PointOffset, AnalogPointType );
+                        insertPointFail( InMessage, retMsg, ScanRateIntegrity, Mct31xDevice::MCT360_IED_VoltsPhaseB_PointOffset, AnalogPointType );
+                        insertPointFail( InMessage, retMsg, ScanRateIntegrity, Mct31xDevice::MCT360_IED_VoltsPhaseC_PointOffset, AnalogPointType );
+                        insertPointFail( InMessage, retMsg, ScanRateIntegrity, Mct31xDevice::MCT360_IED_VoltsNeutralCurrent_PointOffset, AnalogPointType );
 
-                        case TYPEMCT318:
-                        case TYPEMCT318L:
-                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 3, DemandAccumulatorPointType );
-                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 2, DemandAccumulatorPointType );
-                        default:
-                            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 1, DemandAccumulatorPointType );
-                    }
-
-                    resetForScan(ScanRateIntegrity);
-
-                    break;
+                    case TYPEMCT318:
+                    case TYPEMCT318L:
+                        insertPointFail( InMessage, retMsg, ScanRateIntegrity, 3, DemandAccumulatorPointType );
+                        insertPointFail( InMessage, retMsg, ScanRateIntegrity, 2, DemandAccumulatorPointType );
+                    default:
+                        insertPointFail( InMessage, retMsg, ScanRateIntegrity, 1, DemandAccumulatorPointType );
                 }
 
-                case ScanRateLoadProfile:
-                {
-                    if( isMct410(getType()) || isMct420(getType()) || isMct440(getType()) )
-                    {
-                        int channel = parse.getiValue("loadprofile_channel", 0);
+                resetForScan(ScanRateIntegrity);
 
-                        if( channel )
+                break;
+            }
+
+            case ScanRateLoadProfile:
+            {
+                if( isMct410(getType()) || isMct420(getType()) || isMct440(getType()) )
+                {
+                    int channel = parse.getiValue("loadprofile_channel", 0);
+
+                    if( channel )
+                    {
+                        insertPointFail( InMessage, retMsg, ScanRateLoadProfile, channel + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
+                    }
+                }
+                else
+                {
+                    for( int i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++ )
+                    {
+                        if( getLoadProfile()->isChannelValid(i) )
                         {
-                            insertPointFail( InMessage, retMsg, ScanRateLoadProfile, channel + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
+                            insertPointFail( InMessage, retMsg, ScanRateLoadProfile, (i + 1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
                         }
                     }
-                    else
-                    {
-                        for( int i = 0; i < CtiTableDeviceLoadProfile::MaxCollectedChannel; i++ )
-                        {
-                            if( getLoadProfile()->isChannelValid(i) )
-                            {
-                                insertPointFail( InMessage, retMsg, ScanRateLoadProfile, (i + 1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
-                            }
-                        }
-                    }
-
-                    break;
                 }
 
-                default:
-                {
-                    break;
-                }
+                break;
+            }
+
+            default:
+            {
+                break;
             }
         }
+    }
 
-        // send the whole mess to dispatch
-        if( retMsg->PointData().size() > 0 )
-        {
-            retList.push_back(retMsg);
-        }
-        else
-        {
-            delete retMsg;
-        }
-
-        //  set it to null, it's been sent off
-        retMsg = NULL;
+    // send the whole mess to dispatch
+    if( retMsg->PointData().size() > 0 )
+    {
+        retList.push_back(retMsg);
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - null retMsg() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        delete retMsg;
     }
+
+    //  set it to null, it's been sent off
+    retMsg = NULL;
 
     return retCode;
 }
@@ -1779,8 +1750,8 @@ YukonError_t MctDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandParser &
         else
         {
             function = EmetconProtocol::DLCCmd_Invalid;
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - invalid interval type **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+            CTILOG_ERROR(dout, "invalid interval type \""<< temp << "\"");
         }
 
         if( function != EmetconProtocol::DLCCmd_Invalid )
@@ -2144,10 +2115,7 @@ YukonError_t MctDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &
 
                 default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Unknown IED type " << iedtype << " for device \'" << getName() << "\', aborting command **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Unknown IED type " << iedtype << " for device \"" << getName() << "\", aborting command");
 
                     found = false;
                 }
@@ -2276,10 +2244,7 @@ YukonError_t MctDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid Demand Interval \""<< temp <<"\"");
         }
     }
     else if(parse.isKeyValid("timesync"))
@@ -2507,14 +2472,7 @@ YukonError_t MctDevice::decodeLoopback(const INMESS &InMessage, const CtiTime Ti
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString = getName( ) + " / successful ping";
@@ -2539,14 +2497,7 @@ YukonError_t MctDevice::decodeGetValue(const INMESS &InMessage, const CtiTime Ti
     double Value;
     string resultStr;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     switch( InMessage.Sequence )
@@ -2606,14 +2557,7 @@ YukonError_t MctDevice::decodeGetConfig(const INMESS &InMessage, const CtiTime T
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     switch( InMessage.Sequence )
@@ -2722,10 +2666,10 @@ YukonError_t MctDevice::decodeGetConfig(const INMESS &InMessage, const CtiTime T
 
             if( isDebugLudicrous() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "message[0] = " << (int)DSt.Message[0] << endl;
-                dout << "message[1] = " << (int)DSt.Message[1] << endl;
+                CTILOG_DEBUG(dout,
+                        endl <<"message[0] = "<< (int)DSt.Message[0] <<
+                        endl <<"message[1] = "<< (int)DSt.Message[1]
+                        );
             }
 
             multnum   = (int)DSt.Message[0];
@@ -2850,14 +2794,7 @@ YukonError_t MctDevice::decodeGetStatusDisconnect(const INMESS &InMessage, const
     double    Value;
     string resultStr, defaultStateName;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     Value = STATE_CLOSED;
@@ -3065,14 +3002,7 @@ YukonError_t MctDevice::decodePutStatus(const INMESS &InMessage, const CtiTime T
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString = getName( ) + " / command complete";
@@ -3097,13 +3027,7 @@ YukonError_t MctDevice::decodePutConfig(const INMESS &InMessage, const CtiTime T
 
     bool expectMore = false;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     switch( InMessage.Sequence )
     {
@@ -3288,10 +3212,7 @@ YukonError_t MctDevice::decodePutConfig(const INMESS &InMessage, const CtiTime T
                     }
                     else
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[0] << "\" to meter \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "can't send MPKH \""<< _mpkh[0] <<"\" to meter \""<< getName() <<"\"");
                     }
                 }
                 else if( _configType == Config3XX )
@@ -3348,10 +3269,7 @@ YukonError_t MctDevice::decodePutConfig(const INMESS &InMessage, const CtiTime T
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - can't send MPKH \"" << _mpkh[i] << "\" to channel " << i+1 << " on meter \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_ERROR(dout, "can't send MPKH \"" << _mpkh[i] << "\" to channel " << i+1 << " on meter \"" << getName() << "\"");
                         }
                     }
 
@@ -3541,11 +3459,7 @@ bool MctDevice::getOperationFromStore( const CommandSet &store, const UINT &cmd,
 
 void MctDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &outList)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Default load profile logic handler - request deleted" << endl;
-    }
+    CTILOG_ERROR(dout, "Default load profile logic handler - request deleted");
 
     if(OutMessage != NULL)
     {
@@ -3557,11 +3471,7 @@ void MctDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList &ou
 
 bool MctDevice::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS *&OutMessage )
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Default load profile request location handler - request deleted" << endl;
-    }
+    CTILOG_ERROR(dout, "Default load profile request location handler - request deleted");
 
     return false;
 }
@@ -3588,10 +3498,7 @@ void MctDevice::setConfigData( const string &configName, int configType, const s
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - invalid config type \"" << configType << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "invalid config type \""<< configType <<"\" for device \""<< getName() <<"\"");
             }
 
             break;
@@ -3611,10 +3518,7 @@ void MctDevice::setConfigData( const string &configName, int configType, const s
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - invalid config type \"" << configType << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "invalid config type \""<< configType <<"\" for device \""<< getName() <<"\"");
             }
 
             break;
@@ -3622,10 +3526,7 @@ void MctDevice::setConfigData( const string &configName, int configType, const s
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "invalid device type \""<< getType() <<"\" for device \""<< getName() <<"\"");
 
             _configType = ConfigInvalid;
 
@@ -3639,8 +3540,7 @@ void MctDevice::setConfigData( const string &configName, int configType, const s
     {
         if( isDebugLudicrous() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - invalid peak mode string \"" + configMode + "\" - defaulting to minmax **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "invalid peak mode string \""<< configMode <<"\" - defaulting to minmax");
         }
 
         _peakMode = PeakModeInvalid;
@@ -3656,8 +3556,7 @@ void MctDevice::setConfigData( const string &configName, int configType, const s
         {
             if( isDebugLudicrous() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - invalid wire config \"" << mctwire[i] << " for channel " << i+1 << " - defaulting to three-wire **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_DEBUG(dout, "invalid wire config \"" << mctwire[i] << " for channel " << i+1 << " - defaulting to three-wire");
             }
 
             _wireConfig[i] = WireConfigInvalid;
@@ -3675,10 +3574,7 @@ int MctDevice::getNextFreeze( void ) const
     {
         retval = abs(_freeze_expected % 2) + 1;
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - _freeze_counter not set in MctDevice::getNextFreeze(), sending _freeze_expected + 1 (" << retval << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_WARN(dout, "_freeze_counter is not set, sending _freeze_expected + 1 (" << retval << ")");
     }
     else if( _freeze_counter >= 0 )
     {
@@ -3686,8 +3582,7 @@ int MctDevice::getNextFreeze( void ) const
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - _freeze_counter not set in MctDevice::getNextFreeze(), sending 1 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_WARN(dout, "_freeze_counter is not set, sending 1");
     }
 
     return retval;
@@ -3862,26 +3757,19 @@ YukonError_t MctDevice::checkFreezeLogic(const CtiTime &TimeNow, int incoming_co
     {
         if( !getLastFreezeTimestamp(TimeNow).isValid() || _freeze_expected == std::numeric_limits<int>::min() )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no freeze timestamp recorded for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "no freeze timestamp recorded for device \"" << getName() << "\"");
 
             error_string  = "No freeze has been recorded for this device";
             error_string += " - current freeze counter (" + CtiNumStr(_freeze_counter) + "), device expecting a \"freeze ";
             error_string += ((_freeze_counter % 2)?("two"):("one")) + string("\"");
+
             status = ClientErrors::FreezeNotRecorded;
         }
         else if( _freeze_counter != _freeze_expected )
         {
             int tmp_expected = abs(_freeze_expected);
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - incoming freeze counter (" << _freeze_counter <<
-                    ") does not match expected value (" << tmp_expected <<
-                    ") on device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "incoming freeze counter ("<< _freeze_counter <<") does not match expected value ("<< tmp_expected <<") on device \"" << getName() <<"\"");
 
             error_string  = "Invalid freeze counter (" + CtiNumStr(_freeze_counter) + ", expected ";
             error_string += CtiNumStr(tmp_expected);

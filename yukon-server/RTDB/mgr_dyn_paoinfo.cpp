@@ -5,7 +5,7 @@
 #include "database_connection.h"
 #include "database_reader.h"
 #include "database_util.h"
-
+#include "logger.h"
 #include "std_helper.h"
 
 #include "yukon.h"
@@ -171,9 +171,7 @@ void DynamicPaoInfoManager::loadInfo(const Database::id_set &paoids)
 
     if(DebugLevel & 0x00020000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-        dout << CtiTime() << " Looking for Dynamic PAO Info " << __FILE__ << "(" << __LINE__ << ")" << std::endl;
+        CTILOG_DEBUG(dout, "Looking for Dynamic PAO Info");
     }
 
     DatabaseConnection connection;
@@ -185,9 +183,7 @@ void DynamicPaoInfoManager::loadInfo(const Database::id_set &paoids)
 
     if( ! ownerString || ownerString->empty() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-        dout << CtiTime() << " Owner string not set " << __FILE__ << "(" << __LINE__ << ")" << std::endl;
+        CTILOG_ERROR(dout, "Owner string not set");
 
         return;
     }
@@ -253,9 +249,7 @@ void DynamicPaoInfoManager::loadInfo(const Database::id_set &paoids)
             }
             catch( CtiTableDynamicPaoInfo::BadKeyException &ex )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                dout << "Invalid key - paoid = " << ex.paoid << ", key = " << ex.key << ", owner = " << ex.owner << std::endl;
+                CTILOG_ERROR(dout, "Invalid key - paoid = " << ex.paoid << ", key = " << ex.key << ", owner = " << ex.owner);
             }
         }
 
@@ -263,14 +257,12 @@ void DynamicPaoInfoManager::loadInfo(const Database::id_set &paoids)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-        dout << "Error reading Dynamic PAO Info from database. " << std::endl;
+        CTILOG_ERROR(dout, "Could not read Dynamic PAO Info from database");
     }
 
     if(DebugLevel & 0x00020000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Dynamic PAO Info" << std::endl;
+        CTILOG_DEBUG(dout, "Done looking for Dynamic PAO Info");
     }
 }
 
@@ -365,8 +357,7 @@ Database::id_set DynamicPaoInfoManager::writeInfo( void )
 
     if ( ! conn.isValid() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        CTILOG_ERROR(dout, "Invalid Database Connection");
 
         return Database::id_set();
     }
@@ -377,8 +368,7 @@ Database::id_set DynamicPaoInfoManager::writeInfo( void )
 
     if ( ! ownerString || ownerString->empty() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** ERROR **** Cannot write DynamicPaoInfo - invalid owner (" << instance->owner << ")" << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        CTILOG_ERROR(dout, "Cannot write DynamicPaoInfo - invalid owner ("<< instance->owner <<")");
 
         instance->dirtyInfo.clear();
 
@@ -411,12 +401,7 @@ Database::id_set DynamicPaoInfoManager::writeInfo( void )
 
                 if( ! written )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - error inserting/updating DynamicPaoInfo **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                    }
-
-                    dirtyInfo->dump();
+                    CTILOG_ERROR(dout, "Could not insert/update DynamicPaoInfo" << dirtyInfo);
 
                     //  bypass it, try again next time
                     dirtyItr++;

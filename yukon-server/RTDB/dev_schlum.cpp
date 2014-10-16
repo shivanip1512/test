@@ -165,10 +165,8 @@ LONG CtiDeviceSchlumberger::nibblesAndBits(const unsigned char *bptr, INT MaxCha
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "*** ERROR " << __FILE__ << __LINE__ << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid ShiftBits = "<< ShiftBits);
+
                 lRet = 0;
                 break;
             }
@@ -193,19 +191,14 @@ LONG CtiDeviceSchlumberger::nibblesAndBits(const unsigned char *bptr, INT MaxCha
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "*** ERROR " << __FILE__ << __LINE__ << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid ShiftBits = "<< ShiftBits);
+
                 lRet = 0;
                 break;
             }
     }
 #else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << "*** ERROR " << __FILE__ << __LINE__ << endl;
-    }
+    CTILOG_ERROR(dout, "unexpected function call with BIT_FORMAT_COUNT != 12")
     lRet = 0;
 #endif
 
@@ -276,20 +269,17 @@ YukonError_t CtiDeviceSchlumberger::checkReturnMsg(CtiXfer  &Transfer,
 
             if (Transfer.doTrace(ClientErrors::BadCrc))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << "Data failed CRC verification" << endl;
+                CTILOG_ERROR(dout, "Data failed CRC verification");
             }
 
         }
         else if (Transfer.getInBuffer()[0] == NAK)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << "NAK on receive " << getName() << " tries left " << getAttemptsRemaining() << endl;
+            CTILOG_ERROR(dout, "NAK on receive for " << getName() << ", tries left " << getAttemptsRemaining());
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << "Comm error " << getName() << " tries left " << getAttemptsRemaining() << endl;
+            CTILOG_ERROR(dout, "Comm error " << getName() << ", tries left " << getAttemptsRemaining());
         }
 
         setAttemptsRemaining(getAttemptsRemaining()-1);
@@ -447,10 +437,8 @@ BOOL CtiDeviceSchlumberger::insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << "ERROR: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Invalid return message");
+
         delete aDataPoint;
         aDataPoint = NULL;
         retCode = FALSE;
@@ -483,21 +471,13 @@ YukonError_t CtiDeviceSchlumberger::ResultDecode(const INMESS   &InMessage,
     {
         case CmdScanData:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Scan decode for device " << getName() << " in progress " << endl;
-                }
-
+                CTILOG_INFO(dout, "Scan decode for device "<< getName() <<" in progress");
                 decodeResultScan (InMessage, TimeNow, vgList, retList, outList);
                 break;
             }
         case CmdLoadProfileData:
             {
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " LP decode for device " << getName() << " in progress " << endl;
-                }
+                CTILOG_INFO(dout, "LP decode for device "<< getName() <<" in progress");
 
                 // just in case we're getting an empty message
                 if (tmpCurrentState == StateScanReturnLoadProfile)
@@ -506,20 +486,13 @@ YukonError_t CtiDeviceSchlumberger::ResultDecode(const INMESS   &InMessage,
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " LP decode failed device " << getName() << " invalid state " << endl;
-                    }
+                    CTILOG_ERROR(dout, "LP decode failed device "<< getName() <<" invalid state");
                 }
                 break;
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
-                }
-
+                CTILOG_ERROR(dout, "Invalid decode for "<< getName());
             }
     }
 
@@ -530,10 +503,7 @@ YukonError_t CtiDeviceSchlumberger::ErrorDecode (const INMESS   &InMessage,
                                                  const CtiTime   TimeNow,
                                                  CtiMessageList &retList)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "ErrorDecode for device "<< getName() <<" in progress");
 
     YukonError_t retCode = ClientErrors::None;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);

@@ -240,10 +240,7 @@ void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
                     }
                     catch(...)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
                 }
                 default:
@@ -255,8 +252,7 @@ void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -280,10 +276,10 @@ static void applyNewLoad(const long unusedid, CtiPortSPtr ptPort, void *unusedPt
 
     if((PorterDebugLevel & PORTER_DEBUG_VERBOSE) && ptPort->isTAP())
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " WARNING: " << ptPort->getName() << " has a TAP device on it." << endl;
-        dout << " This currently sets the port to 7E1 mode for ALL devices on the port" << endl;
+        //TODO: verify if 'ptPort->isTAP()' can ever return true, remove log if not
+        CTILOG_DEBUG(dout, ptPort->getName() << " has a TAP device on it.  This currently sets the port to 7E1 mode for ALL devices on the port");
     }
+
     ptPort->verifyPortIsRunnable(hPorterEvents[P_QUIT_EVENT]);
 }
 
@@ -304,8 +300,7 @@ static void applyPortShares(const long unusedid, CtiPortSPtr ptPort, void *unuse
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Error initializing shared port for " << ptPort->getName() << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Unable to initialize shared port for "<< ptPort->getName());
         }
     }
 }
@@ -410,10 +405,8 @@ void applyDeviceQueuePurge(const long unusedid, CtiDeviceSPtr RemoteDevice, void
                     QueryQueue(pInfo->QueueHandle, &QueEntCnt);
                     if(QueEntCnt)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " queue queue entries" << endl;
-                        }
+                        CTILOG_WARN(dout, "CCU: "<< RemoteDevice->getName() <<" PURGING "<< QueEntCnt <<" queue queue entries");
+
                         CleanQueue(pInfo->QueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
                         // PurgeQueue(pInfo->QueueHandle);
                     }
@@ -421,10 +414,8 @@ void applyDeviceQueuePurge(const long unusedid, CtiDeviceSPtr RemoteDevice, void
                     QueryQueue(pInfo->ActinQueueHandle, &QueEntCnt);
                     if(QueEntCnt)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << QueEntCnt << " actin queue entries" << endl;
-                        }
+                        CTILOG_WARN(dout, "CCU: "<< RemoteDevice->getName() <<" PURGING "<< QueEntCnt <<" actin queue entries");
+
                         CleanQueue(pInfo->ActinQueueHandle, NULL, findAllQueueEntries, cleanupOrphanOutMessages);
                         //PurgeQueue(pInfo->ActinQueueHandle);
                     }
@@ -444,10 +435,7 @@ void applyDeviceQueuePurge(const long unusedid, CtiDeviceSPtr RemoteDevice, void
 
                 RemoteDevice->getDeviceQueueHandler()->retrieveQueueEntries(findAllQueueEntries, NULL, entries);
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    CCU:  " << RemoteDevice->getName() << "  PURGING " << entries.size() << " queue entries" << endl;
-                }
+                CTILOG_WARN(dout, "CCU: "<< RemoteDevice->getName() <<" PURGING "<<  entries.size() <<" queue entries");
 
                 list<void *>::iterator itr = entries.begin();
 
@@ -481,10 +469,7 @@ void applyPortQueuePurge(const long unusedid, CtiPortSPtr ptPort, void *unusedPt
         /* Print out the port queue information */
         QueryQueue(*QueueHandle(ptPort->getPortID()), &QueEntCnt);
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port: " << setw(2) << ptPort->getPortID() << " / " << ptPort->getName() << " PURGING " << QueEntCnt << " port queue entries" << endl;
-        }
+        CTILOG_WARN(dout, "Port: "<< ptPort->getPortID() <<" / "<< ptPort->getName() <<" PURGING "<< QueEntCnt <<" port queue entries");
 
         CleanQueue(*QueueHandle(ptPort->getPortID()), NULL, findAllQueueEntries, cleanupOrphanOutMessages);
         // PurgeQueue(*QueueHandle(ptPort->getPortID()));
@@ -536,19 +521,33 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
                     QueryQueue (pInfo->ActinQueueHandle, &AQueEntCnt);
                     int ccuStatus = (int)pInfo->getStatus();
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << " " << RemoteDevice->getName() << ": the time is now " << CtiTime( ) << endl;
-                        if(QueWorkCnt) dout << "       " << setw(8) << QueWorkCnt  << " queued work elements. Evaluate next at " << ent << "." << endl;
-                        dout << "       Queue Entries:  Queue: " << setw(8) << QueEntCnt << " Actin:  " << setw(8) << AQueEntCnt << " Status Byte: " << hex << setw(4) << ccuStatus << dec << " FreeSlots: " << pInfo->FreeSlots << endl;
+                        std::ostringstream logmsg;
+                        logmsg << RemoteDevice->getName() <<" queue report:";
+
+                        if( QueWorkCnt )
+                        {
+                            logmsg << endl << QueWorkCnt <<" queued work elements. Evaluate next at "<< ent <<".";
+                        }
+
+                        logmsg << endl
+                                << "Queue Entries - Queue: " << QueEntCnt
+                                <<", Actin: "                << AQueEntCnt
+                                <<", Status Byte: "          << hex << setw(4) << ccuStatus << dec
+                                <<", FreeSlots: "            << pInfo->FreeSlots;
+
                         for(int i = 0; i < 32; i++)
                         {
                             if(pInfo->QueTable[i].InUse)
                             {
-                                dout << "       CCU QueTable Slot " << setw(3)  << i << " is " <<
-                                    ((pInfo->QueTable[i].InUse & INUSE) ? "    INUSE" : "NOT INUSE" ) << " and " <<
-                                    ((pInfo->QueTable[i].InUse & INCCU) ? "    INCCU" : "NOT INCCU" ) << " TimeSent = " << CtiTime( pInfo->QueTable[i].TimeSent ) << " Sequence " << hex << setw(5) << pInfo->QueTable[i].QueueEntrySequence << dec << endl;
+                                logmsg << endl <<"CCU QueTable Slot "<< setw(3) << i <<" is "<<
+                                        ((pInfo->QueTable[i].InUse & INUSE) ? "    INUSE" : "NOT INUSE" ) <<" and "<<
+                                        ((pInfo->QueTable[i].InUse & INCCU) ? "    INCCU" : "NOT INCCU" ) <<
+                                        " TimeSent: "<< CtiTime( pInfo->QueTable[i].TimeSent ) <<
+                                        " Sequence: "<< hex << setw(5) << pInfo->QueTable[i].QueueEntrySequence << dec;
                             }
                         }
+
+                        CTILOG_INFO(dout, logmsg);
                     }
                 }
 
@@ -563,12 +562,9 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
                 //  don't lock dout while we do this - the CCU locks internally, and we want to avoid acquiring any muxes out of order
                 string queue_report = ccu->queueReport();
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << " " << RemoteDevice->getName() << ": the time is now " << CtiTime( ) << endl;
 
-                    dout << queue_report << endl;
-                }
+                CTILOG_INFO(dout, RemoteDevice->getName() <<" queue report: "<<
+                        endl << queue_report);
 
                 break;
             }
@@ -577,8 +573,15 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
             {
                 if(QueWorkCnt > 0)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << " " << setw(8) << QueWorkCnt  << " queued commands. Evaluate next at " << ent << ". Transmitter: " << RemoteDevice->getName() << (ent < ent.now() ? ". *** PAST DUE *** " + CtiNumStr( (unsigned long) (ent.now().seconds() - ent.seconds()) ) : " seconds.") << endl;
+                    Cti::StreamBuffer output;
+                    output << QueWorkCnt <<" queued commands. Evaluate next at "<< ent <<". Transmitter: "<< RemoteDevice->getName();
+
+                    if( ent < ent.now() )
+                    {
+                        output <<". PAST DUE: "<< (ent.now().seconds() - ent.seconds()) <<" seconds.";
+                    }
+
+                    CTILOG_INFO(dout, output);
                 }
             }
         }
@@ -587,8 +590,6 @@ void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevice, voi
 
 void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedPtr)
 {
-    string printStr;
-
     /* Report on the state of the queues */
 
     if(!ptPort->isInhibited())
@@ -601,66 +602,22 @@ void applyPortQueueReport(const long unusedid, CtiPortSPtr ptPort, void *passedP
 
         ptPort->applyPortQueue(&qa, applyPortQueueOutMessageReport);
 
-        #if 0
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            Cti::StreamBuffer output;
+            output <<" Port: "<< ptPort->getPortID() <<" / "<< ptPort->getName() <<" Port Queue Entries: "<< QueEntCnt;
 
-            dout << CtiTime() << " Port " << ptPort->getName() << endl;
-            for(int pri = 1; pri < 16; pri++)
+            if( ptPort->getConnectedDevice() )
             {
-                if(qa.priority_count[pri] > 0)
-                {
-                    dout << "  Priority " << setw(3) << pri << " OM Count " << setw(5) << qa.priority_count[pri] << endl;
-                }
+                output <<". Connected To: "<< GetDeviceName(ptPort->getConnectedDevice());
             }
 
-            // Now I need to look for some of the interesting metrics in the system!  These will be the first 16.
-            // 0  #define WAIT            0x0001
-            // 1  #define RESULT          0x0002
-            // 2  #define QUEUED          0x0004
-            // 3  #define ACTIN           0x0008
-            // 4  #define AWORD           0x0010
-            // 5  #define BWORD           0x0020
-            // 6  #define DTRAN           0x0040
-            // 7  #define RCONT           0x0080
-            // 8  #define RIPPLE          0x0100
-            // 09 #define STAGE           0x0200
-            // 10 #define VERSACOM        0x0400
-            // 11 #define TSYNC           0x0800
-            // 12 #define REMS            0x1000   // This can never be used now.... CGP Corey.
-            // 13 #define FISHERPIERCE    0x1000
-            // 14 #define ENCODED         0x4000
-
-            int pos;
-            for(pos = 0; pos < 16; pos++)
-            {
-                if(qa.metrics[pos])
-                    dout << metric_names[pos] << "           OM Count " << setw(5) << qa.metrics[pos] << endl;
-            }
+            CTILOG_INFO(dout, output);
         }
-        #endif
-
-        {
-            printStr = CtiTime().asString() + " Port: " + CtiNumStr(ptPort->getPortID()).spad(2) + " / " + ptPort->getName() +
-                                             " Port Queue Entries:  " + CtiNumStr(QueEntCnt).spad(4);
-
-            if(ptPort->getConnectedDevice())
-            {
-                printStr += ". Connected To: " + GetDeviceName(ptPort->getConnectedDevice());
-            }
-        }
-    }
-
-    if(!printStr.empty())
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << printStr << endl;
     }
 }
 
 void applyPortWorkReport(const long unusedid, CtiPortSPtr ptPort, void *passedPtr)
 {
-    string printStr;
     ULONG QueEntCnt = 0;
 
     /* Report on the state of the queues */
@@ -676,14 +633,7 @@ void applyPortWorkReport(const long unusedid, CtiPortSPtr ptPort, void *passedPt
         QueEntCnt = ptPort->getWorkCount();
         /* Print out the port queue information */
 
-        printStr = CtiTime().asString() + " Port: " + CtiNumStr(ptPort->getPortID()).spad(2) + " / " + ptPort->getName() +
-                                             " Port/Device Work Entries:  " + CtiNumStr(QueEntCnt).spad(4);
-    }
-
-    if(!printStr.empty())
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << printStr << endl;
+        CTILOG_INFO(dout, "Port: "<< ptPort->getPortID() <<" / "<< ptPort->getName() <<" Port/Device Work Entries: "<< QueEntCnt);
     }
 }
 
@@ -724,32 +674,26 @@ void writeDynamicPaoInfo()
             {
                 if( ! message_queue.timed_send(&paoId, sizeof(long), 0, getAbsTimeFromMillis(1000)) )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** ERROR **** : Timeout while sending paoIds to Scanner. " << __FILE__ << " (" << __LINE__ << ") " << endl;
-                    }
+                    CTILOG_ERROR(dout, "Timeout while sending paoIds to Scanner.");
+
                     return;
                 }
             }
         }
-        catch( boost::interprocess::interprocess_exception &ex )
+        catch( const boost::interprocess::interprocess_exception &ex )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** : " << ex.what() << " " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            CTILOG_EXCEPTION_ERROR(dout, ex);
         }
     }
-    catch( boost::interprocess::interprocess_exception &ex )
+    catch( const boost::interprocess::interprocess_exception &ex )
     {
         CtiTime now;
 
         // Log this error on the first incident, or after one hour or more
         if( ! nextScannerloggingFail || now >= *nextScannerloggingFail )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << now << " **** WARNING **** : Interprocess message queue could not be open, SCANNER may not be started. "
-                        "Exception: " << ex.what() << " " << __FILE__ << " (" << __LINE__ << ") " << endl;
-            }
+            CTILOG_EXCEPTION_WARN(dout, ex, "Interprocess message queue could not be open, SCANNER may not be started.");
+
             nextScannerloggingFail = now + (60*60); // now + 1 hour
         }
     }
@@ -835,8 +779,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     {
         if ( writeLogMessage )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " - Database connection attempt failed." << std::endl;
+            CTILOG_ERROR(dout, "Database connection attempt failed.");
 
             writeLogMessage = false;
         }
@@ -888,8 +831,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 
@@ -924,29 +866,24 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     if(gLogPorts)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Trace is now FORCED on by configuration entry YUKON_LOG_PORTS" << endl;
-        }
+        CTILOG_INFO( dout, "Trace is now FORCED on by configuration entry YUKON_LOG_PORTS");
+
         TraceFlag = TRUE;
     }
     else if(TraceFlag)
     {
         if(TraceErrorsOnly)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Trace is now on for errors only" << endl;
+            CTILOG_INFO( dout, "Trace is now on for errors only");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Trace is now on for all messages" << endl;
+            CTILOG_INFO( dout, "Trace is now on for all messages");
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Trace is now off for all messages" << endl;
+        CTILOG_INFO( dout, "Trace is now off for all messages");
     }
 
     CtiDeviceManager::ptr_type system;
@@ -995,7 +932,14 @@ INT PorterMainFunction (INT argc, CHAR **argv)
                         {
                             if(Char != 0)
                             {
-                                fprintf(stdout, " No ALT 0x%04X, 0x%04X, 0x%02X 0x%08X\n",inRecord.Event.KeyEvent.wVirtualScanCode,inRecord.Event.KeyEvent.wVirtualKeyCode, Char, inRecord.Event.KeyEvent.dwControlKeyState);
+                                Cti::FormattedList items;
+                                items.add("wVirtualScanCode")   << CtiNumStr(inRecord.Event.KeyEvent.wVirtualScanCode).xhex(4);
+                                items.add("wVirtualKeyCode")    << CtiNumStr(inRecord.Event.KeyEvent.wVirtualKeyCode).xhex(4);
+                                items.add("Char")               << CtiNumStr(Char).xhex(2);
+                                items.add("dwControlKeyState")  << CtiNumStr(inRecord.Event.KeyEvent.dwControlKeyState).xhex(8);
+
+                                CTILOG_DEBUG(dout, "key pressed event (No ALT)."<<
+                                        items);
                             }
                         }
                     }
@@ -1074,13 +1018,11 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     {
         if(_connThread.join(2000) != RW_THR_COMPLETED )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _connThread did not shutdown" << endl;
+            CTILOG_ERROR(dout, "_connThread did not shutdown");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _connThread shutdown" << endl;
+            CTILOG_INFO(dout, "_connThread shutdown");
         }
     }
 
@@ -1088,13 +1030,11 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     {
         if(_guiThread.join(2000) != RW_THR_COMPLETED )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _guiThread did not shutdown" << endl;
+            CTILOG_ERROR(dout, "_guiThread did not shutdown");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _guiThread shutdown" << endl;
+            CTILOG_INFO(dout, "_guiThread shutdown");
         }
     }
 
@@ -1102,13 +1042,11 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     {
         if(_tsyncThread.join(2000) != RW_THR_COMPLETED )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _tsyncThread did not shutdown" << endl;
+            CTILOG_ERROR(dout, "_tsyncThread did not shutdown");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _tsyncThread shutdown" << endl;
+            CTILOG_INFO(dout, "_tsyncThread shutdown");
         }
     }
 
@@ -1116,13 +1054,11 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     {
         if(_fillerThread.join(2000) != RW_THR_COMPLETED)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _fillerThread did not shutdown" << endl;
+            CTILOG_ERROR(dout, "_fillerThread did not shutdown");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _fillerThread shutdown" << endl;
+            CTILOG_INFO(dout, "_fillerThread shutdown");
         }
     }
 
@@ -1130,13 +1066,11 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     {
         if(_vconfThread.join(2000) != RW_THR_COMPLETED )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _vconfThread did not shutdown" << endl;
+            CTILOG_ERROR(dout, "_vconfThread did not shutdown");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _vconfThread shutdown" << endl;
+            CTILOG_INFO(dout, "_vconfThread shutdown");
         }
     }
 
@@ -1145,13 +1079,11 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     {
         if(_dispThread.join(15000) != RW_THR_COMPLETED )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _dispThread did not shutdown" << endl;
+            CTILOG_ERROR(dout, "_dispThread did not shutdown");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _dispThread shutdown" << endl;
+            CTILOG_INFO(dout, "_dispThread shutdown");
         }
     }
 
@@ -1159,13 +1091,11 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     {
         if(_gwThread.join(15000) != RW_THR_COMPLETED )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _gwThread did not shutdown" << endl;
+            CTILOG_ERROR(dout, "_gwThread did not shutdown");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _gwThread shutdown" << endl;
+            CTILOG_INFO(dout, "_gwThread shutdown");
         }
     }
 
@@ -1173,13 +1103,11 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     {
         if(_pilThread.join(15000) != RW_THR_COMPLETED )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _pilThread did not shutdown" << endl;
+            CTILOG_ERROR(dout, "_pilThread did not shutdown");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _pilThread shutdown" << endl;
+            CTILOG_INFO(dout, "_pilThread shutdown");
         }
     }
 
@@ -1187,13 +1115,11 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     {
         if(_queueCCU711Thread.join(1500) != RW_THR_COMPLETED )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _queueCCU711Thread did not shutdown" << endl;
+            CTILOG_ERROR(dout, "_queueCCU711Thread did not shutdown");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _queueCCU711Thread shutdown" << endl;
+            CTILOG_INFO(dout, "_queueCCU711Thread shutdown");
         }
     }
 
@@ -1201,13 +1127,11 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     {
         if(_kickerCCU711Thread.join(1500) != RW_THR_COMPLETED )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _kickerCCU711Thread did not shutdown" << endl;
+            CTILOG_ERROR(dout, "_kickerCCU711Thread did not shutdown");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _kickerCCU711Thread shutdown" << endl;
+            CTILOG_INFO(dout, "_kickerCCU711Thread shutdown");
         }
     }
 
@@ -1215,51 +1139,28 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     {
         PorterVerificationThread.join();
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _verificationThread shutdown" << endl;
-        }
+        CTILOG_INFO(dout, "_verificationThread shutdown");
     }
 
     if(_statisticsThread.isValid())
     {
         while( _statisticsThread.join(1500) != RW_THR_COMPLETED )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _statisticsThread has not shutdown" << endl;
+            CTILOG_ERROR(dout, "_statisticsThread has not shutdown");
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _statisticsThread shutdown" << endl;
-        }
+        CTILOG_INFO(dout, "_statisticsThread shutdown");
     }
-
 
     PortManager.haltLogs();
-
-    Sleep(3000);
-
-    // Make sure all the logs get output and done!
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " logger shutdown" << endl;
-    }
-
-    dout.interrupt(CtiThread::SHUTDOWN);
-    dout.join();
-
-    slog.interrupt(CtiThread::SHUTDOWN);
-    slog.join();
-
-    blog.interrupt(CtiThread::SHUTDOWN);
-    blog.join();
 }
 
 
 
 void DebugKeyEvent(KEY_EVENT_RECORD *ke)
 {
+    // FUNCTION not called, but might still be useful?
+
     if(ke->bKeyDown)  fprintf(stdout, "Key     DOWN\n");
     else              fprintf(stdout, "Key NOT DOWN\n");
 
@@ -1329,10 +1230,7 @@ static void applyRefreshRepeaterRoles(const long device_id, CtiDeviceSPtr device
 
     if( !pChg || RouteManager.isRepeaterRelevantToRoute(device->getID(), pChg->getId()) )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Refreshing roles for repeater \"" << device->getName() << "\"" << endl;
-        }
+        CTILOG_INFO(dout, "Refreshing roles for repeater \""<< device->getName() <<"\"");
 
         PIL.putQueue( new CtiRequestMsg(device->getID(), "putconfig emetcon install") );
     }
@@ -1347,21 +1245,15 @@ void refreshRepeaterRoutes(const CtiDBChangeMsg *pChg)
 
     if( porterAutoRoleRate && CtiTime::now() > (lastRefresh + porterAutoRoleRate) )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " AutoRole Download timer (master.cfg: PORTER_AUTOROLE_RATE) expired." << endl;
-            dout << CtiTime() << " All repeaters will have their role table refreshed." << endl;
-        }
+        CTILOG_INFO(dout, "AutoRole Download timer (master.cfg: PORTER_AUTOROLE_RATE) expired. "
+                "All repeaters will have their role table refreshed.");
 
         refreshNeeded = true;
     }
     else if(pChg != NULL)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Reloading repeater routes based upon db change" << endl;
-            dout << CtiTime() << " All relevant repeaters will have their role table refreshed." << endl;
-        }
+        CTILOG_INFO(dout, "Reloading repeater routes based upon db change. "
+                "All relevant repeaters will have their role table refreshed.");
 
         refreshNeeded = true;
     }
@@ -1374,19 +1266,13 @@ void refreshRepeaterRoutes(const CtiDBChangeMsg *pChg)
 
             DeviceManager.apply(applyRefreshRepeaterRoles, (void *)pChg);
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Downloading routes to all CCU-711s on repeater route change" << endl;
-            }
+            CTILOG_INFO(dout, "Downloading routes to all CCU-711s on repeater route change");
 
             PortManager.apply( applyLoadAllRoutes, NULL );
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 }
@@ -1438,10 +1324,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
     if(!PorterQuit && isPortDbChange(pChg) )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Reloading all ports based upon db change" << endl;
-        }
+        CTILOG_INFO(dout, "Reloading all ports based upon DB change");
 
         CtiPortManager::coll_type::writer_lock_guard_t guard(PortManager.getLock());
         PortManager.RefreshList();
@@ -1502,8 +1385,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
                     }
                     catch(...)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
                 }
             }
@@ -1539,8 +1421,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
             if( getDebugLevel() & DEBUGLEVEL_MGR_POINT )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Deleting pointid (" << pChg->getId() << ")" << endl;
+                CTILOG_DEBUG(dout, "Deleting pointid ("<< pChg->getId() <<")");
             }
         }
         else
@@ -1549,8 +1430,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
 
             if( getDebugLevel() & DEBUGLEVEL_MGR_POINT )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Refreshing pointid (" << pChg->getId() << ")" << endl;
+                CTILOG_DEBUG(dout, "Refreshing pointid ("<< pChg->getId() <<")");
             }
 
             // We also need to reload all the point groups to make certain the control strings get updated.
@@ -1573,10 +1453,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
     {
         if(gConfigParms.isTrue("PORTER_LOAD_ALL_POINTS"))
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " PORTER_LOAD_ALL_POINTS is set" << endl;
-            }
+            CTILOG_INFO(dout, "PORTER_LOAD_ALL_POINTS is set");
             PorterPointManager.refreshList();
         }
 
@@ -1587,8 +1464,7 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 
@@ -1738,19 +1614,18 @@ void LoadPorterGlobals(void)
 
     if(isDebugLudicrous())
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Using CCU Delay information from " << gDelayDatFile << endl;
+        CTILOG_DEBUG(dout, "Using CCU Delay information from "<< gDelayDatFile);
     }
-
 
     if(DebugLevel & 0x0001)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        Cti::FormattedList logItems;
+        logItems.add("PORTER_RELOAD_RATE")      << PorterRefreshRate;
+        logItems.add("PORTER_MAXOCTS")          << MaxOcts;
+        logItems.add("PORTER_MCT400SERIESSPID") << (int)gMCT400SeriesSPID;
 
-        dout << "Loading porter globals: " << endl;
-        dout << "PORTER_RELOAD_RATE      " << PorterRefreshRate << endl;
-        dout << "PORTER_MAXOCTS          " << MaxOcts << endl;
-        dout << "PORTER_MCT400SERIESSPID " << (int)gMCT400SeriesSPID << endl;
+        CTILOG_DEBUG(dout, "Loading porter globals:"<<
+                logItems);
     }
 }
 
@@ -1797,10 +1672,7 @@ void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool co
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1868,13 +1740,11 @@ void KickPIL()
     {
         if(_pilThread.join(15000) != RW_THR_COMPLETED )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _pilThread did not shutdown" << endl;
+            CTILOG_ERROR(dout, "_pilThread did not shutdown");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " _pilThread shutdown" << endl;
+            CTILOG_INFO(dout, "_pilThread shutdown");
         }
     }
 
@@ -1897,27 +1767,25 @@ bool processInputFunction(CHAR Char)
     {
     case 0x68:              // alt - h
     case 0x3f:              // alt - ?
-        /* Print some instructions */
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-            dout << endl;
-            dout << "Port Control" << endl << endl;
-            dout << "Alt - C     Reset (cold start) all CCU 711's in system" << endl;
-            dout << "Alt - D     Send Emetcon \"Doubles\" to field devices" << endl;
-            dout << "Alt - E     Trace error communications only" << endl;
-            dout << "Alt - F     Toggle trace filtering off, or reload from environment." << endl;
-            dout << "             PORTER_TRACE_PORT    " << endl;
-            dout << "             PORTER_TRACE_REMOTE  " << endl;
-            dout << "Alt - H     This help screen" << endl;
-            dout << "Alt - L     Toggle printer logging" << endl;
-            dout << "Alt - P     Purge all port queues. (Careful)" << endl;
-            dout << "Alt - Q     Display port queue counts / stats" << endl;
-            dout << "Alt - R     Download all CCU Default Routes" << endl;
-            dout << "Alt - S     Issue a system wide timesync" << endl;
-            dout << "Alt - T     Trace all communications" << endl;
-            dout << "Alt - Z     Reload all CPARMs" << endl;
-            dout << endl;
+            // Print some instructions
+            cout << "Port Control" << endl;
+            cout << endl;
+            cout << "Alt - C     Reset (cold start) all CCU 711's in system" << endl;
+            cout << "Alt - D     Send Emetcon \"Doubles\" to field devices" << endl;
+            cout << "Alt - E     Trace error communications only" << endl;
+            cout << "Alt - F     Toggle trace filtering off, or reload from environment." << endl;
+            cout << "             PORTER_TRACE_PORT" << endl;
+            cout << "             PORTER_TRACE_REMOTE" << endl;
+            cout << "Alt - H     This help screen" << endl;
+            cout << "Alt - L     Toggle printer logging" << endl;
+            cout << "Alt - P     Purge all port queues. (Careful)" << endl;
+            cout << "Alt - Q     Display port queue counts / stats" << endl;
+            cout << "Alt - R     Download all CCU Default Routes" << endl;
+            cout << "Alt - S     Issue a system wide timesync" << endl;
+            cout << "Alt - T     Trace all communications" << endl;
+            cout << "Alt - Z     Reload all CPARMs" << endl;
+            cout << endl;
 
             break;
         }
@@ -1928,21 +1796,16 @@ bool processInputFunction(CHAR Char)
             {
                 if(TraceErrorsOnly)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Trace is Now On for Errors Only" << endl;
+                    CTILOG_INFO(dout, "Trace is Now On for Errors Only");
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Trace is Now On for All Messages" << endl;
+                    CTILOG_INFO(dout, "Trace is Now On for All Messages");
                 }
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Trace is Now Off for All Messages" << endl;
-                }
+                CTILOG_INFO(dout, "Trace is Now Off for All Messages");
             }
 
             break;
@@ -1952,10 +1815,7 @@ bool processInputFunction(CHAR Char)
             gConfigParms.RefreshConfigParameters();
             LoadPorterGlobals();
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " CPARMs have been reloaded" << endl;
-            }
+            CTILOG_INFO(dout, "CPARMs have been reloaded");
 
             break;
         }
@@ -1965,20 +1825,15 @@ bool processInputFunction(CHAR Char)
             if(TraceErrorsOnly)
             {
                 TraceFlag = TRUE;
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Trace is Now On for Errors Only" << endl;
+                CTILOG_INFO(dout, "Trace is Now On for Errors Only");
             }
             else if(TraceFlag)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Trace is Now On for All Messages" << endl;
+                CTILOG_INFO(dout, "Trace is Now On for All Messages");
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Trace is Now Off for All Messages" << endl;
-                }
+                CTILOG_INFO(dout, "Trace is Now Off for All Messages");
             }
 
             break;
@@ -1986,10 +1841,8 @@ bool processInputFunction(CHAR Char)
         }
     case 0x72:              // alt-r
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Downloading Routes to All CCU-711's" << endl;
-            }
+            CTILOG_INFO(dout, "Downloading Routes to All CCU-711's");
+
             PortManager.apply( applyLoadAllRoutes, NULL );
             break;
         }
@@ -1998,13 +1851,11 @@ bool processInputFunction(CHAR Char)
             Double = !Double;
             if(Double)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Commands will be sent double" << endl;
+                CTILOG_INFO(dout, "Commands will be sent double");
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Commands will not be sent double" << endl;
+                CTILOG_INFO(dout, "Commands will not be sent double");
             }
 
             break;
@@ -2013,7 +1864,7 @@ bool processInputFunction(CHAR Char)
         {
             if(TracePort || TraceRemote)
             {
-                fprintf(stdout, "Trace filter is now off\n");
+                CTILOG_INFO(dout, "Trace filter is now off");
                 TracePort = 0;
                 TraceRemote = 0;
             }
@@ -2022,16 +1873,16 @@ bool processInputFunction(CHAR Char)
                 if(!(CTIScanEnv ("PORTER_TRACE_PORT", &Environment)))
                 {
                     TracePort = atoi (Environment);
-                    fprintf(stdout, "Filtering Traces for Port %ld\n", TracePort);
+                    CTILOG_INFO(dout, "Filtering Traces for Port "<< TracePort);
                 }
                 else if(!(CTIScanEnv ("PORTER_TRACE_REMOTE",  &Environment)))
                 {
                     TraceRemote = atoi (Environment);
-                    fprintf(stdout, "Filtering Traces for Remote %ld\n", TraceRemote);
+                    CTILOG_INFO(dout, "Filtering Traces for Remote "<< TraceRemote);
                 }
                 else
                 {
-                    fprintf(stdout, "Neither PORTER_TRACE_PORT nor PORTER_TRACE_REMOTE defined in the environment\n");
+                    CTILOG_INFO(dout, "Neither PORTER_TRACE_PORT nor PORTER_TRACE_REMOTE defined in the environment");
                 }
             }
             break;
@@ -2039,7 +1890,7 @@ bool processInputFunction(CHAR Char)
     case 0x6d:              // alt-m trace filter.
         {
 #ifndef DEBUG_MEMORY
-            fprintf(stdout, "Module not compiled for Memory Dumps\n");
+            CTILOG_INFO(dout, "Module not compiled for Memory Dumps");
             _CrtDumpMemoryLeaks();
 #else
             fprintf(stderr, "Memory Dump ------- \n");
@@ -2060,36 +1911,26 @@ bool processInputFunction(CHAR Char)
     case 0x63:              // alt-c
         {
             /* Issue a cold start to each CCU */
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Issuing Cold Starts to All CCU-711's" << endl;
-            }
+            CTILOG_INFO(dout, "Issuing Cold Starts to All CCU-711's");
+
             PortManager.apply( applyColdStart, NULL);
 
             break;
         }
     case 0x6b:              // alt-k
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << endl << CtiTime() << " Kicking PIL." << endl << endl;
-            }
+            CTILOG_INFO(dout, "Kicking PIL.");
 
             KickPIL();
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << endl << CtiTime() << " PIL has been kicked." << endl << endl;
-            }
+            CTILOG_INFO(dout, "PIL has been kicked.");
+
             break;
         }
     case 0x73:              // alt-s
         {
             /* Force a time sync */
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Forcing Sytem Wide Time Sync" << endl;
-            }
+            CTILOG_INFO(dout, "Forcing System Wide Time Sync");
 
             //CTIPostEventSem (TimeSyncSem);
             SetEvent(hPorterEvents[P_TIMESYNC_EVENT]);
@@ -2107,10 +1948,8 @@ bool processInputFunction(CHAR Char)
             PortManager.apply( applyPortQueueReport, (void*)1 );
             DeviceManager.apply( applyDeviceQueueReport, NULL );
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << endl << CtiTime() << " There are " << OutMessageCount() << " OutMessages held by Port Control." << endl << endl;
-            }
+            CTILOG_INFO(dout, "There are "<< OutMessageCount() <<" OutMessages held by Port Control.");
+
             break;
         }
     case 0x77:              // alt-w
@@ -2270,8 +2109,7 @@ void commFail(const CtiDeviceSPtr &Device)
     }
     else if(PorterDebugLevel & PORTER_DEBUG_VERBOSE && Device && state)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << Device->getName() << " would be COMM FAILED if it had offset " << COMM_FAIL_OFFSET << " defined" << endl;
+        CTILOG_DEBUG(dout, Device->getName() <<" would be COMM FAILED if it had offset "<< COMM_FAIL_OFFSET <<" defined");
     }
 }
 
@@ -2318,10 +2156,7 @@ void LoadCommFailPoints(LONG ptid)
 
         if(resultpair.second == false)           // Insert was unsuccessful (should never be this way!).
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** LoadCommFailPoints Error **** " << __FILE__ << " (" << __LINE__ << ") Pao " << did << " has multiple pids at offset 2000? " << endl;
-            }
+            CTILOG_ERROR(dout, "Pao "<< did <<" has multiple pids at offset 2000?");
         }
     }
 

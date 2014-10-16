@@ -108,9 +108,9 @@ void CtiIONApplicationLayer::setToOutput( const CtiIONSerializable &payload )
     }
     else
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << dataLength << " bytes in CtiIONApplicationLayer ctor;"
-                                                                 << "  proceeding with zero-length ION data payload, setting valid = false" << endl;
+        CTILOG_ERROR(dout, "unable to allocate "<< dataLength <<" bytes in CtiIONApplicationLayer ctor;  "
+                "proceeding with zero-length ION data payload, setting valid = false");
+
         _appOut.header.length.byte1 = 0;
         _appOut.header.length.byte0 = 0;
         _ioState = Failed;
@@ -142,10 +142,7 @@ YukonError_t CtiIONApplicationLayer::generate( CtiXfer &xfer )
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONApplicationLayer::generate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown state "<< _ioState);
 
             _ioState = Failed;
             retVal = ClientErrors::BadRange;
@@ -169,8 +166,7 @@ YukonError_t CtiIONApplicationLayer::decode( CtiXfer &xfer, YukonError_t status 
     {
         if( isDebugLudicrous() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint -- _networkLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "_networkLayer.errorCondition()");
         }
 
         //  error conditions propagate back up to the protocol object
@@ -230,10 +226,7 @@ YukonError_t CtiIONApplicationLayer::decode( CtiXfer &xfer, YukonError_t status 
 
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONApplicationLayer::decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "unknown state "<< _ioState);
 
                 _ioState = Failed;
             }

@@ -307,62 +307,44 @@ DOUBLE CtiAnsiTable12::getResolvedMultiplier( int aOffset )
 //=========================================================================================================================================
 void CtiAnsiTable12::printResult( const string& deviceName )
 {
-    int integer;
-    string string1,string2;
-    double double1;
+    Cti::FormattedTable table;
+    table.setCell(0, 0) << "UOM Offset";
+    table.setCell(0, 1) << "Id Code";
+    table.setCell(0, 2) << "Time Base";
+    table.setCell(0, 3) << "Multiplier";
+    table.setCell(0, 4) << "Q's";
+    table.setCell(0, 5) << "netFlow";
+    table.setCell(0, 6) << "Seg";
+    table.setCell(0, 7) << "Harm";
+    table.setCell(0, 8) << "nfs";
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
+    for (int x=0; x < _numUomEntries; x++)
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 12 ========================" << endl;
-        dout << "UOM Offset  Id Code     Time Base           Multiplier  Q's netFlow Seg Harm  nfs" << endl;
-    }
+        const unsigned row = x+1;
+        table.setCell(row, 0) << x;
+        table.setCell(row, 1) << getResolvedIDCode(x)     <<" ("<< getRawIDCode(x)     <<")";
+        table.setCell(row, 2) << getResolvedTimeBase(x)   <<" ("<< getRawTimeBase(x)   <<")";
+        table.setCell(row, 3) << getResolvedMultiplier(x) <<" ("<< getRawMultiplier(x) <<")";
 
-    for (int x=0;x < _numUomEntries; x++)
-    {
-        integer = getRawIDCode(x);
-        string1 = getResolvedIDCode(x);
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << " " << x << "   " << string1 << " (" << integer <<")  ";
-        }
-
-        integer = getRawTimeBase(x);
-        string1 = getResolvedTimeBase(x);
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << string1 << " (" << integer <<")      ";
-        }
-
-        integer = getRawMultiplier(x);
-        double1 = getResolvedMultiplier(x);
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << double1 << " (" << integer <<")" ;
-        }
+        std::string qs;
         for (int q = 1; q <= 4; q++)
         {
-            if (getQuadrantAccountabilityFlag(q, x))
+            if( getQuadrantAccountabilityFlag(q, x) )
             {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout <<" Q" <<q;
+                qs += " Q" + boost::lexical_cast<string>(q);
             }
         }
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout <<"  " << (bool)_uom_entries[x].net_flow_accountablility;
-            dout <<"  " << (int)_uom_entries[x].segmentation;
-            dout <<"  " << (bool)_uom_entries[x].harmonic;
-            dout <<" (" << (int)_uom_entries[x].nfs <<")" << endl;
-        }
-        //Sleep(50);
+        table.setCell(row, 4) << qs;
+        table.setCell(row, 5) << (bool)_uom_entries[x].net_flow_accountablility;
+        table.setCell(row, 6) <<       _uom_entries[x].segmentation;
+        table.setCell(row, 7) << (bool)_uom_entries[x].harmonic;
+        table.setCell(row, 8) <<"("<< _uom_entries[x].nfs <<")";
     }
+
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 12") <<
+            table
+            );
 }
 
 bool  CtiAnsiTable12::getQuadrantAccountabilityFlag(int quadrant, int index)

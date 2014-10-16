@@ -3,7 +3,6 @@
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <string>
 #include "dlldefs.h"
-#include "logger.h"
 
 class CtiTime;
 

@@ -137,20 +137,17 @@ bool CtiProtocolYmodem::decode( CtiXfer &xfer, int status )
             {
                //  don't pull in the data - this will make isCrcValid() return false, and we'll just cruise
                //    over this repeated packet...  also, we're still (re-)sending the ack like we should
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << CtiTime() << " **** Checkpoint - duplicate YMODEM packet received **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-               }
+               CTILOG_WARN(dout, "duplicate YMODEM packet received");
 
                _state++;
             }
             else
             {
-               if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-               }
+               CTILOG_ERROR(dout, "unexpected data (buf[0..2]) ("<< std::hex << std::setfill('0') <<
+                       std::setw(2) << (unsigned)buf[0] <<", "<<
+                       std::setw(2) << (unsigned)buf[1] <<", "<<
+                       std::setw(2) << (unsigned)buf[2] <<")"
+                       );
 
                setError();
             }

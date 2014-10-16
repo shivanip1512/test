@@ -104,64 +104,59 @@ CtiAnsiTable61& CtiAnsiTable61::operator=(const CtiAnsiTable61& aRef)
 //=========================================================================================================================================
 void CtiAnsiTable61::printResult( const string& deviceName )
 {
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 61  ========================" << endl;
-        dout << " ** Actual Load Profile Table ** "<<endl;
-        dout << "           LP Memory Length        "<<_lp_tbl.lp_memory_len<<endl;
-        dout << "           LP Flags:      "<<endl;
-        dout << "                   lp set1 inhibit ovf flags "<<(bool)_lp_tbl.lp_flags.lp_set1_inhibit_ovf_flag<<endl;
-        dout << "                   lp set2 inhibit ovf flags "<<(bool)_lp_tbl.lp_flags.lp_set2_inhibit_ovf_flag<<endl;
-        dout << "                   lp set3 inhibit ovf flags "<<(bool)_lp_tbl.lp_flags.lp_set3_inhibit_ovf_flag<<endl;
-        dout << "                   lp set4 inhibit ovf flags "<<(bool)_lp_tbl.lp_flags.lp_set4_inhibit_ovf_flag<<endl;
-        dout << "                   blk_end_read_flag         "<<(bool)_lp_tbl.lp_flags.blk_end_read_flag<<endl;
-        dout << "                   blk_end_pulse_flag        "<<(bool)_lp_tbl.lp_flags.blk_end_pulse_flag<<endl;
-        dout << "                   scalar_divisor_flag_set1  "<<(bool)_lp_tbl.lp_flags.scalar_divisor_flag_set1<<endl;
-        dout << "                   scalar_divisor_flag_set2  "<<(bool)_lp_tbl.lp_flags.scalar_divisor_flag_set2<<endl;
-        dout << "                   scalar_divisor_flag_set3  "<<(bool)_lp_tbl.lp_flags.scalar_divisor_flag_set3<<endl;
-        dout << "                   scalar_divisor_flag_set4  "<<(bool)_lp_tbl.lp_flags.scalar_divisor_flag_set4<<endl;
-        dout << "                   extended_int_status_flag  "<<(bool)_lp_tbl.lp_flags.extended_int_status_flag<<endl;
-        dout << "                   simple_int_status_flag    "<<(bool)_lp_tbl.lp_flags.simple_int_status_flag<<endl;
-        dout << "                   closure_status_flag       "<<(bool)_lp_tbl.lp_flags.closure_status_flag<<endl;
-        dout << "           LP Formats:      "<<endl;
-        dout << "                   inv_uint8_flag       "<<(bool)_lp_tbl.lp_fmats.inv_uint8_flag<<endl;
-        dout << "                   inv_uint16_flag      "<<(bool)_lp_tbl.lp_fmats.inv_uint16_flag<<endl;
-        dout << "                   inv_uint32_flag      "<<(bool)_lp_tbl.lp_fmats.inv_uint32_flag<<endl;
-        dout << "                   inv_int8_flag        "<<(bool)_lp_tbl.lp_fmats.inv_int8_flag<<endl;
-        dout << "                   inv_int16_flag       "<<(bool)_lp_tbl.lp_fmats.inv_int16_flag<<endl;
-        dout << "                   inv_int32_flag       "<<(bool)_lp_tbl.lp_fmats.inv_int32_flag<<endl;
-        dout << "                   inv_ni_fmat1_flag    "<<(bool)_lp_tbl.lp_fmats.inv_ni_fmat1_flag<<endl;
-        dout << "                   inv_ni_fmat2_flag    "<<(bool)_lp_tbl.lp_fmats.inv_ni_fmat2_flag<<endl;
-    }
+    itemList.add("LP Memory Length")          << _lp_tbl.lp_memory_len;
+
+    itemList <<"LP Flags";
+    itemList.add("lp set1 inhibit ovf flags") << (bool)_lp_tbl.lp_flags.lp_set1_inhibit_ovf_flag;
+    itemList.add("lp set2 inhibit ovf flags") << (bool)_lp_tbl.lp_flags.lp_set2_inhibit_ovf_flag;
+    itemList.add("lp set3 inhibit ovf flags") << (bool)_lp_tbl.lp_flags.lp_set3_inhibit_ovf_flag;
+    itemList.add("lp set4 inhibit ovf flags") << (bool)_lp_tbl.lp_flags.lp_set4_inhibit_ovf_flag;
+    itemList.add("blk_end_read_flag")         << (bool)_lp_tbl.lp_flags.blk_end_read_flag;
+    itemList.add("blk_end_pulse_flag")        << (bool)_lp_tbl.lp_flags.blk_end_pulse_flag;
+    itemList.add("scalar_divisor_flag_set1")  << (bool)_lp_tbl.lp_flags.scalar_divisor_flag_set1;
+    itemList.add("scalar_divisor_flag_set2")  << (bool)_lp_tbl.lp_flags.scalar_divisor_flag_set2;
+    itemList.add("scalar_divisor_flag_set3")  << (bool)_lp_tbl.lp_flags.scalar_divisor_flag_set3;
+    itemList.add("scalar_divisor_flag_set4")  << (bool)_lp_tbl.lp_flags.scalar_divisor_flag_set4;
+    itemList.add("extended_int_status_flag")  << (bool)_lp_tbl.lp_flags.extended_int_status_flag;
+    itemList.add("simple_int_status_flag")    << (bool)_lp_tbl.lp_flags.simple_int_status_flag;
+    itemList.add("closure_status_flag")       << (bool)_lp_tbl.lp_flags.closure_status_flag;
+
+    itemList <<"LP Formats";
+    itemList.add("inv_uint8_flag")            << (bool)_lp_tbl.lp_fmats.inv_uint8_flag;
+    itemList.add("inv_uint16_flag")           << (bool)_lp_tbl.lp_fmats.inv_uint16_flag;
+    itemList.add("inv_uint32_flag")           << (bool)_lp_tbl.lp_fmats.inv_uint32_flag;
+    itemList.add("inv_int8_flag")             << (bool)_lp_tbl.lp_fmats.inv_int8_flag;
+    itemList.add("inv_int16_flag")            << (bool)_lp_tbl.lp_fmats.inv_int16_flag;
+    itemList.add("inv_int32_flag")            << (bool)_lp_tbl.lp_fmats.inv_int32_flag;
+    itemList.add("inv_ni_fmat1_flag")         << (bool)_lp_tbl.lp_fmats.inv_ni_fmat1_flag;
+    itemList.add("inv_ni_fmat2_flag")         << (bool)_lp_tbl.lp_fmats.inv_ni_fmat2_flag;
+
     int offset = 0;
     for (int x = 0; x < 4; x++)
     {
         if (_lpDataSetUsed[x])
         {
-            printLPDataSetInfo(x,offset);
+            appendLPDataSetInfo(x, offset, itemList);
             offset += 1;
         }
     }
-}
-void CtiAnsiTable61::printLPDataSetInfo(int set, int offset )
-{
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "           LP SET "<<set+1<<" : "<<endl;
-        dout << "                   nbr blocks set             "<<_lp_tbl.lp_data_set_info[offset].nbr_blks_set<<endl;
-        dout << "                   nbr block intervals set    "<<_lp_tbl.lp_data_set_info[offset].nbr_blk_ints_set<<endl;
-        dout << "                   nbr channels set           "<<(int)(_lp_tbl.lp_data_set_info[offset].nbr_chns_set)<<endl;
-        dout << "                   max interval time set      "<<(int)(_lp_tbl.lp_data_set_info[offset].max_int_time_set)<<endl;
-    }
 
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 61") <<
+            endl <<"** Actual Load Profile Table **"<<
+            itemList
+            );
+}
+
+void CtiAnsiTable61::appendLPDataSetInfo(int set, int offset, Cti::FormattedList &itemList)
+{
+    itemList <<"LP SET "<< set+1;
+    itemList.add("nbr blocks set")          << _lp_tbl.lp_data_set_info[offset].nbr_blks_set;
+    itemList.add("nbr block intervals set") << _lp_tbl.lp_data_set_info[offset].nbr_blk_ints_set;
+    itemList.add("nbr channels set")        << _lp_tbl.lp_data_set_info[offset].nbr_chns_set;
+    itemList.add("max interval time set")   << _lp_tbl.lp_data_set_info[offset].max_int_time_set;
 }
 
 UINT32 CtiAnsiTable61::getLPMemoryLength()

@@ -43,12 +43,6 @@ CtiTblPAO& CtiTblPAO::operator=(const CtiTblPAO& aRef)
         _typeStr = aRef._typeStr;
         _description = aRef._description;
         _disableFlag = aRef._disableFlag;
-
-        /* WHAT WAS THIS CHECKPOINT FOR?
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        } */
     }
     return *this;
 }
@@ -312,8 +306,7 @@ void CtiTblPAO::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["paobjectid"] >> _paObjectID;
@@ -336,18 +329,21 @@ void CtiTblPAO::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["paostatistics"] >> _paostatistics;
 }
 
-void CtiTblPAO::DumpData()
+std::string CtiTblPAO::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << endl;
-    dout << "PAO Id                                      : " << _paObjectID << endl;
-    dout << "Name                                        : " << _name << endl;
-    dout << "Description                                 : " << _description << endl;
-    dout << "Category                                    : " << _category << endl;
-    dout << "Class                                       : " << _class << endl;
-    dout << "Type                                        : " << _type << endl;
-    dout << "Disabled                                    : " << (_disableFlag ? "Yes" : "No") << endl;
-    dout << "Statistics                                  : " << getStatisticsStr() << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTblPAO";
+    itemList.add("PAO Id")      << _paObjectID;
+    itemList.add("Name")        << _name;
+    itemList.add("Description") << _description;
+    itemList.add("Category")    << _category;
+    itemList.add("Class")       << _class;
+    itemList.add("Type")        << _type;
+    itemList.add("Disabled")    << _disableFlag;
+    itemList.add("Statistics")  << getStatisticsStr();
+
+    return itemList.toString();
 }
 
 

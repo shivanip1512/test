@@ -12,6 +12,7 @@
 #include "numstr.h"
 #include "cti_asmc.h"
 #include "streamSocketListener.h"
+#include "std_helper.h"
 
 #define SCADA_CONNECT_TIMEOUT  5000
 
@@ -29,8 +30,8 @@ using std::set;
 using Cti::Timing::Chrono;
 using Cti::StreamSocketConnection;
 using Cti::StreamConnectionException;
-
-#define FILELINE     " " << __FILE__ << " (" << __LINE__ << ")"
+using Cti::arrayToRange;
+using Cti::Logging::Range::Hex::operator<<;
 
 CtiPortShareIP::CtiPortShareIP(CtiPortSPtr myPort, INT listenPort) :
     CtiPortShare(myPort,listenPort),
@@ -66,9 +67,7 @@ CtiPortShareIP::~CtiPortShareIP()
 
     if( !isSet(RUNCOMPLETE) )
     {
-        //If you see this, and experience a deadlock, this is probably to blame.
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << getIDString() << " - *** CHECKPOINT *** PortShare refused to shutdown after 5 seconds " << FILELINE << endl;
+        CTILOG_ERROR(dout, getIDString() <<" - PortShare refused to shutdown after 5 seconds");
     }
 }
 
@@ -90,8 +89,6 @@ void CtiPortShareIP::inThread()
     unsigned long remainderbytes;
     Cti::StreamSocketListener scadaListenNexus; // Presents the IP Port for scada to connect to.
 
-    OUTMESS *OutMessage = NULL;
-
     string thread_name = "PSin " + CtiNumStr(_port->getPortID()).zpad(4);
     SetThreadName(-1, thread_name.c_str());
 
@@ -112,10 +109,7 @@ void CtiPortShareIP::inThread()
                             set(CtiPortShareIP::INWAITFOROUT, false);  // outThread might be broken - we will allow a new read from scada.
                             decRequestCount();                         // The last request is assumed timed out!
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << getIDString() << " - inThread timed out waiting for synchronization flag. " << FILELINE << endl;
-                            }
+                            CTILOG_WARN(dout, getIDString() <<" - Timed out waiting for synchronization flag");
 
                             //  Send an error message back to the SCADA system...
                             Buffer[0] = 0x7d;
@@ -125,16 +119,12 @@ void CtiPortShareIP::inThread()
                             //    reply, and he's the only other thread that can write
                             if( _scadaNexus.write(Buffer, 2, Chrono::seconds(10)) != 2 )
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " " << getIDString() << " - SCADA Nexus \"no reply\" error send Failed " << FILELINE << endl;
-                                }
+                                CTILOG_ERROR(dout, getIDString() <<" - SCADA Nexus \"no reply\" error send Failed");
                                 _scadaNexus.close();
                             }
                             else if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << getIDString() << " - Sent \"no reply\" error to SCADA system " << FILELINE << endl;
+                                CTILOG_DEBUG(dout, getIDString() <<" - Sent \"no reply\" error to SCADA system");
                             }
 
                             _scadaNexus.flushInput();
@@ -149,10 +139,8 @@ void CtiPortShareIP::inThread()
                 {
                     if( ! scadaListenNexus.create(getIPPort()) )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getIDString() << " - inThread couldn't create scadaListenNexus - sleeping 5 seconds " << FILELINE << endl;
-                        }
+                        CTILOG_ERROR(dout, getIDString() <<" - Couldn't create scadaListenNexus - sleeping 5 seconds");
+
                         //  sanity check - 5 second delay keeps us from an insanely tight loop if we break repeatedly
                         sleep(5000);
                     }
@@ -164,8 +152,7 @@ void CtiPortShareIP::inThread()
                 {
                     if( getDebugLevel(DEBUG_SCADA_CONNECTION) )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << getIDString() << " - inThread is looking for a new SCADA connection. Loops = " << loopsSinceRead << ". " << FILELINE << endl;
+                        CTILOG_DEBUG(dout, getIDString() <<" - looking for a new SCADA connection. Loops = "<< loopsSinceRead);
                     }
 
                     std::auto_ptr<StreamSocketConnection> newNexus = scadaListenNexus.accept(StreamSocketConnection::ReadExactly, Chrono::seconds(1), &_shutdownEvent);
@@ -174,8 +161,7 @@ void CtiPortShareIP::inThread()
                     {
                         if( getDebugLevel(DEBUG_SCADA_CONNECTION) )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getIDString() << " - inThread got a new SCADA connection - copying tmpNexus to _scadaNexus " << FILELINE << endl;
+                            CTILOG_DEBUG(dout, getIDString() <<" - got a new SCADA connection, copying tmpNexus to _scadaNexus ");
                         }
 
                         _scadaNexus.close();      //  make sure the old/invalid socket is closed
@@ -239,34 +225,18 @@ void CtiPortShareIP::inThread()
                             }
                             catch( const StreamConnectionException &ex )
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << getIDString() << " - **** ERROR **** " << ex.what() << " " << FILELINE << endl;
+                                CTILOG_EXCEPTION_ERROR(dout, ex, getIDString() <<" - scadaNexus read failed");
                             }
 
                             if( dataReady )
                             {
                                 // Get an OutMessage.
-                                if( (OutMessage = CTIDBG_new OUTMESS) == NULL )
-                                {
-                                    // This is bad.
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " " << getIDString() << " - **** Checkpoint **** could not allocate CTIDBG_new OUTMESS for inThread " << FILELINE << endl;
-                                    }
-                                    return;
-                                }
+                                OUTMESS *OutMessage = new OUTMESS;
 
                                 if( getDebugLevel(DEBUG_INPUT_FROM_SCADA) )  // Debug the inbound from SCADA
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " " << getIDString() << " - read " << bytesRead << " SCADA bytes: ";
-
-                                    for( int byteitr = 0; byteitr < bytesRead; byteitr++ )
-                                    {
-                                        dout << string( CtiNumStr((int)Buffer[byteitr]).hex().zpad(2) ) << " ";
-                                    }
-
-                                    dout << endl;
+                                    CTILOG_DEBUG(dout, getIDString() <<" - read "<< bytesRead <<" SCADA bytes:"<<
+                                            endl << arrayToRange(Buffer, bytesRead));
                                 }
 
                                 set(CtiPortShareIP::INWAITFOROUT, true);     // reset the SYNC bool to indicate we've done a read this makes the inThread wait on us.
@@ -320,8 +290,7 @@ void CtiPortShareIP::inThread()
                                     // broadcast message - tell inThread to read again, we expect no reply from this type of message
                                     if( getDebugLevel(DEBUG_SPECIAL_MESSAGES) )
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " " << getIDString() << " - Intercepted RTU broadcast message " << FILELINE << endl;
+                                        CTILOG_DEBUG(dout, getIDString() <<" - Intercepted RTU broadcast message");
                                     }
 
                                     set(CtiPortShareIP::INWAITFOROUT, false);     // set the SYNC bool so inThread does not wait.
@@ -333,8 +302,7 @@ void CtiPortShareIP::inThread()
                                 {
                                     if( getDebugLevel(DEBUG_SPECIAL_MESSAGES) )
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " " << getIDString() << " - Intercepted time sync message " << FILELINE << endl;
+                                        CTILOG_DEBUG(dout, getIDString() <<" - Intercepted time sync message");
                                     }
 
                                     OutMessage->EventCode |= TSYNC;
@@ -346,10 +314,7 @@ void CtiPortShareIP::inThread()
                                 //  ... and put it on the correct port's queue
                                 if(getPort()->writeQueue(OutMessage))
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " " << getIDString() << " - error writing to queue **** " << FILELINE << endl;
-                                    }
+                                    CTILOG_ERROR(dout, getIDString() <<" - error writing to queue");
 
                                     set(CtiPortShareIP::INWAITFOROUT, false);  //  we couldn't write, so we're not waiting for a response
                                     sleep(2000);
@@ -359,22 +324,16 @@ void CtiPortShareIP::inThread()
                             }
                             else
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " " << getIDString() << " - failed to read header-specified rest of IDLC message " << FILELINE << endl;
-                                    dout << "Buffer[3] = " << (int)Buffer[3] << endl;
-                                    dout << "Actually read " << bytesRead << " bytes" << endl;
-                                }
+                                CTILOG_ERROR(dout, getIDString() <<" - failed to read header-specified rest of IDLC message."<<
+                                        endl <<"Buffer[3] = "<< (int)Buffer[3] <<", Actually read "<< bytesRead <<" bytes");
+
                                 //  we're broken, try to read some more
                                 set(CtiPortShareIP::INWAITFOROUT, false);     // set the SYNC bool to allow inthread to run.
                             }
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << getIDString() << " - non-IDLC message intercepted " << FILELINE << endl;
-                            }
+                            CTILOG_WARN(dout, getIDString() <<" - non-IDLC message intercepted");
                         }
                     }
                     else
@@ -384,31 +343,22 @@ void CtiPortShareIP::inThread()
 
                         if( !_scadaNexus.isValid() )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getIDString() << " - connection to _scadaNexus has closed " << FILELINE << endl;
+                            CTILOG_INFO(dout, getIDString() <<" - connection to _scadaNexus has closed");
                         }
                         else if( getDebugLevel(DEBUG_NO_INPUT) )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getIDString() << " - no input from _scadaNexus.read " << FILELINE << endl;
+                            CTILOG_DEBUG(dout, getIDString() <<" - no input from _scadaNexus.read()");
                         }
-
                     }
                 }
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getIDString() << " - waiting to connect to returnNexus " << FILELINE << endl;
-                }
+                CTILOG_INFO(dout, getIDString() <<" - waiting to connect to returnNexus");
 
                 if( !sleep(5000) )   // sleep until outThread interrupts us with a INWAITFOROUT flag.
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << getIDString() << " - timed out waiting to connect to returnNexus" << FILELINE << endl;
-                    }
+                    CTILOG_WARN(dout, getIDString() <<" - timed out waiting to connect to returnNexus");
 
                     if( _scadaNexus.isValid() )
                     {
@@ -419,17 +369,11 @@ void CtiPortShareIP::inThread()
         }
         catch( const StreamConnectionException &ex )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getIDString() << " - **** ERROR **** " << ex.what() <<  " " << FILELINE << endl;
-            }
+            CTILOG_EXCEPTION_ERROR(dout, ex, getIDString());
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getIDString() << " - **** EXCEPTION Checkpoint **** " << FILELINE << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, getIDString());
         }
     } // end of while
 }
@@ -510,10 +454,8 @@ void CtiPortShareIP::outThread()
                     {
                         //  This cannot be
                         set(CtiPortShareIP::INWAITFOROUT, false);
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << getIDString() << " - **** Checkpoint **** " << FILELINE << endl;
-                        }
+
+                        CTILOG_ERROR(dout, getIDString() <<" - Internal connection failed to read InMessage");
 
                         return;
                     }
@@ -538,8 +480,7 @@ void CtiPortShareIP::outThread()
                     {
                         if( getRequestCount() == 0 && !_sequenceFailReported)        // This means something went wrong between submittal and response.
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getIDString() << " - port sharing sequence problem: Unexpected field response. " << getRequestCount() << " pending operations. " << FILELINE << endl;
+                            CTILOG_ERROR(dout, getIDString() <<" - port sharing sequence problem: Unexpected field response. "<< getRequestCount() <<" pending operations.");
                         }
 
                         decRequestCount();
@@ -547,9 +488,9 @@ void CtiPortShareIP::outThread()
                         {
                             if(!_sequenceFailReported)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << getIDString() << " - port sharing sequence problem: Multiple responses pending. " << getRequestCount() << " pending operations. " << FILELINE << endl;
+                                CTILOG_ERROR(dout, getIDString() <<" - port sharing sequence problem: Multiple responses pending. "<< getRequestCount() <<" pending operations.");
                             }
+
                             _sequenceFailReported = true;      // We are OUT of sequence!  Do not report additional failures.
                         }
                         else
@@ -559,13 +500,8 @@ void CtiPortShareIP::outThread()
 
                         if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )  // Debug the outbound back to SCADA
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getIDString() << " - Write " << InMessage.InLength << " to SCADA bytes: ";
-                            for( int byteitr = 0; byteitr < InMessage.InLength; byteitr++ )
-                            {
-                                dout << string( CtiNumStr((int)((BYTE*)(InMessage.IDLCStat + 11))[byteitr]).hex().zpad(2) ) << " ";
-                            }
-                            dout << endl;
+                            CTILOG_DEBUG(dout, getIDString() <<" - Write "<< InMessage.InLength <<" to SCADA bytes: "<<
+                                    endl << arrayToRange(&InMessage.IDLCStat[11], InMessage.InLength));
                         }
 
                         //  is this a CCU-711?  This is shaky, since there's no guarantee that this should be set to 0...
@@ -589,69 +525,50 @@ void CtiPortShareIP::outThread()
 
                             if( _scadaNexus.write((char*)InMessage.IDLCStat, InMessage.InLength, Chrono::seconds(10)) != InMessage.InLength )
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " " << getIDString() << " - SCADA Nexus send Failed" << FILELINE << endl;
-                                }
+                                CTILOG_ERROR(dout, getIDString() <<" - SCADA Nexus send Failed");
                                 _scadaNexus.close();
                             }
                             else if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << getIDString() << " - Successful write back to SCADA " << FILELINE << endl;
+                                CTILOG_DEBUG(dout, getIDString() <<" - Successful write back to SCADA");
                             }
                         }
                         else  // if InMessage.IDLCStat[11] == 0x7e OR InMessage.IDLCStat[13] == HDLC_UD
                         {
                             if( _scadaNexus.write((char*)(InMessage.IDLCStat + 11), InMessage.InLength, Chrono::seconds(10)) != InMessage.InLength )
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " " << getIDString() << " - SCADA Nexus send Failed" << FILELINE << endl;
-                                }
+                                CTILOG_ERROR(dout, getIDString() <<" - SCADA Nexus send Failed");
                                 _scadaNexus.close();
                             }
                             else if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << getIDString() << " - Successful write back to SCADA " << FILELINE << endl;
+                                CTILOG_DEBUG(dout, getIDString() <<" - Successful write back to SCADA");
                             }
                         }
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << getIDString() << " - Attempted send on invalid SCADA Nexus " << FILELINE << endl;
+                        CTILOG_ERROR(dout, getIDString() <<" - Attempted send on invalid SCADA Nexus");
                     }
                 }
                 else if( !isSet(CtiThread::SHUTDOWN) )//Ignore this if we are shutting down
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << getIDString() << " - !!!! - outThread unable to create listenNexus" << FILELINE << endl;
-                    }
+                    CTILOG_ERROR(dout, getIDString() <<" - unable to create listenNexus");
                     sleep(1000);
                 }
             }
             catch(RWCancellation& rwx)
             {
                 interrupt(CtiThread::SHUTDOWN);    // Close it out.
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getIDString() << " - Port Share IP OutThread cancellation - " << rwx.why() << endl;
-                }
+                CTILOG_EXCEPTION_WARN(dout, rwx, getIDString() <<" - Port Share IP OutThread cancellation");
             }
             catch( const StreamConnectionException &ex )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getIDString() << " - **** ERROR **** " << ex.what() << " " << FILELINE << endl;
+                CTILOG_EXCEPTION_ERROR(dout, ex, getIDString());
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getIDString() << " - **** EXCEPTION Checkpoint **** " << FILELINE << endl;
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, getIDString());
             }
         }
 
@@ -659,10 +576,7 @@ void CtiPortShareIP::outThread()
     }
     catch(RWCancellation& rwx)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getIDString() << " - Port Share IP OutThread cancellation - " << rwx.why() << endl;
-        }
+        CTILOG_EXCEPTION_WARN(dout, rwx, getIDString() <<" - Port Share IP OutThread cancellation");
     }
 }
 
@@ -684,10 +598,7 @@ void CtiPortShareIP::run()
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getIDString() << " - **** EXCEPTION Checkpoint **** " << FILELINE << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, getIDString());
     }
 }
 
@@ -724,8 +635,7 @@ void CtiPortShareIP::shutDown()
         {
             if( getDebugLevel(DEBUG_THREAD) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getIDString() << " - Port Share OutThread did not shutdown gracefully.  Will attempt a forceful shutdown. " << FILELINE << endl;
+                CTILOG_WARN(dout, getIDString() <<" - Port Share OutThread did not shutdown gracefully. Will attempt a forceful shutdown.");
             }
             _outThread.terminate();
         }
@@ -734,26 +644,18 @@ void CtiPortShareIP::shutDown()
         {
             if( getDebugLevel(DEBUG_THREAD) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getIDString() << " - Port Share InThread did not shutdown gracefully.  Will attempt a forceful shutdown. " << FILELINE << endl;
+                CTILOG_WARN(dout, getIDString() <<" - Port Share InThread did not shutdown gracefully. Will attempt a forceful shutdown.");
             }
             _inThread.terminate();
         }
     }
-    catch(RWxmsg &msg)
+    catch(const RWxmsg &ex)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getIDString() << " - **** EXCEPTION Checkpoint **** " << FILELINE << endl;
-            dout << msg.why() << endl;
-        }
+        CTILOG_EXCEPTION_ERROR(dout, ex, getIDString());
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getIDString() << " - **** EXCEPTION Checkpoint **** " << FILELINE << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, getIDString());
     }
 
 }

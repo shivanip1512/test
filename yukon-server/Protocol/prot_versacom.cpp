@@ -176,13 +176,6 @@ YukonError_t CtiProtocolVersacom::assembleCommandToMessage()
                 }
                 else
                 {
-                    #if 0
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << hex << setw(2) << (int)_vst.back()->VData.Data[i / 2] << endl;
-                    }
-                    #endif
                     setNibble ( _vst.back()->Nibbles++, _vst.back()->VData.Data[i / 2] >> 4);
                 }
             }
@@ -219,10 +212,7 @@ YukonError_t CtiProtocolVersacom::assembleCommandToMessage()
                 setNibble ( _vst.back()->Nibbles++, offtime);
             }
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_INFO(dout, "VEX_SERVICE");
 
             break;
         }
@@ -629,8 +619,7 @@ YukonError_t CtiProtocolVersacom::assembleAddressing()
                  *  OK, if the user types serial and doesn't specify an address, what should happen???
                  *  Let's make sure we don't do anything
                  */
-                RWMutexLock::LockGuard  guard(coutMux);
-                cout << "**** ADDRESSING ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Serial not set");
 
                 status = ClientErrors::Address;
             }
@@ -1382,15 +1371,9 @@ YukonError_t CtiProtocolVersacom::parseRequest(CtiCommandParser  &parse, const V
         }
     default:
         {
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unsupported command on versacom route Command = " << parse.getCommand() << endl;
-            }
+            CTILOG_ERROR(dout, "Unsupported command on versacom route Command = "<< parse.getCommand());
 
             status = ClientErrors::InvalidRequest;
-
-            break;
         }
     }
 
@@ -1402,17 +1385,20 @@ void CtiProtocolVersacom::dumpMessageBuffer()
 {
     if(PROTOCOL_DEBUG_NIBBLES & gConfigParms.getValueAsULong("PROTOCOL_VERSACOM_DEBUG", 0, 0))
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        Cti::StreamBuffer outLog;
+
+        outLog << endl << hex;
 
         for(int i = 0; i < (_vst.back()->Nibbles * 2) && i < MAX_VERSACOM_MESSAGE; i++ )
         {
             if(i && !(i % 8))
             {
-                dout << endl;
+                outLog << endl;
             }
-            dout << hex << setw(2) << (INT)(_vst.back()->Message[i]) << " ";
+            outLog << setw(2) << (INT)(_vst.back()->Message[i]) <<" ";
         }
-        dout << dec << endl;
+
+        CTILOG_DEBUG(dout, outLog);
     }
 }
 
@@ -1598,10 +1584,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         }
         else
         {
-           {
-              CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << CtiTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("lcrmode") << "\" for \"putconfig lcrmode\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-           }
+           CTILOG_ERROR(dout, "invalid value \""<< parse.getsValue("lcrmode") <<"\" for \"putconfig lcrmode\"");
         }
     }
 
@@ -1625,10 +1608,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         }
         else
         {
-           {
-              CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << CtiTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("eclp") << "\" for \"putconfig eclp\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-           }
+           CTILOG_ERROR(dout, "invalid value \""<< parse.getsValue("eclp") <<"\" for \"putconfig eclp\"");
         }
     }
 
@@ -1647,10 +1627,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         }
         else
         {
-           {
-              CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << CtiTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("gold") << "\" for \"putconfig gold\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-           }
+           CTILOG_ERROR(dout, "invalid value \""<< parse.getsValue("gold") <<"\" for \"putconfig gold\"");
         }
     }
 
@@ -1669,10 +1646,7 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
         }
         else
         {
-           {
-              CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << CtiTime() << " **** Checkpoint - invalid value \"" << parse.getsValue("silver") << "\" for \"putconfig silver\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-           }
+            CTILOG_ERROR(dout, "invalid value \""<< parse.getsValue("silver") <<"\" for \"putconfig silver\"");
         }
     }
 
@@ -1935,8 +1909,7 @@ INT CtiProtocolVersacom::assembleControl(CtiCommandParser  &parse, const VSTRUCT
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Unsupported command on versacom route Command = " << parse.getCommand() << endl;
+        CTILOG_ERROR(dout, "Unsupported command on versacom route Command = "<< parse.getCommand());
     }
 
     return status;
@@ -2107,11 +2080,9 @@ bool CtiProtocolVersacom::isConfigFullAddressValid(LONG sn) const
                 vcrangestr = trim_left(vcrangestr, " ");
                 if(loopcnt++ > 256)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** ERROR **** Problem found with configuration item VERSACOM_FULL_ADDRESS_SERIAL_RANGES : \"" << gConfigParms.getValueAsString("VERSACOM_FULL_ADDRESS_SERIAL_RANGES") << "\"" << endl;
-                        break;
-                    }
+                    CTILOG_ERROR(dout, "Problem found with configuration item VERSACOM_FULL_ADDRESS_SERIAL_RANGES : \""<< gConfigParms.getValueAsString("VERSACOM_FULL_ADDRESS_SERIAL_RANGES") <<"\"");
+
+                    break;
                 }
             }
         }

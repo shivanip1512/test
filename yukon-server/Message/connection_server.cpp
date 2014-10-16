@@ -45,7 +45,7 @@ CtiServerConnection::~CtiServerConnection()
     }
     catch(...)
     {
-        logException( __FILE__, __LINE__, "", "error cleaning the connection." );
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - error cleaning the connection.");
     }
 }
 
@@ -88,35 +88,36 @@ bool CtiServerConnection::establishConnection()
 
         if( ! ackMessage.get() )
         {
-            logStatus( __FUNCTION__, "timeout while waiting for client acknowledge message" );
+            CTILOG_WARN(dout, who() << " - timeout while waiting for client acknowledge message");
             return false;
         }
 
         if( ackMessage->getCMSType() != MessageType::clientAck )
         {
-            logStatus( __FUNCTION__, "unexpected message type: \"" + ackMessage->getCMSType() + "\"" );
+            CTILOG_ERROR(dout, who() << " - unexpected message type: \"" << ackMessage->getCMSType() << "\"");
             return false;
         }
 
         if( ! ackMessage->getCMSReplyTo() )
         {
-            logStatus( __FUNCTION__, "received null ReplyTo destination"
-                                     ", expected: " + _producer->getDestPhysicalName() );
+            CTILOG_ERROR(dout, who() << " - received null ReplyTo destination, expected: " << _producer->getDestPhysicalName() );
             return false;
         }
 
         if( destPhysicalName(*ackMessage->getCMSReplyTo()) != _producer->getDestPhysicalName() )
         {
-            logStatus( __FUNCTION__, "received invalid ReplyTo destination: " + destPhysicalName(*ackMessage->getCMSReplyTo()) +
-                                     ", expected: " + _producer->getDestPhysicalName() );
+            CTILOG_ERROR(dout, who() << " - received invalid ReplyTo destination: " << destPhysicalName(*ackMessage->getCMSReplyTo())
+                    << ", expected: " << _producer->getDestPhysicalName() );
+
             return false;
         }
 
         _consumer->setMessageListener( _messageListener.get() );
 
-        logStatus( __FUNCTION__, "successfully connected.\n"
-                "inbound destination  : " + _consumer->getDestPhysicalName() + "\n"
-                "outbound destination : " + _producer->getDestPhysicalName());
+        CTILOG_INFO(dout, who() << " - successfully connected"
+                << "\ninbound  : " << _consumer->getDestPhysicalName()
+                << "\noutbound : " << _producer->getDestPhysicalName()
+                );
 
         return true;
     }
@@ -124,13 +125,13 @@ bool CtiServerConnection::establishConnection()
     {
         forceTermination();
 
-        logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
+        CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - Failed to establish connection");
 
         return false;
     }
     catch( ... )
     {
-        logException( __FILE__, __LINE__ );
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - Failed to establish connection");
 
         throw;
     }

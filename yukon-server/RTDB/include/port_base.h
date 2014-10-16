@@ -8,7 +8,7 @@
 
 #include "dev_base.h"
 #include "dlldefs.h"
-#include "logger.h"
+#include "logManager.h"
 #include "tbl_port_base.h"
 #include "tbl_pao_lite.h"
 #include "tbl_paoexclusion.h"
@@ -74,10 +74,9 @@ public:
     virtual YukonError_t traceXfer(CtiXfer& Xfer, std::list< CtiMessage* > &traceList, CtiDeviceSPtr Dev, YukonError_t status = ClientErrors::None) const;
 
     static INT traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, std::list< CtiMessage* > &traceList);
-    INT logBytes(BYTE *Message, ULONG Length) const;
     void fileTraces(std::list< CtiMessage* > &traceList) const;
 
-    CtiLogger& getPortLog() { return _portLog; }
+    Cti::Logging::LoggerPtr& getPortLog() { return _portLog; }
 
     /* virtuals to make the world all fat and happy */
     virtual bool   isViable();
@@ -253,8 +252,9 @@ protected:
     ULONG             _connectedDeviceUID;    // A unique reproducable indicator for this device/connection etc.
     BOOL              _tapPort;               // This port has a TAP terminal connected to it!
 
+    mutable Cti::Logging::LoggerPtr _portLog;
+    Cti::Logging::LogManager _portLogManager;
 
-    mutable CtiLogger _portLog;
     mutable CtiMutex  _classMutex;
 
     // Port pooling constructs.

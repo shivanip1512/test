@@ -36,10 +36,13 @@ LONG GetMaxLMControl(long pao)
     {
         rdr >> id;
     }
+    else if( ! rdr.isValid() )
+    {
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
     else
     {
-        RWMutexLock::LockGuard  guard(coutMux);
-        cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
     }
 
     return id;
@@ -76,10 +79,13 @@ LONG LMControlHistoryIdGen(bool force)
             {
                 rdr >> tempid;
             }
+            else if( ! rdr.isValid() )
+            {
+                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+            }
             else
             {
-                RWMutexLock::LockGuard  coutGuard(coutMux);
-                cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
             }
 
             if(tempid >= id)
@@ -94,11 +100,7 @@ LONG LMControlHistoryIdGen(bool force)
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Unable to acquire mutex for LMControlHistoryGen" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire mutex for LMControlHistoryGen");
     }
 
     return(tempid);
@@ -124,8 +126,7 @@ LONG VerificationSequenceGen(bool force, int force_value)
         {
             if( !(trycnt % 10) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << " **** Checkpoint: unable to acquire mux in verificationsequencegen, trycnt = " << trycnt << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Unable to acquire mutex, trycnt = " << trycnt);
             }
 
             Sleep(500);
@@ -144,10 +145,7 @@ LONG VerificationSequenceGen(bool force, int force_value)
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - force_value < vs_id (" << force_value << " < " << vs_id << ") in VerificationSequenceGen() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "force_value < vs_id (" << force_value << " < " << vs_id << ")");
                 }
             }
             else
@@ -163,10 +161,13 @@ LONG VerificationSequenceGen(bool force, int force_value)
                     {
                         rdr >> tempid;
                     }
+                    else if( ! rdr.isValid() )
+                    {
+                        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+                    }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
                     }
 
                     if( tempid >= vs_id )
@@ -183,11 +184,7 @@ LONG VerificationSequenceGen(bool force, int force_value)
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unable to acquire mutex for VerificationSequenceGen" << endl;
-            }
+            CTILOG_ERROR(dout, "Unable to acquire mutex for VerificationSequenceGen");
         }
     }
 
@@ -229,6 +226,8 @@ int DynamicPaoStatisticsIdGen()
         }
         else
         {
+            CTILOG_ERROR(dout, "DB read "<< (rdr.isValid() ? "returned no rows":"failed") <<" for SQL query: "<< rdr.asString());
+
             throw std::runtime_error("invalid DB reader in DynamicPaoStatisticsIdGen()");
         }
     }
@@ -256,10 +255,13 @@ __int64 ChangeIdGen(bool force)
         {
             rdr >> tempid;
         }
+        else if( ! rdr.isValid() )
+        {
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
         else
         {
-            RWMutexLock::LockGuard  coutGuard(coutMux);
-            cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
         }
 
         if(tempid >= id)
@@ -291,10 +293,13 @@ INT SystemLogIdGen()
         {
             rdr >> id;
         }
+        else if( ! rdr.isValid() )
+        {
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
         else
         {
-            RWMutexLock::LockGuard  guard(coutMux);
-            cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
         }
 
         init_id = TRUE;
@@ -325,10 +330,13 @@ INT CCEventActionIdGen(LONG capBankPointId)
     {
         rdr >> id;
     }
+    else if( ! rdr.isValid() )
+    {
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
     else
     {
-        RWMutexLock::LockGuard  guard(coutMux);
-        cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
     }
 
     return id;
@@ -352,10 +360,13 @@ INT CCEventLogIdGen()
         {
             rdr >> id;
         }
+        else if( ! rdr.isValid() )
+        {
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
         else
         {
-            RWMutexLock::LockGuard  guard(coutMux);
-            cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
         }
 
         init_id = TRUE;
@@ -383,10 +394,13 @@ INT CCEventSeqIdGen()
         {
             rdr >> id;
         }
+        else if( ! rdr.isValid() )
+        {
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
         else
         {
-            RWMutexLock::LockGuard  guard(coutMux);
-            cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
         }
 
         init_id = TRUE;
@@ -409,9 +423,7 @@ INT SynchronizedIdGen(string name, int values_needed)
 
         if ( ! connection.isValid() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+            CTILOG_ERROR(dout, "Invalid Connection to Database");
             return 0;
         }
 
@@ -434,14 +446,17 @@ INT SynchronizedIdGen(string name, int values_needed)
 
                 rdr.execute();
 
-                if(rdr() && rdr.isValid())
+                if(rdr())
                 {
                     rdr >> last;
                 }
+                else if( ! rdr.isValid() )
+                {
+                    CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+                }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** Problem reading sequence number: " << name << endl;
+                    CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
                 }
             }
         }
@@ -674,13 +689,13 @@ LONG GetPAOIdOfPoint(long pid)
     {
         rdr >> id;
     }
-    else if(isDebugLudicrous())
+    else if( ! rdr.isValid() )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " " << sql << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else
+    {
+        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
     }
 
     return id;
@@ -703,13 +718,13 @@ INT GetPIDFromDeviceAndOffset(int device, int offset)
     {
         rdr >> id;
     }
-    else if(isDebugLudicrous())
+    else if( ! rdr.isValid() )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " " << sql << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else
+    {
+        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
     }
 
     return id;
@@ -742,13 +757,13 @@ INT GetPIDFromDeviceAndControlOffset(int device, int offset)
     {
         rdr >> id;
     }
-    else if(isDebugLudicrous())
+    else if( ! rdr.isValid() )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " " << sql << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else
+    {
+        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
     }
 
     return id;
@@ -774,13 +789,13 @@ INT GetPIDFromDeviceAndOffsetAndType(int device, int offset, string &type)
     {
         rdr >> id;
     }
-    else if(isDebugLudicrous())
+    else if( ! rdr.isValid() )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " " << sql << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else
+    {
+        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
     }
 
     return id;
@@ -929,12 +944,12 @@ int threadAbortFlag = 0;
 HANDLE hTapTapTap = NULL;
 
 
-
-std::string ShowStack( HANDLE hThread, CONTEXT& c ); // dump a stack
-std::string enumAndLoadModuleSymbols( HANDLE hProcess, DWORD pid );
-std::string fillModuleList( ModuleList& modules, DWORD pid, HANDLE hProcess );
-bool        fillModuleListTH32( ModuleList& modules, DWORD pid );
-std::string fillModuleListPSAPI( ModuleList& modules, DWORD pid, HANDLE hProcess );
+void autopsy_to_sstream       (std::ostringstream& out, const char *calleefile, int calleeline);
+void ShowStack                (std::ostringstream& out, HANDLE hThread, CONTEXT& c ); // dump a stack
+void enumAndLoadModuleSymbols (std::ostringstream& out, HANDLE hProcess, DWORD pid );
+void fillModuleList           (std::ostringstream& out, ModuleList& modules, DWORD pid, HANDLE hProcess );
+bool fillModuleListTH32       ( ModuleList& modules, DWORD pid );
+void fillModuleListPSAPI      (std::ostringstream& out, ModuleList& modules, DWORD pid, HANDLE hProcess );
 
 static bool stinit = false;
 
@@ -950,30 +965,18 @@ typedef struct _MODULEINFO
 
 void autopsy(const char *calleefile, int calleeline)
 {
-    std::string info = autopsy_as_string(calleefile, calleeline);
-
-    CtiLockGuard<CtiLogger> dout_guard(dout, 10000);
-
-    if( dout_guard.isAcquired() )
-    {
-        dout << info;
-    }
-    else    // This is a bit rough!
-    {
-        dout << info;
-        dout.flush();
-    }
+    std::ostringstream out;
+    autopsy_to_sstream(out, calleefile, calleeline);
+    CTILOG_INFO(dout, out);
 }
 
-std::string autopsy_as_string(const char *calleefile, int calleeline)
+void autopsy_to_sstream(std::ostringstream& out, const char *calleefile, int calleeline)
 {
     HANDLE hThread;
     CONTEXT c;
 
     try
     {
-        std::ostringstream out;
-
         DuplicateHandle( GetCurrentProcess(), GetCurrentThread(), GetCurrentProcess(), &hThread, 0, false, DUPLICATE_SAME_ACCESS );
         ::memset( &c, '\0', sizeof c );
         c.ContextFlags = CONTEXT_FULL;
@@ -983,34 +986,25 @@ std::string autopsy_as_string(const char *calleefile, int calleeline)
         if( ! GetThreadContext( hThread, &c ) )
         {
             out << "GetThreadContext(): gle = " << gle << endl;
-
-            return out.str();
+            return;
         }
 
         out << endl << CtiTime() << " **** STACK TRACE **** called from " << calleefile << " line: " << calleeline << endl;
         out << endl << "Thread 0x" << hex << GetCurrentThreadId() << dec << "  " << GetCurrentThreadId() << endl;
-        out << ShowStack( hThread, c ) << endl;
-        out << CtiTime() << " **** STACK TRACE ENDS ****" << endl << endl ;
+        ShowStack(out, hThread, c );
+        out << endl << CtiTime() << " **** STACK TRACE ENDS ****" << endl << endl ;
 
         CloseHandle( hThread );
-
-        return out.str();
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        return "Exception thrown while generating stack trace";
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+        out << "Exception thrown while generating stack trace";
     }
 }
 
-std::string ShowStack( HANDLE hThread, CONTEXT& c )
+void ShowStack(std::ostringstream& out, HANDLE hThread, CONTEXT& c )
 {
-    std::ostringstream out;
-
     HINSTANCE hImagehlpDll = NULL;
 
     {
@@ -1021,7 +1015,7 @@ std::string ShowStack( HANDLE hThread, CONTEXT& c )
         if( hImagehlpDll == NULL )
         {
             out << "LoadLibrary( \"imagehlp.dll\" ): gle = " << gle << endl;
-            return out.str();
+            return;
         }
 
         pSC    = (tSC)    GetProcAddress( hImagehlpDll, "SymCleanup" );
@@ -1044,8 +1038,7 @@ std::string ShowStack( HANDLE hThread, CONTEXT& c )
             out << "GetProcAddress(): some required function not found." << endl;
 
             FreeLibrary( hImagehlpDll );
-
-            return out.str();
+            return;
         }
 
         stinit = true;
@@ -1117,9 +1110,8 @@ std::string ShowStack( HANDLE hThread, CONTEXT& c )
     // init symbol handler stuff (SymInitialize())
     if( ! pSI( hProcess, tt, false ) )
     {
-        {
-            out << "SymInitialize(): gle = " <<  gle << endl;
-        }
+        out << "SymInitialize(): gle = " <<  gle << endl;
+
         goto cleanup;
     }
 
@@ -1131,7 +1123,7 @@ std::string ShowStack( HANDLE hThread, CONTEXT& c )
 
     // Enumerate modules and tell imagehlp.dll about them.
     // On NT, this is not necessary, but it won't hurt.
-    out << enumAndLoadModuleSymbols( hProcess, GetCurrentProcessId() );
+    enumAndLoadModuleSymbols(out, hProcess, GetCurrentProcessId() );
 
     // init STACKFRAME for first call
     // Notes: AddrModeFlat is just an assumption. I hate VDM debugging.
@@ -1165,9 +1157,7 @@ std::string ShowStack( HANDLE hThread, CONTEXT& c )
 
         if( s.AddrPC.Offset == 0 )
         {
-            {
-                out << "(-nosymbols- PC == 0)" << endl;
-            }
+            out << "(-nosymbols- PC == 0)" << endl;
         }
         else
         { // we seem to have a valid PC
@@ -1210,9 +1200,7 @@ std::string ShowStack( HANDLE hThread, CONTEXT& c )
             // show module info (SymGetModuleInfo())
             if( ! pSGMI( hProcess, s.AddrPC.Offset, &Module ) )
             {
-                {
-                    out << "SymGetModuleInfo): gle = " << gle << endl;
-                }
+                out << "SymGetModuleInfo): gle = " << gle << endl;
             }
             else
             { // got module info OK
@@ -1270,21 +1258,17 @@ cleanup:
     delete [] tt;
 
     FreeLibrary( hImagehlpDll );
-
-    return out.str();
 }
 
 
-std::string enumAndLoadModuleSymbols( HANDLE hProcess, DWORD pid )
+void enumAndLoadModuleSymbols(std::ostringstream& out, HANDLE hProcess, DWORD pid )
 {
-    std::ostringstream out;
-
     ModuleList modules;
     ModuleListIter it;
     char *img, *mod;
 
     // fill in module list
-    out << fillModuleList( modules, pid, hProcess );
+    fillModuleList(out, modules, pid, hProcess );
 
     for( it = modules.begin(); it != modules.end(); ++ it )
     {
@@ -1302,29 +1286,25 @@ std::string enumAndLoadModuleSymbols( HANDLE hProcess, DWORD pid )
         delete [] img;
         delete [] mod;
     }
-
-    return out.str();
 }
 
 
 
-std::string fillModuleList( ModuleList& modules, DWORD pid, HANDLE hProcess )
+void fillModuleList(std::ostringstream& out, ModuleList& modules, DWORD pid, HANDLE hProcess )
 {
     // try toolhelp32 first
     if( fillModuleListTH32( modules, pid ) )
     {
-        return "";
+        return;
     }
 
     // nope? try psapi, then
-    return fillModuleListPSAPI( modules, pid, hProcess );
+    fillModuleListPSAPI(out, modules, pid, hProcess);
 }
 
 
-std::string fillModuleListPSAPI( ModuleList& modules, DWORD pid, HANDLE hProcess )
+void fillModuleListPSAPI(std::ostringstream& out, ModuleList& modules, DWORD pid, HANDLE hProcess )
 {
-    std::ostringstream out;
-
     // EnumProcessModules()
     typedef BOOL (__stdcall *tEPM)( HANDLE hProcess, HMODULE *lphModule, DWORD cb, LPDWORD lpcbNeeded );
     // GetModuleFileNameEx()
@@ -1349,7 +1329,7 @@ std::string fillModuleListPSAPI( ModuleList& modules, DWORD pid, HANDLE hProcess
 
     hPsapi = LoadLibrary( "psapi.dll" );
     if( hPsapi == 0 )
-        return "";
+        return;
 
     modules.clear();
 
@@ -1361,7 +1341,7 @@ std::string fillModuleListPSAPI( ModuleList& modules, DWORD pid, HANDLE hProcess
     {
         // yuck. Some API is missing.
         FreeLibrary( hPsapi );
-        return "";
+        return;
     }
 
     hMods = new HMODULE[TTBUFLEN / sizeof HMODULE];
@@ -1371,17 +1351,15 @@ std::string fillModuleListPSAPI( ModuleList& modules, DWORD pid, HANDLE hProcess
 
     if( ! pEPM( hProcess, hMods, TTBUFLEN, &cbNeeded ) )
     {
-        {
-            out << "EPM failed, gle = " << gle << endl;
-        }
+        out << "EPM failed, gle = " << gle << endl;
+
         goto cleanup;
     }
 
     if( cbNeeded > TTBUFLEN )
     {
-        {
-            out << "More than " << lenof( hMods ) << " module handles. Huh?" << endl;
-        }
+        out << "More than " << lenof( hMods ) << " module handles. Huh?" << endl;
+
         goto cleanup;
     }
 
@@ -1418,8 +1396,6 @@ std::string fillModuleListPSAPI( ModuleList& modules, DWORD pid, HANDLE hProcess
         FreeLibrary( hPsapi );
     delete [] tt;
     delete [] hMods;
-
-    return out.str();
 }
 
 
@@ -1649,25 +1625,19 @@ USHORT  CCITT16CRC(INT Id, UCHAR* buffer, LONG length, BOOL bAdd)
          }
       case TYPE_KV2:
           {
-
-              CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << __FILE__ << " (" << __LINE__ << "): May need CRC code for kv2 implemented here" << endl;
+              CTILOG_WARN(dout, "May need CRC code for kv2 implemented here");
               break;
           }
       case TYPE_ALPHA_A3:
           {
-
-              CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << __FILE__ << " (" << __LINE__ << "): May need CRC code for alpha a3 implemented here" << endl;
+              CTILOG_WARN(dout, "May need CRC code for alpha a3 implemented here");
               break;
           }
 
       case TYPE_IPC_430SL:
       case TYPE_SENTINEL:
           {
-
-              CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << __FILE__ << " (" << __LINE__ << "): May need CRC code for sentinel implemented here" << endl;
+              CTILOG_WARN(dout, "May need CRC code for sentinel implemented here");
               break;
           }
 
@@ -1675,17 +1645,13 @@ USHORT  CCITT16CRC(INT Id, UCHAR* buffer, LONG length, BOOL bAdd)
       case TYPE_IPC_420FD:
       case TYPE_FOCUS:
           {
-
-              CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << __FILE__ << " (" << __LINE__ << "): May need CRC code for focus implemented here" << endl;
+              CTILOG_WARN(dout, "May need CRC code for focus implemented here");
               break;
           }
 
       case TYPE_TDMARKV:
           {
-
-              CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << __FILE__ << " (" << __LINE__ << "): May need CRC code for transdata mk5 implemented here" << endl;
+              CTILOG_WARN(dout, "May need CRC code for transdata mk5 implemented here");
               break;
           }
 
@@ -1849,10 +1815,9 @@ bool findLPRequestEntries(void *om, void *d)
 
             if( isDebugLudicrous() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Comparing Outmessage->CommandStr" << endl;
-                dout << "NewGuy     = \"" << NewGuy->Request.CommandStr << "\" and" << endl;
-                dout << "OutMessage = \"" << OutMessage->Request.CommandStr << "\"" << endl;
+                CTILOG_DEBUG(dout, "Comparing Outmessage->CommandStr" << endl
+                        << "NewGuy     = \"" << NewGuy->Request.CommandStr << "\" and" << endl
+                        << "OutMessage = \"" << OutMessage->Request.CommandStr << "\"");
             }
 
             bRet = (oldstr.find("scan loadprofile")!=string::npos) && (newstr.find("scan loadprofile")!=string::npos);
@@ -1877,8 +1842,7 @@ bool findLPRequestEntries(void *om, void *d)
 
     if( isDebugLudicrous() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " bRet = " << bRet << endl;
+        CTILOG_DEBUG(dout, "bRet = " << bRet);
     }
 
     return(bRet);
@@ -1904,10 +1868,7 @@ void cleanupOutMessages(void *unusedptr, void* d)
 {
     OUTMESS *OutMessage = (OUTMESS *)d;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Removing Outmessage for TargetID " << OutMessage->TargetID << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_INFO(dout, "Removing Outmessage for TargetID " << OutMessage->TargetID);
 
     delete OutMessage;
     return;
@@ -1931,8 +1892,7 @@ void applyPortQueueOutMessageReport(void *ptr, void* d)
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - priority = " << i << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Invalid priority = "<< i);
         }
 
         // Now I need to look for some of the interesting metrics in the system!  These will be the first 16.
@@ -1966,8 +1926,7 @@ void applyPortQueueOutMessageReport(void *ptr, void* d)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Malformed OutMessage.  Header and Footer are not valid. **** " << endl;
+        CTILOG_ERROR(dout, "Malformed OutMessage.  Header and Footer are not valid.");
     }
 
     return;
@@ -2166,91 +2125,53 @@ vector<int> getPointIdsOnPao(long paoid)
     DatabaseReader rdr(conn, sql);
     rdr.execute();
 
-    if(rdr.isValid())
+    int id;
+    while(rdr())
     {
-        while (rdr())
-        {
-            int id;
-            rdr["pointid"] >> id;
-            ids.push_back(id);
-        }
+       rdr["pointid"] >> id;
+       ids.push_back(id);
     }
-    else if(isDebugLudicrous())
+
+    if( ! rdr.isValid() )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " " << sql << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else if( ids.empty() )
+    {
+        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
     }
 
     return ids;
 }
 
-std::vector< std::vector<string> > getLmXmlParametersByGroupId(long groupId)
-{
-    string sql("SELECT parametername,parametervalue FROM LMGroupXMLParameter WHERE lmgroupid = ");
-    sql += CtiNumStr(groupId);
 
-    std::vector< std::vector<string> > params;
-
-    DatabaseConnection conn;
-    DatabaseReader rdr(conn, sql);
-    rdr.execute();
-
-    if(rdr.isValid())
-    {
-        while (rdr())
-        {
-            std::vector<string> parameters;
-            string name, value;
-            rdr["parametername"] >> name;
-            rdr["parametervalue"] >> value;
-
-            parameters.push_back(name);
-            parameters.push_back(value);
-
-            params.push_back(parameters);
-        }
-    }
-    else if(isDebugLudicrous())
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " " << sql << endl;
-        }
-    }
-
-    return params;
-}
-
-
-void GetPseudoPointIDs(std::vector<unsigned long> &pointIDs)
+vector<unsigned long> GetPseudoPointIDs()
 {
     string sql("SELECT pointid FROM point WHERE pseudoflag = 'P'");
 
+    vector<unsigned long> pointIDs;
+
     DatabaseConnection conn;
     DatabaseReader rdr(conn, sql);
     rdr.execute();
 
-    if(rdr.isValid())
+    int id;
+    while(rdr())
     {
-        int id;
-        while (rdr())
-        {
-            rdr["pointid"] >> id;
-            pointIDs.push_back(id);
-        }
+        rdr["pointid"] >> id;
+        pointIDs.push_back(id);
     }
-    else if(isDebugLudicrous())
+
+    if( ! rdr.isValid() )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " " << sql << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
     }
+    else if( pointIDs.empty() )
+    {
+        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+    }
+
+    return pointIDs;
 }
 
 string getEncodingTypeForPort(long portId)
@@ -2268,14 +2189,13 @@ string getEncodingTypeForPort(long portId)
     {
         rdr["encodingtype"] >> type;
     }
+    else if( ! rdr.isValid() )
+    {
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
     else
     {
-        if(isDebugLudicrous())
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " " << sql << endl;
-        }
+        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
     }
 
     return type;
@@ -2296,14 +2216,13 @@ string getEncodingKeyForPort(long portId)
     {
         rdr["encodingkey"] >> type;
     }
+    else if( ! rdr.isValid() )
+    {
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
     else
     {
-        if(isDebugLudicrous())
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " " << sql << endl;
-        }
+        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
     }
 
     return type;

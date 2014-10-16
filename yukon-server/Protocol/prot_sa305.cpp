@@ -188,10 +188,8 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " ALERT: That's a BIG Control!" << endl;
-                    }
+                    CTILOG_WARN(dout, "ALERT: That's a BIG Control!");
+
                     _period = 60.0;
                     period_sec = 3600;
                 }
@@ -229,10 +227,7 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << parse.getCommandStr() << endl;
-                }
+                CTILOG_ERROR(dout, "command string error: "<< parse.getCommandStr());
             }
         }
 
@@ -484,13 +479,13 @@ int CtiProtocolSA305::solveStrategy(CtiCommandParser &parse)
 
     if(gConfigParms.getValueAsInt("SA305_DEBUGLEVEL",0) & DEBUGLEVEL_LUDICROUS)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << " period        : " << _period << endl;
-        dout << " % off         : " << _percentageOff << endl;
-        dout << " repetitions   : " << _repetitions << endl;
-        dout << " strategy      : " << strategy << endl;
-        dout << " flags         : " << _flags << endl;
+        CTILOG_DEBUG(dout,
+                endl <<" period:      "<< _period <<
+                endl <<" % off:       "<< _percentageOff <<
+                endl <<" repetitions: "<< _repetitions <<
+                endl <<" strategy:    "<< strategy <<
+                endl <<" flags:       "<< _flags
+                );
     }
 
     return strategy;
@@ -551,14 +546,9 @@ INT CtiProtocolSA305::parseCommand(CtiCommandParser &parse, CtiOutMessage &OutMe
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unsupported command on sa305 route. Command = " << parse.getCommand() << endl;
-            }
+            CTILOG_ERROR(dout, "Unsupported command on sa305 route. Command = "<< parse.getCommand());
 
             status = ClientErrors::InvalidRequest;
-
-            break;
         }
     }
 
@@ -691,8 +681,8 @@ INT CtiProtocolSA305::assembleControl(CtiCommandParser &parse, CtiOutMessage &Ou
     else
     {
         status = ClientErrors::NoMethod;
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Unsupported sa305 command.  Command = " << parse.getCommand() << endl;
+
+        CTILOG_ERROR(dout, "Unsupported sa305 command.  Command = "<< parse.getCommand());
     }
 
     return status;
@@ -786,11 +776,8 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
                     configed = true;
                     clpCount = (int)( (float)clsec / 14.0616 );
                     // Input:Cold Load Pickup Count, 0-255, 1 count = 14.0616seconds
-                    {
-                        CtiLockGuard<CtiLogger> slog_guard(slog);
-                        slog << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        slog << " Setting coldLoadPickup. Serial " << serialstr << " " << clpstr << " set to  " << clpCount << " on the receiver (* 14.0616 = sec) " << endl;
-                    }
+
+                    CTILOG_INFO(slog, "Setting coldLoadPickup. Serial "<< serialstr <<" "<< clpstr <<" set to "<< clpCount <<" on the receiver (* 14.0616 = sec)");
 
                     if( clsec >= 0 )
                     {
@@ -885,11 +872,7 @@ INT CtiProtocolSA305::assemblePutConfig(CtiCommandParser &parse, CtiOutMessage &
 
                 if( (tdCount = parse.getiValue(tdstr,-1)) >= 0 )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> slog_guard(slog);
-                        slog << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        slog << " Setting tamperDetectCount. Serial " << serialstr << " " << tdstr << " set to  " << tdCount << " on the receiver " << endl;
-                    }
+                    CTILOG_INFO(slog, "Setting tamperDetectCount. Serial "<< serialstr <<" "<< tdstr <<" set to "<< tdCount <<" on the receiver");
 
                     if(newmessageneeded)
                     {
@@ -1036,9 +1019,7 @@ int CtiProtocolSA305::buildNumericPageMessage(CHAR *buffer) const      // Return
 
         if(_transmitterType == TYPE_RTC)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ERROR ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  RTCs should never execute this code" << endl;
+            CTILOG_ERROR(dout, "RTCs should never execute this code");
         }
 
         for( itr = _messageBits.begin(); itr != _messageBits.end(); itr++ )

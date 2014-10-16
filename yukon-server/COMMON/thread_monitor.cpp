@@ -36,8 +36,7 @@ using namespace boost::posix_time;
             if(lastReportTime.seconds() < (lastReportTime.now().seconds() - CtiThreadMonitor::StandardMonitorTime))
             {
                 lastReportTime = lastReportTime.now();
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " RTDB Archiver Thread Active. TID:  " << rwThreadId() << endl;
+                CTILOG_INFO(dout, "RTDB Archiver Thread Active.");
             }
 
             CtiThreadRegData *data;
@@ -453,37 +452,37 @@ void CtiThreadMonitor::messageOut( const char *fmt, ... )
     va_list ap;
     va_start( ap, fmt );
 
-    CtiLockGuard<CtiLogger> doubt_guard( dout );
+    Cti::StreamBuffer outLog;
 
     while( *p )
     {
         if( *p == 'i' )
         {
             int num = va_arg( ap, int );
-            dout << " " << num;
+            outLog << " " << num;
         }
         else if( *p == 't' )
         {
-            dout << CtiTime();
+            outLog << CtiTime();
         }
         else if( *p == 's' )
         {
             std::string word = va_arg( ap, char * );
-            dout << " " << word;
+            outLog << " " << word;
         }
         else if( *p == 'v' )
         {
             std::string word = va_arg( ap, std::string );
-            dout << " " << word;
+            outLog << " " << word;
         }
         else
         {
-            dout << " messageOut format problem" << endl;
+            outLog << " messageOut format problem" << endl;
         }
 
         ++p;
     }
-    dout << endl;
+    CTILOG_INFO(dout, outLog);
 
     va_end( ap );
 }

@@ -173,25 +173,22 @@ CtiLMManualControlRequest::~CtiLMManualControlRequest()
 }
 
 
-/*----------------------------------------------------------------------------
-  dump
-
-  Sends information about this request to the logs/screen.
----------------------------------------------------------------------------*/
-void CtiLMManualControlRequest::dump() const
+std::string CtiLMManualControlRequest::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    Cti::FormattedList list;
 
-    dout << " ------- Message -------       LM Manual Control Request" << endl;
-    dout << "Command                        " << _command << endl;
-    dout << "Paobject ID                    " << _paoid << endl;
-    dout << "Notify Time                    " << _notifytime << endl;
-    dout << "Start Time                     " << _starttime << endl;
-    dout << "Stop Time                      " << _stoptime << endl;
-    dout << "Start Gear                     " << _startgear << endl;
-    dout << "Start Priority                 " << _startpriority << endl;
-    dout << "Additional Info                " << _additionalinfo << endl;
-    dout << "Constraint                     " << _constraint_cmd << endl;
+    list << "LM Manual Control Request";
+    list.add("Command")         << _command;
+    list.add("Paobject ID")     << _paoid;
+    list.add("Notify Time")     << _notifytime;
+    list.add("Start Time")      << _starttime;
+    list.add("Stop Time")       << _stoptime;
+    list.add("Start Gear")      << _startgear;
+    list.add("Start Priority")  << _startpriority;
+    list.add("Additional Info") << _additionalinfo;
+    list.add("Constraint")      << _constraint_cmd;
+
+    return Inherited::toString() += list.toString();
 }
 
 /*---------------------------------------------------------------------------
@@ -1089,82 +1086,87 @@ CtiLMDynamicTriggerDataMsg::CtiLMDynamicTriggerDataMsg(CtiLMControlAreaTrigger *
 }
 
 
-/* ==========================================================================
-   Dumps
-   ==========================================================================*/
-
-void CtiLMDynamicGroupDataMsg::dump() const
+std::string CtiLMDynamicGroupDataMsg::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    Cti::FormattedList itemList;
 
-    dout << " ------- Message -------       LM Dynamic Group Data" << endl;
-    dout << "PAObject ID                    " << _paoid << endl;
-    dout << "Disable Flag                   " << _disableflag << endl;
-    dout << "Group Control State            " << _groupcontrolstate << endl;
-    dout << "Current Hours Daily            " << _currenthoursdaily << endl;
-    dout << "Current Hours Monthly          " << _currenthoursmonthly << endl;
-    dout << "Current Hours Seasonal         " << _currenthoursseasonal << endl;
-    dout << "Current Hours Annually         " << _currenthoursannually << endl;
-    dout << "Last Control Sent Time         " << _lastcontrolsent << endl;
-    dout << "Control Start Time             " << _controlstarttime << endl;
-    dout << "Control Complete Time          " << _controlcompletetime << endl;
-    dout << "Next Control Time              " << _next_control_time << endl;
-    dout << "Internal State                 " << _internalState << endl;
-    dout << "Daily Ops                      " << _daily_ops << endl;
+    itemList << "LM Dynamic Group Data";
+    itemList.add("PAObject ID")             << _paoid;
+    itemList.add("Disable Flag")            << _disableflag;
+    itemList.add("Group Control State")     << _groupcontrolstate;
+    itemList.add("Current Hours Daily")     << _currenthoursdaily;
+    itemList.add("Current Hours Monthly")   << _currenthoursmonthly;
+    itemList.add("Current Hours Seasonal")  << _currenthoursseasonal;
+    itemList.add("Current Hours Annually")  << _currenthoursannually;
+    itemList.add("Last Control Sent Time")  << _lastcontrolsent;
+    itemList.add("Control Start Time")      << _controlstarttime;
+    itemList.add("Control Complete Time")   << _controlcompletetime;
+    itemList.add("Next Control Time")       << _next_control_time;
+    itemList.add("Internal State")          << _internalState;
+    itemList.add("Daily Ops")               << _daily_ops;
+
+    return (Inherited::toString() += itemList.toString());
 }
 
-void CtiLMDynamicProgramDataMsg::dump() const
+std::string CtiLMDynamicProgramDataMsg::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << " ------- Message -------       LM Dynamic Program Data" << endl;
-    dout << "PAObject ID                    " << _paoid << endl;
-    dout << "Disable Flag                   " << _disableflag << endl;
-    dout << "Current Gear Number            " << _currentgearnumber << endl;
-    dout << "Last Group Controlled          " << _lastgroupcontrolled << endl;
-    dout << "Program State                  " << _programstate << endl;
-    dout << "Reduction Total                " << _reductiontotal << endl;
-    dout << "Direct Start Time              " << _directstarttime << endl;
-    dout << "Direct Stop Time               " << _directstoptime << endl;
-    dout << "Notify Active Time             " << _notify_active_time << endl;
-    dout << "Notify Inactive Time           " << _notify_inactive_time << endl;
-    dout << "Started Ramping Out Time       " << _startedrampingouttime << endl;
+    Cti::FormattedList itemList;
+
+    itemList << "LM Dynamic Program Data";
+    itemList.add("PAObject ID")                 << _paoid;
+    itemList.add("Disable Flag")                << _disableflag;
+    itemList.add("Current Gear Number")         << _currentgearnumber;
+    itemList.add("Last Group Controlled")       << _lastgroupcontrolled;
+    itemList.add("Program State")               << _programstate;
+    itemList.add("Reduction Total")             << _reductiontotal;
+    itemList.add("Direct Start Time")           << _directstarttime;
+    itemList.add("Direct Stop Time")            << _directstoptime;
+    itemList.add("Notify Active Time")          << _notify_active_time;
+    itemList.add("Notify Inactive Time")        << _notify_inactive_time;
+    itemList.add("Started Ramping Out Time")    << _startedrampingouttime;
+
+    return (Inherited::toString() += itemList.toString());
 }
 
-void CtiLMDynamicControlAreaDataMsg::dump() const
+std::string CtiLMDynamicControlAreaDataMsg::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << " ------- Message -------       LM Dynamic Control Area Data" << endl;
-    dout << "PAObject ID                    " << _paoid << endl;
-    dout << "Disable Flag                   " << _disableflag << endl;
-    dout << "Next Check Time                " << _nextchecktime << endl;
-    dout << "Last Group Controlled          " << _controlareastate << endl;
-    dout << "Current Priority               " << _currentpriority << endl;
-    dout << "Current Start Time             " << _currentdailystarttime << endl;
-    dout << "Current Stop Time              " << _currentdailystoptime << endl;
+    Cti::FormattedList itemList;
+
+    itemList << "LM Dynamic Control Area Data";
+    itemList.add("PAObject ID")             << _paoid;
+    itemList.add("Disable Flag")            << _disableflag;
+    itemList.add("Next Check Time")         << _nextchecktime;
+    itemList.add("Last Group Controlled")   << _controlareastate;
+    itemList.add("Current Priority")        << _currentpriority;
+    itemList.add("Current Start Time")      << _currentdailystarttime;
+    itemList.add("Current Stop Time")       << _currentdailystoptime;
     if( _triggers.size() > 0 )
     {
         for( int i = 0; i < _triggers.size(); i++ )
         {
-            dout << "Trigger:" << endl;
-            _triggers[i].dump();
+            itemList.add("Trigger " + CtiNumStr(i + 1)) << _triggers[i];
         }
     }
+
+    return (Inherited::toString() += itemList.toString());
 }
 
-//This cannot be called by itself, it is not protected by a mutex.
-//This is only called by control area msg dump.
-void CtiLMDynamicTriggerDataMsg::dump() const
+std::string CtiLMDynamicTriggerDataMsg::toString() const
 {
-    dout << " ------- Message -------       LM Dynamic Trigger Data" << endl;
-    dout << "PAObject ID                    " << _paoid << endl;
-    dout << "Trigger Number                 " << _triggernumber << endl;
-    dout << "Point Value                    " << _pointvalue << endl;
-    dout << "Last Point Value Timestamp     " << _lastpointvaluetimestamp << endl;
-    dout << "Normal State                   " << _normalstate << endl;
-    dout << "Threshold                      " << _threshold << endl;
-    dout << "Peak Point Value               " << _peakpointvalue << endl;
-    dout << "Last Pk Point Value Timestamp  " << _lastpeakpointvaluetimestamp << endl;
-    dout << "Projected Point Value          " << _projectedpointvalue << endl;
+    Cti::FormattedList itemList;
+
+    itemList << "LM Dynamic Trigger Data";
+    itemList.add("PAObject ID")                     << _paoid;
+    itemList.add("Trigger Number")                  << _triggernumber;
+    itemList.add("Point Value")                     << _pointvalue;
+    itemList.add("Last Point Value Timestamp")      << _lastpointvaluetimestamp;
+    itemList.add("Normal State")                    << _normalstate;
+    itemList.add("Threshold")                       << _threshold;
+    itemList.add("Peak Point Value")                << _peakpointvalue;
+    itemList.add("Last Pk Point Value Timestamp")   << _lastpeakpointvaluetimestamp;
+    itemList.add("Projected Point Value")           << _projectedpointvalue;
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 /*---------------------------------------------------------------------------

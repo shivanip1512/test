@@ -8,7 +8,7 @@
 #include "msg_dbchg.h"
 
 #include "millisecond_timer.h"
-
+#include "logManager.h"
 #include "queue.h"
 #include "socket_helper.h"
 
@@ -88,8 +88,7 @@ private:
     typedef std::list<device_record *> device_list;
     typedef std::map <device_record *, device_list::iterator> device_activity_map;
 
-    void startLog( void );
-    void haltLog ( void );
+    void startLog();
 
     void initializeDeviceRecords( void );
     const device_record *insertDeviceRecord(const CtiDeviceSPtr &device);
@@ -141,7 +140,9 @@ private:
     static void sendDevicePointsFromProtocol(std::vector<CtiPointDataMsg *> &points, const CtiDeviceSingleSPtr &device, CtiConnection &connection);
 
     CtiPortSPtr _port;
-    CtiLogger   _portLog;
+
+    Cti::Logging::LogManager _portLogManager;
+    Cti::Logging::LoggerPtr  _portLog;
 
     typedef std::map< long, device_record * > device_record_map;
 

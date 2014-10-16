@@ -312,11 +312,7 @@ YukonError_t MctBroadcastDevice::ResultDecode(const INMESS &InMessage, const Cti
 {
     YukonError_t status = ClientErrors::None;
 
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "No ResultDecode method defined for MctBroadcastDevice");
 
     return status;
 }

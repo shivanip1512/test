@@ -70,6 +70,7 @@
 #undef protected
 
 #include "test_cc_serialization.h"
+#include "logManager.h"
 
 using namespace std;
 
@@ -80,7 +81,6 @@ void __cdecl Purecall(void)
 
 
 bool bGCtrlC;
-DLLIMPORT extern CtiLogger dout;
 
 CtiListenerConnection listenerConn( "com.eaton.eas.yukon.conntest" );
 
@@ -127,7 +127,7 @@ struct ServerClientTestSequence
         _tc.Create();
 
         cout << "Populating " << typeid(*_tc._imsg).name() << endl;
-        
+
         _tc.Populate();
 
         _serverConn.WriteConnQue( _tc._imsg.release() );
@@ -148,12 +148,12 @@ void main(void)
     bGCtrlC = false;
 
     // fire up the logger thread
-    dout.start              ();
-    dout.setOutputPath      ( gLogDirectory );
-    dout.setRetentionLength ( gLogRetention );
-    dout.setOutputFile      ( "cc_server_client_serialization_test" );
-    dout.setToStdOut        ( true );
-    dout.setWriteInterval   ( 1000 );
+    doutManager.setOutputPath   ( gLogDirectory );
+    doutManager.setRetentionDays( gLogRetention );
+    doutManager.setOutputFile   ( "cc_server_client_serialization_test" );
+    doutManager.setToStdOut     ( true );
+
+    doutManager.start();
 
     for(;!bGCtrlC;)
     {

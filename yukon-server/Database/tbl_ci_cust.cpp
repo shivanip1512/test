@@ -1,29 +1,11 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_ci_cust.cpp
-*
-* Date:   4/2/2001
-*
-* Author: Corey G. Plender
-*         Aaron Lauinger
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ci_cust.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2005/12/20 17:16:05 $
-*
-* Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
 #include "database_connection.h"
 #include "database_reader.h"
-
 #include "dbaccess.h"
 #include "logger.h"
 #include "tbl_ci_cust.h"
+
 
 using namespace std;
 
@@ -189,10 +171,14 @@ size_t CtiTableCICustomerBase::entries() const
   return _contactNotificationIDs.size();
 }
 
-void CtiTableCICustomerBase::dump() const
+std::string CtiTableCICustomerBase::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << getID() << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTableCICustomerBase";
+    itemList.add("customer id") << getID();
+
+    return itemList.toString();
 }
 
 CtiTableCICustomerBase::INTSET CtiTableCICustomerBase::getContactNotificationSet() const
@@ -202,19 +188,22 @@ CtiTableCICustomerBase::INTSET CtiTableCICustomerBase::getContactNotificationSet
 
 void CtiTableCICustomerBase::dumpContactNotifications() const
 {
-  try
+    try
     {
-      CtiTableCICustomerBase::CONST_INTSETITERATOR iter;
-      CtiLockGuard<CtiLogger> guard(dout);
-      for(iter = _contactNotificationIDs.begin(); iter != _contactNotificationIDs.end(); iter++)
-    {
-      dout << " ContactNotificationID " << *iter << endl;
+        Cti::FormattedList itemList;
+
+        CtiTableCICustomerBase::CONST_INTSETITERATOR iter;
+
+        for(iter = _contactNotificationIDs.begin(); iter != _contactNotificationIDs.end(); iter++)
+        {
+            itemList.add("ContactNotificationID") << *iter;
+        }
+
+        CTILOG_INFO(dout, itemList);
     }
-    }
-  catch(...)
+    catch(...)
     {
-      CtiLockGuard<CtiLogger> guard(dout);
-      dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -226,24 +215,23 @@ CtiTableCICustomerBase& CtiTableCICustomerBase::setContactNotificationSet(const 
 
 vector<int> CtiTableCICustomerBase::getContactNotificationVector() const
 {
-  vector<int> n_vec;
+    vector<int> n_vec;
 
-  try
+    try
     {
-      CtiTableCICustomerBase::CONST_INTSETITERATOR iter;
+        CtiTableCICustomerBase::CONST_INTSETITERATOR iter;
 
-      for(iter = _contactNotificationIDs.begin(); iter != _contactNotificationIDs.end(); iter++)
-    {
-      n_vec.push_back(*iter);
+        for(iter = _contactNotificationIDs.begin(); iter != _contactNotificationIDs.end(); iter++)
+        {
+            n_vec.push_back(*iter);
+        }
     }
-    }
-  catch(...)
+    catch(...)
     {
-      CtiLockGuard<CtiLogger> guard(dout);
-      dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-  return n_vec;
+    return n_vec;
 }
 //            set<int>::const_reference locID = *iter;
 

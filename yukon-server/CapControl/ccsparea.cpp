@@ -113,10 +113,7 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted area into dynamicCCSpecialArea: " << getPaoName() << endl;
-            }
+            CTILOG_INFO(dout, "Inserted area into dynamicCCSpecialArea: " << getPaoName());
             string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
             static const string inserterSql = "insert into dynamicccspecialarea values (?, ?, ?)";

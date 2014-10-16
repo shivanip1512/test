@@ -62,6 +62,7 @@
 #include "logger.h"
 #include "std_ansi_tbl_base.h"
 #include "ctidate.h"
+#include "ctitime.h"
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -550,4 +551,15 @@ int CtiAnsiTableBase::toUint32LTime( BYTE *source, ULONG &result, int format )
    return( offset );
 }
 
+namespace {
+Cti::StringFormatter fieldNameFormatter = Cti::StringFormatter().width(40);
+}
 
+std::string CtiAnsiTableBase::formatTableName(const std::string &name)
+{
+    std::string tableName;
+
+    tableName += "=================== " + name + " ===================";
+
+    return tableName;
+}

@@ -17,22 +17,12 @@ namespace {
 
 std::string getErrorMessage(int error)
 {
-    std::ostringstream desc;
-    desc << "Error " << error << " -> " << getSystemErrorMessage(error);
-    return desc.str();
+    return StreamBuffer() <<"Error "<< error <<" -> "<< getSystemErrorMessage(error);
 }
 
 std::string getErrorMessage(const SOCKET s, int error)
 {
-    std::ostringstream desc;
-    desc << "Socket " << s << ", Error " << error << " -> " << getSystemErrorMessage(error);
-    return desc.str();
-}
-
-void logError(const char *label, int line, const std::string &desc)
-{
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << CtiTime() << " **** ERROR **** " << label << " (" << line << "): " << desc << endl;
+    return StreamBuffer() <<"Socket "<< s <<", Error "<< error <<" -> "<< getSystemErrorMessage(error);
 }
 
 } // namespace anonymous
@@ -79,7 +69,7 @@ bool StreamSocketListener::create(unsigned short nPort)
     AddrInfo addrInfo = makeTcpServerSocketAddress(nPort);
     if( ! addrInfo )
     {
-        logError(__FILE__, __LINE__, getErrorMessage(addrInfo.getError()));
+        CTILOG_ERROR(dout, getErrorMessage(addrInfo.getError()));
         return false;
     }
 
@@ -98,7 +88,7 @@ bool StreamSocketListener::create(unsigned short nPort)
     }
     catch( const SocketException &ex )
     {
-        logError(__FILE__, __LINE__, ex.what());
+        CTILOG_EXCEPTION_ERROR(dout, ex);
         return false;
     }
 }
@@ -120,7 +110,7 @@ std::auto_ptr<StreamSocketConnection> StreamSocketListener::accept(ConnectionMod
         bool keepAlive = true;
         if( ::setsockopt(newSocket, SOL_SOCKET, SO_KEEPALIVE, (char*)&keepAlive, sizeof(bool)) == SOCKET_ERROR )
         {
-            logError(__FILE__, __LINE__, getErrorMessage(newSocket,  WSAGetLastError()));
+            CTILOG_ERROR(dout, getErrorMessage(newSocket, WSAGetLastError()));
             ::closesocket(newSocket);
             return std::auto_ptr<StreamSocketConnection>();
         }
@@ -129,7 +119,7 @@ std::auto_ptr<StreamSocketConnection> StreamSocketListener::accept(ConnectionMod
         unsigned long nonBlocking = 1;
         if( ::ioctlsocket(newSocket, FIONBIO, &nonBlocking) == SOCKET_ERROR )
         {
-            logError(__FILE__, __LINE__, getErrorMessage(newSocket,  WSAGetLastError()));
+            CTILOG_ERROR(dout, getErrorMessage(newSocket, WSAGetLastError()));
             ::closesocket(newSocket);
             return std::auto_ptr<StreamSocketConnection>();
         }
@@ -147,7 +137,7 @@ std::auto_ptr<StreamSocketConnection> StreamSocketListener::accept(ConnectionMod
     }
     catch( const SocketException &ex )
     {
-        logError(__FILE__, __LINE__, ex.what());
+        CTILOG_EXCEPTION_ERROR(dout, ex);
         return std::auto_ptr<StreamSocketConnection>();
     }
 }

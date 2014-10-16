@@ -258,9 +258,8 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
 
                                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Analog point " << translationName;
-                                        dout << " value " << value << " from " << getInterfaceName() << " assigned to point " << point.getPointID() << endl;;
+                                       CTILOG_DEBUG(dout, "Analog point "<< translationName <<" value "<< value <<
+                                               " from "<< getInterfaceName() <<" assigned to point "<< point.getPointID());
                                     }
                                     retCode = true;
                                     break;
@@ -284,11 +283,8 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                         }
                                         else
                                         {
-                                            {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << CtiTime() << " Invalid control state " << value;
-                                                dout << " for " << translationName << " received from " << getInterfaceName() << endl;
-                                            }
+                                            CTILOG_ERROR(dout, "Invalid control state "<< value <<" for "<< translationName <<" received from "<< getInterfaceName());
+
                                             CHAR state[20];
                                             _snprintf (state,20,"%.0f",value);
                                             desc = getInterfaceName() + string (" control point received with an invalid state ") + string (state);
@@ -302,18 +298,21 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
                                         {
                                             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                             {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << CtiTime() << " Control point " << translationName;
+                                                Cti::StreamBuffer logmsg;
+
+                                                logmsg <<" Control point "<< translationName;
                                                 if (controlState == STATE_OPENED)
                                                 {
-                                                    dout << " control: Open " ;
+                                                    logmsg <<" control: Open ";
                                                 }
                                                 else
                                                 {
-                                                    dout << " control: Closed " ;
+                                                    logmsg <<" control: Closed ";
                                                 }
 
-                                                dout <<" from " << getInterfaceName() << " and processed for point " << point.getPointID() << endl;;
+                                                logmsg <<" from "<< getInterfaceName() <<" and processed for point "<< point.getPointID();
+
+                                                CTILOG_DEBUG(dout, logmsg);
                                             }
 
                                             // build the command message and send the control
@@ -366,10 +365,9 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
 
                                         if (yukonValue == STATE_INVALID)
                                         {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Status point " << translationName;
-                                            dout << " received an invalid state " << (int)value;
-                                            dout <<" from " << getInterfaceName() << " for point " << point.getPointID() << endl;;
+                                            CTILOG_ERROR(dout, "Status point "<< translationName <<
+                                                    " received an invalid state "<< (int)value <<
+                                                    " from "<< getInterfaceName() <<" for point "<< point.getPointID());
 
                                             CHAR state[20];
                                             _snprintf (state,20,"%.0f",value);
@@ -389,10 +387,9 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
 //                                            ((CtiPointDataMsg*)*retMsg)->setTime(timestamp);
                                             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                             {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << CtiTime() << " Status point " << translationName;
-                                                dout << " new state: " << traceState;
-                                                dout <<" from " << getInterfaceName() << " assigned to point " << point.getPointID() << endl;;
+                                                CTILOG_DEBUG(dout, "Status point "<< translationName <<
+                                                        " new state: "<< traceState <<
+                                                        " from "<< getInterfaceName() <<" assigned to point "<< point.getPointID());
                                             }
                                             retCode = true;
                                         }
@@ -487,21 +484,20 @@ int CtiFDR_Dsm2Import::readConfig( void )
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Dsm2 import file name " << getFileName() << endl;
-        dout << CtiTime() << " Dsm2 import directory " << getDriveAndPath() << endl;
-        dout << CtiTime() << " Dsm2 import interval " << getImportInterval() << endl;
-        dout << CtiTime() << " Dsm2 import dispatch queue flush rate " << getQueueFlushRate() << endl;
-        dout << CtiTime() << " Dsm2 import db reload rate " << getReloadRate() << endl;
+        Cti::FormattedList loglist;
+        loglist.add("Dsm2 import file name")                 << getFileName();
+        loglist.add("Dsm2 import directory")                 << getDriveAndPath();
+        loglist.add("Dsm2 import interval")                  << getImportInterval();
+        loglist.add("Dsm2 import dispatch queue flush rate") << getQueueFlushRate();
+        loglist.add("Dsm2 import db reload rate")            << getReloadRate();
 
         if (shouldDeleteFileAfterImport())
-            dout << CtiTime() << " Import file will be deleted after import" << endl;
+            loglist <<" Import file will be deleted after import";
         else
-            dout << CtiTime() << " Import file will NOT be deleted after import" << endl;
+            loglist <<" Import file will NOT be deleted after import";
 
+        CTILOG_DEBUG(dout, loglist);
     }
-
-
 
     return successful;
 }

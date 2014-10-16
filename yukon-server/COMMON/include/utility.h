@@ -42,8 +42,7 @@ IM_EX_CTIBASE std::string& traceBuffer(std::string &str, BYTE *Message, ULONG Le
 
 IM_EX_CTIBASE CtiTime nextScheduledTimeAlignedOnRate( const CtiTime &origin, LONG rate );
 
-IM_EX_CTIBASE void        autopsy          (const char *calleefile, int calleeline);       // Usage is: autopsy( __FILE__, __LINE__);
-IM_EX_CTIBASE std::string autopsy_as_string(const char *calleefile, int calleeline);
+IM_EX_CTIBASE void autopsy(const char *calleefile, int calleeline);       // Usage is: autopsy( __FILE__, __LINE__);
 
 IM_EX_CTIBASE BOOL searchFuncForOutMessageDevID(void *pId, void* d);
 IM_EX_CTIBASE BOOL searchFuncForOutMessageRteID(void *pId, void* d);
@@ -102,7 +101,7 @@ IM_EX_CTIBASE LONG  GetPAOIdOfPoint(long pid);
 IM_EX_CTIBASE INT   GetPIDFromDeviceAndOffset(int device, int offset);
 IM_EX_CTIBASE INT   GetPIDFromDeviceAndControlOffset(int device, int offset);
 IM_EX_CTIBASE INT   GetPIDFromDeviceAndOffsetAndType(int device, int offset, std::string &type);
-IM_EX_CTIBASE void  GetPseudoPointIDs(std::vector<unsigned long> &pointIDs);
+IM_EX_CTIBASE std::vector<unsigned long>  GetPseudoPointIDs();
 
 IM_EX_CTIBASE INT   EstablishOutMessagePriority(CtiOutMessage *Out, INT priority);
 IM_EX_CTIBASE INT   OverrideOutMessagePriority(CtiOutMessage *Out, INT priority);
@@ -129,7 +128,6 @@ IM_EX_CTIBASE std::string explainTags(const unsigned tags);
 IM_EX_CTIBASE int binaryStringToInt(const CHAR *buffer, int length);
 
 IM_EX_CTIBASE std::vector<int> getPointIdsOnPao(long paoid);
-IM_EX_CTIBASE std::vector< std::vector<std::string> > getLmXmlParametersByGroupId(long groupId);
 IM_EX_CTIBASE std::string getEncodingTypeForPort(long portId);
 IM_EX_CTIBASE std::string getEncodingKeyForPort(long portId);
 

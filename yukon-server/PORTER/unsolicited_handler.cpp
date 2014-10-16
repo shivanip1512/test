@@ -28,18 +28,27 @@ extern CtiClientConnection VanGoghConnection;
 extern YukonError_t ReturnResultMessage(YukonError_t CommResult, INMESS &InMessage, OUTMESS *&OutMessage);
 extern bool processCommStatus(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, const CtiDeviceSPtr &Device);
 
+
+
 namespace Cti {
 namespace Porter {
 
-UnsolicitedMessenger UnsolicitedPortsQueue;
+namespace
+{
+Cti::Atomic<unsigned long> portHandlerCount;
+}
 
+UnsolicitedMessenger UnsolicitedPortsQueue;
 using Protocols::GpuffProtocol;
 
 UnsolicitedHandler::UnsolicitedHandler(CtiPortSPtr &port, CtiDeviceManager &deviceManager) :
     _port(port),
     _deviceManager(deviceManager),
-    _shutdown(false)
+    _shutdown(false),
+    _portLogManager("porthandler" + CtiNumStr(++portHandlerCount))
 {
+    _portLog = _portLogManager.getLogger();
+
     UnsolicitedPortsQueue.addClient(this);
 }
 
@@ -48,58 +57,39 @@ UnsolicitedHandler::~UnsolicitedHandler()
     //  delete the device records
     delete_assoc_container(_device_records);
 
-    haltLog();
-
     UnsolicitedPortsQueue.removeClient(this);
 }
 
 
-void UnsolicitedHandler::startLog( void )
+void UnsolicitedHandler::startLog()
 {
-    if( gLogPorts && !_portLog.isRunning() )
+    if( gLogPorts && !_portLogManager.isStarted() )
     {
-        string of(describePort() + "_");
-
-        string comlogdir;
-        comlogdir  = gLogDirectory.data();
+        const string outputFile = describePort() + "_";
+        string comlogdir = gLogDirectory.data();
         comlogdir += "\\Comm";
+
         // Create a subdirectory called Comm beneath Log.
         CreateDirectoryEx(gLogDirectory.data(), comlogdir.data(), NULL);
 
-        _portLog.setToStdOut(false);  // Not to std out.
-        _portLog.setOwnerInfo(CompileInfo);
-        _portLog.setOutputPath(comlogdir);
-        _portLog.setRetentionLength(gLogRetention);
-        _portLog.setOutputFile(of);
-        _portLog.setWriteInterval(10000);                   // 7/23/01 CGP.
-
-        _portLog.start();
+        _portLogManager.setToStdOut      ( false );  // Not to std out.
+        _portLogManager.setOwnerInfo     ( CompileInfo );
+        _portLogManager.setOutputPath    ( comlogdir );
+        _portLogManager.setRetentionDays ( gLogRetention );
+        _portLogManager.setOutputFile    ( outputFile );
+        _portLogManager.start();
     }
 }
-
-void UnsolicitedHandler::haltLog( void )
-{
-    if( gLogPorts )
-    {
-        _portLog.interrupt(CtiThread::SHUTDOWN);
-        _portLog.join();
-    }
-}
-
 
 void UnsolicitedHandler::run( void )
 {
     startLog();
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << describePort() << " started as TID  " << CurrentTID() << endl;
-    }
+    CTILOG_INFO(dout, describePort() <<" started");
 
     if( !setupPort() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << describePort() << " setupPort() failed" << endl;
+        CTILOG_ERROR(dout, describePort() <<" setupPort() failed");
     }
     else
     {
@@ -135,8 +125,7 @@ void UnsolicitedHandler::run( void )
             }
             catch( ... )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION in " << describePort() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, describePort() <<" has failed");
             }
 
             if( ! work_remaining )
@@ -161,10 +150,7 @@ void UnsolicitedHandler::run( void )
         }
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << describePort() << " shutdown." << endl;
-    }
+    CTILOG_INFO(dout, describePort() <<" shutdown");
 }
 
 
@@ -450,8 +436,7 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
     {
         if( gConfigParms.isTrue("PORTER_UNSOLICITED_HANDLER_DEBUG") )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Porter::UnsolicitedHandler::handleDeviceRequest - no device found for device id (" << om->DeviceID << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "no device found for device id ("<< om->DeviceID <<")");
         }
 
         return handleDeviceError(om, ClientErrors::IdNotFound);
@@ -474,8 +459,7 @@ void UnsolicitedHandler::handleDeviceRequest(OUTMESS *om)
 
     if( gConfigParms.isTrue("PORTER_UNSOLICITED_HANDLER_DEBUG") )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Porter::UnsolicitedHandler::handleDeviceRequest - queueing work for \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "queueing work for \""<< dr->device->getName() <<"\"");
     }
 
     dr->outbound.push_back(om);
@@ -635,9 +619,7 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
             }
             catch( MissingConfigException &e )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " DNP Device " << dnp_device->getName() << " is not assigned a DNP configuration. "
-                     << "Unable to process inbound message." << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_EXCEPTION_ERROR(dout, e, "DNP Device "<< dnp_device->getName() <<" is not assigned a DNP configuration. Unable to process inbound message.");
             }
         }
         else if( isGpuffDevice(*dr->device) )
@@ -873,9 +855,7 @@ void UnsolicitedHandler::readPortQueue(CtiPortSPtr &port, om_list &local_queue)
 
         if( !printed && entries && gConfigParms.isTrue("PORTER_UNSOLICITED_HANDLER_DEBUG") )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Porter::UnsolicitedHandler::getOutMessages - " << entries << " additional entries on queue " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
+            CTILOG_DEBUG(dout, entries <<" additional entries on queue");
             printed = true;
         }
 
@@ -1084,8 +1064,7 @@ void UnsolicitedHandler::processGpuffInbound(device_record &dr)
     {
         delete_container(packet.points);
 
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " GPUFF device " << dr.device->getName() << " sequence number " << packet.seq << " already processed." << endl;
+        CTILOG_INFO(dout, "GPUFF device "<< dr.device->getName() <<" sequence number "<< packet.seq <<" already processed.");
     }
 
     delete p->data;
@@ -1143,17 +1122,19 @@ void UnsolicitedHandler::trace()
 
     if( gLogPorts )
     {
-        CtiLockGuard<CtiLogger> portlog_guard(_portLog);
+        Cti::StreamBuffer output;
 
-        for each( CtiMessage *msg in _traceList )
+        for each( const CtiMessage *msg in _traceList )
         {
-            _portLog << ((CtiTraceMsg *)msg)->getTrace();
-
-            if( ((CtiTraceMsg *)msg)->isEnd() )
+            const CtiTraceMsg* trace = static_cast<const CtiTraceMsg*>(msg);
+            output << trace->getTrace();
+            if(trace->isEnd())
             {
-                _portLog << endl;
+                output << endl;
             }
         }
+
+        CTILOG_INFO(_portLog, output);
     }
 
     {

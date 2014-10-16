@@ -4,7 +4,7 @@
 
 #include <set>
 
-class CtiInterpreterPool
+class CtiInterpreterPool : public Cti::Loggable
 {
 public:
 
@@ -17,7 +17,7 @@ public:
     void stopAndDestroyAllInterpreters();
 
     // dumps the active and available interpreters to dout
-    void dumpPool();
+    std::string toString() const override;
 
 private:
     typedef std::set< CtiInterpreter* >::iterator interp_set_iter;

@@ -28,24 +28,10 @@ bool CtiMCScheduleManager::refreshAllSchedules()
             success = false;
 
     }
-    catch(RWExternalErr e )
-    {
-        success = false;
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " Exception:  " << e.why() << endl;
-        }
-    }
     catch(...)
     {
         success = false;
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout
-            << CtiTime()
-            << " Unknown exception occured in CtiMCScheduleManager::refreshAllSchedules()"
-            << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( success )
@@ -73,10 +59,8 @@ bool CtiMCScheduleManager::refreshAllSchedules()
             delete (*itr).second;
         }
         temp_map.clear();
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " An error occured retrieving schedules from the database" << endl;
-        }
+
+        CTILOG_ERROR(dout, "Unable to retrieve schedules from the database");
     }
 
     return success;
@@ -112,8 +96,7 @@ bool CtiMCScheduleManager::updateAllSchedules()
                 // add the schedule to the database
                 if( gMacsDebugLevel & MC_DEBUG_DB )
                 {
-                    CtiLockGuard< CtiLogger > g(dout);
-                    dout << CtiTime() << " Inserting schedule into the database:  " << sched->getScheduleID() << endl;
+                    CTILOG_DEBUG(dout, "Inserting schedule into the database: "<< sched->getScheduleID());
                 }
 
                 sched->Insert();
@@ -124,8 +107,7 @@ bool CtiMCScheduleManager::updateAllSchedules()
             {
                 if( gMacsDebugLevel & MC_DEBUG_DB )
                 {
-                    CtiLockGuard< CtiLogger > g(dout);
-                    dout << CtiTime() << " Update schedule in the database:  " << sched->getScheduleID() << endl;
+                    CTILOG_DEBUG(dout, "Update schedule in the database: "<< sched->getScheduleID());
                 }
 
                 sched->Update();
@@ -140,8 +122,7 @@ bool CtiMCScheduleManager::updateAllSchedules()
     {
         if( gMacsDebugLevel & MC_DEBUG_DB )
         {
-            CtiLockGuard< CtiLogger > g(dout);
-            dout << CtiTime() << " Deleteing schedule from the database:  " << (*iter)->getScheduleID() << endl;
+            CTILOG_DEBUG(dout, "Deleting schedule from the database: "<< (*iter)->getScheduleID());
         }
 
         delete *iter;
@@ -178,8 +159,7 @@ CtiMCSchedule* CtiMCScheduleManager::addSchedule(const CtiMCSchedule& sched)
 
     if ( id == 0 )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        CTILOG_ERROR(dout, "Invalid Connection to Database");
 
         return NULL;
     }
@@ -266,14 +246,12 @@ bool CtiMCScheduleManager::deleteSchedule(long sched_id)
             {
                 if( gMacsDebugLevel & MC_DEBUG_DB )
                 {
-                    CtiLockGuard< CtiLogger > g(dout);
-                    dout << CtiTime() << " Successfully added:  " << to_delete << " to the delete set" << endl;
+                    CTILOG_DEBUG(dout, "Successfully added: "<< to_delete <<" to the delete set");
                 }
             }
             else
             {
-                CtiLockGuard< CtiLogger > g(dout);
-                dout << CtiTime() << " Failed to add:  " << to_delete << " it was already in the set" << endl;
+                CTILOG_ERROR(dout, "Failed to insert: "<< to_delete <<", it was already in the set");
             }
 
             ret_val = true;
@@ -371,32 +349,16 @@ bool CtiMCScheduleManager::retrieveSimpleSchedules(
             }
         }
     }
-    catch(RWExternalErr e )
-    {
-        success = false;
-
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " Exception:  " << e.why() << endl;
-        }
-    }
     catch(...)
     {
         success = false;
 
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " An unkown exception occured"  << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( !success )
     {
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " An error occured executing the following sql:"  << endl;
-            dout << CtiTime() << " " << sql << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< sql);
     }
 
     return success;
@@ -453,34 +415,17 @@ bool CtiMCScheduleManager::retrieveScriptedSchedules(
             }
         }
     }
-    catch(RWExternalErr e )
-    {
-        success = false;
-
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " Exception:  " << e.why() << endl;
-        }
-    }
     catch(...)
     {
         success = false;
 
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " An unkown exception occured"  << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( !success )
     {
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " An error occured executing the following sql:"  << endl;
-            dout << CtiTime() << " " << sql << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< sql);
     }
-
 
     return success;
 }

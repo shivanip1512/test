@@ -20,7 +20,7 @@
 #include "numstr.h"
 #include "socket_helper.h"
 #include "std_helper.h"
-
+#include "win_helper.h"
 #include "portfield.h"
 
 #include "connection_client.h"
@@ -31,7 +31,9 @@ using namespace std;
 
 using Cti::Protocols::GpuffProtocol;
 using Cti::Timing::MillisecondTimer;
+using Cti::arrayToRange;
 using Cti::Logging::Vector::Hex::operator<<;
+using Cti::Logging::Range::Hex::operator<<;
 
 extern CtiDeviceManager DeviceManager;
 
@@ -59,10 +61,7 @@ void PortUdpThread(void *pid)
 
         udp.run();
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Shutdown PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
-        }
+        CTILOG_INFO(dout, "Shutdown PortUdpThread for port "<< Port->getPortID() <<" / "<< Port->getName());
     }
 }
 
@@ -85,11 +84,7 @@ bool UdpPortHandler::setupPort()
 {
     if( !_udp_port )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - _udp_port == 0 in UdpPortHandler::setup() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
+        CTILOG_ERROR(dout, "_udp_port is Null");
         return false;
     }
 
@@ -144,11 +139,8 @@ void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
 
         if (!insertResult.second)
         {
-            // The insert didn't occur! Complain.
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - properties insert failed for device "
-             << device.getName() << ". Please update the type/serial values for this device to be unique. "
-             << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "properties insert failed for device "<< device.getName() <<
+                    ". Please update the type/serial values for this device to be unique.");
         }
     }
     else if( isDnpDevice(device) )
@@ -159,10 +151,8 @@ void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
         if (!insertResult.second)
         {
             // The insert didn't occur! Complain.
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - properties insert failed for device "
-             << device.getName() << ". Please update the master/slave values for this device to be unique. "
-             << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "properties insert failed for device "<< device.getName() <<
+                    ". Please update the master/slave values for this device to be unique.");
         }
     }
     else if( isRdsDevice(device) )
@@ -184,11 +174,7 @@ void UdpPortHandler::addDeviceProperties(const CtiDeviceSingle &device)
 
     if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - loading device "
-             << device.getName() << " "
-             << _ip_addresses[device_id] << ":" << _ports[device_id] << " "
-             << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "loading device "<< device.getName() <<" / "<< formatHostAndPort(_ip_addresses[device_id], _ports[device_id]));
     }
 }
 
@@ -280,8 +266,7 @@ void UdpPortHandler::loadStaticRdsIPAndPort(const CtiDeviceSingle &device)
     if( !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_RDS_IP_Address) ||
         !device.hasStaticInfo(CtiTableStaticPaoInfo::Key_RDS_IP_Port) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Unable to load devices IP and Port " << device.getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Unable to load IP and Port for device "<< device.getName());
         return;
     }
 
@@ -294,11 +279,7 @@ void UdpPortHandler::loadStaticRdsIPAndPort(const CtiDeviceSingle &device)
 
     if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Cti::Porter::UdpPortHandler::addDeviceProperties - loading device "
-             << device.getName() << " "
-             << formatHostAndPort(_ip_addresses[device_id], _ports[device_id]) << " "
-             << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "loading device "<< device.getName() <<" / "<< formatHostAndPort(_ip_addresses[device_id], _ports[device_id]));
     }
 }
 
@@ -338,10 +319,7 @@ bool UdpPortHandler::tryBindSocket( void )
     Cti::AddrInfo pAddrInfo = Cti::makeUdpServerSocketAddress(_udp_port->getIPPort());
     if( !pAddrInfo )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::bindSocket() - **** Checkpoint - failed to retrieve address info with error " << pAddrInfo.getError() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "failed to retrieve address info ("<< pAddrInfo.getError() <<")");
         return false;
     }
 
@@ -364,18 +342,12 @@ bool UdpPortHandler::tryBindSocket( void )
         {
             _udp_sockets.setOption(SOL_SOCKET, SO_RCVBUF, (char *)&rcvbuf, rcvbuf_size);
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Cti::Porter::UdpPortHandler::bindSocket() - **** Checkpoint - new SO_RCVBUF is " << rcvbuf << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_DEBUG(dout, "SO_RCVBUF is set to "<< rcvbuf);
         }
     }
-    catch( Cti::SocketException & e )
+    catch( const Cti::SocketException& e )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::tryBindSocket() - **** Checkpoint - socket error: " << e.what() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_EXCEPTION_ERROR(dout, e);
 
         return false;
     }
@@ -396,8 +368,8 @@ void UdpPortHandler::updateDeviceIpAndPort(device_record &dr, const ip_packet &p
     {
         if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::updateDeviceRecord() - IP or port mismatch for device \"" << dr.device->getName() << "\", updating (" << old_device_ip << " != " << p.ip << " || " << old_device_port << " != " << p.port << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "IP or port mismatch for device \""<< dr.device->getName() <<"\", "
+                    "updating ("<< old_device_ip <<" != "<< p.ip <<" || "<< old_device_port <<" != "<< p.port << ")");
         }
 
         setDeviceIp  (dr.device->getID(), p.ip);
@@ -494,26 +466,15 @@ YukonError_t UdpPortHandler::sendOutbound( device_record &dr )
 
     if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Cti::Porter::UdpPortHandler::generateOutbound() - sending packet to "
-                          << device_ip << ":" << device_port << " "
-                          << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-        for( int xx = 0; xx < dr.xfer.getOutCount(); xx++ )
-        {
-            dout << " " << CtiNumStr(dr.xfer.getOutBuffer()[xx]).hex().zpad(2).toString();
-        }
-
-        dout << endl;
+        CTILOG_DEBUG(dout, "sending packet to "<< formatHostAndPort(device_ip, device_port) <<
+                endl << arrayToRange(dr.xfer.getOutBuffer(), dr.xfer.getOutCount()));
     }
 
     Cti::AddrInfo pAddrInfo = Cti::makeUdpClientSocketAddress(device_ip, device_port);
     if( !pAddrInfo )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::sendOutbound() - **** SENDTO: Checkpoint (error : " << pAddrInfo.getError() << " )**** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "failed to retrieve address info ("<< pAddrInfo.getError() <<") for "<< formatHostAndPort(device_ip, device_port));
+
         return ClientErrors::PortWrite;
     }
 
@@ -526,8 +487,8 @@ YukonError_t UdpPortHandler::sendOutbound( device_record &dr )
     {
         if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::sendOutbound() - **** SENDTO: Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            const DWORD error = WSAGetLastError();
+            CTILOG_DEBUG(dout, "sendto() failed with error code "<< error <<" / "<< Cti::getSystemErrorMessage(error));
         }
 
         return ClientErrors::PortWrite;
@@ -586,7 +547,6 @@ UdpPortHandler::ip_packet *UdpPortHandler::recvPacket(unsigned char * const recv
 
     Cti::SocketAddress from;
 
-    int errorCode;
     int recv_len = SOCKET_ERROR;
 
     // check if we receive data from each family of sockets
@@ -601,12 +561,12 @@ UdpPortHandler::ip_packet *UdpPortHandler::recvPacket(unsigned char * const recv
             break; // break from the loop
         }
 
-        if( (errorCode = WSAGetLastError()) != WSAEWOULDBLOCK )
+        const int error = WSAGetLastError();
+        if( error != WSAEWOULDBLOCK )
         {
             if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << __FUNCTION__ << " - **** Checkpoint - error " << errorCode << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_DEBUG(dout, "recvfrom() failed with error code "<< error <<" / "<< Cti::getSystemErrorMessage(error));
             }
         }
     }
@@ -617,17 +577,6 @@ UdpPortHandler::ip_packet *UdpPortHandler::recvPacket(unsigned char * const recv
     }
 
     ip_packet *p = new ip_packet;
-
-    if( !p )
-    {
-        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::recvPacket() - **** Checkpoint - unable to allocate packet **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        return 0;
-    }
 
     p->ip   = from.getIpAddress();
     p->port = from.getPort();
@@ -640,25 +589,23 @@ UdpPortHandler::ip_packet *UdpPortHandler::recvPacket(unsigned char * const recv
     vector<unsigned char> pText;
     if( ! _encodingFilter->decode(recv_buf, recv_len, pText) )
     {
-        const vector<unsigned char> payload(recv_buf, recv_buf + recv_len);
-
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-            dout << CtiTime() << " " << __FUNCTION__ << " - unable to decode packet received from "
-                 << p->describeAddress() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            Cti::StreamBuffer output;
+            output <<"unable to decode packet received from "<< p->describeAddress();
 
             if( dumpPacket )
             {
-                if( ! payload.empty() )
+                if( recv_len )
                 {
-                    dout << "" << payload << endl;
+                    output << endl << arrayToRange(recv_buf, recv_len);
                 }
                 else
                 {
-                    dout << "[empty]" << endl;
+                    output << endl <<"[empty]";
                 }
             }
+
+            CTILOG_ERROR(dout, output);
         }
 
         //  this packet was unhandled, so we trace it
@@ -675,19 +622,19 @@ UdpPortHandler::ip_packet *UdpPortHandler::recvPacket(unsigned char * const recv
 
     if( dumpPacket )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-        dout << CtiTime() << " " << __FUNCTION__ << " - packet received from "
-             << p->describeAddress() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        Cti::StreamBuffer output;
+        output <<"packet received from "<< p->describeAddress() << endl;
 
         if( ! pText.empty() )
         {
-            dout << "" << pText << endl;
+            output << pText << endl;
         }
         else
         {
-            dout << "[empty]" << endl;
+            output <<"[empty]"<< endl;
         }
+
+        CTILOG_DEBUG(dout, output);
     }
 
     validatePacket(p);
@@ -708,10 +655,7 @@ bool UdpPortHandler::validatePacket(ip_packet *&p)
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FUNCTION__ << "() - incoming packet from " << p->describeAddress() << " is invalid " << __FILE__ << "(" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "incoming packet from "<< p->describeAddress() <<" is invalid ");
 
         //  this packet was unhandled, so we trace it
         traceInbound(p->describeAddress(), ClientErrors::None, p->data, p->len);
@@ -744,11 +688,7 @@ void UdpPortHandler::distributePacket(ip_packet *p)
         }
         default:
         {
-            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Cti::Porter::UdpPortHandler::collectInbounds() - packet doesn't match any known protocol - discarding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "packet doesn't match any known protocol - discarding");
         }
     }
 
@@ -775,8 +715,7 @@ void UdpPortHandler::handleDnpPacket(ip_packet *&p)
     {
         if( dr->device->isInhibited() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Cti::Porter::UdpPortHandler::handleDnpPacket - device \"" << dr->device->getName() << "\" is inhibited, discarding packet " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_WARN(dout, "device \""<< dr->device->getName() <<"\" is inhibited, discarding packet");
         }
         else
         {
@@ -789,8 +728,7 @@ void UdpPortHandler::handleDnpPacket(ip_packet *&p)
     }
     else if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Cti::Porter::UdpPortHandler::handleDnpPacket - can't find DNP master/slave (" << master_address << "/" << slave_address << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "can't find DNP master/slave ("<< master_address <<"/"<< slave_address <<")");
     }
 }
 
@@ -810,10 +748,7 @@ void UdpPortHandler::handleGpuffPacket(ip_packet *&p)
            (p->data[12] << 16) |
            (p->data[13] <<  8) |  p->data[14];
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - incoming packet from " << p->describeAddress() << endl;
-    }
+    CTILOG_INFO(dout, "incoming packet from "<< p->describeAddress());
 
     GpuffProtocol::describeFrame(p->data, p->len, len, crc_included, ack_required, devt, ser);
 
@@ -825,8 +760,7 @@ void UdpPortHandler::handleGpuffPacket(ip_packet *&p)
         {
             if( dr->device->isInhibited() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Cti::Porter::UdpPortHandler::handleDnpPacket - device \"" << dr->device->getName() << "\" is inhibited, discarding packet " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_WARN(dout, "device \""<< dr->device->getName() <<"\" is inhibited, discarding packet");
             }
             else
             {
@@ -841,18 +775,12 @@ void UdpPortHandler::handleGpuffPacket(ip_packet *&p)
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no device found for GPUFF serial (" << ser << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "no device found for GPUFF serial ("<< ser <<")");
         }
     }
     catch( ... )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 

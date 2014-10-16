@@ -47,10 +47,8 @@ CtiIONValueVariable &CtiIONValueVariable::operator=( const CtiIONValueVariable &
 {
     if(this != &aRef)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        //TODO: Remove this log or make this class non-copyable
+        CTILOG_TRACE(dout, "inside "<<__FUNCTION__);
 
         _variableType = aRef._variableType;
     }
@@ -169,8 +167,7 @@ CtiIONValue *CtiIONValueVariable::restoreVariable( unsigned char ionClass, unsig
 
         default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "unknown classDescriptor ("<< classDescriptor <<")");
         }
     }
 

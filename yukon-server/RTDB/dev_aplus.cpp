@@ -137,10 +137,7 @@ YukonError_t CtiDeviceAlphaPPlus::GeneralScan(CtiRequestMsg     *pReq,
                                      OutMessageList    &outList,
                                      INT ScanPriority)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " General Scan of device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "General Scan of device "<< getName() <<" in progress");
 
     if( ! OutMessage )
     {
@@ -334,10 +331,8 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, CtiMe
                             {
                                 setPreviousState (StateScanAbort);
                                 generateCommandTerminate (Transfer, traceList);
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Class 0 failed for " << getName() << " aborting scan " << endl;
-                                }
+
+                                CTILOG_ERROR(dout, "Class 0 failed for "<< getName() <<" aborting scan");
                             }
                             break;
                         }
@@ -367,10 +362,8 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, CtiMe
                             {
                                 setPreviousState (StateScanAbort);
                                 generateCommandTerminate (Transfer, traceList);
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Class 6 failed for " << getName() << " aborting scan " << endl;
-                                }
+
+                                CTILOG_ERROR(dout, "Class 6 failed for "<< getName() <<" aborting scan");
                             }
 
                             break;
@@ -400,10 +393,8 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, CtiMe
                             {
                                 setPreviousState (StateScanAbort);
                                 generateCommandTerminate (Transfer, traceList);
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Class 2 failed for " << getName() << " aborting scan " << endl;
-                                }
+
+                                CTILOG_ERROR(dout, "Class 2 failed for "<< getName() <<" aborting scan");
                             }
 
                             break;
@@ -435,10 +426,8 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, CtiMe
                             {
                                 setPreviousState (StateScanAbort);
                                 generateCommandTerminate (Transfer, traceList);
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Class 82 failed for " << getName() << " aborting scan " << endl;
-                                }
+
+                                CTILOG_ERROR(dout, "Class 82 failed for "<< getName() <<" aborting scan");
                             }
 
                             break;
@@ -481,10 +470,8 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, CtiMe
                             {
                                 setPreviousState (StateScanAbort);
                                 generateCommandTerminate (Transfer, traceList);
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Class 11 failed for " << getName() << " aborting scan " << endl;
-                                }
+
+                                CTILOG_ERROR(dout, "Class 11 failed for "<< getName() <<" aborting scan");
                             }
                             break;
                         }
@@ -505,12 +492,12 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandScan( CtiXfer  &Transfer, CtiMe
             }
         default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
+                generateCommandTerminate (Transfer, traceList);
+                setPreviousState (StateScanAbort);
+                retCode = ClientErrors::Abnormal;
             }
-            generateCommandTerminate (Transfer, traceList);
-            setPreviousState (StateScanAbort);
-            retCode = ClientErrors::Abnormal;
     }
     return retCode;
 }
@@ -653,12 +640,6 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer
                             ptr->class0.wattHoursPerRevolution = (ULONG) BCDtoBase10(wPtr->UKH,     3) / 1000.0;
                             ptr->class0.pulsesPerRevolution = (USHORT) BCDtoBase10(&wPtr->UPR,     1);
 
-//                            {
-//                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-//                                dout << "watt hours   : " <<  ptr->class0.wattHoursPerRevolution << endl;
-//                                dout << "pulses per : " << ptr->class0.pulsesPerRevolution << endl;
-//                            }
-
                             if (_lpWorkBuffer != NULL)
                             {
                                 delete []_lpWorkBuffer;
@@ -693,17 +674,6 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer
                             ptr->class6.primaryFunction = primaryFunction(wPtr->XUOM[0]);
                             ptr->class6.secondaryFunction = secondaryFunction(wPtr->XUOM[0]);
 
-/*
-                            {
-                                char junk[10];
-                                sprintf (junk,"0x%2x",wPtr->XUOM[0]);
-
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "Raw data  : " << string(junk) << endl;
-                                dout << "Primary   : " << (USHORT)ptr->class6.primaryFunction << endl;
-                                dout << "Secondary : " << (USHORT)ptr->class6.secondaryFunction << endl;
-                            }
-*/
                             if (_lpWorkBuffer != NULL)
                             {
                                 delete []_lpWorkBuffer;
@@ -747,13 +717,6 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer
                                 ptr->class2.configTOUBlk2  = touBlockMapping (wPtr->EBLKCF2,ptr->class6.secondaryFunction);
                             }
 
-/*
-                            {
-                              CtiLockGuard<CtiLogger> doubt_guard(dout);
-                              dout << "Blk 1 Mapping= " << (USHORT)ptr->class2.configTOUBlk1 << endl;
-                              dout << "Blk 2 Mapping= " << (USHORT)ptr->class2.configTOUBlk2 << endl;
-                            }
-*/
                             if (_lpWorkBuffer != NULL)
                             {
                                 delete []_lpWorkBuffer;
@@ -802,16 +765,21 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer
 
                             if( DebugLevel & 0x0001 )
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << endl << CtiTime() << " -------- Alpha Load Profile Inputs ---------------" << endl;
-                                dout << "Number of Channels " << ptr->class14.numberOfChannels << " Interval " << ptr->class14.intervalLength << endl;
-                                dout << "\tChannel 1: " << ptr->class14.channelInput[0] << endl;
-                                dout << "\tChannel 2: " << ptr->class14.channelInput[1] << endl;
-                                dout << "\tChannel 3: " << ptr->class14.channelInput[2] << endl;
-                                dout << "\tChannel 4: " << ptr->class14.channelInput[3] << endl;
+                                Cti::FormattedList logItems;
 
-                                dout << endl << "Scaling factor " << ptr->class14.scalingFactor << endl;
-                                dout << "Days requested " << ptr->daysRequested << endl;
+                                logItems.add("Number of Channels") << ptr->class14.numberOfChannels;
+                                logItems.add("Interval")           << ptr->class14.intervalLength;
+                                logItems.add("Channel 1")          << ptr->class14.channelInput[0];
+                                logItems.add("Channel 2")          << ptr->class14.channelInput[1];
+                                logItems.add("Channel 3")          << ptr->class14.channelInput[2];
+                                logItems.add("Channel 4")          << ptr->class14.channelInput[3];
+                                logItems.add("Scaling factor")     << ptr->class14.scalingFactor;
+                                logItems.add("Days requested")     << ptr->daysRequested;
+
+                                CTILOG_DEBUG(dout,
+                                        endl <<"---------- Alpha Load Profile Inputs ----------"<<
+                                        logItems
+                                        );
                             }
 
                             if (shouldRetrieveLoadProfile (ptr->porterLPTime, ptr->class14.intervalLength))
@@ -848,10 +816,8 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer
                             }
                             else
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
-                                }
+                                CTILOG_WARN(dout, "Load profile for "<< getName() <<" will not be collected this scan");
+
                                 setPreviousState (StateScanComplete);
                                 generateCommandTerminate (Transfer, traceList);
                             }
@@ -883,12 +849,12 @@ YukonError_t CtiDeviceAlphaPPlus::generateCommandLoadProfile( CtiXfer  &Transfer
             }
         default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
+                generateCommandTerminate (Transfer, traceList);
+                setPreviousState (StateScanAbort);
+                retCode = ClientErrors::Abnormal;
             }
-            generateCommandTerminate (Transfer, traceList);
-            setPreviousState (StateScanAbort);
-            retCode = ClientErrors::Abnormal;
     }
     return retCode;
 }
@@ -1048,8 +1014,8 @@ YukonError_t CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer &Transfer, YukonEr
                     }
                     catch (...)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Could not retrieve Alpha "<< getName() <<"'s class "<< getReadClass());
+
                         // the esc is inside of class 7
                         setCurrentState (StateScanValueSet7FirstScan);
                     }
@@ -1201,8 +1167,8 @@ YukonError_t CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer &Transfer, YukonEr
                         }
                         catch (...)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Could not retrieve Alpha "<< getName() <<"'s class "<< getReadClass());
+
                             // the esc is inside of class 7
                             setCurrentState (StateScanValueSet7FirstScan);
                         }
@@ -1253,13 +1219,11 @@ YukonError_t CtiDeviceAlphaPPlus::decodeResponseScan (CtiXfer &Transfer, YukonEr
 
         default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
-            setPreviousState (StateScanAbort);
-            setCurrentState (StateScanSendTerminate);
-            break;
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
 
+                setPreviousState (StateScanAbort);
+                setCurrentState (StateScanSendTerminate);
+            }
     }
 
     return retCode;
@@ -1445,10 +1409,8 @@ YukonError_t CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer,
                                 * invalid
                                 ************************
                                 */
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Aborting scan: Invalid day record timestamp " << getName()  << " " << dateOfRecord.asString()<< endl;
-                                }
+                                CTILOG_ERROR(dout, "Aborting scan: Invalid day record timestamp "<< getName() <<" "<< dateOfRecord);
+
                                 setPreviousState (StateScanAbort);
                                 setCurrentState (StateScanSendTerminate);
                             }
@@ -1466,10 +1428,8 @@ YukonError_t CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer,
                     }
                     catch (...)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
-                        }
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Could not retrieve Alpha "<< getName() <<"'s class "<< getReadClass());
+
                         // the esc is inside of class 7
                         setCurrentState (StateScanValueSet7FirstScan);
                     }
@@ -1671,8 +1631,8 @@ YukonError_t CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer,
                         }
                         catch (...)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Could not retrieve Alpha "<< getName() <<"'s class "<< getReadClass());
+
                             // the esc is inside of class 7
                             setCurrentState (StateScanValueSet7FirstScan);
                         }
@@ -1716,13 +1676,11 @@ YukonError_t CtiDeviceAlphaPPlus::decodeResponseLoadProfile (CtiXfer  &Transfer,
 
         default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
-            setPreviousState (StateScanAbort);
-            setCurrentState (StateScanSendTerminate);
-            break;
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
 
+                setPreviousState (StateScanAbort);
+                setCurrentState (StateScanSendTerminate);
+            }
     }
     return retCode;
 }
@@ -1856,10 +1814,8 @@ INT CtiDeviceAlphaPPlus::decodeResultScan   (const INMESS   &InMessage,
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "ERROR: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Unexpected pPIL is NULL");
+
                     delete pData;
                     pData = NULL;
                 }
@@ -2080,10 +2036,7 @@ INT CtiDeviceAlphaPPlus::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBy
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Unable to read " << getName() << " Class 0 defaulting decimals" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to read "<< getName() <<" Class 0 defaulting decimals");
     }
 
     // if we were able to retrieve class 6
@@ -2097,10 +2050,7 @@ INT CtiDeviceAlphaPPlus::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBy
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Unable to read " << getName() << " Class 6 defaulting functionality" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to read "<< getName() <<" Class 6 defaulting functionality");
     }
 
     ptr->Real.class2.configTOUBlk1  = PPLUS_KW_DELIVERED;
@@ -2122,10 +2072,7 @@ INT CtiDeviceAlphaPPlus::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBy
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Unable to read " << getName() << " Class 2 defaulting block mappings" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to read "<< getName() <<" Class 2 defaulting block mappings");
     }
 
     ptr->Real.class82.BLK1Demand    = 0.0;
@@ -2138,10 +2085,7 @@ INT CtiDeviceAlphaPPlus::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBy
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Unable to read " << getName() << " Class 82 demand data not collected" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to read "<< getName() <<" Class 82 demand data not collected");
     }
 
     // class 11
@@ -2238,10 +2182,7 @@ INT CtiDeviceAlphaPPlus::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBy
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Unable to read " << getName() << " Class 11 billing data not collected" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to read "<< getName() <<" Class 11 billing data not collected");
     }
 
     memcpy (aInMessBuffer, _dataBuffer, sizeof (AlphaPPlusScanData_t));
@@ -2261,6 +2202,36 @@ INT CtiDeviceAlphaPPlus::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aTotalB
 
 INT CtiDeviceAlphaPPlus::ResultDisplay(const INMESS &InMessage)
 {
+    struct FormatValue
+    {
+        std::ostringstream _ostream;
+
+        FormatValue()
+        {
+            _ostream << std::setfill('0');
+        }
+
+        std::ostringstream& operator()(float val, int precision)
+        {
+            _ostream.str("");
+            _ostream << std::fixed << std::setprecision(precision) << val;
+            return _ostream;
+        }
+
+        std::ostringstream& operator()(float val)
+        {
+            return (*this)(val, 6);
+        }
+
+        std::ostringstream& operator()(const AlphaDateTime_t& dt)
+        {
+            _ostream.str("");
+            _ostream << dt.Month <<"/"<< dt.Day <<"/"<< dt.Year <<" "<< std::setw(2) << dt.Hour <<":"<< std::setw(2) << dt.Minute;
+            return _ostream;
+        }
+
+    } formatVal;
+
     const DIALUPREPLY *DUPRep = &InMessage.Buffer.DUPSt.DUPRep;
     /* Misc. definitions */
     ULONG i, j;
@@ -2269,185 +2240,115 @@ INT CtiDeviceAlphaPPlus::ResultDisplay(const INMESS &InMessage)
     // looking for billing data DLS
     const AlphaPPlusScanData_t *ptr = (const AlphaPPlusScanData_t *)DUPRep->Message;
 
+    Cti::FormattedList itemList;
+
+    itemList <<"--------- Class 0 ---------";
+    itemList.add("DemandDecimals") << formatVal(ptr->Real.class0.demandDecimals);
+    itemList.add("EnergyDecimals") << formatVal(ptr->Real.class0.energyDecimals);
+    itemList.add("Kh")             << formatVal(ptr->Real.class0.wattHoursPerRevolution);
+    itemList.add("Mp")             << ptr->Real.class0.pulsesPerRevolution;
+
+    itemList <<"--------- Class 2 ---------";
+    itemList.add("Blk 1 Mapping") << ptr->Real.class2.configTOUBlk1;
+    itemList.add("Blk 2 Mapping") << ptr->Real.class2.configTOUBlk2;
+
+    itemList <<"--------- Class 82 ---------";
+    itemList.add("Blk 1") << formatVal(ptr->Real.class82.BLK1Demand);
+    itemList.add("Blk 2") << formatVal(ptr->Real.class82.BLK2Demand);
+
+    itemList <<"--------- Class 11 ---------";
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Result display for device " << getName() << " in progress " << endl;
+        Cti::FormattedTable table;
 
-        sprintf(buffer,"--------- Class 0 ---------");
-        dout << endl << buffer << endl;
-        sprintf(buffer,"DemandDecimals= %f",ptr->Real.class0.demandDecimals);
-        dout << buffer << endl;
-        sprintf(buffer,"EnergyDecimals= %f",ptr->Real.class0.energyDecimals);
-        dout << buffer << endl;
-        sprintf(buffer,"Kh           =   %f",ptr->Real.class0.wattHoursPerRevolution);
-        dout << buffer << endl;
-        sprintf(buffer,"Mp            = %d",ptr->Real.class0.pulsesPerRevolution);
-        dout << buffer << endl;
+        table.setCell(0, 1) <<"Avg PF";
+        table.setCell(0, 2) <<"Total kWh 1";
+        table.setCell(0, 3) <<"Total kWh 2";
+        table.setCell(0, 4) <<"kVarh 1";
+        table.setCell(0, 5) <<"kVarh 2";
+        table.setCell(0, 6) <<"kVarh 3";
+        table.setCell(0, 7) <<"kVarh 4";
 
-        sprintf(buffer,"--------- Class 2 ---------");
-        dout << endl << buffer << endl;
-        sprintf(buffer,"Blk 1 Mapping= %d",ptr->Real.class2.configTOUBlk1);
-        dout << buffer << endl;
-        sprintf(buffer,"Blk 2 Mapping= %d",ptr->Real.class2.configTOUBlk2);
-        dout << buffer << endl;
+        table.setCell(1, 0) <<"Rate E";
+        table.setCell(1, 1) << formatVal(ptr->Real.class11.EAVGPF);
+        table.setCell(1, 2) << formatVal(ptr->Real.class11.ETKWH1);
+        table.setCell(1, 3) << formatVal(ptr->Real.class11.ETKWH2);
+        table.setCell(1, 4) << formatVal(ptr->Real.class11.EKVARH1);
+        table.setCell(1, 5) << formatVal(ptr->Real.class11.EKVARH2);
+        table.setCell(1, 6) << formatVal(ptr->Real.class11.EKVARH3);
+        table.setCell(1, 7) << formatVal(ptr->Real.class11.EKVARH4);
 
-        sprintf(buffer,"--------- Class 82 ---------");
-        dout << endl << buffer << endl;
-        sprintf(buffer,"BLK1          = %f",ptr->Real.class82.BLK1Demand);
-        dout << buffer << endl;
-        sprintf(buffer,"BLK2          = %f",ptr->Real.class82.BLK2Demand);
-        dout << buffer << endl;
-
-        sprintf(buffer,"--------- Class 11 ---------");
-        dout << endl << buffer << endl;
-        sprintf(buffer,"EAVGPF   = %f",       ptr->Real.class11.EAVGPF   );
-        dout << buffer << endl;
-        sprintf(buffer,"ETKWH2   = %f",       ptr->Real.class11.ETKWH2   );
-        dout << buffer << endl;
-        sprintf(buffer,"ETKWH1   = %f",       ptr->Real.class11.ETKWH1   );
-        dout << buffer << endl;
-        sprintf(buffer,"EKVARH1  = %f",       ptr->Real.class11.EKVARH1  );
-        dout << buffer << endl;
-        sprintf(buffer,"EKVARH2  = %f",       ptr->Real.class11.EKVARH2  );
-        dout << buffer << endl;
-        sprintf(buffer,"EKVARH3  = %f",       ptr->Real.class11.EKVARH3  );
-        dout << buffer << endl;
-        sprintf(buffer,"EKVARH4  = %f",       ptr->Real.class11.EKVARH4  );
-        dout << buffer << endl << endl;
-
-        sprintf(buffer,"AKWH1    = %f",       ptr->Real.class11.AKWH1    );
-        dout << buffer << endl;
-        sprintf(buffer,"AKW1     = %f",       ptr->Real.class11.AKW1     );
-        dout << buffer << endl;
-        sprintf(buffer,"ATD1     = %d/%d/%d %02d:%02d",
-                ptr->Real.class11.ATD1.Month,
-                ptr->Real.class11.ATD1.Day,
-                ptr->Real.class11.ATD1.Year,
-                ptr->Real.class11.ATD1.Hour,
-                ptr->Real.class11.ATD1.Minute);
-        dout << buffer << endl;
-        sprintf(buffer,"AKWCUM1  = %f",       ptr->Real.class11.AKWCUM1  );
-        dout << buffer << endl;
-        sprintf(buffer,"AKWC1    = %f",       ptr->Real.class11.AKWC1    );
-        dout << buffer << endl;
-
-        sprintf(buffer,"BKWH1    = %f",       ptr->Real.class11.BKWH1    );
-        dout << buffer << endl;
-        sprintf(buffer,"BKW1     = %f",       ptr->Real.class11.BKW1     );
-        dout << buffer << endl;
-        sprintf(buffer,"BTD1     = %d/%d/%d %02d:%02d",
-                ptr->Real.class11.BTD1.Month,
-                ptr->Real.class11.BTD1.Day,
-                ptr->Real.class11.BTD1.Year,
-                ptr->Real.class11.BTD1.Hour,
-                ptr->Real.class11.BTD1.Minute);
-        dout << buffer << endl;
-        sprintf(buffer,"BKWCUM1  = %f",       ptr->Real.class11.BKWCUM1  );
-        dout << buffer << endl;
-        sprintf(buffer,"BKWC1    = %f",       ptr->Real.class11.BKWC1    );
-        dout << buffer << endl;
-
-        sprintf(buffer,"CKWH1    = %f",       ptr->Real.class11.CKWH1    );
-        dout << buffer << endl;
-        sprintf(buffer,"CKW1     = %f",       ptr->Real.class11.CKW1     );
-        dout << buffer << endl;
-        sprintf(buffer,"CTD1     = %d/%d/%d %02d:%02d",
-                ptr->Real.class11.CTD1.Month,
-                ptr->Real.class11.CTD1.Day,
-                ptr->Real.class11.CTD1.Year,
-                ptr->Real.class11.CTD1.Hour,
-                ptr->Real.class11.CTD1.Minute);
-        dout << buffer << endl;
-        sprintf(buffer,"CKWCUM1  = %f",       ptr->Real.class11.CKWCUM1  );
-        dout << buffer << endl;
-        sprintf(buffer,"CKWC1    = %f",       ptr->Real.class11.CKWC1    );
-        dout << buffer << endl;
-
-
-        sprintf(buffer,"DKWH1    = %f",       ptr->Real.class11.DKWH1    );
-        dout << buffer << endl;
-        sprintf(buffer,"DKW1     = %f",       ptr->Real.class11.DKW1     );
-        dout << buffer << endl;
-        sprintf(buffer,"DTD1     = %d/%d/%d %02d:%02d",
-                ptr->Real.class11.DTD1.Month,
-                ptr->Real.class11.DTD1.Day,
-                ptr->Real.class11.DTD1.Year,
-                ptr->Real.class11.DTD1.Hour,
-                ptr->Real.class11.DTD1.Minute);
-        dout << buffer << endl;
-        sprintf(buffer,"DKWCUM1  = %f",       ptr->Real.class11.DKWCUM1  );
-        dout << buffer << endl;
-        sprintf(buffer,"DKWC1    = %f",       ptr->Real.class11.DKWC1    );
-        dout << buffer << endl;
-
-
-        sprintf(buffer,"AKWH2    = %f",       ptr->Real.class11.AKWH2    );
-        dout << buffer << endl;
-        sprintf(buffer,"AKW2     = %f",       ptr->Real.class11.AKW2     );
-        dout << buffer << endl;
-        sprintf(buffer,"ATD2     = %d/%d/%d %02d:%02d",
-                ptr->Real.class11.ATD2.Month,
-                ptr->Real.class11.ATD2.Day,
-                ptr->Real.class11.ATD2.Year,
-                ptr->Real.class11.ATD2.Hour,
-                ptr->Real.class11.ATD2.Minute);
-        dout << buffer << endl;
-        sprintf(buffer,"AKWCUM2  = %f",       ptr->Real.class11.AKWCUM2  );
-        dout << buffer << endl;
-        sprintf(buffer,"AKWC2    = %f",       ptr->Real.class11.AKWC2    );
-        dout << buffer << endl;
-
-        sprintf(buffer,"BKWH2    = %f",       ptr->Real.class11.BKWH2    );
-        dout << buffer << endl;
-        sprintf(buffer,"BKW2     = %f",       ptr->Real.class11.BKW2     );
-        dout << buffer << endl;
-        sprintf(buffer,"BTD2     = %d/%d/%d %02d:%02d",
-                ptr->Real.class11.BTD2.Month,
-                ptr->Real.class11.BTD2.Day,
-                ptr->Real.class11.BTD2.Year,
-                ptr->Real.class11.BTD2.Hour,
-                ptr->Real.class11.BTD2.Minute);
-        dout << buffer << endl;
-        sprintf(buffer,"BKWCUM2  = %f",       ptr->Real.class11.BKWCUM2  );
-        dout << buffer << endl;
-        sprintf(buffer,"BKWC2    = %f",       ptr->Real.class11.BKWC2    );
-        dout << buffer << endl;
-
-
-        sprintf(buffer,"CKWH2    = %f",       ptr->Real.class11.CKWH2    );
-        dout << buffer << endl;
-        sprintf(buffer,"CKW2     = %f",       ptr->Real.class11.CKW2     );
-        dout << buffer << endl;
-        sprintf(buffer,"CTD2     = %d/%d/%d %02d:%02d",
-                ptr->Real.class11.CTD2.Month,
-                ptr->Real.class11.CTD2.Day,
-                ptr->Real.class11.CTD2.Year,
-                ptr->Real.class11.CTD2.Hour,
-                ptr->Real.class11.CTD2.Minute);
-        dout << buffer << endl;
-        sprintf(buffer,"CKWCUM2  = %f",       ptr->Real.class11.CKWCUM2  );
-        dout << buffer << endl;
-        sprintf(buffer,"CKWC2    = %f",       ptr->Real.class11.CKWC2    );
-        dout << buffer << endl;
-
-        sprintf(buffer,"DKWH2    = %f",       ptr->Real.class11.DKWH2    );
-        dout << buffer << endl;
-        sprintf(buffer,"DKW2     = %f",       ptr->Real.class11.DKW2     );
-        dout << buffer << endl;
-        sprintf(buffer,"DTD2     = %d/%d/%d %02d:%02d",
-                ptr->Real.class11.DTD2.Month,
-                ptr->Real.class11.DTD2.Day,
-                ptr->Real.class11.DTD2.Year,
-                ptr->Real.class11.DTD2.Hour,
-                ptr->Real.class11.DTD2.Minute);
-        dout << buffer << endl;
-
-        sprintf(buffer,"DKWCUM2  = %f",       ptr->Real.class11.DKWCUM2  );
-        dout << buffer << endl;
-        sprintf(buffer,"DKWC2    = %f",       ptr->Real.class11.DKWC2    );
-        dout << buffer << endl;
-
+        itemList << table;
     }
+
+    {
+        Cti::FormattedTable table;
+
+        // setCell(column, row)
+        table.setCell(0, 1) <<"kWh";
+        table.setCell(0, 2) <<"kW";
+        table.setCell(0, 3) <<"kWc";
+        table.setCell(0, 4) <<"Cum";
+        table.setCell(0, 5) <<"Date/Time";
+
+        table.setCell(1, 0) <<"Block 1";
+        table.setCell(2, 0) <<"Rate A";
+        table.setCell(2, 1) << formatVal(ptr->Real.class11.AKWH1);
+        table.setCell(2, 2) << formatVal(ptr->Real.class11.AKW1);
+        table.setCell(2, 3) << formatVal(ptr->Real.class11.AKWC1);
+        table.setCell(2, 4) << formatVal(ptr->Real.class11.AKWCUM1);
+        table.setCell(2, 5) << formatVal(ptr->Real.class11.ATD1);
+        table.setCell(3, 0) <<"Rate B";
+        table.setCell(3, 1) << formatVal(ptr->Real.class11.BKWH1);
+        table.setCell(3, 2) << formatVal(ptr->Real.class11.BKW1);
+        table.setCell(3, 3) << formatVal(ptr->Real.class11.BKWC1);
+        table.setCell(3, 4) << formatVal(ptr->Real.class11.BKWCUM1);
+        table.setCell(3, 5) << formatVal(ptr->Real.class11.BTD1);
+        table.setCell(4, 0) <<"Rate C";
+        table.setCell(4, 1) << formatVal(ptr->Real.class11.CKWH1);
+        table.setCell(4, 2) << formatVal(ptr->Real.class11.CKW1);
+        table.setCell(4, 3) << formatVal(ptr->Real.class11.CKWC1);
+        table.setCell(4, 4) << formatVal(ptr->Real.class11.CKWCUM1);
+        table.setCell(4, 5) << formatVal(ptr->Real.class11.CTD1);
+        table.setCell(5, 0) <<"Rate D";
+        table.setCell(5, 1) << formatVal(ptr->Real.class11.DKWH1);
+        table.setCell(5, 2) << formatVal(ptr->Real.class11.DKW1);
+        table.setCell(5, 3) << formatVal(ptr->Real.class11.DKWC1);
+        table.setCell(5, 4) << formatVal(ptr->Real.class11.DKWCUM1);
+        table.setCell(5, 5) << formatVal(ptr->Real.class11.DTD1);
+
+        table.setCell(6, 0) <<"Block 2";
+        table.setCell(7, 0) <<"Rate A";
+        table.setCell(7, 1) << formatVal(ptr->Real.class11.AKWH2);
+        table.setCell(7, 2) << formatVal(ptr->Real.class11.AKW2);
+        table.setCell(7, 3) << formatVal(ptr->Real.class11.AKWC2);
+        table.setCell(7, 4) << formatVal(ptr->Real.class11.AKWCUM2);
+        table.setCell(7, 5) << formatVal(ptr->Real.class11.ATD2);
+        table.setCell(8, 0) <<"Rate B";
+        table.setCell(8, 1) << formatVal(ptr->Real.class11.BKWH2);
+        table.setCell(8, 2) << formatVal(ptr->Real.class11.AKW2);
+        table.setCell(8, 3) << formatVal(ptr->Real.class11.BKWC2);
+        table.setCell(8, 4) << formatVal(ptr->Real.class11.BKWCUM2);
+        table.setCell(8, 5) << formatVal(ptr->Real.class11.BTD2);
+        table.setCell(9, 0) <<"Rate C";
+        table.setCell(9, 1) << formatVal(ptr->Real.class11.CKWH2);
+        table.setCell(9, 2) << formatVal(ptr->Real.class11.CKW2);
+        table.setCell(9, 3) << formatVal(ptr->Real.class11.CKWC2);
+        table.setCell(9, 4) << formatVal(ptr->Real.class11.CKWCUM2);
+        table.setCell(9, 5) << formatVal(ptr->Real.class11.CTD2);
+        table.setCell(10,0) <<"Rate D";
+        table.setCell(10,1) << formatVal(ptr->Real.class11.DKWH2);
+        table.setCell(10,2) << formatVal(ptr->Real.class11.DKW2);
+        table.setCell(10,3) << formatVal(ptr->Real.class11.DKWC2);
+        table.setCell(10,4) << formatVal(ptr->Real.class11.DKWCUM2);
+        table.setCell(10,5) << formatVal(ptr->Real.class11.DTD2);
+
+        itemList << table;
+    }
+
+    CTILOG_INFO(dout, "Result display for device "<< getName() <<" in progress"<<
+            itemList;
+            );
+
     return ClientErrors::None;
 }
 
@@ -2564,10 +2465,6 @@ UCHAR CtiDeviceAlphaPPlus::touBlockMapping (UCHAR config, USHORT type)
         else if (config & 0x01)
         {
 /*
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ****** Alpha " << getName() << " configured for Q1 vars, defaulting to delivered vars ******" << endl;
-            }
             retCode = PPLUS_REACTIVE_DELIVERED;
 */
             retCode = PPLUS_REACTIVE_QUADRANT1;
@@ -2575,10 +2472,6 @@ UCHAR CtiDeviceAlphaPPlus::touBlockMapping (UCHAR config, USHORT type)
         else if (config & 0x02)
         {
 /*
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ****** Alpha " << getName() << " configured for Q2 vars, defaulting to delivered vars ******" << endl;
-            }
             retCode = PPLUS_REACTIVE_DELIVERED;
 */
             retCode = PPLUS_REACTIVE_QUADRANT2;
@@ -2586,10 +2479,6 @@ UCHAR CtiDeviceAlphaPPlus::touBlockMapping (UCHAR config, USHORT type)
         else if (config & 0x03)
         {
 /*
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ****** Alpha " << getName() << " configured for Q3 vars, defaulting to delivered vars ******" << endl;
-            }
             retCode = PPLUS_REACTIVE_DELIVERED;
 */
             retCode = PPLUS_REACTIVE_QUADRANT3;
@@ -2597,10 +2486,6 @@ UCHAR CtiDeviceAlphaPPlus::touBlockMapping (UCHAR config, USHORT type)
         else if (config & 0x04)
         {
 /*
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ****** Alpha " << getName() << " configured for Q4 vars, defaulting to delivered vars ******" << endl;
-            }
             retCode = PPLUS_REACTIVE_DELIVERED;
 */
             retCode = PPLUS_REACTIVE_QUADRANT4;

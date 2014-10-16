@@ -207,10 +207,7 @@ YukonError_t CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg     *pReq,
                     OutMessage = NULL;
                 }
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - Unsupported command (" << parse.getCommand() << ") in Emetcon group \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Unsupported command (" << parse.getCommand() << ") in Emetcon group \"" << getName() << "\"");
 
                 break;
             }
@@ -242,10 +239,7 @@ YukonError_t CtiDeviceGroupEmetcon::ExecuteRequest(CtiRequestMsg     *pReq,
             OutMessage = NULL;
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << resultString << endl;
-        }
+        CTILOG_ERROR(dout, resultString);
     }
 
     return nRet;
@@ -290,12 +284,8 @@ string CtiDeviceGroupEmetcon::getDescription(const CtiCommandParser & parse) con
     else
     {
         ch_relay += " DB Error. Invalid Emetcon entry.";
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  " << ch_relay << endl;
-        }
 
+        CTILOG_ERROR(dout, ch_relay);
     }
 
     return ch_relay;
@@ -322,8 +312,7 @@ void CtiDeviceGroupEmetcon::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 
     EmetconGroup.DecodeDatabaseReader(rdr);

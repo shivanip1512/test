@@ -320,20 +320,15 @@ YukonError_t CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime Time
 
                     if( status = GeneralScan (NULL, parse, OutMessage, vgList, retList, outList, MAXPRIORITY - 4) )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, getName() <<" General Scan return error "<< status);
 
                         delete OutMessage;
                     }
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Throwing away unexpected freeze response" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Throwing away unexpected freeze response");
+
                     setScanFlag(ScanFreezeFailed);
                     /* message for screwed up freeze */
                 }
@@ -342,10 +337,8 @@ YukonError_t CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime Time
             }
         case MASTERRESET:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << " accumulator reset"  << endl;
-                }
+                CTILOG_INFO(dout, getName() <<" accumulator reset");
+
                 setPrevFreezeTime(CtiTime(InMessage.Time));
                 setLastFreezeTime(CtiTime(InMessage.Time));
                 resetScanFlag(ScanResetting);
@@ -438,29 +431,23 @@ YukonError_t CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime Time
             }
         case MASTERLOCKOUTSET:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << " LOCK OUT SET" << endl;
-                }
+                CTILOG_INFO(dout, getName() <<" LOCK OUT SET");
+
                 _lockedOut = true;
                 break;
             }
         case MASTERLOCKOUTRESET:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << " LOCK OUT CLEARED" << endl;
-                }
+                CTILOG_INFO(dout, getName() << " LOCK OUT CLEARED");
+
                 _lockedOut = false;
                 break;
             }
         default:
             {
                 /* This should never happen so reset the scan */
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << " Unknown Mastercom response " << __FILE__ << " (" << __LINE__ << ") " << hex << setw(2) << (int)(InMessage.Buffer.InMessage[2]) << endl;
-                }
+                CTILOG_ERROR(dout, getName() << " Unknown Mastercom response " << hex << setw(2) << (int)(InMessage.Buffer.InMessage[2]));
+
                 resetScanFlag();
                 setScanFlag(ScanStarting);
 
@@ -470,10 +457,7 @@ YukonError_t CtiDeviceLCU::lcuDecode(const INMESS &InMessage, const CtiTime Time
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Message is not a proper MASTERCOM reply" << endl;
-        }
+        CTILOG_ERROR(dout, "Message is not a proper MASTERCOM reply");
 
         status = ClientErrors::Framing;
     }
@@ -592,10 +576,7 @@ YukonError_t CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
             // Get a scan done maybe?
             if((nRet = lcuScanAll(OutMessage)) != 0)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " error scanning " << getName()<< endl;
-                }
+                CTILOG_ERROR(dout, "Could not scan device "<< getName());
 
                 vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT, pReq->getSOE(), getDescription(parse), string("Scan All Request for LCU failed"), GeneralLogType, SignalEvent, pReq->getUser()));
                 retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
@@ -623,10 +604,8 @@ YukonError_t CtiDeviceLCU::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
             // Get a scan done maybe?
             if((nRet = lcuLoop(OutMessage)) != 0)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " error looping " << getName()<< endl;
-                }
+                CTILOG_ERROR(dout, "Could not loop device "<< getName());
+
                 retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                            string(OutMessage->Request.CommandStr),
                                                            string(getName() + " / unsuccessful ping to LCU"),
@@ -828,15 +807,15 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS &InMessage)
     {
         if(InMessage.Buffer.InMessage[3] >= 4)
         {
-            pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                           string(InMessage.Return.CommandStr),
-                                           string("LCU status request complete"),
-                                           InMessage.ErrorCode,
-                                           InMessage.Return.RouteID,
-                                           InMessage.Return.RetryMacroOffset,
-                                           InMessage.Return.Attempt,
-                                           InMessage.Return.GrpMsgID,
-                                           InMessage.Return.UserID);
+            pPIL = new CtiReturnMsg(getID(),
+                                    string(InMessage.Return.CommandStr),
+                                    string("LCU status request complete"),
+                                    InMessage.ErrorCode,
+                                    InMessage.Return.RouteID,
+                                    InMessage.Return.RetryMacroOffset,
+                                    InMessage.Return.Attempt,
+                                    InMessage.Return.GrpMsgID,
+                                    InMessage.Return.UserID);
 
             /*
              *  Due to the T3026's unique nature of connector order determines data order, and a lack of any way to tell
@@ -865,24 +844,11 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS &InMessage)
                     else
                         resultString += "INACTIVE";
 
-                    pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
-                    if(pData != NULL)
-                    {
-                        if(pPIL != NULL)
-                        {
-                            pPIL->PointData().push_back(pData);
-                            pData = NULL;  // We just put it on the list...
-                        }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "ERROR: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                            delete pData;
-                            pData = NULL;
-                        }
-                    }
+                    pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
+
+                    pPIL->PointData().push_back(pData);
+                    pData = NULL;  // We just put it on the list...
+
                 }
             }
 
@@ -895,33 +861,25 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS &InMessage)
         }
         else if(InMessage.Buffer.InMessage[3] == 12)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  That is likely not a T3026 LCU!" << endl;
-            }
+            CTILOG_WARN(dout, "That is likely not a T3026 LCU!");
         }
         else if(InMessage.Buffer.InMessage[3] != 2)
         {
             // We have a very poor assumption here...
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  LCU T3026 does not meet External data assumptions!!!" << endl;
-            }
+            CTILOG_ERROR(dout, "LCU T3026 does not meet External data assumptions!!!");
         }
     }
     else
     {
-        pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                       string(InMessage.Return.CommandStr),
-                                       string("LCU status request complete"),
-                                       InMessage.ErrorCode,
-                                       InMessage.Return.RouteID,
-                                       InMessage.Return.RetryMacroOffset,
-                                       InMessage.Return.Attempt,
-                                       InMessage.Return.GrpMsgID,
-                                       InMessage.Return.UserID);
+        pPIL = new CtiReturnMsg(getID(),
+                                string(InMessage.Return.CommandStr),
+                                string("LCU status request complete"),
+                                InMessage.ErrorCode,
+                                InMessage.Return.RouteID,
+                                InMessage.Return.RetryMacroOffset,
+                                InMessage.Return.Attempt,
+                                InMessage.Return.GrpMsgID,
+                                InMessage.Return.UserID);
 
         /* Rebuild the status word */
         USHORT lcuDigital = MAKEUSHORT (InMessage.Buffer.InMessage[6], InMessage.Buffer.InMessage[17]);
@@ -946,24 +904,10 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeDigitalInputs(const INMESS &InMessage)
                     resultString = "Error " + string(__FILE__) + "(" + CtiNumStr(__LINE__) + ")";
                 }
 
-                pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
-                if(pData != NULL)
-                {
-                    if(pPIL != NULL)
-                    {
-                        pPIL->PointData().push_back(pData);
-                        pData = NULL;  // We just put it on the list...
-                    }
-                    else
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "ERROR: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                        delete pData;
-                        pData = NULL;
-                    }
-                }
+                pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
+
+                pPIL->PointData().push_back(pData);
+                pData = NULL;  // We just put it on the list...
             }
         }
 
@@ -989,15 +933,15 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(const INMESS &InMessage)
 
     CtiPointDataMsg *pData = NULL;
 
-    CtiReturnMsg    *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                                    string(InMessage.Return.CommandStr),
-                                                    string("LCU status request complete"),
-                                                    InMessage.ErrorCode,
-                                                    InMessage.Return.RouteID,
-                                                    InMessage.Return.RetryMacroOffset,
-                                                    InMessage.Return.Attempt,
-                                                    InMessage.Return.GrpMsgID,
-                                                    InMessage.Return.UserID);
+    CtiReturnMsg    *pPIL = new CtiReturnMsg(getID(),
+                                             string(InMessage.Return.CommandStr),
+                                             string("LCU status request complete"),
+                                             InMessage.ErrorCode,
+                                             InMessage.Return.RouteID,
+                                             InMessage.Return.RetryMacroOffset,
+                                             InMessage.Return.Attempt,
+                                             InMessage.Return.GrpMsgID,
+                                             InMessage.Return.UserID);
 
     switch(getLCUType())
     {
@@ -1029,32 +973,17 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeStatus(const INMESS &InMessage)
                         resultString = "Error " + string(__FILE__) + "(" + CtiNumStr(__LINE__) + ")";
                     }
 
-                    pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
-                    if(pData != NULL)
-                    {
-                        if(pPIL != NULL)
-                        {
-                            pPIL->PointData().push_back(pData);
-                            pData = NULL;  // We just put it on the list...
-                        }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "ERROR: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                            delete pData;
-                            pData = NULL;
-                        }
-                    }
+                    pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, StatusPointType, resultString);
+
+                    pPIL->PointData().push_back(pData);
+                    pData = NULL;  // We just put it on the list...
                 }
             }
             break;
         }
     default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, getName() << " unexpected LCU Type ("<< getLCUType() <<")");
         }
     }
 
@@ -1086,19 +1015,12 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(const INMESS &InMessage, OutMe
     {
         if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(1, DemandAccumulatorPointType)))
         {
-            // Freeze Failed to dispatch message
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Freeze Failed to dispatch message for DemandAccumulatorPointType, with offset of 1"); //FIXME: is this the correct message ?
         }
+
         if(pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType)))
         {
-            // Freeze Failed to dispatch message
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Freeze Failed to dispatch message for PulseAccumulatorPointType, with offset of 1"); //FIXME: is this the correct message ?
         }
 
         /* This is catastrophic so zero out previous freeze's */
@@ -1162,8 +1084,7 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAccumulators(const INMESS &InMessage, OutMe
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Unexpected prev freeze time == last freeze time ("<< getPrevFreezeTime() <<")");
             }
         }
 
@@ -1212,16 +1133,15 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(const INMESS &InMessage)
     DOUBLE     PValue;
 
     CtiPointDataMsg *pData = NULL;
-    CtiReturnMsg     *pPIL = CTIDBG_new CtiReturnMsg(getID(),
-                                                     string(InMessage.Return.CommandStr),
-                                                     string("LCU analog request complete"),
-                                                     InMessage.ErrorCode,
-                                                     InMessage.Return.RouteID,
-                                                     InMessage.Return.RetryMacroOffset,
-                                                     InMessage.Return.Attempt,
-                                                     InMessage.Return.GrpMsgID,
-                                                     InMessage.Return.UserID);
-
+    CtiReturnMsg     *pPIL = new CtiReturnMsg(getID(),
+                                              string(InMessage.Return.CommandStr),
+                                              string("LCU analog request complete"),
+                                              InMessage.ErrorCode,
+                                              InMessage.Return.RouteID,
+                                              InMessage.Return.RetryMacroOffset,
+                                              InMessage.Return.Attempt,
+                                              InMessage.Return.GrpMsgID,
+                                              InMessage.Return.UserID);
 
     switch(_lcuType)
     {
@@ -1254,31 +1174,10 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(const INMESS &InMessage)
 
                     resultString = getName() + " / " + PointRecord->getName() + " = " + CtiNumStr(PValue);
 
-#if 0
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << resultString << endl;
-                    }
-#endif
+                    pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, resultString);
 
-                    pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, resultString);
-                    if(pData != NULL)
-                    {
-                        if(pPIL != NULL)
-                        {
-                            pPIL->PointData().push_back(pData);
-                            pData = NULL;  // We just put it on the list...
-                        }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "ERROR: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                            delete pData;
-                            pData = NULL;
-                        }
-                    }
+                    pPIL->PointData().push_back(pData);
+                    pData = NULL;  // We just put it on the list...
                 }
 
                 offset += 2;
@@ -1315,24 +1214,10 @@ CtiReturnMsg* CtiDeviceLCU::lcuDecodeAnalogs(const INMESS &InMessage)
                         resultString = "Error " + string(__FILE__) + "(" + CtiNumStr(__LINE__) + ")";
                     }
 
-                    pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, resultString);
-                    if(pData != NULL)
-                    {
-                        if(pPIL != NULL)
-                        {
-                            pPIL->PointData().push_back(pData);
-                            pData = NULL;  // We just put it on the list...
-                        }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "ERROR: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                            delete pData;
-                            pData = NULL;
-                        }
-                    }
+                    pData = new CtiPointDataMsg(PointRecord->getPointID(), PValue, NormalQuality, AnalogPointType, resultString);
+
+                    pPIL->PointData().push_back(pData);
+                    pData = NULL;  // We just put it on the list...
                 }
             }
 
@@ -1378,10 +1263,6 @@ ULONG CtiDeviceLCU::lcuTime(OUTMESS *&OutMessage, UINT lcuType)
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
         Count = 8;
         Subcount = 0;
     }
@@ -1446,8 +1327,7 @@ void CtiDeviceLCU::initLCUGlobals()
             _landgMinimumTime = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Configuration Parameter DSM2_LANDGMINIMUMTIME found : " << str << endl;
+                CTILOG_DEBUG(dout, "Configuration Parameter DSM2_LANDGMINIMUMTIME found      : "<< str);
             }
         }
 
@@ -1456,8 +1336,7 @@ void CtiDeviceLCU::initLCUGlobals()
             _landgTimeout = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Configuration Parameter DSM2_LANDGTIMEOUT     found : " << str << endl;
+                CTILOG_DEBUG(dout, "Configuration Parameter DSM2_LANDGTIMEOUT found          : " << str);
             }
         }
 
@@ -1466,8 +1345,7 @@ void CtiDeviceLCU::initLCUGlobals()
             _landgRetries = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Configuration Parameter DSM2_LANDGRETRIES     found : " << str << endl;
+                CTILOG_DEBUG(dout, "Configuration Parameter DSM2_LANDGRETRIES found          : " << str);
             }
         }
 
@@ -1476,8 +1354,7 @@ void CtiDeviceLCU::initLCUGlobals()
             _erepcRetries = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Configuration Parameter DSM2_EREPCRETRIES     found : " << str << endl;
+                CTILOG_DEBUG(dout, "Configuration Parameter DSM2_EREPCRETRIES found          : " << str);
             }
         }
 
@@ -1486,8 +1363,7 @@ void CtiDeviceLCU::initLCUGlobals()
             _lcuStartStopCrossings = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Configuration Parameter RIPPLE_STARTSTOP_CROSSINGS     found : " << str << endl;
+                CTILOG_DEBUG(dout, "Configuration Parameter RIPPLE_STARTSTOP_CROSSINGS found : " << str);
             }
         }
 
@@ -1496,8 +1372,7 @@ void CtiDeviceLCU::initLCUGlobals()
             _lcuStartStopCrossings = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Configuration Parameter RIPPLE_BIT_CROSSINGS     found : " << str << endl;
+                CTILOG_DEBUG(dout, "Configuration Parameter RIPPLE_BIT_CROSSINGS found       : " << str);
             }
         }
 
@@ -1506,8 +1381,7 @@ void CtiDeviceLCU::initLCUGlobals()
             _lcuDutyCyclePercent = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Configuration Parameter RIPPLE_DUTY_CYCLE_PERCENT     found : " << str << endl;
+                CTILOG_DEBUG(dout, "Configuration Parameter RIPPLE_DUTY_CYCLE_PERCENT found  : " << str);
             }
         }
 
@@ -1516,8 +1390,7 @@ void CtiDeviceLCU::initLCUGlobals()
             _lcuSlowScanDelay = strtoul(str.c_str(), NULL, 10);
             if(DebugLevel & 0x0001)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Configuration Parameter RIPPLE_SLOW_SCAN_DELAY     found : " << str << endl;
+                CTILOG_DEBUG(dout, "Configuration Parameter RIPPLE_SLOW_SCAN_DELAY found     : " << str);
             }
         }
 
@@ -1722,10 +1595,8 @@ OUTMESS* CtiDeviceLCU::lcuStage(OUTMESS *&OutMessage)
 
                     if(MyOutMessage != NULL)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_INFO(dout, getName() << " setting stage time to PASTDATE");
+
                         setStageTime( PASTDATE );
                     }
                 }
@@ -1773,10 +1644,7 @@ void CtiDeviceLCU::verifyControlLockoutState(const INMESS &InMessage)
     {
         if(InMessage.Buffer.InMessage[4] & MnA_TESTMODE && !(isFlagSet(LCUWASTRANSMITTING)) )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << " LOCAL MODE is set. " << endl;
-            }
+            CTILOG_INFO(dout, getName() <<" LOCAL MODE is set");
 
             lcuResetFlagsAndTags();
         }
@@ -1837,8 +1705,7 @@ void CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessa
         {
             if(!(now.seconds() % 5))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << now << " ** SIMULATED ** " << getName() << " \"BUSY\" scanning for \"NOT-BUSY\"" << endl;
+                CTILOG_INFO(dout, "** SIMULATED ** "<< getName() <<" \"BUSY\" scanning for \"NOT-BUSY\"");
             }
             setFlags( LCUWASTRANSMITTING );
             resultCode = eLCUFastScan;
@@ -1846,10 +1713,8 @@ void CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessa
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << now << " ** SIMULATED ** " << getName() << " HAS COMPLETED AND GONE IDLE!" << endl;
-            }
+            CTILOG_INFO(dout, "** SIMULATED ** "<< getName() <<" HAS COMPLETED AND GONE IDLE!");
+
             resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
             resultCode = eLCUDeviceControlComplete;
         }
@@ -1890,17 +1755,12 @@ void CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessa
                             if( !(isInhibited()) )
                             {
                                 setFlags( LCUWASTRANSMITTING );
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " " << getName() << " \"BUSY\" scanning for \"NOT-BUSY\" " << endl;
-                                }
+
+                                CTILOG_INFO(dout, getName() << " \"BUSY\" scanning for \"NOT-BUSY\"");
                             }
                             else
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << "**** WARNING: Inhibited LCU \" " << getName() << " just reported as busy **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
+                                CTILOG_WARN(dout, "Inhibited LCU \" "<< getName() <<" just reported as busy");
                             }
                         }     // Busy Transmitting
                         else
@@ -1934,10 +1794,8 @@ void CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessa
                             }       // Checkbit or Minor
                             else if(watchBusyBit() && isFlagSet(LCUWASTRANSMITTING))
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " " << getName() << " HAS COMPLETED AND GONE IDLE! " << endl;
-                                }
+                                CTILOG_INFO(dout, getName() <<" HAS COMPLETED AND GONE IDLE!");
+
                                 /*
                                  *  This LCUWASTRANSMITTING bit is set only if the result decode was processed
                                  *  (at least) once and the LCU responded with a busy bit status indication!
@@ -1954,10 +1812,8 @@ void CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessa
                                 {
                                     if( !isExecutionProhibited() )
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " " << getName() << " HAS CLOCKED OUT ALL BITS! " << endl;
-                                        }
+                                        CTILOG_INFO(dout, getName() <<" HAS CLOCKED OUT ALL BITS!");
+
                                         // Just let it all end...
                                         resultCode = eLCUDeviceControlComplete;
                                     }
@@ -1996,9 +1852,7 @@ void CtiDeviceLCU::lcuFastScanDecode(OUTMESS *&OutMessage, const INMESS &InMessa
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  Message is not a proper MASTERCOM reply" << endl;
+            CTILOG_ERROR(dout, "Message is not a proper MASTERCOM reply");
         }
     }
 }
@@ -2015,10 +1869,8 @@ bool CtiDeviceLCU::isLCULockedOut( const INMESS &InMessage )
     {
         if(InMessage.Buffer.InMessage[5] & LCULOCKEDOUT)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Local Mode is set on the LCU! " << getName() << endl;
-            }
+            CTILOG_INFO(dout, "Local Mode is set on the LCU! " << getName());
+
             _lockedOut = true;
         }
         else
@@ -2030,10 +1882,8 @@ bool CtiDeviceLCU::isLCULockedOut( const INMESS &InMessage )
     {
         if(InMessage.Buffer.InMessage[4] & MnA_TESTMODE && !isFlagSet(LCUWASTRANSMITTING))
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Local (MnA_TESTMODE) Mode is set on the LCU! " << getName() << endl;
-            }
+            CTILOG_INFO(dout, "Local (MnA_TESTMODE) Mode is set on the LCU! "<< getName());
+
             _lockedOut = true;
         }
         else
@@ -2070,18 +1920,16 @@ void CtiDeviceLCU::dumpStatus(BYTE Byte4, BYTE Byte5)
     {
     case (LCU_STANDARD):
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            // FIXME the right log?
+            CTILOG_ERROR(dout, getName() <<" unexpected lcu type LCU_STANDARD");
+
             break;
         }
     case (LCU_LANDG):
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            // FIXME the right log?
+            CTILOG_ERROR(dout, getName() <<" unexpected lcu type LCU_LANDG");
+
             break;
         }
     case (LCU_EASTRIVER):
@@ -2105,38 +1953,28 @@ void CtiDeviceLCU::dumpStatus(BYTE Byte4, BYTE Byte5)
             //#define MnA_OVERCURR_AL    0x40
             //#define MnA_PHASELOSS_AL   0x80
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
+            CTILOG_INFO(dout, getName() << " Status bytes = 0x"<< hex << setfill('0') << setw(2) << (int)Byte4 <<" 0x"<< setw(2) << (int)Byte5 <<
+                   ((Byte4 & MnA_TESTMODE)    ? "\nMnA_TESTMODE SET"     : "" ) <<
+                   ((Byte4 & MnA_ANYALARM)    ? "\nMnA_ANYALARM SET"     : "" ) <<
+                   ((Byte4 & MnA_BUSY)        ? "\nMnA_BUSY SET"         : "" ) <<
+                   ((Byte4 & MnA_STANDALONE)  ? "\nMnA_STANDALONE SET"   : "" ) <<
+                   ((Byte4 & MnA_RESET)       ? "\nMnA_RESET SET"        : "" ) <<
+                   ((Byte5 & MnA_BITERROR)    ? "\nMnA_BITERROR SET"     : "" ) <<
+                   ((Byte5 & MnA_INJDISABLED) ? "\nMnA_INJDISABLED SET"  : "" ) <<
+                   ((Byte5 & MnA_INJSTAGED)   ? "\nMnA_INJSTAGED SET"    : "" ) <<
+                   ((Byte5 & MnA_COUPLING_AL) ? "\nMnA_COUPLING_AL SET"  : "" ) <<
+                   ((Byte5 & MnA_PRECHARGE_AL)? "\nMnA_PRECHARGE_AL SET" : "" ) <<
+                   ((Byte5 & MnA_TRANSMIT_AL) ? "\nMnA_TRANSMIT_AL SET"  : "" ) <<
+                   ((Byte5 & MnA_OVERCURR_AL) ? "\nMnA_OVERCURR_AL SET"  : "" ) <<
+                   ((Byte5 & MnA_PHASELOSS_AL)? "\nMnA_PHASELOSS_AL SET" : "" )
+                   );
 
-                char ofill = dout.fill('0');
-
-                dout << CtiTime() << " " << getName() << " Status bytes = 0x" <<
-                hex << setw(2) << (int)Byte4 << " 0x" <<
-                hex << setw(2) << (int)Byte5 << dec << endl <<
-                ((Byte4 & MnA_TESTMODE)    ? "   MnA_TESTMODE SET\n" : "" ) <<
-                ((Byte4 & MnA_ANYALARM)    ? "   MnA_ANYALARM SET\n" : "" ) <<
-                ((Byte4 & MnA_BUSY)        ? "   MnA_BUSY SET\n" : "" ) <<
-                ((Byte4 & MnA_STANDALONE)  ? "   MnA_STANDALONE SET\n" : "" ) <<
-                ((Byte4 & MnA_RESET)       ? "   MnA_RESET SET\n" : "" ) <<
-                ((Byte5 & MnA_BITERROR)    ? "   MnA_BITERROR SET\n" : "" ) <<
-                ((Byte5 & MnA_INJDISABLED) ? "   MnA_INJDISABLED SET\n" : "" ) <<
-                ((Byte5 & MnA_INJSTAGED)   ? "   MnA_INJSTAGED SET\n" : "" ) <<
-                ((Byte5 & MnA_COUPLING_AL) ? "   MnA_COUPLING_AL SET\n" : "" ) <<
-                ((Byte5 & MnA_PRECHARGE_AL)? "   MnA_PRECHARGE_AL SET\n" : "" ) <<
-                ((Byte5 & MnA_TRANSMIT_AL) ? "   MnA_TRANSMIT_AL SET\n" : "" ) <<
-                ((Byte5 & MnA_OVERCURR_AL) ? "   MnA_OVERCURR_AL SET\n" : "" ) <<
-                ((Byte5 & MnA_PHASELOSS_AL)? "   MnA_PHASELOSS_AL SET\n" : "" ) << endl;
-
-                dout.fill(ofill);
-            }
             break;
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, getName() << " unexpected LCU Type ("<< getLCUType() <<")");
+
             break;
         }
     }
@@ -2206,10 +2044,7 @@ bool CtiDeviceLCU::exceedsDutyCycle(BYTE *bptr)     // bptr MUST point at a vali
 
             if( bnewminute )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " DUTY CYCLE PAUSE: ";
-                dout << " Message would have contributed " << honkcntr << " bits, and " << txtime << " seconds" << endl;
-                dout << CtiTime() << "   Cannot transmit because " << currenttally + txtime << " exceeds the allotted " << dutycycleallotment << " seconds" << endl;
+                CTILOG_INFO(dout, "DUTY CYCLE PAUSE:  Message would have contributed "<< honkcntr <<" bits, and "<< txtime <<" seconds. Cannot transmit because "<< currenttally + txtime <<" exceeds the allotted " << dutycycleallotment <<" seconds");
             }
         }
         else
@@ -2217,10 +2052,7 @@ bool CtiDeviceLCU::exceedsDutyCycle(BYTE *bptr)     // bptr MUST point at a vali
             // We can GO!  add us into the tally!
             _honktime[currentminute].second = _honktime[currentminute].second + txtime;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Message is " << honkcntr << " bits = " << txtime << " seconds, totalling " << currenttally + txtime << " of an allotted " << dutycycleallotment << " seconds" << endl;
-            }
+             CTILOG_INFO(dout, "Message is "<< honkcntr <<" bits and "<< txtime <<" seconds, totalling "<< currenttally + txtime <<" of an allotted "<< dutycycleallotment <<" seconds");
         }
     }
 
@@ -2322,12 +2154,6 @@ CtiPointDataMsg* CtiDeviceLCU::getPointSet( int status )
         pData->setType( StatusPointType );
         pData->setQuality( NormalQuality );
         pData->setValue( 1 );
-
-        /* {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Sending SET **** " << pPoint->getName() << endl;
-        } */
-
     }
 
     return pData;
@@ -2348,12 +2174,6 @@ CtiPointDataMsg* CtiDeviceLCU::getPointClear( int status )
         pData->setType( StatusPointType );
         pData->setQuality( NormalQuality );
         pData->setValue( 0 );
-
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Sending CLEAR **** " << pPoint->getName() << endl;
-        }*/
-
     }
 
     return pData;

@@ -20,25 +20,27 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, uns
     _ccSubstations = new CtiCCSubstation_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CtiCCSubstationsMsg has "<< ccSubstations.size()<<" entries." << endl;
+        CTILOG_DEBUG(dout, "CtiCCSubstationsMsg has "<< ccSubstations.size()<<" entries.");
     }
     if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
     {
         for (int h=0;h < ccSubstations.size(); h++)
         {
             CtiCCSubstation* station = (CtiCCSubstation*)ccSubstations[h];
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Substation: "<<station->getPaoName()<< " Parent: "<< station->getParentId() <<" SAEnabled ?"<<station->getSaEnabledFlag() << " SAEnId : " << station->getSaEnabledId()<< endl;
-            }
+
+            Cti::FormattedList list;
+
+            list.add("Substation") << station->getPaoName();
+            list.add("Parent")     << station->getParentId();
+            list.add("SAEnabled")  << station->getSaEnabledFlag();
+            list.add("SAEnId")     << station->getSaEnabledId();
+
             for each (long busId in station->getCCSubIds())
             {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " -    SubBus: "<< busId << endl;
-                }
+                list.add("SubBus") << busId;
             }
+
+            CTILOG_DEBUG(dout, list);
         }
     }
 
@@ -54,8 +56,7 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_set& ccSubstations, uns
     _ccSubstations = new CtiCCSubstation_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CtiCCSubstationsMsg has "<< ccSubstations.size()<<" entries." << endl;
+        CTILOG_DEBUG(dout, "CtiCCSubstationsMsg has "<< ccSubstations.size()<<" entries.");
     }
     CtiCCSubstation_set::iterator it;
     for(it = ccSubstations.begin(); it != ccSubstations.end(); it++)

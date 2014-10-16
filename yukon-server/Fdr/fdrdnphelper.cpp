@@ -23,8 +23,7 @@ CtiFDRDNPHelper<T>::CtiFDRDNPHelper(CtiFDRSocketServer* parent)
     _parent = parent;
     if (_parent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Helper created" << endl;;
+        CTILOG_DEBUG(dout, _parent->logNow() <<"Helper created");
     }
 }
 
@@ -33,8 +32,7 @@ CtiFDRDNPHelper<T>::~CtiFDRDNPHelper()
 {
     if (_parent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Helper destroyed" << endl;;
+        CTILOG_DEBUG(dout, _parent->logNow() <<"Helper destroyed");
     }
 }
 
@@ -44,8 +42,7 @@ void CtiFDRDNPHelper<T>::addSendMapping(const T& id, const CtiFDRDestination& po
     sendMap[pointDestination] = id;
     if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Added send mapping " << pointDestination << " to " << id << endl;
+        CTILOG_DEBUG(dout, "Added send mapping "<< pointDestination <<" to " << id);
     }
 }
 
@@ -57,8 +54,7 @@ void CtiFDRDNPHelper<T>::removeSendMapping(const T& id, const CtiFDRDestination&
     sendMap.erase(pointDestination);
     if (_parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        _parent->logNow() << "Removing send mapping " << pointDestination << " to " << id << endl;
+        CTILOG_DEBUG(dout, "Removing send mapping "<< pointDestination <<" to "<< id);
     }
 }
 

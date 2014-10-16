@@ -83,10 +83,7 @@ YukonError_t CtiPortDialout::connectToDevice(CtiDeviceSPtr Device, LONG &LastDev
             /*  Now Dial */
             if(ClientErrors::None != (status = modemConnect((char*)number.c_str(), trace, _superPort->getCDWait() != 0)))
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Error Dialing Modem on Port " << _superPort->getPortID() << ":  " << _superPort->getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Could not dial Modem on Port "<< _superPort->getPortID() <<":  "<< _superPort->getName());
 
                 _superPort->disconnect(Device, trace);    // Poke the handle down.
             }
@@ -112,8 +109,7 @@ INT CtiPortDialout::disconnect(CtiDeviceSPtr Device, INT trace)
 
     if(status)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << _superPort->getName() << " modemHangup reported status " << status << endl;
+        CTILOG_ERROR(dout, _superPort->getName() <<" modemHangup reported status "<< status);
     }
 
     return status;
@@ -131,8 +127,7 @@ YukonError_t CtiPortDialout::reset(INT trace)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "_superPort is Null");
     }
 
     return status;
@@ -146,10 +141,8 @@ INT CtiPortDialout::setup(INT trace)
 
 INT CtiPortDialout::close(INT trace)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "CtiPortDialout cannot be closed");
+
     return ClientErrors::None;
 }
 
@@ -179,8 +172,7 @@ YukonError_t CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
         {
             if(!(++tCount % 300))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << "  Port " << _superPort->getName() << " No Modem CTS.  Modem may be off or configured wrong" << endl;
+                CTILOG_ERROR(dout, "Port "<< _superPort->getName() <<" No Modem CTS. Modem may be off or configured wrong");
             }
 
             _superPort->lowerDTR();
@@ -203,10 +195,7 @@ YukonError_t CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
             {
                 if(!(++tCount % 300))
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Port " << _superPort->getName() << " No Modem CTS..." << endl;
-                    }
+                    CTILOG_ERROR(dout, "Port "<< _superPort->getName() <<" No Modem CTS...");
                 }
 
                 _superPort->lowerDTR();
@@ -230,8 +219,7 @@ YukonError_t CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
             {
                 if(Trace)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response <<  endl;
+                    CTILOG_INFO(dout, "Port "<< _superPort->getName() <<" Received from Modem:  " << Response);
                 }
             }
 
@@ -240,8 +228,7 @@ YukonError_t CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
             _superPort->writePort("AT\r", 3, 1, &BytesWritten);    // Attention to the modem.
             if(Trace)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port " << _superPort->getName() << " Sent to Modem:  AT" << endl;
+                CTILOG_INFO(dout, "Port " << _superPort->getName() << " Sent to Modem:  AT");
             }
 
             /* Wait for a response or till we time out */
@@ -252,8 +239,7 @@ YukonError_t CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
 
                 if(Trace)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Port " << _superPort->getName() << " Sent to Modem:  +++" << endl;
+                    CTILOG_INFO(dout, "Port " << _superPort->getName() << " Sent to Modem:  +++");
                 }
 
                 ResponseSize = sizeof (Response);
@@ -263,8 +249,7 @@ YukonError_t CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
                 {
                     if(Trace)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Port " << _superPort->getName() << " Modem Response Timeout" << endl;
+                        CTILOG_INFO(dout, "Port "<< _superPort->getName() <<" Modem Response Timeout");
                     }
 
                     _superPort->writePort("\r", 1, 1, &BytesWritten);    // Get rid of the trash that didn't give a good return.
@@ -272,18 +257,14 @@ YukonError_t CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
             }
             else if(Trace)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response <<  endl;
+                CTILOG_INFO(dout, "Port "<< _superPort->getName() <<" Received from Modem:  " << Response);
             }
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << _superPort->getName() << " modem reset" << endl;
-            }
+            CTILOG_INFO(dout, _superPort->getName() <<" modem reset");
+
             if(gLogPorts)
             {
-                CtiLockGuard<CtiLogger> portlog_guard(_superPort->getPortLog());
-                _superPort->getPortLog() << CtiTime() << " " << _superPort->getName() << " modem reset" << endl;
+                CTILOG_INFO(_superPort->getPortLog(), _superPort->getName() <<" modem reset");
             }
 
             /* Make sure that we got OK */
@@ -295,8 +276,7 @@ YukonError_t CtiPortDialout::modemReset(USHORT Trace, BOOL dcdTest)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return ClientErrors::DialupConnectPort;
@@ -333,8 +313,7 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
 
         if(Trace)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port " << _superPort->getName() << " Sent to Modem:  " << getTablePortDialup().getModemInitString() << endl;
+            CTILOG_INFO(dout, "Port "<< _superPort->getName() <<" Sent to Modem:  "<< getTablePortDialup().getModemInitString());
         }
 
         ResponseSize = sizeof (Response);
@@ -344,16 +323,14 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
         {
             if(Trace)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port " << _superPort->getName() << " Modem Response Timeout" << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_INFO(dout, "Port "<< _superPort->getName() <<" Modem Response Timeout");
             }
             continue;
         }
 
         if(Trace)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response << endl;
+            CTILOG_INFO(dout, "Port "<< _superPort->getName() <<" Received from Modem:  "<< Response);
         }
 
         /* Make sure that we got OK */
@@ -363,24 +340,19 @@ INT CtiPortDialout::modemSetup(USHORT Trace, BOOL dcdTest)
         }
         else if(!(strnicmp (Response, "ERROR", 5)))
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  The modem init string \"" << getTablePortDialup().getModemInitString() << "\" was rejected." << endl;
-            }
+            CTILOG_ERROR(dout, "Port "<< _superPort->getName() <<" Received from Modem: "<< Response <<
+                    ", The modem init string \""<< getTablePortDialup().getModemInitString() <<"\" was rejected."
+                    );
+
             return ClientErrors::DialupFailed;
         }
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << _superPort->getName() << " modem setup " << (j >= 5 ? "failed" : "successful") << endl;
-    }
+    CTILOG_INFO(dout, _superPort->getName() << " modem setup " << (j >= 5 ? "failed" : "successful"));
 
     if(gLogPorts)
     {
-        CtiLockGuard<CtiLogger> portlog_guard(_superPort->getPortLog());
-        _superPort->getPortLog() << CtiTime() << " " << _superPort->getName() << " modem setup " << (j >= 5 ? "failed" : "successful") << endl;
+        CTILOG_INFO(_superPort->getPortLog(), _superPort->getName() <<" modem setup " << (j >= 5 ? "failed" : "successful"));
     }
 
     if(j >= 5)
@@ -430,8 +402,7 @@ YukonError_t CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdT
 
     if(Trace)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Port " << _superPort->getName() << " Sent to Modem:  " << MyMessage << endl;
+        CTILOG_INFO(dout, "Port "<< _superPort->getName() <<" Sent to Modem:  "<< MyMessage);
     }
 
     ResponseSize = sizeof (Response);
@@ -441,16 +412,14 @@ YukonError_t CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdT
     {
         if(Trace)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port " << _superPort->getName() << " Modem Response Timeout" << endl;
+            CTILOG_INFO(dout, "Port "<< _superPort->getName() <<" Modem Response Timeout");
         }
     }
     else
     {
         if(Trace)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port " << _superPort->getName() << " Received from Modem:  " << Response <<  endl;
+            CTILOG_INFO(dout, "Port "<< _superPort->getName() <<" Received from Modem:  "<< Response);
         }
 
         /* We have a response so see what it is */
@@ -514,10 +483,7 @@ YukonError_t CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdT
         {
             status = ClientErrors::DialupConnectPort;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") Modem responded " << Response << endl;
-            }
+            CTILOG_ERROR(dout, "Modem responded:  " << Response);
         }
     }
 
@@ -534,13 +500,11 @@ YukonError_t CtiPortDialout::modemConnect(PCHAR Message, USHORT Trace, BOOL dcdT
             MdmResponse = string("Modem did not respond");
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << _superPort->getName() << " modem connect to " << Message << ". " << MdmResponse << endl;
-        }
+        // FIXME: change log level according to MdmResponse?
 
-        CtiLockGuard<CtiLogger> portlog_guard(_superPort->getPortLog());
-        _superPort->getPortLog() << CtiTime() << " " << _superPort->getName() << " modem connect to " << Message << ". " << MdmResponse << endl;
+        CTILOG_INFO(dout, _superPort->getName() <<" modem connect to "<< Message <<". "<< MdmResponse);
+
+        CTILOG_INFO(_superPort->getPortLog(), _superPort->getName() <<" modem connect to "<< Message <<". "<< MdmResponse);
     }
 
     return(status);
@@ -585,8 +549,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
             {
                 if(Trace)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << _superPort->getName()  << " Received from Modem:  " << Response <<  endl;
+                    CTILOG_INFO(dout, _superPort->getName() <<" Received from Modem:  "<< Response);
                 }
             }
 
@@ -599,8 +562,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
                 _superPort->writePort("+++", 3, 1, &BytesWritten);    // Escape to command mode please
                 if(Trace)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << _superPort->getName()  << " Sent to Modem:  +++" << endl;
+                    CTILOG_INFO(dout, _superPort->getName() <<" Sent to Modem:  +++");
                 }
 
                 CTISleep ( 1500L );
@@ -610,8 +572,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
                 {
                     if(Trace)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << _superPort->getName()  << " Modem Response Timeout (will re-try)" << endl;
+                        CTILOG_INFO(dout, _superPort->getName() <<" Modem Response Timeout (will re-try)");
                     }
 
                     status = ClientErrors::ReadTimeout;
@@ -619,8 +580,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
                 }
                 else if(Trace)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << _superPort->getName()  << " Received from Modem:  " << Response <<  endl;
+                    CTILOG_INFO(dout, _superPort->getName() <<" Received from Modem:  " << Response);
 
                     status = ClientErrors::None;
                     break;
@@ -646,8 +606,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
 
                 if(Trace)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << _superPort->getName()  << " Sent to Modem:  ATH0" << endl;
+                    CTILOG_INFO(dout, _superPort->getName() <<" Sent to Modem:  ATH0");
                 }
 
                 ResponseSize = sizeof (Response);
@@ -656,8 +615,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
                 {
                     if(Trace)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << _superPort->getName()  << " Modem Response Timeout" << endl;
+                        CTILOG_INFO(dout, _superPort->getName() <<" Modem Response Timeout");
                     }
 
                     status = ClientErrors::ReadTimeout;     // Hangup Failed
@@ -667,8 +625,7 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
                 {
                     if(Trace)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << _superPort->getName()  << " Received from Modem:  " << Response <<  endl;
+                        CTILOG_INFO(dout, _superPort->getName() <<" Received from Modem:  "<< Response);
                     }
 
                     status = ClientErrors::None;
@@ -705,21 +662,14 @@ INT CtiPortDialout::modemHangup(USHORT Trace, BOOL dcdTest)
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "_superPort is not viable");
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << _superPort->getName() << " modem hangup " << (getDialedUpNumber().empty() ? "" : string("on ") + getDialedUpNumber()) << endl;
-    }
+    CTILOG_INFO(dout, _superPort->getName() <<" modem hangup "<< (getDialedUpNumber().empty() ? "" : string("on ") + getDialedUpNumber()));
 
     if(gLogPorts)
     {
-        CtiLockGuard<CtiLogger> portlog_guard(_superPort->getPortLog());
-        _superPort->getPortLog() << CtiTime() << " " << _superPort->getName() << " modem hangup " << (getDialedUpNumber().empty() ? "" : string("on ") + getDialedUpNumber()) << endl;
+        CTILOG_INFO(_superPort->getPortLog(), _superPort->getName() <<" modem hangup "<< (getDialedUpNumber().empty() ? "" : string("on ") + getDialedUpNumber()));
     }
 
     _superPort->setConnectedDevice(0);

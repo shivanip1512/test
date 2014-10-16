@@ -1,9 +1,12 @@
 #pragma once
 
-#include <rw/thr/recursiv.h>
 #include "row_reader.h"
+#include "loggable.h"
 
-class IM_EX_CTIYUKONDB CtiTableContactNotification
+#include <rw/thr/recursiv.h>
+
+
+class IM_EX_CTIYUKONDB CtiTableContactNotification : public Cti::Loggable
 {
 protected:
 
@@ -46,7 +49,7 @@ public:
   CtiTableContactNotification& setDirty( bool dirt );
   bool isDirty() const;
 
-  void dump() const;
+  virtual std::string toString() const override;
 
   static std::string getTableName();
   virtual bool Restore();

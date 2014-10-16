@@ -126,41 +126,24 @@ void CtiAnsiTable08::populateRespDataRcd( BYTE *dataBlob, RSP_DATA_RCD *data_rcd
 //=========================================================================================================================================
 void CtiAnsiTable08::printResult( const string& deviceName )
 {
-    int integer;
-    string string;
-    bool flag;
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 8 =========================" << endl;
-    }
+    itemList.add("Procedure")        << getTblProcNbr();
+    itemList.add("Std Vs. Mfg Flag") << getStdMfgFlg();
+    itemList.add("Selector")         << getSelector();
+    itemList.add("Sequence Nbr")     << getSeqNbr();
+    itemList.add("Result Code")      << getResultCode();
 
-
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<  " **** Data Response Table **** " << endl;
-
-        dout << " Procedure:        " <<getTblProcNbr()<< endl;
-        dout << " Std Vs. Mfg Flag: " <<getStdMfgFlg()<< endl;
-        dout << " Selector:         " <<getSelector()<< endl;
-        dout << " Sequence Nbr:     " <<getSeqNbr()<< endl;
-        dout << " Result Code:      " <<getResultCode()<< endl;
-    }
     if (getTblProcNbr() == 22)
     {
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout <<  " LP Offset " << (int)_proc_resp_tbl.resp_data.u.pm22.lpOffset<<endl;
-        }
+        itemList.add("LP Offset") << _proc_resp_tbl.resp_data.u.pm22.lpOffset;
     }
 
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 8") <<
+            endl <<"** Data Response Table **"<<
+            itemList
+            );
 }
 
 int CtiAnsiTable08::getTblProcNbr(void)

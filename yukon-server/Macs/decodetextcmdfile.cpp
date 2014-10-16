@@ -71,9 +71,8 @@ int decodeTextCommandFile(const string& fileName,
 
     if( commandList == NULL )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " Invalid use of command decodeTextCommandFile"<< endl;
-        dout << "             second parameter commandList cannot be NULL " << endl;
+        CTILOG_ERROR(dout, "Invalid use of command decodeTextCommandFile - Second parameter commandList cannot be NULL");
+
         retVal = TEXT_CMD_FILE_COMMAND_LIST_INVALID;
     }
     else
@@ -116,6 +115,8 @@ int decodeTextCommandFile(const string& fileName,
                 int     totalCommands=0;
                 lineCnt = 0;
 
+                Cti::StreamBuffer logDecodedLines;
+
                 while ((lineCnt < totalLines ) && (totalCommands < aCommandsToPerform))
                 {
                     // increment for each valid line
@@ -125,27 +126,22 @@ int decodeTextCommandFile(const string& fileName,
                     *  ASCII command string built from the text line
                     ******************
                     */
-                    std::string *decodedCommand = new std::string();
+                    std::auto_ptr<std::string> decodedCommand(new std::string());
 
-                    if( true == validateAndDecodeLine( commandVector[lineCnt], aProtocolFlag, decodedCommand, fileName ))
+                    if( true == validateAndDecodeLine(commandVector[lineCnt], aProtocolFlag, decodedCommand.get(), fileName))
                     {
                         totalCommands++;
-                        {
-                            CtiLockGuard< CtiLogger > guard(dout);
-                            dout << "-- " << *decodedCommand << endl;
-                        }
-                        commandList->push_back(decodedCommand);
-                        // set to null for safety sakes
-                        decodedCommand = NULL;
 
-                    }
-                    else
-                    {
-                        delete decodedCommand;
+                        logDecodedLines << endl <<"-- "<< *decodedCommand;
+
+                        commandList->push_back(decodedCommand.release());
                     }
 
                     lineCnt++;
                 }
+
+                CTILOG_INFO(dout, "Decoded lines: "<<
+                        logDecodedLines);
 
                 // log the commands
                 if (!outputLogFile (logVector))
@@ -203,10 +199,9 @@ bool outputLogFile (vector<string> &aLog)
                                              OPEN_ALWAYS,
                                              FILE_ATTRIBUTE_NORMAL,
                                              NULL);
-                {
-                    CtiLockGuard< CtiLogger > guard(dout);
-                    dout << CtiTime() << " - Log file " << string (newFileName) << " is locked "<< endl;
-                }
+
+                CTILOG_ERROR(dout, "Log file "<< newFileName <<" is locked");
+
                 cnt++;
                 Sleep (1000);
             }
@@ -266,10 +261,12 @@ bool outputCommandFile (const string &aFileName, int aLineCnt, vector<string> &a
 
     if (aCmdVector.size())
     {
+        CtiDate date;
+
         sprintf (newFileName,"..\\export\\ctitmp%02d%02d%04d.txt",
-                 CtiDate().month(),
-                 CtiDate().dayOfMonth(),
-                 CtiDate().year());
+                 date.month(),
+                 date.dayOfMonth(),
+                 date.year());
 
         // create or open file of the day
         tmpFileHandle = CreateFile (newFileName,
@@ -291,10 +288,9 @@ bool outputCommandFile (const string &aFileName, int aLineCnt, vector<string> &a
                                              CREATE_ALWAYS,
                                              FILE_ATTRIBUTE_NORMAL,
                                              NULL);
-                {
-                    CtiLockGuard< CtiLogger > guard(dout);
-                    dout << CtiTime() << " - tmp file " << string (newFileName) << " is locked "<< endl;
-                }
+
+                CTILOG_ERROR(dout, "Temporary file "<< newFileName <<" is locked");
+
                 cnt++;
                 Sleep (1000);
             }
@@ -346,12 +342,11 @@ bool outputCommandFile (const string &aFileName, int aLineCnt, vector<string> &a
             while ( (GetLastError() == ERROR_SHARING_VIOLATION || GetLastError() == ERROR_LOCK_VIOLATION) && cnt < 30)
             {
                 CopyFile (newFileName, aFileName.c_str(), false);
-                    {
-                        CtiLockGuard< CtiLogger > guard(dout);
-                        dout << CtiTime() << " - original file " << string (aFileName) << " is locked "<< endl;
-                    }
-                    cnt++;
-                    Sleep (1000);
+
+                CTILOG_ERROR(dout, "Original file "<< aFileName <<" is locked");
+
+                cnt++;
+                Sleep (1000);
             }
 
             if (cnt >= 30)
@@ -523,16 +518,14 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, string* programmin
                                             }
                                             else
                                             {
-                                                CtiLockGuard< CtiLogger > guard(dout);
-                                                dout << CtiTime() << " Invalid parameter -" << tempString1 << "- in line (" << input << ") " << endl;
+                                                CTILOG_ERROR(dout, "Invalid parameter -"<< tempString1 <<"- in line ("<< input <<")");
                                                 retCode = false;
                                             }
                                         }
                                     }
                                     else
                                     {
-                                        CtiLockGuard< CtiLogger > guard(dout);
-                                        dout << CtiTime() << " Invalid parameter -" << tempString1 << "- in line (" << input << ") " << endl;
+                                        CTILOG_ERROR(dout, "Invalid parameter -"<< tempString1 <<"- in line ("<< input <<")");
                                         retCode = false;
                                     }
                                 }
@@ -863,13 +856,11 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, string* programmin
                                                         }
                                                         else
                                                         {
-                                                            {
-                                                                CtiLockGuard< CtiLogger > guard(dout);
-                                                                dout << CtiTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
-                                                                dout << " --- Loads must be addressed in numerical order " << endl;
-                                                                dout << " --- " << input << endl;
-                                                                loadCnt--;
-                                                            }
+                                                            CTILOG_ERROR(dout, "Invalid configuration line in "<< aFileName <<" for serial number "<< serialNum <<
+                                                                    endl <<"--- Loads must be addressed in numerical order. "<<
+                                                                    endl <<"---"<< input);
+
+                                                            loadCnt--;
                                                         }
                                                     }
                                                 }
@@ -1073,12 +1064,9 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, string* programmin
                                             }
                                             else
                                             {
-                                                {
-                                                    CtiLockGuard< CtiLogger > guard(dout);
-                                                    dout << CtiTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
-                                                    dout << " --- Number of addressed loads/splinters/programs must be equal " << endl;
-                                                    dout << " --- " << input << endl;
-                                                }
+                                                CTILOG_ERROR(dout, "Invalid configuration line in "<< aFileName <<" for serial number "<< serialNum <<
+                                                        endl <<"--- Number of addressed loads/splinters/programs must be equal"<<
+                                                        endl <<"--- "<< input);
 
                                                 retCode = false;
                                             }
@@ -1108,12 +1096,10 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, string* programmin
                                             address += string (" Program ");
                                         if (invalidSplinter)
                                             address += string (" Splinter ");
-                                        {
-                                            CtiLockGuard< CtiLogger > guard(dout);
-                                            dout << CtiTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
-                                            dout << " --- Address is out of range :" << address << endl;
-                                            dout << " --- " << input << endl;
-                                        }
+
+                                        CTILOG_ERROR(dout, "Invalid configuration line in "<< aFileName <<" for serial number "<< serialNum <<
+                                                endl <<"--- Address is out of range : "<< address <<
+                                                endl <<"--- "<< input);
 
                                         retCode = false;
                                     }
@@ -1390,9 +1376,8 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, string* programmin
                                     {
                                         fail = true;
 
-                                        CtiLockGuard< CtiLogger > guard(dout);
-                                        dout << CtiTime() << " ERROR:  Invalid configuration line in " << aFileName <<  " for serial number " << serialNum << endl;
-                                        dout << " --- Unable to decode parameter: " << tempString1 << endl;
+                                        CTILOG_ERROR(dout, "Invalid configuration line in "<< aFileName <<" for serial number "<< serialNum <<
+                                                endl <<"--- Unable to decode parameter: "<< tempString1);
                                     }
 
                                     if (++tok_iter != cmdLine.end())
@@ -1417,11 +1402,8 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, string* programmin
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard< CtiLogger > guard(dout);
-                                        dout << CtiTime() << " ERROR:  Invalid configuration line in " << aFileName << endl;
-                                        dout << " --- " << input << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "Invalid configuration line in "<< aFileName <<
+                                            endl <<"--- "<< input);
 
                                     retCode = false;
                                 }
@@ -1650,9 +1632,8 @@ int decodeDSM2VconfigFile(const string& fileName, std::vector<std::string *>* co
 
     if( commandList == NULL )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " Invalid use of command decodeDSM2VconfigFile"<< endl;
-        dout << "             second parameter commandList cannont be NULL " << endl;
+        CTILOG_ERROR(dout, "Invalid use of command decodeDSM2VconfigFile. Second parameter commandList cannot be NULL");
+
         retVal = TEXT_CMD_FILE_COMMAND_LIST_INVALID;
     }
     else
@@ -1687,35 +1668,34 @@ int decodeDSM2VconfigFile(const string& fileName, std::vector<std::string *>* co
                 int     totalCommands=0;
                 lineCnt = 0;
 
+                Cti::StreamBuffer logDecodedDsm2Lines;
+
                 while ((lineCnt+4) <= totalLines )
                 {
                     /*****************
                     *  ASCII command string built from the text line
                     ******************
                     */
-                    std::string *decodedCommand = new std::string();
+
+                    std::auto_ptr<std::string> decodedCommand(new std::string());
 
                     if( true == decodeDsm2Lines( commandVector[lineCnt],
                                                  commandVector[lineCnt+1],
                                                  commandVector[lineCnt+2],
                                                  commandVector[lineCnt+3],
-                                                 decodedCommand ))
+                                                 decodedCommand.get() ))
                     {
-                        {
-                            CtiLockGuard< CtiLogger > guard(dout);
-                            dout << "-- " << *decodedCommand << endl;
-                        }
-                        commandList->push_back(decodedCommand);
-                        // set to null for safety sakes
-                        decodedCommand = NULL;
-                    }
-                    else
-                    {
-                        delete decodedCommand;
+                        logDecodedDsm2Lines << endl <<"-- "<< *decodedCommand;
+
+                        commandList->push_back(decodedCommand.release());
                     }
 
                     lineCnt+=4;
                 }
+
+                CTILOG_INFO(dout, "Decoded DSM2 lines: "<<
+                        logDecodedDsm2Lines);
+
                 commandVector.erase(commandVector.begin(), commandVector.end());
             }
         }

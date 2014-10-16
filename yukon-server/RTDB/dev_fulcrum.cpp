@@ -52,10 +52,7 @@ YukonError_t CtiDeviceFulcrum::GeneralScan(CtiRequestMsg     *pReq,
 {
     YukonError_t status = ClientErrors::None;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " General Scan of device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "General Scan of device "<< getName() <<" in progress");
 
     if (OutMessage != NULL)
     {
@@ -191,10 +188,8 @@ YukonError_t CtiDeviceFulcrum::generateCommandHandshake (CtiXfer  &Transfer, Cti
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateHandshakeAbort);
@@ -296,10 +291,8 @@ YukonError_t CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , CtiMessageL
                         }
 
                     default:
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                        }
+                        CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                         Transfer.setOutCount( 0 );
                         Transfer.setInCountExpected( 0 );
                         setCurrentState (StateScanAbort);
@@ -312,10 +305,9 @@ YukonError_t CtiDeviceFulcrum::generateCommand (CtiXfer  &Transfer , CtiMessageL
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
-                }
+
+                CTILOG_ERROR(dout, "Invalid command "<< getCurrentCommand() <<" scanning "<< getName());
+
                 retCode = ClientErrors::Abnormal;
                 break;
             }
@@ -453,10 +445,8 @@ YukonError_t CtiDeviceFulcrum::generateCommandSelectMeter (CtiXfer  &Transfer, C
 
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
@@ -591,10 +581,8 @@ YukonError_t CtiDeviceFulcrum::generateCommandScan (CtiXfer  &Transfer, CtiMessa
             }
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
@@ -898,10 +886,8 @@ YukonError_t CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, C
                             }
                             else
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Aborting scan: Invalid clock reading " << getName()  << " " << CtiTime(LPTime).asString()<< endl;
-                                }
+                                CTILOG_ERROR(dout, "Aborting scan: Invalid clock reading "<< getName() <<" - "<< CtiTime(LPTime));
+
                                 Transfer.setOutCount( 0 );
                                 Transfer.setInCountExpected( 0 );
                                 setCurrentState (StateScanAbort);
@@ -921,10 +907,8 @@ YukonError_t CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, C
                     }
                     else
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Meter " << getName() << " has no load profile channels configured" << endl;
-                        }
+                        CTILOG_WARN(dout, "Meter "<< getName() <<" has no load profile channels configured");
+
                         Transfer.setOutCount( 0 );
                         Transfer.setInCountExpected( 0 );
                         setCurrentState (StateScanDecode4);
@@ -932,10 +916,8 @@ YukonError_t CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, C
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
-                    }
+                    CTILOG_WARN(dout, "Load profile for "<< getName() <<" will not be collected this scan");
+
                     Transfer.setOutCount( 0 );
                     Transfer.setInCountExpected( 0 );
                     setCurrentState (StateScanDecode4);
@@ -1050,10 +1032,8 @@ YukonError_t CtiDeviceFulcrum::generateCommandLoadProfile (CtiXfer  &Transfer, C
             }
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
@@ -1079,8 +1059,7 @@ YukonError_t CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                     setCurrentState (StateHandshakeSendIdentify);
                     if (Transfer.doTrace(ClientErrors::Unknown))
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " NAK: Fulcrum " << getName() << " already online"<< endl;
+                        CTILOG_ERROR(dout, "NAK: Fulcrum "<< getName() <<" already online");
                     }
                     break;
                 }
@@ -1090,8 +1069,7 @@ YukonError_t CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                     setCurrentState (StateHandshakeSendIdentify);
                     if (Transfer.doTrace(ClientErrors::Unknown))
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " ACK: Fulcrum " << getName() << " already online"<< endl;
+                        CTILOG_ERROR(dout, "ACK: Fulcrum "<< getName() <<" already online");
                     }
                     break;
                 }
@@ -1176,17 +1154,11 @@ YukonError_t CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                     // CGP Huh?? Transfer.InCountReceived = 0;
                     if (Transfer.doTrace (ClientErrors::BadCrc))
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Data failed CRC " << getName() << endl;
-                        }
+                        CTILOG_ERROR(dout, "Data failed CRC "<< getName());
                     }
                     else if ( Transfer.doTrace (ClientErrors::ReadTimeout))
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " No Reply from meter " << getName() << endl;
-                        }
+                        CTILOG_ERROR(dout, "No Reply from meter "<< getName());
                     }
                     CTISleep(2000);
                 }
@@ -1211,10 +1183,8 @@ YukonError_t CtiDeviceFulcrum::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                 setCurrentState (StateHandshakeAbort);
                 retCode = ClientErrors::Abnormal;
                 break;
@@ -1276,10 +1246,8 @@ YukonError_t CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, YukonError_t 
                         break;
 
                     default:
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                        }
+                        CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                         setCurrentState (StateScanAbort);
                         retCode = ClientErrors::Abnormal;
                 }
@@ -1291,10 +1259,9 @@ YukonError_t CtiDeviceFulcrum::decodeResponse (CtiXfer  &Transfer, YukonError_t 
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
-                }
+
+                CTILOG_ERROR(dout, "Invalid command "<< getCurrentCommand() <<" scanning "<< getName());
+
                 retCode = ClientErrors::Abnormal;
                 break;
             }
@@ -1443,19 +1410,15 @@ YukonError_t CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                 // make sure its a slave
                                 if (!(Transfer.getInBuffer()[1] & 0x01) && (Transfer.getInBuffer()[1] & 0x02))
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Successfully switched to master " << getName() << endl;
-                                    }
+                                    CTILOG_INFO(dout, "Successfully switched to master "<< getName());
+
                                     setCurrentState (StateScanComplete);
 
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Failed switching to master " << getName() << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "Failed switching to master "<< getName());
+
                                     setCurrentState (StateScanAbort);
                                     retCode = ClientErrors::Abnormal;
                                 }
@@ -1471,29 +1434,23 @@ YukonError_t CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                     if ((Transfer.getInBuffer()[1] & 0x04) ||
                                         (Transfer.getInBuffer()[1] & 0x08))
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Failed switching to slave 1 " << getName() << endl;
-                                        }
+                                        CTILOG_ERROR(dout, "Failed switching to slave 1 "<< getName());
+
                                         setCurrentState (StateScanAbort);
                                         retCode = ClientErrors::Abnormal;
                                     }
                                     else
                                     {
                                         // correct slave, move on
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Successfully switched to slave 1 " << getName() << endl;
-                                        }
+                                        CTILOG_INFO(dout, "Successfully switched to slave 1 "<< getName());
+
                                         setCurrentState (StateScanComplete);
                                     }
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Failed switching to slave 1 " << getName() << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "Failed switching to slave 1 "<< getName());
+
                                     setCurrentState (StateScanAbort);
                                     retCode = ClientErrors::Abnormal;
                                 }
@@ -1510,29 +1467,23 @@ YukonError_t CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                     if ((!(Transfer.getInBuffer()[1] & 0x04)) ||
                                         (Transfer.getInBuffer()[1] & 0x08))
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Failed switching to slave 2 " << getName() << endl;
-                                        }
+                                        CTILOG_ERROR(dout, "Failed switching to slave 2 "<< getName());
+
                                         setCurrentState (StateScanAbort);
                                         retCode = ClientErrors::Abnormal;
                                     }
                                     else
                                     {
                                         // correct slave, move on
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Successfully switched to slave 2 " << getName() << endl;
-                                        }
+                                        CTILOG_INFO(dout, "Successfully switched to slave 2 "<< getName());
+
                                         setCurrentState (StateScanComplete);
                                     }
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Failed switching to slave 2 " << getName() << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "Failed switching to slave 2 "<< getName());
+
                                     setCurrentState (StateScanAbort);
                                     retCode = ClientErrors::Abnormal;
                                 }
@@ -1547,29 +1498,23 @@ YukonError_t CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                     if ((Transfer.getInBuffer()[1] & 0x04) ||
                                         (!(Transfer.getInBuffer()[1] & 0x08)))
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Failed switching to slave 3 " << getName() << endl;
-                                        }
+                                        CTILOG_ERROR(dout, "Failed switching to slave 3 "<< getName());
+
                                         setCurrentState (StateScanAbort);
                                         retCode = ClientErrors::Abnormal;
                                     }
                                     else
                                     {
                                         // correct slave, move on
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Successfully switched to slave 3 " << getName() << endl;
-                                        }
+                                        CTILOG_INFO(dout, "Successfully switched to slave 3 "<< getName());
+
                                         setCurrentState (StateScanComplete);
                                     }
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Failed switching to slave 3 " << getName() << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "Failed switching to slave 3 "<< getName());
+
                                     setCurrentState (StateScanAbort);
                                     retCode = ClientErrors::Abnormal;
                                 }
@@ -1585,29 +1530,23 @@ YukonError_t CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                     if ((!(Transfer.getInBuffer()[1] & 0x04)) ||
                                         (!(Transfer.getInBuffer()[1] & 0x08)))
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Failed switching to slave 4 " << getName() << endl;
-                                        }
+                                        CTILOG_ERROR(dout, "Failed switching to slave 4 "<< getName());
+
                                         setCurrentState (StateScanAbort);
                                         retCode = ClientErrors::Abnormal;
                                     }
                                     else
                                     {
                                         // correct slave, move on
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Successfully switched to slave 4 " << getName() << endl;
-                                        }
+                                        CTILOG_INFO(dout, "Successfully switched to slave 4 "<< getName());
+
                                         setCurrentState (StateScanComplete);
                                     }
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Failed switching to slave 4 " << getName() << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "Failed switching to slave 4 "<< getName());
+
                                     setCurrentState (StateScanAbort);
                                     retCode = ClientErrors::Abnormal;
                                 }
@@ -1625,10 +1564,8 @@ YukonError_t CtiDeviceFulcrum::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
             }
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             setCurrentState (StateScanAbort);
             retCode = ClientErrors::Abnormal;
 
@@ -1733,10 +1670,8 @@ YukonError_t CtiDeviceFulcrum::decodeResponseScan (CtiXfer  &Transfer, YukonErro
                 }
 
             default:
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                 setCurrentState (StateScanAbort);
                 retCode = ClientErrors::Abnormal;
         }
@@ -1822,10 +1757,8 @@ YukonError_t CtiDeviceFulcrum::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
                     break;
                 }
             default:
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                 setCurrentState (StateScanAbort);
                 retCode = ClientErrors::Abnormal;
         }
@@ -2110,10 +2043,7 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (const INMESS   &InMessage,
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Load Profile register type " << energyRegister << " type not supported" << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Load Profile register type "<< energyRegister <<" type not supported " << getName());
         }
     }
 
@@ -2136,104 +2066,229 @@ INT CtiDeviceFulcrum::decodeResultLoadProfile (const INMESS   &InMessage,
 INT CtiDeviceFulcrum::ResultDisplay (const INMESS &InMessage)
 
 {
+    struct FormatValue
+    {
+        std::ostringstream _ostream;
+
+        FormatValue()
+        {
+            _ostream << std::setfill('0');
+        }
+
+        std::ostringstream& operator()(float val, int precision)
+        {
+            _ostream.str("");
+            _ostream << std::fixed << std::setprecision(precision) << val;
+            return _ostream;
+        }
+
+        std::ostringstream& operator()(float val)
+        {
+            return (*this)(val, 6);
+        }
+
+        std::ostringstream& time(const FulcrumRealTimeRegister_t& r)
+        {
+            _ostream.str("");
+            _ostream << std::setw(2) << r.Hours <<":"<< std::setw(2) << r.Minutes <<":"<< std::setw(2) << r.Seconds;
+            return _ostream;
+        }
+
+        std::ostringstream& date(const FulcrumRealTimeRegister_t& r)
+        {
+            _ostream.str("");
+            _ostream << std::setw(2) << r.Month <<"/"<< std::setw(2) << r.DayOfMonth <<"/"<< r.Year+2000;
+            return _ostream;
+        }
+
+    } format;
+
+
     ULONG          i, j;
     const DIALUPREPLY    *DUPRep = &InMessage.Buffer.DUPSt.DUPRep;
     const FulcrumScanData_t  *Fsd = (const FulcrumScanData_t*) InMessage.Buffer.DUPSt.DUPRep.Message;
-     CHAR buffer[200];
 
-     /**************************
-     * lazy way to do this
-     ***************************
-     */
-     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Result display for device " << getName() << " in progress " << endl;
-        sprintf(buffer,"Meter ID          :   %.9s ",Fsd->MeterId);
-        dout << endl << buffer << endl;
-        sprintf(buffer,"Unit Type         :   %.3s ",Fsd->UnitType);
-        dout << buffer << endl;
-        sprintf(buffer,"Unit  ID          :   %.8s ",Fsd->UnitId);
-        dout << buffer << endl;
-        sprintf(buffer,"Time              :   %02d:%02d:%02d ",Fsd->TimeDate.Hours, Fsd->TimeDate.Minutes, Fsd->TimeDate.Seconds);
-        dout << buffer << endl;
-        sprintf(buffer,"Date              :   %02d/%02d/%02d ",Fsd->TimeDate.Month, Fsd->TimeDate.DayOfMonth, Fsd->TimeDate.Year);
-        dout << buffer << endl;
+    Cti::FormattedList itemList;
 
-        sprintf(buffer,"Register Multiplier:  %.5f ",Fsd->RegisterMultiplier);
-        dout << buffer << endl;
+    /// meter info ///
+    itemList.add("Meter ID")            << string((const char*)Fsd->MeterId,  9);
+    itemList.add("Unit Type")           << string((const char*)Fsd->UnitType, 3);
+    itemList.add("Unit ID")             << string((const char*)Fsd->UnitId,   8);
+    itemList.add("Time")                << format.time (Fsd->TimeDate);
+    itemList.add("Date")                << format.date (Fsd->TimeDate);
+    itemList.add("Register Multiplier") << format      (Fsd->RegisterMultiplier, 5);
 
-        sprintf(buffer,"                               Watthour     VARhour      VAhour ");
-        dout << buffer << endl;
-        sprintf(buffer,"Energy Rate E              = %9.2f,  %9.2f,  %9.2f ",Fsd->Watthour.Energy.RateE_Energy ,Fsd->VARhourLag.Energy.RateE_Energy ,Fsd->VAhour.Energy.RateE_Energy);
-        dout << buffer << endl;
-        sprintf(buffer,"Energy Rate A              = %9.2f,  %9.2f,  %9.2f ",Fsd->Watthour.Energy.RateA_Energy ,Fsd->VARhourLag.Energy.RateA_Energy ,Fsd->VAhour.Energy.RateA_Energy);
-        dout << buffer << endl;
-        sprintf(buffer,"Energy Rate B              = %9.2f,  %9.2f,  %9.2f ",Fsd->Watthour.Energy.RateB_Energy ,Fsd->VARhourLag.Energy.RateB_Energy ,Fsd->VAhour.Energy.RateB_Energy);
-        dout << buffer << endl;
-        sprintf(buffer,"Energy Rate C              = %9.2f,  %9.2f,  %9.2f ",Fsd->Watthour.Energy.RateC_Energy ,Fsd->VARhourLag.Energy.RateC_Energy ,Fsd->VAhour.Energy.RateC_Energy);
-        dout << buffer << endl;
-        sprintf(buffer,"Energy Rate D              = %9.2f,  %9.2f,  %9.2f ",Fsd->Watthour.Energy.RateD_Energy ,Fsd->VARhourLag.Energy.RateD_Energy ,Fsd->VAhour.Energy.RateD_Energy);
-        dout << buffer << endl;
-        sprintf(buffer,"Energy Rate E Intermediate = %9.2f,  %9.2f,  %9.2f ",Fsd->Watthour.RateE_IntEnergy     ,Fsd->VARhourLag.RateE_IntEnergy     ,Fsd->VAhour.RateE_IntEnergy);
-        dout << buffer << endl;
+    /// energy rate ///
+    {
+        Cti::FormattedTable table;
 
+        table.setCell(0, 1) <<"Watthour";
+        table.setCell(0, 2) <<"VARhour";
+        table.setCell(0, 3) <<"VAhour";
 
-        sprintf(buffer,"Power Factor ");
-        dout << endl << buffer << endl;
-        sprintf(buffer,"Instantaneous              = %f ",Fsd->PowerFactor.INSTPF);
-        dout << buffer << endl;
-        sprintf(buffer,"Average                    = %f ",Fsd->PowerFactor.AVGPF);
-        dout << buffer << endl;
+        table.setCell(1, 0) <<"Energy Rate E";
+        table.setCell(1, 1) << format (Fsd->Watthour.Energy.RateE_Energy,   2);
+        table.setCell(1, 2) << format (Fsd->VARhourLag.Energy.RateE_Energy, 2);
+        table.setCell(1, 3) << format (Fsd->VAhour.Energy.RateE_Energy,     2);
 
-        sprintf(buffer,"Demand                         Watts,       Lag VAR,      VA ");
-        dout << endl << buffer << endl;
-        sprintf(buffer,"Instantaneous               = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.Instantaneous               ,Fsd->VARLagDemand.Instantaneous               ,Fsd->VADemand.Instantaneous);
-        dout << buffer << endl;
-        sprintf(buffer,"Previous Interval Total     = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.TotalPreviousInterval       ,Fsd->VARLagDemand.TotalPreviousInterval       ,Fsd->VADemand.TotalPreviousInterval);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate A Maximum              = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.A_Maximum.PeakValue       ,Fsd->VARLagDemand.A_Maximum.PeakValue       ,Fsd->VADemand.A_Maximum.PeakValue);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate B Maximum              = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.B_Maximum.PeakValue       ,Fsd->VARLagDemand.B_Maximum.PeakValue       ,Fsd->VADemand.B_Maximum.PeakValue);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate C Maximum              = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.C_Maximum.PeakValue       ,Fsd->VARLagDemand.C_Maximum.PeakValue       ,Fsd->VADemand.C_Maximum.PeakValue);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate D Maximum              = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.D_Maximum.PeakValue       ,Fsd->VARLagDemand.D_Maximum.PeakValue       ,Fsd->VADemand.D_Maximum.PeakValue);
-        dout << buffer << endl;
-        sprintf(buffer,"Peak #1                     = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.Peak1.PeakValue           ,Fsd->VARLagDemand.Peak1.PeakValue           ,Fsd->VADemand.Peak1.PeakValue);
-        dout << buffer << endl;
-        sprintf(buffer,"Peak #2                     = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.Peak2.PeakValue           ,Fsd->VARLagDemand.Peak2.PeakValue           ,Fsd->VADemand.Peak2.PeakValue);
-        dout << buffer << endl;
-        sprintf(buffer,"Peak #3                     = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.Peak3.PeakValue           ,Fsd->VARLagDemand.Peak3.PeakValue           ,Fsd->VADemand.Peak3.PeakValue);
-        dout << buffer << endl;
-        sprintf(buffer,"Peak #4                     = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.Peak4.PeakValue           ,Fsd->VARLagDemand.Peak4.PeakValue           ,Fsd->VADemand.Peak4.PeakValue);
-        dout << buffer << endl;
-        sprintf(buffer,"Peak #5                     = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.Peak5.PeakValue           ,Fsd->VARLagDemand.Peak5.PeakValue           ,Fsd->VADemand.Peak5.PeakValue);
-        dout << buffer << endl;
-        sprintf(buffer,"Coincident                  = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.Coincident                  ,Fsd->VARLagDemand.Coincident                  ,Fsd->VADemand.Coincident);
-        dout << buffer << endl;
-        sprintf(buffer,"Total Cumulative            = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.TotalCumulative             ,Fsd->VARLagDemand.TotalCumulative             ,Fsd->VADemand.TotalCumulative);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate A Cumulative           = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.A_Cumulative                ,Fsd->VARLagDemand.A_Cumulative                ,Fsd->VADemand.A_Cumulative);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate B Cumulative           = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.B_Cumulative                ,Fsd->VARLagDemand.B_Cumulative                ,Fsd->VADemand.B_Cumulative);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate C Cumulative           = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.C_Cumulative                ,Fsd->VARLagDemand.C_Cumulative                ,Fsd->VADemand.C_Cumulative);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate D Cumulative           = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.D_Cumulative                ,Fsd->VARLagDemand.D_Cumulative                ,Fsd->VADemand.D_Cumulative);
-        dout << buffer << endl;
-        sprintf(buffer,"Total Continuous Cumulative = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.TotalContinuousCumulative   ,Fsd->VARLagDemand.TotalContinuousCumulative   ,Fsd->VADemand.TotalContinuousCumulative);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate A Continuous Cum.      = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.A_ContinuousCumulative      ,Fsd->VARLagDemand.A_ContinuousCumulative      ,Fsd->VADemand.A_ContinuousCumulative);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate B Continuous Cum.      = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.B_ContinuousCumulative      ,Fsd->VARLagDemand.B_ContinuousCumulative      ,Fsd->VADemand.B_ContinuousCumulative);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate C Continuous Cum.      = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.C_ContinuousCumulative      ,Fsd->VARLagDemand.C_ContinuousCumulative      ,Fsd->VADemand.C_ContinuousCumulative);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate D Continuous Cum.      = %9.2f,  %9.2f,  %9.2f ",Fsd->WattsDemand.D_ContinuousCumulative      ,Fsd->VARLagDemand.D_ContinuousCumulative      ,Fsd->VADemand.D_ContinuousCumulative);
-        dout << buffer << endl << endl;
-     }
-//#endif
+        table.setCell(2, 0) <<"Energy Rate A";
+        table.setCell(2, 1) << format (Fsd->Watthour.Energy.RateA_Energy,   2);
+        table.setCell(2, 2) << format (Fsd->VARhourLag.Energy.RateA_Energy, 2);
+        table.setCell(2, 3) << format (Fsd->VAhour.Energy.RateA_Energy,     2);
 
+        table.setCell(3, 0) <<"Energy Rate B";
+        table.setCell(3, 1) << format (Fsd->Watthour.Energy.RateB_Energy,   2);
+        table.setCell(3, 2) << format (Fsd->VARhourLag.Energy.RateB_Energy, 2);
+        table.setCell(3, 3) << format (Fsd->VAhour.Energy.RateB_Energy,     2);
+
+        table.setCell(4, 0) <<"Energy Rate C";
+        table.setCell(4, 1) << format (Fsd->Watthour.Energy.RateC_Energy,   2);
+        table.setCell(4, 2) << format (Fsd->VARhourLag.Energy.RateC_Energy, 2);
+        table.setCell(4, 3) << format (Fsd->VAhour.Energy.RateC_Energy,     2);
+
+        table.setCell(5, 0) <<"Energy Rate D";
+        table.setCell(5, 1) << format (Fsd->Watthour.Energy.RateD_Energy,   2);
+        table.setCell(5, 2) << format (Fsd->VARhourLag.Energy.RateD_Energy, 2);
+        table.setCell(5, 3) << format (Fsd->VAhour.Energy.RateD_Energy,     2);
+
+        table.setCell(6, 0) <<"Energy Rate E Intermediate";
+        table.setCell(6, 1) << format (Fsd->Watthour.RateE_IntEnergy,       2);
+        table.setCell(6, 2) << format (Fsd->VARhourLag.RateE_IntEnergy,     2);
+        table.setCell(6, 3) << format (Fsd->VAhour.RateE_IntEnergy,         2);
+
+        itemList << table;
+    }
+
+    /// power factor ///
+    itemList <<"Power Factor";
+    itemList.add("Instantaneous")  << Fsd->PowerFactor.INSTPF;
+    itemList.add("Average")        << Fsd->PowerFactor.AVGPF;
+
+    /// demand ///
+    {
+        Cti::FormattedTable table;
+
+        table.setCell( 0,0) <<"Demand";
+        table.setCell( 0,1) <<"Watts";
+        table.setCell( 0,2) <<"Lag VAR";
+        table.setCell( 0,3) <<"VA";
+
+        table.setCell( 1,0) <<"Instantaneous";
+        table.setCell( 1,1) << Fsd->WattsDemand  .Instantaneous;
+        table.setCell( 1,2) << Fsd->VARLagDemand .Instantaneous;
+        table.setCell( 1,3) << Fsd->VADemand     .Instantaneous;
+
+        table.setCell( 2,0) <<"Previous Interval Total";
+        table.setCell( 2,1) << Fsd->WattsDemand  .TotalPreviousInterval;
+        table.setCell( 2,2) << Fsd->VARLagDemand .TotalPreviousInterval;
+        table.setCell( 2,3) << Fsd->VADemand     .TotalPreviousInterval;
+
+        table.setCell( 3,0) <<"Rate A Maximum";
+        table.setCell( 3,1) << Fsd->WattsDemand  .A_Maximum.PeakValue;
+        table.setCell( 3,2) << Fsd->VARLagDemand .A_Maximum.PeakValue;
+        table.setCell( 3,3) << Fsd->VADemand     .A_Maximum.PeakValue;
+
+        table.setCell( 4,0) <<"Rate B Maximum";
+        table.setCell( 4,1) << Fsd->WattsDemand  .B_Maximum.PeakValue;
+        table.setCell( 4,2) << Fsd->VARLagDemand .B_Maximum.PeakValue;
+        table.setCell( 4,3) << Fsd->VADemand     .B_Maximum.PeakValue;
+
+        table.setCell( 5,0) <<"Rate C Maximum";
+        table.setCell( 5,1) << Fsd->WattsDemand  .C_Maximum.PeakValue;
+        table.setCell( 5,2) << Fsd->VARLagDemand .C_Maximum.PeakValue;
+        table.setCell( 5,3) << Fsd->VADemand     .C_Maximum.PeakValue;
+
+        table.setCell( 6,0) <<"Rate D Maximum";
+        table.setCell( 6,1) << Fsd->WattsDemand  .D_Maximum.PeakValue;
+        table.setCell( 6,2) << Fsd->VARLagDemand .D_Maximum.PeakValue;
+        table.setCell( 6,3) << Fsd->VADemand     .D_Maximum.PeakValue;
+
+        table.setCell( 7,0) <<"Peak #1";
+        table.setCell( 7,1) << Fsd->WattsDemand  .Peak1.PeakValue;
+        table.setCell( 7,2) << Fsd->VARLagDemand .Peak1.PeakValue;
+        table.setCell( 7,3) << Fsd->VADemand     .Peak1.PeakValue;
+
+        table.setCell( 8,0) <<"Peak #2";
+        table.setCell( 8,1) << Fsd->WattsDemand  .Peak2.PeakValue;
+        table.setCell( 8,2) << Fsd->VARLagDemand .Peak2.PeakValue;
+        table.setCell( 8,3) << Fsd->VADemand     .Peak2.PeakValue;
+
+        table.setCell( 9,0) <<"Peak #3";
+        table.setCell( 9,1) << Fsd->WattsDemand  .Peak3.PeakValue;
+        table.setCell( 9,2) << Fsd->VARLagDemand .Peak3.PeakValue;
+        table.setCell( 9,3) << Fsd->VADemand     .Peak3.PeakValue;
+
+        table.setCell(10,0) <<"Peak #4";
+        table.setCell(10,1) << Fsd->WattsDemand  .Peak4.PeakValue;
+        table.setCell(10,2) << Fsd->VARLagDemand .Peak4.PeakValue;
+        table.setCell(10,3) << Fsd->VADemand     .Peak4.PeakValue;
+
+        table.setCell(11,0) <<"Peak #5";
+        table.setCell(11,1) << Fsd->WattsDemand  .Peak5.PeakValue;
+        table.setCell(11,2) << Fsd->VARLagDemand .Peak5.PeakValue;
+        table.setCell(11,3) << Fsd->VADemand     .Peak5.PeakValue;
+
+        table.setCell(12,0) <<"Coincident";
+        table.setCell(12,1) << Fsd->WattsDemand  .Coincident;
+        table.setCell(12,2) << Fsd->VARLagDemand .Coincident;
+        table.setCell(12,3) << Fsd->VADemand     .Coincident;
+
+        table.setCell(13,0) <<"Total Cumulative";
+        table.setCell(13,1) << Fsd->WattsDemand  .TotalCumulative;
+        table.setCell(13,2) << Fsd->VARLagDemand .TotalCumulative;
+        table.setCell(13,3) << Fsd->VADemand     .TotalCumulative;
+
+        table.setCell(14,0) <<"Rate A Cumulative";
+        table.setCell(14,1) << Fsd->WattsDemand  .A_Cumulative;
+        table.setCell(14,2) << Fsd->VARLagDemand .A_Cumulative;
+        table.setCell(14,3) << Fsd->VADemand     .A_Cumulative;
+
+        table.setCell(15,0) <<"Rate B Cumulative";
+        table.setCell(15,1) << Fsd->WattsDemand  .B_Cumulative;
+        table.setCell(15,2) << Fsd->VARLagDemand .B_Cumulative;
+        table.setCell(15,3) << Fsd->VADemand     .B_Cumulative;
+
+        table.setCell(16,0) <<"Rate C Cumulative";
+        table.setCell(16,1) << Fsd->WattsDemand  .C_Cumulative;
+        table.setCell(16,2) << Fsd->VARLagDemand .C_Cumulative;
+        table.setCell(16,3) << Fsd->VADemand     .C_Cumulative;
+
+        table.setCell(17,0) <<"Rate D Cumulative";
+        table.setCell(17,1) << Fsd->WattsDemand  .D_Cumulative;
+        table.setCell(17,2) << Fsd->VARLagDemand .D_Cumulative;
+        table.setCell(17,3) << Fsd->VADemand     .D_Cumulative;
+
+        table.setCell(18,0) <<"Total Continuous Cumulative";
+        table.setCell(18,1) << Fsd->WattsDemand  .TotalContinuousCumulative;
+        table.setCell(18,2) << Fsd->VARLagDemand .TotalContinuousCumulative;
+        table.setCell(18,3) << Fsd->VADemand     .TotalContinuousCumulative;
+
+        table.setCell(19,0) <<"Rate A Continuous Cum.";
+        table.setCell(19,1) << Fsd->WattsDemand  .A_ContinuousCumulative;
+        table.setCell(19,2) << Fsd->VARLagDemand .A_ContinuousCumulative;
+        table.setCell(19,3) << Fsd->VADemand     .A_ContinuousCumulative;
+
+        table.setCell(20,0) <<"Rate B Continuous Cum.";
+        table.setCell(20,1) << Fsd->WattsDemand  .B_ContinuousCumulative;
+        table.setCell(20,2) << Fsd->VARLagDemand .B_ContinuousCumulative;
+        table.setCell(20,3) << Fsd->VADemand     .B_ContinuousCumulative;
+
+        table.setCell(21,0) <<"Rate C Continuous Cum.";
+        table.setCell(21,1) << Fsd->WattsDemand  .C_ContinuousCumulative;
+        table.setCell(21,2) << Fsd->VARLagDemand .C_ContinuousCumulative;
+        table.setCell(21,3) << Fsd->VADemand     .C_ContinuousCumulative;
+
+        table.setCell(22,0) <<"Rate D Continuous Cum.";
+        table.setCell(22,1) << Fsd->WattsDemand  .D_ContinuousCumulative;
+        table.setCell(22,2) << Fsd->VARLagDemand .D_ContinuousCumulative;
+        table.setCell(22,3) << Fsd->VADemand     .D_ContinuousCumulative;
+
+        itemList << table;
+    }
+
+    CTILOG_INFO(dout, "Result display for device "<< getName() <<" in progress"<<
+            itemList
+            );
 
     return ClientErrors::None;
 }

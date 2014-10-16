@@ -109,37 +109,28 @@ void CtiInterpreterPool::stopAndDestroyAllInterpreters()
 
 
 /*----------------------------------------------------------------------------
-  dumpPool
+  toString()
 
   Dumps out the contents of pool
 
 ----------------------------------------------------------------------------*/
-void CtiInterpreterPool::dumpPool()
+std::string CtiInterpreterPool::toString() const
 {
-    // lock the whole funtion, least output will be
-    // contiguous
-    CtiLockGuard< CtiLogger > guard(dout);
+    Cti::StreamBuffer out;
 
-    dout << CtiTime() << " Available interpreters:" << endl;
-
-    interp_set_iter iter;
-    for( iter = _available_interps.begin();
-         iter != _available_interps.end();
-         iter++ )
+    out << endl <<"Available interpreters:";
+    for each(const CtiInterpreter* interp in _available_interps)
     {
-        CtiInterpreter* interp = *iter;
-        dout << CtiTime() << interp << endl;
+        out << endl << interp; // print the pointer
     }
 
-    dout << CtiTime() << " Active Interpreters: " << endl;
-
-    for( iter = _active_interps.begin();
-         iter != _active_interps.end();
-         iter++ )
+    out << endl <<"Active Interpreters:";
+    for each(const CtiInterpreter* interp in _active_interps)
     {
-        CtiInterpreter* interp = *iter;
-        dout << CtiTime() << interp << endl;
+        out << endl << interp; // print the pointer
     }
+
+    return out;
 }
 
 /*----------------------------------------------------------------------------

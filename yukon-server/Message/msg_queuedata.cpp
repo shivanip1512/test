@@ -148,22 +148,20 @@ CtiQueueDataMsg& CtiQueueDataMsg::setTime(const CtiTime& aTime)
     return *this;
 }
 
-void CtiQueueDataMsg::dump() const
+std::string CtiQueueDataMsg::toString() const
 {
-    Inherited::dump();
+    Cti::FormattedList itemList;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+    itemList <<"CtiQueueDataMsg";
+    itemList.add("QueueID")        << getId();
+    itemList.add("Rate")           << getRate();
+    itemList.add("QueueCount")     << getQueueCount();
+    itemList.add("RequestId")      << getRequestId();
+    itemList.add("RequestIdCount") << getRequestIdCount();
+    itemList.add("Time")           << getTime();
+    itemList.add("UserMessageID")  << UserMessageId();
 
-        dout << " QueueID                       " << getId() << endl;
-        dout << " Rate                          " << getRate() << endl;
-        dout << " QueueCount                    " << getQueueCount() << endl;
-        dout << " RequestId                     " << getRequestId() << endl;
-        dout << " RequestIdCount                " << getRequestIdCount() << endl;
-        dout << " Time                          " << getTime() << endl;
-        dout << " UserMessageID                 " << UserMessageId() << endl;
-    }
-
+    return (Inherited::toString() += itemList.toString());
 }
 
 // Return a new'ed copy of this message!

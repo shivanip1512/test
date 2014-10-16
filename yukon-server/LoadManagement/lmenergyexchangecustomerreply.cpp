@@ -365,10 +365,7 @@ void CtiLMEnergyExchangeCustomerReply::addLMEnergyExchangeCustomerReplyTable()
 {
     static const std::string sql = "insert into lmenergyexchangecustomerreply values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Inserted customer activity into LMEnergyExchangeCustomerReply, customerid: " << getCustomerId() << ", offerid: " << getOfferId() << ", revision: " << getRevisionNumber() << endl;
-    }
+    CTILOG_INFO(dout, "Inserted customer activity into LMEnergyExchangeCustomerReply, customerid: " << getCustomerId() << ", offerid: " << getOfferId() << ", revision: " << getRevisionNumber());
 
     Cti::Database::DatabaseConnection   conn;
     Cti::Database::DatabaseWriter       inserter(conn, sql);
@@ -459,8 +456,7 @@ void CtiLMEnergyExchangeCustomerReply::restoreDynamicData(Cti::RowReader &rdr)
 
     if( _LM_DEBUG )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << rdr.asString().c_str() << endl;
+        CTILOG_DEBUG(dout, rdr.asString().c_str());
     }
 
     if(rdr())

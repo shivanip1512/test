@@ -368,8 +368,7 @@ void CtiProtocolLMI::queueCode(CtiOutMessage *om)
 {
     if( isDebugLudicrous() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - OutMessage->VerificationSequence = " << om->VerificationSequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "OutMessage->VerificationSequence = "<< om->VerificationSequence);
     }
 
     _codes.push(om);
@@ -472,10 +471,7 @@ bool CtiProtocolLMI::isTransactionComplete( void ) const
     {
         retval = true;
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - breaking out of late loop in \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "breaking out of late loop in \""<< _name <<"\"");
     }
     else
     {
@@ -515,8 +511,7 @@ YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
 
     if( gConfigParms.getValueAsULong("LMI_DEBUGLEVEL", 0) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(slog);
-        slog << CtiTime() << " **** prot_lmi generating with command = " << _command << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(slog, "prot_lmi generating with command = "<< _command);
     }
 
     if( _in_total > 0 )
@@ -551,8 +546,7 @@ YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
 
         if( count != _codes.size() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(slog);
-            slog << CtiTime() << " LMI device \"" << _name << "\" pruned " << (count - _codes.size()) << " codes this pass" << endl;
+            CTILOG_INFO(slog, "LMI device \""<< _name <<"\" pruned "<< (count - _codes.size()) <<" codes this pass");
         }
 
         //  if we haven't ever read the statuses OR if there's an existing status that needs to be reset
@@ -573,10 +567,7 @@ YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
             //  we can survive any other status (except maybe "lmi comm failure", but the RTU should still respond, even if it can't communicate with the transmitter)
             if( _status.s.questionable_request )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - persistent 'questionable request' respose from LMI **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_WARN(dout, "persistent 'questionable request' respose from LMI");
 
                 _transaction_complete = true;
 
@@ -624,10 +615,7 @@ YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
 
                         if( _first_code_block )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                                slog << CtiTime() << " LMI device \"" << _name << "\" removing previous outbound codes" << endl;
-                            }
+                            CTILOG_INFO(slog, "LMI device \""<< _name <<"\" removing previous outbound codes");
 
                             _num_codes_loaded = 0;
                         }
@@ -662,21 +650,18 @@ YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - removing null OM from device queue for LMI device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                CTILOG_WARN(dout,"removing null OM from device queue for LMI device \""<< _name <<"\"");
                             }
                         }
 
+                        Cti::StreamBuffer sLogOut;
+
                         if( expired_code_count )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << CtiTime() << " LMI device \"" << _name << "\" pruned " << expired_code_count << " codes this pass" << endl;
+                            sLogOut <<"LMI device \""<< _name <<"\" pruned "<< expired_code_count <<" codes this pass";
                         }
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << CtiTime() << " LMI device \"" << _name << "\" loading " << viable_codes.size() << " (of " << (viable_codes.size() + _codes.size()) << " potential) codes this pass (" << slots_available << " slots available):" << endl;
-                        }
+                        sLogOut <<"LMI device \""<< _name <<"\" loading "<< viable_codes.size() <<" (of "<< (viable_codes.size() + _codes.size()) <<" potential) codes this pass ("<< slots_available <<" slots available):";
 
                         _outbound_code_count = viable_codes.size();
 
@@ -707,10 +692,7 @@ YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
 
                             codestr[6] = 0;  //  make sure it's null-terminated, just to be safe...
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                                slog << om->Buffer.SASt._codeSimple << " ";
-                            }
+                            sLogOut << om->Buffer.SASt._codeSimple <<" ";
 
                             //  all offset by one because of the "num_codes" byte at the beginning
                             _outbound.data[offset++] = codestr[0];
@@ -750,10 +732,7 @@ YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
                             delete om;
                         }
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << endl;
-                        }
+                        CTILOG_INFO(slog, sLogOut);
 
                         break;
                     }
@@ -883,11 +862,7 @@ YukonError_t CtiProtocolLMI::generate( CtiXfer &xfer )
         else
         {
             //  what should we do if the generate causes an error?
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - retval = " << retval << " in CtiProtocolLMI::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "retval = "<< retval);
 
             _transaction_complete = true;
         }
@@ -1067,8 +1042,7 @@ YukonError_t CtiProtocolLMI::decode( CtiXfer &xfer, YukonError_t status )
 
                                             if( gConfigParms.getValueAsULong("LMI_DEBUGLEVEL", 0) )
                                             {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << CtiTime() << " CtiProtocolLMI::decode() creating report object for code \"" << golay_codestr << "\", receiver_id (" << _transmitter_id << ")" << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                CTILOG_DEBUG(dout, "creating report object for code \""<< golay_codestr <<"\", receiver_id ("<< _transmitter_id <<")");
                                             }
 
                                             CtiVerificationReport *report = CTIDBG_new CtiVerificationReport(CtiVerificationBase::Protocol_Golay, _transmitter_id, golay_codestr, second_clock::universal_time());
@@ -1090,10 +1064,7 @@ YukonError_t CtiProtocolLMI::decode( CtiXfer &xfer, YukonError_t status )
                                 //  shouldn't be possible
                                 if( _num_codes_retrieved > 0xff )
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint - exceeded maximum codes for device \"" << _name << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "exceeded maximum codes for device \""<< _name <<"\"");
 
                                     if( _command == Command_ReadEchoedCodes )
                                     {
@@ -1179,8 +1150,7 @@ YukonError_t CtiProtocolLMI::decode( CtiXfer &xfer, YukonError_t status )
 
                                         if( isDebugLudicrous() )
                                         {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " **** Checkpoint - !_codes_ready in CtiProtocolLMI::decode() for device " << _name << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                            CTILOG_DEBUG(dout, "!_codes_ready in CtiProtocolLMI::decode() for device "<< _name);
                                         }
                                     }
                                 }

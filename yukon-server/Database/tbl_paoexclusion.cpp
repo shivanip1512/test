@@ -117,8 +117,7 @@ void CtiTablePaoExclusion::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["exclusionid"]      >> _exclusionId;
@@ -171,26 +170,24 @@ void CtiTablePaoExclusion::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 }
 
-void CtiTablePaoExclusion::dump() const
+std::string CtiTablePaoExclusion::toString() const
 {
+    Cti::FormattedList itemList;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    itemList <<"CtiTablePaoExclusion";
+    itemList.add("exclusionid")   << _exclusionId;
+    itemList.add("paoid")         << _paoId;
+    itemList.add("excludedpaoid") << _excludedPaoId;
+    itemList.add("pointid")       << _pointId;
+    itemList.add("value")         << _value;
+    itemList.add("functionid")    << _functionId;
+    itemList.add("funcname")      << _funcName;
+    itemList.add("funcrequeue")   << _funcRequeue;
+    itemList.add("funcparams")    << _funcParams;
+    itemList.add("cycletime")     << _cycleTime;
+    itemList.add("cycleoffset")   << _cycleOffset;
 
-        dout << "exclusionid    " <<  _exclusionId << endl;
-        dout << "paoid          " <<  _paoId << endl;
-        dout << "excludedpaoid  " <<  _excludedPaoId << endl;
-        dout << "pointid        " <<  _pointId << endl;
-        dout << "value          " <<  _value << endl;
-        dout << "functionid     " <<  _functionId << endl;
-        dout << "funcname       " <<  _funcName << endl;
-        dout << "funcrequeue    " <<  _funcRequeue << endl;
-        dout << "funcparams     " <<  _funcParams << endl;
-        dout << "cycletime      " <<  _cycleTime << endl;
-        dout << "cycleoffset    " <<  _cycleOffset << endl;
-
-    }
+    return itemList.toString();
 }
 
 int CtiTablePaoExclusion::getCycleTime() const
@@ -220,8 +217,7 @@ CtiTablePaoExclusion &CtiTablePaoExclusion::setCycleTime(int cycletime)
 
     if( _cycleTime < _cycleOffset )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - cycleTime (" << _cycleTime << ") < cycleOffset (" << _cycleOffset << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "cycleTime ("<< _cycleTime <<") < cycleOffset ("<< _cycleOffset <<")");
     }
 
     return *this;
@@ -233,8 +229,7 @@ CtiTablePaoExclusion &CtiTablePaoExclusion::setCycleOffset(int cycleoffset)
 
     if( _cycleTime < _cycleOffset )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - cycleTime (" << _cycleTime << ") < cycleOffset (" << _cycleOffset << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "cycleTime ("<< _cycleTime <<") < cycleOffset ("<< _cycleOffset <<")");
     }
 
     return *this;

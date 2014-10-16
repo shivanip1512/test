@@ -19,7 +19,7 @@ class CtiDeviceExclusion;
 
 typedef boost::shared_ptr< CtiDeviceExclusion > CtiExclusionSPtr;
 
-class IM_EX_DEVDB CtiDeviceExclusion : private boost::noncopyable
+class IM_EX_DEVDB CtiDeviceExclusion : private boost::noncopyable, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -80,7 +80,7 @@ public:
     void   setExecuting(bool set = true, CtiTime when = CtiTime(YUKONEOT));
     CtiTime getExecutingUntil() const;
 
-    void Dump(void) const;
+    virtual std::string toString() const override;
 
     CtiTime getEvaluateNextAt() const;
     void setEvaluateNextAt(CtiTime set);

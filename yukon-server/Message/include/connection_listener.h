@@ -31,10 +31,6 @@ class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
 
     const std::string _title;
 
-    void logStatus    ( std::string funcName, std::string note ) const;
-    void logDebug     ( std::string funcName, std::string note ) const;
-    void logException ( std::string fileName, int line, std::string exceptionName = "", std::string note = "" ) const;
-
     void releaseResources();
     bool validateRequest( const std::string &replyTo );
 

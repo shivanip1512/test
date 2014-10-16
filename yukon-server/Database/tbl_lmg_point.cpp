@@ -93,13 +93,5 @@ void CtiTablePointGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["startcontrolrawstate"] >> _controlStartRawState;
     rdr["statezerocontrol"]     >> tStr;  _rawstate[0] = tStr;
     rdr["stateonecontrol"]      >> tStr;  _rawstate[1] = tStr;
-
-    #if 0
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << getControlStartString() << " / " << getControlStopString() << endl;
-    }
-    #endif
 }
 

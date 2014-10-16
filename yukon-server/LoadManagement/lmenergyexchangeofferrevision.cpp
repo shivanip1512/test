@@ -351,10 +351,7 @@ void CtiLMEnergyExchangeOfferRevision::addLMEnergyExchangeOfferRevisionTable()
 {
     static const std::string sql = "insert into lmenergyexchangeofferrevision values (?, ?, ?, ?, ?, ?)";
 
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Inserted offer revision into LMEnergyExchangeOfferRevision, offer id: " << getOfferId() << " revision number: " << getRevisionNumber() << endl;
-    }
+    CTILOG_INFO(dout, "Inserted offer revision into LMEnergyExchangeOfferRevision, offer id: " << getOfferId() << " revision number: " << getRevisionNumber());
 
     Cti::Database::DatabaseConnection   conn;
     Cti::Database::DatabaseWriter       inserter(conn, sql);
@@ -369,8 +366,7 @@ void CtiLMEnergyExchangeOfferRevision::addLMEnergyExchangeOfferRevisionTable()
 
     if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << inserter.asString() << endl;
+        CTILOG_DEBUG(dout, inserter.asString());
     }
 
     inserter.execute();
@@ -441,11 +437,7 @@ void CtiLMEnergyExchangeOfferRevision::restoreDynamicData()
 
     if( _LM_DEBUG & LM_DEBUG_DATABASE )
     {
-        string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << endl;
-        }
+        CTILOG_DEBUG(dout, rdr.asString());
     }
 
     if(rdr())

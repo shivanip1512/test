@@ -18,7 +18,7 @@
 #include "types.h"
 #include "logger.h"
 
-class IM_EX_CTIYUKONDB CtiTableDeviceWindow : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableDeviceWindow : public CtiMemDBObject, public Cti::Loggable
 {
 public:
     typedef std::set< int > CtiWindowSet_t;
@@ -73,7 +73,7 @@ public:
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-   virtual void DumpData();
+   virtual std::string toString() const override;
 
    static std::string getTableName();
 

@@ -1,11 +1,5 @@
 #pragma once
 
-#include <float.h>
-
-#include <limits.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
-
 #include "dlldefs.h"
 #include "dllbase.h"
 #include "dbmemobject.h"
@@ -14,15 +8,22 @@
 #include "desolvers.h"
 #include "yukon.h"
 #include "row_reader.h"
-
+#include "loggable.h"
 #include "pointtypes.h"
+
+#include <float.h>
+#include <limits.h>
+#include <rw/thr/recursiv.h>
+#include <rw/thr/monitor.h>
+
 
 #define  LIMIT_IN_RANGE    0
 #define  LIMIT_EXCEEDS_LO  1
 #define  LIMIT_EXCEEDS_HI  2
 #define  LIMIT_SETUP_ERROR 3
 
-class IM_EX_CTIYUKONDB CtiTablePointLimit : public CtiMemDBObject
+
+class IM_EX_CTIYUKONDB CtiTablePointLimit : public CtiMemDBObject, public Cti::Loggable
 {
 
 protected:
@@ -55,5 +56,5 @@ public:
 
    static std::string getTableName();
    static void getSQL(std::string &sql, LONG pointID, LONG paoID, const std::set<long> &pointIds = std::set<long>());
-   void dump() const;
+   virtual std::string toString() const override;
 };

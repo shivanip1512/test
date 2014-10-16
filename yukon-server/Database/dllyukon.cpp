@@ -94,16 +94,13 @@ DLLEXPORT void ReloadStateNames(void)
         if(reloadFailed)
         {
             _stateGroupSet.clear();          // All stategroups will be reloaded on their next usage..  This shouldn't happen very often
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " State Group Set reset. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+
+            CTILOG_WARN(dout, "State Group Set reset.");
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " INFO: State group names were not reloaded this pass.  Exclusion could not be obtained." << endl;
+        CTILOG_ERROR(dout, "State group names were not reloaded this pass.  Exclusion could not be obtained.");
     }
 }
 

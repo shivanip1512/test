@@ -292,7 +292,9 @@ unsigned char CtiIONFixedArray::getVariableClassDescriptor( void ) const
 {
     unsigned char desc;
 
-    switch( getFixedArrayType() )
+    const FixedArrayTypes fixedArrayType = getFixedArrayType();
+
+    switch( fixedArrayType )
     {
         case FixedArray_Boolean:        desc = ClassDescriptor_FixedArray_Boolean;       break;
         case FixedArray_Char:           desc = ClassDescriptor_FixedArray_Char;          break;
@@ -302,10 +304,7 @@ unsigned char CtiIONFixedArray::getVariableClassDescriptor( void ) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout,"unknown fixedArrayType ("<< fixedArrayType <<")");
 
             desc = ClassDescriptor_FixedArray_Char;
 
@@ -392,11 +391,7 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
     }
     else  //  tmp4b == LengthDescriptor_Reserved
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "arrayLength = 0xf, reserved" << endl;
-        }
+        CTILOG_ERROR(dout, "arrayLength = 0xf, reserved");
 
         itemCount   = 0;
         arrayLength = 0;
@@ -419,10 +414,7 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
 
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "unexpected classDescriptor ("<< classDescriptor <<")");
             }
         }
     }
@@ -430,8 +422,7 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
     {
         if( isDebugLudicrous() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "arrayLength = "<< arrayLength <<", itemCount = "<< itemCount);
         }
     }
 
@@ -440,8 +431,7 @@ CtiIONValueVariable *CtiIONFixedArray::restoreFixedArray( unsigned char classDes
     {
         if( isDebugLudicrous() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "newArray is NULL");
         }
 
         //  we shouldn't do this - the stream isn't necessarily corrupt.  if the array is zero-length, we should

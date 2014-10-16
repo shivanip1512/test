@@ -53,9 +53,8 @@ bool LMGroupEcobee::sendCycleControl( long dutyCycle,
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending ecobee Cycle command, LM Group: " << getPAOName() << ", control minutes: "
-             << ( controlDurationSeconds / 60 ) << ", percent: " << dutyCycle << std::endl;
+        CTILOG_DEBUG(dout, "Sending ecobee Cycle command, LM Group: " << getPAOName() << ", control minutes: "
+             << ( controlDurationSeconds / 60 ) << ", percent: " << dutyCycle);
     }
 
     setLastControlSent( now );
@@ -92,8 +91,7 @@ bool LMGroupEcobee::sendStopControl( bool stopImmediately /* unused */ )
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending ecobee Stop command, LM Group: " << getPAOName() << std::endl;
+        CTILOG_DEBUG(dout, "Sending ecobee Stop command, LM Group: " << getPAOName());
     }
 
     setLastControlSent( now );
@@ -126,8 +124,7 @@ bool LMGroupEcobee::sendShedControl( long controlMinutes )
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending ecobee Shed command, LM Group: " << getPAOName() << ", control minutes: " << CtiNumStr(controlMinutes) << std::endl;
+        CTILOG_DEBUG(dout, "Sending ecobee Shed command, LM Group: " << getPAOName() << ", control minutes: " << controlMinutes);
     }
 
     setLastControlSent( now );
@@ -146,8 +143,7 @@ bool LMGroupEcobee::doesStopRequireCommandAt(const CtiTime &currentTime) const
 
 CtiRequestMsg* LMGroupEcobee::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() << " - Can not Time Refresh an ecobee Group, in: " << __FILE__ << " at:" << __LINE__ << std::endl;
+    CTILOG_INFO(dout, "Can not Time Refresh an ecobee Group,");
 
     return 0;
 }
@@ -155,8 +151,7 @@ CtiRequestMsg* LMGroupEcobee::createTimeRefreshRequestMsg(LONG refreshRate, LONG
 
 CtiRequestMsg* LMGroupEcobee::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() << " - Can not Smart Cycle an ecobee Group, in: " << __FILE__ << " at:" << __LINE__ << std::endl;
+    CTILOG_INFO(dout, "Can not Smart Cycle an ecobee Group,");
 
     return 0;
 }
@@ -164,8 +159,7 @@ CtiRequestMsg* LMGroupEcobee::createSmartCycleRequestMsg(LONG percent, LONG peri
 
 CtiRequestMsg* LMGroupEcobee::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() << " - Can not Rotation an ecobee Group, in: " << __FILE__ << " at:" << __LINE__ << std::endl;
+    CTILOG_INFO(dout, "Can not Rotation an ecobee Group,");
 
     return 0;
 }
@@ -173,8 +167,7 @@ CtiRequestMsg* LMGroupEcobee::createRotationRequestMsg(LONG sendRate, LONG shedT
 
 CtiRequestMsg* LMGroupEcobee::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() << " - Can not Master Cycle an ecobee Group, in: " << __FILE__ << " at:" << __LINE__ << std::endl;
+    CTILOG_INFO(dout, "Can not Master Cycle an ecobee Group,");
 
     return 0;
 }

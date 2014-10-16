@@ -10,14 +10,17 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include "dlldefs.h"
 #include "ctibase.h"
-#include "logger.h"
+#include "logManager.h"
 #include "guard.h"
 #include "cparms.h"
 #include "CServiceConfig.h"
 #include "fdrservice.h"
 #include "id_fdr.h"
-
 #include "connection_base.h"
+
+// Shutdown logging when this object is destroyed
+Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
+
 // Close all yukon messaging connections when this object is destroyed
 Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
@@ -69,21 +72,17 @@ int main( int argc, char *argv[] )
         }
         else
         {
-            dout.start();     // fire up the logger thread
-            dout.setOwnerInfo(CompileInfo);
-            dout.setOutputPath(gLogDirectory);
-            dout.setRetentionLength(gLogRetention);
-            dout.setOutputFile("fdr");
-            dout.setToStdOut(true);
-            dout.setWriteInterval(0);
+            doutManager.setOwnerInfo     (CompileInfo);
+            doutManager.setOutputPath    (gLogDirectory);
+            doutManager.setRetentionDays (gLogRetention);
+            doutManager.setOutputFile    ("fdr");
+            doutManager.setToStdOut      (true);
+
+            doutManager.start();     // fire up the logger thread
 
             Cti::identifyProject(CompileInfo);
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << "Starting " << CompileInfo.project << " in console mode" << endl;
-            }
-
+            CTILOG_INFO(dout, "Starting "<< CompileInfo.project <<" in console mode");
 
             //cout << CtiTime( ) << " - FDR starting up..." << endl;
             CtiFDRService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
@@ -93,21 +92,17 @@ int main( int argc, char *argv[] )
     }
     else
     {
-        dout.start();     // fire up the logger thread
-        dout.setOwnerInfo(CompileInfo);
-        dout.setOutputPath(gLogDirectory);
-        dout.setRetentionLength(gLogRetention);
-        dout.setOutputFile("fdr");
-        dout.setToStdOut(false);
-        dout.setWriteInterval(5000);
+        doutManager.setOwnerInfo     (CompileInfo);
+        doutManager.setOutputPath    (gLogDirectory);
+        doutManager.setRetentionDays (gLogRetention);
+        doutManager.setOutputFile    ("fdr");
+        doutManager.setToStdOut      (false);
+
+        doutManager.start();     // fire up the logger thread
 
         Cti::identifyProject(CompileInfo);
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << "Starting " << CompileInfo.project << " as service" << endl;
-        }
-
+        CTILOG_INFO(dout, "Starting "<< CompileInfo.project << " as service");
 
         CtiFDRService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
 
@@ -131,7 +126,6 @@ int install( DWORD dwStart )
     }
 
     cout << CtiTime( ) << " - Installing FDR as a service..." << endl;
-
 
     CServiceConfig si(szServiceName, szDisplayName);
 

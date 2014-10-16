@@ -4,18 +4,18 @@
 #define NOMINMAX
 #endif
 
-#include <windows.h>
-
-#include <rw/thr/recursiv.h>
-#include "row_reader.h"
-
 #include "dlldefs.h"
 #include "yukon.h"
+#include "row_reader.h"
+#include "loggable.h"
 
+#include <windows.h>
+#include <rw/thr/recursiv.h>
 #include <set>
 #include <vector>
 
-class IM_EX_CTIYUKONDB CtiTableCICustomerBase
+
+class IM_EX_CTIYUKONDB CtiTableCICustomerBase : public Cti::Loggable
 {
 public:
 
@@ -50,7 +50,7 @@ public:
    std::vector<int> getContactNotificationVector() const;
 
    void dumpContactNotifications() const;
-   void dump() const;
+   virtual std::string toString() const override;
 
    static std::string getTableName();
    virtual bool Restore();

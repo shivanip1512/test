@@ -77,8 +77,7 @@ CtiRequestMsg* CtiLMGroupRipple::createTimeRefreshRequestMsg(LONG refreshRate, L
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -100,10 +99,7 @@ CtiRequestMsg* CtiLMGroupRipple::createTimeRefreshRequestMsg(LONG refreshRate, L
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupRipple::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not smart cycle an Ripple Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "Can not smart cycle an Ripple Load Management Group,");
     return NULL;
 }
 
@@ -119,8 +115,7 @@ CtiRequestMsg* CtiLMGroupRipple::createRotationRequestMsg(LONG sendRate, LONG sh
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -145,8 +140,7 @@ CtiRequestMsg* CtiLMGroupRipple::createMasterCycleRequestMsg(LONG offTime, LONG 
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -177,8 +171,7 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTi
         returnBOOL = TRUE;
         _refreshsent = TRUE;
         /*{
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle refreshed in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_INFO(dout, "PAOId: " << getPAOId() << " is to be Master Cycle refreshed");
         }*/
     }
     else if( trueShedTime!=0 )
@@ -193,8 +186,7 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTi
                 {
                     returnBOOL = TRUE;
                     /*{
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - PAOId: " << getPAOId() << " is to be Master Cycle extended in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_INFO(dout, "PAOId: " << getPAOId() << " is to be Master Cycle extended");
                     }*/
                 }
             }
@@ -202,8 +194,7 @@ BOOL CtiLMGroupRipple::doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTi
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Tried to divide by zero in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_INFO(dout, "Tried to divide by zero");
     }
 
     return returnBOOL;

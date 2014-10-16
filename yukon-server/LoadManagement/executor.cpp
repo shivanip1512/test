@@ -124,10 +124,7 @@ void CtiLMCommandExecutor::Execute()
         ResetPeakPointValue();
         break;
     default:
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - executor.cpp::Execute - unknown command type" << endl;
-        }
+        CTILOG_INFO(dout, "executor.cpp::Execute - unknown command type");
     }
 }
 
@@ -171,10 +168,7 @@ void CtiLMCommandExecutor::ChangeThreshold()
                         _snprintf(tempchar,80,"%.*f",3,_command->getValue());
                         additional += tempchar;
                         CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser(), NULL));
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << text << ", " << additional << endl;
-                        }
+                        CTILOG_INFO(dout, text << ", " << additional);
                     }
                     break;
                 }
@@ -224,10 +218,7 @@ void CtiLMCommandExecutor::ChangeRestoreOffset()
                         _snprintf(tempchar,80,"%.*f",3,_command->getValue());
                         additional += tempchar;
                         CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << text << ", " << additional << endl;
-                        }
+                        CTILOG_INFO(dout, text << ", " << additional);
                     }
                     break;
                 }
@@ -268,10 +259,7 @@ void CtiLMCommandExecutor::EnableControlArea()
                 additional += tempchar;
 
                 CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << text << ", " << additional << endl;
-                }
+                CTILOG_INFO(dout, text << ", " << additional);
             }
             currentLMControlArea->setDisableFlag(FALSE);
             CtiLMControlAreaStore::getInstance()->UpdateControlAreaDisableFlagInDB(currentLMControlArea);
@@ -305,10 +293,7 @@ void CtiLMCommandExecutor::DisableControlArea()
                 additional += tempchar;
 
                 CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << text << ", " << additional << endl;
-                }
+                CTILOG_INFO(dout, text << ", " << additional);
             }
             currentLMControlArea->setDisableFlag(TRUE);
             vector<CtiLMProgramBaseSPtr>& lmPrograms = currentLMControlArea->getLMPrograms();
@@ -333,10 +318,7 @@ void CtiLMCommandExecutor::DisableControlArea()
                         additional += tempchar;
 
                         CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << text << ", " << additional << endl;
-                        }
+                        CTILOG_INFO(dout, text << ", " << additional);
                     }
                 }
             }
@@ -376,10 +358,7 @@ void CtiLMCommandExecutor::EnableProgram()
                     additional += tempchar;
 
                     CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                    }
+                    CTILOG_INFO(dout, text << ", " << additional);
                 }
                 CtiLMControlAreaStore::getInstance()->UpdateProgramDisableFlagInDB(currentLMProgramBase);
                 ((CtiLMControlArea*)controlAreas[i])->setUpdatedFlag(TRUE);
@@ -427,10 +406,7 @@ void CtiLMCommandExecutor::DisableProgram(bool emergency)
 
 
                     CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                    }
+                    CTILOG_INFO(dout, text << ", " << additional);
                 }
 
                 if( currentLMProgramBase->getProgramState() != CtiLMProgramBase::InactiveState )
@@ -465,10 +441,7 @@ void CtiLMCommandExecutor::DisableProgram(bool emergency)
                         additional += tempchar;
 
                         CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << text << ", " << additional << endl;
-                        }
+                        CTILOG_INFO(dout, text << ", " << additional);
                     }
                 }
                 CtiLMControlAreaStore::getInstance()->UpdateProgramDisableFlagInDB(currentLMProgramBase);
@@ -543,10 +516,7 @@ void CtiLMCommandExecutor::ChangeDailyStartTime()
                     _snprintf(tempchar,80,"%d",currentLMControlArea->getPAOId());
                     additional += tempchar;
                     CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                    }
+                    CTILOG_INFO(dout, text << ", " << additional);
                 }
                 break;
             }
@@ -591,10 +561,7 @@ void CtiLMCommandExecutor::ChangeDailyStopTime()
                     _snprintf(tempchar,80,"%d",currentLMControlArea->getPAOId());
                     additional += tempchar;
                     CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                    }
+                    CTILOG_INFO(dout, text << ", " << additional);
                 }
                 break;
             }
@@ -638,10 +605,7 @@ void CtiLMCommandExecutor::ShedGroup()
                             additional += tempchar;
 
                             CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << text << ", " << additional << endl;
-                            }
+                            CTILOG_INFO(dout, text << ", " << additional);
                         }
 
                         if( GroupControlInterfacePtr controllableGroup = boost::dynamic_pointer_cast<GroupControlInterface>(currentLMGroup) )
@@ -679,8 +643,7 @@ void CtiLMCommandExecutor::ShedGroup()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cannot create request in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                CTILOG_INFO(dout, "Cannot create request");
                             }
                         }
 
@@ -735,10 +698,7 @@ void CtiLMCommandExecutor::CycleGroup()
                             additional += tempchar;
 
                             CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << text << ", " << additional << endl;
-                            }
+                            CTILOG_INFO(dout, text << ", " << additional);
                         }
                         CtiRequestMsg* requestMsg = NULL;
 
@@ -763,8 +723,7 @@ void CtiLMCommandExecutor::CycleGroup()
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Cannot create request in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            CTILOG_WARN(dout, "Cannot create request");
                         }
 
                         found = TRUE;
@@ -817,10 +776,7 @@ void CtiLMCommandExecutor::RestoreGroup()
                             additional += tempchar;
 
                             CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << text << ", " << additional << endl;
-                            }
+                            CTILOG_INFO(dout, text << ", " << additional);
                         }
 
                         if( GroupControlInterfacePtr controllableGroup = boost::dynamic_pointer_cast<GroupControlInterface>(currentLMGroup) )
@@ -867,8 +823,7 @@ void CtiLMCommandExecutor::RestoreGroup()
 
                         if( _LM_DEBUG & LM_DEBUG_STANDARD )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << endl;
+                            CTILOG_DEBUG(dout, "Sending restore command, LM Group: " << currentLMGroup->getPAOName());
                         }
 
                         found = TRUE;
@@ -918,10 +873,7 @@ void CtiLMCommandExecutor::EnableGroup()
                             additional += tempchar;
 
                             CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << text << ", " << additional << endl;
-                            }
+                            CTILOG_INFO(dout, text << ", " << additional);
                         }
 
                         currentLMGroup->setDisableFlag(FALSE);
@@ -973,10 +925,7 @@ void CtiLMCommandExecutor::DisableGroup()
                             additional += tempchar;
 
                             CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << text << ", " << additional << endl;
-                            }
+                            CTILOG_INFO(dout, text << ", " << additional);
                         }
 
                         if( !found &&
@@ -992,10 +941,7 @@ void CtiLMCommandExecutor::DisableGroup()
                                 additional += tempchar;
 
                                 CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                }
+                                CTILOG_INFO(dout, text << ", " << additional);
                             }
 
                             if( GroupControlInterfacePtr controllableGroup = boost::dynamic_pointer_cast<GroupControlInterface>(currentLMGroup) )
@@ -1018,8 +964,7 @@ void CtiLMCommandExecutor::DisableGroup()
 
                                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+                                    CTILOG_DEBUG(dout, "Sending restore command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority);
                                 }
 
                                 currentLMGroup->setLastControlString(requestMsg->CommandString());
@@ -1078,16 +1023,6 @@ void CtiLMCommandExecutor::ConfirmGroup()
                         if( !(str = gConfigParms.getValueAsString(var)).empty() )
                         {
                             confirmExpireInSeconds = atoi(str.c_str());
-                            /*if( _LM_DEBUG & LM_DEBUG_STANDARD )
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << var << ":  " << str << endl;
-                            }*/
-                        }
-                        else
-                        {
-                            /*CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;*/
                         }
 
                         if( currentLMGroup->getLastControlSent().seconds() + confirmExpireInSeconds >= CtiTime().seconds() &&
@@ -1102,10 +1037,7 @@ void CtiLMCommandExecutor::ConfirmGroup()
                                 additional += tempchar;
 
                                 CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                }
+                                CTILOG_INFO(dout, text << ", " << additional);
                             }
                             int priority = 11;
                             string controlString = currentLMGroup->getLastControlString();
@@ -1121,8 +1053,7 @@ void CtiLMCommandExecutor::ConfirmGroup()
 
                             if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Sending confirm command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+                                CTILOG_DEBUG(dout, "Sending confirm command, LM Group: " << currentLMGroup->getPAOName() << ", string: " << controlString << ", priority: " << priority);
                             }
 
                             if( routeId > 0 )
@@ -1179,10 +1110,7 @@ void CtiLMCommandExecutor::ResetPeakPointValue()
                         string additional = ("Peak Point Value Reset for Trigger: ");
                         _snprintf(tempchar,80,"%d",triggerNumber);
                         CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_command->getUser()));
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << text << ", " << additional << endl;
-                        }
+                        CTILOG_INFO(dout, text << ", " << additional);
                     }
                     break;
                 }
@@ -1192,11 +1120,7 @@ void CtiLMCommandExecutor::ResetPeakPointValue()
         }
     }
 
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " - " << "Received user peak point value reset for control area id: " << commandPAOID << " trigger: " << triggerNumber << endl;
-        dout << CtiTime() << " but couldn't locate the correct trigger." << endl;
-    }
+    CTILOG_INFO(dout, "Received user peak point value reset for control area id: " << commandPAOID << " trigger: " << triggerNumber << " but couldn't locate the correct trigger.");
 }
 
 /*---------------------------------------------------------------------------
@@ -1216,19 +1140,14 @@ void CtiLMManualControlRequestExecutor::Execute()
 
     if( !store->findProgram(_controlMsg->getPAOId(), program, &controlArea) )
     {
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " - Received a manual control message that specified a program that doesn't exist, program id was: " << _controlMsg->getPAOId() << endl;
-            dout << CtiTime() << " - Send a response messge here!" << endl;
-            return;
-        }
+        CTILOG_INFO(dout, "Received a manual control message that specified a program that doesn't exist, program id was: " << _controlMsg->getPAOId() << " - Send a response messge here!");
+        return;
     }
 
     if( !program )
     {
         //This would cause very very very bad things (program would die immediately due to assertions and exceptions)
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " *** CHECKPOINT *** - This should not happen. Program ID was: " << _controlMsg->getPAOId() << endl;
+        CTILOG_ERROR(dout, "Program null. Program ID was: " << _controlMsg->getPAOId());
         return;
     }
 
@@ -1342,10 +1261,7 @@ void CtiLMManualControlRequestExecutor::Execute()
             break;
 
         default:
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " *** Checkpoint *** Received request with improper constraints " << __FILE__ << "(" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Received request with improper constraints: " << _controlMsg->getConstraintCmd());
             break;
 
         };
@@ -1391,10 +1307,7 @@ void CtiLMManualControlRequestExecutor::Execute()
             break;
 
         default:
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " *** Checkpoint *** Received request with improper constraints " << __FILE__ << "(" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Received request with improper constraints: " << _controlMsg->getConstraintCmd());
             break;
         };
 
@@ -1435,12 +1348,17 @@ void CtiLMManualControlRequestExecutor::Execute()
                 if( checker.checkManualGearChangeConstraints(_controlMsg->getStartGear()-1, stopTime.seconds()) )
                 {
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " Gear Change being sent: " << endl;
-                        dout << "     OldStopTime: " << (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getDirectStopTime() <<
-                             " NewStopTime: " << stopTime << endl;
-                        dout << "     OldGear: " << (boost::static_pointer_cast< CtiLMProgramDirect >(program))->getCurrentGearNumber() <<
-                             " NewGear: " << _controlMsg->getStartGear()-1 << endl;
+                        const CtiLMProgramDirect &directProgram = static_cast<const CtiLMProgramDirect &>(*program);
+
+                        Cti::FormattedList gearChange;
+
+                        gearChange.add("Gear Change being sent");
+                        gearChange.add("OldStopTime") << directProgram.getDirectStopTime();
+                        gearChange.add("NewStopTime") << stopTime;
+                        gearChange.add("OldGear")     << directProgram.getCurrentGearNumber();
+                        gearChange.add("NewGear")     << _controlMsg->getStartGear()-1;
+
+                        CTILOG_INFO(dout, gearChange);
                     }
                     StartProgram(program, controlArea, startTime, stopTime);
                     program->setProgramState(CtiLMProgramBase::GearChangeState);
@@ -1462,10 +1380,7 @@ void CtiLMManualControlRequestExecutor::Execute()
                 break;
 
             default:
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " *** Checkpoint *** Received request with improper constraints " << __FILE__ << "(" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Received request with improper constraints: " << _controlMsg->getConstraintCmd());
                 break;
 
             };
@@ -1473,9 +1388,7 @@ void CtiLMManualControlRequestExecutor::Execute()
         break;
     default:
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - executor.cpp::Execute - unknown command type at: " << __LINE__ << endl;
-            dout << CtiTime() << " - Send a response messge here!" << endl;
+            CTILOG_ERROR(dout, "unknown command type " << _controlMsg->getCommand());
         }
 
     }
@@ -1491,7 +1404,7 @@ void CtiLMManualControlRequestExecutor::Execute()
 
         if( _LM_DEBUG & LM_DEBUG_OUT_MESSAGES )
         {
-            response->dump();
+            CTILOG_DEBUG(dout, *response);
         }
         //Send the response to one or all of the clients
         if( _controlMsg->getConnectionHandle() != NULL )
@@ -1514,18 +1427,17 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBaseSPtr progra
     {
         if( _LM_DEBUG & LM_DEBUG_STANDARD ) //TODO: pull this out into an operator
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            char tempchar[64];
-            dout << CtiTime() << " - Manual direct control scheduled start received." << endl;
-            _ltoa(_controlMsg->getPAOId(),tempchar,10);
-            dout << "pao id: " << tempchar << endl;
-            dout << "start time: " << start.asString() << endl;
-            dout << "stop time: " << stop.asString() << endl;
-            _ltoa(_controlMsg->getStartGear(),tempchar,10);
-            dout << "start gear: " << tempchar << endl;
-            _ltoa(_controlMsg->getStartPriority(),tempchar,10);
-            dout << "start priority: " << tempchar << endl;
-            dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
+            Cti::FormattedList list;
+
+            list << "Manual direct control scheduled start received";
+            list.add("pao id")          << _controlMsg->getPAOId();
+            list.add("start time")      << start;
+            list.add("stop time")       << stop;
+            list.add("start gear")      << _controlMsg->getStartGear();
+            list.add("start priority")  << _controlMsg->getStartPriority();
+            list.add("additional info") << _controlMsg->getAdditionalInfo();
+
+            CTILOG_DEBUG(dout, list);
         }
         CtiLMProgramDirectSPtr directProgram = boost::static_pointer_cast< CtiLMProgramDirect >(program);
         StartDirectProgram(directProgram, controlArea, start, stop);
@@ -1538,24 +1450,22 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBaseSPtr progra
         additional += ", Stop: ";
         additional += directProgram->getDirectStopTime().asString();
         CtiLoadManager::getInstance()->sendMessageToDispatch( CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << text << ", " << additional << endl;
-        }
+        CTILOG_INFO(dout, text << ", " << additional);
     } // end program->getPAOType() == TYPE_LMPROGRAM_DIRECT
     else if( program->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
     {
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            char tempchar[64];
-            dout << CtiTime() << " - Manual curtail scheduled start received." << endl;
-            _ltoa(_controlMsg->getPAOId(),tempchar,10);
-            dout << "pao id: " << tempchar << endl;
-            dout << "notify time: " << _controlMsg->getNotifyTime().asString() << endl;
-            dout << "start time: " << start.asString() << endl;
-            dout << "stop time: " << stop.asString() << endl;
-            dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
+            Cti::FormattedList list;
+
+            list << "Manual curtail scheduled start received";
+            list.add("pao id")          << _controlMsg->getPAOId();
+            list.add("notify time")     << _controlMsg->getNotifyTime();
+            list.add("start time")      << start;
+            list.add("stop time")       << stop;
+            list.add("additional info") << _controlMsg->getAdditionalInfo();
+
+            CTILOG_DEBUG(dout, list);
         }
 
         CtiLMProgramCurtailmentSPtr lmProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(program);
@@ -1584,11 +1494,7 @@ void CtiLMManualControlRequestExecutor::StartProgram(CtiLMProgramBaseSPtr progra
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " **Checkpoint** " << __FILE__ << "(" << __LINE__ << ")" << endl;
-            dout << CtiTime() << " send a response message here" << __FILE__ << "(" << __LINE__ << ")" << endl;
-        }
+        CTILOG_INFO(dout, "Unhandled paotype " << program->getPAOType());
     }
 
 }
@@ -1600,13 +1506,14 @@ void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBaseSPtr program
     {
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            char tempchar[64];
-            dout << CtiTime() << " - Manual direct control scheduled stop received." << endl;
-            _ltoa(_controlMsg->getPAOId(),tempchar,10);
-            dout << "pao id: " << tempchar << endl;
-            dout << "stop time: " << stop.asString() << endl;
-            dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
+            Cti::FormattedList list;
+
+            list << "Manual direct control scheduled stop received";
+            list.add("pao id")          << _controlMsg->getPAOId();
+            list.add("stop time")       << stop;
+            list.add("additional info") << _controlMsg->getAdditionalInfo();
+
+            CTILOG_DEBUG(dout, list);
         }
 
         CtiLMProgramDirectSPtr lmProgramDirect = boost::static_pointer_cast< CtiLMProgramDirect >(program);
@@ -1622,25 +1529,22 @@ void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBaseSPtr program
         string additional = ("Stop: ");
         additional += lmProgramDirect->getDirectStopTime().asString();
         CtiLoadManager::getInstance()->sendMessageToDispatch( CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent,_controlMsg->getUser()) );
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << text << ", " << additional << endl;
-        }
+        CTILOG_INFO(dout, text << ", " << additional);
 
     }
     else if( program->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
     {
-
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            char tempchar[64];
-            dout << CtiTime() << " - Manual curtail scheduled stop received." << endl;
-            _ltoa(_controlMsg->getPAOId(),tempchar,10);
-            dout << "pao id: " << tempchar << endl;
-            dout << "notify time: " << _controlMsg->getNotifyTime().asString() << endl;
-            dout << "stop time: " << stop.asString() << endl;
-            dout << "additional info: " << _controlMsg->getAdditionalInfo() << endl;
+            Cti::FormattedList list;
+
+            list << "Manual curtail scheduled stop received";
+            list.add("pao id")          << _controlMsg->getPAOId();
+            list.add("notify time")     << _controlMsg->getNotifyTime();
+            list.add("stop time")       << stop;
+            list.add("additional info") << _controlMsg->getAdditionalInfo();
+
+            CTILOG_DEBUG(dout, list);
         }
         CtiLMProgramCurtailmentSPtr lmProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(program);
         StopCurtailmentProgram(lmProgramCurtailment, controlArea, stop);
@@ -1648,11 +1552,7 @@ void CtiLMManualControlRequestExecutor::StopProgram(CtiLMProgramBaseSPtr program
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " **Checkpoint** " <<  __FILE__ << "(" << __LINE__ << ")" << endl;
-            dout << CtiTime() << " send a response message here" << __FILE__ << "(" << __LINE__ << ")" << endl;
-        }
+        CTILOG_WARN(dout, "Response message missing for PAO type " << program->getPAOType());
     }
 }
 
@@ -1798,10 +1698,7 @@ void CtiLMManualControlRequestExecutor::StopCurtailmentProgram(CtiLMProgramCurta
  */
 void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr program, CtiTime& start, CtiTime& stop, CtiLMControlArea *controlArea)
 {
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " - before coerce start: " << start.asString() << " stop: " << stop.asString() << endl;
-    }
+    CTILOG_INFO(dout, "before coerce start: " << start.asString() << " stop: " << stop.asString());
 
     CtiTime resultStart, resultStop;
 
@@ -1811,10 +1708,7 @@ void CtiLMManualControlRequestExecutor::CoerceStartStopTime(CtiLMProgramBaseSPtr
         stop = resultStop;
     }
 
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " - after coerce start: " << start.asString() << " stop: " << stop.asString() << endl;
-    }
+    CTILOG_INFO(dout, "after coerce start: " << start.asString() << " stop: " << stop.asString());
 }
 
 /*---------------------------------------------------------------------------
@@ -1848,10 +1742,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::Execute()
         break;
 
     default:
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - executor.cpp::Execute - unknown command type at: " << __LINE__ << endl;
-        }
+        CTILOG_WARN(dout, "unknown command type");
 
     }
 }
@@ -1863,15 +1754,16 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        char tempchar[64];
-        dout << CtiTime() << " - NEW energy exchange offer received." << endl;
-        _ltoa(_energyExchangeMsg->getPAOId(),tempchar,10);
-        dout << "pao id: " << tempchar << endl;
-        dout << "offer date: " << _energyExchangeMsg->getOfferDate().asString() << endl;
-        dout << "notification datetime: " << _energyExchangeMsg->getNotificationDateTime().asString() << endl;
-        dout << "expiration datetime: " << _energyExchangeMsg->getExpirationDateTime().asString() << endl;
-        dout << "additional info: " << _energyExchangeMsg->getAdditionalInfo() << endl;
+        Cti::FormattedList list;
+
+        list << "NEW energy exchange offer received";
+        list.add("pao id")                  << _energyExchangeMsg->getPAOId();
+        list.add("offer date")              << _energyExchangeMsg->getOfferDate();
+        list.add("notification datetime")   << _energyExchangeMsg->getNotificationDateTime();
+        list.add("expiration datetime")     << _energyExchangeMsg->getExpirationDateTime();
+        list.add("additional info")         << _energyExchangeMsg->getAdditionalInfo();
+
+        CTILOG_DEBUG(dout, list);
     }
 
     BOOL found = FALSE;
@@ -1940,8 +1832,7 @@ void CtiLMEnergyExchangeControlMsgExecutor::NewOffer()
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                    CTILOG_INFO(dout, "CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch: " << currentLMProgramBase->getPAOType());
                 }
                 found = TRUE;
                 break;
@@ -1962,17 +1853,17 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        char tempchar[64];
-        dout << CtiTime() << " - Energy exchange offer UPDATE received." << endl;
-        _ltoa(_energyExchangeMsg->getPAOId(),tempchar,10);
-        dout << "pao id: " << tempchar << endl;
-        _ltoa(_energyExchangeMsg->getOfferId(),tempchar,10);
-        dout << "offer id: " << tempchar << endl;
-        dout << "offer date: " << _energyExchangeMsg->getOfferDate().asString() << endl;
-        dout << "notification datetime: " << _energyExchangeMsg->getNotificationDateTime().asString() << endl;
-        dout << "expiration datetime: " << _energyExchangeMsg->getExpirationDateTime().asString() << endl;
-        dout << "additional info: " << _energyExchangeMsg->getAdditionalInfo() << endl;
+        Cti::FormattedList list;
+
+        list << "Energy exchange offer UPDATE received";
+        list.add("pao id")                  << _energyExchangeMsg->getPAOId();
+        list.add("offer id")                << _energyExchangeMsg->getOfferId();
+        list.add("offer date")              << _energyExchangeMsg->getOfferDate();
+        list.add("notification datetime")   << _energyExchangeMsg->getNotificationDateTime();
+        list.add("expiration datetime")     << _energyExchangeMsg->getExpirationDateTime();
+        list.add("additional info")         << _energyExchangeMsg->getAdditionalInfo();
+
+        CTILOG_DEBUG(dout, list);
     }
 
     BOOL found = FALSE;
@@ -2038,22 +1929,19 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate()
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate no offer to update for given date in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                            CTILOG_INFO(dout, "CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate no offer to update for given date");
                         }
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate no offers to update in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                        CTILOG_INFO(dout, "CtiLMEnergyExchangeControlMsgExecutor::OfferUpdate no offers to update");
                     }
                     lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
                     currentControlArea->setUpdatedFlag(TRUE);
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                    CTILOG_INFO(dout, "CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch");
                 }
                 found = TRUE;
                 break;
@@ -2074,17 +1962,17 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        char tempchar[64];
-        dout << CtiTime() << " - Energy exchange offer REVISION received." << endl;
-        _ltoa(_energyExchangeMsg->getPAOId(),tempchar,10);
-        dout << "pao id: " << tempchar << endl;
-        _ltoa(_energyExchangeMsg->getOfferId(),tempchar,10);
-        dout << "offer id: " << tempchar << endl;
-        dout << "offer date: " << _energyExchangeMsg->getOfferDate().asString() << endl;
-        dout << "notification datetime: " << _energyExchangeMsg->getNotificationDateTime().asString() << endl;
-        dout << "expiration datetime: " << _energyExchangeMsg->getExpirationDateTime().asString() << endl;
-        dout << "additional info: " << _energyExchangeMsg->getAdditionalInfo() << endl;
+        Cti::FormattedList list;
+
+        list << "Energy exchange offer REVISION received";
+        list.add("pao id")                  << _energyExchangeMsg->getPAOId();
+        list.add("offer id")                << _energyExchangeMsg->getOfferId();
+        list.add("offer date")              << _energyExchangeMsg->getOfferDate();
+        list.add("notification datetime")   << _energyExchangeMsg->getNotificationDateTime();
+        list.add("expiration datetime")     << _energyExchangeMsg->getExpirationDateTime();
+        list.add("additional info")         << _energyExchangeMsg->getAdditionalInfo();
+
+        CTILOG_DEBUG(dout, list);
     }
 
     BOOL found = FALSE;
@@ -2160,22 +2048,19 @@ void CtiLMEnergyExchangeControlMsgExecutor::OfferRevision()
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::OfferRevision no offer to revise for given date in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                            CTILOG_WARN(dout, "no offer to revise for given date");
                         }
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::OfferRevison no offers to revise in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                        CTILOG_WARN(dout, "no offers to revise");
                     }
                     lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
                     currentControlArea->setUpdatedFlag(TRUE);
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                    CTILOG_ERROR(dout, "command type and LM Program type mismatch: " << currentLMProgramBase->getPAOType());
                 }
                 found = TRUE;
                 break;
@@ -2196,17 +2081,17 @@ void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        char tempchar[64];
-        dout << CtiTime() << " - Energy exchange offer CLOSE received." << endl;
-        _ltoa(_energyExchangeMsg->getPAOId(),tempchar,10);
-        dout << "pao id: " << tempchar << endl;
-        _ltoa(_energyExchangeMsg->getOfferId(),tempchar,10);
-        dout << "offer id: " << tempchar << endl;
-        dout << "offer date: " << _energyExchangeMsg->getOfferDate().asString() << endl;
-        dout << "notification datetime: " << _energyExchangeMsg->getNotificationDateTime().asString() << endl;
-        dout << "expiration datetime: " << _energyExchangeMsg->getExpirationDateTime().asString() << endl;
-        dout << "additional info: " << _energyExchangeMsg->getAdditionalInfo() << endl;
+        Cti::FormattedList list;
+
+        list << "Energy exchange offer CLOSE received";
+        list.add("pao id")                  << _energyExchangeMsg->getPAOId();
+        list.add("offer id")                << _energyExchangeMsg->getOfferId();
+        list.add("offer date")              << _energyExchangeMsg->getOfferDate();
+        list.add("notification datetime")   << _energyExchangeMsg->getNotificationDateTime();
+        list.add("expiration datetime")     << _energyExchangeMsg->getExpirationDateTime();
+        list.add("additional info")         << _energyExchangeMsg->getAdditionalInfo();
+
+        CTILOG_DEBUG(dout, list);
     }
 
     BOOL found = FALSE;
@@ -2258,22 +2143,19 @@ void CtiLMEnergyExchangeControlMsgExecutor::CloseOffer()
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::CloseOffer no offer to close for given date in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                            CTILOG_WARN(dout, "no offer to close for given date");
                         }
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::CloseOffer no offers to close in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                        CTILOG_WARN(dout, "no offers to close");
                     }
                     lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
                     currentControlArea->setUpdatedFlag(TRUE);
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                    CTILOG_ERROR(dout, "CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch: " << currentLMProgramBase->getPAOType());
                 }
                 found = TRUE;
                 break;
@@ -2294,17 +2176,17 @@ void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        char tempchar[64];
-        dout << CtiTime() << " - Energy exchange offer CANCEL received." << endl;
-        _ltoa(_energyExchangeMsg->getPAOId(),tempchar,10);
-        dout << "pao id: " << tempchar << endl;
-        _ltoa(_energyExchangeMsg->getOfferId(),tempchar,10);
-        dout << "offer id: " << tempchar << endl;
-        dout << "offer date: " << _energyExchangeMsg->getOfferDate().asString() << endl;
-        dout << "notification datetime: " << _energyExchangeMsg->getNotificationDateTime().asString() << endl;
-        dout << "expiration datetime: " << _energyExchangeMsg->getExpirationDateTime().asString() << endl;
-        dout << "additional info: " << _energyExchangeMsg->getAdditionalInfo() << endl;
+        Cti::FormattedList list;
+
+        list << "Energy exchange offer CANCEL received";
+        list.add("pao id")                  << _energyExchangeMsg->getPAOId();
+        list.add("offer id")                << _energyExchangeMsg->getOfferId();
+        list.add("offer date")              << _energyExchangeMsg->getOfferDate();
+        list.add("notification datetime")   << _energyExchangeMsg->getNotificationDateTime();
+        list.add("expiration datetime")     << _energyExchangeMsg->getExpirationDateTime();
+        list.add("additional info")         << _energyExchangeMsg->getAdditionalInfo();
+
+        CTILOG_DEBUG(dout, list);
     }
 
     BOOL found = FALSE;
@@ -2359,22 +2241,19 @@ void CtiLMEnergyExchangeControlMsgExecutor::CancelOffer()
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::CloseOffer no offer to close for given date in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                            CTILOG_WARN(dout, "no offer to close");
                         }
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor::CloseOffer no offers to close in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                        CTILOG_WARN(dout, "no offers to close");
                     }
                     lmProgramEnergyExchange->setManualControlReceivedFlag(TRUE);
                     currentControlArea->setUpdatedFlag(TRUE);
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - CtiLMEnergyExchangeControlMsgExecutor command type and LM Program type mismatch in file: " << __FILE__ << " at: " << __LINE__ << endl;
+                    CTILOG_ERROR(dout, "command type and LM Program type mismatch: " << currentLMProgramBase->getPAOType());
                 }
                 found = TRUE;
                 break;
@@ -2411,21 +2290,18 @@ void CtiLMCurtailmentAcknowledgeMsgExecutor::Execute()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Curtail acknowledge received." << endl;
+        Cti::FormattedList list;
 
-        char tempchar[64];
-        _ltoa(_curtailAckMsg->getPAOId(),tempchar,10);
-        string outString = tempchar;
-        dout << "pao id: " << outString.c_str() << endl;
-        _ltoa(_curtailAckMsg->getCurtailReferenceId(),tempchar,10);
-        outString = tempchar;
-        dout << "curtail reference id: " << outString.c_str() << endl;
-        dout << "acknowledge status: " << _curtailAckMsg->getAcknowledgeStatus() << endl;
-        dout << "ip address of ack user: " << _curtailAckMsg->getIPAddressOfAckUser() << endl;
-        dout << "user id name: " << _curtailAckMsg->getUserIdName() << endl;
-        dout << "name of ack person: " << _curtailAckMsg->getNameOfAckPerson() << endl;
-        dout << "curtailmentnotes: " << _curtailAckMsg->getCurtailmentNotes() << endl;
+        list << "Curtail acknowledge received";
+        list.add("pao id")                  << _curtailAckMsg->getPAOId();
+        list.add("curtail reference id")    << _curtailAckMsg->getCurtailReferenceId();
+        list.add("acknowledge status")      << _curtailAckMsg->getAcknowledgeStatus();
+        list.add("ip address of ack user")  << _curtailAckMsg->getIPAddressOfAckUser();
+        list.add("user id name")            << _curtailAckMsg->getUserIdName();
+        list.add("name of ack person")      << _curtailAckMsg->getNameOfAckPerson();
+        list.add("curtailmentnotes")        << _curtailAckMsg->getCurtailmentNotes();
+
+        CTILOG_DEBUG(dout, list);
     }
 
     CtiTime currentDateTime;
@@ -2533,24 +2409,19 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Energy exchange accept received." << endl;
+        Cti::FormattedList list;
 
-        char tempchar[64];
-        _ltoa(_energyExchangeAcceptMsg->getPAOId(),tempchar,10);
-        string outString = tempchar;
-        dout << "pao id: " << outString.c_str() << endl;
-        _ltoa(_energyExchangeAcceptMsg->getOfferId(),tempchar,10);
-        outString = tempchar;
-        dout << "offer id: " << outString.c_str() << endl;
-        _ltoa(_energyExchangeAcceptMsg->getRevisionNumber(),tempchar,10);
-        outString = tempchar;
-        dout << "revision number: " << outString.c_str() << endl;
-        dout << "accept status: " << _energyExchangeAcceptMsg->getAcceptStatus() << endl;
-        dout << "ip address of accept user: " << _energyExchangeAcceptMsg->getIPAddressOfAcceptUser() << endl;
-        dout << "user id name: " << _energyExchangeAcceptMsg->getUserIdName() << endl;
-        dout << "name of accept person: " << _energyExchangeAcceptMsg->getNameOfAcceptPerson() << endl;
-        dout << "energy exchange notes: " << _energyExchangeAcceptMsg->getEnergyExchangeNotes() << endl;
+        list << "Energy exchange accept received";
+        list.add("pao id")                      << _energyExchangeAcceptMsg->getPAOId();
+        list.add("offer id")                    << _energyExchangeAcceptMsg->getOfferId();
+        list.add("revision number")             << _energyExchangeAcceptMsg->getRevisionNumber();
+        list.add("accept status")               << _energyExchangeAcceptMsg->getAcceptStatus();
+        list.add("ip address of accept user")   << _energyExchangeAcceptMsg->getIPAddressOfAcceptUser();
+        list.add("user id name")                << _energyExchangeAcceptMsg->getUserIdName();
+        list.add("name of accept person")       << _energyExchangeAcceptMsg->getNameOfAcceptPerson();
+        list.add("energy exchange notes")       << _energyExchangeAcceptMsg->getEnergyExchangeNotes();
+
+        CTILOG_DEBUG(dout, list);
     }
 
     CtiTime currentDateTime;
@@ -2646,8 +2517,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                         }
                                         else
                                         {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - Accept for offer revision that already contains hourly commitments, in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                            CTILOG_WARN(dout, "Accept for offer revision that already contains hourly commitments");
                                         }
                                     }
                                     //currentLMCurtailCustomer->dumpDynamicData();
@@ -2708,8 +2578,7 @@ void CtiLMEnergyExchangeAcceptMsgExecutor::Execute()
                                 }
                                 else
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Accept for offer revision that has expired, in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    CTILOG_WARN(dout, "Accept for offer revision that has expired");
                                 }
                                 found = TRUE;
                                 break;
@@ -2803,8 +2672,7 @@ CtiLMExecutor* CtiLMExecutorFactory::createExecutor(const CtiMessage* message)
         message = (CtiMessage*) request->getPayload();
         if( message  == NULL )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " **Checkpoint** " << "CtiLMServerRequest received but it contains no payload, doing nothing!" << __FILE__ << "(" << __LINE__ << ")" << endl;
+            CTILOG_WARN(dout, "CtiLMServerRequest received but it contains no payload, doing nothing!");
             return 0;
         }
         classId = message->isA();
@@ -2812,7 +2680,7 @@ CtiLMExecutor* CtiLMExecutorFactory::createExecutor(const CtiMessage* message)
 
     if( _LM_DEBUG & LM_DEBUG_IN_MESSAGES )
     {
-        message->dump();
+        CTILOG_DEBUG(dout, *message);
     }
 
     switch( classId )
@@ -2851,10 +2719,7 @@ CtiLMExecutor* CtiLMExecutorFactory::createExecutor(const CtiMessage* message)
         break;
 
     default:
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - CtiLMExecutorFactory::createExecutor - Warning unknown classId: " << classId << endl;
-        }
+        CTILOG_WARN(dout, "unknown classId: " << classId);
     }
 
     return ret_val;

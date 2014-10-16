@@ -24,10 +24,7 @@ string desolveScanType( long scanType )
         case ScanRateStatus:    Ret = SCANRATE_STATUS;      break;
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unsupported scan rate type " << endl;
-            }
+            CTILOG_ERROR(dout, "Unsupported scan rate type");
 
             Ret = SCANRATE_INVALID;
 
@@ -49,10 +46,7 @@ string desolveDeviceWindowType( long aType )
         case DeviceWindowAlternateRate: Ret = DEVICE_WINDOW_TYPE_ALTERNATE_RATE;    break;
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unsupported device window type " << endl;
-            }
+            CTILOG_ERROR(dout, "Unsupported device window type");
 
             Ret = DEVICE_WINDOW_TYPE_INVALID;
 
@@ -234,10 +228,7 @@ string desolveDeviceType( int aType )
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unknown DEVICE type \"" << aType << "\" " << endl;
-            }
+            CTILOG_ERROR(dout, "Unknown DEVICE type \"" << aType << "\"");
 
             break;
         }

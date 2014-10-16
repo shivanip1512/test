@@ -111,11 +111,9 @@ CtiTableRippleLoadGroup& CtiTableRippleLoadGroup::setShedTime( const LONG shedTi
 
 void CtiTableRippleLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["deviceid"] >> _deviceID;
@@ -159,10 +157,7 @@ bool CtiTableRippleLoadGroup::copyMessage(BYTE *bptr, bool shed) const
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return false;
 }

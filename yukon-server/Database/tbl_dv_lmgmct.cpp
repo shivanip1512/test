@@ -79,8 +79,7 @@ void CtiTableLMGroupMCT::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["deviceid"   ] >> _deviceID;
@@ -103,11 +102,7 @@ void CtiTableLMGroupMCT::DecodeDatabaseReader(Cti::RowReader &rdr)
         case 'l':   _addressLevel = Addr_Lead;      break;
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unknown/bad address level specifier \"" << (tmpStr.c_str())[0] << "\" for device ID " << _deviceID << endl;
-            }
+            CTILOG_ERROR(dout, "Unknown/bad address level specifier \""<< (tmpStr.c_str())[0] <<"\" for device ID "<< _deviceID);
 
             _addressLevel = Addr_Invalid;
         }
@@ -129,12 +124,9 @@ void CtiTableLMGroupMCT::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( !_relays )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "No relays selected for control in MCT load group, device ID " << _deviceID << endl;
-            dout << "All shed commands will fail (restores will work, however)" << endl;
-        }
+        CTILOG_ERROR(dout, "No relays selected for control in MCT load group, device ID "<< _deviceID <<
+                endl <<"All shed commands will fail (restores will work, however)"
+                );
     }
 
     rdr["routeid"] >> _routeID;

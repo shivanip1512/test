@@ -170,14 +170,15 @@ YukonError_t CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, Ct
 
 void logResponse(const unsigned short outboundMessageId, const std::vector<unsigned char> outboundMessagePayload, const Cti::Messaging::Rfn::RfnBroadcastReplyMessage &reply)
 {
-    CtiLockGuard<CtiLogger> dout_guard(dout);
-    dout << CtiTime() << " Received RFN broadcast reply message " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-    dout << "Outbound ID " << outboundMessageId << ", outbound payload [" << outboundMessagePayload << "];" << std::endl;
-    dout << "Reply results: ";
+    Cti::StreamBuffer output;
+
+    output <<"Received RFN broadcast reply message";
+    output << endl <<"Outbound ID "<< outboundMessageId <<", outbound payload ["<< outboundMessagePayload <<"]";
+    output << endl <<"Reply results: ";
 
     if( reply.gatewayResults.empty() )
     {
-        dout << "[empty]";
+        output <<"[empty]";
     }
     else
     {
@@ -185,11 +186,11 @@ void logResponse(const unsigned short outboundMessageId, const std::vector<unsig
 
         for( itr = reply.gatewayResults.begin(); itr != reply.gatewayResults.end(); ++itr )
         {
-            dout << "[GW ID: " << itr->first << ", " << itr->second->description << "] ";
+            output <<"[GW ID: "<< itr->first <<", "<< itr->second->description <<"] ";
         }
     }
 
-    dout << std::endl;
+    CTILOG_INFO(dout, output);
 }
 
 void CtiDeviceGroupRfnExpresscom::sendDRMessage(int priority, int expirationDuration, std::vector<unsigned char> &payload)

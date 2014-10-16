@@ -216,10 +216,9 @@ USHORT CtiFDR_TextImport::ForeignToYukonQuality (char aQuality)
         return NonUpdatedQuality;
     if (aQuality == 'M' || aQuality == 'm')
         return ManualQuality;
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " WARNING: Quality not recognized. Defaulting to NonUpdated. Q: " << aQuality << endl;
-    }
+
+    CTILOG_WARN(dout, "Quality not recognized. Defaulting to NonUpdated. Q: "<< aQuality);
+
     return NonUpdatedQuality;
 }
 
@@ -248,8 +247,7 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
         /** Error Check: unexpected end of input */
         if (tok_iter == cmdLine.end())
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ERROR: Incorrect number of parameters in input line from file." << endl;
+            CTILOG_ERROR(dout, "Incorrect number of parameters in input line from file.");
             return retCode;
         }
                 tempString1 = string(*tok_iter);
@@ -274,11 +272,8 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Translation for point " << translationName;
-                    dout << " from " << getFileName() << " was not found" << endl;
-                }
+                CTILOG_DEBUG(dout, "Translation for point "<< translationName <<" from "<< getFileName() <<" was not found");
+
                 desc = getFileName() + string (" point is not listed in the translation table");
                 action = translationName;
                 logEvent (desc,action);
@@ -288,35 +283,30 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Translation for point " << translationName;
-                    dout << " from " << getFileName() << " was found" << endl;
-                }
+                CTILOG_DEBUG(dout, "Translation for point " << translationName << " from " << getFileName() << " was found");
             }
+
             //Param 3 - Value
             /** Error Check: unexpected end of input */
             if (tok_iter == cmdLine.end())
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ERROR: Incorrect number of parameters in input line from file." << endl;
+                CTILOG_ERROR(dout, "Incorrect number of parameters in input line from file.");
                 return retCode;
             }
+
             tempString1 = string(*tok_iter);
             ++tok_iter;
             value = atof(tempString1.c_str());
             //Test if the Value is Zero. if it is zero and tempString1[0] is not 0 then this could indicate a problem
             if (value == 0 && tempString1[0] != '0')
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " WARNING: Possible bad input from import file. Received a 0.0 value from " << tempString1 << endl;
+                CTILOG_WARN(dout, "Possible bad input from import file. Received a 0.0 value from "<< tempString1);
             }
             //Param 4 - quality
             /** Error Check: unexpected end of input */
             if (tok_iter == cmdLine.end())
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ERROR: Incorrect number of parameters in input line from file." << endl;
+                CTILOG_ERROR(dout, "Incorrect number of parameters in input line from file.");
                 return retCode;
             }
             tempString1 = string(*tok_iter);
@@ -328,18 +318,17 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
             /** Error Check: unexpected end of input */
             if (tok_iter == cmdLine.end())
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ERROR: Incorrect number of parameters in input line from file." << endl;
+                CTILOG_ERROR(dout, "Incorrect number of parameters in input line from file.");
                 return retCode;
             }
+
             tempString1 = string(*tok_iter);
             ++tok_iter;
             linetimestamp = tempString1;
             /** Error Check: unexpected end of input */
             if (tok_iter == cmdLine.end())
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ERROR: Incorrect number of parameters in input line from file." << endl;
+                CTILOG_ERROR(dout, "Incorrect number of parameters in input line from file.");
                 return retCode;
             }
             tempString1 = string(*tok_iter);
@@ -351,19 +340,20 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                Cti::StreamBuffer logmsg;
+                logmsg <<"Input for point invalid, not sending the update. Check log for errors.";
                 if (pointtimestamp == PASTDATE)
                 {
-                    dout << CtiTime() << " ERROR: Timestamp or DST Flag is incorrect: " << linetimestamp << " " << tempString1[0] << endl;
+                    logmsg <<"Timestamp or DST Flag is incorrect: "<< linetimestamp <<" "<< tempString1[0];
                 }
-                dout << CtiTime() << " ERROR: Input for point invalid, not sending the update. Check log for errors." << endl;
+
+                CTILOG_ERROR(dout, logmsg);
            }
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error Parsing data. Bad input from the file.\n";
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Unable to parse data. Bad input from the file.");
     }
 
     return retCode;
@@ -408,9 +398,7 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
 
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Analog point " << aTranslationName;
-                dout << " value " << value << " from " << getFileName() << " assigned to point " << aPoint.getPointID() << endl;;
+                CTILOG_DEBUG(dout, "Analog point "<< aTranslationName <<" value "<< value <<" from "<< getFileName() <<" assigned to point "<< aPoint.getPointID());
             }
             retCode = true;
             break;
@@ -425,17 +413,19 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
                 {
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Control point " << aTranslationName;
+                        Cti::StreamBuffer logmsg;
+                        logmsg << " Control point " << aTranslationName;
                         if (aValue == STATE_OPENED)
                         {
-                            dout << " control: Open " ;
+                            logmsg << " control: Open " ;
                         } else
                         {
-                            dout << " control: Closed " ;
+                            logmsg << " control: Closed " ;
                         }
 
-                        dout <<" from " << getFileName() << " and processed for point " << aPoint.getPointID() << endl;;
+                        logmsg <<" from " << getFileName() << " and processed for point " << aPoint.getPointID();
+
+                        CTILOG_DEBUG(dout, logmsg);
                     }
 
                     // build the command message and send the control
@@ -449,11 +439,8 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
 
                 } else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Invalid control state " << aValue;
-                        dout << " for " << aTranslationName << " received from " << getFileName() << endl;
-                    }
+                    CTILOG_ERROR(dout, "Invalid control state "<< aValue <<" for " << aTranslationName <<" received from "<< getFileName());
+
                     CHAR state[20];
                     _snprintf (state,20,"%.0f",aValue);
                     desc = getFileName() + string (" control point received with an invalid state ") + string (state);
@@ -481,20 +468,15 @@ bool CtiFDR_TextImport::buildAndAddPoint (CtiFDRPoint &aPoint,
                     ((CtiPointDataMsg*)*aRetMsg)->setTime(aTimestamp);
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Status point " << aTranslationName;
-                        dout << " new state: " << tracestate;
-                        dout <<" from " << getFileName() << " assigned to point " << aPoint.getPointID() << endl;;
+                        CTILOG_DEBUG(dout, "Status point "<< aTranslationName <<" new state: "<< tracestate <<
+                                " from "<< getFileName() <<" assigned to point "<< aPoint.getPointID());
                     }
                     retCode = true;
                 } else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Status point " << aTranslationName;
-                        dout << " received an invalid state " << (int)aValue;
-                        dout <<" from " << getFileName() << " for point " << aPoint.getPointID() << endl;;
-                    }
+                    CTILOG_ERROR(dout, "Status point "<< aTranslationName <<" received an invalid state "<< (int)aValue <<
+                            " from "<< getFileName() <<" for point "<< aPoint.getPointID());
+
                     CHAR state[20];
                     _snprintf (state,20,"%.0f",aValue);
                     desc = getFileName() + string (" status point received with an invalid state ") + string (state);
@@ -648,33 +630,38 @@ int CtiFDR_TextImport::readConfig( void )
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        Cti::FormattedList loglist;
 
         if ( _legacyDrivePath )
         {
-            dout << CtiTime() << " Legacy method of setting the Drive Path. Please update to the new Method using the Points." << endl;
+            loglist <<"Legacy method of setting the Drive Path. Please update to the new Method using the Points.";
         }
-        dout << CtiTime() << " Text import file name " << getFileName() << endl;
-        dout << CtiTime() << " Text import directory " << getDriveAndPath() << endl;//obsolete?
-        dout << CtiTime() << " Text import interval " << getInterval() << endl;
-        dout << CtiTime() << " Text import dispatch queue flush rate " << getQueueFlushRate() << endl;
-        dout << CtiTime() << " Text import db reload rate " << getReloadRate() << endl;
+
+        loglist.add("Text import file name")                 << getFileName();
+        loglist.add("Text import directory")                 << getDriveAndPath();//obsolete?
+        loglist.add("Text import interval")                  << getInterval();
+        loglist.add("Text import dispatch queue flush rate") << getQueueFlushRate();
+        loglist.add("Text import db reload rate")            << getReloadRate();
 
         if( shouldDeleteFileAfterImport() && shouldRenameSaveFileAfterImport() )
         {
-            dout << CtiTime() << " Configuration Error cannot rename AND delete the input file. Defaulting to rename.\n";
+            loglist <<"Configuration Error cannot rename AND delete the input file. Defaulting to rename.\n";
             setRenameSaveFileAfterImport(true);
             setDeleteFileAfterImport(false);
-        }else if( !shouldDeleteFileAfterImport() && !shouldRenameSaveFileAfterImport() )
+        }
+        else if( !shouldDeleteFileAfterImport() && !shouldRenameSaveFileAfterImport() )
         {
-            dout << CtiTime() << " Configuration Error please specify what to do with the file after the import. Defaulting to delete.\n";
+            loglist <<"Configuration Error please specify what to do with the file after the import. Defaulting to delete.\n";
             setDeleteFileAfterImport(true);
         }
-        if (shouldDeleteFileAfterImport() )
-            dout << CtiTime() << " Import file will be deleted after import" << endl;
-        if (shouldRenameSaveFileAfterImport() )
-            dout << CtiTime() << " Import file will be renamed after import" << endl;
 
+        if (shouldDeleteFileAfterImport() )
+            loglist << " Import file will be deleted after import" << endl;
+
+        if (shouldRenameSaveFileAfterImport() )
+            loglist << " Import file will be renamed after import" << endl;
+
+        CTILOG_DEBUG(dout, loglist);
     }
 
     return successful;
@@ -714,8 +701,7 @@ bool CtiFDR_TextImport::loadTranslationLists()
             {
                 if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "pointList->entries() " << pointList->entries()<< endl;
+                    CTILOG_DEBUG(dout, "pointList->entries() " << pointList->entries());
                 }
 
                 // get iterator on send list
@@ -747,22 +733,21 @@ bool CtiFDR_TextImport::loadTranslationLists()
                         successful = true;
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                            CTILOG_DEBUG(dout, "No points defined for use by interface "<< getInterfaceName());
                         }
                     }
                 }
                 setLinkStatusID(getClientLinkStatusID (getInterfaceName()));
-            } else
+            }
+            else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                CTILOG_ERROR(dout, "Could not load (Receive) points for "<< getInterfaceName() <<" : Empty data set returned ");
                 successful = false;
             }
-        } else
+        }
+        else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Unable to load points from database for "<< getInterfaceName());
             successful = false;
         }
 
@@ -770,16 +755,14 @@ bool CtiFDR_TextImport::loadTranslationLists()
 
     catch (RWExternalErr e )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to load translation lists for "<< getInterfaceName());
         RWTHROW(e);
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load translation lists for "<< getInterfaceName());
     }
 
     return successful;
@@ -802,21 +785,22 @@ bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
 
     if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " translationPoint " << translationPoint->getPointID() <<endl;
-        dout << CtiTime() << " translationFolderName " << translationFolderName <<endl;
-        dout << CtiTime() << " translationDrivePath " << translationDrivePath <<endl;
-    }
+        Cti::FormattedList loglist;
+        loglist.add("translationPoint")      << translationPoint->getPointID();
+        loglist.add("translationFolderName") << translationFolderName;
+        loglist.add("translationDrivePath")  << translationDrivePath;
 
+        CTILOG_DEBUG(dout, loglist);
+    }
 
     for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
     {
         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+            CTILOG_DEBUG(dout, "Parsing Yukon Point ID "<< translationPoint->getPointID() <<
+                    " translate: "<< translationPoint->getDestinationList()[x].getTranslation());
         }
+
         translationName = "";
 
         pointID = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
@@ -852,9 +836,11 @@ bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
 
                 if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " translationFolderName " << translationFolderName <<endl;
-                    dout << CtiTime() << " translationDrivePath " << translationDrivePath <<endl;
+                    Cti::FormattedList loglist;
+                    loglist.add("translationFolderName") << translationFolderName;
+                    loglist.add("translationDrivePath")  << translationDrivePath;
+
+                    CTILOG_DEBUG(dout, loglist);
                 }
 
                 translationName += " ";
@@ -876,8 +862,7 @@ bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
 
             if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << " translationFilename ** "<< translationFilename<<" translationDrivePath ** "<<translationDrivePath<< endl;
+                CTILOG_DEBUG(dout, "translationFilename: "<< translationFilename <<" translationDrivePath: "<< translationDrivePath);
             }
 
             //check if its already there before putting it in the list.
@@ -903,11 +888,13 @@ bool CtiFDR_TextImport::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
 
             if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Point ID " << translationPoint->getPointID();
-                dout << " translated: " << translationName << endl;
-                dout << " FILE INFO LIST SIZE = " << getFileInfoList()->size() << endl;
-                dout << " Translation... = " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+                Cti::FormattedList loglist;
+                loglist.add("Point ID")            << translationPoint->getPointID();
+                loglist.add("translated")          << translationName;
+                loglist.add("FILE INFO LIST SIZE") << getFileInfoList()->size();
+                loglist.add("Translation...")      << translationPoint->getDestinationList()[x].getTranslation();
+
+                CTILOG_DEBUG(dout, loglist);
             }
         }
     }
@@ -987,8 +974,7 @@ std::list<string> CtiFDR_TextImport::parseFiles()
         strm->open( (*itr).c_str(), std::fstream::in );
         if( !(*strm).is_open() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Error opening File: " << (*itr) << "\n";
+            CTILOG_ERROR(dout, "Unable to open file: "<< (*itr));
             delete strm;
         }else
         {
@@ -1059,15 +1045,13 @@ void CtiFDR_TextImport::threadFunctionReadFromFile( void )
 
     }
 
-    catch ( RWCancellation &cancellationMsg )
+    catch ( RWCancellation & )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION CtiFDRTextImport::threadFunctionReadFromFile in interface " << getInterfaceName() << endl;
+        CTILOG_INFO(dout, "CANCELLATION threadFunctionReadFromFile in interface "<< getInterfaceName());
     }
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Fatal Error: CtiFDRTextIMport::threadFunctionReadFromFile: " << getInterfaceName() << " is offline " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionReadFromFile in interface "<< getInterfaceName() << " is dead!");
     }
 }
 void CtiFDR_TextImport::handleFilePostOp( string fileName )
@@ -1085,8 +1069,7 @@ void CtiFDR_TextImport::handleFilePostOp( string fileName )
     {
         //both specified. default to move, and not delete( since they were moved )
         moveFile( fileName );
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " master.cfg configuration error cannot rename AND delete the input file. Defaulting to rename.\n";
+        CTILOG_WARN(dout, "master.cfg configuration error cannot rename AND delete the input file. Defaulting to rename.");
     }
 }
 
@@ -1137,9 +1120,8 @@ bool CtiFDR_TextImport::moveFile( string fileName )
     if ( !success )
     {
         noErrors = false;
-        DWORD lastError = GetLastError();
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Error moving file " <<  fileNameAndPath << ". Code: " << lastError << " for MoveFile()" << endl;
+        const DWORD lastError = GetLastError();
+        CTILOG_ERROR(dout, "Failed to move file "<< fileNameAndPath <<". Error Code: "<< lastError);
     }
     return noErrors;
 }
@@ -1164,9 +1146,8 @@ bool CtiFDR_TextImport::deleteFile( string fileName )
     if ( !success )
     {
         noErrors = false;
-        DWORD lastError = GetLastError();
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Error deleting " <<  fileNameAndPath << ". Code: " << lastError << " for DeleteFile()" << endl;
+        const DWORD lastError = GetLastError();
+        CTILOG_ERROR(dout, "Failed to delete "<< fileNameAndPath <<". Error Code: "<< lastError);
     }
     return noErrors;
 }

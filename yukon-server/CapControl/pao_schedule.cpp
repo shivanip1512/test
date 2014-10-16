@@ -143,6 +143,5 @@ void CtiPAOSchedule::setDirty(bool flag)
 
 void CtiPAOSchedule::printSchedule()
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() << " " <<_scheduleName<<" id: "<<_scheduleId<<" nextRunTime: "<<CtiTime(_nextRunTime.seconds())<<" intvlRate: "<<_intervalRate<<" secs."<< endl;
+    CTILOG_INFO(dout, "" <<_scheduleName<<" id: "<<_scheduleId<<" nextRunTime: "<<CtiTime(_nextRunTime.seconds())<<" intvlRate: "<<_intervalRate<<" secs.");
 }

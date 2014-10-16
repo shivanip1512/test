@@ -1,10 +1,10 @@
 #pragma once
 
 #include "dlldefs.h"
-
 #include "row_reader.h"
 
 #include <string>
+
 
 namespace Cti {
 namespace Database {
@@ -39,9 +39,6 @@ public:
     static std::string getSQLCoreStatement();
 
     static std::string addIDSQLClause(const std::set<long> &deviceids);
-
-    void dump() const;
-
 };
 
 }

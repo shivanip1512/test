@@ -60,5 +60,5 @@ public:
    const std::vector<LONG>& getPointList() const;
    void setPointList( const std::vector<LONG>& points );
 
-   virtual void dump() const;
+   virtual std::string toString() const override;
 };

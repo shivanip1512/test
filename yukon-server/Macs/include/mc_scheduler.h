@@ -77,18 +77,20 @@ public:
                   _invalid_time );
    }
 
-   void dumpEventQueue() const
+    std::string dumpEventQueue() const
     {
-        CtiLockGuard<CtiLogger> guard(dout);
-        dout << CtiTime() << " Dumping macs event queue" << std::endl;
+        Cti::FormattedList loglist;
+        loglist <<"MACS event queue content";
 
         for( int i = 0; i < _event_deque.size(); i++ )
         {
-            dout << CtiTime() << " id:   " << _event_deque[i].sched_id << std::endl;
-            dout << CtiTime() << " type:  " << _event_deque[i].event_type << std::endl;
-            dout << CtiTime() << " timestamp:  " << _event_deque[i].timestamp << std::endl;
+            loglist.add("id")        << _event_deque[i].sched_id;
+            loglist.add("type")      << _event_deque[i].event_type;
+            loglist.add("timestamp") << _event_deque[i].timestamp;
         }
-}
+
+        return loglist.toString();
+    }
 
 private:
 

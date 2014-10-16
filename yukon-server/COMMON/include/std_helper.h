@@ -3,6 +3,7 @@
 #include "utility.h"
 
 #include "boost/optional/optional.hpp"
+#include "boost/range/iterator.hpp"
 
 namespace Cti {
 
@@ -72,12 +73,48 @@ boost::optional<typename Cont::reference> findIfRef(Cont& c, UnaryPredicate pred
     return *itr;
 }
 
+template <typename T>
+boost::iterator_range<T*> arrayToRange(T* arr, size_t len)
+{
+    return boost::make_iterator_range(arr, arr+len);
+}
+
+// TODO: remove this function when std::begin() is available
+template <typename T, size_t size>
+T* begin(T(&array)[size])
+{
+    return array;
+}
+
+// TODO: remove this function when std::end() is available
+template <typename T, size_t size>
+T* end(T(&array)[size])
+{
+    return array + size;
+}
+
 namespace Logging {
 namespace Vector {
 namespace Hex {
-namespace {
 
-std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned char> &buf)
+inline std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned char> &buf)
+{
+    const std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex );
+
+    copy(buf.begin(), buf.end(), padded_output_iterator<int, std::ostream>(logger, '0', 2));
+
+    logger.flags(oldflags);
+
+    return logger;
+}
+
+}
+} // namespace Vector::Hex
+
+namespace Range {
+namespace Hex {
+
+inline std::ostream &operator<<(std::ostream &logger, const boost::iterator_range<unsigned char*> &buf)
 {
     const std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex );
 
@@ -90,7 +127,6 @@ std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned char> 
 
 }
 }
-}
-}
+} // namespace Logging::Range::Hex
 
-}
+} // namespace Cti

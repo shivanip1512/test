@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ccoperationstats.h"  
-          
-class CtiCCConfirmationStats  
+#include "ccoperationstats.h"
+
+class CtiCCConfirmationStats
 {
 
 public:
@@ -32,7 +32,7 @@ public:
     long    getMonthlyCommSuccessPercentId() const;
     double  getMonthlyCommSuccessPercent() const;
 
-    
+
     CtiCCConfirmationStats& setPAOId(long paoId);
     CtiCCConfirmationStats& setUserDefCommCount(long value);
     CtiCCConfirmationStats& setUserDefCommFail(long value);
@@ -49,7 +49,7 @@ public:
     CtiCCConfirmationStats& setWeeklyCommSuccessPercentId(long pointId);
     CtiCCConfirmationStats& setWeeklyCommSuccessPercent(double value);
     CtiCCConfirmationStats& setMonthlyCommSuccessPercentId(long pointId);
-    CtiCCConfirmationStats& setMonthlyCommSuccessPercent(double value); 
+    CtiCCConfirmationStats& setMonthlyCommSuccessPercent(double value);
 
     CtiCCConfirmationStats& incrementAllCommCounts(long attempts);
     CtiCCConfirmationStats& incrementAllCommFails(long errors);
@@ -61,15 +61,13 @@ public:
     CtiCCConfirmationStats& incrementDailyCommFails(long errors);
     CtiCCConfirmationStats& incrementUserDefCommCounts(long attempts);
     CtiCCConfirmationStats& incrementUserDefCommFails(long errors);
-    
+
 
 
     double calculateSuccessPercent(capcontrol::ccStatsType type);
     bool setSuccessPercentPointId(long tempPointId, long tempPointOffset);
     CtiCCConfirmationStats& createPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 
-    void printCommStats();
-    
     CtiCCConfirmationStats* replicate() const;
 
 
@@ -78,20 +76,20 @@ public:
     int operator==(const CtiCCConfirmationStats& right) const;
     int operator!=(const CtiCCConfirmationStats& right) const;
 
-  
-        
+
+
 private:
 
     long _paoid;
 
     long _userDefCommCount;
-	long _userDefCommFail;
-	long _dailyCommCount;
-	long _dailyCommFail;
-	long _weeklyCommCount;	
-	long _weeklyCommFail;
-	long _monthlyCommCount;
-	long _monthlyCommFail;
+    long _userDefCommFail;
+    long _dailyCommCount;
+    long _dailyCommFail;
+    long _weeklyCommCount;
+    long _weeklyCommFail;
+    long _monthlyCommCount;
+    long _monthlyCommFail;
 
     long    _userDefCommSuccessPercentId;
     double  _userDefCommSuccessPercent;

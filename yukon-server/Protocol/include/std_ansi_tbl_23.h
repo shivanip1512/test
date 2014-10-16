@@ -3,6 +3,7 @@
 #include "dlldefs.h"
 #include "types.h"
 #include "std_ansi_tbl_base.h"
+#include "logger.h"
 
 #define BCD   unsigned char
 
@@ -81,9 +82,11 @@ public:
    virtual ~CtiAnsiTable23();
    CtiAnsiTable23& operator=(const CtiAnsiTable23& aRef);
    void printResult( const std::string& deviceName );
-   void printSummations( DATA_BLK_RCD data_block );
-   void printDemands( DATA_BLK_RCD data_block );
-   void printCoincidents( DATA_BLK_RCD data_block );
+
+   void appendResult      ( Cti::FormattedList &itemList );
+   void appendSummations  ( DATA_BLK_RCD data_block, Cti::FormattedList &itemList );
+   void appendDemands     ( DATA_BLK_RCD data_block, Cti::FormattedList &itemList );
+   void appendCoincidents ( DATA_BLK_RCD data_block, Cti::FormattedList &itemList );
 
    void populateSummations( BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset );
    void populateDemandsRecord(BYTE *dataBlob, DATA_BLK_RCD *data_block, int &offset);

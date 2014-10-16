@@ -56,10 +56,8 @@ void CtiPendingOpThread::setSignalManager(CtiSignalManager *pSM)
 void CtiPendingOpThread::run( void )
 {
     UINT sanity = 0;
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PendingOperationThread TID: " << CurrentTID () << endl;
-    }
+
+    CTILOG_INFO(dout, "PendingOperationThread starting");
 
     set(PROCESSQ);
 
@@ -110,27 +108,18 @@ void CtiPendingOpThread::run( void )
 
                 if(!(++sanity % 300))
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " PendingOperationThread run() Thread Active " << endl;
-                    }
+                    CTILOG_INFO(dout, "PendingOperationThread run() Thread Active");
                 }
 
                 sleep(1000);               // interrupt(XXX) can wake us.
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " PendingOperationThread received shutdown - processing all remaining items" << endl;
-        }
+        CTILOG_INFO(dout, "PendingOperationThread received shutdown - processing all remaining items");
 
         processPendableQueue();
         doPendingLimits(true);
@@ -152,15 +141,10 @@ void CtiPendingOpThread::run( void )
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Exception in CtiPendingOpThread, thread exiting" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PendingOperationThread TID: " << CurrentTID() << " shutting down" << endl;
-    }
-
+    CTILOG_INFO(dout, "PendingOperationThread shutting down");
 }
 
 void CtiPendingOpThread::push(CtiPendable *entry)
@@ -171,8 +155,7 @@ void CtiPendingOpThread::push(CtiPendable *entry)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - CtiPendingOpThread::push cannot enqueue null pointer **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "cannot enqueue null pointer");
     }
 }
 
@@ -221,11 +204,7 @@ void CtiPendingOpThread::processPendableQueue()
         case CtiPendable::CtiPendableAction_Unspecified:
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unknown type \"" << pendable->getAction() << "\" in PendingOpThread;  deleting pendable **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                break;
+                CTILOG_ERROR(dout, "unknown type \""<< pendable->getAction() <<"\" in PendingOpThread - deleting pendable");
             }
         }
 
@@ -237,8 +216,7 @@ void CtiPendingOpThread::processPendableQueue()
 
     if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && elapsedTime > 500)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " processPendableQueue duration (ms) = " << elapsedTime << endl;
+        CTILOG_DEBUG(dout, "duration (ms) = "<< elapsedTime);
     }
 }
 
@@ -253,10 +231,7 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
     {
         if(!_pMainQueue)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " MainQueue is non-valid." << endl;
-            }
+            CTILOG_ERROR(dout, "MainQueue is non-valid");
             return;
         }
 
@@ -353,12 +328,7 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                                 pSig->setMessageTime( now );
                                 pSig->setMessagePriority( MAXPRIORITY - 1 );
 
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << "  *****************  CONTROL FAILED **************** " << endl;
-                                    pSig->dump();
-                                    dout << "  *************************************************** " << endl;
-                                }
+                                CTILOG_ERROR(dout, "CONTROL FAILED"<< *pSig);
 
                                 CtiCommandMsg *pCmd = CTIDBG_new CtiCommandMsg(CtiCommandMsg::PointTagAdjust, 15);
                                 pCmd->insert(-1);                   // token
@@ -392,11 +362,7 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
                     }
                     else
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << " Unexpected pending operation control state " << ppo.getControlState() << endl;
-                        }
+                        CTILOG_ERROR(dout, "Unexpected pending operation control state ("<< ppo.getControlState() <<")");
                     }
                 }
                 else
@@ -411,16 +377,16 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
 
             if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && duration > 2)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " doPendingControls count         = " << _pendingControls.size() << endl;
-                dout << CtiTime() << " doPendingControls duration (ms) = " << duration << endl;
+                CTILOG_DEBUG(dout,
+                        endl << "count         = "<< _pendingControls.size() <<
+                        endl << "duration (ms) = "<< duration
+                        );
             }
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -431,10 +397,7 @@ void CtiPendingOpThread::doPendingPointData(bool bShutdown)
     {
         if(!_pMainQueue)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " MainQueue is non-valid." << endl;
-            }
+            CTILOG_ERROR(dout, "MainQueue is non-valid");
             return;
         }
 
@@ -489,15 +452,13 @@ void CtiPendingOpThread::doPendingPointData(bool bShutdown)
 
             if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && duration > 2)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " doPendingPointDataOp duration (ms) = " << duration << endl;
+                CTILOG_DEBUG(dout, "duration (ms) = "<< duration);
             }
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -507,10 +468,7 @@ void CtiPendingOpThread::doPendingLimits(bool bShutdown)
     {
         if(!_pMainQueue)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " MainQueue is non-valid." << endl;
-            }
+            CTILOG_ERROR(dout, "MainQueue is non-valid");
             return;
         }
 
@@ -558,15 +516,13 @@ void CtiPendingOpThread::doPendingLimits(bool bShutdown)
 
             if(gConfigParms.isTrue("DISPATCH_TIME_PENDING_OPS") && duration > 2)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " doPendingLimitsOp duration (ms) = " << duration << endl;
+                CTILOG_DEBUG(dout, "duration (ms) = "<< duration);
             }
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -628,8 +584,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<")");
                     }
                 }
 
@@ -675,8 +630,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<")");
                     }
                 }
 
@@ -699,8 +653,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<")");
                     }
                 }
 
@@ -733,8 +686,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<")");
                     }
                 }
                 break;
@@ -800,28 +752,20 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") AR : " << ppc.getControl().getActiveRestore(  ) << " " << ppc.getControl().getControlCompleteTime() << " < " << ppc.getControl().getPreviousLogTime() << endl;
+                        CTILOG_ERROR(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<", active restore = "<< ppc.getControl().getActiveRestore() <<")");
                     }
                 }
                 break;
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint: Unexpected state **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                break;
+                CTILOG_ERROR(dout, "Unexpected state ("<< cause <<")");
             }
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1044,9 +988,7 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
 
                 if ( ! conn.isValid() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+                    CTILOG_ERROR(dout, "Invalid Connection to Database");
                     return;
                 }
 
@@ -1068,26 +1010,18 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
                 }
                 catch(...)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
             }
+
             if( panicCounter > 0 )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " LMControlHistory transaction complete. Inserted " << panicCounter << " rows" << endl;
-                }
+                CTILOG_INFO(dout, "LMControlHistory transaction complete. Inserted " << panicCounter << " rows");
             }
 
             if(panicCounter >= PANIC_CONSTANT)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " LM Control History queue has " << _lmControlHistoryQueue.entries() << " entries" << endl;
-                }
+                CTILOG_INFO(dout, "LMControlHistory queue has " << _lmControlHistoryQueue.entries() << " entries");
             }
 
             while((pTblEntry = writtenEntries.getQueue(0)) != NULL)
@@ -1104,15 +1038,9 @@ void CtiPendingOpThread::writeLMControlHistoryToDB(bool justdoit)
             }
         }
     }
-    catch(const RWxmsg& x)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
-    }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1141,9 +1069,7 @@ void CtiPendingOpThread::writeDynamicLMControlHistoryToDB(bool justdoit)
 
                 if ( ! conn.isValid() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+                    CTILOG_ERROR(dout, "Invalid Connection to Database");
                     return;
                 }
 
@@ -1158,38 +1084,23 @@ void CtiPendingOpThread::writeDynamicLMControlHistoryToDB(bool justdoit)
                 }
                 catch(...)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
             }
             if( panicCounter > 0 )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Dynamic LMControlHistory transaction complete. Inserted " << panicCounter << " rows" << endl;
-                }
+                CTILOG_INFO(dout, "Dynamic LMControlHistory transaction complete. Inserted " << panicCounter << " rows");
             }
 
             if(panicCounter >= PANIC_CONSTANT)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Dynamic LM Control History queue has " << _dynLMControlHistoryQueue.entries() << " entries" << endl;
-                }
+                CTILOG_INFO(dout, "Dynamic LMControlHistory queue has " << _dynLMControlHistoryQueue.entries() << " entries");
             }
         }
     }
-    catch(const RWxmsg& x)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
-    }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1216,17 +1127,8 @@ bool CtiPendingOpThread::loadICControlMap()
         Cti::Database::DatabaseReader rdr(connection, sql);
         rdr.execute();
 
-        if(!rdr.isValid())
-        {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << loggedSQLstring << endl;
-            }
-        }
-
         CtiTime now;
+
         while( rdr() )
         {
             long paoid = 0;
@@ -1324,26 +1226,24 @@ bool CtiPendingOpThread::loadICControlMap()
 
             createOrUpdateICControl(paoid, dynC);
         }
+
+        if( ! rdr.isValid() )
+        {
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if(cleanShutdown || allControlsCompleted)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Dynamic LMControlHistory was complete, no deep analysis required." << endl;
-        }
+        CTILOG_INFO(dout, "Dynamic LMControlHistory was complete, no deep analysis required");
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Dynamic LMControlHistory was incomplete, _deep_ analysis required." << endl;
+        CTILOG_INFO(dout, "Dynamic LMControlHistory was incomplete, _deep_ analysis required.");
     }
 
     return(cleanShutdown || allControlsCompleted);
@@ -1449,11 +1349,7 @@ void CtiPendingOpThread::checkControlStatusChange( CtiPendable *&pendable )
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
+            CTILOG_ERROR(dout, "Unexpected control state ("<< pendable->_value <<")");
         }
     }
 }
@@ -1666,11 +1562,7 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                break;
+                CTILOG_ERROR(dout, "Invalid type ("<< pendable->_ppo->getType() <<")");
             }
         }
     }
@@ -1681,10 +1573,7 @@ void CtiPendingOpThread::dbWriterThread()
 {
     UINT sanity = 0;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Dispatch PendingOp DB Writer Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
-    }
+    CTILOG_INFO(dout, "PendingOp DB Writer Thread starting");
 
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 
@@ -1696,10 +1585,7 @@ void CtiPendingOpThread::dbWriterThread()
             {
                 if(!(++sanity % 300))
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " PendingOp DB Writer Thread Active " << endl;
-                    }
+                    CTILOG_INFO(dout, "PendingOp DB Writer Thread Active ");
                 }
 
                 rwSleep(1000);
@@ -1709,10 +1595,7 @@ void CtiPendingOpThread::dbWriterThread()
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
         }
 
@@ -1721,23 +1604,13 @@ void CtiPendingOpThread::dbWriterThread()
         writeLMControlHistoryToDB(true);
 
     }
-    catch(RWxmsg& msg )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Error: " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
 
     // And let'em know were A.D.
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Dispatch PendingOp DB Writer Thread shutdown" << endl;
-    }
+    CTILOG_INFO(dout, "PendingOp DB Writer Thread shutdown");
 
     return;
 }

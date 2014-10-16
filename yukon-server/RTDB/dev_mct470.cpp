@@ -468,11 +468,7 @@ void Mct470Device::requestDynamicInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key, O
     // Tell the porter side to complete the assembly of the message.
     newOutMessage->Request.BuildIt = TRUE;
 
-    if( getMCTDebugLevel(DebugLevel_DynamicInfo) )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" requesting key (" << key << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_TRACE(dout, "device \""<< getName() <<"\" requesting key (" << key << ")");
 
     if( key == CtiTableDynamicPaoInfo::Key_MCT_SSpec || key == CtiTableDynamicPaoInfo::Key_MCT_Configuration )
     {
@@ -503,10 +499,7 @@ void Mct470Device::requestDynamicInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key, O
                 }
                 default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - unhandled key (" << key << ") in Mct470Device::requestDynamicInfo **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "unhandled key ("<< key <<")");
 
                     delete newOutMessage;
                     newOutMessage = 0;
@@ -526,8 +519,7 @@ void Mct470Device::requestDynamicInfo(CtiTableDynamicPaoInfo::PaoInfoKeys key, O
                 }
                 default:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unhandled key (" << key << ") in Mct470Device::requestDynamicInfo **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "unhandled key ("<< key <<")");
                 }
                 //  we don't care about these keys, since this sspec should only be used for pulse inputs...
                 //    they only matter for IED reads
@@ -592,10 +584,7 @@ ULONG Mct470Device::calcNextLPScanTime( void )
 
             if( interval_len <= 0 )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" has invalid LP rate (" << interval_len << ") for channel (" << channel << ") - setting nextLPtime out 30 minutes **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "device \""<< getName() <<"\" has invalid LP rate ("<< interval_len <<") for channel ("<< channel <<") - setting nextLPtime out 30 minutes");
 
                 next_time = Now.seconds() + (30 * 60);
             }
@@ -662,8 +651,7 @@ ULONG Mct470Device::calcNextLPScanTime( void )
 
     if( getMCTDebugLevel(DebugLevel_LoadProfile) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << getName() << "'s next Load Profile request at " << CtiTime(next_time) << endl;
+        CTILOG_DEBUG(dout, getName() <<"'s next Load Profile request at "<< CtiTime(next_time));
     }
 
     return (_nextLPScanTime = next_time);
@@ -731,16 +719,12 @@ long Mct470Device::getLoadProfileInterval( unsigned channel )
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - channel " << channel << " not in range **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "device \""<< getName() <<"\" - channel "<< channel <<" not in range");
     }
 
     if( retval < 0 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - load profile interval requested, but value not retrieved...  sending DB value **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_WARN(dout, "device \""<< getName() <<"\" - load profile interval requested, but value not retrieved...  sending DB value");
 
         if( isMct470(getType()) )
         {
@@ -753,10 +737,7 @@ long Mct470Device::getLoadProfileInterval( unsigned channel )
     }
     else if( retval == 0 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - channel " << channel << " LP interval returned zero **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "device \""<< getName() <<"\" - channel "<< channel <<" LP interval returned zero");
     }
 
     return retval;
@@ -775,14 +756,12 @@ bool Mct470Device::isIedChannel(unsigned channel) const
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - config.length() < channel * 3 (" << config.length() << " < " << channel * 3 << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "device \""<< getName() <<"\" - config.length() < channel * 3 (" << config.length() << " < " << channel * 3 << ")");
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - load profile config not retrieved - channel = " << channel << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "device \"" << getName() << "\" - load profile config not retrieved - channel = " << channel);
     }
 
     return false;
@@ -1013,9 +992,7 @@ void Mct470Device::decodeReadDataForKey(const CtiTableDynamicPaoInfo::PaoInfoKey
 {
     if( end <= begin )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - end <= begin in Mct470Device::decodeReadDataForKey()"
-                             " for device  \"" << getName() << "\" (begin - end = " << static_cast<int>(begin - end) << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "end <= begin for device \""<< getName() <<"\" (begin - end = "<< static_cast<int>(begin - end));
 
         return;
     }
@@ -1068,8 +1045,7 @@ void Mct470Device::decodeReadDataForKey(const CtiTableDynamicPaoInfo::PaoInfoKey
 
             if( getMCTDebugLevel(DebugLevel_DynamicInfo) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" LP config decode - \"" << channel_info << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_DEBUG(dout, "device \""<< getName() <<"\" LP config decode - \""<< channel_info);
             }
 
             setDynamicInfo(key, channel_info.str());
@@ -1222,17 +1198,13 @@ Mct470Device::point_info Mct470Device::getLoadProfileData(unsigned channel, long
                         case IED_Type_None:
                         default:
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" is reporting an invalid IED type (" << (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) << "); aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_ERROR(dout, "device \""<< getName() <<"\" is reporting an invalid IED type (" << (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) << "); aborting decode");
                         }
                     }
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" does not have Key_MCT_Configuration; attempting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_WARN(dout, "device \""<< getName() <<"\" does not have Key_MCT_Configuration; attempting decode");
                 }
             }
             else
@@ -1242,24 +1214,19 @@ Mct470Device::point_info Mct470Device::getLoadProfileData(unsigned channel, long
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - config.length() < channel * 3 (" << config.length() << " < " << channel * 3 << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "device \""<< getName() <<"\" - config.length() < channel * 3 ("<< config.length() << " < " << channel * 3 <<")");
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - dynamic LP config not stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "device \""<< getName() <<"\" - dynamic LP config not stored");
     }
 
     pi = getData(buf, len, vt);
 
     if( interval_len <= 0 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - interval_len = \"" << interval_len << "\" in Mct410Device::getLoadProfileData() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "interval_len = \""<< interval_len <<"\" for device \""<< getName() <<"\"");
 
         pi.quality = InvalidQuality;
         pi.description = "Invalid demand interval, cannot adjust reading";
@@ -1282,11 +1249,7 @@ void Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
     {
         if( _lastConfigRequest >= (Now.seconds()) )
         {
-            if( getMCTDebugLevel(DebugLevel_LoadProfile) )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - config request too soon for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_WARN(dout, "config request too soon for device \""<< getName() <<"\"");
         }
         else
         {
@@ -1346,10 +1309,7 @@ void Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
 
             if( outList.empty() )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - !isLPDynamicInfoCurrent(), but no dynamic info requested **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "!isLPDynamicInfoCurrent(), but no dynamic info requested");
             }
         }
     }
@@ -1362,8 +1322,7 @@ void Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
 
             if( interval_len <= 0 )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - interval_len = " << interval_len << " in " << __FUNCTION__ << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "invalid interval_len ("<< interval_len <<") for device \""<< getName() <<"\"");
             }
             else if( getLoadProfile()->isChannelValid(channel) )
             {
@@ -1382,11 +1341,11 @@ void Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
 
                     if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - LP variable check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "Now.seconds() = " << Now.seconds() << endl;
-                        dout << "_lp_info[" << channel << "].collection_point = " << _lp_info[channel].collection_point << endl;
-                        dout << "MCT4XX_LPRecentBlocks * block_size = " << LPRecentBlocks * block_len << endl;
+                        CTILOG_DEBUG(dout, "LP variable check for device \""<< getName() <<
+                                endl <<"Now.seconds()                                = "<< Now.seconds() <<
+                                endl <<"_lp_info[" << channel << "].collection_point = "<< _lp_info[channel].collection_point <<
+                                endl <<"MCT4XX_LPRecentBlocks * block_size           = "<< LPRecentBlocks * block_len
+                                );
                     }
 
                     //  make sure we're aligned
@@ -1403,9 +1362,9 @@ void Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
 
                     if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
+                        CTILOG_DEBUG(dout, "command string check for device \""<< getName() <<"\":"<<
+                                endl << tmpOutMess->Request.CommandStr
+                                );
                     }
 
                     outList.push_back(tmpOutMess);
@@ -1417,8 +1376,7 @@ void Mct470Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
         {
             if( getMCTDebugLevel(DebugLevel_LoadProfile) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - LP collection up to date for device \"" << getName() << "\", no scans generated **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_DEBUG(dout, "LP collection up to date for device \""<< getName() <<"\", no scans generated");
             }
         }
     }
@@ -1438,10 +1396,10 @@ bool Mct470Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 
     if( getMCTDebugLevel(DebugLevel_LoadProfile) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - LP parse value check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "parse.getiValue(\"scan_loadprofile_block\",   0) = " << parse.getiValue("scan_loadprofile_block", 0) << endl;
-        dout << "parse.getiValue(\"scan_loadprofile_channel\", 0) = " << parse.getiValue("scan_loadprofile_channel", 0) << endl;
+        CTILOG_DEBUG(dout,
+                endl <<"parse.getiValue(\"scan_loadprofile_block\",   0) = "<< parse.getiValue("scan_loadprofile_block", 0) <<
+                endl <<"parse.getiValue(\"scan_loadprofile_channel\", 0) = "<< parse.getiValue("scan_loadprofile_channel", 0)
+                );
     }
 
     block   = parse.getiValue("scan_loadprofile_block",   0);
@@ -1463,11 +1421,7 @@ bool Mct470Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
     }
     else
     {
-        if( getMCTDebugLevel(DebugLevel_LoadProfile) )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Improperly formed LP request discarded for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;;
-        }
+        CTILOG_WARN(dout, "Improperly formed LP request discarded for \""<< getName() <<"\"");
 
         retVal = false;
     }
@@ -1545,7 +1499,7 @@ YukonError_t Mct470Device::ErrorDecode(const INMESS &InMessage, const CtiTime Ti
 {
     YukonError_t retVal = ClientErrors::None;
     CtiCommandParser  parse(InMessage.Return.CommandStr);
-    CtiReturnMsg     *retMsg = CTIDBG_new CtiReturnMsg(getID(),
+    CtiReturnMsg     *retMsg = new CtiReturnMsg(getID(),
                                                 CtiString(InMessage.Return.CommandStr),
                                                 CtiString(),
                                                 InMessage.ErrorCode,
@@ -1555,110 +1509,102 @@ YukonError_t Mct470Device::ErrorDecode(const INMESS &InMessage, const CtiTime Ti
                                                 InMessage.Return.GrpMsgID,
                                                 InMessage.Return.UserID);
 
-    if( retMsg != NULL )
+    if( parse.getCommand() == ScanRequest )  //  we only plug values for failed scans
     {
-        if( parse.getCommand() == ScanRequest )  //  we only plug values for failed scans
+        switch( parse.getiValue("scantype") )
         {
-            switch( parse.getiValue("scantype") )
+            case ScanRateGeneral:
+            case ScanRateStatus:
             {
-                case ScanRateGeneral:
-                case ScanRateStatus:
+                insertPointFail( InMessage, retMsg, ScanRateStatus, 8, StatusPointType );
+                insertPointFail( InMessage, retMsg, ScanRateStatus, 7, StatusPointType );
+                insertPointFail( InMessage, retMsg, ScanRateStatus, 6, StatusPointType );
+                insertPointFail( InMessage, retMsg, ScanRateStatus, 5, StatusPointType );
+
+                resetForScan(ScanRateGeneral);
+                break;
+            }
+
+            case ScanRateAccum:
+            {
+                insertPointFail( InMessage, retMsg, ScanRateAccum, 1, PulseAccumulatorPointType );
+                insertPointFail( InMessage, retMsg, ScanRateAccum, 2, PulseAccumulatorPointType );
+                insertPointFail( InMessage, retMsg, ScanRateAccum, 3, PulseAccumulatorPointType );
+                insertPointFail( InMessage, retMsg, ScanRateAccum, 4, PulseAccumulatorPointType );
+
+                resetForScan(ScanRateAccum);
+                break;
+            }
+
+            case ScanRateIntegrity:
+            {
+                insertPointFail( InMessage, retMsg, ScanRateIntegrity, PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType);
+                insertPointFail( InMessage, retMsg, ScanRateIntegrity, 1, DemandAccumulatorPointType);
+                insertPointFail( InMessage, retMsg, ScanRateIntegrity, 2, DemandAccumulatorPointType);
+                insertPointFail( InMessage, retMsg, ScanRateIntegrity, 3, DemandAccumulatorPointType);
+                insertPointFail( InMessage, retMsg, ScanRateIntegrity, 4, DemandAccumulatorPointType);
+                insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_TotalKW,     AnalogPointType);
+                insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_TotalKM,     AnalogPointType);
+                insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_VoltsPhaseA, AnalogPointType);
+                insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_VoltsPhaseB, AnalogPointType);
+                insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_VoltsPhaseC, AnalogPointType);
+
+                resetForScan(ScanRateIntegrity);
+                break;
+            }
+
+            case ScanRateLoadProfile:
+            {
+                int channel = parse.getiValue("loadprofile_channel", 0);
+
+                if( channel )
                 {
-                    insertPointFail( InMessage, retMsg, ScanRateStatus, 8, StatusPointType );
-                    insertPointFail( InMessage, retMsg, ScanRateStatus, 7, StatusPointType );
-                    insertPointFail( InMessage, retMsg, ScanRateStatus, 6, StatusPointType );
-                    insertPointFail( InMessage, retMsg, ScanRateStatus, 5, StatusPointType );
-
-                    resetForScan(ScanRateGeneral);
-                    break;
+                    insertPointFail( InMessage, retMsg, ScanRateLoadProfile, channel + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
                 }
+                break;
+            }
 
-                case ScanRateAccum:
-                {
-                    insertPointFail( InMessage, retMsg, ScanRateAccum, 1, PulseAccumulatorPointType );
-                    insertPointFail( InMessage, retMsg, ScanRateAccum, 2, PulseAccumulatorPointType );
-                    insertPointFail( InMessage, retMsg, ScanRateAccum, 3, PulseAccumulatorPointType );
-                    insertPointFail( InMessage, retMsg, ScanRateAccum, 4, PulseAccumulatorPointType );
+            default:
+            {
+                retVal = Inherited::ErrorDecode(InMessage, TimeNow, retList);
 
-                    resetForScan(ScanRateAccum);
-                    break;
-                }
-
-                case ScanRateIntegrity:
-                {
-                    insertPointFail( InMessage, retMsg, ScanRateIntegrity, PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType);
-                    insertPointFail( InMessage, retMsg, ScanRateIntegrity, 1, DemandAccumulatorPointType);
-                    insertPointFail( InMessage, retMsg, ScanRateIntegrity, 2, DemandAccumulatorPointType);
-                    insertPointFail( InMessage, retMsg, ScanRateIntegrity, 3, DemandAccumulatorPointType);
-                    insertPointFail( InMessage, retMsg, ScanRateIntegrity, 4, DemandAccumulatorPointType);
-                    insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_TotalKW,     AnalogPointType);
-                    insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_TotalKM,     AnalogPointType);
-                    insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_VoltsPhaseA, AnalogPointType);
-                    insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_VoltsPhaseB, AnalogPointType);
-                    insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_VoltsPhaseC, AnalogPointType);
-
-                    resetForScan(ScanRateIntegrity);
-                    break;
-                }
-
-                case ScanRateLoadProfile:
-                {
-                    int channel = parse.getiValue("loadprofile_channel", 0);
-
-                    if( channel )
-                    {
-                        insertPointFail( InMessage, retMsg, ScanRateLoadProfile, channel + PointOffset_LoadProfileOffset, DemandAccumulatorPointType );
-                    }
-                    break;
-                }
-
-                default:
-                {
-                    retVal = Inherited::ErrorDecode(InMessage, TimeNow, retList);
-
-                    break;
-                }
+                break;
             }
         }
-        else if( InMessage.Sequence == EmetconProtocol::Scan_Integrity || InMessage.Sequence == EmetconProtocol::GetValue_Demand )
-        {
-            insertPointFail( InMessage, retMsg, ScanRateIntegrity, PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType);
-            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 1, DemandAccumulatorPointType);
-            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 2, DemandAccumulatorPointType);
-            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 3, DemandAccumulatorPointType);
-            insertPointFail( InMessage, retMsg, ScanRateIntegrity, 4, DemandAccumulatorPointType);
-        }
-        else if( InMessage.Sequence == EmetconProtocol::GetValue_IEDDemand )
-        {
-            insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_TotalKW,     AnalogPointType);
-            insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_TotalKM,     AnalogPointType);
-            insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_VoltsPhaseA, AnalogPointType);
-            insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_VoltsPhaseB, AnalogPointType);
-            insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_VoltsPhaseC, AnalogPointType);
-        }
-        else
-        {
-            retVal = Inherited::ErrorDecode(InMessage, TimeNow, retList);
-        }
-
-        // send the whole mess to dispatch
-        if( retMsg->PointData().size() > 0 )
-        {
-            retList.push_back(retMsg);
-        }
-        else
-        {
-            delete retMsg;
-        }
-
-        //  set it to null, it's been sent off
-        retMsg = NULL;
+    }
+    else if( InMessage.Sequence == EmetconProtocol::Scan_Integrity || InMessage.Sequence == EmetconProtocol::GetValue_Demand )
+    {
+        insertPointFail( InMessage, retMsg, ScanRateIntegrity, PointOffset_Accumulator_Powerfail, PulseAccumulatorPointType);
+        insertPointFail( InMessage, retMsg, ScanRateIntegrity, 1, DemandAccumulatorPointType);
+        insertPointFail( InMessage, retMsg, ScanRateIntegrity, 2, DemandAccumulatorPointType);
+        insertPointFail( InMessage, retMsg, ScanRateIntegrity, 3, DemandAccumulatorPointType);
+        insertPointFail( InMessage, retMsg, ScanRateIntegrity, 4, DemandAccumulatorPointType);
+    }
+    else if( InMessage.Sequence == EmetconProtocol::GetValue_IEDDemand )
+    {
+        insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_TotalKW,     AnalogPointType);
+        insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_TotalKM,     AnalogPointType);
+        insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_VoltsPhaseA, AnalogPointType);
+        insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_VoltsPhaseB, AnalogPointType);
+        insertPointFail( InMessage, retMsg, ScanRateGeneral, Mct470Device::PointOffset_VoltsPhaseC, AnalogPointType);
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - null retMsg() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        retVal = Inherited::ErrorDecode(InMessage, TimeNow, retList);
     }
+
+    // send the whole mess to dispatch
+    if( retMsg->PointData().size() > 0 )
+    {
+        retList.push_back(retMsg);
+    }
+    else
+    {
+        delete retMsg;
+    }
+
+    //  set it to null, it's been sent off
+    retMsg = NULL;
 
     return retVal;
 }
@@ -2269,19 +2215,13 @@ bool Mct470Device::computeMultiplierFactors(double multiplier, unsigned &numerat
 
     if( multiplier > 50000 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - Multiplier too large - must be less than 50000 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "device \""<< getName() <<"\" - Multiplier too large - must be less than 50000");
 
         retval = false;
     }
     else if( multiplier < 0.0001 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" - Multiplier too small - must be at least 0.0001 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "device \""<< getName() <<"\" - Multiplier too small - must be at least 0.0001");
 
         retval = false;
     }
@@ -2803,8 +2743,8 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
 
         if( ! optTouEnabled )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - device " << getName() << " missing config value " << MCTStrings::touEnabled << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "device "<< getName() <<" missing config value "<< MCTStrings::touEnabled);
+
             return ClientErrors::NoConfigData;
         }
 
@@ -2885,8 +2825,8 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
             {
                 if( rateStringValues[i][j].empty() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - device " << getName() << " bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "device " << getName() << " bad rate string stored");
+
                     return ClientErrors::NoConfigData;
                 }
             }
@@ -2898,8 +2838,8 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
             {
                 if( timeStringValues[i][j].length() < 4 ) //A time needs at least 4 digits X:XX
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - device " << getName() << " bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "device "<< getName() <<" bad time string stored");
+
                     return ClientErrors::NoConfigData;
                 }
             }
@@ -2913,8 +2853,8 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
                 rates[i][j] = rateStringValues[i][j][0] - 'A';
                 if( rates[i][j] < 0 || rates[i][j] > 3 )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - device " << getName() << " bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "device "<< getName() <<" bad rate string stored");
+
                     return ClientErrors::NoConfigData;
                 }
             }
@@ -2940,8 +2880,8 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
                 times[i][j] = times[i][j]/5;
                 if( times[i][j] < 0 || times[i][j] > 255 )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - device " << getName() << " time sequencing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "device "<< getName() <<" time sequencing");
+
                     return ClientErrors::NoConfigData;
                 }
             }
@@ -2949,16 +2889,16 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
 
         if( defaultTOURateString.empty() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - device " << getName() << " empty default TOU rate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "device "<< getName() <<" empty default TOU rate");
+
             return ClientErrors::NoConfigData;
         }
 
         defaultTOURate = defaultTOURateString[0] - 'A';
         if( defaultTOURate < 0 || defaultTOURate > 3 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - device " << getName() << " bad default rate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "device "<< getName() <<" bad default rate");
+
             return ClientErrors::NoConfigData;
         }
 
@@ -2971,8 +2911,8 @@ YukonError_t Mct470Device::executePutConfigTOU(CtiRequestMsg *pReq,CtiCommandPar
             wednesdaySchedule == std::numeric_limits<long>::min() ||
             thursdaySchedule == std::numeric_limits<long>::min() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - device " << getName() << " no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "device "<< getName() <<" no or bad schedule value stored");
+
             return ClientErrors::NoConfigData;
         }
 
@@ -3130,8 +3070,7 @@ YukonError_t Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pRe
             {
                 if( getMCTDebugLevel(DebugLevel_Configs) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Configs - no or bad value stored, LPChannel " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, "Configs - no or bad value stored, LPChannel");
                 }
                 nRet = ClientErrors::NoConfigData;
             }
@@ -3223,8 +3162,7 @@ YukonError_t Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pRe
             {
                 if( getMCTDebugLevel(DebugLevel_Configs) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Configs - no or bad value stored, LPChannel " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, "Configs - no or bad value stored, LPChannel");
                 }
                 nRet = ClientErrors::NoConfigData;
             }
@@ -3324,8 +3262,8 @@ YukonError_t Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommand
 
             if ( ! relayATimer || ! relayBTimer || ! spid )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "no or bad value stored");
+
                 nRet = ClientErrors::NoConfigData;
             }
             else
@@ -3391,8 +3329,8 @@ YukonError_t Mct470Device::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiComma
 
             if( ! demand || ! loadProfile1 )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "no or bad value stored");
+
                 nRet = ClientErrors::NoConfigData;
             }
             else
@@ -3457,8 +3395,8 @@ YukonError_t Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,Ct
             if( ! tableReadInterval || ! tableType || ! spid  //  if we don't have TableReadInterval, TableType, or SPID...
                 || (isMct470(getType()) && ! meterNumber) )   //  or we're an MCT-470 and we don't have MeterNumber
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "no or bad value stored");
+
                 nRet = ClientErrors::NoConfigData;
             }
             else
@@ -3539,8 +3477,8 @@ int Mct470Device::sendDNPConfigMessages(int startMCTID, OutMessageList &outList,
 
     if( dataA.empty() || dataB.empty() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - Configuration not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Configuration not found");
+
         nRet = ClientErrors::NoConfigData;
     }
     else if( bufferSize >= 24 )
@@ -3549,16 +3487,14 @@ int Mct470Device::sendDNPConfigMessages(int startMCTID, OutMessageList &outList,
         getBytesFromString(dataA, buffer, bufferSize, valCount, 6, 2);//16 bit, 6 entries min
         if( valCount != 6 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Collection improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Collection improperly set up");
         }
 
         //offset by 12 as we must have 6 entries in previous table, 6 in this one.
         getBytesFromString(dataB, buffer+12, bufferSize-12, valCount, 6, 2);
         if( valCount != 6 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Collection improperly set up **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Collection improperly set up");
         }
 
         if( force
@@ -3655,8 +3591,7 @@ YukonError_t Mct470Device::decodeGetValueKWH(const INMESS &InMessage, const CtiT
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Accumulator Decode for \""<< getName() <<"\"");
     }
 
     if( InMessage.Sequence == EmetconProtocol::Scan_Accum )
@@ -3730,12 +3665,7 @@ YukonError_t Mct470Device::decodeGetValueKWH(const INMESS &InMessage, const CtiT
 
                     if( pi.freeze_bit != getExpectedFreezeParity() )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
-                                                ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
-                                                "/" << getExpectedFreezeCounter() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "incoming freeze parity bit ("<< pi.freeze_bit <<") does not match expected freeze bit ("<< getExpectedFreezeParity() <<") on device \""<< getName() <<"\" - not sending data");
 
                         pi.description  = "Freeze parity does not match (";
                         pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
@@ -3783,21 +3713,13 @@ YukonError_t Mct470Device::decodeGetValueDemand(const INMESS &InMessage, const C
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Demand Decode for \""<< getName() <<"\"");
     }
 
     setScanFlag(ScanRateGeneral, false);
     setScanFlag(ScanRateIntegrity, false);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     for( i = 0; i < 8; i++ )
@@ -3869,28 +3791,17 @@ YukonError_t Mct470Device::decodeGetValueMinMaxDemand(const INMESS &InMessage, c
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Min/Max Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Min/Max Demand Decode for \""<< getName() <<"\"");
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     base_offset = parse.getOffset();
 
     if( base_offset < 1 || base_offset > 4 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - offset = " << base_offset << " - resetting to 1 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_WARN(dout, "offset = "<< base_offset <<" - resetting to 1");
 
         base_offset = 1;
     }
@@ -3981,21 +3892,13 @@ YukonError_t Mct470Device::decodeGetValueIED(const INMESS &InMessage, const CtiT
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** IED Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "IED Decode for \"" << getName() << "\"");
     }
 
     setScanFlag(ScanRateGeneral, false);
     setScanFlag(ScanRateIntegrity, false);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     bool dataInvalid = true;
@@ -4146,8 +4049,7 @@ YukonError_t Mct470Device::decodeGetValueIED(const INMESS &InMessage, const CtiT
 
                 default:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" is reporting an invalid IED type (" << (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) << ") for getvalue ied demand **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "device \""<< getName() <<"\" is reporting an invalid IED type (" << (getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_Configuration) >> 4) << ") for getvalue ied demand");
                 }
                 case IED_Type_Alpha_PP:
                 {
@@ -4541,10 +4443,7 @@ YukonError_t Mct470Device::decodeGetValueIED(const INMESS &InMessage, const CtiT
                 pi.quality = InvalidQuality;
                 pi.description = "Bad peak kW timestamp";
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - invalid time (" << std::hex << peak_time << ") in IED peak decode for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "invalid time ("<< std::hex << peak_time <<") in IED peak decode for device \""<< getName() <<"\"");
             }
             if( (peak_time.seconds() >= (DawnOfTime_UtcSeconds - 86400) && peak_time.seconds() <= (DawnOfTime_UtcSeconds + 86400) ) ||
                  (peak_time.seconds() <= 86400) )
@@ -4608,10 +4507,7 @@ YukonError_t Mct470Device::decodeGetValueIEDPrecannedTable11Peak(const CtiComman
 
         if( !is_valid_time(consumption_timestamp) )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - invalid consumption timestamp (" << std::hex << consumption_timestamp << ") in IED peak decode for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "invalid consumption timestamp ("<< std::hex << consumption_timestamp <<") in IED peak decode for device \""<< getName() <<"\"");
 
             consumption_value.quality = InvalidQuality;
             consumption_value.description = "Bad consumption timestamp";
@@ -4636,10 +4532,7 @@ YukonError_t Mct470Device::decodeGetValueIEDPrecannedTable11Peak(const CtiComman
 
         if( !is_valid_time(demand_timestamp) )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - invalid peak demand timestamp (" << std::hex << demand_timestamp << ") in IED peak decode for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "invalid peak demand timestamp ("<< std::hex << demand_timestamp <<") in IED peak decode for device \"" << getName() << "\"");
 
             demand_value.quality = InvalidQuality;
             demand_value.description = "Bad peak demand timestamp";
@@ -4691,10 +4584,7 @@ unsigned long Mct470Device::convertTimestamp(const unsigned long timestamp, cons
 
     if( minutes_until_end_of_year > 0x007fff00 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - invalid time (" << std::hex << minutes_until_end_of_year << ") in Mct470Device::convertTimestamp() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "invalid time ("<< std::hex << minutes_until_end_of_year <<") in Mct470Device::convertTimestamp() for device \""<< getName() <<"\"");
 
         return 0;
     }
@@ -4717,14 +4607,7 @@ YukonError_t Mct470Device::decodeGetConfigIED(const INMESS &InMessage, const Cti
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData     = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     switch( InMessage.Sequence )
@@ -4953,14 +4836,7 @@ YukonError_t Mct470Device::decodeGetStatusInternal( const INMESS &InMessage, con
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString += getName() + " / Internal Status:\n";
@@ -5050,14 +4926,7 @@ YukonError_t Mct470Device::decodeGetStatusLoadProfile( const INMESS &InMessage, 
     CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg  *pData = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString += getName() + " / Load Profile Channel " + CtiNumStr(lp_channel) + " Status:\n";
@@ -5107,14 +4976,7 @@ YukonError_t Mct470Device::decodeGetStatusDNP( const INMESS &InMessage, const Ct
     CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg  *pData = NULL;
 
-    if( (ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int dnpStatus          = DSt->Message[0];
@@ -5165,14 +5027,7 @@ YukonError_t Mct470Device::decodeGetStatusFreeze( const INMESS &InMessage, const
      CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
      CtiPointDataMsg      *pData = NULL;
 
-     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-     {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-         return ClientErrors::MemoryAccess;
-     }
-
+     ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
      ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
      resultString += getName() + " / Freeze status:\n";
@@ -5235,14 +5090,7 @@ YukonError_t Mct470Device::decodeGetConfigIntervals(const INMESS &InMessage, con
     resultString += getName() + " / Precanned Meter Number: " + CtiNumStr(DSt->Message[4]) + "\n";
     resultString += getName() + " / Precanned Table Type: "   + CtiNumStr(DSt->Message[5]) + "\n";
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
@@ -5372,14 +5220,7 @@ YukonError_t Mct470Device::decodeGetConfigChannelSetup(const INMESS &InMessage, 
         result_string += describeChannel(DSt->Message[i]) + "\n";
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(result_string.c_str());
 
@@ -5430,14 +5271,7 @@ YukonError_t Mct470Device::decodeGetConfigModel(const INMESS &InMessage, const C
     options += "DST ";
     options += (InMessage.Buffer.DSt.Message[3] & 0x01)?"enabled\n":"disabled\n";
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( sspec + options );
 
@@ -5797,9 +5631,7 @@ unsigned char Mct470Device::computeResolutionByte(double lpResolution, double pe
             break;
         default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unexpected value of " << lpResolution << " for Load Profile Resolution\n";
-                dout << CtiTime() << " Using default value of 10Wh for Resolution Byte Calculation." << endl;
+                CTILOG_WARN(dout, "Unexpected value of "<< lpResolution <<" for Load Profile Resolution - Using default value of 10Wh for Resolution Byte Calculation");
             }
             defaultUsed = true;
             lpByte = 1;
@@ -5817,9 +5649,7 @@ unsigned char Mct470Device::computeResolutionByte(double lpResolution, double pe
             break;
         default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unexpected value of " << peakKwResolution << " for Peak KW Resolution.\n";
-                dout << CtiTime() << " Using default value of 10Wh for Resolution Byte Calculation." << endl;
+                CTILOG_WARN(dout, "Unexpected value of " << peakKwResolution << " for Peak KW Resolution - Using default value of 10Wh for Resolution Byte Calculation");
             }
             defaultUsed = true;
             peakKwByte = 0;
@@ -5843,9 +5673,7 @@ unsigned char Mct470Device::computeResolutionByte(double lpResolution, double pe
             break;
         default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unexpected value of " << lastIntervalDemandResolution << " for Last Interval Demand Resolution.\n";
-                dout << CtiTime() << " Using default value of 10Wh for Resolution Byte Calculation." << endl;
+                CTILOG_WARN(dout, "Unexpected value of "<< lastIntervalDemandResolution <<" for Last Interval Demand Resolution - Using default value of 10Wh for Resolution Byte Calculation");
             }
             defaultUsed = true;
             lastIntrvlByte = 0;
@@ -5858,8 +5686,7 @@ unsigned char Mct470Device::computeResolutionByte(double lpResolution, double pe
 
     if (defaultUsed == true)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " A default value was used to compute the Resolution Byte, the result is: " << (int)resolutionByte << endl;
+        CTILOG_INFO(dout, "A default value was used to compute the Resolution Byte, the result is: "<< (int)resolutionByte);
     }
 
     return resolutionByte;
@@ -5892,11 +5719,7 @@ int Mct470Device::setupRatioBytesBasedOnMeterType(int channel, double multiplier
         {
             if (!computeMultiplierFactors(multiplier, ratio, kRatio))
             {
-                if( getMCTDebugLevel(DebugLevel_Configs) )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Configs - Cannot compute multiplier " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_WARN(dout, "Configs - Cannot compute multiplier");
 
                 nRet = ClientErrors::NoConfigData;
             }

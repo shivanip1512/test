@@ -21,7 +21,7 @@
  *  Makes use of resolveScanType(string)
  *-----------------------------------------------------------------------------*/
 
-class IM_EX_CTIYUKONDB CtiTableDeviceScanRate : public CtiMemDBObject, private boost::noncopyable
+class IM_EX_CTIYUKONDB CtiTableDeviceScanRate : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -70,7 +70,7 @@ public:
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-   virtual void DumpData();
+   virtual std::string toString() const override;
 
    static std::string getTableName();
 

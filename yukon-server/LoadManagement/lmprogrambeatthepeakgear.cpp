@@ -29,8 +29,7 @@ void CtiLMProgramBeatThePeakGear::restore(Cti::RowReader &rdr)
     }
     catch (Cti::BeatThePeak::AlertLevel::InvalidAlertLevel & invalidLevel)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << invalidLevel.what() << ". Setting to Green." << endl;
+        CTILOG_EXCEPTION_WARN(dout, invalidLevel, "Setting to Green");
         _alertLevel = Cti::BeatThePeak::AlertLevelGreen;
     }
 
@@ -59,8 +58,7 @@ bool CtiLMProgramBeatThePeakGear::attemptControl(CtiLMGroupPtr currentLMGroup, l
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Group does not implement Beat the Peak control interface: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_INFO(dout, "Group does not implement Beat the Peak control interface: " << currentLMGroup->getPAOName());
         return false;
     }
 }
@@ -74,8 +72,7 @@ bool CtiLMProgramBeatThePeakGear::stopControl(CtiLMGroupPtr currentLMGroup)
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Group does not implement Beat the Peak control interface: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_INFO(dout, "Group does not implement Beat the Peak control interface: " << currentLMGroup->getPAOName());
         return false;
     }
 

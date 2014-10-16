@@ -222,15 +222,11 @@ void CtiInterpreter::run()
                        char* result = Tcl_GetStringResult(_interp);
 
                        // check for interrupted as to not alarm the reader
-                       if( strcmp(result,"interrupted") != 0)
+                       if( strcmp(result, "interrupted") != 0)
                        {
-                           CtiLockGuard< CtiLogger > guard(dout);
-
-                           char* err = Tcl_GetVar(_interp, "errorInfo", 0 );
-                           if( err != NULL )
+                           if( const char* err = Tcl_GetVar(_interp, "errorInfo", 0) )
                            {
-                                dout << CtiTime() << " [" << rwThreadId() << "] INTERPRETER ERROR: " << endl;
-                                dout << CtiTime() << " " << err << endl;
+                                CTILOG_ERROR(dout, "Interpreter Error: "<< err);
                            }
                        }
                     }
@@ -250,20 +246,10 @@ void CtiInterpreter::run()
     }
     catch(...)
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " An unknown exception occured in CtiInterpreter::run()" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " Interpreter shutting down." << endl;
-    }
-
-
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " _interp exiting" << endl;
-    }
+    CTILOG_INFO(dout, "Interpreter shutting down.");
 }
 
 

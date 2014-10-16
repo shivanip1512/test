@@ -207,10 +207,7 @@ unsigned PaoStatistics::writeRecords(Database::DatabaseWriter &writer)
 
         if( _daily->getRequests() < _daily->getCompletions() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " PaoStatistics::writeRecords - daily requests < daily completions ";
-            dout << "(" << _daily->getRequests() << " < " << _daily->getCompletions() << ") ";
-            dout << "for ID " << _pao_id << "\n";
+            CTILOG_INFO(dout, "daily requests < daily completions ("<< _daily->getRequests() <<" < "<< _daily->getCompletions() <<") for ID "<< _pao_id);
         }
     }
 

@@ -8,12 +8,14 @@
 #include "ccusimsvc.h"
 #include "CServiceConfig.h"
 #include "ctibase.h"
-
-#include "logger.h"
+#include "logManager.h"
 #include "guard.h"
-
 #include "connection_base.h"
-// Close all yukon messaging connections when this object is destroyed
+
+// Shutdown logging when this object is destroyed
+Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
+
+// Close all messaging connections when this object is destroyed
 Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
 using namespace std;
@@ -30,10 +32,17 @@ extern HANDLE gQuitEvent;
 
 int main(int argc, char* argv[] )
 {
+    doutManager.setOutputPath    (gLogDirectory);
+    doutManager.setRetentionDays (gLogRetention);
+    doutManager.setOutputFile    ("ccu_simulator");
+    doutManager.setToStdOut      (true);
+
+    doutManager.start(); // fire up the logger thread
+
     gQuitEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     if( gQuitEvent == (HANDLE)NULL )
     {
-       cout << "Couldn't create hQuitEvent!!!" << endl;
+       CTILOG_FATAL(dout, "Couldn't create hQuitEvent!!!");
        exit(-1);
     }
 
@@ -54,7 +63,6 @@ int main(int argc, char* argv[] )
           }
           else
           {
-             dout.setWriteInterval(0);
              CtiSimulatorService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
 
              RunningInConsole = TRUE;
@@ -80,17 +88,11 @@ int install(DWORD dwStart)
 
     memset(depend, 0, 1000 );
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime()  << " - Installing as a service..." << endl;
-    }
+    CTILOG_INFO(dout, "Installing as a service...");
 
     CServiceConfig si(szServiceName, szDisplayName, szDesc);
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Installing CCU Simulator Service Using LocalSystem Account." << endl;
-    }
+    CTILOG_INFO(dout, "Installing CCU Simulator Service Using LocalSystem Account.");
 
     // test using the LocalSystem account
     si.Install(SERVICE_WIN32_OWN_PROCESS,
@@ -104,10 +106,7 @@ int install(DWORD dwStart)
 
 int remove()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime()  << " - Removing service..." << endl;
-    }
+    CTILOG_INFO(dout, "Removing service...");
 
     CServiceConfig si(szServiceName, szDisplayName);
     si.Remove();

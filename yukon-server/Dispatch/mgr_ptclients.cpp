@@ -241,7 +241,7 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
 
     if( DebugLevel & DEBUGLEVEL_MGR_POINT )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Looking for Alarming" << endl;
+        CTILOG_DEBUG(dout, "Looking for Alarming");
     }
 
     start = start.now();
@@ -251,10 +251,13 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
     DatabaseReader rdr(conn, sql);
     rdr.execute();
 
-    if( !rdr.isValid() || DebugLevel & DEBUGLEVEL_MGR_POINT )
+    if( ! rdr.isValid() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << sql << endl;
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else if( DebugLevel & DEBUGLEVEL_MGR_POINT )
+    {
+        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
     }
 
     LONG pID;
@@ -290,12 +293,12 @@ void CtiPointClientManager::refreshAlarming(LONG pntID, LONG paoID, const set<lo
 
     if((stop = stop.now()).seconds() - start.seconds() > 5 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Alarming " << endl;
+        CTILOG_INFO(dout, (stop.seconds() - start.seconds()) <<" seconds for Alarming");
     }
+
     if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Done looking for Alarming" << endl;
+        CTILOG_DEBUG(dout, "Done looking for Alarming");
     }
 }
 
@@ -355,14 +358,9 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
 
     rdr.execute();
 
-    if( !rdr.isValid() )
+    if( ! rdr.isValid() )
     {
-        string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << loggedSQLstring << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
     }
 
     std::list<CtiTablePointProperty*> tempList;
@@ -386,8 +384,7 @@ void CtiPointClientManager::refreshProperties(LONG pntID, LONG paoID, const set<
 
     if((stop = stop.now()).seconds() - start.seconds() > 5 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Properties " << endl;
+        CTILOG_INFO(dout , (stop.seconds() - start.seconds()) <<" seconds for Properties");
     }
 }
 
@@ -466,8 +463,7 @@ void CtiPointClientManager::refreshArchivalList(LONG pntID, LONG paoID, const se
 
     if((stop = stop.now()).seconds() - start.seconds() > 5 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Archival List " << endl;
+        CTILOG_INFO(dout , (stop.seconds() - start.seconds()) <<" seconds for Archival List");
     }
 }
 
@@ -475,11 +471,23 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const
 {
     int nRet = 0;
     CtiTime   NowTime;
-    int ptcnt = aReg.getCount();
+    const int ptcnt = aReg.getCount();
     ConnectionMgrPointMap::iterator conIter = _conMgrPointMap.end();
 
     if(!(aReg.getFlags() & (REG_ADD_POINTS | REG_REMOVE_POINTS)) )     // If add/remove is set, we are augmenting or removing an existing registration (Not the whole thing).
         RemoveConnectionManager(CM);
+
+    if( debugprint )
+    {
+        Cti::StreamBuffer outLog;
+        outLog << CM->getClientName() <<" has registered for "<< ptcnt <<" points:";
+        for(int pointNbr = 0 ; pointNbr < ptcnt; pointNbr++)
+        {
+            outLog << endl << aReg[pointNbr];
+        }
+
+        CTILOG_DEBUG(dout, outLog);
+    }
 
     /*
      *  if count is greater than zero (there are point id's in the list),
@@ -488,12 +496,6 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const
 
     if(ptcnt > 0)
     {
-        if(debugprint)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << NowTime << " " << CM->getClientName() << " has registered for " << ptcnt << " points" << endl;
-        }
-
         conIter = _conMgrPointMap.find(CM->hash(*CM.get()));
         if( conIter == _conMgrPointMap.end() )
         {
@@ -516,14 +518,6 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const
             {
                 if(!((const CtiVanGoghConnectionManager *)CM.get())->isRegForChangeType(temp->getType())) // Make sure we didn't already register for ALL points of this type.
                 {
-                    if(debugprint)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << NowTime << " " << CM->getClientName() << " has registered for point " << aReg[i] << endl;
-                        }
-                    }
-
                     if(aReg.getFlags() & REG_REMOVE_POINTS)
                     {
                         PointConnectionMap::iterator iter = _pointConnectionMap.find(temp->getPointID());
@@ -566,6 +560,9 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const
             }
         }
     }
+
+
+
 
     return nRet;
 }
@@ -716,10 +713,7 @@ void CtiPointClientManager::getDirtyRecordList(list<CtiDynamicPointDispatchSPtr>
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 }
@@ -730,18 +724,13 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiDynamicPointDispatchSPtr> &
 
     if ( ! conn.isValid() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+        CTILOG_ERROR(dout, "Invalid Connection to Database");
         return;
     }
 
     const int total = updateList.size();
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " WRITING " << total << " dynamic dispatch records. " << endl;
-    }
+    CTILOG_INFO(dout, "WRITING "<< total <<" dynamic dispatch records");
 
     int listCount = 0;
 
@@ -753,17 +742,14 @@ void CtiPointClientManager::writeRecordsToDB(list<CtiDynamicPointDispatchSPtr> &
         {
             if( dispatch.isPointIdInvalid() )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** WARNING **** removing record for invalid point ID " << dispatch.getPointID() << ". " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                }
+                CTILOG_WARN(dout, "Removing record for invalid point ID "<< dispatch.getPointID());
+
                 erase( dispatch.getPointID() );
             }
         }
         else if(++listCount % 1000 == 0)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " WRITING dynamic dispatch records to DB, " << listCount << " of " << total << " records written. " << endl;
+            CTILOG_INFO(dout, "WRITING dynamic dispatch records to DB, "<< listCount <<" of "<< total <<" records written");
         }
     }
 }
@@ -791,18 +777,12 @@ void CtiPointClientManager::removeOldDynamicData()
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             break;
         }
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PURGED " << recordCount << " records from memory." << endl;
-    }
+    CTILOG_INFO(dout, "PURGED "<< recordCount <<" records from memory");
 }
 
 void CtiPointClientManager::storeDirtyRecords()
@@ -820,8 +800,7 @@ void CtiPointClientManager::storeDirtyRecords()
 
     if(recordCount > 0 && gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Updated " << recordCount << " dynamic dispatch records. " << endl;
+        CTILOG_DEBUG(dout, "Updated "<< recordCount <<" dynamic dispatch records");
     }
 
     return;
@@ -852,10 +831,7 @@ void CtiPointClientManager::refreshDynamicDataForSinglePoint(const long id)
 {
     if( ! id )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " A valid pointId was not provided. Unable to refresh dynamic data for point." << endl;
-        }
+        CTILOG_ERROR(dout, "A valid pointId was not provided. Unable to refresh dynamic data for point");
         return;
     }
 
@@ -868,10 +844,7 @@ void CtiPointClientManager::refreshDynamicDataForPointSet(const set<long> &point
 {
     if( pointIds.empty() )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " No pointIds were provided. Unable to refresh dynamic data for points." << endl;
-        }
+        CTILOG_ERROR(dout, "No pointIds were provided. Unable to refresh dynamic data for points.");
         return;
     }
 
@@ -939,7 +912,7 @@ void CtiPointClientManager::executeDynamicDataQueries(const vector<string> &quer
 
     if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Looking for Dynamic Dispatch Data" << endl;
+        CTILOG_DEBUG(dout, "Looking for Dynamic Dispatch Data");
     }
 
     Cti::Database::DatabaseConnection connection;
@@ -950,13 +923,13 @@ void CtiPointClientManager::executeDynamicDataQueries(const vector<string> &quer
 
         rdr.execute();
 
-        if(DebugLevel & DEBUGLEVEL_MGR_POINT || !rdr.isValid())
+        if( ! rdr.isValid() )
         {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << loggedSQLstring << endl;
-            }
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
+        else if( DebugLevel & DEBUGLEVEL_MGR_POINT )
+        {
+            CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
         }
 
         start = start.now();
@@ -968,14 +941,13 @@ void CtiPointClientManager::executeDynamicDataQueries(const vector<string> &quer
 
         if((stop = stop.now()).seconds() - start.seconds() > 5 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Dynamic Data " << endl;
+            CTILOG_INFO(dout , (stop.seconds() - start.seconds()) <<" seconds for Dynamic Data");
         }
     }
 
     if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Done looking for Dynamic Dispatch Data" << endl;
+        CTILOG_DEBUG(dout, "Done looking for Dynamic Dispatch Data");
     }
 }
 
@@ -1003,9 +975,7 @@ void CtiPointClientManager::loadDynamicPoint(Cti::Database::DatabaseReader &rdr)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** WARNING **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "  Point id " << lTemp << " found in "  << CtiTablePointDispatch::getTableName() << ", no other point info available" << endl;
+        CTILOG_WARN(dout, "Point id "<< lTemp <<" found in "<< CtiTablePointDispatch::getTableName() <<", no other point info available");
     }
 }
 
@@ -1017,8 +987,9 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
 
     if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Looking for Reasonability limits" << endl;
+        CTILOG_DEBUG(dout, "Looking for Reasonability limits");
     }
+
     sql = "select pointid, highreasonabilitylimit, lowreasonabilitylimit from pointunit where "
           "(highreasonabilitylimit != 1E30 OR lowreasonabilitylimit != -1E30) "
           "AND highreasonabilitylimit != lowreasonabilitylimit";
@@ -1056,9 +1027,13 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
     DatabaseReader rdr(conn, sql);
     rdr.execute();
 
-    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
+    if( ! rdr.isValid() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << sql << endl;
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else if( DebugLevel & DEBUGLEVEL_MGR_POINT )
+    {
+        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
     }
 
     int pointid;
@@ -1095,13 +1070,12 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID, c
 
     if((stop = stop.now()).seconds() - start.seconds() > 5 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Reasonability Limits" << endl;
+        CTILOG_INFO(dout , (stop.seconds() - start.seconds()) <<" seconds for Reasonability Limits");
     }
 
     if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Done looking for Reasonability Limits" << endl;
+        CTILOG_DEBUG(dout, "Done looking for Reasonability Limits");
     }
 }
 
@@ -1117,7 +1091,7 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
 
     if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Limits" << endl;
+        CTILOG_DEBUG(dout, "Looking for Limits");
     }
     /* Go after the point limits! */
     CtiTablePointLimit::getSQL( sql, pntID, paoID, pointIds );
@@ -1126,9 +1100,13 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
     DatabaseReader rdr(conn, sql);
     rdr.execute();
 
-    if(DebugLevel & DEBUGLEVEL_MGR_POINT)
+    if( ! rdr.isValid() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << sql << endl;
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else if( DebugLevel & DEBUGLEVEL_MGR_POINT )
+    {
+        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
     }
 
     std::list<CtiTablePointLimit> tempList;
@@ -1164,12 +1142,12 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID, const set
 
     if((stop = stop.now()).seconds() - start.seconds() > 5 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Limits " << endl;
+        CTILOG_INFO(dout , (stop.seconds() - start.seconds()) <<" seconds for Limits");
     }
+
     if(DebugLevel & DEBUGLEVEL_MGR_POINT)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Limits" << endl;
+        CTILOG_DEBUG(dout, "Done looking for Limits");
     }
 }
 

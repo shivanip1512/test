@@ -54,5 +54,5 @@ public:
    CtiTime& getTime();
    CtiRequestCancelMsg& setTime(const CtiTime& aTime);
 
-   virtual void dump() const;
+   virtual std::string toString() const override;
 };

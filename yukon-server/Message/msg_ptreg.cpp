@@ -36,19 +36,20 @@ CtiMessage* CtiPointRegistrationMsg::replicateMessage() const
    return( (CtiMessage*)ret );
 }
 
-void CtiPointRegistrationMsg::dump() const
+std::string CtiPointRegistrationMsg::toString() const
 {
-   Inherited::dump();
+   Cti::FormattedList itemList;
 
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-   dout << " Registration Flags            " << RegFlags << endl;
+   itemList <<"CtiPointRegistrationMsg";
+   itemList.add("Registration Flags") << RegFlags;
 
    std::vector<LONG>::const_iterator itr = PointList.begin();
    for( ; itr != PointList.end(); itr++)
    {
-      dout << " Registering for Point         " << *itr << endl;
+       itemList.add("Registering for Point") << *itr;
    }
+
+   return (Inherited::toString() += itemList.toString());
 }
 
 CtiPointRegistrationMsg::CtiPointRegistrationMsg(int Flag, int Pri) :

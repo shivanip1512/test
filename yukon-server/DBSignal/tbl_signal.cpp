@@ -218,19 +218,13 @@ CtiTableSignal& CtiTableSignal::setMillis(INT millis)
 {
     if( millis > 999 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "millis = "<< millis <<" > 999 - returning % 1000");
 
         millis %= 1000;
     }
     else if( millis < 0 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - setMillis(), millis = " << millis << " < 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "millis = "<< millis <<" < 0 - returning 0");
 
         millis = 0;
     }
@@ -280,17 +274,19 @@ CtiTableSignal& CtiTableSignal::setAdditionalInfo(const std::string &str)
 
 void CtiTableSignal::dump() const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << endl;
-    dout << " Log ID                        " << _logID << endl;
-    dout << " Point ID                      " << _pointID << endl;
-    dout << " Log time                      " << _time << ", " << _millis << "ms" << endl;
-    dout << " SOE Tag                       " << _soe << endl;
-    dout << " Log Type                      " << _logType << endl;
-    dout << " Log Priority Level            " << _logPriority << endl;
-    dout << " AdditionalInfo                " << _additional << endl;
-    dout << " Text                          " << _text << endl;
-    dout << " User Name                     " << _user << endl;
+    Cti::FormattedList itemList;
+
+    itemList.add("Log ID")             << _logID;
+    itemList.add("Point ID")           << _pointID;
+    itemList.add("Log time")           << _time <<", "<< _millis <<"ms";
+    itemList.add("SOE Tag")            << _soe;
+    itemList.add("Log Type")           << _logType;
+    itemList.add("Log Priority Level") << _logPriority;
+    itemList.add("AdditionalInfo")     << _additional;
+    itemList.add("Text")               << _text;
+    itemList.add("User Name")          << _user;
+
+    CTILOG_INFO(dout, itemList);
 }
 
 CtiTableSignal* CtiTableSignal::replicate() const

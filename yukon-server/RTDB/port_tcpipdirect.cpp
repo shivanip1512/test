@@ -59,18 +59,13 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
 
     if(_socket != INVALID_SOCKET)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_WARN(dout, "Unexpected _socket is not INVALID_SOCKET");
     }
 
     if(isViable())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port " << getName() << " closing port " << _socket << endl;
-        }
+        CTILOG_INFO(dout, "Port "<< getName() <<" closing port "<< _socket);
+
         close(FALSE);
 
         Sleep(1000);
@@ -89,10 +84,7 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
     Cti::AddrInfo pAddrInfo = Cti::makeTcpClientSocketAddress(getIPAddress(), getIPPort());
     if( !pAddrInfo )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port " << getName() << " could not resolve IP for DNS name \"" << getIPAddress() << "\"" << endl;
-        }
+        CTILOG_ERROR(dout, "Port "<< getName() <<" could not resolve IP for DNS name \""<< getIPAddress() <<"\"");
         return ClientErrors::DnsLookupFailed;
     }
 
@@ -101,10 +93,8 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
     /* get a stream socket. */
     if((_socket = socket(pAddrInfo->ai_family, pAddrInfo->ai_socktype, pAddrInfo->ai_protocol)) == INVALID_SOCKET)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Error getting Socket for Terminal Server:  " << WSAGetLastError() << " " << getName() << endl;
-        }
+        CTILOG_ERROR(dout, "Could not create a Socket for Terminal Server: "<< WSAGetLastError() <<" "<< getName());
+
         shutdownClose(__FILE__, __LINE__);
         status = ClientErrors::TcpConnect;
     }
@@ -123,8 +113,7 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << "- Invalid reconnect rate " << cparmReconnectValue << ". " << cparmReconnectKey << "must be between 1 and 3600 (1 hr). Setting to " << reconnectRate << " seconds." << endl;
+                CTILOG_WARN(dout, "Invalid reconnect rate "<< cparmReconnectValue <<". "<< cparmReconnectKey <<"must be between 1 and 3600 (1 hr). Setting to " << reconnectRate << " seconds");
             }
         }
 
@@ -134,42 +123,35 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
 
         if( connect_delay > 0 )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port " << getName() << " next connect at " << nextConnect << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_WARN(dout, "Port "<< getName() <<" next connect at "<< nextConnect);
+
             CTISleep(connect_delay * 1000);
         }
 
         if( connect(_socket, pAddrInfo->ai_addr, pAddrInfo->ai_addrlen) == SOCKET_ERROR )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error Connecting to Terminal Server:  " << WSAGetLastError() << " " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Could not connect to Terminal Server: "<< WSAGetLastError() <<" "<< getName());
+
             shutdownClose(__FILE__, __LINE__);
             return ClientErrors::TcpConnect;
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port " << getName() << " acquiring socket handle " << _socket << endl;
+            CTILOG_INFO(dout, "Port "<< getName() <<" acquiring socket handle "<< _socket);
         }
 
         /* Make sure we time out on our writes after 5 seconds */
         const int socketWriteTimeout = gConfigParms.getValueAsInt("PORTER_SOCKET_WRITE_TIMEOUT", 5);
         if(setsockopt (_socket, SOL_SOCKET, SO_SNDTIMEO, (const char *) &socketWriteTimeout, sizeof (socketWriteTimeout)))
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Error setting KeepAlive Mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
+            CTILOG_ERROR(dout, "Could not set KeepAlive Mode for Terminal Server Socket: "<< WSAGetLastError() <<" "<< getName());
         }
 
         /* Turn on the keepalive timer */
         const int keepaliveTimer = 1;
         if(setsockopt (_socket, SOL_SOCKET, SO_KEEPALIVE, (const char *) &keepaliveTimer, sizeof (keepaliveTimer)))
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Error setting KeepAlive Mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
+            CTILOG_ERROR(dout, "Could not set KeepAlive Mode for Terminal Server Socket: "<< WSAGetLastError() <<" "<< getName());
         }
 
         LINGER ling;
@@ -178,16 +160,14 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
 
         if(setsockopt (_socket, SOL_SOCKET, SO_LINGER, (const char *)&ling, sizeof(ling)))
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Error setting Linger Mode (Hard) for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
+            CTILOG_ERROR(dout, "Could not set Linger Mode (Hard) for Terminal Server Socket: "<< WSAGetLastError() <<" "<< getName());
         }
 
         unsigned long nonblocking = 1;
 
         if(ioctlsocket(_socket, FIONBIO, &nonblocking))
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Error setting nonblocking mode for Terminal Server Socket:  " << WSAGetLastError() << " " << getName() << endl;
+            CTILOG_ERROR(dout, "Could not set nonblocking mode for Terminal Server Socket: "<< WSAGetLastError() <<" "<< getName());
         }
 
         _lastConnect = CtiTime::now();
@@ -195,15 +175,13 @@ YukonError_t CtiPortTCPIPDirect::openPort(INT rate, INT bits, INT parity, INT st
 
     if( status = reset(true) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error resetting port for dialup on " << getName() << endl;
+        CTILOG_ERROR(dout, "Could not reset port for dialup on "<< getName());
     }
 
     /* set the modem parameters */
     if( status = setup(true) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error setting port for dialup modem on " << getName() << endl;
+        CTILOG_ERROR(dout, "Could not set port for dialup modem on "<< getName());
     }
 
     return status;
@@ -490,7 +468,8 @@ YukonError_t CtiPortTCPIPDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list
     {
         if(Xfer.getOutCount() > 4096)
         {
-            std::cerr << " *** ERROR *** to attempt an OutMess of " << Xfer.getOutCount() << " bytes" << endl;
+            CTILOG_ERROR(dout, "attempt OutMess of " << Xfer.getOutCount() << " bytes");
+
             Xfer.setOutCount(100);     // Only allow 100 or so...
         }
 
@@ -594,28 +573,22 @@ INT CtiPortTCPIPDirect::shutdownClose(PCHAR Label, ULONG Line)
 
     if(_socket != INVALID_SOCKET)
     {
+        Cti::StreamBuffer output;
+        output <<"Port "<< getName() <<" closing socket "<< _socket;
+
+        if(Label != NULL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Port " << getName() << " closing socket " << _socket;
-
-            if(Label != NULL)
-            {
-                dout << " from " << Label << " (" << Line << ") ";
-            }
-
-            dout << endl;
+            output <<" from "<< Label <<" ("<< Line <<")";
         }
+
+        CTILOG_INFO(dout, output)
 
         shutdown(_socket, 2);
 
         if(closesocket(_socket))
         {
             iRet = WSAGetLastError();
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Socket close failed. Error = " << iRet << endl;
-            }
+            CTILOG_ERROR(dout, "Socket close failed. Error = "<< iRet);
         }
     }
 
@@ -683,11 +656,9 @@ YukonError_t CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG T
         /* Go ahead and actually read some bytes */
         if((*ReceiveLength = recv(_socket, (CHAR*)Message, Length, 0)) <= 0)
         {
+            const int error = WSAGetLastError();
             shutdownClose(__FILE__, __LINE__);
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Read from Terminal Server failed:  " << WSAGetLastError() << endl;
-            }
+            CTILOG_ERROR(dout, "Read from Terminal Server failed: "<< error);
             return ClientErrors::TcpRead;
         }
 
@@ -718,11 +689,10 @@ YukonError_t CtiPortTCPIPDirect::receiveData(PBYTE Message, LONG Length, ULONG T
         /* Go ahead and actually read some bytes */
         if((*ReceiveLength = recv(_socket, (CHAR*)Message, -Length, 0)) <= 0)
         {
+            const int error = WSAGetLastError();
             shutdownClose(__FILE__, __LINE__);
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Read from Terminal Server failed:  " << WSAGetLastError() << endl;
-            }
+            CTILOG_ERROR(dout, "Read from Terminal Server failed: "<< error);
+
             return ClientErrors::TcpRead;
         }
     }
@@ -744,11 +714,11 @@ INT CtiPortTCPIPDirect::sendData(PBYTE Message, ULONG Length, PULONG Written)
 
     if( (bytesSent = send (_socket, (CHAR*)Message, Length, 0)) == SOCKET_ERROR )
     {
+        const int error = WSAGetLastError();
         shutdownClose(__FILE__, __LINE__);
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Error Sending Message to Terminal Server:  " << WSAGetLastError() << endl;
-        }
+
+        CTILOG_ERROR(dout, "Could not send message to Terminal Server: "<< error);
+
         return ClientErrors::TcpWrite;
     }
 
@@ -767,8 +737,7 @@ void CtiPortTCPIPDirect::DecodeDatabaseReader(Cti::RowReader &rdr)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -804,8 +773,7 @@ YukonError_t CtiPortTCPIPDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "_dialable is NULL");
     }
 
     return status;
@@ -912,10 +880,7 @@ YukonError_t CtiPortTCPIPDirect::connectToDevice(CtiDeviceSPtr Device, LONG &Las
 
     if( portpair.first && status == ClientErrors::None )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getName() << " opened for connect." << endl;
-        }
+        CTILOG_INFO(dout,  getName() <<" opened for connect");
     }
 
     if(_dialable)

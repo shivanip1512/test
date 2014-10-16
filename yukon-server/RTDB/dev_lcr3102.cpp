@@ -114,12 +114,8 @@ YukonError_t Lcr3102Device::ResultDecode( const INMESS &InMessage, const CtiTime
 
             if( status )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
+                CTILOG_DEBUG(dout, "IM->Sequence = "<< InMessage.Sequence <<" for "<< getName());
             }
-
-            break;
         }
     }
 
@@ -138,14 +134,7 @@ YukonError_t Lcr3102Device::decodeGetValueTemperature( const INMESS &InMessage, 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int txTemp, boxTemp;
@@ -169,14 +158,7 @@ YukonError_t Lcr3102Device::decodeGetValueTransmitPower( const INMESS &InMessage
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int transmitPower;
@@ -199,14 +181,7 @@ YukonError_t Lcr3102Device::decodeGetValueDutyCycle(const INMESS &InMessage, con
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     point_info pi;
@@ -238,8 +213,7 @@ YukonError_t Lcr3102Device::decodeGetValueDutyCycle(const INMESS &InMessage, con
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Value " << currentTransformer << " is not a valid current transformer number" << endl;
+        CTILOG_ERROR(dout, "Value "<< currentTransformer <<" is not a valid current transformer number");
 
         return ClientErrors::BadParameter;
     }
@@ -254,14 +228,7 @@ YukonError_t Lcr3102Device::decodeGetValueIntervalLast( const INMESS &InMessage,
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     point_info pi;
@@ -338,14 +305,7 @@ YukonError_t Lcr3102Device::decodeGetValueHistoricalTime( const INMESS &InMessag
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int relay   = 0; // Relay is 1-4 here
@@ -473,14 +433,7 @@ YukonError_t Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS &I
     BSTRUCT       BSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     // Assuming this is not a point, let's just dump the data to the screen for now.
@@ -507,10 +460,7 @@ YukonError_t Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS &I
             {
                 // This is strange. The 'invalid data' return should give us 0x3F, so this returned a number higher
                 // than the 60 minutes in an hour but less than the 0x3F case.
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "The data returned was outside the valid range: " << runtimeMins << endl;
-                }
+                CTILOG_ERROR(dout, "The data returned was outside the valid range: "<< runtimeMins );
 
                 results += " - Data outside valid range";
 
@@ -518,10 +468,7 @@ YukonError_t Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS &I
             else if( runtimeMins == 0x3f)
             {
                 // Invalid data
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "Invalid data returned: " << runtimeMins << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid data returned: "<< runtimeMins);
 
                 results += " - Invalid data";
             }
@@ -535,8 +482,7 @@ YukonError_t Lcr3102Device::decodeGetValueXfmrHistoricalRuntime( const INMESS &I
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << "Value" << currentTransformer << " is not a valid CT identifier" << endl;
+        CTILOG_ERROR(dout, "Value "<< currentTransformer <<" is not a valid CT identifier");
 
         return ClientErrors::BadParameter;
     }
@@ -551,21 +497,13 @@ YukonError_t Lcr3102Device::decodeGetValueControlTime( const INMESS &InMessage, 
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int relay = DSt->Message[0];
     if (!hasDynamicInfo(CtiTableDynamicPaoInfo::Key_LCR_SSpecRevision))
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Device " << getName() << " is missing SSPEC revision number. Unable to decode control time data." << endl;
+        CTILOG_ERROR(dout, "Device "<< getName() <<" is missing SSPEC revision number. Unable to decode control time data.");
 
         return ClientErrors::VerifySSPEC;
     }
@@ -613,8 +551,7 @@ YukonError_t Lcr3102Device::decodeGetValueControlTime( const INMESS &InMessage, 
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Relay number " << relay << " is invalid. Point has not been inserted." << endl;
+        CTILOG_ERROR(dout, "Relay number "<< relay <<" is invalid. Point has not been inserted");
 
         return ClientErrors::BadRange;
     }
@@ -629,14 +566,7 @@ YukonError_t Lcr3102Device::decodeGetValuePropCount( const INMESS &InMessage, co
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     point_info pi;
@@ -662,13 +592,7 @@ YukonError_t Lcr3102Device::decodePutConfig( const INMESS &InMessage, const CtiT
     const DSTRUCT      *DSt       = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     string results;
 
@@ -702,13 +626,7 @@ YukonError_t Lcr3102Device::decodeGetConfigRaw( const INMESS &InMessage, const C
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     string results;
 
@@ -728,39 +646,38 @@ YukonError_t Lcr3102Device::decodeGetConfigRaw( const INMESS &InMessage, const C
                      + "\tRevision: " + CtiNumStr(((double)rev) / 10.0, 1)
                      + "\n";
 
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << errorMessage << endl;
+        CTILOG_ERROR(dout, errorMessage);
 
         results += errorMessage + "\n";
     }
 
-            int rawloc = parse.getiValue("rawloc");
+    int rawloc = parse.getiValue("rawloc");
 
-            int rawlen = parse.isKeyValid("rawlen")
-                ? std::min(parse.getiValue("rawlen"), 13)       // max 13 bytes...
-                : DSt->Length;
+    int rawlen = parse.isKeyValid("rawlen")
+        ? std::min(parse.getiValue("rawlen"), 13)       // max 13 bytes...
+        : DSt->Length;
 
-            if( parse.isKeyValid("rawfunc") )
-            {
-                for( int i = 0; i < rawlen; i++ )
-                {
-                    results += getName()
-                            + " / FR " + CtiNumStr(rawloc).xhex().zpad(2)
-                            + " byte " + CtiNumStr(i).zpad(2)
-                            + " : "    + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
-                            + "\n";
-                }
-            }
-            else
-            {
-                for( int i = 0; i < rawlen; i++ )
-                {
-                    results += getName()
-                            + " / byte " + CtiNumStr(rawloc + i).xhex().zpad(2)
-                            + " : "      + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
-                            + "\n";
-                }
-            }
+    if( parse.isKeyValid("rawfunc") )
+    {
+        for( int i = 0; i < rawlen; i++ )
+        {
+            results += getName()
+                    + " / FR " + CtiNumStr(rawloc).xhex().zpad(2)
+                    + " byte " + CtiNumStr(i).zpad(2)
+                    + " : "    + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
+                    + "\n";
+        }
+    }
+    else
+    {
+        for( int i = 0; i < rawlen; i++ )
+        {
+            results += getName()
+                    + " / byte " + CtiNumStr(rawloc + i).xhex().zpad(2)
+                    + " : "      + CtiNumStr((int)DSt->Message[i]).xhex().zpad(2)
+                    + "\n";
+        }
+    }
 
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( results );
@@ -779,13 +696,7 @@ YukonError_t Lcr3102Device::decodeGetConfigSoftspec( const INMESS &InMessage, co
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-        }
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     string results;
 
@@ -822,13 +733,7 @@ YukonError_t Lcr3102Device::decodeGetConfigAddressing( const INMESS &InMessage, 
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     string results;
     int function = InMessage.Return.ProtocolInfo.Emetcon.Function;
@@ -899,13 +804,7 @@ YukonError_t Lcr3102Device::decodeGetConfigTime( const INMESS &InMessage, const 
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     string results;
     CtiTime time;
@@ -1049,9 +948,7 @@ YukonError_t Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser 
 
             status = ClientErrors::NoMethod;
 
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Device " << getName() << endl;
+            CTILOG_ERROR(dout, "Command lookup failed for Device "<< getName());
         }
     }
 
@@ -1487,9 +1384,9 @@ YukonError_t Lcr3102Device::executeGetValueHistorical( CtiRequestMsg *pReq, CtiC
                 }
                 default:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Invalid optionsField value " << optionsField << " for device " << getName()
-                         << ". Treating this message as an initial attempt." << endl;
+                    CTILOG_ERROR(dout, "Invalid optionsField value "<< optionsField <<" for device "<< getName() <<
+                            ". Treating this message as an initial attempt"
+                            );
                 }
             }
 
@@ -1696,8 +1593,7 @@ void Lcr3102Device::DecodeDatabaseReader( RowReader & rdr )
 {
     if ( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 
     Inherited::DecodeDatabaseReader(rdr);

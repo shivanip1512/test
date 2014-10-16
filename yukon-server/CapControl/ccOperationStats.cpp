@@ -399,10 +399,7 @@ void CtiCCOperationStats::dumpDynamicData(Cti::Database::DatabaseConnection& con
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted CC Operation Statistics into DynamicCCOperationStatistics: " << getPAOId() << endl;
-            }
+            CTILOG_INFO(dout, "Inserted CC Operation Statistics into DynamicCCOperationStatistics: " << getPAOId());
             static const string insertSql = "insert into dynamicccoperationstatistics values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
             Cti::Database::DatabaseWriter inserter(conn, insertSql);
 
@@ -418,10 +415,7 @@ void CtiCCOperationStats::dumpDynamicData(Cti::Database::DatabaseConnection& con
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << inserter.asString() << endl;
-                }
+                CTILOG_DEBUG(dout, inserter.asString());
             }
 
             if( Cti::Database::executeCommand( inserter, __FILE__, __LINE__, Cti::Database::LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) ))
@@ -587,27 +581,5 @@ int CtiCCOperationStats::operator==(const CtiCCOperationStats& right) const
 int CtiCCOperationStats::operator!=(const CtiCCOperationStats& right) const
 {
     return getPAOId() != right.getPAOId();
-}
-
-
-
-void CtiCCOperationStats::printOpStats()
-{
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - DUMPING OpStats. " <<  endl;
-
-        dout << "\t\t -  _paoid: " << _paoid
-            << " _userDefOpCount " << _userDefOpCount
-             << " _userDefConfFail " << _userDefConfFail
-             << "  _dailyOpCount "   << _dailyOpCount
-             << "  _dailyConfFail "  << _dailyConfFail
-             << "  _weeklyOpCount "  << _weeklyOpCount
-             << "  _weeklyConfFail " << _weeklyConfFail
-             << "  _monthlyOpCount " << _monthlyOpCount
-             << "  _monthlyConfFail "<< _monthlyConfFail
-            << endl;
-    }
-
 }
 

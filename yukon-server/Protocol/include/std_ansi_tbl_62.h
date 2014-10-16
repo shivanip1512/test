@@ -60,8 +60,8 @@ public:
     CtiAnsiTable62& operator=(const CtiAnsiTable62& aRef);
     void printResult( const std::string& deviceName);
 
-    void printLPSelSet(int set, int numChans);
-    void printScalarsDivisorSet(int set, int numChans);
+    void appendLPSelSet(int set, int numChans, Cti::FormattedList& itemList);
+    void appendScalarsDivisorSet(int set, int numChans, Cti::FormattedList& itemList);
     UINT8 getIntervalFmtCde(int setNbr);
     bool  getNoMultiplierFlag(int setNbr);
 

@@ -1,574 +1,170 @@
 #include "precompiled.h"
 
-#include "utility.h"
-#include "cparms.h"
-#include "dllbase.h"
+#include "guard.h"
+#include "logManager.h"
 #include "logger.h"
-#include "numstr.h"
-#include "ctidate.h"
-#include "ctistring.h"
 
-using namespace std;
+#include "log4cxx/logger.h"
+#include "log4cxx/helpers/transcoder.h"
+#include "log4cxx/helpers/pool.h"
+#include "log4cxx/spi/loggingevent.h"
 
-IM_EX_CTIBASE CtiLogger   dout;           // Global log
-IM_EX_CTIBASE CtiLogger   slog;           // Global instance. Simulator log
-IM_EX_CTIBASE CtiLogger   blog;           // Global instance. Statistics
+#include "boost/algorithm/string/replace.hpp"
 
+namespace Cti {
+namespace Logging {
 
-CtiLogger::CtiLogger(const string& file, bool to_stdout) :
-    _first_output(true),
-    _base_filename(file),
-    _std_out(to_stdout),
-    _path("..\\log"),
-    _fill(' '),
-    _write_interval(5000),
-    _days_to_keep(0)
+namespace {
+
+log4cxx::LevelPtr getLogLevel(Logger::Level levelIn)
 {
-    _current_stream = new strstream;
-    _current_stream->fill(_fill);
-}
+    log4cxx::LevelPtr levelOut;
 
-void cleanupStream( strstream *stream )
-{
-    if( stream )
+    switch(levelIn)
     {
-        stream->freeze(false);
-
-        delete stream;
+    case Logger::Fatal : levelOut = log4cxx::Level::getFatal(); break;
+    case Logger::Error : levelOut = log4cxx::Level::getError(); break;
+    case Logger::Warn  : levelOut = log4cxx::Level::getWarn();  break;
+    case Logger::Info  : levelOut = log4cxx::Level::getInfo();  break;
+    case Logger::Debug : levelOut = log4cxx::Level::getDebug(); break;
+    case Logger::Trace : levelOut = log4cxx::Level::getTrace(); break;
     }
+
+    return levelOut;
 }
 
-CtiLogger::~CtiLogger()
+/**
+ *  Preformat the method name to avoid bad logging.
+ *  The formatting will be completed by log4cxx::LocationInfo::getMethodName()
+ *
+ *  Example:
+ *  "void __cdecl Cti::identifyProject(const struct Cti::compileinfo_t &)"
+ *  will be formatted to:
+ *  "::Cti::identifyProject(const struct Cti::compileinfo_t &)"
+ *
+ *  formatting done by log4cxx::LocationInfo::getMethodName() removes the initial double colons "::"
+ *  and arguments:
+ *  "Cti::identifyProject"
+ */
+std::string preformatMethodName(const char * func)
 {
-    cleanupStream(_current_stream);
-
-    strstream *tmpStream;
-
-    while( _queue.tryRead(tmpStream) )
+    std::string methodName(func);
+    const size_t parenPos = methodName.find('(');
+    const size_t spacePos = methodName.rfind(' ', parenPos);
+    if( spacePos != std::string::npos )
     {
-        cleanupStream(tmpStream);
-    }
-}
-
-CtiLogger& CtiLogger::setOutputPath(const string& path)
-{
-    CtiLockGuard<CtiMutex> guard(_log_mux);
-
-    _path = path;
-
-    return *this;
-}
-
-CtiLogger& CtiLogger::setOutputFile(const string& file)
-{
-    CtiLockGuard<CtiMutex> guard(_log_mux);
-
-    _base_filename = scrub(file);
-
-    return *this;
-}
-
-CtiLogger& CtiLogger::setOwnerInfo(const Cti::compileinfo_t &ownerinfo)
-{
-    CtiLockGuard<CtiMutex> guard(_log_mux);
-
-    _project = ownerinfo.project;
-    _version = ownerinfo.version;
-
-    return *this;
-}
-
-CtiLogger& CtiLogger::setWriteInterval(long millis)
-{
-    CtiLockGuard<CtiMutex> guard(_log_mux);
-
-    _write_interval = millis;
-
-    return *this;
-}
-
-CtiLogger& CtiLogger::setToStdOut(bool to_stdout)
-{
-    CtiLockGuard<CtiMutex> guard(_log_mux);
-
-    _std_out = to_stdout;
-
-    return *this;
-}
-
-//  retain logs for 'days_to_keep' days:  0 == keep forever
-CtiLogger& CtiLogger::setRetentionLength(const unsigned long days_to_keep)
-{
-    CtiLockGuard<CtiMutex> guard(_log_mux);
-
-    _days_to_keep = days_to_keep;
-
-    return *this;
-}
-
-void CtiLogger::flush()
-{
-    if( _current_stream )
-    {
-        const std::streamsize pcount = _current_stream->pcount();
-
-        if( pcount > 0 )
+        if( methodName.compare(spacePos+1, 2, "::") == 0)
         {
-            if( pcount > 256 * 1024 )
-            {
-                std::auto_ptr<strstream> tmp(new strstream);
-
-                *tmp << std::string(_current_stream->str(), 1024);
-                *tmp << endl;
-                *tmp << "Log entry trimmed due to excessive size(" << pcount << ")" << endl;
-                *tmp << "Stack trace follows:" << endl;
-                *tmp << autopsy_as_string(__FILE__,  __LINE__);
-
-                delete _current_stream;
-                _current_stream = 0;
-
-                _queue.write(tmp.release());
-            }
-            else
-            {
-                _queue.write(_current_stream);
-                _current_stream = 0;
-            }
-
-            if( _flush_mux.acquire(0) )
-            {
-                interrupt();
-                _flush_mux.release();
-            }
-        }
-        else if( pcount < 0 )
-        {
-            //  This is not legal in any of the 50 states, Puerto Rico, Guam, or anywhere else in the universe.
-            delete _current_stream;
-            _current_stream = 0;
+            methodName.erase(0, spacePos+1);
         }
         else
         {
-            _current_stream->rdbuf()->freeze(false);     // Unfreeze it, for further input...
-        }
-    }
-}
-CtiLogger& CtiLogger::write()
-{
-    interrupt();
-    return *this;
-}
-
-void CtiLogger::run()
-{
-    SetThreadName(-1, "Logger   ");
-
-    while( !isSet(SHUTDOWN) )
-    {
-        // consider anything less than 1000 millis to
-        // be immediate
-        if( _write_interval < 1000 )
-        {
-            sleep( numeric_limits<int>::max() );
-        }
-        else
-        {
-            // Acquire _flush_mux...
-            // when it is acquired, calls to flush()
-            // will NOT cause a call to interrupt
-
-            CtiLockGuard<CtiMutex> guard(_flush_mux);
-            sleep(_write_interval);
-        }
-
-        if( !_queue.empty() )
-        {
-            doOutput();
+            methodName.replace(0, spacePos+1, "::");
         }
     }
 
-    if( !_queue.empty() )
-    {
-        doOutput();
-    }
+    return methodName;
 }
 
-CtiLogger& CtiLogger::acquire()
+} // namespace anonymous
+
+struct Logger::LoggerObj
 {
-#ifdef _DEBUG
+    const log4cxx::LoggerPtr _logger;
+    LoggerObj(log4cxx::LoggerPtr logger) : _logger(logger) 
+    {}
+};
 
-    bool isacq = false;
-    do
+struct Logger::LogEvent
+{
+    std::string _methodName;
+    log4cxx::spi::LoggingEventPtr _event;
+};
+
+Logger::Logger(const std::string &loggerName) : _logger(new LoggerObj(log4cxx::Logger::getLogger(loggerName)))
+{}
+
+Logger::~Logger()
+{}
+
+void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const char* file, const char* func, int line)
+{
+    std::string message = logStream.extractToString();
+    boost::replace_all(message, "\n", "\n\t"); // preformat the message: add a tab before each newline
+    
+    LOG4CXX_DECODE_CHAR(msg, message);
+
+    std::string methodName = preformatMethodName(func);
+
+    if( !_ready )
     {
-        isacq = _log_mux.acquire(300000);       // Five minutes seems like infinite anyway!
+        CtiLockGuard<CtiCriticalSection> guard(_preBufferMux);
 
-        if(!isacq)
+        if( !_ready )
         {
-            cerr << CtiTime() << " logger mutex is unable to be locked down for thread id: " << GetCurrentThreadId() << endl;
-            cerr << "  Thread TID=" << _log_mux.lastAcquiredByTID() << " was the last to acquire " << endl;
-        }
-
-    } while (!isacq);
-#else
-    _log_mux.acquire();
-#endif
-    return *this;
-}
-
-CtiLogger& CtiLogger::release()
-{
-    flush();
-    _log_mux.release();
-    return *this;
-}
-
-bool CtiLogger::acquire(unsigned long millis)
-{
-    return _log_mux.acquire(millis);
-}
-
-
-void CtiLogger::doOutput()
-{
-    ofstream outfile;
-
-    try
-    {
-        if( !_base_filename.empty() )
-        {
-            bool logfile_current = true;
-
-            const CtiTime   now;
-
-            if( now >= _next_logfile_check )
+            if( _logger->_logger->getAllAppenders().empty() )
             {
-                //  check at midnight or after 14 hours, whichever is closer...  this accomodates
-                //    DST, since if we go ahead or behind by an hour, we'll still only check twice a day
-                _next_logfile_check = now + min(secondsUntilMidnight(now), 14U * 60U * 60U);
+                // no appenders are available, the logManager as not been started yet.
+                // save the logging event for later!
+                std::auto_ptr<LogEvent> logEvent(new LogEvent());
 
-                std::string new_log_filename = logFilename( CtiDate(now) );
+                // move the contain of the method name
+                logEvent->_methodName.swap(methodName);
 
-                logfile_current = _today_filename == new_log_filename;
+                // create the logging event.
+                // contains raw all info (timestamp, location, TID, level, message, etc..)
+                //
+                // IMPORTANT:
+                // we use a temporary c_str, the logging event will be unusable if logEvent->_methodName is modified
+                logEvent->_event = new log4cxx::spi::LoggingEvent(
+                        _logger->_logger->getName(),
+                        getLogLevel(level),
+                        msg,
+                        log4cxx::spi::LocationInfo(file, logEvent->_methodName.c_str(), line));
 
-                if ( ! logfile_current )
-                {
-                    _today_filename = new_log_filename;
-                }
+                // no appenders are available, the logManager as not been started yet.
+                // save the logging event for later!
+                _preBufferLogEvents.push_back(logEvent);
+
+                return;
             }
 
-            if( !tryOpenOutputFile(outfile) )
+            // the logManager as just been started!
+            // log all saved event before logging our own event
+            log4cxx::helpers::Pool pool;
+            for each(const LogEvent& event in _preBufferLogEvents)
             {
-                static bool nag = false;
-
-                if(!nag)
-                {
-                    nag = true;
-                    RWMutexLock::LockGuard  guard(coutMux);
-                    cout << endl << "*********************" << endl;
-                    cout << "ERROR!  Unable to open output file " << _today_filename << endl;
-                    cout << "   Use cparm LOG_DIRECTORY to alter the logfile path" << endl;
-                    cout << "*********************" << endl << endl;
-                }
+                _logger->_logger->callAppenders(event._event, pool);
             }
 
-            //  first time we've written to this file - write the headers
-            if( outfile && (_first_output || !logfile_current) )
-            {
-                strstream s;
-                const CtiTime headerTime;
-
-                if( !_project.empty() && !_version.empty() )
-                {
-                    s << headerTime << " --------  " << "(" << _project << " [Version " << _version << "])  --------" << endl;
-                }
-
-                if( _first_output )
-                {
-                    _first_output = false;
-
-                    s << headerTime << " --------  LOG BEGINS  --------" << endl;
-                }
-                else
-                {
-                    s << headerTime << " --------  LOG CONTINUES (Running since " << _running_since << ")  --------" << endl;
-                }
-
-                outfile.write(s.str(), s.pcount());
-
-                cleanupOldFiles();
-            }
-
-            int outputCount = 0;
-            strstream* to_write;
-            bool truncated_output_printed = false;
-            while( _queue.tryRead(to_write) )
-            {
-                const streamsize Limit_4k = 1024 * 4;
-                const streamsize pcount = to_write->pcount();
-                const bool oversize = pcount > Limit_4k;
-
-                const int n = std::min(pcount, Limit_4k);
-
-                if( n > 0 )
-                {
-                    // print to screen rate limiting. This always prints the first 100 lines then
-                    // only prints the last 100 or so. This only applies to the console and helps
-                    // console mode keep up.
-                    if( _std_out )
-                    {
-                        if( ++outputCount < 100 || _queue.entries() < 100 )
-                        {
-                            int acquireloops = 0;
-
-                            RWMutexLock::TryLockGuard guard(coutMux);
-
-                            while( !guard.isAcquired() && acquireloops++ < 60)
-                            {
-                                Sleep(500L);
-
-                                guard.tryAcquire();
-                            }
-
-                            cout.write( to_write->str(), n );
-                            if( oversize )
-                            {
-                                cout << endl << " ******** Console Output Limited ******** " << endl;
-                            }
-                        }
-                        else if( !truncated_output_printed )
-                        {
-                            truncated_output_printed = true;
-                            cout << " ******** Console Output Truncated ******** " << endl;
-                        }
-                    }
-
-                    if( outfile )
-                    {
-                        outfile.write( to_write->str(), n );
-                        if( oversize )
-                        {
-                            outfile << endl << "********  Log entry limited to " << Limit_4k << " chars, was " << pcount << " chars ********" << endl;
-                        }
-                    }
-                }
-
-                // unfreeze to_write's buffer
-                to_write->rdbuf()->freeze(false);
-
-                delete to_write;
-            }
-            outfile.close();
-        }
-    }
-    catch(...)                          // 081001 CGP I dunno.
-    {
-        if( outfile.is_open() )
-        {
-            outfile.close();
-            {
-                cerr << "*********************" << endl;
-                cerr << "EXCEPTION in LOGGER " << _base_filename << endl;
-                cerr << "*********************" << endl;
-            }
-        }
-    }
-}
-
-
-string CtiLogger::scrub(string filename)
-{
-    //  this only gets called once per file per day, so it's not too expensive
-    for(int i = 0; i < filename.length(); i++)
-    {
-        //  if the character is not a-z, A-Z, 0-9, '-', or '_', scrub it to an underscore
-        if( !(isalnum(filename[i]) || filename[i] == '-' || filename[i] == '_') )
-        {
-            filename[i] = '_';
+            _preBufferLogEvents.clear();
+            _ready = true;
         }
     }
 
-    return filename;
+    // create the logging event.
+    // contains raw all info (timestamp, location, TID, level, message, etc..)
+    //
+    // IMPORTANT:
+    // we use a temporary c_str, the event will be unusable once methodName is out-of-scope
+    const log4cxx::spi::LoggingEventPtr event =
+            new log4cxx::spi::LoggingEvent(
+                _logger->_logger->getName(),
+                getLogLevel(level),
+                msg,
+                log4cxx::spi::LocationInfo(file, methodName.c_str(), line));
+
+    log4cxx::helpers::Pool pool;
+    _logger->_logger->callAppenders(event, pool);
 }
 
-std::string CtiLogger::logFilename(const CtiDate & date)
+bool Logger::isLevelEnable(Level level) const
 {
-    ostringstream stream;
-
-    stream << _path << "\\" << _base_filename;
-
-    stream
-        << date.year()
-        << setfill('0') << setw(2) << date.month()
-        << setfill('0') << setw(2) << date.dayOfMonth();
-
-    stream << ".log";
-
-    return stream.str();
-
+    return _logger->_logger->isEnabledFor(getLogLevel(level));
 }
 
-unsigned CtiLogger::secondsUntilMidnight(const CtiTime & tm_now)
-{
-    unsigned seconds_until_midnight = 0;
-
-    seconds_until_midnight += 24 - tm_now.hour();
-    seconds_until_midnight *= 60;
-    seconds_until_midnight -= tm_now.minute();
-    seconds_until_midnight *= 60;
-    seconds_until_midnight -= tm_now.second();
-
-    return seconds_until_midnight;
 }
+} // namespace Cti::Logging
 
-bool CtiLogger::tryOpenOutputFile(ofstream& stream)
-{
-    stream.open( _today_filename.c_str(), ios::app );   // only append - never truncate
-
-    return stream;
-}
-
-void CtiLogger::initStream()
-{
-    if( _current_stream == NULL )
-    {
-        _current_stream = new strstream;
-        _current_stream->fill(_fill);
-    }
-}
-
-ostream& CtiLogger::operator<<(ostream& (*pf)(ostream&))       {  initStream();  *_current_stream << pf;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(ios_base& (*pf)(ios_base&))     {  initStream();  *_current_stream << pf;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(_Smanip<ios_base::fmtflags> &s) {  initStream();  *_current_stream << s;   return *_current_stream;  }
-
-ostream& CtiLogger::operator<<(const char *s)   {  initStream();  *_current_stream << s;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(char c)          {  initStream();  *_current_stream << c;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(bool n)          {  initStream();  *_current_stream << n;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(short n)         {  initStream();  *_current_stream << n;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(unsigned short n){  initStream();  *_current_stream << n;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(int n)           {  initStream();  *_current_stream << n;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(unsigned int n)  {  initStream();  *_current_stream << n;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(long n)          {  initStream();  *_current_stream << n;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(unsigned long n) {  initStream();  *_current_stream << n;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(float n)         {  initStream();  *_current_stream << n;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(double n)        {  initStream();  *_current_stream << n;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(long double n)   {  initStream();  *_current_stream << n;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(void * n)        {  initStream();  *_current_stream << n;  return *_current_stream;  }
-ostream& CtiLogger::operator<<(const string& s) {  initStream();  *_current_stream << s;  return *_current_stream;  }
-
-ostream& CtiLogger::operator<<(const CtiTime &r){  return operator<<(r.asString(CtiTime::Local, CtiTime::IncludeTimezone));  }
-
-char CtiLogger::fill(char cfill)
-{
-    _fill = cfill;
-    initStream();
-    return _current_stream->fill(_fill);
-}
-char CtiLogger::fill() const
-{
-    if( _current_stream != NULL )
-    {
-        return _current_stream->fill();
-    }
-    else
-    {
-        return _fill;
-    }
-}
-
-/// #ifdef _DEBUG
-DWORD CtiLogger::lastAcquiredByTID() const
-{
-    return _log_mux.lastAcquiredByTID();
-}
-/// #endif
-
-
-void CtiLogger::cleanupOldFiles()
-{
-    if ( _days_to_keep )
-    {
-        WIN32_FIND_DATA     found_file_info;
-        const std::string   file_spec = _path + "\\" + _base_filename + "????????.log";
-
-        CtiDate cutOffDate;
-        cutOffDate -= _days_to_keep;
-
-        HANDLE finder_handle = FindFirstFile( file_spec.c_str(), &found_file_info );
-
-        if ( finder_handle != INVALID_HANDLE_VALUE )
-        {
-            std::string found_filename = _path + "\\" + found_file_info.cFileName;
-
-            if ( shouldDeleteFile( found_filename, cutOffDate ) )
-            {
-                deleteOldFile( found_filename );
-            }
-
-            while ( FindNextFile( finder_handle, &found_file_info ) )
-            {
-                found_filename = _path + "\\" + found_file_info.cFileName;
-
-                if ( shouldDeleteFile( found_filename, cutOffDate ) )
-                {
-                    deleteOldFile( found_filename );
-                }
-            }
-
-            FindClose( finder_handle );
-        }
-    }
-}
-
-
-void CtiLogger::deleteOldFile( const std::string &file_to_delete )
-{
-    if ( DeleteFile( file_to_delete.c_str() ) )
-    {
-        std::cerr << "Error deleting old log file: " << file_to_delete << std::endl;
-    }
-}
-
-
-bool CtiLogger::shouldDeleteFile( const std::string &file_to_delete, const CtiDate &cut_off )
-{
-    std::string base_filename( _base_filename );
-
-    CtiToLower( base_filename );
-
-    const std::string   date_regex_spec = "2\\d{7}";
-    const std::string   file_regex_spec = "\\\\" + base_filename + date_regex_spec + "\\.log$";
-
-    CtiString   input( file_to_delete );
-    input.toLower();
-
-    // Check if the filename portion is in the proper format -- '\filenameYYYYMMDD.log'
-
-    CtiString   output = input.match( file_regex_spec );
-
-    if ( output.empty() )
-    {
-        return false;
-    }
-
-    // Check the date format
-    //  Previous 'file_regex_spec' match ensures a match here too.
-
-    CtiString   date = output.match( date_regex_spec );
-
-    unsigned long   date_num = std::strtoul( date.c_str(), NULL, 10 );
-
-    unsigned    day = date_num % 100;
-    date_num /= 100;
-    unsigned    month = date_num % 100;
-    unsigned    year = date_num / 100;
-
-    CtiDate     fileDate( day, month, year );   // Any invalid params set us to Jan 01, 1970
-
-    if ( fileDate < CtiDate( 1, 1, 2000 ) || fileDate > CtiDate( 31, 12, 2035 ) )
-    {
-        return false;
-    }
-
-    return fileDate < cut_off;
-}
-
+Cti::Logging::LoggerPtr dout = doutManager.getLogger(); // Global log
+Cti::Logging::LoggerPtr slog = slogManager.getLogger(); // Global instance. Simulator log

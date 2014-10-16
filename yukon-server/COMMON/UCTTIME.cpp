@@ -10,7 +10,6 @@
 #include "cticalls.h"
 #include "dsm2.h"
 #include "elogger.h"
-#include "logger.h"
 
 #define DST_FILE_NAME    "DATA\\DSM2_DST.DAT"
 

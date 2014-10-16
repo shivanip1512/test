@@ -94,41 +94,35 @@ CtiAnsiTable52& CtiAnsiTable52::operator=(const CtiAnsiTable52& aRef)
 //=========================================================================================================================================
 void CtiAnsiTable52::printResult( const string& deviceName )
 {
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 52 ========================" << endl;
-        dout << " ** Clock Table ** "<<endl;
-        dout << "          Clock Calendar - year "<<(int)getClkCldrYear()<<endl;
-        dout << "                        - month "<<(int)getClkCldrMon()<<endl;
-        dout << "                          - day "<<(int)getClkCldrDay()<<endl;
-        dout << "                         - hour "<<(int)getClkCldrHour()<<endl;
-        dout << "                       - minute "<<(int)getClkCldrMin()<<endl;
-        dout << "                       - second "<<(int)getClkCldrSec()<<endl;
-        dout << "          Time Date Quality - day of the week "<<(int)clock_table.time_date_qual.day_of_week<<endl;
-        dout << "                      - daylight savings flag "<<(bool)clock_table.time_date_qual.dst_flag<<endl;
-        dout << "                    - greenwich meantime flag "<<(bool)clock_table.time_date_qual.gmt_flag<<endl;
-        dout << "                     - time zone applied flag "<<(bool)clock_table.time_date_qual.tm_zn_applied_flag<<endl;
-        dout << "         - daylight savings time applied flag "<<(bool)clock_table.time_date_qual.dst_applied_flag<<endl;
-        if ( isCalendarValid() && meterTimeIsGMT() )
-        {
-            dout << "         - TIME  "<<CtiTime(clock_table.clock_calendar).asString(CtiTime::Gmt, CtiTime::OmitTimezone)<<endl;
-        }
-        else
-        {
-            dout << "         - TIME  "<<CtiTime(clock_table.clock_calendar).asString(CtiTime::Local, CtiTime::OmitTimezone)<<endl;
-        }
+    itemList <<"Clock Calendar";
+    itemList.add("year")   << getClkCldrYear();
+    itemList.add("month")  << getClkCldrMon();
+    itemList.add("day")    << getClkCldrDay();
+    itemList.add("hour")   << getClkCldrHour();
+    itemList.add("minute") << getClkCldrMin();
+    itemList.add("second") << getClkCldrSec();
 
-    }
+    itemList <<"Time Date Quality";
+    itemList.add("day of the week")                    <<       clock_table.time_date_qual.day_of_week;
+    itemList.add("daylight savings flag")              << (bool)clock_table.time_date_qual.dst_flag;
+    itemList.add("greenwich meantime flag")            << (bool)clock_table.time_date_qual.gmt_flag;
+    itemList.add("time zone applied flag")             << (bool)clock_table.time_date_qual.tm_zn_applied_flag;
+    itemList.add("daylight savings time applied flag") << (bool)clock_table.time_date_qual.dst_applied_flag;
 
+    const CtiTime::DisplayOffset displayOffset =
+            (isCalendarValid() && meterTimeIsGMT())
+                ? CtiTime::Gmt
+                : CtiTime::Local;
 
+    itemList.add("Time") << CtiTime(clock_table.clock_calendar).asString(displayOffset, CtiTime::OmitTimezone);
+
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 52") <<
+            endl <<"** Clock Table **"<< 
+            itemList
+            );
 }
 
 bool CtiAnsiTable52::isCalendarValid()

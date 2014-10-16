@@ -43,7 +43,7 @@ public:
     virtual void run();  // <-- MACS main loop
     virtual void interrupt(int id);
 
-    void dumpRunningScripts();
+    std::string dumpRunningScripts() const;
 private:
 
     std::set < ScheduledEvent > work_around;

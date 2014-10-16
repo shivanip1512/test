@@ -41,10 +41,7 @@ void DispatchMsgHandlerThread(void *Arg)
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Porter);
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " DispatchMsgHandlerThd started as TID " << rwThreadId() << endl;
-    }
+    CTILOG_INFO(dout, "DispatchMsgHandlerThd started");
 
     SetThreadName(-1, "DispMsg  ");
 
@@ -73,10 +70,8 @@ void DispatchMsgHandlerThread(void *Arg)
 
             if( PIL.isBroken() && !bServerClosing )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " PIL interface is indicating a failure.  Restarting the interface." << endl;
-                }
+                CTILOG_WARN(dout, "PIL interface is indicating a failure.  Restarting the interface.");
+
                 KickPIL();
             }
 
@@ -95,10 +90,7 @@ void DispatchMsgHandlerThread(void *Arg)
                     {
                         dbchg.reset(static_cast<const CtiDBChangeMsg *>(MsgPtr.release()));
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << TimeNow << " Porter has received a " << dbchg->getCategory() << " DBCHANGE message from Dispatch." << endl;
-                        }
+                        CTILOG_INFO(dout, "Porter has received a "<< dbchg->getCategory() <<" DBCHANGE message from Dispatch");
 
                         break;
                     }
@@ -110,15 +102,8 @@ void DispatchMsgHandlerThread(void *Arg)
                         {
                         case (CtiCommandMsg::Shutdown):
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
-                                Cmd->dump();
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Shutdown requests by command messages are ignored." << endl;
-                                }
+                                CTILOG_WARN(dout, "Porter has received a shutdown request from Dispatch (shutdown requests by command messages are ignored)"<<
+                                        *Cmd);
                                 break;
                             }
                         case (CtiCommandMsg::AreYouThere):
@@ -135,21 +120,13 @@ void DispatchMsgHandlerThread(void *Arg)
                                 case 0x01:
                                     {
                                         PorterDebugLevel = Cmd->getOpArgList().at(2);
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << "  PorterDebugLevel set to 0x" << CtiNumStr(PorterDebugLevel).hex().zpad(8).toString() << endl;
-
-                                        }
+                                        CTILOG_INFO(dout, "PorterDebugLevel set to 0x"<< CtiNumStr(PorterDebugLevel).hex().zpad(8));
                                         break;
                                     }
                                 case 0x02:
                                     {
                                         DebugLevel = Cmd->getOpArgList().at(2);
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << "  DebugLevel set to 0x" << CtiNumStr(DebugLevel).hex().zpad(8).toString() << endl;
-
-                                        }
+                                        CTILOG_INFO(dout, "DebugLevel set to 0x"<< CtiNumStr(DebugLevel).hex().zpad(8));
                                         break;
                                     }
                                 default:
@@ -162,13 +139,11 @@ void DispatchMsgHandlerThread(void *Arg)
                             }
                         default:
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "Unhandled command message " << Cmd->getOperation() << " sent to Porter.." << endl;
+                                CTILOG_ERROR(dout, "Unhandled command message "<< Cmd->getOperation() <<" sent to Porter..");
                             }
                         }
                         break;
                     }
-
                 default:
                     {
                         break;
@@ -178,19 +153,8 @@ void DispatchMsgHandlerThread(void *Arg)
 
             if(TimeNow > RefreshTime || dbchg.get())
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " DispatchMsgHandlerThd beginning a database reload";
-
-                    if(dbchg.get())
-                    {
-                        dout << " - DBChange message." << endl;
-                    }
-                    else
-                    {
-                        dout << " - No DBChange message." << endl;
-                    }
-                }
+                CTILOG_INFO(dout, "DispatchMsgHandlerThd beginning a database reload"<<
+                        (dbchg.get() ? " - DBChange message" : " - No DBChange message"));
 
                 RefreshPorterRTDB(dbchg.get());
 
@@ -213,10 +177,7 @@ void DispatchMsgHandlerThread(void *Arg)
 
                 RefreshTime = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " DispatchMsgHandlerThd done reloading" << endl;
-                }
+                CTILOG_INFO(dout, "DispatchMsgHandlerThd done reloading");
             }
             else if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 250L) )
             {
@@ -242,10 +203,7 @@ void DispatchMsgHandlerThread(void *Arg)
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     } /* End of for */
 

@@ -15,8 +15,7 @@ YukonError_t CtiDeviceCCU710::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser 
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "General Scan of device "<< getName() <<" in progress");
     }
 
     pReq->setCommandString("loop");
@@ -83,8 +82,7 @@ YukonError_t CtiDeviceCCU710::ResultDecode(const INMESS &InMessage, const CtiTim
             {
                 if( isDebugLudicrous() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, getName() <<" / successful ping");
                 }
 
                 if( retMsg != NULL )
@@ -113,12 +111,7 @@ YukonError_t CtiDeviceCCU710::ResultDecode(const INMESS &InMessage, const CtiTim
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - IM->Sequence = " << InMessage.Sequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
+            CTILOG_DEBUG(dout, "IM->Sequence = "<< InMessage.Sequence <<" for "<< getName());
         }
     }
 

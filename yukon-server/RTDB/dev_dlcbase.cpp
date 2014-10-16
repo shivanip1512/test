@@ -60,8 +60,7 @@ void DlcBaseDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 
     CtiLockGuard<CtiMutex> guard(_classMutex);
@@ -70,13 +69,11 @@ void DlcBaseDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
     if( oldAddress && *oldAddress != CarrierSettings.getAddress() )
     {
         purgeDynamicPaoInfo();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device address for \"" << getName() << "\" (paoid " << getID() << ") has been updated"
-                              << " from \"" << *oldAddress << "\""
-                              << " to \"" << CarrierSettings.getAddress() << "\"."
-                              << " Purging dynamicPaoInfo from memory and database." << endl;
-        }
+
+        CTILOG_INFO(dout, "Device address for \""<< getName() <<"\" (paoid "<< getID() <<") has been updated"
+                " from \"" << *oldAddress << "\" to \""<< CarrierSettings.getAddress() <<"\"."
+                " Purging dynamicPaoInfo from memory and database."
+                );
     }
 
     DeviceRoutes.DecodeDatabaseReader(rdr);
@@ -134,9 +131,7 @@ YukonError_t DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Unsupported command type on EMETCON route. Command = " << parse.getCommand( ) << endl;
+            CTILOG_ERROR(dout, "Unsupported command on EMETCON route. Command = "<< parse.getCommand());
 
             nRet = ClientErrors::NoMethod;
         }
@@ -150,11 +145,7 @@ YukonError_t DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
 
     if( nRet )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
-            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
-        }
+        CTILOG_ERROR(dout, "Couldn't come up with an operation for device "<< getName() <<". Command: " << pReq->CommandString());
 
         retList.push_back(
                 new CtiReturnMsg(
@@ -312,12 +303,8 @@ bool DlcBaseDevice::dlcAddressMismatch(const DSTRUCT dst, const CtiDeviceBase & 
         (temDevice.getAddress() & 0x1fff) != (dst.Address & 0x1fff) )
     {
         //  Seems this should percolate to the device level, although setting status here kills the decode
+        CTILOG_ERROR(dout, "Wrong DLC Address: \""<< temDevice.getName() <<"\" ("<< temDevice.getAddress() <<") != ("<< dst.Address <<")");
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << temDevice.getName() << "\" ";
-            dout << "(" << temDevice.getAddress() << ") != (" << dst.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
         return true;
     }
     return false;
@@ -609,8 +596,7 @@ YukonError_t DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg       *pReq,
                     case Q_ARMS:    arm = Q_ARMS;   arm_name = "arms";  break;
                     default:
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - multiple ARM flags set in command \"" << pOut->Request.CommandStr << "\" sent to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "multiple ARM flags set in command \""<< pOut->Request.CommandStr <<"\" sent to device \""<< getName() <<"\"");
                     }
                     //  if multiple ARM flags are used, none will be sent
                     arm = 0;
@@ -643,8 +629,7 @@ YukonError_t DlcBaseDevice::executeOnDLCRoute( CtiRequestMsg       *pReq,
 
                         if( beginExecuteRequestFromTemplate(arm_req, arm_parse, vgList, tmp_retlist, outList, pOut) )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - error sending ARM to device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            CTILOG_ERROR(dout, "Could not send ARM to device \""<< getName() <<"\"");
                         }
 
                         //  ... and erase them

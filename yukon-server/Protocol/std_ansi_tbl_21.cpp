@@ -209,53 +209,36 @@ bool CtiAnsiTable21::getContCumDemandFlag( void )
 //=========================================================================================================================================
 void CtiAnsiTable21::printResult( const string& deviceName )
 {
-    int integer;
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 21 ========================" << endl;
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " ** Reg_Func1_Flags ** "<<endl;
-        dout << "       Season_Info_Field_Flag "<<(bool) _reg_func1_flags.season_info_field_flag <<endl;
-        dout << "       Date_Time_Field_Flag   "<<(bool) _reg_func1_flags.date_time_field_flag<<endl;
-        dout << "       Demand_Reset_Ctr_Flag  "<<(bool) _reg_func1_flags.demand_reset_ctr_flag<<endl;
-        dout << "       Demand_Reset_Lock_Flag "<<(bool) _reg_func1_flags.demand_reset_lock_flag<<endl;
-        dout << "       Cum_Demand_Flag        "<<(bool) _reg_func1_flags.cum_demand_flag<<endl;
-        dout << "       Cont_Cum_Demand_Flag   "<<(bool) _reg_func1_flags.cont_cum_demand_flag<<endl;
-        dout << "       Time_Remaining_Flag    "<<(bool) _reg_func1_flags.time_remaining_flag<<endl;
-        dout << " ** Reg_Func2_Flags ** "<<endl;
-        dout << "       Self_Read_Inhibit_Overflow_Flag "<<(bool) _reg_func2_flags.self_read_inhibit_overflow_flag<<endl;
-        dout << "       Self_Read_Seq_Nbr_Flag "<<(bool) _reg_func2_flags.self_read_seq_nbr_flag<<endl;
-        dout << "       Daily_Self_Read_Flag   "<<(bool) _reg_func2_flags.daily_self_read_flag<<endl;
-        dout << "       Weekly_Self_Read_Flag  "<<(bool) _reg_func2_flags.weekly_self_read_flag<<endl;
-        dout << "       Self_Read_Demand_Reset "<<(int) _reg_func2_flags.self_read_demand_reset<<endl;
-        dout << " ***** "<<endl;
-        dout << "    Nbr_Self_Reads      "<<(int) _nbr_self_reads<<endl;
-        dout << "    Nbr_Summations      "<<(int) _nbr_summations<<endl;
-        dout << "    Nbr_Demands         "<<(int) _nbr_demands<<endl;
-        dout << "    Nbr_Coin_Values     "<<(int) _nbr_coin_values<<endl;
-        dout << "    Nbr_Occur           "<<(int) _occur<<endl;
-        dout << "    Nbr_Tiers           "<<(int) _tiers<<endl;
-        dout << "    Nbr_Present_Demands "<<(int) _nbr_present_demands<<endl;
-        dout << "    Nbr_Present_Values  "<<(int) _nbr_present_values<<endl;
-    }
+    Cti::FormattedList itemList;
+
+    itemList << "** Reg_Func1_Flags **";
+    itemList.add("Season_Info_Field_Flag") << (bool)_reg_func1_flags.season_info_field_flag;
+    itemList.add("Date_Time_Field_Flag")   << (bool)_reg_func1_flags.date_time_field_flag;
+    itemList.add("Demand_Reset_Ctr_Flag")  << (bool)_reg_func1_flags.demand_reset_ctr_flag;
+    itemList.add("Demand_Reset_Lock_Flag") << (bool)_reg_func1_flags.demand_reset_lock_flag;
+    itemList.add("Cum_Demand_Flag")        << (bool)_reg_func1_flags.cum_demand_flag;
+    itemList.add("Cont_Cum_Demand_Flag")   << (bool)_reg_func1_flags.cont_cum_demand_flag;
+    itemList.add("Time_Remaining_Flag")    << (bool)_reg_func1_flags.time_remaining_flag;
+
+    itemList <<"** Reg_Func2_Flags **";
+    itemList.add("Self_Read_Inhibit_Overflow_Flag") << (bool)_reg_func2_flags.self_read_inhibit_overflow_flag;
+    itemList.add("Self_Read_Seq_Nbr_Flag")          << (bool)_reg_func2_flags.self_read_seq_nbr_flag;
+    itemList.add("Daily_Self_Read_Flag")            << (bool)_reg_func2_flags.daily_self_read_flag;
+    itemList.add("Weekly_Self_Read_Flag")           << (bool)_reg_func2_flags.weekly_self_read_flag;
+    itemList.add("Self_Read_Demand_Reset")          <<       _reg_func2_flags.self_read_demand_reset;
+
+    itemList <<"** Stats **";
+    itemList.add("Nbr_Self_Reads")      << _nbr_self_reads;
+    itemList.add("Nbr_Summations")      << _nbr_summations;
+    itemList.add("Nbr_Demands")         << _nbr_demands;
+    itemList.add("Nbr_Coin_Values")     << _nbr_coin_values;
+    itemList.add("Nbr_Occur")           << _occur;
+    itemList.add("Nbr_Tiers")           << _tiers;
+    itemList.add("Nbr_Present_Demands") << _nbr_present_demands;
+    itemList.add("Nbr_Present_Values")  << _nbr_present_values;
+
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 21") <<
+            itemList
+            );
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -202,11 +202,7 @@ void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
 
     if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
     {
-        string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << endl;
-        }
+        CTILOG_DEBUG(dout, rdr.asString());
     }
 
     if( rdr() )
@@ -220,10 +216,7 @@ void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
         setOfferId(1);
     }
 
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Inserting a program energy exchange entry into LMEnergyExchangeProgramOffer with offer id: " << getOfferId() << endl;
-    }
+    CTILOG_INFO(dout, "Inserting a program energy exchange entry into LMEnergyExchangeProgramOffer with offer id: " << getOfferId());
 
     {
         static const std::string sql_insert = "insert into lmenergyexchangeprogramoffer values (?, ?, ?, ?)";
@@ -239,8 +232,7 @@ void CtiLMEnergyExchangeOffer::addLMEnergyExchangeProgramOfferTable()
 
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << inserter.asString() << endl;
+            CTILOG_DEBUG(dout, inserter.asString());
         }
 
         inserter.execute();
@@ -287,11 +279,7 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(CtiTime& 
 
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << loggedSQLstring << endl;
-            }
+            CTILOG_DEBUG(dout, rdr.asString());
         }
 
         if( rdr() )
@@ -305,10 +293,7 @@ void CtiLMEnergyExchangeOffer::updateLMEnergyExchangeProgramOfferTable(CtiTime& 
             setOfferId(1);
         }
 
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Inserting a program energy exchange entry into LMEnergyExchangeProgramOffer: with offer id: " << getOfferId() << endl;
-        }
+        CTILOG_INFO(dout, "Inserting a program energy exchange entry into LMEnergyExchangeProgramOffer: with offer id: " << getOfferId());
 
         {
             static const std::string sql_insert = "insert into lmenergyexchangeprogramoffer values (?, ?, ?, ?)";

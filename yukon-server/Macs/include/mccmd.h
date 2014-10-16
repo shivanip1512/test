@@ -151,7 +151,7 @@ static int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue,
 static long GetNotificationGroupID( const std::string& name );
 
 /* Retrive the name/id of a device */
-static void GetDeviceName(long deviceID, std::string& name);
+static std::string GetDeviceName(long deviceID);
 static long GetDeviceID(const std::string& name);
 
 static std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, CtiString cmd);
@@ -175,10 +175,7 @@ struct thr_hash
 };
 
 std::string BuildCommandString(const int argc, const char * const argv[]);
-void DumpReturnMessage(CtiReturnMsg& msg);
-void DumpRequestMessage(CtiRequestMsg& msg);
+std::string DumpReturnMessage(const CtiReturnMsg& msg);
+std::string DumpRequestMessage(const CtiRequestMsg& msg);
 
-/* Let the world know of any interesting output - it will put the output onto the
-   queue stored for the current thread, if there is one */
-void WriteOutput(const char* output);
 

@@ -47,10 +47,7 @@ CtiSignalManager::~CtiSignalManager()
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -80,10 +77,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool mark
             CtiLockGuard< CtiMutex > tlg(_mux, 5000);
             while(!tlg.isAcquired())
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
                 tlg.tryAcquire(5000);
             }
 
@@ -103,8 +97,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool mark
                     {
                         if(isDebugLudicrous())
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** INSERT COLLISION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            CTILOG_DEBUG(dout, "INSERT COLLISION");
                         }
 
                         SigMgrMap_t::iterator itr = ip.first;
@@ -118,22 +111,14 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool mark
                                 {
                                     if(isDebugLudicrous())
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                        dout << " ORIGINAL :" << endl;
-
-                                        pOriginalSig->dump();
+                                        CTILOG_DEBUG(dout, "ORIGINAL: "<< *pOriginalSig);
                                     }
 
                                     *pOriginalSig = sig;
 
                                     if(isDebugLudicrous())
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                        dout << " NEW :" << endl;
-
-                                        pOriginalSig->dump();
+                                        CTILOG_DEBUG(dout, "NEW: "<< *pOriginalSig);
                                     }
 
                                 }
@@ -148,17 +133,13 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool mark
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Unexpected signal condition ("<< sig.getCondition() <<")");
             }
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return *this;
@@ -219,10 +200,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_conditio
         CtiLockGuard< CtiMutex > tlg(_mux, 5000);
         while(!tlg.isAcquired())
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
             tlg.tryAcquire(5000);
         }
 
@@ -281,10 +259,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_conditio
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return pSig;
@@ -298,10 +273,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmAcknowledged(long pointid, int alarm_co
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Warning **** " << __FILE__ << " (" << __LINE__ << "): Unable to lock the signal manager sync object" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -356,10 +328,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmAcknowledged(long pointid, int alarm_co
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return pSig;
@@ -370,38 +339,31 @@ bool CtiSignalManager::isAlarmed(long pointid, int alarm_condition) const       
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
     return ((getConditionTags(pointid,alarm_condition) & MASK_ANY_ALARM ) != 0x00000000);
 }
+
 bool CtiSignalManager::isAlarmActive(long pointid, int alarm_condition) const             // The manager has an active alarm on this condition for this point.  It could be acknowledged or otherwise
 {
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
     return ((getConditionTags(pointid,alarm_condition) & TAG_ACTIVE_ALARM ) == TAG_ACTIVE_ALARM);
 }
+
 bool CtiSignalManager::isAlarmUnacknowledged(long pointid, int alarm_condition) const      // The manager has an unacknowledged alarm on this condition for this point.  It could be active or otherwise
 {
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -415,10 +377,7 @@ UINT CtiSignalManager::getConditionTags(long pointid, int alarm_condition) const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -440,10 +399,7 @@ UINT CtiSignalManager::getConditionTags(long pointid, int alarm_condition) const
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return tags;
@@ -454,10 +410,7 @@ UINT CtiSignalManager::getTagMask(long pointid) const // Returns the bitwise OR 
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -495,14 +448,9 @@ CtiSignalMsg* CtiSignalManager::getAlarm(long pointid, int alarm_condition) cons
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
-
-    CtiSignalMsg *pSig = 0;
 
     try
     {
@@ -516,21 +464,16 @@ CtiSignalMsg* CtiSignalManager::getAlarm(long pointid, int alarm_condition) cons
 
             if(pOriginalSig)
             {
-                pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
+                return (CtiSignalMsg*)(pOriginalSig->replicateMessage());
             }
         }
     }
     catch(...)
     {
-        delete pSig;
-        pSig = 0;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    return pSig;
+    return NULL;
 }
 
 
@@ -539,15 +482,11 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
-    CtiMultiMsg *pMulti = new CtiMultiMsg;
-    CtiSignalMsg *pSig = 0;
+    std::auto_ptr<CtiMultiMsg>       pMulti(new CtiMultiMsg);
     PointSignalMap_t::const_iterator itr;
 
     itr = _pointMap.find(pointid);
@@ -563,28 +502,23 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
 
                 if(key == pointid && pOriginalSig)
                 {
-                    pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
+                    std::auto_ptr<CtiSignalMsg> pSig((CtiSignalMsg*)(pOriginalSig->replicateMessage()));
                     pSig->setText( TrimAlarmTagText((string &)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
 
-                    if(pMulti)
+                    if(pMulti.get())
                     {
-                        pMulti->insert(pSig);
+                        pMulti->insert(pSig.release());
                     }
                 }
             }
         }
         catch(...)
         {
-            delete pSig;
-            pSig = 0;
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 
-    return pMulti;
+    return pMulti.release();
 }
 
 CtiMultiMsg* CtiSignalManager::getAllAlarmSignals() const
@@ -592,15 +526,11 @@ CtiMultiMsg* CtiSignalManager::getAllAlarmSignals() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
-    CtiMultiMsg *pMulti = 0;
-    CtiSignalMsg *pSig = 0;
+    std::auto_ptr<CtiMultiMsg>  pMulti;
     SigMgrMap_t::const_iterator itr;
 
     try
@@ -613,32 +543,24 @@ CtiMultiMsg* CtiSignalManager::getAllAlarmSignals() const
 
             if(pOriginalSig && (pOriginalSig->getTags() & MASK_ANY_ALARM))
             {
-                pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
+                std::auto_ptr<CtiSignalMsg> pSig((CtiSignalMsg*)(pOriginalSig->replicateMessage()));
                 pSig->setText( TrimAlarmTagText((string &)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
 
-                if(!pMulti)
+                if( ! pMulti.get() )
                 {
-                    pMulti = new CtiMultiMsg;
+                    pMulti.reset(new CtiMultiMsg);
                 }
 
-                if(pMulti)
-                {
-                    pMulti->insert(pSig);
-                }
+                pMulti->insert(pSig.release());
             }
         }
     }
     catch(...)
     {
-        delete pSig;
-        pSig = 0;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    return pMulti;
+    return pMulti.release();
 }
 
 size_t CtiSignalManager::entries() const
@@ -646,10 +568,7 @@ size_t CtiSignalManager::entries() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -661,10 +580,7 @@ size_t CtiSignalManager::pointMapEntries() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -676,10 +592,7 @@ bool CtiSignalManager::empty() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -691,10 +604,7 @@ bool CtiSignalManager::dirty() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -708,10 +618,7 @@ void CtiSignalManager::setDirty(bool flag, long paoID)
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -733,10 +640,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -753,9 +657,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
 
             if ( ! conn.isValid() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+                CTILOG_ERROR(dout, "Invalid Connection to Database");
                 return 0;
             }
 
@@ -789,11 +691,8 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
 
                     if( ! ptAlm.Update( conn ) )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** ERROR **** Writing dynamic signals to Database has fail " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            ptAlm.dump();
-                        }
+                        CTILOG_ERROR(dout, "Writing dynamic signals to Database failed"<<
+                                ptAlm);
 
                         updateError = true; // an update has fail, do not reset the dirty flag
                     }
@@ -808,9 +707,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
 
             if((stop.seconds() - start.seconds()) > 5)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Writing dynamic signals took " << (stop.seconds() - start.seconds())
-                     << " Seconds and wrote " << count << " entries." << endl;
+                CTILOG_INFO(dout, "Writing dynamic signals took "<< (stop.seconds() - start.seconds()) <<" seconds and wrote "<< count <<" entries");
             }
 
             if(! updateError)
@@ -821,10 +718,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return count;
@@ -836,15 +730,12 @@ CtiMultiMsg* CtiSignalManager::getCategorySignals(unsigned category) const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
-    CtiMultiMsg *pMulti = new CtiMultiMsg;
-    CtiSignalMsg *pSig = 0;
+    std::auto_ptr<CtiMultiMsg> pMulti(new CtiMultiMsg);
+
     SigMgrMap_t::const_iterator itr;
 
     try
@@ -857,24 +748,19 @@ CtiMultiMsg* CtiSignalManager::getCategorySignals(unsigned category) const
 
             if( pOriginalSig->getSignalCategory() == category )
             {
-                pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
+                std::auto_ptr<CtiSignalMsg> pSig((CtiSignalMsg*)(pOriginalSig->replicateMessage()));
                 pSig->setText( TrimAlarmTagText((string&)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
 
-                if(pMulti) pMulti->insert(pSig);        // Insert into the multi.
+                pMulti->insert(pSig.release()); // Insert into the multi.
             }
         }
     }
     catch(...)
     {
-        delete pSig;
-        pSig = 0;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    return pMulti;
+    return pMulti.release();
 }
 
 void CtiSignalManager::removeFromMaps(long pointID, int condition)

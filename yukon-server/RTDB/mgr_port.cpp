@@ -115,9 +115,7 @@ void CtiPortManager::RefreshList()
 
         if( ! refreshExclusions() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " database had a return code of " << _smartMap.getErrorCode() << endl;
+            CTILOG_ERROR(dout, "database had a return code of "<< _smartMap.getErrorCode());
 
             return;
         }
@@ -136,11 +134,8 @@ void CtiPortManager::RefreshList()
             pTempPort = _smartMap.remove(isNotUpdated, NULL);
             if(pTempPort)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  Evicting " << pTempPort->getName() << " from list" << endl;
-                }
+                CTILOG_WARN(dout, "Evicting "<< pTempPort->getName() <<" from list");
+
                 pTempPort.reset();      // Free the thing!
             }
 
@@ -148,8 +143,7 @@ void CtiPortManager::RefreshList()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -157,7 +151,7 @@ bool CtiPortManager::RefreshType(const std::string name, const std::string sql, 
 {
     if(DebugLevel & 0x00080000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for " << name << endl;
+        CTILOG_DEBUG(dout, "Looking for "<< name);
     }
 
     using namespace Cti::Database;
@@ -173,8 +167,7 @@ bool CtiPortManager::RefreshType(const std::string name, const std::string sql, 
 
     if(DebugLevel & 0x00080000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Done looking for " << name << endl;
+        CTILOG_DEBUG(dout, "Done looking for "<< name);
     }
 
     return rowFound;
@@ -190,18 +183,14 @@ void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* 
 
         while(!guard.isAcquired())
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << static_cast<string>(getLock()) << endl;
-            }
+            CTILOG_WARN(dout, "Unable to lock port mutex. Will retry. (Last Acquired By TID: "<< static_cast<string>(getLock()) <<")");
+
             guard.tryAcquire(30000);
 
             if(trycount++ > 6)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << " CtiPortManager::apply " << endl;
-                }
+                CTILOG_ERROR(dout, "Unable to lock port mutex");
+
                 break;
             }
         }
@@ -215,8 +204,7 @@ void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* 
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -246,10 +234,7 @@ CtiPortManager::ptr_type CtiPortManager::getPortById(LONG pid)
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return p;
@@ -297,10 +282,7 @@ void CtiPortManager::RefreshEntries(bool &rowFound, Cti::RowReader& rdr)
                 {
                     tempPortTCP->shutdownClose();
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Port " << tempPortTCP->getName() << " reconnecting due to DBChange " << __FILE__ << "(" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_INFO(dout, "Port "<< tempPortTCP->getName() <<" reconnecting due to DBChange");
                 }
 
                 tempPortTCP.reset();
@@ -348,10 +330,7 @@ void CtiPortManager::RefreshDialableEntries(bool &rowFound, Cti::RowReader& rdr)
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port " << lTemp << " not found in pao, but IS in portdialupmodem table" << endl;
-            }
+            CTILOG_ERROR(dout, "Port "<< lTemp <<" not found in pao, but IS in portdialupmodem table")
         }
     }
 }
@@ -428,24 +407,18 @@ void CtiPortManager::RefreshPooledPortEntries(bool &rowFound, Cti::RowReader& rd
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " Unable to match child port id " << child << " to add to " << pOwnerPort->getName() << endl;
+                    CTILOG_ERROR(dout, "Unable to match child port id "<< child <<" to add to "<< pOwnerPort->getName());
                 }
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "no pao info or owner not found");
             }
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -463,10 +436,8 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
 
         while(!guard.isAcquired())
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Unable to lock port mutex. Will retry. (Last Acquired By TID: "<< static_cast<string>(getLock()) <<")");
+
             guard.tryAcquire(30000);
         }
 
@@ -502,8 +473,7 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
                                     {
                                         if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                                         {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Port " << anxiousPort->getName() << " cannot execute because " << port->getName() << " is executing" << endl;
+                                            CTILOG_DEBUG(dout, "Port "<< anxiousPort->getName() <<" cannot execute because "<< port->getName() <<" is executing");
                                         }
                                         portexclusion = paox;   // Pass this out to the callee!
                                         exlist.clear();         // Cannot use it!
@@ -519,10 +489,8 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
                             }
                         default:
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
+                                CTILOG_ERROR(dout, "Invalid function id ("<< paox.getFunctionId() <<")");
+
                                 break;
                             }
                         }
@@ -535,8 +503,7 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
                         {
                             if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Port " << port->getName() << " prohibited because " << anxiousPort->getName() << " is executing" << endl;
+                                CTILOG_DEBUG(dout, "Port "<< port->getName() <<" prohibited because "<< anxiousPort->getName() <<" is executing");
                             }
                             port = *xitr;
                             port->setExecutionProhibited(anxiousPort->getPortID());
@@ -554,8 +521,7 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
             {
                 if(anxiousPort->hasExclusions() && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Port " << anxiousPort->getName() << " is clear to execute" << endl;
+                    CTILOG_DEBUG(dout, "Port "<< anxiousPort->getName() <<" is clear to execute");
                 }
                 anxiousPort->setExecuting(true);                    // Mark ourselves as executing!
             }
@@ -563,8 +529,7 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return bstatus;
@@ -579,10 +544,8 @@ bool CtiPortManager::refreshExclusions(LONG id)
 
     while(!guard.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to lock port mutex. Will retry. (Last Acquired By TID: "<< static_cast<string>(getLock()) <<")");
+
         guard.tryAcquire(30000);
     }
 
@@ -594,7 +557,7 @@ bool CtiPortManager::refreshExclusions(LONG id)
 
     if(DebugLevel & 0x00080000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Looking for Port Exclusions" << endl;
+        CTILOG_DEBUG(dout, "Looking for Port Exclusions");
     }
 
     const string sql = CtiTablePaoExclusion::getSQLCoreStatement(id) ;
@@ -609,13 +572,13 @@ bool CtiPortManager::refreshExclusions(LONG id)
 
     rdr.execute();
 
-    if(DebugLevel & 0x00080000 || !rdr.isValid())
+    if( ! rdr.isValid() )
     {
-        string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << loggedSQLstring << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else if( DebugLevel & 0x00080000 )
+    {
+        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
     }
 
     while( (_smartMap.setErrorCode(rdr.isValid() ? 0 : 1) == 0) && rdr() )
@@ -634,7 +597,7 @@ bool CtiPortManager::refreshExclusions(LONG id)
 
     if(DebugLevel & 0x00080000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout  << "Done looking for Port Exclusions" << endl;
+        CTILOG_DEBUG(dout, "Done looking for Port Exclusions");
     }
 
     return rdr.isValid();
@@ -680,16 +643,14 @@ CtiPort* CtiPortManager::PortFactory(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_FACTORY)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Creating a Port of type " << portTypeString << endl;
+        CTILOG_DEBUG(dout, "Creating a Port of type " << portTypeString);
     }
 
     boost::optional<PortLookup::mapped_type> portCreator = Cti::mapFind(portFactory, resolvePortType(portTypeString));
 
     if( ! portCreator )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Port Factory has failed to produce for type " << portTypeString << "!" << endl;
+        CTILOG_ERROR(dout, "Port Factory has failed to produce for type " << portTypeString << "!");
 
         return 0;
     }

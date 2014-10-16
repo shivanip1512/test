@@ -67,8 +67,7 @@ YukonError_t Repeater900Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParse
     {
         if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "GeneralScan for \"" << getName() << "\"");
         }
 
 
@@ -90,9 +89,7 @@ YukonError_t Repeater900Device::GeneralScan(CtiRequestMsg *pReq, CtiCommandParse
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Command lookup failed **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Device " << getName() << endl;
+            CTILOG_ERROR(dout, "Command lookup failed for Device "<< getName());
 
             status = ClientErrors::NoMethod;
         }
@@ -344,18 +341,6 @@ YukonError_t Repeater900Device::executePutConfig(CtiRequestMsg        *pReq,
                }
                stagestf = !strTemp.empty() ? atoi(strTemp.c_str()) : 15;
 
-               #if 0
-               {
-                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                   dout << " Role       " << rolenum + i/2 << endl;
-                   dout << " Fix   bits " << fixbits << endl;
-                   dout << " OD    bits " << varbits_out << endl;
-                   dout << " ID    bits " << varbits_in << endl;
-                   dout << " STF   bits " << stagestf << endl;
-               }
-               #endif
-
                Temp[0]  = fixbits & 0x1F;
                Temp[0] |= varbits_out << 5;
                Temp[1]  = (stagestf << 1) & 0x1F;
@@ -499,13 +484,8 @@ YukonError_t Repeater900Device::ResultDecode(const INMESS &InMessage, const CtiT
         }
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
-            }
+            CTILOG_DEBUG(dout, "IM->Sequence = "<< InMessage.Sequence <<" for "<< getName());
             status = ClientErrors::NoMethod;
-            break;
         }
     }
 
@@ -526,16 +506,8 @@ YukonError_t Repeater900Device::decodeLoopback(const INMESS &InMessage, const Ct
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
-
     ReturnMsg->setResultString( getName() + " / successful ping" );
 
     retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
@@ -555,14 +527,7 @@ YukonError_t Repeater900Device::decodeGetConfigModel(const INMESS &InMessage, co
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     int  sspec;
@@ -602,16 +567,8 @@ YukonError_t Repeater900Device::decodeGetConfigRole(const INMESS &InMessage, con
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
-
 
     rolenum = parse.getiValue( "rolenum" );
     rolenum -= (rolenum - 1) % 6;
@@ -649,14 +606,7 @@ YukonError_t Repeater900Device::decodePutConfigRole(const INMESS &InMessage, con
 
     CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     CtiString cmdStr = InMessage.Return.CommandStr;
@@ -712,13 +662,7 @@ YukonError_t Repeater900Device::decodeGetConfigRaw( const INMESS &InMessage, con
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     string results;
 
@@ -765,13 +709,7 @@ YukonError_t Repeater900Device::decodePutConfigRaw( const INMESS &InMessage, con
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
     CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     string results;
 

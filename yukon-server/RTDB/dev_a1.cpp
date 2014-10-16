@@ -144,10 +144,7 @@ YukonError_t CtiDeviceAlphaA1::GeneralScan(CtiRequestMsg     *pReq,
                                            OutMessageList    &outList,
                                            INT ScanPriority)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " General Scan of device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "General Scan of device "<< getName() <<" in progress");
 
     if( ! OutMessage )
     {
@@ -459,13 +456,11 @@ YukonError_t CtiDeviceAlphaA1::generateCommandScan( CtiXfer  &Transfer, CtiMessa
                                 {
                                     if (localData->Real.class14.valid)
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Class 11 billing data read failed for " << getName() << " aborting scan " << endl;
+                                        CTILOG_DEBUG(dout, "Class 11 billing data read failed for "<< getName() <<", aborting scan..");
                                     }
                                     else
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Class 14 load profile configuration read failed for " << getName() << " aborting scan " << endl;
+                                        CTILOG_DEBUG(dout, "Class 14 load profile configuration read failed for "<< getName()<< ", aborting scan..");
                                     }
                                 }
                             }
@@ -488,12 +483,12 @@ YukonError_t CtiDeviceAlphaA1::generateCommandScan( CtiXfer  &Transfer, CtiMessa
             }
         default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
+                generateCommandTerminate (Transfer, traceList);
+                setPreviousState (StateScanAbort);
+                retCode = ClientErrors::Abnormal;
             }
-            generateCommandTerminate (Transfer, traceList);
-            setPreviousState (StateScanAbort);
-            retCode = ClientErrors::Abnormal;
     }
     return retCode;
 }
@@ -644,10 +639,13 @@ YukonError_t CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, C
 
                             if( DebugLevel & 0x0001 )
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "---------------------- Class 0 -------------------------" << endl;
-                                dout << "Kh     : " << ptr->class0.wattHoursPerRevolution << endl;
-                                dout << "Mp     : " << ptr->class0.pulsesPerRevolution<< endl;
+                                Cti::FormattedList itemList;
+
+                                itemList<<"---------------------- Class 0 -------------------------";
+                                itemList.add("Kh") << ptr->class0.wattHoursPerRevolution;
+                                itemList.add("Mp") << ptr->class0.pulsesPerRevolution;
+
+                                CTILOG_DEBUG(dout, itemList);
                             }
 
                             if (_lpWorkBuffer != NULL)
@@ -698,12 +696,15 @@ YukonError_t CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, C
 
                             if( DebugLevel & 0x0001 )
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "---------------------- Class 8 -------------------------" << endl;
-                                dout << "Firmware               : " << ptr->class8.firmwareSpec << endl;
-                                dout << "Group                  : " << ptr->class8.groupNo << endl;
-                                dout << "Revision               : " << ptr->class8.revisionNo << endl;
-                                dout << "Type (0=A1R 1=A1K)     : " << ptr->class8.meterType << endl;
+                                Cti::FormattedList logItems;
+
+                                logItems <<"---------------------- Class 8 -------------------------";
+                                logItems.add("Firmware")           << ptr->class8.firmwareSpec;
+                                logItems.add("Group")              << ptr->class8.groupNo;
+                                logItems.add("Revision")           << ptr->class8.revisionNo;
+                                logItems.add("Type (0=A1R 1=A1K)") << ptr->class8.meterType;
+
+                                CTILOG_DEBUG(dout, logItems);
                             }
 
                             if (_lpWorkBuffer != NULL)
@@ -787,15 +788,18 @@ YukonError_t CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, C
 
                                 if( DebugLevel & 0x0001 )
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime().asString() << endl << "--------- Alpha Load Profile Inputs ---------------" << endl;
-                                    dout << "Number of Channels " << ptr->class14.numberOfChannels  << " Interval " << ptr->class14.intervalLength << endl;
-                                    dout << "\tChannel 1: " << (USHORT)ptr->class14.channelInput[0] << endl;
-                                    dout << "\tChannel 2: " << (USHORT)ptr->class14.channelInput[1] << endl;
-                                    dout << "\tChannel 3: " << (USHORT)ptr->class14.channelInput[2] << endl;
-                                    dout << "\tChannel 4: " << (USHORT)ptr->class14.channelInput[3] << endl;
+                                    Cti::FormattedList logItems;
 
-                                    dout << "Scaling factor " << ptr->class14.scalingFactor << endl << endl;
+                                    logItems <<"---------- Alpha Load Profile Inputs ----------";
+                                    logItems.add("Number of Channels") << ptr->class14.numberOfChannels;
+                                    logItems.add("Interval")           << ptr->class14.intervalLength;
+                                    logItems.add("Channel 1")          << ptr->class14.channelInput[0];
+                                    logItems.add("Channel 2")          << ptr->class14.channelInput[1];
+                                    logItems.add("Channel 3")          << ptr->class14.channelInput[2];
+                                    logItems.add("Channel 4")          << ptr->class14.channelInput[3];
+                                    logItems.add("Scaling factor")     << ptr->class14.scalingFactor;
+
+                                    CTILOG_DEBUG(dout, logItems);
                                 }
 
                                 /***********************
@@ -842,10 +846,8 @@ YukonError_t CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, C
                             }
                             else
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
-                                }
+                                CTILOG_WARN(dout, "Load profile for "<< getName() <<" will not be collected this scan");
+
                                 setTotalByteCount(0);
                                 setPreviousState (StateScanComplete);
                                 generateCommandTerminate (Transfer, traceList);
@@ -887,12 +889,12 @@ YukonError_t CtiDeviceAlphaA1::generateCommandLoadProfile( CtiXfer  &Transfer, C
             }
         default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
+                generateCommandTerminate (Transfer, traceList);
+                setPreviousState (StateScanAbort);
+                retCode = ClientErrors::Abnormal;
             }
-            generateCommandTerminate (Transfer, traceList);
-            setPreviousState (StateScanAbort);
-            retCode = ClientErrors::Abnormal;
     }
     return retCode;
 }
@@ -1053,8 +1055,8 @@ YukonError_t CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, YukonErro
                     }
                     catch (...)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Could not retrieve Alpha "<< getName() <<"'s class "<< getReadClass());
+
                         // the esc is inside of class 7
                         setCurrentState (StateScanValueSet7FirstScan);
                     }
@@ -1208,8 +1210,8 @@ YukonError_t CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, YukonErro
                         }
                         catch (...)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error retrieving " << getName() << "'s class " << getReadClass() << endl;
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Could not retrieve Alpha "<< getName() <<"'s class "<< getReadClass());
+
                             // the esc is inside of class 7
                             setCurrentState (StateScanValueSet7FirstScan);
                         }
@@ -1258,14 +1260,12 @@ YukonError_t CtiDeviceAlphaA1::decodeResponseScan (CtiXfer  &Transfer, YukonErro
             }
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+        {
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             setPreviousState (StateScanAbort);
             setCurrentState (StateScanSendTerminate);
-            break;
-
+        }
     }
 
     return retCode;
@@ -1448,10 +1448,8 @@ YukonError_t CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
                     }
                     catch (...)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
-                        }
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Could not retrieve Alpha "<< getName() <<"'s class "<< getReadClass());
+
                         // the esc is inside of class 7
                         setCurrentState (StateScanValueSet7FirstScan);
                     }
@@ -1650,8 +1648,8 @@ YukonError_t CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
                         }
                         catch (...)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error retrieving Alpha " << getName() << "'s class " << getReadClass() << endl;
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Could not retrieve Alpha "<< getName() <<"'s class "<< getReadClass());
+
                             // the esc is inside of class 7
                             setCurrentState (StateScanValueSet7FirstScan);
                         }
@@ -1694,14 +1692,12 @@ YukonError_t CtiDeviceAlphaA1::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
             }
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+        {
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             setPreviousState (StateScanAbort);
             setCurrentState (StateScanSendTerminate);
-            break;
-
+        }
     }
 
     return retCode;
@@ -1840,10 +1836,8 @@ INT CtiDeviceAlphaA1::decodeResultScan   (const INMESS   &InMessage,
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "ERROR: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Unexpected pPIL is NULL");
+
                     delete pData;
                     pData = NULL;
                 }
@@ -1975,10 +1969,7 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (const INMESS   &InMessage,
             * invalid
             ************************
             */
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Aborting scan: Invalid last interval timestamp " << getName()  << " " << lastIntervalTS.asString()<< endl;
-            }
+            CTILOG_WARN(dout, "Aborting scan: Invalid last interval timestamp "<< getName() <<" "<< lastIntervalTS);
         }
         else
         {
@@ -2041,10 +2032,7 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (const INMESS   &InMessage,
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Parity calculation failed " << getName() << endl;
-                            }
+                            CTILOG_ERROR(dout, "Parity calculation failed "<< getName());
                         }
 
                         offset--;
@@ -2079,308 +2067,207 @@ INT CtiDeviceAlphaA1::decodeResultLoadProfile (const INMESS   &InMessage,
 
 INT CtiDeviceAlphaA1::ResultDisplay(const INMESS &InMessage)
 {
+    struct FormatValue
+    {
+        std::ostringstream _ostream;
+
+        FormatValue()
+        {
+            _ostream << setfill('0');
+        }
+
+        std::ostringstream& operator()(float val, int precision)
+        {
+            _ostream.str("");
+            _ostream << std::fixed << std::setprecision(precision) << val;
+            return _ostream;
+        }
+
+        std::ostringstream& operator()(float val)
+        {
+            return (*this)(val, 6);
+        }
+
+        std::ostringstream& operator()(const AlphaDateTime_t& dt)
+        {
+            _ostream.str("");
+            _ostream << dt.Month <<"/"<< dt.Day <<"/"<< dt.Year <<" "<< std::setw(2) << dt.Hour <<":"<< std::setw(2) << dt.Minute;
+            return _ostream;
+        }
+
+    } formatVal;
+
     const DIALUPREPLY *DUPRep = &InMessage.Buffer.DUPSt.DUPRep;
     const AlphaA1ScanData_t *ptr = (const AlphaA1ScanData_t *)DUPRep->Message;
-    CHAR buffer[200];
-    /**************************
-    * lazy way to do this
-    ***************************
-    */
 
+    Cti::FormattedList itemList;
+
+    itemList <<"--------- Class 0 ---------";
+    itemList.add("DemandDecimals") << formatVal(ptr->Real.class0.demandDecimals);
+    itemList.add("EnergyDecimals") << formatVal(ptr->Real.class0.energyDecimals);
+
+    itemList <<"--------- Class 11 ---------";
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Result display for device " << getName() << " in progress " << endl;
+        Cti::FormattedTable table;
 
+        table.setCell(0, 1) <<"kWh";
+        table.setCell(0, 2) <<"kW";
+        table.setCell(0, 3) <<"Cum";
+        table.setCell(0, 4) <<"Date/Time";
 
-        ::sprintf(buffer,"--------- Class 0 ---------");
-        dout << endl << buffer << endl;
-        ::sprintf(buffer,"DemandDecimals= %f",ptr->Real.class0.demandDecimals);
-        dout << buffer << endl;
-        ::sprintf(buffer,"EnergyDecimals= %f",ptr->Real.class0.energyDecimals);
-        dout << buffer << endl;
+        table.setCell(1, 0) <<"Block 1";
+        table.setCell(1, 1) << formatVal(ptr->Real.class11.KWH1,    3);
+        table.setCell(2, 0) <<"Rate A";
+        table.setCell(2, 1) << formatVal(ptr->Real.class11.AKWH1,   3);
+        table.setCell(2, 2) << formatVal(ptr->Real.class11.AKW1,    3);
+        table.setCell(2, 3) << formatVal(ptr->Real.class11.AKWCUM1, 3);
+        table.setCell(2, 4) << formatVal(ptr->Real.class11.ATD1);
+        table.setCell(3, 0) <<"Rate B";
+        table.setCell(3, 1) << formatVal(ptr->Real.class11.BKWH1,   3);
+        table.setCell(3, 2) << formatVal(ptr->Real.class11.BKW1,    3);
+        table.setCell(3, 3) << formatVal(ptr->Real.class11.BKWCUM1, 3);
+        table.setCell(3, 4) << formatVal(ptr->Real.class11.BTD1);
+        table.setCell(4, 0) <<"Rate C";
+        table.setCell(4, 1) << formatVal(ptr->Real.class11.CKWH1,   3);
+        table.setCell(4, 2) << formatVal(ptr->Real.class11.CKW1,    3);
+        table.setCell(4, 3) << formatVal(ptr->Real.class11.CKWCUM1, 3);
+        table.setCell(4, 4) << formatVal(ptr->Real.class11.CTD1);
+        table.setCell(5, 0) <<"Rate D";
+        table.setCell(5, 1) << formatVal(ptr->Real.class11.DKWH1,   3);
+        table.setCell(5, 2) << formatVal(ptr->Real.class11.DKW1,    3);
+        table.setCell(5, 3) << formatVal(ptr->Real.class11.DKWCUM1, 3);
+        table.setCell(5, 4) << formatVal(ptr->Real.class11.DTD1);
 
+        table.setCell(6, 0) <<"Block 2";
+        table.setCell(6, 1) << formatVal(ptr->Real.class11.KWH2,    3);
+        table.setCell(7, 0) <<"Rate A";
+        table.setCell(7, 1) << formatVal(ptr->Real.class11.AKWH2,   3);
+        table.setCell(7, 2) << formatVal(ptr->Real.class11.AKW2,    3);
+        table.setCell(7, 3) << formatVal(ptr->Real.class11.AKWCUM2, 3);
+        table.setCell(7, 4) << formatVal(ptr->Real.class11.ATD2);
+        table.setCell(8, 0) <<"Rate B";
+        table.setCell(8, 1) << formatVal(ptr->Real.class11.BKWH2,   3);
+        table.setCell(8, 2) << formatVal(ptr->Real.class11.BKW2,    3);
+        table.setCell(8, 3) << formatVal(ptr->Real.class11.BKWCUM2, 3);
+        table.setCell(8, 4) << formatVal(ptr->Real.class11.BTD2);
+        table.setCell(9, 0) <<"Rate C";
+        table.setCell(9, 1) << formatVal(ptr->Real.class11.CKWH2,   3);
+        table.setCell(9, 2) << formatVal(ptr->Real.class11.CKW2,    3);
+        table.setCell(9, 3) << formatVal(ptr->Real.class11.CKWCUM2, 3);
+        table.setCell(9, 4) << formatVal(ptr->Real.class11.CTD2);
+        table.setCell(10,0) <<"Rate D";
+        table.setCell(10,1) << formatVal(ptr->Real.class11.DKWH2,   3);
+        table.setCell(10,2) << formatVal(ptr->Real.class11.DKW2,    3);
+        table.setCell(10,3) << formatVal(ptr->Real.class11.DKWCUM2, 3);
+        table.setCell(10,4) << formatVal(ptr->Real.class11.DTD2);
 
-        // class 11
-        ::sprintf(buffer,"--------- Class 11 ---------");
-        dout << endl << buffer << endl;
+        table.setCell(11,0) <<"Block 3";
+        table.setCell(11,1) << formatVal(ptr->Real.class11.KWH3,    3);
+        table.setCell(12,0) <<"Rate A";
+        table.setCell(12,1) << formatVal(ptr->Real.class11.AKWH3,   3);
+        table.setCell(12,2) << formatVal(ptr->Real.class11.AKW3,    3);
+        table.setCell(12,3) << formatVal(ptr->Real.class11.AKWCUM3, 3);
+        table.setCell(12,4) << formatVal(ptr->Real.class11.ATD3);
+        table.setCell(13,0) <<"Rate B";
+        table.setCell(13,1) << formatVal(ptr->Real.class11.BKWH3,   3);
+        table.setCell(13,2) << formatVal(ptr->Real.class11.BKW3,    3);
+        table.setCell(13,3) << formatVal(ptr->Real.class11.BKWCUM3, 3);
+        table.setCell(13,4) << formatVal(ptr->Real.class11.BTD3);
+        table.setCell(14,0) <<"Rate C";
+        table.setCell(14,1) << formatVal(ptr->Real.class11.CKWH3,   3);
+        table.setCell(14,2) << formatVal(ptr->Real.class11.CKW3,    3);
+        table.setCell(14,3) << formatVal(ptr->Real.class11.CKWCUM3, 3);
+        table.setCell(14,4) << formatVal(ptr->Real.class11.CTD3);
+        table.setCell(15,0) <<"Rate D";
+        table.setCell(15,1) << formatVal(ptr->Real.class11.DKWH3,   3);
+        table.setCell(15,2) << formatVal(ptr->Real.class11.DKW3,    3);
+        table.setCell(15,3) << formatVal(ptr->Real.class11.DKWCUM3, 3);
+        table.setCell(15,4) << formatVal(ptr->Real.class11.DTD3);
 
-        ::sprintf(buffer,"                    KWH        KW         Cum            Date/Time");
-        dout << buffer << endl;
-        ::sprintf(buffer,"Block 1          %9.3f",ptr->Real.class11.KWH1);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.AKWH1,
-                ptr->Real.class11.AKW1,
-                ptr->Real.class11.AKWCUM1,
-                ptr->Real.class11.ATD1.Month,
-                ptr->Real.class11.ATD1.Day,
-                ptr->Real.class11.ATD1.Year,
-                ptr->Real.class11.ATD1.Hour,
-                ptr->Real.class11.ATD1.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.BKWH1,
-                ptr->Real.class11.BKW1,
-                ptr->Real.class11.BKWCUM1,
-                ptr->Real.class11.BTD1.Month,
-                ptr->Real.class11.BTD1.Day,
-                ptr->Real.class11.BTD1.Year,
-                ptr->Real.class11.BTD1.Hour,
-                ptr->Real.class11.BTD1.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.CKWH1,
-                ptr->Real.class11.CKW1,
-                ptr->Real.class11.CKWCUM1,
-                ptr->Real.class11.CTD1.Month,
-                ptr->Real.class11.CTD1.Day,
-                ptr->Real.class11.CTD1.Year,
-                ptr->Real.class11.CTD1.Hour,
-                ptr->Real.class11.CTD1.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d\n",
-                ptr->Real.class11.DKWH1,
-                ptr->Real.class11.DKW1,
-                ptr->Real.class11.DKWCUM1,
-                ptr->Real.class11.DTD1.Month,
-                ptr->Real.class11.DTD1.Day,
-                ptr->Real.class11.DTD1.Year,
-                ptr->Real.class11.DTD1.Hour,
-                ptr->Real.class11.DTD1.Minute);
-        dout << buffer << endl << endl;
+        table.setCell(16,0) <<"Block 4";
+        table.setCell(16,1) << formatVal(ptr->Real.class11.KWH4,    3);
+        table.setCell(17,0) <<"Rate A";
+        table.setCell(17,1) << formatVal(ptr->Real.class11.AKWH4,   3);
+        table.setCell(17,2) << formatVal(ptr->Real.class11.AKW4,    3);
+        table.setCell(17,3) << formatVal(ptr->Real.class11.AKWCUM4, 3);
+        table.setCell(17,4) << formatVal(ptr->Real.class11.ATD4);
+        table.setCell(18,0) <<"Rate B";
+        table.setCell(18,1) << formatVal(ptr->Real.class11.BKWH4,   3);
+        table.setCell(18,2) << formatVal(ptr->Real.class11.BKW4,    3);
+        table.setCell(18,3) << formatVal(ptr->Real.class11.BKWCUM4, 3);
+        table.setCell(18,4) << formatVal(ptr->Real.class11.BTD4);
+        table.setCell(19,0) <<"Rate C";
+        table.setCell(19,1) << formatVal(ptr->Real.class11.CKWH4,   3);
+        table.setCell(19,2) << formatVal(ptr->Real.class11.CKW4,    3);
+        table.setCell(19,3) << formatVal(ptr->Real.class11.CKWCUM4, 3);
+        table.setCell(19,4) << formatVal(ptr->Real.class11.CTD4);
+        table.setCell(20,0) <<"Rate D";
+        table.setCell(20,1) << formatVal(ptr->Real.class11.DKWH4,   3);
+        table.setCell(20,2) << formatVal(ptr->Real.class11.DKW4,    3);
+        table.setCell(20,3) << formatVal(ptr->Real.class11.DKWCUM4, 3);
+        table.setCell(20,4) << formatVal(ptr->Real.class11.DTD4);
 
-        ::sprintf(buffer,"Block 2          %9.3f\n",ptr->Real.class11.KWH2);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.AKWH2,
-                ptr->Real.class11.AKW2,
-                ptr->Real.class11.AKWCUM2,
-                ptr->Real.class11.ATD2.Month,
-                ptr->Real.class11.ATD2.Day,
-                ptr->Real.class11.ATD2.Year,
-                ptr->Real.class11.ATD2.Hour,
-                ptr->Real.class11.ATD2.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.BKWH2,
-                ptr->Real.class11.BKW2,
-                ptr->Real.class11.BKWCUM2,
-                ptr->Real.class11.BTD2.Month,
-                ptr->Real.class11.BTD2.Day,
-                ptr->Real.class11.BTD2.Year,
-                ptr->Real.class11.BTD2.Hour,
-                ptr->Real.class11.BTD2.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.CKWH2,
-                ptr->Real.class11.CKW2,
-                ptr->Real.class11.CKWCUM2,
-                ptr->Real.class11.CTD2.Month,
-                ptr->Real.class11.CTD2.Day,
-                ptr->Real.class11.CTD2.Year,
-                ptr->Real.class11.CTD2.Hour,
-                ptr->Real.class11.CTD2.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d\n",
-                ptr->Real.class11.DKWH2,
-                ptr->Real.class11.DKW2,
-                ptr->Real.class11.DKWCUM2,
-                ptr->Real.class11.DTD2.Month,
-                ptr->Real.class11.DTD2.Day,
-                ptr->Real.class11.DTD2.Year,
-                ptr->Real.class11.DTD2.Hour,
-                ptr->Real.class11.DTD2.Minute);
-        dout << buffer << endl << endl;
+        table.setCell(21,0) <<"Block 5";
+        table.setCell(21,1) << formatVal(ptr->Real.class11.KWH5,    3);
+        table.setCell(22,0) <<"Rate A";
+        table.setCell(22,1) << formatVal(ptr->Real.class11.AKWH5,   3);
+        table.setCell(22,2) << formatVal(ptr->Real.class11.AKW5,    3);
+        table.setCell(22,3) << formatVal(ptr->Real.class11.AKWCUM5, 3);
+        table.setCell(22,4) << formatVal(ptr->Real.class11.ATD5);
+        table.setCell(23,0) <<"Rate B";
+        table.setCell(23,1) << formatVal(ptr->Real.class11.BKWH5,   3);
+        table.setCell(23,2) << formatVal(ptr->Real.class11.BKW5,    3);
+        table.setCell(23,3) << formatVal(ptr->Real.class11.BKWCUM5, 3);
+        table.setCell(23,4) << formatVal(ptr->Real.class11.BTD5);
+        table.setCell(24,0) <<"Rate C";
+        table.setCell(24,1) << formatVal(ptr->Real.class11.CKWH5,   3);
+        table.setCell(24,2) << formatVal(ptr->Real.class11.CKW5,    3);
+        table.setCell(24,3) << formatVal(ptr->Real.class11.CKWCUM5, 3);
+        table.setCell(24,4) << formatVal(ptr->Real.class11.CTD5);
+        table.setCell(25,0) <<"Rate D";
+        table.setCell(25,1) << formatVal(ptr->Real.class11.DKWH5,   3);
+        table.setCell(25,2) << formatVal(ptr->Real.class11.DKW5,    3);
+        table.setCell(25,3) << formatVal(ptr->Real.class11.DKWCUM5, 3);
+        table.setCell(25,4) << formatVal(ptr->Real.class11.DTD5);
 
-        ::sprintf(buffer,"Block 3          %9.3f\n",ptr->Real.class11.KWH3);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.AKWH3,
-                ptr->Real.class11.AKW3,
-                ptr->Real.class11.AKWCUM3,
-                ptr->Real.class11.ATD3.Month,
-                ptr->Real.class11.ATD3.Day,
-                ptr->Real.class11.ATD3.Year,
-                ptr->Real.class11.ATD3.Hour,
-                ptr->Real.class11.ATD3.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.BKWH3,
-                ptr->Real.class11.BKW3,
-                ptr->Real.class11.BKWCUM3,
-                ptr->Real.class11.BTD3.Month,
-                ptr->Real.class11.BTD3.Day,
-                ptr->Real.class11.BTD3.Year,
-                ptr->Real.class11.BTD3.Hour,
-                ptr->Real.class11.BTD3.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.CKWH3,
-                ptr->Real.class11.CKW3,
-                ptr->Real.class11.CKWCUM3,
-                ptr->Real.class11.CTD3.Month,
-                ptr->Real.class11.CTD3.Day,
-                ptr->Real.class11.CTD3.Year,
-                ptr->Real.class11.CTD3.Hour,
-                ptr->Real.class11.CTD3.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.DKWH3,
-                ptr->Real.class11.DKW3,
-                ptr->Real.class11.DKWCUM3,
-                ptr->Real.class11.DTD3.Month,
-                ptr->Real.class11.DTD3.Day,
-                ptr->Real.class11.DTD3.Year,
-                ptr->Real.class11.DTD3.Hour,
-                ptr->Real.class11.DTD3.Minute);
-        dout << buffer << endl << endl;
+        table.setCell(26,0) <<"Block 6";
+        table.setCell(26,1) << formatVal(ptr->Real.class11.KWH6,    3);
+        table.setCell(27,0) <<"Rate A";
+        table.setCell(27,1) << formatVal(ptr->Real.class11.AKWH6,   3);
+        table.setCell(27,2) << formatVal(ptr->Real.class11.AKW6,    3);
+        table.setCell(27,3) << formatVal(ptr->Real.class11.AKWCUM6, 3);
+        table.setCell(27,4) << formatVal(ptr->Real.class11.ATD6);
+        table.setCell(28,0) <<"Rate B";
+        table.setCell(28,1) << formatVal(ptr->Real.class11.BKWH6,   3);
+        table.setCell(28,2) << formatVal(ptr->Real.class11.BKW6,    3);
+        table.setCell(28,3) << formatVal(ptr->Real.class11.BKWCUM6, 3);
+        table.setCell(28,4) << formatVal(ptr->Real.class11.BTD6);
+        table.setCell(29,0) <<"Rate C";
+        table.setCell(29,1) << formatVal(ptr->Real.class11.CKWH6,   3);
+        table.setCell(29,2) << formatVal(ptr->Real.class11.CKW6,    3);
+        table.setCell(29,3) << formatVal(ptr->Real.class11.CKWCUM6, 3);
+        table.setCell(29,4) << formatVal(ptr->Real.class11.CTD6);
+        table.setCell(30,0) <<"Rate D";
+        table.setCell(30,1) << formatVal(ptr->Real.class11.DKWH6,   3);
+        table.setCell(30,2) << formatVal(ptr->Real.class11.DKW6,    3);
+        table.setCell(30,3) << formatVal(ptr->Real.class11.DKWCUM6, 3);
+        table.setCell(30,4) << formatVal(ptr->Real.class11.DTD6);
 
-        ::sprintf(buffer,"Block 4          %9.3f\n",ptr->Real.class11.KWH4);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.AKWH4,
-                ptr->Real.class11.AKW4,
-                ptr->Real.class11.AKWCUM4,
-                ptr->Real.class11.ATD4.Month,
-                ptr->Real.class11.ATD4.Day,
-                ptr->Real.class11.ATD4.Year,
-                ptr->Real.class11.ATD4.Hour,
-                ptr->Real.class11.ATD4.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.BKWH4,
-                ptr->Real.class11.BKW4,
-                ptr->Real.class11.BKWCUM4,
-                ptr->Real.class11.BTD4.Month,
-                ptr->Real.class11.BTD4.Day,
-                ptr->Real.class11.BTD4.Year,
-                ptr->Real.class11.BTD4.Hour,
-                ptr->Real.class11.BTD4.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.CKWH4,
-                ptr->Real.class11.CKW4,
-                ptr->Real.class11.CKWCUM4,
-                ptr->Real.class11.CTD4.Month,
-                ptr->Real.class11.CTD4.Day,
-                ptr->Real.class11.CTD4.Year,
-                ptr->Real.class11.CTD4.Hour,
-                ptr->Real.class11.CTD4.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.DKWH4,
-                ptr->Real.class11.DKW4,
-                ptr->Real.class11.DKWCUM4,
-                ptr->Real.class11.DTD4.Month,
-                ptr->Real.class11.DTD4.Day,
-                ptr->Real.class11.DTD4.Year,
-                ptr->Real.class11.DTD4.Hour,
-                ptr->Real.class11.DTD4.Minute);
-        dout << buffer << endl << endl;
-
-        ::sprintf(buffer,"Block 5          %9.3f",ptr->Real.class11.KWH5);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.AKWH5,
-                ptr->Real.class11.AKW5,
-                ptr->Real.class11.AKWCUM5,
-                ptr->Real.class11.ATD5.Month,
-                ptr->Real.class11.ATD5.Day,
-                ptr->Real.class11.ATD5.Year,
-                ptr->Real.class11.ATD5.Hour,
-                ptr->Real.class11.ATD5.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.BKWH5,
-                ptr->Real.class11.BKW5,
-                ptr->Real.class11.BKWCUM5,
-                ptr->Real.class11.BTD5.Month,
-                ptr->Real.class11.BTD5.Day,
-                ptr->Real.class11.BTD5.Year,
-                ptr->Real.class11.BTD5.Hour,
-                ptr->Real.class11.BTD5.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.CKWH5,
-                ptr->Real.class11.CKW5,
-                ptr->Real.class11.CKWCUM5,
-                ptr->Real.class11.CTD5.Month,
-                ptr->Real.class11.CTD5.Day,
-                ptr->Real.class11.CTD5.Year,
-                ptr->Real.class11.CTD5.Hour,
-                ptr->Real.class11.CTD5.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.DKWH5,
-                ptr->Real.class11.DKW5,
-                ptr->Real.class11.DKWCUM5,
-                ptr->Real.class11.DTD5.Month,
-                ptr->Real.class11.DTD5.Day,
-                ptr->Real.class11.DTD5.Year,
-                ptr->Real.class11.DTD5.Hour,
-                ptr->Real.class11.DTD5.Minute);
-        dout << buffer << endl << endl;
-
-        ::sprintf(buffer,"Block 6          %9.3f",ptr->Real.class11.KWH6);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate A           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.AKWH6,
-                ptr->Real.class11.AKW6,
-                ptr->Real.class11.AKWCUM6,
-                ptr->Real.class11.ATD6.Month,
-                ptr->Real.class11.ATD6.Day,
-                ptr->Real.class11.ATD6.Year,
-                ptr->Real.class11.ATD6.Hour,
-                ptr->Real.class11.ATD6.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate B           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.BKWH6,
-                ptr->Real.class11.BKW6,
-                ptr->Real.class11.BKWCUM6,
-                ptr->Real.class11.BTD6.Month,
-                ptr->Real.class11.BTD6.Day,
-                ptr->Real.class11.BTD6.Year,
-                ptr->Real.class11.BTD6.Hour,
-                ptr->Real.class11.BTD6.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate C           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.CKWH6,
-                ptr->Real.class11.CKW6,
-                ptr->Real.class11.CKWCUM6,
-                ptr->Real.class11.CTD6.Month,
-                ptr->Real.class11.CTD6.Day,
-                ptr->Real.class11.CTD6.Year,
-                ptr->Real.class11.CTD6.Hour,
-                ptr->Real.class11.CTD6.Minute);
-        dout << buffer << endl;
-        ::sprintf(buffer,"Rate D           %9.3f %9.3f %9.3f           %d/%d/%d %02d:%02d",
-                ptr->Real.class11.DKWH6,
-                ptr->Real.class11.DKW6,
-                ptr->Real.class11.DKWCUM6,
-                ptr->Real.class11.DTD6.Month,
-                ptr->Real.class11.DTD6.Day,
-                ptr->Real.class11.DTD6.Year,
-                ptr->Real.class11.DTD6.Hour,
-                ptr->Real.class11.DTD6.Minute);
-        dout << buffer << endl << endl;
-
-
-        ::sprintf(buffer,"--------- Class 14 ---------");
-        dout << endl << buffer << endl;
-        ::sprintf(buffer,"TOU Blk 1 Config:  %d",ptr->Real.class14.touInput[0]);
-        dout << buffer << endl;
-        ::sprintf(buffer,"TOU Blk 2 Config:  %d",ptr->Real.class14.touInput[1]);
-        dout << buffer << endl;
-        ::sprintf(buffer,"TOU Blk 3 Config:  %d",ptr->Real.class14.touInput[2]);
-        dout << buffer << endl;
-        ::sprintf(buffer,"TOU Blk 4 Config:  %d",ptr->Real.class14.touInput[3]);
-        dout << buffer << endl;
-        ::sprintf(buffer,"TOU Blk 5 Config:  %d",ptr->Real.class14.touInput[4]);
-        dout << buffer << endl;
-        ::sprintf(buffer,"TOU Blk 6 Config:  %d",ptr->Real.class14.touInput[5]);
-        dout << buffer << endl;
+        itemList << table;
     }
 
+    itemList <<"--------- Class 14 ---------";
+    itemList.add("TOU Blk 1 Config") << ptr->Real.class14.touInput[0];
+    itemList.add("TOU Blk 2 Config") << ptr->Real.class14.touInput[1];
+    itemList.add("TOU Blk 3 Config") << ptr->Real.class14.touInput[2];
+    itemList.add("TOU Blk 4 Config") << ptr->Real.class14.touInput[3];
+    itemList.add("TOU Blk 5 Config") << ptr->Real.class14.touInput[4];
+    itemList.add("TOU Blk 6 Config") << ptr->Real.class14.touInput[5];
+
+    CTILOG_INFO(dout,
+            endl <<"Result display for device "<< getName() <<" in progress"<<
+            itemList;
+            );
 
     return ClientErrors::None;
 }
@@ -2416,10 +2303,7 @@ INT CtiDeviceAlphaA1::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Unable to read " << getName() << " Class 0 defaulting decimals" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to read "<< getName() <<" Class 0 defaulting decimals");
     }
 
     // default to KVAR meter
@@ -2441,10 +2325,7 @@ INT CtiDeviceAlphaA1::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Unable to read " << getName() << " Class 8 defaulting type" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to read "<< getName() <<" Class 8 defaulting type");
     }
 
     if (ptr->Real.class11.valid)
@@ -2716,10 +2597,7 @@ INT CtiDeviceAlphaA1::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Unable to read " << getName() << " Class 11 billing data not read" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to read "<< getName() <<" Class 11 billing data not read");
     }
 
     // default these to most likely settings
@@ -2745,10 +2623,7 @@ INT CtiDeviceAlphaA1::reformatDataBuffer(BYTE *aInMessBuffer, ULONG &aTotalBytes
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Unable to read " << getName() << " Class 14 TOU inputs defaulted" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to read "<< getName() <<" Class 14 TOU inputs defaulted");
     }
 
     ::memcpy (aInMessBuffer, _dataBuffer, sizeof (AlphaA1ScanData_t));

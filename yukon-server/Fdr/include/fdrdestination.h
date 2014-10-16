@@ -1,13 +1,15 @@
 #pragma once
 
-#include <string>
 #include "dlldefs.h"
 #include "fdr.h"
 #include "rwutil.h"
+#include "loggable.h"
+
+#include <string>
 
 class CtiFDRPoint;
 
-class IM_EX_FDRBASE CtiFDRDestination
+class IM_EX_FDRBASE CtiFDRDestination : public Cti::Loggable
 {
     public:
         CtiFDRDestination () {}; // this is only defined so this class can be used in an std::map
@@ -31,12 +33,13 @@ class IM_EX_FDRBASE CtiFDRDestination
         bool operator<(const CtiFDRDestination& other) const;
         bool operator==(const CtiFDRDestination& other) const;
 
+        std::string toString() const;
+
     private:
         // private data
         std::string      iTranslation;
         std::string      iDestination;
         CtiFDRPoint*     iParentPoint;
-
 };
 
 IM_EX_FDRBASE std::ostream& operator<< (std::ostream& os, const CtiFDRDestination& dest);

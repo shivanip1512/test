@@ -824,10 +824,7 @@ BOOL CtiLMProgramBase::isWithinValidControlWindow(LONG secondsFromBeginningOfDay
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::isReadyForTimedControl(LONG secondsFromBeginningOfDay)
 {
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " **Checkpoint** " << "Timed control is not implemented in this program type" << __FILE__ << "(" << __LINE__ << ")" << endl;
-    }
+    CTILOG_WARN(dout, "Timed control is not implemented in this program type");
     return FALSE;
 }
 
@@ -839,10 +836,7 @@ BOOL CtiLMProgramBase::isReadyForTimedControl(LONG secondsFromBeginningOfDay)
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramBase::handleTimedControl(CtiTime currentTime, LONG secondsFromBeginningOfDay, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg)
 {
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " **Checkpoint** " << "Timed control is not implemented in this program type" << __FILE__ << "(" << __LINE__ << ")" << endl;
-    }
+    CTILOG_WARN(dout, "Timed control is not implemented in this program type");
     return FALSE;
 }
 
@@ -977,10 +971,7 @@ void CtiLMProgramBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
     {
         static const std::string sql_insert = "insert into dynamiclmprogram values (?, ?, ?, ?, ?, ?, ?)";
 
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Inserted program into DynamicLMProgram: " << getPAOName() << endl;
-        }
+        CTILOG_INFO(dout, "Inserted program into DynamicLMProgram: " << getPAOName());
 
         Cti::Database::DatabaseWriter   inserter(conn, sql_insert);
 
@@ -1000,7 +991,7 @@ void CtiLMProgramBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
 
         _insertDynamicDataFlag = false;
     }
-    
+
     resetDirty(); // setDirty inserts into the changed group list and we do not want to do that here.
 }
 

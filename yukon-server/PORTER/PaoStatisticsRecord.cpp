@@ -222,8 +222,7 @@ bool PaoStatisticsRecord::TryInsert(Database::DatabaseWriter &writer)
     }
     catch( std::runtime_error &e )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << e.what() << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_EXCEPTION_ERROR(dout, e);
 
         return false;
     }
@@ -244,12 +243,7 @@ bool PaoStatisticsRecord::Insert(Database::DatabaseWriter &writer)
 
     if( ! success )
     {
-        std::string error_sql = writer.asString();
-
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Statistics Insert Error " << endl << error_sql << endl;
-        }
+        CTILOG_ERROR(dout, "Statistics DB Insert Error for SQL query: "<< writer.asString())
     }
 
     return success;
@@ -332,10 +326,7 @@ bool PaoStatisticsRecord::UpdateSum(Database::DatabaseWriter &writer)
     {
         std::string error_sql = writer.asString();
 
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Statistics Update Sum Error " << endl << error_sql << endl;
-        }
+        CTILOG_ERROR(dout, "Statistics DB Update Sum Error for SQL query: "<< writer.asString())
     }
 
     return success;

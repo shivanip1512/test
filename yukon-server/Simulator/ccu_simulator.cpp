@@ -1,7 +1,5 @@
 #include "precompiled.h"
 
-#include <boost/filesystem.hpp>
-
 #include "SimulatorUtils.h"
 #include "Simulator.h"
 #include "Ccu711.h"
@@ -11,6 +9,9 @@
 #include "cparms.h"
 #include "StreamSocketListener.h"
 #include "module_util.h"
+
+#include <boost/filesystem.hpp>
+#include <boost/thread.hpp>
 
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType);
 
@@ -25,8 +26,6 @@ using namespace boost;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
 using Cti::Timing::Chrono;
-
-DLLIMPORT extern CtiLogger dout;
 
 namespace Cti {
 namespace Simulator {
@@ -99,13 +98,6 @@ int SimulatorMainFunction(int argc, char **argv)
 
     port_max = max(port_max, port_min);
 
-    dout.start();     // fire up the logger thread
-    dout.setOutputPath(gLogDirectory);
-    dout.setRetentionLength(gLogRetention);
-    dout.setOutputFile("ccu_simulator");
-    dout.setToStdOut(true);
-    dout.setWriteInterval(1000);
-
     SimulatorLogger logger(dout);
 
     Cti::identifyProject(CompileInfo);
@@ -160,9 +152,6 @@ int SimulatorMainFunction(int argc, char **argv)
     threadGroup.join_all();
 
     logger.log(string(CompileInfo.project) + " exiting");
-
-    dout.interrupt(CtiThread::SHUTDOWN);
-    dout.join();
 
     return 0;
 }

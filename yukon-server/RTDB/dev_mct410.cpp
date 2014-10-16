@@ -364,11 +364,7 @@ Mct4xxDevice::point_info Mct410Device::getData(const unsigned char *buf, const u
         vt == ValueType_FrozenDynamicDemand ||
         vt == ValueType_LoadProfile_DynamicDemand )
     {
-        if( getMCTDebugLevel(DebugLevel_Info) )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - demand value " << (unsigned long)value << " resolution " << (int)resolution << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_TRACE(dout, "demand value "<< (unsigned long)value <<" resolution "<< (int)resolution);
 
         //  we need to do this here because value is an unsigned long and retval.first is a double
         switch( resolution )
@@ -400,10 +396,7 @@ Mct410Device::point_info Mct410Device::getLoadProfileData(unsigned channel, long
 
         if( interval_len <= 0 )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - interval_len = " << interval_len << " in Mct410Device::getLoadProfileData() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "invalid interval_len ("<< interval_len <<") for device \""<< getName() <<"\"");
 
             pi.quality = InvalidQuality;
             pi.description = "Invalid demand interval, cannot adjust reading";
@@ -419,10 +412,7 @@ Mct410Device::point_info Mct410Device::getLoadProfileData(unsigned channel, long
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - channel = " << channel << " in Mct410Device::getLoadProfileData() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "invalid channel = "<< channel <<" for device \""<< getName() <<"\"");
 
         pi = Mct4xxDevice::getData(buf, len, ValueType_Raw);
     }
@@ -545,10 +535,7 @@ long Mct410Device::getLoadProfileInterval( unsigned channel )
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - channel = " << channel << " in getLoadProfileInterval() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "invalid channel = "<< channel <<" for device \""<< getName() <<"\"");
 
         retval = 3600;
     }
@@ -593,10 +580,7 @@ ULONG Mct410Device::calcNextLPScanTime( void )
 
             if( interval_len <= 0 )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" has invalid LP rate (" << interval_len << ") for channel (" << channel << ") - setting nextLPtime out 30 minutes **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_WARN(dout, "device \""<< getName() <<"\" has invalid LP rate ("<< interval_len <<") for channel ("<< channel <<") - setting nextLPtime out 30 minutes");
 
                 _lp_info[channel].current_schedule = Now.seconds() + (30 * 60);
             }
@@ -638,11 +622,12 @@ ULONG Mct410Device::calcNextLPScanTime( void )
 
                 if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "planned_time = " << planned_time << endl;
-                    dout << "_lp_info[" << channel << "].collection_point = " << _lp_info[channel].collection_point << endl;
-                    dout << "_lp_info[" << channel << "].current_schedule = " << _lp_info[channel].current_schedule << endl;
+                    CTILOG_DEBUG(dout, "lp calctime check..."<<
+                            endl <<"planned_time     = "<< planned_time <<
+                            endl <<"channel          = "<< channel <<
+                            endl <<"collection_point = "<< _lp_info[channel].collection_point <<
+                            endl <<"current_schedule = "<< _lp_info[channel].current_schedule
+                            );
                 }
 
                 _lp_info[channel].current_schedule = planned_time;
@@ -666,20 +651,19 @@ ULONG Mct410Device::calcNextLPScanTime( void )
 
             if( getMCTDebugLevel(DebugLevel_LoadProfile) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint - lp calctime check... **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "planned_time = " << planned_time << endl;
-                dout << "_lp_info[" << channel << "].collection_point = " << _lp_info[channel].collection_point << endl;
-                dout << "_lp_info[" << channel << "].current_schedule = " << _lp_info[channel].current_schedule << endl;
-                dout << "next_time = " << next_time << endl;
+                CTILOG_DEBUG(dout, "lp calctime check..."<<
+                        endl <<"planned_time = "<< planned_time <<
+                        endl <<"_lp_info["<< channel <<"].collection_point = "<< _lp_info[channel].collection_point <<
+                        endl <<"_lp_info["<< channel <<"].current_schedule = "<< _lp_info[channel].current_schedule <<
+                        endl << "next_time = "<< next_time
+                        );
             }
         }
     }
 
     if( getMCTDebugLevel(DebugLevel_LoadProfile) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << getName() << "'s next Load Profile request at " << CtiTime(next_time) << endl;
+        CTILOG_DEBUG(dout, getName() <<"'s next Load Profile request at "<< CtiTime(next_time));
     }
 
     return (_nextLPScanTime = next_time);
@@ -712,11 +696,7 @@ void Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
     }
     else if( !useScanFlags() )
     {
-        if( getMCTDebugLevel(DebugLevel_LoadProfile) )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - calcAndInsertLPRequests() called from outside Scanner for device \"" << getName() << "\", ignoring **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_WARN(dout, "Function called from outside Scanner for device \""<< getName() <<"\", ignoring");
     }
     else
     {
@@ -727,8 +707,7 @@ void Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
 
             if( interval_len <= 0 )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - interval_len = " << interval_len << " in " << __FUNCTION__ << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "invalid interval_len ("<< interval_len <<") for device \""<< getName() <<"\"");
             }
             else if( getLoadProfile()->isChannelValid(channel) )
             {
@@ -747,11 +726,11 @@ void Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
 
                     if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - LP variable check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "Now.seconds() = " << Now.seconds() << endl;
-                        dout << "_lp_info[" << channel << "].collection_point = " << _lp_info[channel].collection_point << endl;
-                        dout << "MCT4XX_LPRecentBlocks * block_len = " << LPRecentBlocks * block_len << endl;
+                        CTILOG_DEBUG(dout, "LP variable check for device \""<< getName() <<"\""<<
+                                endl <<"Now.seconds() = "<< Now.seconds() <<
+                                endl <<"_lp_info["<< channel <<"].collection_point = "<< _lp_info[channel].collection_point <<
+                                endl <<"MCT4XX_LPRecentBlocks * block_len = "<< LPRecentBlocks * block_len
+                                );
                     }
 
                     //  make sure we're aligned
@@ -768,9 +747,9 @@ void Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
 
                     if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
+                        CTILOG_DEBUG(dout, "command string check for device \""<< getName() <<"\":"<<
+                                endl << tmpOutMess->Request.CommandStr
+                                );
                     }
 
                     outList.push_back(tmpOutMess);
@@ -782,8 +761,7 @@ void Mct410Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
         {
             if( getMCTDebugLevel(DebugLevel_LoadProfile) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - LP collection up to date for device \"" << getName() << "\", no scans generated **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_DEBUG(dout, "LP collection up to date for device \""<< getName() <<"\", no scans generated");
             }
         }
     }
@@ -803,10 +781,10 @@ bool Mct410Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 
     if( getMCTDebugLevel(DebugLevel_LoadProfile) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - LP parse value check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "parse.getiValue(\"scan_loadprofile_block\",   0) = " << parse.getiValue("scan_loadprofile_block", 0) << endl;
-        dout << "parse.getiValue(\"scan_loadprofile_channel\", 0) = " << parse.getiValue("scan_loadprofile_channel", 0) << endl;
+        CTILOG_DEBUG(dout,
+                endl <<"parse.getiValue(\"scan_loadprofile_block\",   0) = "<< parse.getiValue("scan_loadprofile_block", 0) <<
+                endl <<"parse.getiValue(\"scan_loadprofile_channel\", 0) = "<< parse.getiValue("scan_loadprofile_channel", 0)
+                );
     }
 
     block   = parse.getiValue("scan_loadprofile_block",   0);
@@ -830,8 +808,7 @@ bool Mct410Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
     {
         if( getMCTDebugLevel(DebugLevel_LoadProfile) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Improperly formed LP request discarded for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;;
+            CTILOG_DEBUG(dout, "Improperly formed LP request discarded for \""<< getName() <<"\"");
         }
 
         retVal = false;
@@ -1689,21 +1666,13 @@ YukonError_t Mct410Device::executePutConfigInstallDisconnect(CtiRequestMsg *pReq
         }
         catch( InvalidConfigDataException &ex )
         {
-            if( getMCTDebugLevel(DebugLevel_Configs) )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - " << ex.message << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_EXCEPTION_ERROR(dout, ex, "Device \""<< getName() <<"\"");
 
             return ClientErrors::InvalidConfigData;
         }
         catch( MissingConfigDataException &ex )
         {
-            if( getMCTDebugLevel(DebugLevel_Configs) )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - " << ex.message << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_EXCEPTION_ERROR(dout, ex, "Device \""<< getName() <<"\"");
 
             return ClientErrors::NoConfigData;
         }
@@ -1745,18 +1714,14 @@ YukonError_t Mct410Device::executePutConfigInstallFreezeDay(CtiRequestMsg *pReq,
 
             if ( ! configValue  )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - no value found for config key \""
-                     << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - no value found for config key \""<< configKey <<"\"");
 
                 return ClientErrors::NoConfigData;
             }
 
             if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned char>::max() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" << *configValue << ") found for config key \""
-                     << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - invalid value ("<< *configValue <<") found for config key \""<< configKey << "\"");
 
                 return ClientErrors::BadParameter;
             }
@@ -2610,25 +2575,14 @@ YukonError_t Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiT
     CtiPointSPtr   pPoint;
     CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if( getMCTDebugLevel(DebugLevel_Scanrates) )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_TRACE(dout, "Accumulator Decode for \""<< getName() <<"\"");
 
     if( InMessage.Sequence == EmetconProtocol::Scan_Accum )
     {
         setScanFlag(ScanRateAccum, false);
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     const unsigned char *freeze_counter = 0;
@@ -2676,12 +2630,7 @@ YukonError_t Mct410Device::decodeGetValueKWH(const INMESS &InMessage, const CtiT
 
                     if( pi.freeze_bit != getExpectedFreezeParity() )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
-                                                ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
-                                                "/" << getExpectedFreezeCounter() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "incoming freeze parity bit ("<< pi.freeze_bit <<") does not match expected freeze bit ("<< getExpectedFreezeParity() <<") on device \""<< getName() <<"\" - not sending data");
 
                         pi.description  = "Freeze parity does not match (";
                         pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
@@ -2736,14 +2685,7 @@ YukonError_t Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const C
     CtiPointSPtr   pPoint;
     CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     const unsigned char *freeze_counter = 0;
@@ -2778,12 +2720,7 @@ YukonError_t Mct410Device::decodeGetValueTOUkWh(const INMESS &InMessage, const C
 
                 if( pi.freeze_bit != getExpectedFreezeParity() )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
-                                            ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
-                                            "/" << getExpectedFreezeCounter() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "incoming freeze parity bit ("<< pi.freeze_bit <<") does not match expected freeze bit ("<< getExpectedFreezeParity() <<") on device \""<< getName() <<"\" - not sending data");
 
                     pi.description  = "Freeze parity does not match (";
                     pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
@@ -2833,23 +2770,12 @@ YukonError_t Mct410Device::decodeGetValueDemand(const INMESS &InMessage, const C
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg *pData = NULL;
 
-    if( getMCTDebugLevel(DebugLevel_Scanrates) )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_TRACE(dout, "Demand Decode for \""<< getName() <<"\"");
 
     setScanFlag(ScanRateGeneral, false);
     setScanFlag(ScanRateIntegrity, false);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     for( int i = 1; i <= 3; i++ )
@@ -2901,14 +2827,7 @@ YukonError_t Mct410Device::decodeGetValueVoltage( const INMESS &InMessage, const
 
     CtiReturnMsg    *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     max_volt_info = getData(DSt->Message, 2, ValueType_Voltage);
@@ -3154,8 +3073,7 @@ YukonError_t Mct410Device::decodeGetConfigLoadProfileExistingPeak(const INMESS &
 
     if( ! _llpPeakInterest.tryContinueRequest(requestId) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - orphaned GetConfig_LoadProfileExistingPeak in Mct410Device::decodeGetConfigLoadProfileExistingPeak() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_WARN(dout, "orphaned GetConfig_LoadProfileExistingPeak for device \""<< getName() <<"\"");
 
         //  We're not executing any more, just disappear.
         return ClientErrors::None;
@@ -3230,8 +3148,7 @@ YukonError_t Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InM
 
     if( ! _llpPeakInterest.tryContinueRequest(requestId) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - orphaned GetValue_LoadProfilePeakReport in Mct410Device::decodeGetConfigLoadProfileExistingPeak() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_WARN(dout, "orphaned GetValue_LoadProfilePeakReport for device \""<< getName() <<"\"");
 
         //  We're not executing any more, just disappear.
         return ClientErrors::None;
@@ -3248,13 +3165,7 @@ YukonError_t Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InM
 
     CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     pulses = DSt->Message[0] << 16 |
              DSt->Message[1] <<  8 |
@@ -3347,10 +3258,7 @@ YukonError_t Mct410Device::decodeGetValueLoadProfilePeakReport(const INMESS &InM
 
                 if( interval_len <= 0 )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - interval_len = " << interval_len << " in " << __FUNCTION__ << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "invalid interval_len ("<< interval_len <<") for device \""<< getName() <<"\"");
 
                     result_string += "Demand: (cannot calculate, invalid load profile interval)\n";
                 }
@@ -3820,14 +3728,7 @@ YukonError_t Mct410Device::decodeGetStatusInternal( const INMESS &InMessage, con
 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString  = getName() + " / Internal Status:\n";
@@ -3908,14 +3809,7 @@ YukonError_t Mct410Device::decodeGetStatusLoadProfile( const INMESS &InMessage, 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString += getName() + " / Demand Load Profile Status:\n";
@@ -3971,14 +3865,7 @@ YukonError_t Mct410Device::decodeGetStatusFreeze( const INMESS &InMessage, const
      CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
      CtiPointDataMsg      *pData = NULL;
 
-     if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-     {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-         return ClientErrors::MemoryAccess;
-     }
-
+     ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
      ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
      resultString += getName() + " / Freeze status:\n";
@@ -4060,14 +3947,7 @@ YukonError_t Mct410Device::decodeGetConfigIntervals(const INMESS &InMessage, con
 
     resultString += getName() + " / Voltage Profile Interval: " + CtiNumStr(DSt->Message[3]) + string(" minutes\n");
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
@@ -4103,14 +3983,7 @@ YukonError_t Mct410Device::decodeGetConfigThresholds(const INMESS &InMessage, co
         resultString += getName() + " / Outage threshold: disabled\n";
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
@@ -4142,14 +4015,7 @@ YukonError_t Mct410Device::decodeGetConfigFreeze(const INMESS &InMessage, const 
         resultString  = getName() + " / Scheduled day of freeze: (disabled)\n";
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
@@ -4210,14 +4076,7 @@ YukonError_t Mct410Device::decodeGetConfigMeterParameters(const INMESS &InMessag
         resultString += getName() + " / Transformer ratio: " + CtiNumStr(transformer_ratio);
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
@@ -4437,20 +4296,11 @@ YukonError_t Mct410Device::decodeGetConfigAddress(const INMESS &InMessage, const
 
     resultStr  = getName() + " / Unique address: " + CtiNumStr(address);
 
-    if(ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr))
-    {
-        ReturnMsg->setUserMessageId(InMessage.Return.UserID);
-        ReturnMsg->setResultString(resultStr);
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
+    ReturnMsg->setUserMessageId(InMessage.Return.UserID);
+    ReturnMsg->setResultString(resultStr);
 
-        retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        status = ClientErrors::MemoryAccess;
-    }
+    retMsgHandler( InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList );
 
     return status;
 }
@@ -4472,14 +4322,8 @@ YukonError_t Mct410Device::decodeGetConfigPhaseDetect(const INMESS &InMessage, c
     float first_interval_voltage, last_interval_voltage;
 
     CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
 
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
 //       Binary Values: 00 - Phase Unknown (default)
@@ -4624,14 +4468,7 @@ YukonError_t Mct410Device::decodeGetConfigModel(const INMESS &InMessage, const C
 
     descriptor += describeStatusAndEvents(DSt.Message + 5);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(descriptor);
 

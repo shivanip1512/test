@@ -181,8 +181,7 @@ std::vector<RfnCommand::TypeLengthValue> RfnCommand::getTlvsFromBytes( const Byt
 
     if( itr != bytes.end() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " - TLVs contains residual bytes. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        CTILOG_WARN(dout, "TLVs contains residual bytes.");
     }
 
     return tlvs;

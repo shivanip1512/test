@@ -9,7 +9,7 @@ namespace Cti    {
 namespace Porter {
 namespace Connections {
 
-struct SocketAddress
+struct SocketAddress : Loggable
 {
     SocketAddress(std::string ip_, unsigned short port_) :
         ip  (ip_),
@@ -24,7 +24,7 @@ struct SocketAddress
         return ip == other.ip && port == other.port;
     }
 
-    std::string toString() const
+    std::string toString() const override
     {
         return formatHostAndPort(ip, port);
     }
@@ -33,7 +33,7 @@ struct SocketAddress
 
 struct SocketStream
 {
-    typedef std::vector<char> bytes;
+    typedef std::vector<unsigned char> bytes;
 
     bytes stream;
 
@@ -79,7 +79,7 @@ protected:
 
 public:
 
-    static int reportSocketError(const std::string winsock_function_name, const char *method_name, const char *file, const int line);
+    static std::string formatSocketError(const std::string& winsock_function_name, int error);
 
     void add_to(fd_set *set) const;
     bool is_in(const fd_set *set) const;

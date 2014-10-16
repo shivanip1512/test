@@ -50,13 +50,7 @@ void CtiTableMeterReadLog::Insert(Cti::Database::DatabaseConnection &conn)
 
         if(newcid != getLogID() && newcid != 0)
         {
-            CtiTime Now;
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << Now << " Insert collision occurred in table " << getTableName() << "." << endl;
-                dout << Now << "   ChangeId has been re-initialized." << endl;
-            }
+            CTILOG_WARN(dout, "Insert collision occurred in table "<< getTableName() <<". ChangeId has been re-initialized");
 
             setLogID( newcid );
 
@@ -71,9 +65,10 @@ void CtiTableMeterReadLog::Insert(Cti::Database::DatabaseConnection &conn)
 
             if( ! inserter.execute() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unable to insert log for device id " << getDeviceID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << inserter.asString() << endl;
+                CTILOG_ERROR(dout, "Unable to insert log for device id "<< getDeviceID() <<
+                        endl << inserter.asString()
+                        );
+
             }
         }
     }

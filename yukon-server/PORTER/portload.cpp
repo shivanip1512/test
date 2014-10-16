@@ -65,15 +65,18 @@
 #include "trx_711.h"
 #include "dev_ccu.h"
 #include "dev_ccu721.h"
+#include "std_helper.h"
 
 
 using namespace std;
+
+using Cti::arrayToRange;
+using Cti::Logging::Range::Hex::operator<<;
 
 extern CtiRouteManager    RouteManager;
 
 INT LoadRemoteRoutes(CtiDeviceSPtr Dev);
 INT LoadPortRoutes (USHORT Port);
-
 
 struct loadRemoteRoutes
 {
@@ -139,9 +142,10 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                 OutMessage->ReturnNexus  = NULL;
                 OutMessage->SaveNexus    = NULL;
 
-                if( PortManager.writeQueue(OutMessage) )
+                if(PortManager.writeQueue(OutMessage))
                 {
-                    printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
+                    CTILOG_ERROR(dout, "Could not write to port queue for DeviceID "<< OutMessage->DeviceID <<" / Port "<< OutMessage->Port);
+
                     delete (OutMessage);
                     return ClientErrors::QueueWrite;
                 }
@@ -202,8 +206,7 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
 
                         if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Route " << RouteCount << " **** " << endl;
+                            CTILOG_DEBUG(dout, "RouteCount: "<< RouteCount);
                         }
 
                         /* Load route */
@@ -221,14 +224,8 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
 
                         if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << endl << "**** RouteCount: " << RouteCount << " ****" << endl;
-                            dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-6]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-5]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                            CTILOG_DEBUG(dout, "Load route - outMessage["<< Index-6 <<":"<< Index-1 <<"]"<<
+                                    endl << arrayToRange(&OutMessage->Buffer.OutMessage[Index-6], 6));
                         }
 
                         /* Load the Route set */
@@ -244,14 +241,8 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
 
                         if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-7]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-6]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-5]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                            CTILOG_DEBUG(dout, "Load the Route set - outMessage["<< Index-7 <<":"<< Index-1 <<"]"<<
+                                    endl << arrayToRange(&OutMessage->Buffer.OutMessage[Index-7], 7));
                         }
 
                         /* Load the zone */
@@ -264,11 +255,8 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
 
                         if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                                 << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                            CTILOG_DEBUG(dout, "Load the zone - outMessage["<< Index-4 <<":"<< Index-1 <<"]"<< 
+                                    endl << arrayToRange(&OutMessage->Buffer.OutMessage[Index-4], 4));
                         }
 
                         /* Last SETL */
@@ -276,8 +264,8 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
 
                         if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                            CTILOG_DEBUG(dout, "Last SETL - outMessage["<< Index-1 <<"]"<< 
+                                    endl << arrayToRange(&OutMessage->Buffer.OutMessage[Index-1], 1));
                         }
 
                         /* Thats it so send the message */
@@ -285,13 +273,13 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
 
                         if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "OutLength " << OutMessage->OutLength << endl;
+                            CTILOG_DEBUG(dout, "OutLength "<< OutMessage->OutLength);
                         }
 
-                        if( PortManager.writeQueue(OutMessage) )
+                        if(PortManager.writeQueue(OutMessage))
                         {
-                            printf ("Error Writing to Queue for Port %2hd\n", Dev->getPortID());
+                            CTILOG_ERROR(dout, "Could not write to port queue for DeviceID "<< OutMessage->DeviceID <<" / Port "<< OutMessage->Port);
+
                             delete (OutMessage);
                             continue;
                         }
@@ -306,8 +294,7 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 /* Allocate some memory for additional functions */
@@ -344,13 +331,9 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                 OutMessage->Buffer.OutMessage[Index++] = (UCHAR)RouteCount;
 
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << endl << "**** Final Message ****" << endl;
-                    dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                { 
+                    CTILOG_DEBUG(dout, "Final Message - RTE_COUNT - outMessage["<< Index-4 <<":"<< Index-1 <<"]"<<
+                            endl << arrayToRange(&OutMessage->Buffer.OutMessage[Index-4], 4));
                 }
 
                 switch( ((CtiDeviceCCU *)Dev.get())->getIDLC().getCCUAmpUseType() )  //  CCURouteRecord->getCarrier().getAmpUseType())
@@ -398,11 +381,8 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
 
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                    CTILOG_DEBUG(dout, "Load the amp mode - outMessage["<< Index-4 <<":"<< Index-1 <<"]"<<
+                            endl << arrayToRange(&OutMessage->Buffer.OutMessage[Index-4], 4));
                 }
 
                 /* Load the DLC Retries */
@@ -414,12 +394,9 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
                 OutMessage->Buffer.OutMessage[Index++] = 0;
 
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                {   
+                    CTILOG_DEBUG(dout, "Load the DLC Retries - outMessage["<< Index-4 <<":"<< Index-1 <<"]"<<
+                            endl << arrayToRange(&OutMessage->Buffer.OutMessage[Index-4], 4));
                 }
 
                 /* Load the zone count */
@@ -432,11 +409,8 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
 
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                    CTILOG_DEBUG(dout, "Load the zone count - outMessage["<< Index-4 <<":"<< Index-1 <<"]"<<
+                            endl << arrayToRange(&OutMessage->Buffer.OutMessage[Index-4], 4));
                 }
 
                 /* Load the route set count */
@@ -449,11 +423,8 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
 
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-4]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-3]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-2]) << " "
-                         << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                    CTILOG_DEBUG(dout, "Load the route set count - outMessage["<< Index-4 <<":"<< Index-1 <<"]"<<
+                            endl << arrayToRange(&OutMessage->Buffer.OutMessage[Index-4], 4));
                 }
 
                 /* Last SETL */
@@ -461,8 +432,8 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
 
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << hex << setw(2) << setfill('0') << (int)(OutMessage->Buffer.OutMessage[Index-1]) << endl;
+                    CTILOG_DEBUG(dout, "Last SETL - outMessage["<< Index-1 <<"]"<<
+                            endl << arrayToRange(&OutMessage->Buffer.OutMessage[Index-1], 1));
                 }
 
                 /* Thats it so send the message */
@@ -470,13 +441,13 @@ INT LoadRemoteRoutes(CtiDeviceSPtr Dev)
 
                 if( PorterDebugLevel & PORTER_DEBUG_VERBOSE )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "OutLength " << OutMessage->OutLength << endl;
+                    CTILOG_DEBUG(dout, "OutLength "<< OutMessage->OutLength);
                 }
 
-                if( PortManager.writeQueue(OutMessage) )
+                if(PortManager.writeQueue(OutMessage))
                 {
-                    printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
+                    CTILOG_ERROR(dout, "Could not write to port queue for DeviceID "<< OutMessage->DeviceID <<" / Port "<< OutMessage->Port);
+
                     delete (OutMessage);
                     return ClientErrors::QueueWrite;
                 }

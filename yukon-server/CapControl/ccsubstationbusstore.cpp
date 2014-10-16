@@ -134,10 +134,7 @@ void CtiCCSubstationBusStore::stopThreads()
         {
             _resetthr.terminate();
 
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Store Reset Thread forced to terminate." << endl;
-            }
+            CTILOG_INFO(dout, "Store Reset Thread forced to terminate.");
         }
         else
         {
@@ -149,10 +146,7 @@ void CtiCCSubstationBusStore::stopThreads()
         {
             _amfmthr.terminate();
 
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - AMFM Thread forced to terminate." << endl;
-            }
+            CTILOG_INFO(dout, "AMFM Thread forced to terminate.");
         }
         else
         {
@@ -164,10 +158,7 @@ void CtiCCSubstationBusStore::stopThreads()
         {
             _opstatsthr.terminate();
 
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Store Op Stat Thread forced to terminate." << endl;
-            }
+            CTILOG_INFO(dout, "Store Op Stat Thread forced to terminate.");
         }
         else
         {
@@ -177,8 +168,7 @@ void CtiCCSubstationBusStore::stopThreads()
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1043,8 +1033,7 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
     /*{
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Store START dumpAllDynamicData" << endl;
+        CTILOG_INFO(dout, "Store START dumpAllDynamicData");
     }*/
     try
     {
@@ -1057,8 +1046,7 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
 
             if ( ! conn.isValid() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                CTILOG_ERROR(dout, "Invalid Connection to Database");
 
                 return;
             }
@@ -1130,12 +1118,10 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     /*{
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Store STOP dumpAllDynamicData" << endl;
+        CTILOG_INFO(dout, "Store STOP dumpAllDynamicData");
     }*/
 }
 
@@ -1211,8 +1197,7 @@ bool CtiCCSubstationBusStore::deleteCapControlMaps()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Exception clearing old data for reload. Location: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to clear old data for reload");
     }
     return wasAlreadyRunning;
 }
@@ -1242,10 +1227,7 @@ void CtiCCSubstationBusStore::reset()
         {
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Obtained connection to the database..." << endl;
-                dout << CtiTime() << " - Resetting substation buses from database..." << endl;
-            }
+                CTILOG_INFO(dout, "Obtained connection to the database..." << " - Resetting substation buses from database...");            }
 
             wasAlreadyRunning = deleteCapControlMaps();
 
@@ -1255,8 +1237,7 @@ void CtiCCSubstationBusStore::reset()
             **************************************************************/
             if ( _CC_DEBUG )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - DataBase Reload Begin - " << endl;
+                CTILOG_DEBUG(dout, "DataBase Reload Begin - ");
             }
 
             if ( !reloadStrategyFromDatabase(-1) )
@@ -1321,8 +1302,7 @@ void CtiCCSubstationBusStore::reset()
             }
             else
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - No Substations in: " << __FILE__ << " at: " << __LINE__ << endl;
+                CTILOG_WARN(dout, "No Substations");
             }
 
             /*************************************************************
@@ -1370,16 +1350,12 @@ void CtiCCSubstationBusStore::reset()
             }
             catch (...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             if ( _CC_DEBUG )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - DataBase Reload End - " << endl;
-                dout << CtiTime() << " - Done Loading values into capcontrol - " << endl;
-            }
+                CTILOG_DEBUG(dout, "DataBase Reload End - " << " - Done Loading values into capcontrol - ");            }
 
             _isvalid = true;
             _2wayFlagUpdate = false;
@@ -1389,15 +1365,11 @@ void CtiCCSubstationBusStore::reset()
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     try
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Store reset." << endl;
-        }
+        CTILOG_INFO(dout, "Store reset.");
 
         CtiMultiMsg_vec capMessages;
         _reregisterforpoints = true;
@@ -1444,8 +1416,7 @@ void CtiCCSubstationBusStore::reset()
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
 
@@ -1455,13 +1426,11 @@ void CtiCCSubstationBusStore::reset()
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     if( _CC_DEBUG )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - reset complete - " << endl;
+        CTILOG_DEBUG(dout, "reset complete - ");
     }
 }
 
@@ -1474,11 +1443,7 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
 
-    //if( _CC_DEBUG )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Checking AMFM system for updates..." << endl;
-    }
+    CTILOG_INFO(dout, "Checking AMFM system for updates...");
 
     {
         Cti::Database::DatabaseConnection connection;
@@ -1491,14 +1456,10 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
             if ( !amfmFile.IsEmpty() )
             {
                 lastAMFMUpdateTime = timeSaver;
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                //dout << CtiTime() << " - After restoreFrom lastAMFMUpdateTime = " << lastAMFMUpdateTime.asString() << endl;
             }
             else
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Creating amfm.dat" << endl;
-                //dout << CtiTime() << " - Initial saveOn lastAMFMUpdateTime = " << lastAMFMUpdateTime.asString() << endl;
+                CTILOG_INFO(dout, "Creating amfm.dat");
                 amfmFile.Erase();
                 timeSaver = lastAMFMUpdateTime;
                 amfmFile.Flush();
@@ -1506,8 +1467,7 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Can not create amfm.dat to store date!!!!!!!!!" << endl;
+            CTILOG_ERROR(dout, "Can not create amfm.dat to store date!!!!!!!!!");
         }
 
         CtiTime currentDateTime;
@@ -1529,11 +1489,7 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
 
         if( _CC_DEBUG & CC_DEBUG_DATABASE )
         {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << loggedSQLstring << endl;
-            }
+            CTILOG_INFO(dout, "DB read for SQL query: " << rdr.asString());
         }
 
         bool newAMFMChanges = false;
@@ -1553,16 +1509,9 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
         {
             if( amfmFile.Exists() )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                //dout << CtiTime() << " - Periodic saveOn lastAMFMUpdateTime = " << lastAMFMUpdateTime.asString() << endl;
                 amfmFile.Erase();
                 timeSaver = lastAMFMUpdateTime;
                 amfmFile.Flush();
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                //dout << CtiTime() << " - Can not create amfm.dat to store date!!!!!!!!!" << endl;
             }
 
             //sending a signal message to dispatch so that changes from the amfm are in the system log
@@ -1693,27 +1642,30 @@ void CtiCCSubstationBusStore::handleAMFMChanges(Cti::RowReader& rdr)
 
     if( _CC_DEBUG )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - AMFM system update:"
-             << " capacitor_id_string: "                << capacitor_id_string
-             << " circt_id_normal: "                    << circt_id_normal
-             << " circt_nam_normal: "                   << circt_nam_normal
-             << " circt_id_current: "                   << circt_id_current
-             << " circt_name_current: "                 << circt_name_current
-             << " switch_datetime: "                    << switch_datetime.asString()
-             << " owner: "                              << owner
-             << " capacitor_name: "                     << capacitor_name
-             << " kvar_rating: "                        << kvar_rating
-             << " cap_fs: "                             << cap_fs
-             << " cbc_model: "                          << cbc_model
-             << " serial_no: "                          << serial_no
-             << " location: "                           << location
-             << " switching_seq: "                      << switching_seq
-             << " cap_disable_flag: "                   << cap_disable_flag
-             << " cap_disable_type: "                   << cap_disable_type
-             << " inoperable_bad_order_equipnote: "     << inoperable_bad_order_equipnote
-             << " open_tag_note: "                      << open_tag_note
-             << " cap_change_type: "                    << cap_change_type << endl;
+        Cti::FormattedList list;
+
+        list << "AMFM system update:";
+        list.add("capacitor_id_string")             << capacitor_id_string;
+        list.add("circt_id_normal")                 << circt_id_normal;
+        list.add("circt_nam_normal")                << circt_nam_normal;
+        list.add("circt_id_current")                << circt_id_current;
+        list.add("circt_name_current")              << circt_name_current;
+        list.add("switch_datetime")                 << switch_datetime;
+        list.add("owner")                           << owner;
+        list.add("capacitor_name")                  << capacitor_name;
+        list.add("kvar_rating")                     << kvar_rating;
+        list.add("cap_fs")                          << cap_fs;
+        list.add("cbc_model")                       << cbc_model;
+        list.add("serial_no")                       << serial_no;
+        list.add("location")                        << location;
+        list.add("switching_seq")                   << switching_seq;
+        list.add("cap_disable_flag")                << cap_disable_flag;
+        list.add("cap_disable_type")                << cap_disable_type;
+        list.add("inoperable_bad_order_equipnote")  << inoperable_bad_order_equipnote;
+        list.add("open_tag_note")                   << open_tag_note;
+        list.add("cap_change_type")                 << cap_change_type;
+
+        CTILOG_DEBUG(dout, list);
     }
 
     feederReconfigureM3IAMFM( capacitor_id_string, circt_id_normal, circt_nam_normal, circt_id_current, circt_name_current,
@@ -1830,10 +1782,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                     additional += ", on Feeder: ";
                                     additional += currentFeeder->getPaoName();
                                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                    }
+                                    CTILOG_INFO(dout, text << ", " << additional);
                                 }
                                 currentCapBank->setBankSize(kvarrating);
                                 updateCapBankFlag = true;
@@ -1856,10 +1805,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                     additional += ", on Feeder: ";
                                     additional += currentFeeder->getPaoName();
                                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                    }
+                                    CTILOG_INFO(dout, text << ", " << additional);
                                 }
                                 currentCapBank->setOperationalState(ciStringEqual(cap_fs,tempFixedOperationalStateString)?CtiCCCapBank::FixedOperationalState:CtiCCCapBank::SwitchedOperationalState);
                                 updateCapBankFlag = true;
@@ -1880,10 +1826,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                     additional += ", on Feeder: ";
                                     additional += currentFeeder->getPaoName();
                                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                    }
+                                    CTILOG_INFO(dout, text << ", " << additional);
                                 }
                                 currentCapBank->setDisableFlag(ciStringEqual(cap_disable_flag,m3iAMFMDisabledString));
                                 updateCapBankFlag = true;
@@ -1904,10 +1847,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                     additional += ", on Feeder: ";
                                     additional += currentFeeder->getPaoName();
                                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                    }
+                                    CTILOG_INFO(dout, text << ", " << additional);
                                 }
                                 currentCapBank->setControllerType(translateCBCModelToControllerType(cbc_model));
                                 updateCapBankFlag = true;
@@ -1928,10 +1868,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                     additional += ", on Feeder: ";
                                     additional += currentFeeder->getPaoName();
                                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                    }
+                                    CTILOG_INFO(dout, text << ", " << additional);
                                 }
                                 currentCapBank->setPaoDescription(location);
                                 updateCapBankFlag = true;
@@ -1960,8 +1897,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
     }
     if( !found )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Cap Bank not found MapLocationId: " << capacitor_id_string << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        CTILOG_WARN(dout, "Cap Bank not found MapLocationId: " << capacitor_id_string);
     }
 }
 
@@ -2056,10 +1992,7 @@ void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeed
                     _ltoa(currentFeeder->getPaoId(),tempchar,10);
                     additional += tempchar;
                     CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                    }
+                    CTILOG_INFO(dout, text << ", " << additional);
                 }
 
                 found = true;
@@ -2075,8 +2008,7 @@ void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeed
 
     if( !found )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Feeder not found MapLocationId: " << feederid << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        CTILOG_WARN(dout, "Feeder not found, id: " << feederid);
     }
 }
 
@@ -2119,10 +2051,7 @@ void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* curre
         additional += ", on Feeder: ";
         additional += currentFeeder->getPaoName();
         CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << text << ", " << additional << endl;
-        }
+        CTILOG_INFO(dout, text << ", " << additional);
     }
 }
 
@@ -2162,11 +2091,10 @@ void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(long feederid, long capid, 
                                 UpdatePaoDisableFlagInDB(currentCapBank, ciStringEqual(enableddisabled,m3iAMFMDisabledString));
                                 currentCCSubstationBus->setBusUpdatedFlag(true);
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - M3I change, 'Cap Out of Service' PAO Id: "
+                                    CTILOG_INFO(dout, "M3I change, 'Cap Out of Service' PAO Id: "
                                          << currentCapBank->getPaoId() << ", name: "
                                          << currentCapBank->getPaoName() << ", was "
-                                         << enableddisabled << endl;
+                                         << enableddisabled);
                                 }
                             }
                             found = true;
@@ -2188,8 +2116,7 @@ void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(long feederid, long capid, 
     }
     if( !found )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Cap Bank not found MapLocationId: " << capid << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        CTILOG_WARN(dout, "Cap Bank not found, id: " << capid);
     }
 }
 
@@ -2226,11 +2153,10 @@ void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(long feederid, string& f
                             UpdatePaoDisableFlagInDB(currentFeeder, ciStringEqual(enableddisabled,m3iAMFMDisabledString));
                             currentCCSubstationBus->setBusUpdatedFlag(true);
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - M3I change, 'Feeder Out of Service' PAO Id: "
+                                CTILOG_INFO(dout, "M3I change, 'Feeder Out of Service' PAO Id: "
                                      << currentFeeder->getPaoId() << ", name: "
                                      << currentFeeder->getPaoName() << ", was "
-                                     << enableddisabled << endl;
+                                     << enableddisabled);
                             }
                         }
                         found = true;
@@ -2246,8 +2172,7 @@ void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(long feederid, string& f
     }
     if( !found )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Feeder not found MapLocationId: " << feederid << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        CTILOG_WARN(dout, "Feeder not found, id: " << feederid);
     }
 }
 
@@ -2296,14 +2221,12 @@ void CtiCCSubstationBusStore::doOpStatsThr()
         refreshrate = atoi(str.c_str());
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << refreshrate << endl;
+            CTILOG_DEBUG(dout, var << ":  " << refreshrate);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
     ThreadStatusKeeper threadStatus("CapControl doOpsThr");
     bool startUpSendStats = true;
@@ -2324,10 +2247,7 @@ void CtiCCSubstationBusStore::doOpStatsThr()
         if( (currentTime.seconds() > opStatRefreshRate.seconds() && secondsFrom1901 != lastOpStatsThreadPulse) ||
             startUpSendStats )
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Controller refreshing OP STATS" << endl;
-            }
+            CTILOG_INFO(dout, "Controller refreshing OP STATS");
 
             {
                 RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
@@ -2344,10 +2264,7 @@ void CtiCCSubstationBusStore::doOpStatsThr()
                     reCalculateAllStats( );
                     lastOpStatsThreadPulse = secondsFrom1901;
                     opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  _OP_STATS_REFRESH_RATE );
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Next OP STATS CHECKTIME : "<<opStatRefreshRate << endl;
-                    }
+                    CTILOG_INFO(dout, "Next OP STATS CHECKTIME : "<<opStatRefreshRate);
 
                     createAllStatsPointDataMsgs(pointChanges);
                     try
@@ -2363,14 +2280,12 @@ void CtiCCSubstationBusStore::doOpStatsThr()
                     }
                     catch(...)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
             }
@@ -2403,14 +2318,12 @@ void CtiCCSubstationBusStore::doResetThr()
         refreshrate = atoi(str.c_str());
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << refreshrate << endl;
+            CTILOG_DEBUG(dout, var << ":  " << refreshrate);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     CtiTime lastPeriodicDatabaseRefresh = CtiTime();
@@ -2423,10 +2336,7 @@ void CtiCCSubstationBusStore::doResetThr()
 
         if( currentTime.seconds() >= lastPeriodicDatabaseRefresh.seconds()+refreshrate )
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Periodic restore of substation list from the database" << endl;
-            }
+            CTILOG_INFO(dout, "Periodic restore of substation list from the database");
 
             dumpAllDynamicData();
             setValid(false);
@@ -2461,14 +2371,12 @@ void CtiCCSubstationBusStore::doAMFMThr()
         std::transform(amfm_interface.begin(),amfm_interface.end(),amfm_interface.begin(), ::toupper);
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << amfm_interface << endl;
+            CTILOG_DEBUG(dout, var << ":  " << amfm_interface);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     if( ciStringEqual(amfm_interface,m3iAMFMInterfaceString) )
@@ -2485,14 +2393,12 @@ void CtiCCSubstationBusStore::doAMFMThr()
             refreshrate = atoi(str.c_str());
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << refreshrate << endl;
+                CTILOG_DEBUG(dout, var << ":  " << refreshrate);
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
         }
 
         std::strcpy(var, "CAP_CONTROL_AMFM_DB_TYPE");
@@ -2502,14 +2408,12 @@ void CtiCCSubstationBusStore::doAMFMThr()
 
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << amFmDbType << endl;
+                CTILOG_DEBUG(dout, var << ":  " << amFmDbType);
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
         }
 
         std::strcpy(var, "CAP_CONTROL_AMFM_DB_SQLSERVER");
@@ -2518,14 +2422,12 @@ void CtiCCSubstationBusStore::doAMFMThr()
             amFmDbName = str.c_str();
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << amFmDbName << endl;
+                CTILOG_DEBUG(dout, var << ":  " << amFmDbName);
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
         }
 
         std::strcpy(var, "CAP_CONTROL_AMFM_DB_USERNAME");
@@ -2534,14 +2436,12 @@ void CtiCCSubstationBusStore::doAMFMThr()
             amFmDbUser = str.c_str();
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << amFmDbUser << endl;
+                CTILOG_DEBUG(dout, var << ":  " << amFmDbUser);
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
         }
 
         std::strcpy(var, "CAP_CONTROL_AMFM_DB_PASSWORD");
@@ -2550,23 +2450,18 @@ void CtiCCSubstationBusStore::doAMFMThr()
             amFmDbPassword = str.c_str();
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << amFmDbPassword << endl;
+                CTILOG_DEBUG(dout, var << ":  " << amFmDbPassword);
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
         }
 
 
         if( amFmDbType != "none" && amFmDbName != "none" && amFmDbUser != "none" && amFmDbPassword != "none" )
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Obtaining connection to the AMFM database..." << endl;
-            }
+            CTILOG_INFO(dout, "Obtaining connection to the AMFM database...");
             setDatabaseParams(amFmDbType,amFmDbName,amFmDbUser,amFmDbPassword);
 
             time_t start = ::time(NULL);
@@ -2588,8 +2483,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
                 {
                     if( _CC_DEBUG & CC_DEBUG_STANDARD )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Setting AMFM reload flag." << endl;
+                        CTILOG_DEBUG(dout, "Setting AMFM reload flag.");
                     }
 
                     dumpAllDynamicData();
@@ -2609,8 +2503,7 @@ void CtiCCSubstationBusStore::doAMFMThr()
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Can't find AMFM DB setting in master.cfg!!!" << endl;
+            CTILOG_INFO(dout, "Can't find AMFM DB setting in master.cfg!!!");
         }
     }
 }
@@ -2827,27 +2720,18 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                     if( numberOfCapBanksPending == 0 && !currentFeeder->getPostOperationMonitorPointScanFlag())
                     {
                         currentFeeder->setRecentlyControlledFlag(false);
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Feeder: " << currentFeeder->getPaoName() << ", no longer recently controlled because no banks were pending in: " << __FILE__ << " at: " << __LINE__ << endl;
-                        }
+                        CTILOG_INFO(dout, "Feeder: " << currentFeeder->getPaoName() << ", no longer recently controlled because no banks were pending");
                     }
                     else if( numberOfCapBanksPending > 1 )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Multiple cap banks pending in Feeder: " << currentFeeder->getPaoName() << ", setting status to questionable in: " << __FILE__ << " at: " << __LINE__ << endl;
-                        }
+                        CTILOG_INFO(dout, "Multiple cap banks pending in Feeder: " << currentFeeder->getPaoName() << ", setting status to questionable");
                         for(int k=0;k<ccCapBanks.size();k++)
                         {
                             CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
 
                             if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending && currentCapBank->getStatusPointId() > 0)
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPaoName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                }
+                                CTILOG_INFO(dout, "Setting status to close questionable, Cap Bank: " << currentCapBank->getPaoName());
                                 currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                                 currentCapBank->setControlRecentlySentFlag(false);
                                 currentFeeder->setRetryIndex(0);
@@ -2866,10 +2750,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             }
                             else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending && currentCapBank->getStatusPointId() > 0)
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPaoName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                }
+                                CTILOG_INFO(dout, "Setting status to open questionable, Cap Bank: " << currentCapBank->getPaoName());
                                 currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                                 currentCapBank->setControlRecentlySentFlag(false);
                                 currentFeeder->setRetryIndex(0);
@@ -2889,10 +2770,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                     }
                     else if (currentFeeder->getPostOperationMonitorPointScanFlag())
                     {
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Feeder: " << currentFeeder->getPaoName() << " waiting for Post Op Monitor Scan " << endl;
-                        }
+                        CTILOG_INFO(dout, "Feeder: " << currentFeeder->getPaoName() << " waiting for Post Op Monitor Scan ");
                     }
                     else
                     {//normal pending feeder
@@ -2909,10 +2787,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 
                         if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending && currentCapBank->getStatusPointId() > 0)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
-                            }
+                            CTILOG_INFO(dout, "Cap Bank: " << currentCapBank->getPaoName() << " questionable because feeder is not recently controlled");
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                             currentCapBank->setControlRecentlySentFlag(false);
                             currentFeeder->setRetryIndex(0);
@@ -2930,10 +2805,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                         }
                         else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending && currentCapBank->getStatusPointId() > 0)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
-                            }
+                            CTILOG_INFO(dout, "Cap Bank: " << currentCapBank->getPaoName() << " questionable because feeder is not recently controlled");
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                             currentCapBank->setControlRecentlySentFlag(false);
                             currentFeeder->setRetryIndex(0);
@@ -2962,10 +2834,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
         }
         else if (currentSubstationBus->getPostOperationMonitorPointScanFlag())
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Sub: " << currentSubstationBus->getPaoName() << " waiting for Post Op Monitor Scan " << endl;
-            }
+            CTILOG_INFO(dout, "Sub: " << currentSubstationBus->getPaoName() << " waiting for Post Op Monitor Scan ");
         }
         else//sub bus not recently controlled
         {
@@ -2984,10 +2853,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                     if( currentFeeder->getRecentlyControlledFlag() )
                     {
                         currentFeeder->setRecentlyControlledFlag(false);
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Feeder: " << currentFeeder->getPaoName() << ", no longer recently controlled because sub bus not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
-                        }
+                        CTILOG_INFO(dout, "Feeder: " << currentFeeder->getPaoName() << ", no longer recently controlled because sub bus not recently controlled");
                     }
 
                     CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
@@ -2998,10 +2864,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 
                         if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending && !(currentCapBank->getVerificationFlag() && currentCapBank->getPerformingVerificationFlag()) && currentCapBank->getStatusPointId() > 0)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPaoName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-                            }
+                            CTILOG_INFO(dout, "Setting status to close questionable, Cap Bank: " << currentCapBank->getPaoName());
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                             currentCapBank->setControlRecentlySentFlag(false);
                             currentFeeder->setRetryIndex(0);
@@ -3021,10 +2884,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                         }
                         else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending && !(currentCapBank->getVerificationFlag() && currentCapBank->getPerformingVerificationFlag()) && currentCapBank->getStatusPointId() > 0)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPaoName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
-                            }
+                            CTILOG_INFO(dout, "Setting status to open questionable, Cap Bank: " << currentCapBank->getPaoName());
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                             currentCapBank->setControlRecentlySentFlag(false);
                             currentFeeder->setRetryIndex(0);
@@ -3075,10 +2935,7 @@ void CtiCCSubstationBusStore::resetDailyOperations()
             if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
                 pointChanges.push_back(new CtiSignalMsg(currentSubstationBus->getDailyOperationsAnalogPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control",
                                                                                         0,0,0, currentSubstationBus->getCurrentDailyOperations() ));
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << text << ", " << additional << endl;
-            }
+            CTILOG_INFO(dout, text << ", " << additional);
             long stationId, areaId, spAreaId;
             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId);
             if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
@@ -3497,20 +3354,12 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(const EventLogEntry &msg)
 
     if( _CC_DEBUG & CC_DEBUG_DATABASE )
     {
-        string loggedSQLstring = dbInserter.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << endl;
-        }
+        CTILOG_INFO(dout, dbInserter.asString());
     }
 
     if( ! dbInserter.execute() )
     {
-        if( _CC_DEBUG & CC_DEBUG_DATABASE )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " **** ERROR **** inserting entry into CCEventLog Table" << endl;
-        }
+        CTILOG_ERROR(dout, "CCEventLog Table insert failed: " << dbInserter.asString());
 
         return false;
     }
@@ -3576,11 +3425,7 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
 
                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                         {
-                             string loggedSQLstring = dbRdr.asString();
-                             {
-                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                 dout << CtiTime() << " - " << loggedSQLstring << endl;
-                             }
+                             CTILOG_INFO(dout, dbRdr.asString());
                         }
 
                         while ( dbRdr() )
@@ -3607,8 +3452,7 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
                 {
                     if (_CC_DEBUG & CC_DEBUG_EXTENDED)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - HOLIDAY!  CELEBRATE..." << endl;
+                        CTILOG_DEBUG(dout, "HOLIDAY!  CELEBRATE...");
                     }
 
                     reloadAndAssignHolidayStrategysFromDatabase(strategyId);
@@ -3618,8 +3462,7 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
                 {
                     if (_CC_DEBUG & CC_DEBUG_EXTENDED)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - No HOLIDAY!  No CELEBRATE..." << endl;
+                        CTILOG_DEBUG(dout, "No HOLIDAY!  No CELEBRATE...");
                     }
                 }
             }
@@ -3637,8 +3480,7 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return true;
@@ -3691,11 +3533,7 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
 
                      if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                      {
-                         string loggedSQLstring = rdr.asString();
-                         {
-                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                             dout << CtiTime() << " - " << loggedSQLstring << endl;
-                         }
+                         CTILOG_INFO(dout, rdr.asString());
                      }
 
                      while ( rdr() )
@@ -3724,8 +3562,7 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -3771,11 +3608,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
 
                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                    {
-                       string loggedSQLstring = dbRdr.asString();
-                       {
-                           CtiLockGuard<CtiLogger> logger_guard(dout);
-                           dout << CtiTime() << " - " << loggedSQLstring << endl;
-                       }
+                       CTILOG_INFO(dout, dbRdr.asString());
                    }
 
                    while ( dbRdr() )
@@ -3800,8 +3633,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -3863,11 +3695,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -3907,11 +3735,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -3954,11 +3778,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             CtiCCSubstationPtr currentCCSubstation;
@@ -4015,11 +3835,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             long currentSubId;
@@ -4082,11 +3898,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -4137,14 +3949,12 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                         }
                         else
                         {//undefined area point
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Undefined Substation point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            CTILOG_INFO(dout, "Undefined Substation point offset: " << tempPointOffset);
                         }
                     }
                     else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Undefined Substation point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        CTILOG_INFO(dout, "Undefined Substation point type: " << tempPointType);
                     }
                 }
             }
@@ -4166,11 +3976,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             long currentSubBusId;
@@ -4192,8 +3998,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 /*---------------------------------------------------------------------------
@@ -4246,11 +4051,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -4357,11 +4158,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
 
              if ( _CC_DEBUG & CC_DEBUG_DATABASE )
              {
-                 string loggedSQLstring = rdr.asString();
-                 {
-                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                     dout << CtiTime() << " - " << loggedSQLstring << endl;
-                 }
+                 CTILOG_INFO(dout, rdr.asString());
              }
 
              while ( rdr() )
@@ -4424,11 +4221,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -4466,11 +4259,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -4522,14 +4311,12 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
                         }
                         else
                         {//undefined area point
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Undefined Area point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            CTILOG_INFO(dout, "Undefined Area point offset: " << tempPointOffset);
                         }
                     }
                     else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Undefined Area point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        CTILOG_INFO(dout, "Undefined Area point type: " << tempPointType);
                     }
                 }
             }
@@ -4549,11 +4336,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             long currentSubstationId;
@@ -4576,8 +4359,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -4610,11 +4392,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -4648,11 +4426,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
 
              if ( _CC_DEBUG & CC_DEBUG_DATABASE )
              {
-                 string loggedSQLstring = rdr.asString();
-                 {
-                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                     dout << CtiTime() << " - " << loggedSQLstring << endl;
-                 }
+                 CTILOG_INFO(dout, rdr.asString());
              }
 
              while ( rdr() )
@@ -4698,11 +4472,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
 
              if ( _CC_DEBUG & CC_DEBUG_DATABASE )
              {
-                 string loggedSQLstring = rdr.asString();
-                 {
-                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                     dout << CtiTime() << " - " << loggedSQLstring << endl;
-                 }
+                 CTILOG_INFO(dout, rdr.asString());
              }
 
              while ( rdr() )
@@ -4749,11 +4519,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -4781,11 +4547,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -4837,14 +4599,12 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                         }
                         else
                         {//undefined area point
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Undefined Special Area point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            CTILOG_INFO(dout, "Undefined Special Area point offset: " << tempPointOffset);
                         }
                     }
                     else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Undefined Special Area point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        CTILOG_INFO(dout, "Undefined Special Area point type: " << tempPointType);
                     }
                 }
             }
@@ -4852,8 +4612,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -4940,11 +4699,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             CtiCCSubstationBusPtr  currentCCSubstationBus;
@@ -5044,11 +4799,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = dbRdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, dbRdr.asString());
             }
 
             while ( dbRdr() )
@@ -5210,11 +4961,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 
                  if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                  {
-                     string loggedSQLstring = dbRdr.asString();
-                     {
-                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                         dout << CtiTime() << " - " << loggedSQLstring << endl;
-                     }
+                     CTILOG_INFO(dout, dbRdr.asString());
                  }
 
                  while ( dbRdr() )
@@ -5234,10 +4981,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 
                      if (today == CtiDate(holDay, holMon, tempYear) )
                      {
-                         {
-                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                             dout << CtiTime() << " TODAY is: " << today << " HOLIDAY is: "<<CtiDate(holDay, holMon, tempYear)  << endl;
-                         }
+                         CTILOG_INFO(dout, "TODAY is: " << today << " HOLIDAY is: "<<CtiDate(holDay, holMon, tempYear) );
                          long busId, stratId, areaId = 0;
                          CtiCCSubstationBusPtr currentCCSubstationBus = NULL;
                          if (subBusId > 0)
@@ -5286,9 +5030,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                 }
                                 else
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " ***WARNING*** Sub: "<<currentCCSubstationBus->getPaoName()<<" will NOT operate in Dual Mode."<<endl;
-                                    dout << "   Alternate Sub: "<<dualBus->getPaoName()<<" does not have a VAR Point ID attached."<< endl;
+                                    CTILOG_WARN(dout, "Sub: "<<currentCCSubstationBus->getPaoName()<<" will NOT operate in Dual Mode."
+                                                    "Alternate Sub: "<<dualBus->getPaoName()<<" does not have a VAR Point ID attached.");
                                 }
                             }
                             else if(ciStringEqual(currentCCSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) )
@@ -5300,9 +5043,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                                 }
                                 else
                                 {
-                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                     dout << CtiTime() << " ***WARNING*** Sub: "<<currentCCSubstationBus->getPaoName()<<" will NOT operate in Dual Mode."<<endl;
-                                     dout << "   Alternate Sub: "<<dualBus->getPaoName()<<" does not have a Volt Point ID attached."<< endl;
+                                     CTILOG_WARN(dout, "Sub: "<<currentCCSubstationBus->getPaoName()<<" will NOT operate in Dual Mode."
+                                                    "Alternate Sub: "<<dualBus->getPaoName()<<" does not have a Volt Point ID attached.");
                                 }
                             }
                         }
@@ -5334,11 +5076,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -5390,11 +5128,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -5424,11 +5158,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             long currentFeederId;
@@ -5467,11 +5197,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -5555,14 +5281,12 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                         }
                         else
                         {//undefined bus point
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Undefined Substation Bus point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            CTILOG_INFO(dout, "Undefined Substation Bus point offset: " << tempPointOffset);
                         }
                     }
                     else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Undefined Substation Bus point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        CTILOG_INFO(dout, "Undefined Substation Bus point type: " << tempPointType);
                     }
                 }
             }
@@ -5596,8 +5320,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -5836,11 +5559,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             CtiCCFeederPtr oldCCFeeder, currentCCFeeder;
@@ -5904,11 +5623,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             CtiCCFeederPtr currentCCFeeder;
@@ -6059,11 +5774,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
 
              if ( _CC_DEBUG & CC_DEBUG_DATABASE )
              {
-                 string loggedSQLstring = rdr.asString();
-                 {
-                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                     dout << CtiTime() << " - " << loggedSQLstring << endl;
-                 }
+                 CTILOG_INFO(dout, rdr.asString());
              }
 
              while ( rdr() )
@@ -6116,11 +5827,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             long capbankid, feedid, controlorder, closeorder, triporder;
@@ -6164,11 +5871,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -6225,11 +5928,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -6279,11 +5978,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -6363,14 +6058,12 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
                             }
                             else
                             {//undefined feeder point
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Undefined Feeder point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                CTILOG_INFO(dout, "Undefined Feeder point offset: " << tempPointOffset);
                             }
                         }
                         else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Undefined Feeder point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            CTILOG_INFO(dout, "Undefined Feeder point type: " << tempPointType);
                         }
                     }
                 }
@@ -6385,8 +6078,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId,
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -6437,11 +6129,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -6474,11 +6162,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -6529,11 +6213,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -6584,11 +6264,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             long subbusid;
@@ -6665,11 +6341,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while (rdr())
@@ -6705,11 +6377,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -6770,8 +6438,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                         }
                         else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Undefined Cap Bank point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                            CTILOG_INFO(dout, "Undefined Cap Bank point offset: " << tempPointOffset);
                         }
                     }
                 }
@@ -6802,11 +6469,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -6844,8 +6507,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Undefined Cap Bank point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                CTILOG_INFO(dout, "Undefined Cap Bank point offset: " << tempPointOffset);
                             }
                         }
                     }
@@ -6886,11 +6548,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
             while ( rdr() )
             {
@@ -6921,8 +6579,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -6961,11 +6618,7 @@ void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, PaoId
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             CtiCCCapBankPtr currentCCCapBank = NULL;
@@ -7015,8 +6668,7 @@ void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, PaoId
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -7096,11 +6748,7 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                std::string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << std::endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -7185,8 +6833,7 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long subBusId, Pao
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -7266,8 +6913,7 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                 _ccCapBankStates->clear();
                 if (_ccCapBankStates->size() > 0)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " _ccCapBankStates did NOT get destroyed " << endl;
+                    CTILOG_INFO(dout, "_ccCapBankStates did NOT get destroyed ");
                 }
             }
             {
@@ -7286,11 +6932,7 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
 
                 if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_INFO(dout, rdr.asString());
                 }
 
                 while ( rdr() )
@@ -7313,11 +6955,7 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
 
                 if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_INFO(dout, rdr.asString());
                 }
 
                 while ( rdr() )
@@ -7340,11 +6978,7 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
 
                 if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_INFO(dout, rdr.asString());
                 }
 
                 CtiString str;
@@ -7370,10 +7004,7 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                     }
                     if (stringContainsIgnoreCase(translation, str))
                     {
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " FDR Link Status POINT FOUND: "<<pointID << endl;
-                        }
+                        CTILOG_INFO(dout, "FDR Link Status POINT FOUND: "<<pointID);
                         _linkStatusPointId = pointID;
                         _linkStatusFlag = STATE_OPENED;
                         break;
@@ -7384,8 +7015,7 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -7435,11 +7065,7 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -7478,8 +7104,7 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -7515,8 +7140,7 @@ void CtiCCSubstationBusStore::locateOrphans(PaoIdVector *orphanCaps, PaoIdVector
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -7535,8 +7159,7 @@ bool CtiCCSubstationBusStore::isFeederOrphan(long feederId)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return false;
 }
@@ -7552,8 +7175,7 @@ bool CtiCCSubstationBusStore::isCapBankOrphan(long capBankId)
                 {
                     if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " Cap " <<capBankId<<" is on Orphan list. "<< endl;
+                        CTILOG_DEBUG(dout, "Cap " <<capBankId<<" is on Orphan list. ");
                     }
                     return true;
                 }
@@ -7562,8 +7184,7 @@ bool CtiCCSubstationBusStore::isCapBankOrphan(long capBankId)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return false;
 }
@@ -7577,8 +7198,7 @@ void CtiCCSubstationBusStore::removeFromOrphanList(long ccId)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -7634,8 +7254,7 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
         try
@@ -7677,21 +7296,18 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
             }
             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << "SUBSTATION: " << substationName <<" has been deleted." << endl;
+                CTILOG_DEBUG(dout, "SUBSTATION: " << substationName <<" has been deleted.");
             }
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -7732,8 +7348,7 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             long stationId;
@@ -7781,22 +7396,19 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                 }
                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << "AREA: " << areaName <<" has been deleted." << endl;
+                    CTILOG_DEBUG(dout, "AREA: " << areaName <<" has been deleted.");
                 }
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -7837,8 +7449,7 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             ChildToParentMultiMap::const_iterator iter = _substation_specialarea_map.begin();
@@ -7878,21 +7489,18 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
                 }
                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << "SPECIAL AREA: " << areaName <<" has been deleted." << endl;
+                    CTILOG_DEBUG(dout, "SPECIAL AREA: " << areaName <<" has been deleted.");
                 }
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -7946,8 +7554,7 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
         //DUAL BUS Alt Sub deletion...
         try
@@ -7993,8 +7600,7 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
         try
@@ -8021,20 +7627,17 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
             }
             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << "SUBBUS: " << subBusName <<" has been deleted." << endl;
+                CTILOG_DEBUG(dout, "SUBBUS: " << subBusName <<" has been deleted.");
             }
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -8099,21 +7702,18 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
 
             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << "FEEDER: " << feederName <<" has been deleted." << endl;
+                CTILOG_DEBUG(dout, "FEEDER: " << feederName <<" has been deleted.");
             }
 
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -8181,22 +7781,19 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
                 }
                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << "CAPBANK: " << capBankName <<" has been deleted." << endl;
+                    CTILOG_DEBUG(dout, "CAPBANK: " << capBankName <<" has been deleted.");
                 }
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -8251,8 +7848,7 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(long reloadId, BYTE reloadAc
      {
         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
         {
-          CtiLockGuard<CtiLogger> logger_guard(dout);
-          dout << CtiTime() << " Reload Cap "<< reloadId<<" because of ChangeTypeUpdate message " << endl;
+          CTILOG_DEBUG(dout, "Reload Cap "<< reloadId<<" because of ChangeTypeUpdate message ");
         }
         if (long oldBusId = findSubBusIDbyCapBankID(reloadId))
         {
@@ -8285,8 +7881,7 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(long reloadId, BYTE reloadAc
              {
                  if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                  {
-                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                 dout << CtiTime() << "  Update Cap NOT found on sub  "<< endl;
+                 CTILOG_DEBUG(dout, " Update Cap NOT found on sub  ");
                  }
              }
          }
@@ -8301,9 +7896,7 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(long reloadId, BYTE reloadAc
              {
                  if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                  {
-                      CtiLockGuard<CtiLogger> logger_guard(dout);
-                      dout << CtiTime() << " Delete Cap "<<reloadId <<" was found on sub " << endl;
-                      dout << CtiTime() << " Sub " <<tempSub->getPaoName()<<" modified "<< endl;
+                      CTILOG_DEBUG(dout, "Delete Cap "<<reloadId <<" was found on sub; Sub " <<tempSub->getPaoName()<<" modified ");
                  }
              }
          }
@@ -8311,8 +7904,7 @@ void CtiCCSubstationBusStore::handleCapBankDBChange(long reloadId, BYTE reloadAc
          {
              if( _CC_DEBUG & CC_DEBUG_EXTENDED )
              {
-                  CtiLockGuard<CtiLogger> logger_guard(dout);
-                  dout << CtiTime() << " Delete Cap was NOT found on sub " << endl;
+                  CTILOG_DEBUG(dout, "Delete Cap was NOT found on sub ");
              }
          }
 
@@ -8577,8 +8169,7 @@ void CtiCCSubstationBusStore::registerForAdditionalPoints(PaoIdSet &modifiedBusI
    }
    catch(...)
    {
-       CtiLockGuard<CtiLogger> logger_guard(dout);
-       dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+       CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
    }
 }
 
@@ -8703,8 +8294,7 @@ void CtiCCSubstationBusStore::createAndSendClientMessages( unsigned long &msgBit
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -8819,8 +8409,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 }
                 if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " DBChange " << endl;
+                    CTILOG_DEBUG(dout, "DBChange ");
                 }
                 if (!forceFullReload)
                 {
@@ -8843,8 +8432,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
                 registerForAdditionalPoints(modifiedBusIdsSet);
 
@@ -8860,8 +8448,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -8905,10 +8492,8 @@ void CtiCCSubstationBusStore::updateAreaObjectSet(long areaId, CtiCCArea_set &mo
 void CtiCCSubstationBusStore::sendUserQuit(void *who)
 {
     string *strPtr = (string *) who;
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << *strPtr << " has asked for shutdown."<< endl;
-    }
+
+    CTILOG_INFO(dout, *strPtr << " has asked for shutdown.");
 
     CtiCCExecutorFactory::createExecutor(new CtiCCShutdown())->execute();
 }
@@ -8916,10 +8501,7 @@ void CtiCCSubstationBusStore::sendUserQuit(void *who)
 
 void CtiCCSubstationBusStore::periodicComplain( void *la )
 {
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << CtiTime( ) << " CapControl periodic thread is AWOL" << endl;
-   }
+   CTILOG_ERROR(dout, "CapControl periodic thread is AWOL");
 }
 
 void CtiCCSubstationBusStore::insertDBReloadList(CcDbReloadInfo x)
@@ -9018,8 +8600,7 @@ void CtiCCSubstationBusStore::checkUnsolicitedList()
             {
 
                 // print out something about it not processing the thing....
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " UNSOLICTED MSG for: "<< currentCapBank->getPaoName()<<" Not Processed - TIME: " << currentCapBank->getUnsolicitedChangeTimeUpdated() << endl;
+                CTILOG_INFO(dout, "UNSOLICTED MSG for: "<< currentCapBank->getPaoName()<<" Not Processed - TIME: " << currentCapBank->getUnsolicitedChangeTimeUpdated());
             }
         }
         listIter++;
@@ -9096,8 +8677,7 @@ void CtiCCSubstationBusStore::checkUnexpectedUnsolicitedList()
             {
 
                 // print out something about it not processing the thing....
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " UNSOLICTED MSG for: "<< currentCapBank->getPaoName()<<" Not Processed - TIME: " << currentCapBank->getUnsolicitedChangeTimeUpdated() << endl;
+                CTILOG_INFO(dout, "UNSOLICTED MSG for: "<< currentCapBank->getPaoName()<<" Not Processed - TIME: " << currentCapBank->getUnsolicitedChangeTimeUpdated());
             }
         }
     }
@@ -9459,8 +9039,7 @@ long CtiCCSubstationBusStore::isKVARAvailable( long kvarNeeded )
         ctitime_t deltaTime = now.seconds() - obj.getTimestamp().seconds();
         if( deltaTime > _MAX_KVAR_TIMEOUT)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Expired kvar request, removing: " << obj.getPaoId() << endl;
+            CTILOG_INFO(dout, "Expired kvar request, removing: " << obj.getPaoId());
             _maxKvarMap.erase(itr++);
         }
         else
@@ -9489,10 +9068,7 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementOpCount(CtiMultiMsg_ve
 
     if( status < 0 )
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Control state value (" << status << ") is not valid. Not adjusting the cap bank state." << endl;
-        }
+        CTILOG_INFO(dout, "Control state value (" << status << ") is not valid. Not adjusting the cap bank state.");
         return;
     }
 
@@ -9822,20 +9398,16 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "*** userDefWindow " << CtiTime(userDefWindow)
-                << "*** yesterday " << CtiTime(yesterday)
-                << "*** lastWeek " << CtiTime(lastWeek)
-                << "*** oneMonthAgo " <<CtiTime(oneMonthAgo) << endl;
+                CTILOG_DEBUG(dout,
+                             "userDefWindow "   << userDefWindow
+                             << "yesterday "    << yesterday
+                             << "lastWeek "     << lastWeek
+                             << "oneMonthAgo "  << oneMonthAgo);
             }
 
             while ( rdr() )
@@ -9855,8 +9427,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                 {
                     if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " logDateTime >= userDefWindow " << CtiTime(logDateTime) <<">="<<CtiTime(userDefWindow) << endl;
+                        CTILOG_DEBUG(dout, "logDateTime >= userDefWindow " << CtiTime(logDateTime) <<">="<<CtiTime(userDefWindow));
                     }
                     cap->getOperationStats().incrementAllOpCounts();
                 }
@@ -9864,8 +9435,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                 {
                     if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " logDateTime >= yesterday " << CtiTime(logDateTime) <<">="<<CtiTime(yesterday) << endl;
+                        CTILOG_DEBUG(dout, "logDateTime >= yesterday " << CtiTime(logDateTime) <<">="<<CtiTime(yesterday));
                     }
                     cap->getOperationStats().incrementDailyOpCounts();
                 }
@@ -9873,8 +9443,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                 {
                     if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " logDateTime >= lastWeek " << CtiTime(logDateTime) <<">="<<CtiTime(lastWeek) << endl;
+                        CTILOG_DEBUG(dout, "logDateTime >= lastWeek " << CtiTime(logDateTime) <<">="<<CtiTime(lastWeek));
                     }
                     cap->getOperationStats().incrementWeeklyOpCounts();
                 }
@@ -9882,8 +9451,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                 {
                     if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " logDateTime >= oneMonthAgo " << CtiTime(logDateTime) <<">="<<CtiTime(oneMonthAgo) << endl;
+                        CTILOG_DEBUG(dout, "logDateTime >= oneMonthAgo " << CtiTime(logDateTime) <<">="<<CtiTime(oneMonthAgo));
                     }
                     cap->getOperationStats().incrementMonthlyOpCounts();
                 }
@@ -9892,13 +9460,11 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                 {
                     if (cap != NULL)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPaoName()<< endl;
+                        CTILOG_INFO(dout, "irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPaoName());
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) <<" CAPBANK with Bank Status PID: "<< pointId <<" no longer exists."<< endl;
+                        CTILOG_INFO(dout, "irregular LOG datetime: " << CtiTime(logDateTime) <<" CAPBANK with Bank Status PID: "<< pointId <<" no longer exists.");
                     }
                 }
             }
@@ -9925,11 +9491,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -9966,13 +9528,11 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                 {
                     if (cap != NULL)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPaoName()<< endl;
+                        CTILOG_INFO(dout, "irregular LOG datetime: " << CtiTime(logDateTime) << " for CAPBANK: " << cap->getPaoName());
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) <<" CAPBANK with Bank Status PID: "<< pointId <<" no longer exists."<< endl;
+                        CTILOG_INFO(dout, "irregular LOG datetime: " << CtiTime(logDateTime) <<" CAPBANK with Bank Status PID: "<< pointId <<" no longer exists.");
                     }
                 }
             }
@@ -9980,8 +9540,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -10013,11 +9572,7 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             while ( rdr() )
@@ -10071,16 +9626,13 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
                 {
                     if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " Start Time: " << CtiTime(start) <<"  *** UserDefined Window: "
-                            << CtiTime(userDefWindow) << endl;
+                        CTILOG_DEBUG(dout, "Start Time: " << start <<"  *** UserDefined Window: " << userDefWindow);
                     }
                     if (start > userDefWindow )
                     {
                         if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " ##### Incrementing User Def Comm Counts for Cap: "<< cap->getPaoName() << endl;
+                            CTILOG_DEBUG(dout, "Incrementing User Def Comm Counts for Cap: "<< cap->getPaoName());
                         }
                         cap->getConfirmationStats().incrementUserDefCommCounts(attempts);
                         cap->getConfirmationStats().incrementUserDefCommFails(errorTotal);
@@ -10091,8 +9643,7 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -10110,10 +9661,7 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementFailCount(CtiMultiMsg_
 
     if( status < 0 )
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Control state value (" << status << ") is not valid. Not adjusting the cap bank state." << endl;
-        }
+        CTILOG_INFO(dout, "Control state value (" << status << ") is not valid. Not adjusting the cap bank state.");
         return;
     }
 
@@ -10166,8 +9714,7 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     try
@@ -10182,8 +9729,7 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     try
@@ -10198,8 +9744,7 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     try
@@ -10215,8 +9760,7 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
@@ -10241,23 +9785,20 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
                         }
                         catch(...)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                         }
                     }
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
             }
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -10441,8 +9982,7 @@ bool CtiCCSubstationBusStore::reloadZoneFromDatabase(const long zoneId)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return true;
@@ -10472,8 +10012,7 @@ bool CtiCCSubstationBusStore::reloadVoltageRegulatorFromDatabase(const long regu
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return true;
@@ -10542,20 +10081,14 @@ void CtiCCSubstationBusStore::handleMonitorPointDBChange(long reloadId, BYTE rel
 
         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
         {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << loggedSQLstring << endl;
-            }
+            CTILOG_INFO(dout, rdr.asString());
         }
 
         while ( rdr() )
         {
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                dout << CtiTime() << " - Updating Monitor Point ID: " << reloadId << endl;
+                CTILOG_DEBUG(dout, "Updating Monitor Point ID: " << reloadId);
             }
 
             CtiCCMonitorPointPtr    updatedMonitorPoint = CtiCCMonitorPointPtr( new CtiCCMonitorPoint(rdr) );

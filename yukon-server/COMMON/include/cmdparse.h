@@ -87,8 +87,6 @@ public:
 
    CtiCommandParser& operator=(const CtiCommandParser& aRef);
 
-   void Dump();
-
    const std::string& getCommandStr() const;
 
    bool isEqual(const std::string &cmdStr) const;

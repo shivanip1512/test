@@ -130,7 +130,7 @@ public:
    CtiAnsiTable64& operator=(const CtiAnsiTable64& aRef);
    void printResult( const std::string& deviceName);
    int populateIntData(INT_FMT1_RCD *intData, BYTE *dataBlob);
-   void printIntervalFmtRecord(INT_FMT1_RCD intData);
+   boost::optional<int> resolveIntervalFmtRecord(INT_FMT1_RCD intData);
 
    void getBlkIntvlTime(int blkSet, int blkIntvl, ULONG &blkIntvlTime);
    bool getBlkEndTime(int blkSet, ULONG &blkEndTime);

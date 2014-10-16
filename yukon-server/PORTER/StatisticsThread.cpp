@@ -42,8 +42,7 @@ void StatisticsThread( void * )
 
         if( PorterQuit )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " StatisticsThread: TID " << CurrentTID() << " recieved shutdown request." << endl;
+            CTILOG_INFO(dout, "StatisticsThread received shutdown request");
         }
 
         {
@@ -56,10 +55,7 @@ void StatisticsThread( void * )
 
     } while( ! PorterQuit );
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " StatisticsThread: TID " << CurrentTID() << " exiting" << endl;
-    }
+    CTILOG_INFO(dout, "StatisticsThread exiting");
 }
 
 }

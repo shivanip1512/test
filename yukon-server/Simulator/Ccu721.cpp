@@ -939,10 +939,7 @@ error_t Ccu721::processGeneralRequest(const idlc_request &request, idlc_reply &r
                     if( pending_itr == pending_end )
                     {
                         // We didn't find it, print a message and move on.
-                        {
-                            CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << "Message with sequence " << sequence << " not found in pending queue." << endl;
-                        };
+                        CTILOG_WARN(dout, "Message with sequence "<< sequence <<" not found in pending queue.");
                     }
                     else
                     {

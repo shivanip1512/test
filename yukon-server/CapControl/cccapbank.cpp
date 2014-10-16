@@ -1417,8 +1417,7 @@ bool CtiCCCapBank::updateVerificationState(void)
     _verificationDoneFlag = false;
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " CB: "<<getPaoId()<<" vCtrlIdx: "<< getVCtrlIndex() <<" prevControlStatus: "<< _prevVerificationControlStatus <<"  ControlStatus: " << getControlStatus() << endl;
+        CTILOG_DEBUG(dout, "CB: "<<getPaoId()<<" vCtrlIdx: "<< getVCtrlIndex() <<" prevControlStatus: "<< _prevVerificationControlStatus <<"  ControlStatus: " << getControlStatus());
     }
     switch (ctrlIdx)
     {
@@ -1538,10 +1537,7 @@ bool CtiCCCapBank::updateVerificationState(void)
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ***WARNING*** Adjusting CapBank Verification Control Index = 5 and setting Verification Done Flag ==> " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_WARN(dout, "Adjusting CapBank Verification Control Index = 5 and setting Verification Done Flag");
             _verificationDoneFlag = true;
             ctrlIdx = 5;
             _retryFlag = false;
@@ -1765,7 +1761,7 @@ bool CtiCCCapBank::addMonitorPoint(CtiCCMonitorPointPtr monPoint)
         }
     }
 
-	_monitorPoint.push_back(monPoint);
+    _monitorPoint.push_back(monPoint);
     return true;
 }
 
@@ -1784,7 +1780,7 @@ bool CtiCCCapBank::updateExistingMonitorPoint(CtiCCMonitorPointPtr monPoint)
         }
     }
 
-	_monitorPoint.push_back(monPoint);
+    _monitorPoint.push_back(monPoint);
     return true;
 }
 
@@ -1870,7 +1866,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& rightObj)
 
         _operationStats = rightObj._operationStats;
 
-        if ( rightObj._twoWayPoints ) 
+        if ( rightObj._twoWayPoints )
         {
             _twoWayPoints.reset( CtiCCTwoWayPointsFactory::Create(rightObj._controldeviceid, rightObj._controlDeviceType) );
         }
@@ -2181,10 +2177,7 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted Cap Bank into DynamicCCCapBank: " << getPaoName() << endl;
-            }
+            CTILOG_INFO(dout, "Inserted Cap Bank into DynamicCCCapBank: " << getPaoName());
 
             string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
@@ -2236,8 +2229,7 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -2252,8 +2244,7 @@ void CtiCCCapBank::dumpDynamicPointResponseData(Cti::Database::DatabaseConnectio
 
         if( (ret == false) && (_CC_DEBUG & CC_DEBUG_DATABASE) )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Point Response save failed. " << endl;
+            CTILOG_DEBUG(dout, "Point Response save failed. ");
         }
     }
 }
@@ -2269,8 +2260,7 @@ void CtiCCCapBank::dumpDynamicPointResponseData()
 
         if( (ret == false) && (_CC_DEBUG & CC_DEBUG_DATABASE) )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Point Response save failed. " << endl;
+            CTILOG_DEBUG(dout, "Point Response save failed. ");
         }
     }
 }

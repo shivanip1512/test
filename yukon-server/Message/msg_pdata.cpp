@@ -23,6 +23,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "pointtypes.h"
 #include "msg_pdata.h"
 #include "collectable.h"
+#include "numstr.h"
 
 DEFINE_COLLECTABLE( CtiPointDataMsg, MSG_POINTDATA );
 
@@ -58,10 +59,7 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
 
     if(_isnan(_value) || !_finite(_value))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") pdata is NaN or INF!" << endl;
-        }
+        CTILOG_WARN(dout, "pdata is NaN or INF!");
         _value = 0.0;
     }
 }
@@ -162,10 +160,7 @@ CtiPointDataMsg& CtiPointDataMsg::setValue(double value)
     _value = value;
     if(_isnan(_value) || !_finite(_value))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") pdata is NaN or INF!" << endl;
-        }
+        CTILOG_WARN(dout, "pdata is NaN or INF!");
         _value = 0.0;
     }
     return *this;
@@ -244,8 +239,6 @@ CtiPointDataMsg& CtiPointDataMsg::setMillis(unsigned millis)
     if( millis > 999 )
     {
        _millis = 0;
-       //CtiLockGuard<CtiLogger> doubt_guard(dout);
-       //dout << CtiTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return *this;
@@ -260,28 +253,23 @@ CtiPointDataMsg& CtiPointDataMsg::setTimeWithMillis(const CtiTime& aTime, const 
 }
 
 
-void CtiPointDataMsg::dump() const
+std::string CtiPointDataMsg::toString() const
 {
-   Inherited::dump();
+    Cti::FormattedList itemList;
 
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
+    itemList <<"CtiPointDataMsg";
+    itemList.add("Id")                      << getId();
+    itemList.add("Type")                    << getType();
+    itemList.add("Quality")                 << getQuality();
+    itemList.add("Tags")                    << CtiNumStr(getTags()).xhex().zpad(8);
+    itemList.add("Limit")                   << getLimit();
+    itemList.add("Value")                   << getValue();
+    itemList.add("Change Time")             << getTime() <<", "<< getMillis() <<"ms";
+    itemList.add("Change Report")           << getString();
+    itemList.add("Is this data exemptable") << isExemptable();
+    //itemList.add("Exception Exempt")        <<(bool)_exceptionExempt;
 
-      dout << " Id                            " << getId() << endl;
-      dout << " Type                          " << getType() << endl;
-      dout << " Quality                       " << getQuality() << endl;
-      CHAR  oldFill = dout.fill();
-      dout.fill('0');
-      dout << " Tags                          0x" << hex << setw(8) <<  getTags() << dec << endl;
-      dout.fill(oldFill);
-      dout << " Limit                         " << getLimit() << endl;
-      dout << " Value                         " << getValue() << endl;
-      dout << " Change Time                   " << getTime() << ", " << getMillis() << "ms" << endl;
-      dout << " Change Report                 " << getString() << endl;
-      dout << " Is this data exemptable       " << isExemptable() << endl;
-      // dout << " Exception Exempt              " << (_exceptionExempt ? "TRUE" : "FALSE") << endl;
-   }
-
+    return (Inherited::toString() += itemList.toString());
 }
 
 // Return a new'ed copy of this message!

@@ -51,8 +51,7 @@ CtiRequestMsg* CtiLMGroupSA305::createTimeRefreshRequestMsg(LONG refreshRate, LO
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -86,8 +85,7 @@ CtiRequestMsg* CtiLMGroupSA305::createSmartCycleRequestMsg(LONG percent, LONG pe
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -121,8 +119,7 @@ CtiRequestMsg* CtiLMGroupSA305::createTrueCycleRequestMsg(LONG percent, LONG per
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending adaptive alg command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending adaptive alg command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -148,8 +145,7 @@ CtiRequestMsg* CtiLMGroupSA305::createRotationRequestMsg(LONG sendRate, LONG she
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -175,8 +171,7 @@ CtiRequestMsg* CtiLMGroupSA305::createMasterCycleRequestMsg(LONG offTime, LONG p
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,

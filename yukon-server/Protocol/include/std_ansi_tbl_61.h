@@ -79,7 +79,7 @@ public:
 
    CtiAnsiTable61& operator=(const CtiAnsiTable61& aRef);
    void printResult( const std::string& deviceName);
-   void printLPDataSetInfo( int set, int offset );
+   void appendLPDataSetInfo(int set, int offset, Cti::FormattedList &itemList);
    LP_DATA_SET * getLPDataSetInfo();
    bool * getLPDataSetUsedFlags();
    bool getLPScalarDivisorFlag( int setNo );

@@ -6,13 +6,17 @@
 using std::string;
 using std::endl;
 
-void CtiTableRepeaterRoute::DumpData()
+std::string CtiTableRepeaterRoute::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << " Repeater DeviceID                          " << DeviceID << endl;
-    dout << " Repeater RouteID                           " << _routeID << endl;
-    dout << " Repeater Variable Bits                     " << VarBit << endl;
-    dout << " Repeater Order                             " << RepeaterOrder << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTableRepeaterRoute";
+    itemList.add("Repeater DeviceID")      << DeviceID;
+    itemList.add("Repeater RouteID")       << _routeID;
+    itemList.add("Repeater Variable Bits") << VarBit;
+    itemList.add("Repeater Order")         << RepeaterOrder;
+
+    return itemList.toString();
 }
 
 string CtiTableRepeaterRoute::getSQLCoreStatement()
@@ -30,8 +34,7 @@ CtiTableRepeaterRoute::CtiTableRepeaterRoute(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["deviceid"] >> DeviceID;

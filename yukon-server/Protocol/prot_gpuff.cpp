@@ -91,13 +91,11 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
                                 device_name.erase(device_name.find_first_of('\0'));
                             }
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - FCI device has reported in **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << CtiTime() << " name: \"" << device_name << "\"" << endl;
-                                dout << CtiTime() << " latitude:  " << string(CtiNumStr(latitude))  << endl;
-                                dout << CtiTime() << " longitude: " << string(CtiNumStr(longitude)) << endl;
-                            }
+                            CTILOG_INFO(dout, "FCI device has reported in"<<
+                                    endl <<" name: \""<< device_name <<"\""<<
+                                    endl <<" latitude:  "<< latitude <<
+                                    endl <<" longitude: "<< longitude
+                                    );
 
                             break;
                         }
@@ -256,10 +254,7 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
                                 hostname.assign((const char *)p_data + pos, hostname_len);
                             }
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - device \"" << device_name << "\" host config report - index " << index << " : " << hostname << ":" << port << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_INFO(dout, "device \""<< device_name <<"\" host config report - index"<< index <<" : "<< hostname <<":"<< port);
 
                             break;
                         }
@@ -328,10 +323,8 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
                             {
                                 unsigned short duration = 0;
                                 duration = convertBytes( p_data, pos, 2);
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Duration decode unimplemented. Duration is: " << duration << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
+
+                                CTILOG_WARN(dout, "Duration decode unimplemented. Duration is: "<< duration);
                             }
 
                             break;
@@ -445,10 +438,9 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
                                ser == 60000050 ||
                                (60000020 <= ser && ser <= 60000045))
                             {    // dTechs devices - this is horrible - 5 minute offsets.
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint REMOVE dTechs code someday - dirty  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
+
+                                // FIXME: why is this a log print and not a comment?
+                                CTILOG_WARN(dout, "REMOVE dTechs code someday - dirty");
 
                                 time_offset = 300;
                                 dmult = 0.01;
@@ -615,45 +607,39 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
                                     }
                                 default:
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << "  new/unknown ie_type  " << CtiNumStr((int)ie_type).hex().zpad(2) << "  total config len " << (int)total_len << " IE Position " << (int)(cfg_pos-2) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                        }
+                                        CTILOG_WARN(dout, "new/unknown ie_type "<< CtiNumStr((int)ie_type).hex().zpad(2) <<", total config len "<< (int)total_len <<", IE Position "<< (int)(cfg_pos-2));
 
                                         if(cfg_pos + ie_len < total_len)
                                         {
                                             // Process through the ie in the for loop - HOP OVER IT.
-                                            string rawBytes = "";
-                                            for( int xx = 0; xx < ie_len; xx++ )
+                                            std::ostringstream rawBytes;
+                                            rawBytes << hex << setfill('0');
+
+                                            for(int nbr = 0; nbr < ie_len; ++nbr)
                                             {
-                                                if( xx == 0 ) rawBytes += CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString();
-                                                else rawBytes += " " + CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString();
+                                                rawBytes << setw(2) << convertBytes(pConfig, cfg_pos, 1) <<" ";
                                             }
 
-                                            {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << CtiTime() << " ie_type = " << CtiNumStr((int)ie_type).hex().zpad(2) << " ie_len = " << (int)ie_len << ": " << rawBytes << endl;
-                                            }
+                                            CTILOG_INFO(dout, "ie_type = "<< CtiNumStr((int)ie_type).hex().zpad(2) <<", ie_len = "<< (int)ie_len <<": "<< rawBytes);
                                         }
                                         else
                                         {
                                             cfg_pos = total_len;
                                         }
-                                        break;
                                     }
                                 }
 
                                 if(cfg_pos < next_ie_pos)
                                 {
-                                    string rawBytes = "";
+                                    std::ostringstream rawBytes;
+                                    rawBytes << hex << setfill('0');
+
                                     while(cfg_pos < next_ie_pos)
                                     {
-                                        rawBytes += CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString() + " ";
+                                        rawBytes << setw(2) << convertBytes(pConfig, cfg_pos, 1) <<" ";
                                     }
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " ie_type = " << CtiNumStr((int)ie_type).hex().zpad(2) << " ie_len = " << (int)ie_len << ": had extra bytes: " << rawBytes << endl;
-                                    }
+
+                                    CTILOG_INFO(dout, "ie_type = "<< CtiNumStr((int)ie_type).hex().zpad(2) <<", ie_len = "<< (int)ie_len <<": had extra bytes: "<< rawBytes);
                                 }
                             }
 
@@ -665,12 +651,9 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
                     default:
                         {
                             // We just consumed a GPUFF FCN we do not recognize.  All beds are off for the remainder of this message.
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Unknown GPUFF FCN " << fcn << " - message processing aborted " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_ERROR(dout, "Unknown GPUFF FCN "<< fcn <<" - message processing aborted");
+
                             pos = len;
-                            break;
                         }
                     }
                 }
@@ -711,14 +694,12 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
                                 device_name.erase(device_name.find_first_of('\0'));
                             }
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - Neutral Monitor device has reported in **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << CtiTime() << " name: \"" << device_name << "\"" << endl;
-                                dout << CtiTime() << " latitude:      " << string(CtiNumStr(latitude))      << endl;
-                                dout << CtiTime() << " longitude:     " << string(CtiNumStr(longitude))     << endl;
-                                dout << CtiTime() << " amp threshold: " << string(CtiNumStr(amp_threshold)) << endl;
-                            }
+                            CTILOG_INFO(dout, "Neutral Monitor device has reported in"<<
+                                    endl <<" name:          \""<< device_name <<"\""<<
+                                    endl <<" latitude:      "<< latitude <<
+                                    endl <<" longitude:     "<< longitude <<
+                                    endl <<" amp threshold: "<< amp_threshold
+                                    );
 
                             break;
                         }
@@ -1125,54 +1106,44 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
                                 case 0x81:
                                     {
                                         // APN Server to Device Information Element
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                        }
+                                        CTILOG_INFO(dout, "APN Server to Device Information Element");
 
                                         break;
                                     }
                                 default:
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << "  new/unknown ie_type  " << CtiNumStr((int)ie_type).hex().zpad(2) << "  total config len " << (int)total_len << " IE Position " << (int)(cfg_pos-2) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                        }
+                                        CTILOG_WARN(dout, "new/unknown ie_type "<< CtiNumStr((int)ie_type).hex().zpad(2) <<", total config len "<< (int)total_len <<", IE Position "<< (int)(cfg_pos-2));
 
                                         if(cfg_pos + ie_len < total_len)
                                         {
-                                            // Process through the ie in the for loop - HOP OVER IT.
-                                            string rawBytes = "";
-                                            for( int xx = 0; xx < ie_len; xx++ )
+                                            std::ostringstream rawBytes;
+                                            rawBytes << hex << setfill('0');
+
+                                            for(int nbr = 0; nbr < ie_len; ++nbr)
                                             {
-                                                if( xx == 0 ) rawBytes += CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString();
-                                                else rawBytes += " " + CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString();
+                                                rawBytes << setw(2) << convertBytes(pConfig, cfg_pos, 1) <<" ";
                                             }
 
-                                            {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << CtiTime() << " ie_type = " << CtiNumStr((int)ie_type).hex().zpad(2) << " ie_len = " << (int)ie_len << ": " << rawBytes << endl;
-                                            }
+                                            CTILOG_INFO(dout, "ie_type = "<< CtiNumStr((int)ie_type).hex().zpad(2) <<", ie_len = "<< (int)ie_len <<": "<< rawBytes);
                                         }
                                         else
                                         {
                                             cfg_pos = total_len;
                                         }
-                                        break;
                                     }
                                 }
 
                                 if(cfg_pos < next_ie_pos)
                                 {
-                                    string rawBytes = "";
+                                    std::ostringstream rawBytes;
+                                    rawBytes << hex << setfill('0');
+
                                     while(cfg_pos < next_ie_pos)
                                     {
-                                        rawBytes += CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString() + " ";
+                                        rawBytes << setw(2) << convertBytes(pConfig, cfg_pos, 1) <<" ";
                                     }
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " ie_type = " << CtiNumStr((int)ie_type).hex().zpad(2) << " ie_len = " << (int)ie_len << ": had extra bytes: " << rawBytes << endl;
-                                    }
+
+                                    CTILOG_INFO(dout, "ie_type = "<< CtiNumStr((int)ie_type).hex().zpad(2) <<", ie_len = "<< (int)ie_len <<": had extra bytes: "<< rawBytes);
                                 }
                             }
 
@@ -1184,12 +1155,9 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
                     default:
                         {
                             // We just consumed a GPUFF FCN we do not recognize.  All beds are off for the remainder of this message.
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Unknown GPUFF FCN " << fcn << " - message processing aborted " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_ERROR(dout, "Unknown GPUFF FCN "<< fcn <<" - message processing aborted");
+
                             pos = len;
-                            break;
                         }
                     }
                 }
@@ -1199,10 +1167,7 @@ GpuffProtocol::decoded_packet GpuffProtocol::decode( const unsigned char *p_data
 
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unknown GPUFF device type " << devt << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Unknown GPUFF device type "<< devt);
             }
         }
     }
@@ -1236,20 +1201,17 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
     add_to_csv_summary(keys, values, "DEVR", devr);
     add_to_csv_summary(keys, values, "SER",  ser);
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
 
-        dout << "LEN  : " << len << endl;
-        dout << "CRC? : " << crc_included << endl;
-        dout << "ACK? : " << ack_required << endl;
-        dout << "CID  : " << cid << endl;
-        dout << "SEQ  : " << seq << endl;
-        dout << "DEVT : " << devt << endl;
-        dout << "DEVR : " << devr << endl;
-        dout << "SER  : " << ser << endl;
-
-        dout << endl;
-    }
+    CTILOG_INFO(dout,
+            endl <<" LEN:  "<< len <<
+            endl <<" CRC?: "<< crc_included <<
+            endl <<" ACK?: "<< ack_required <<
+            endl <<" CID:  "<< cid <<
+            endl <<" SEQ:  "<< seq <<
+            endl <<" DEVT: "<< devt <<
+            endl <<" DEVR: "<< devr <<
+            endl <<" SER:  "<< ser
+            );
 
     pos = 15;
 
@@ -1298,17 +1260,15 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
                         add_to_csv_summary(keys, values, "device name", device_name);
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - FCI device has reported in **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << CtiTime() << " name: \"" << device_name << "\"" << endl;
-                            dout << CtiTime() << " latitude:    " << string(CtiNumStr(latitude))  << endl;
-                            dout << CtiTime() << " longitude:   " << string(CtiNumStr(longitude)) << endl;
-                            dout << CtiTime() << " request ack: " << request_ack << endl;
-                            dout << CtiTime() << " udp repeats: " << udp_repeats << endl;
-                            dout << CtiTime() << " phase:       " << phase << endl;
-                            dout << CtiTime() << " current survey: " << current_survey << endl;
-                        }
+                        CTILOG_INFO(dout, "FCI device has reported in"<<
+                                endl <<" name:           \""<< device_name <<"\""<<
+                                endl <<" latitude:       "<< latitude <<
+                                endl <<" longitude:      "<< longitude <<
+                                endl <<" request ack:    "<< request_ack <<
+                                endl <<" udp repeats:    "<< udp_repeats <<
+                                endl <<" phase:          "<< phase <<
+                                endl <<" current survey: "<< current_survey
+                                );
 
                         break;
                     }
@@ -1328,13 +1288,11 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         unsigned long time = 0;
                         float battery_voltage, temperature, amps_nominal, amps_peak;
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - FCI device values **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << CtiTime() << " fault: " << fault << endl;
-                            dout << CtiTime() << " event: " << event << endl;
-                            dout << CtiTime() << " no power: " << noPower << endl;
-                        }
+                        CTILOG_INFO(dout, "FCI device values"<<
+                                endl <<" fault:    "<< fault <<
+                                endl <<" event:    "<< event <<
+                                endl <<" no power: "<< noPower
+                                );
 
                         add_to_csv_summary(keys, values, "includes time", items_included & 0x20);
                         add_to_csv_summary(keys, values, "TSO",           items_included & 0x80);
@@ -1346,17 +1304,12 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
                             if( items_included & 0x80 )
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " tso value: " << time << endl;
-                                }
+                                CTILOG_INFO(dout, "tso value: "<< time);
+
                                 time = CtiTime::now().seconds() - time;
                             }
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " time: " << CtiTime(time) << endl;
-                            }
+                            CTILOG_INFO(dout, "time: "<< CtiTime(time));
 
                             add_to_csv_summary(keys, values, "time", CtiTime(time).asString());
                         }
@@ -1369,10 +1322,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
                             battery_voltage /= 1000.0;
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " battery voltage: " << battery_voltage << endl;
-                            }
+                            CTILOG_INFO(dout, "battery voltage: "<< battery_voltage);
                         }
 
                         add_to_csv_summary(keys, values, "includes temperature", items_included & 0x08);
@@ -1383,10 +1333,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
                             temperature /= 100.0;
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " temperature: " << temperature << endl;
-                            }
+                            CTILOG_INFO(dout, "temperature: "<< temperature);
 
                             add_to_csv_summary(keys, values, "temperature", temperature);
                         }
@@ -1397,10 +1344,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         {
                             amps_nominal = convertBytes( p_data, pos, 2);
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " amps nominal: " << amps_nominal << endl;
-                            }
+                            CTILOG_INFO(dout, "amps nominal: "<< amps_nominal);
 
                             add_to_csv_summary(keys, values, "nominal amps", amps_nominal);
                         }
@@ -1411,10 +1355,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         {
                             amps_peak = convertBytes( p_data, pos, 2);
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " amps peak: " << amps_peak << endl;
-                            }
+                            CTILOG_INFO(dout, "amps peak: "<< amps_peak);
 
                             add_to_csv_summary(keys, values, "peak amps", amps_peak);
                         }
@@ -1520,17 +1461,12 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
                             if( items_included & 0x80 )
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " tso value: " << time << endl;
-                                }
+                                CTILOG_INFO(dout, "tso value: "<< time);
+
                                 time = CtiTime::now().seconds() - time;
                             }
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " time: " << CtiTime(time) << endl;
-                            }
+                            CTILOG_INFO(dout, "time: "<< CtiTime(time));
 
                             add_to_csv_summary(keys, values, "time", CtiTime(time).asString());
                         }
@@ -1541,10 +1477,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
                         add_to_csv_summary(keys, values, "momentary count", momCount);
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " momentary count: " << momCount << endl;
-                        }
+                        CTILOG_INFO(dout,  "momentary count: "<< momCount);
 
                         add_to_csv_summary(keys, values, "includes nominal amps", items_included & 0x04);
 
@@ -1552,10 +1485,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         {
                             amps_nominal = convertBytes( p_data, pos, 2);
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " amps nominal: " << amps_nominal << endl;
-                            }
+                            CTILOG_INFO(dout, "amps nominal: "<< amps_nominal);
 
                             add_to_csv_summary(keys, values, "nominal amps", amps_nominal);
                         }
@@ -1566,10 +1496,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         {
                             amps_peak = convertBytes( p_data, pos, 2);
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " amps peak: " << amps_peak << endl;
-                            }
+                            CTILOG_INFO(dout, "amps peak: "<< amps_peak);
 
                             add_to_csv_summary(keys, values, "nominal amps", amps_peak);
                         }
@@ -1579,10 +1506,8 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         {
                             unsigned short duration = 0;
                             duration = convertBytes( p_data, pos, 2);
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Duration decode unimplemented. Duration is: " << duration << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+
+                            CTILOG_WARN(dout, "Duration decode unimplemented. Duration is: "<< duration);
                         }
 
                         break;
@@ -1615,18 +1540,16 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         unsigned int momentary_cnt = 0, th_high, rpt_max, rpt_min, amps;
                         float battery_voltage, temperature, amps_nominal, amps_peak;
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - FCI device status/values with current profile **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << CtiTime() << " fault: " << fault << endl;
-                            dout << CtiTime() << " event: " << event << endl;
-                            dout << CtiTime() << " no power: " << noPower << endl;
-                            dout << CtiTime() << " calibrated: " << calibrated << endl;
-                            dout << CtiTime() << " charge ckt enabled: " << charge_enabled << endl;
-                            dout << CtiTime() << " high current detect: " << high_current << endl;
-                            dout << CtiTime() << " reed triggered: " << reed_triggered << endl;
-                            dout << CtiTime() << " momentary triggered: " << momentary_triggered << endl;
-                        }
+                        CTILOG_INFO(dout, "FCI device status/values with current profile"<<
+                                endl <<" fault:               "<< fault <<
+                                endl <<" event:               "<< event <<
+                                endl <<" no power:            "<< noPower <<
+                                endl <<" calibrated:          "<< calibrated <<
+                                endl <<" charge ckt enabled:  "<< charge_enabled <<
+                                endl <<" high current detect: "<< high_current <<
+                                endl <<" reed triggered:      "<< reed_triggered <<
+                                endl <<" momentary triggered: "<< momentary_triggered
+                                );
 
                         add_to_csv_summary(keys, values, "includes time", msg_flags & 0x20);
                         add_to_csv_summary(keys, values, "TSO",           msg_flags & 0x80);
@@ -1638,17 +1561,12 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
                             if( msg_flags & 0x80 )
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " tso value: " << time << endl;
-                                }
+                                CTILOG_INFO(dout, "tso value: "<< time);
+
                                 time = CtiTime::now().seconds() - time;
                             }
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " time: " << CtiTime(time) << endl;
-                            }
+                            CTILOG_INFO(dout, "time: "<< CtiTime(time));
 
                             add_to_csv_summary(keys, values, "time", CtiTime(time).asString());
                         }
@@ -1661,10 +1579,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
                             battery_voltage /= 1000.0;
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " battery voltage: " << battery_voltage << endl;
-                            }
+                            CTILOG_INFO(dout, "battery voltage: "<< battery_voltage);
                         }
 
                         add_to_csv_summary(keys, values, "includes temperature", msg_flags & 0x08);
@@ -1675,10 +1590,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
                             temperature /= 100.0;
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " temperature: " << temperature << endl;
-                            }
+                            CTILOG_INFO(dout, "temperature: "<< temperature);
 
                             add_to_csv_summary(keys, values, "temperature", temperature);
                         }
@@ -1689,10 +1601,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         {
                             amps_nominal = convertBytes( p_data, pos, 2);
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " amps nominal: " << amps_nominal << endl;
-                            }
+                            CTILOG_INFO(dout, "amps nominal: "<< amps_nominal);
 
                             add_to_csv_summary(keys, values, "nominal amps", amps_nominal);
                         }
@@ -1703,21 +1612,15 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         {
                             amps_peak = convertBytes( p_data, pos, 2);
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " amps peak: " << amps_peak << endl;
-                            }
+                            CTILOG_INFO(dout, "amps peak: "<< amps_peak);
 
                             add_to_csv_summary(keys, values, "peak amps", amps_peak);
                         }
 
                         momentary_cnt = convertBytes( p_data, pos, 2);
                         add_to_csv_summary(keys, values, "momentary count", momentary_cnt);
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " momentary count: " << momentary_cnt << endl;
-                        }
 
+                        CTILOG_INFO(dout, "momentary count: "<< momentary_cnt);
 
                         th_high = convertBytes( p_data, pos, 2);
                         rpt_max = convertBytes( p_data, pos, 2);
@@ -1726,23 +1629,22 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         add_to_csv_summary(keys, values, "threshold high", th_high);
                         add_to_csv_summary(keys, values, "report max amps", rpt_max);
                         add_to_csv_summary(keys, values, "report min amps", rpt_min);
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " threshold high: " << th_high << endl;
-                            dout << CtiTime() << " report min amps: " << rpt_min << endl;
-                            if( msg_flags & 0x04 ) dout << CtiTime() << " report avg amps: " << amps_nominal << endl;
-                            dout << CtiTime() << " report max amps: " << rpt_max << endl;
-                        }
+
+                        CTILOG_INFO(dout,
+                                endl <<" threshold high:  "<< th_high <<
+                                endl <<" report min amps: "<< rpt_min <<
+                                endl <<" report avg amps: "<< ((msg_flags & 0x04) ? boost::lexical_cast<string>(amps_nominal) : string("N/A")) <<
+                                endl <<" report max amps: "<< rpt_max
+                                );
+
 
                         int time_offset = 3600; // Standard offset is 3600 seconds per record
                         double dmult = 1.0, dvalue;
 
                         if(ser == 60000006 || ser == 60000007 || ser == 11661166 || ser == 22772277 || ser == 33883388 || ser == 60000050 || (60000020 <= ser && ser <= 60000045))
                         {   // dTechs devices - this is horrible - 5 minute offsets.
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint REMOVE dTechs code someday - dirty **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_WARN(dout, "REMOVE dTechs code someday - dirty");
+
                             time_offset = 300;
                             dmult = 0.01;
                         }
@@ -1754,10 +1656,8 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                             time += time_offset;
                             amps = convertBytes( p_data, pos, 2);
                             dvalue = amps * dmult;
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime(time) << " record[" << i << "]: " << dvalue << endl;
-                            }
+
+                            CTILOG_INFO(dout, "time: "<< CtiTime(time) <<", record["<< i <<"]: "<< dvalue);
                         }
 
                         if(msg_flags & 0x01)
@@ -1766,48 +1666,39 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                             amps = convertBytes( p_data, pos, 2);
                             dvalue = amps * dmult;
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " record[event]: " << dvalue << endl;
-                            }
+                            CTILOG_INFO(dout, "record[event]: "<< dvalue)
                         }
 
                         if(event)
                         {
+                            if(reed_triggered)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                if(reed_triggered)
-                                {
-                                    dout << CtiTime() << " *** REED SWITCH TRIGGERED MESSAGE " << endl << endl;
-                                }
-                                else if(fault)
-                                {
-                                    dout << CtiTime() << " *** PERMANENT FAULT MESSAGE " << endl << endl;
-                                }
-                                else if(high_current)
-                                {
-                                    dout << CtiTime() << " *** HIGH CURRENT THRESHOLD EXCEEDED MESSAGE " << endl << endl;
-                                }
-                                else if(momentary_triggered)
-                                {
-                                    dout << CtiTime() << " *** MOMENTARY TRIGGERED EVENT   " << endl << endl;
-                                }
-                                else if(noPower)
-                                {
-                                    dout << CtiTime() << " *** NO POWER(CURRENT BELOW DETECT) MESSAGE " << endl << endl;
-                                }
-                                else
-                                {
-                                    dout << CtiTime() << " *** POWER RESTORE (CURRENT ABOVE DETECT) MESSAGE " << endl << endl;
-                                }
+                                CTILOG_INFO(dout, "REED SWITCH TRIGGERED MESSAGE");
+                            }
+                            else if(fault)
+                            {
+                                CTILOG_INFO(dout, "PERMANENT FAULT MESSAGE");
+                            }
+                            else if(high_current)
+                            {
+                                CTILOG_INFO(dout, "HIGH CURRENT THRESHOLD EXCEEDED MESSAGE");
+                            }
+                            else if(momentary_triggered)
+                            {
+                                CTILOG_INFO(dout, "MOMENTARY TRIGGERED EVENT");
+                            }
+                            else if(noPower)
+                            {
+                                CTILOG_INFO(dout, "NO POWER(CURRENT BELOW DETECT) MESSAGE");
+                            }
+                            else
+                            {
+                                CTILOG_INFO(dout, "POWER RESTORE (CURRENT ABOVE DETECT) MESSAGE");
                             }
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " *** SUPERVISORY MESSAGE " << endl << endl;
-                            }
+                            CTILOG_INFO(dout, "SUPERVISORY MESSAGE");
                         }
 
                         break;
@@ -1843,15 +1734,13 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
                                     string apn = convertBytesToString(pConfig, cfg_pos, ie_len-2 );
 
-
                                     add_to_csv_summary(keys, values, "periodic cfg report", periodic);
                                     add_to_csv_summary(keys, values, "apn", apn);
 
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << "APN                            : " << apn << endl;
-                                        dout << "periodic cfg reports           : " << periodic << endl;
-                                    }
+                                    CTILOG_INFO(dout,
+                                            endl <<" APN:                  "<< apn <<
+                                            endl <<" periodic cfg reports: "<< periodic
+                                            );
 
                                     break;
                                 }
@@ -1870,12 +1759,10 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                     add_to_csv_summary(keys, values, url_name, url);
                                     add_to_csv_summary(keys, values, port_name, port);
 
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << "URL                            : " << url << endl;
-                                        dout << "IP Port                        : " << port << endl;
-                                    }
-
+                                    CTILOG_INFO(dout,
+                                            endl <<" URL:     "<< url <<
+                                            endl <<" IP Port: "<< port
+                                            );
 
                                     break;
                                 }
@@ -1898,15 +1785,15 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                     add_to_csv_summary(keys, values, "radio serial[1]", radio_sn_1);
                                     add_to_csv_summary(keys, values, "radio serial[0]", radio_sn_0);
 
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << "cooper serial number h/l       : " << cooper_sn_h << " / " << cooper_sn_l << endl;
-                                        dout << "radio serial number            : " << hex << showbase << uppercase << setfill('0')
-                                        << setw(2) << radio_sn_3 << " / "
-                                        << setw(2) << radio_sn_2 << " / "
-                                        << setw(2) << radio_sn_1 << " / "
-                                        << setw(2) << radio_sn_0 << endl;
-                                    }
+                                    CTILOG_INFO(dout,
+                                            endl <<" cooper serial number h/l: "<< cooper_sn_h <<" / "<< cooper_sn_l <<
+                                            endl <<" radio serial number:      "<< hex << showbase << uppercase << setfill('0') <<
+                                            setw(2) << radio_sn_3 <<" / "<<
+                                            setw(2) << radio_sn_2 <<" / "<<
+                                            setw(2) << radio_sn_1 <<" / "<<
+                                            setw(2) << radio_sn_0
+                                            );
+
                                     break;
                                 }
                             case 0x04:
@@ -1922,12 +1809,10 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
                                     add_to_csv_summary(keys, values, "radio serial", rsn);
 
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << "cooper serial number h/l       : " << cooper_sn_h << " / " << cooper_sn_l << endl;
-                                        dout << "radio serial number            : " << rsn << endl;
-                                    }
-
+                                    CTILOG_INFO(dout,
+                                            endl <<" cooper serial number h/l: "<< cooper_sn_h <<" / "<< cooper_sn_l <<
+                                            endl <<" radio serial number:      "<< rsn
+                                            );
 
                                     break;
                                 }
@@ -1980,19 +1865,18 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                     add_to_csv_summary(keys, values, "reset momentary count",   reset_momentary );
                                     add_to_csv_summary(keys, values, "revert count", revert_cnt );
 
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << "firmware major                 : " << firmware_major  << endl;
-                                        dout << "firmware minor                 : " << firmware_minor  << endl;
-                                        dout << "reset_count                    : " << reset_count     << endl;
-                                        dout << "spi_errors                     : " << SPI_errors      << endl;
-                                        dout << "momentary_count                : " << momentary_count << endl;
-                                        dout << "fault_count                    : " << fault_count     << endl;
-                                        dout << "all_clear_count                : " << all_clear_count << endl;
-                                        dout << "power_loss_count               : " << power_loss_count<< endl;
-                                        dout << "reset_momentary                : " << reset_momentary << endl;
-                                        dout << "revert count                   : " << revert_cnt << endl << endl;
-                                    }
+                                    CTILOG_INFO(dout,
+                                            endl <<" firmware major:   "<< firmware_major <<
+                                            endl <<" firmware minor:   "<< firmware_minor <<
+                                            endl <<" reset_count:      "<< reset_count <<
+                                            endl <<" spi_errors:       "<< SPI_errors <<
+                                            endl <<" momentary_count:  "<< momentary_count <<
+                                            endl <<" fault_count:      "<< fault_count <<
+                                            endl <<" all_clear_count:  "<< all_clear_count <<
+                                            endl <<" power_loss_count: "<< power_loss_count <<
+                                            endl <<" reset_momentary:  "<< reset_momentary <<
+                                            endl <<" revert count:     "<< revert_cnt
+                                            );
 
                                     if(devr >= 4 && cfg_pos < next_ie_pos)
                                     {
@@ -2008,14 +1892,13 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                         add_to_csv_summary(keys, values, "ber",                     ber);
                                         add_to_csv_summary(keys, values, "rs count",                rs_cnt );
 
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << "analog firmware major          : " << abfw_major << endl;
-                                            dout << "analog firmware minor          : " << abfw_minor << endl;
-                                            dout << "rssi                           : " << rssi << endl;
-                                            dout << "ber                            : " << ber << endl;
-                                            dout << "reed switch count              : " << rs_cnt << endl;
-                                        }
+                                        CTILOG_INFO(dout,
+                                                endl <<" analog firmware major: "<< abfw_major <<
+                                                endl <<" analog firmware minor: "<< abfw_minor <<
+                                                endl <<" rssi:                  "<< rssi <<
+                                                endl <<" ber:                   "<< ber <<
+                                                endl <<" reed switch count:     "<< rs_cnt
+                                                );
                                     }
 
                                     break;
@@ -2032,55 +1915,47 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                     add_to_csv_summary(keys, values, "report period (hours)", report_period_hours);
                                     add_to_csv_summary(keys, values, "high current thresh.", high_current_threshold);
 
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << "GCVT report period             : " << report_period_hours << endl;
-                                        dout << "high current threshold         : " << high_current_threshold << endl;
-                                    }
+                                    CTILOG_INFO(dout,
+                                            endl <<" GCVT report period:     "<< report_period_hours <<
+                                            endl <<" high current threshold: "<< high_current_threshold
+                                            );
 
                                     break;
                                 }
                             default:
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << "  new/unknown ie_type  " << CtiNumStr((int)ie_type).hex().zpad(2) << "  total config len " << (int)total_len << " IE Position " << (int)(cfg_pos-2) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    }
+                                    CTILOG_WARN(dout, "new/unknown ie_type "<< CtiNumStr((int)ie_type).hex().zpad(2) <<", total config len "<< (int)total_len <<", IE Position "<< (int)(cfg_pos-2));
 
                                     if(cfg_pos + ie_len < total_len)
                                     {
-                                        // Process through the ie in the for loop - HOP OVER IT.
-                                        string rawBytes = "";
-                                        for( int xx = 0; xx < ie_len; xx++ )
+                                        std::ostringstream rawBytes;
+                                        rawBytes << hex << setfill('0');
+
+                                        for(int nbr = 0; nbr < ie_len; ++nbr)
                                         {
-                                            if( xx == 0 ) rawBytes += CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString();
-                                            else rawBytes += " " + CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString();
+                                            rawBytes << setw(2) << convertBytes(pConfig, cfg_pos, 1) <<" ";
                                         }
 
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " ie_type = " << CtiNumStr((int)ie_type).hex().zpad(2) << " ie_len = " << (int)ie_len << ": " << rawBytes << endl;
-                                        }
+                                        CTILOG_INFO(dout, "ie_type = "<< CtiNumStr((int)ie_type).hex().zpad(2) <<", ie_len = "<< (int)ie_len <<": "<< rawBytes);
                                     }
                                     else
                                     {
                                         cfg_pos = total_len;
                                     }
-                                    break;
                                 }
                             }
 
                             if(cfg_pos < next_ie_pos)
                             {
-                                string rawBytes = "";
+                                std::ostringstream rawBytes;
+                                rawBytes << hex << setfill('0');
+
                                 while(cfg_pos < next_ie_pos)
                                 {
-                                    rawBytes += CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString() + " ";
+                                    rawBytes << setw(2) << convertBytes(pConfig, cfg_pos, 1) <<" ";
                                 }
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " ie_type = " << CtiNumStr((int)ie_type).hex().zpad(2) << " ie_len = " << (int)ie_len << ": had extra bytes: " << rawBytes << endl;
-                                }
+
+                                CTILOG_INFO(dout, "ie_type = "<< CtiNumStr((int)ie_type).hex().zpad(2) <<", ie_len = "<< (int)ie_len <<": had extra bytes: "<< rawBytes);
                             }
                         }
 
@@ -2092,10 +1967,8 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                 default:
                     {
                         // We just consumed a GPUFF FCN we do not recognize.  All beds are off for the remainder of this message.
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Unknown GPUFF FCN " << fcn << " - message processing aborted " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "Unknown GPUFF FCN "<< fcn <<" - message processing aborted");
+
                         pos = len;
                         break;
                     }
@@ -2113,15 +1986,6 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                 }
                 rawBytes += "\"";
                 add_to_csv_summary(keys, values, "raw data", rawBytes);
-
-                #if 0
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** FCI CSV summary **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << keys   << endl;
-                    dout << values << endl;
-                }
-                #endif
             }
 
 
@@ -2162,14 +2026,12 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                             device_name.erase(device_name.find_first_of('\0'));
                         }
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - Neutral Monitor device has reported in **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << CtiTime() << " name: \"" << device_name << "\"" << endl;
-                            dout << CtiTime() << " latitude:      " << string(CtiNumStr(latitude))      << endl;
-                            dout << CtiTime() << " longitude:     " << string(CtiNumStr(longitude))     << endl;
-                            dout << CtiTime() << " amp threshold: " << string(CtiNumStr(amp_threshold)) << endl;
-                        }
+                        CTILOG_INFO(dout, "Neutral Monitor device has reported in"<<
+                                endl <<" name: \""<< device_name <<"\""<<
+                                endl <<" latitude:      "<< latitude <<
+                                endl <<" longitude:     "<< longitude <<
+                                endl <<" amp threshold: "<< amp_threshold
+                                );
 
                         break;
                     }
@@ -2180,10 +2042,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         unsigned long time = 0;
                         float battery_voltage, temperature, amps;
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - GVAR(X): Device Values 0x01 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_INFO(dout, "GVAR(X): Device Values 0x01");
 
                         if( msg_flags & 0x20 )
                         {
@@ -2194,38 +2053,28 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                 time = CtiTime::now().seconds() - time;
                             }
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " time:          " << CtiTime(time) << endl;
-                            }
+                            CTILOG_INFO(dout, "time: "<< CtiTime(time));
                         }
                         if( msg_flags & 0x10 )
                         {
                             battery_voltage = convertBytes( p_data, pos, 2);
                             battery_voltage /= 1000.0;
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " battery:       " << string(CtiNumStr(battery_voltage))     << endl;
-                            }
+
+                            CTILOG_INFO(dout, "battery: "<< battery_voltage);
                         }
                         if( msg_flags & 0x08 )
                         {
                             temperature = convertSignedBytes( p_data, pos, 2);
                             temperature /= 100.0;
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " temperature:   " << string(CtiNumStr(temperature))     << endl;
-                            }
+
+                            CTILOG_INFO(dout, "temperature: "<< temperature);
                         }
                         if( msg_flags & 0x08 )
                         {
                             amps = convertBytes( p_data, pos, 2);
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " amps:          " << string(CtiNumStr(amps))     << endl;
-                            }
-                        }
 
+                            CTILOG_INFO(dout," amps: "<< amps);
+                        }
 
                         break;
                     }
@@ -2237,10 +2086,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         int rate, count, reading;
                         float battery_voltage;
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - GVAR(X): Neutral Current History Report 0x02 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_INFO(dout, "GVAR(X): Neutral Current History Report 0x02");
 
                         time = convertBytes( p_data, pos, 4);
                         if( flags & 0x80 )
@@ -2265,13 +2111,13 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         count  = (p_data[pos++] & 0x3f) << 8;
                         count |=  p_data[pos++];
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " time:          " << CtiTime(time) << endl;
-                            dout << CtiTime() << " battery:       " << battery_voltage << endl;
-                            dout << CtiTime() << " rate:          " << string(CtiNumStr(rate))     << endl;
-                            dout << CtiTime() << " count:         " << string(CtiNumStr(count))     << endl;
-                        }
+                        CTILOG_INFO(dout,
+                                endl <<" time:    "<< CtiTime(time) <<
+                                endl <<" battery: "<< battery_voltage <<
+                                endl <<" rate:    "<< rate <<
+                                endl <<" count:   "<< count
+                                );
+
                         //  get the timestamp ready
                         time -= rate * count;
 
@@ -2280,14 +2126,10 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                             time += rate;
                             reading = p_data[pos + (i * 2)] << 8 | p_data[pos + (i * 2) + 1];
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " time:          " << CtiTime(time) << " amps: " << string(CtiNumStr(reading)) << endl;
-                            }
+                            CTILOG_INFO(dout, "time: "<< CtiTime(time) <<", amps: "<< reading);
                         }
 
                         pos += count * 2;
-
 
                         break;
                     }
@@ -2300,10 +2142,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         int interval_cnt = 0, sample_rate = 0, rate, ts_max, ts_min;
                         float battery_voltage = 0.0, temperature = 0.0, min_reading, max_reading;
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - GVAR(X): Neutral Current History Report 0x03 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_INFO(dout, "GVAR(X): Neutral Current History Report 0x03");
 
                         hasTime = flags & 0x10 ? true : false;
                         calibrated = flags & 0x02 ? true : false;
@@ -2359,23 +2198,22 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                         over = (report_flgs & 0x80) == 0x80;        // Over Threshold
                         reset = (report_flgs & 0x40) == 0x40;       // Reset Threshold
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " time:          " << CtiTime(time) << endl;
-                            dout << CtiTime() << " battery:       " << battery_voltage << endl;
-                            dout << CtiTime() << " temperature    " << temperature << endl;
-                            dout << CtiTime() << " record rate    " << string(CtiNumStr(rate))     << endl;
-                            dout << CtiTime() << " calibrated     " << calibrated << endl;
-                            dout << CtiTime() << " reed trigger   " << reed_triggered << endl;
-                            dout << CtiTime() << " high threshold " << threshold_hi << endl;
-                            dout << CtiTime() << " low  threshold " << threshold_lo << endl;
-                            dout << CtiTime() << " report max     " << report_max << endl;
-                            dout << CtiTime() << " report min     " << report_min << endl;
-                            dout << CtiTime() << " record count   " << rec_num << endl;
-                            dout << CtiTime() << " report period  " << report_period << endl;
-                            dout << CtiTime() << " over alarm     " << over << endl;
-                            dout << CtiTime() << " reset alarm    " << reset << endl;
-                        }
+                        CTILOG_INFO(dout,
+                                endl <<" time:           "<< CtiTime(time) <<
+                                endl <<" battery:        "<< battery_voltage <<
+                                endl <<" temperature:    "<< temperature <<
+                                endl <<" record rate:    "<< rate <<
+                                endl <<" calibrated:     "<< calibrated <<
+                                endl <<" reed trigger:   "<< reed_triggered <<
+                                endl <<" high threshold: "<< threshold_hi <<
+                                endl <<" low  threshold: "<< threshold_lo <<
+                                endl <<" report max:     "<< report_max <<
+                                endl <<" report min:     "<< report_min <<
+                                endl <<" record count:   "<< rec_num <<
+                                endl <<" report period:  "<< report_period <<
+                                endl <<" over alarm:     "<< over <<
+                                endl <<" reset alarm:    "<< reset
+                                );
 
                         // get the timestamp ready
                         time -= rate * rec_num;
@@ -2388,13 +2226,11 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                             ts_max = convertBytes( p_data, pos, 1) & 0x3f;
                             ts_min = convertBytes( p_data, pos, 1) & 0x3f;
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " interval time: " << CtiTime(time) <<
-                                " min time " << CtiTime(time - ((interval_cnt - ts_min - 1) * sample_rate)) << " min amps: " << string(CtiNumStr(min_reading)) <<
-                                " max time " << CtiTime(time - ((interval_cnt - ts_max - 1) * sample_rate)) << " max amps: " << string(CtiNumStr(max_reading)) <<
-                                " ts_min/max: " << string(CtiNumStr(ts_min)) << "/" << string(CtiNumStr(ts_max)) << endl;
-                            }
+                            CTILOG_INFO(dout, "interval time: "<< CtiTime(time) <<
+                                    ", min time: "<< CtiTime(time - ((interval_cnt - ts_min - 1) * sample_rate)) <<", min amps: "<< min_reading <<
+                                    ", max time: "<< CtiTime(time - ((interval_cnt - ts_max - 1) * sample_rate)) <<", max amps: "<< max_reading <<
+                                    ", ts_min/max: "<< ts_min <<"/"<< ts_max
+                                    );
                         }
 
                         // Process Rec[E]
@@ -2428,14 +2264,13 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                     emintime = 0;   // Invalid
                             }
 
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " event triggered record reed/over/reset: " << reed_triggered << "/" << over << "/" << reset << endl;
-                            dout << CtiTime() <<
-                            " min time " << CtiTime(emintime) <<
-                            " min amps: " << string(CtiNumStr(min_reading)) <<
-                            " max time " << CtiTime(emaxtime) <<
-                            " max amps: " << string(CtiNumStr(max_reading)) <<
-                            " ts_min / max: " << string(CtiNumStr(ts_min)) << " / " << string(CtiNumStr(ts_max)) << endl;
+                            CTILOG_INFO(dout, "event triggered record reed/over/reset: "<< reed_triggered <<"/"<< over <<"/"<< reset <<
+                                    endl <<" min time:      "<< CtiTime(emintime) <<
+                                    endl <<", min amps:     "<< min_reading <<
+                                    endl <<", max time:     "<< CtiTime(emaxtime) <<
+                                    endl <<", max amps:     "<< max_reading <<
+                                    endl <<", ts_min / max: "<< ts_min <<" / "<< ts_max
+                                    );
                         }
 
                         break;
@@ -2475,11 +2310,10 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                     add_to_csv_summary(keys, values, "periodic cfg report", periodic);
                                     add_to_csv_summary(keys, values, "apn", apn);
 
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << "APN                            : " << apn << endl;
-                                        dout << "periodic cfg reports           : " << periodic << endl;
-                                    }
+                                    CTILOG_INFO(dout,
+                                            endl <<" APN:                  "<< apn <<
+                                            endl <<" periodic cfg reports: "<< periodic
+                                            );
 
                                     break;
                                 }
@@ -2498,12 +2332,10 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                     add_to_csv_summary(keys, values, url_name, url);
                                     add_to_csv_summary(keys, values, port_name, port);
 
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << "URL                            : " << url << endl;
-                                        dout << "IP Port                        : " << port << endl;
-                                    }
-
+                                    CTILOG_INFO(dout,
+                                            endl <<" URL:     "<< url <<
+                                            endl <<" IP Port: "<< port
+                                            );
 
                                     break;
                                 }
@@ -2518,12 +2350,10 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                     add_to_csv_summary(keys, values, "cooper serial low ", cooper_sn_l);
                                     add_to_csv_summary(keys, values, "radio serial", radio_sn);
 
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << "cooper serial number h/l       : " << cooper_sn_h << " / " << cooper_sn_l << endl;
-                                        dout << "radio serial number            : " << radio_sn << endl;
-                                    }
-
+                                    CTILOG_INFO(dout,
+                                            endl <<" cooper serial number h/l: "<< cooper_sn_h <<" / "<< cooper_sn_l <<
+                                            endl <<" radio serial number:      "<< radio_sn
+                                            );
 
                                     break;
                                 }
@@ -2540,12 +2370,10 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
                                     add_to_csv_summary(keys, values, "radio serial", rsn);
 
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << "cooper serial number h/l       : " << cooper_sn_h << " / " << cooper_sn_l << endl;
-                                        dout << "radio serial number            : " << rsn << endl;
-                                    }
-
+                                    CTILOG_INFO(dout,
+                                            endl <<" cooper serial number h/l: "<< cooper_sn_h <<" / "<< cooper_sn_l <<
+                                            endl <<" radio serial number:      "<< rsn
+                                            );
 
                                     break;
                                 }
@@ -2561,12 +2389,11 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                     add_to_csv_summary(keys, values, "over current thresh.", over_current_threshold);
                                     add_to_csv_summary(keys, values, "reset thresh.", reset_threshold);
 
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << "GVAR report frequency          : " << report_freq_days << endl;
-                                        dout << "over current threshold         : " << over_current_threshold << endl;
-                                        dout << "reset current threshold        : " << reset_threshold << endl;
-                                    }
+                                    CTILOG_INFO(dout,
+                                            endl <<" GVAR report frequency:   "<< report_freq_days <<
+                                            endl <<" over current threshold:  "<< over_current_threshold <<
+                                            endl <<" reset current threshold: "<< reset_threshold
+                                            );
 
                                     break;
                                 }
@@ -2612,72 +2439,61 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                                     add_to_csv_summary(keys, values, "ber",                     ber);
                                     add_to_csv_summary(keys, values, "revert count", revert_cnt );
 
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << "firmware major                 : " << firmware_major  << endl;
-                                        dout << "firmware minor                 : " << firmware_minor  << endl;
-                                        dout << "reset_count                    : " << reset_count     << endl;
-                                        dout << "spi_errors                     : " << SPI_errors      << endl;
-                                        dout << "analog firmware major          : " << abfw_major << endl;
-                                        dout << "analog firmware minor          : " << abfw_minor     << endl;
-                                        dout << "rssi                           : " << rssi << endl;
-                                        dout << "ber                            : " << ber<< endl;
-                                        dout << "revert count                   : " << revert_cnt << endl << endl;
-                                    }
+                                    CTILOG_INFO(dout,
+                                            endl <<" firmware major:        "<< firmware_major <<
+                                            endl <<" firmware minor:        "<< firmware_minor <<
+                                            endl <<" reset_count:           "<< reset_count <<
+                                            endl <<" spi_errors:            "<< SPI_errors <<
+                                            endl <<" analog firmware major: "<< abfw_major <<
+                                            endl <<" analog firmware minor: "<< abfw_minor <<
+                                            endl <<" rssi:                  "<< rssi <<
+                                            endl <<" ber:                   "<< ber <<
+                                            endl <<" revert count:          "<< revert_cnt
+                                            );
 
                                     break;
                                 }
                             case 0x81:
                                 {
                                     // APN Server to Device Information Element
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    }
+                                    CTILOG_INFO(dout, "APN Server to Device Information Element");
 
                                     break;
                                 }
                             default:
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << "  new/unknown ie_type  " << CtiNumStr((int)ie_type).hex().zpad(2) << "  total config len " << (int)total_len << " IE Position " << (int)(cfg_pos-2) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    }
+                                    CTILOG_WARN(dout, "new/unknown ie_type "<< CtiNumStr((int)ie_type).hex().zpad(2) <<", total config len "<< (int)total_len <<", IE Position "<< (int)(cfg_pos-2));
 
                                     if(cfg_pos + ie_len < total_len)
                                     {
-                                        // Process through the ie in the for loop - HOP OVER IT.
-                                        string rawBytes = "";
-                                        for( int xx = 0; xx < ie_len; xx++ )
+                                        std::ostringstream rawBytes;
+                                        rawBytes << hex << setfill('0');
+
+                                        for(int nbr = 0; nbr < ie_len; ++nbr)
                                         {
-                                            if( xx == 0 ) rawBytes += CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString();
-                                            else rawBytes += " " + CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString();
+                                            rawBytes << setw(2) << convertBytes(pConfig, cfg_pos, 1) <<" ";
                                         }
 
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " ie_type = " << CtiNumStr((int)ie_type).hex().zpad(2) << " ie_len = " << (int)ie_len << ": " << rawBytes << endl;
-                                        }
+                                        CTILOG_INFO(dout, "ie_type = "<< CtiNumStr((int)ie_type).hex().zpad(2) <<", ie_len = "<< (int)ie_len <<": "<< rawBytes);
                                     }
                                     else
                                     {
                                         cfg_pos = total_len;
                                     }
-                                    break;
                                 }
                             }
 
                             if(cfg_pos < next_ie_pos)
                             {
-                                string rawBytes = "";
+                                std::ostringstream rawBytes;
+                                rawBytes << hex << setfill('0');
+
                                 while(cfg_pos < next_ie_pos)
                                 {
-                                    rawBytes += CtiNumStr(convertBytes(pConfig, cfg_pos, 1)).hex().zpad(2).toString() + " ";
+                                    rawBytes << setw(2) << convertBytes(pConfig, cfg_pos, 1) <<" ";
                                 }
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " ie_type = " << CtiNumStr((int)ie_type).hex().zpad(2) << " ie_len = " << (int)ie_len << ": had extra bytes: " << rawBytes << endl;
-                                }
+
+                                CTILOG_INFO(dout, "ie_type = "<< CtiNumStr((int)ie_type).hex().zpad(2) <<", ie_len = "<< (int)ie_len <<": had extra bytes: "<< rawBytes);
                             }
                         }
 
@@ -2689,10 +2505,8 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
                 default:
                     {
                         // We just consumed a GPUFF FCN we do not recognize.  All beds are off for the remainder of this message.
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Unknown GPUFF FCN " << fcn << " - message processing aborted " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "Unknown GPUFF FCN "<< fcn <<" - message processing aborted");
+
                         pos = len;
                         break;
                     }
@@ -2704,10 +2518,7 @@ void GpuffProtocol::describeFrame(unsigned char *p_data, int p_len, int len, boo
 
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unknown GPUFF device type " << devt << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Unknown GPUFF device type "<< devt);
         }
     }
 }
@@ -2876,8 +2687,7 @@ bool GpuffProtocol::isPacketValid(const unsigned char *buf, const size_t len)
 
     if( len < packet_length + 4 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - Cti::Protocols::GpuffProtocol::isPacketValid() - packet too small (" << len << " < " << packet_length << " + 4) **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "packet too small ("<< len <<" < "<< packet_length <<" + 4)");
 
         return false;
     }
@@ -2888,8 +2698,7 @@ bool GpuffProtocol::isPacketValid(const unsigned char *buf, const size_t len)
 
     if( crc_included && CheckCCITT16CRC(-1, &mutable_copy.front(), packet_length + 4) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - Cti::Protocols::GpuffProtocol::isPacketValid() - packet failed CRC check **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "packet failed CRC check");
 
         return false;
     }

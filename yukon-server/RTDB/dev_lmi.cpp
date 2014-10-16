@@ -122,10 +122,7 @@ YukonError_t CtiDeviceLMI::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser
 
                 default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - undefined scan type \"" << parse.getiValue("scantype") << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Invalid scan type \""<< parse.getiValue("scantype") <<"\" for device \""<< getName() <<"\"");
 
                     break;
                 }
@@ -163,12 +160,7 @@ YukonError_t CtiDeviceLMI::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser
         case PutStatusRequest:
         default:
         {
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint - command \"" << OutMessage->Request.CommandStr << "\" not defined for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
+            CTILOG_ERROR(dout, "command \""<< OutMessage->Request.CommandStr <<"\" not defined for device \""<< getName() <<"\"");
 
             nRet = ClientErrors::NoMethodForExecuteRequest;
 
@@ -218,8 +210,7 @@ YukonError_t CtiDeviceLMI::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParse
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** AccumulatorScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "AccumulatorScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString(newParse.getCommandStr());
@@ -244,8 +235,7 @@ YukonError_t CtiDeviceLMI::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &pa
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "GeneralScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString(newParse.getCommandStr());
@@ -269,8 +259,7 @@ YukonError_t CtiDeviceLMI::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "IntegrityScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString(newParse.getCommandStr());
@@ -503,8 +492,7 @@ YukonError_t CtiDeviceLMI::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *d
     {
         if( isDebugLudicrous() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - OutMessage->VerificationSequence = " << OutMessage->VerificationSequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "OutMessage->VerificationSequence = "<< OutMessage->VerificationSequence);
         }
 
         _lmi.queueCode(OutMessage);
@@ -694,10 +682,11 @@ void CtiDeviceLMI::addExclusion(CtiTablePaoExclusion &paox)
             if( _exclusion.getCycleTimeExclusion().getCycleTime() != (_seriesv.getTickTime() * 60) ||
                 _exclusion.getCycleTimeExclusion().getCycleOffset() != _seriesv.getTimeOffset() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Exclusion and Series 5 cycle time and/or offset do not match for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << " **** (" << _exclusion.getCycleTimeExclusion().getCycleTime()   << ") (" << (_seriesv.getTickTime() * 60) << "), ("
-                                              << _exclusion.getCycleTimeExclusion().getCycleOffset() << ") (" <<  _seriesv.getTimeOffset()     << ")" << endl;
+                CTILOG_ERROR(dout, "Exclusion and Series 5 cycle time and/or offset do not match for \"" << getName() <<"\""<<
+                        endl <<"("<< _exclusion.getCycleTimeExclusion().getCycleTime()   <<") ("<< (_seriesv.getTickTime() * 60) <<"), "
+                               "("<< _exclusion.getCycleTimeExclusion().getCycleOffset() <<") ("<< _seriesv.getTimeOffset() << ")");
+
+
             }
 
             _lmi.setSystemData(_seriesv.getTickTime(),
@@ -711,8 +700,7 @@ void CtiDeviceLMI::addExclusion(CtiTablePaoExclusion &paox)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -726,8 +714,7 @@ void CtiDeviceLMI::clearExclusions()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -747,8 +734,7 @@ bool CtiDeviceLMI::isDeviceExcluded(long id) const
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return bstatus;

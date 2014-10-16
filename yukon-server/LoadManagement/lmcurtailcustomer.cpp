@@ -313,11 +313,7 @@ void CtiLMCurtailCustomer::restoreDynamicData()
 
     if( _LM_DEBUG & LM_DEBUG_DATABASE )
     {
-        string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << endl;
-        }
+        CTILOG_DEBUG(dout, rdr.asString());
     }
 
     if(rdr())

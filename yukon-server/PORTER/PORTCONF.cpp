@@ -147,10 +147,7 @@ void VConfigThread (void *Arg)
    ULONG ServicesDone;
    ULONG UtilIDsDone;
 
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " VConfig Thread Starting as TID:  " << CurrentTID() << endl;
-   }
+   CTILOG_INFO(dout, "VConfig Thread Started");
 
    /* Figure out what the name is */
    if((gConfigParms.getValueAsString("PORTER_VCONFIGPATH")).empty())
@@ -171,8 +168,8 @@ void VConfigThread (void *Arg)
    //if(InitVConfigDB ())
    if(0) // FIX FIX FIX CGP This must be repaired 082199
    {
-      printf ("Unable to Open Versacom Configuration Database\n");
-      CTIExit (-1, -1);
+      CTILOG_FATAL(dout, "Unable to Open Versacom Configuration Database");
+      exit(-1);
    }
 
    /* Do this forever */
@@ -203,7 +200,7 @@ void VConfigThread (void *Arg)
 
       if((File = fopen (Name, "r")) == NULL) continue;
 
-      SendTextToLogger ("Inf", "Processing Started: VCONFIG.DAT");
+      CTILOG_INFO(dout, "Processing Started: VCONFIG.DAT");
 
       /* Now loop through contents */
       for(;;)
@@ -316,9 +313,9 @@ void VConfigThread (void *Arg)
                VSend (&VSt, Route, TRUE);
             }
             else
-         {
-            printf ("Bad New Auxilary ID\n");
-         }
+            {
+                CTILOG_ERROR(dout, "Bad New Auxilary ID");
+            }
 
 
             /* Do a new Section address */
@@ -351,7 +348,7 @@ void VConfigThread (void *Arg)
                /* This is a straight mask */
                if(sscanf (Buffer + 1, "%hx", &Address) != 1)
                {
-                  printf ("Invalid Class Hex Mask\n");
+                   CTILOG_ERROR(dout, "Invalid Class Hex Mask");
                }
                else
                {
@@ -389,7 +386,7 @@ void VConfigThread (void *Arg)
                   /* Check to be sure it is in the range */
                   if(Address > 16)
                   {
-                     printf ("New Class out of Range\n");
+                      CTILOG_ERROR(dout, "New Class out of Range");
                   }
                   else
                   {
@@ -423,7 +420,7 @@ void VConfigThread (void *Arg)
                /* This is a straight mask */
                if(sscanf (Buffer + 1, "%hx", &Address) != 1)
                {
-                  printf ("Invalid Divison Hex Mask\n");
+                   CTILOG_ERROR(dout, "Invalid Divison Hex Mask");
                }
                else
                {
@@ -461,7 +458,7 @@ void VConfigThread (void *Arg)
                   /* Check to be sure it is in the range */
                   if(Address > 16)
                   {
-                     printf ("New Division out of Range\n");
+                      CTILOG_ERROR(dout, "New Division out of Range");
                   }
                   else
                   {
@@ -531,7 +528,7 @@ void VConfigThread (void *Arg)
             }
             else
             {
-               printf ("Bad New Utility ID\n");
+                CTILOG_ERROR(dout, "Bad New Utility ID");
             }
          }
 
@@ -561,100 +558,26 @@ void VConfigThread (void *Arg)
             {
                VConfigRecord.VConfigName[i] = ' ';
             }
-
-            /* Check for this record in the verscom configuration file */
-// //             if(!(VConfigGetEqual (&VConfigRecord)))
-// //             {
-// //                /* Load 'er up */
-// //                VSt.CommandType =  VCONFIG;
-// //
-// //                /* Do the new auxilary ID */
-// //                VSt.VConfig.Data[0] = (UCHAR)VConfigRecord.UtilityID;
-// //                memset (&VSt.VConfig.Data[1], 0, sizeof (VSt.VConfig.Data) - 1);
-// //                VSt.VConfig.ConfigType = VCONFIG_AUXID;
-// //                VSend (&VSt,
-// //                       Route,
-// //                       TRUE);
-// //
-// //                /* Do a new Section address */
-// //                VSt.VConfig.Data[0] = (UCHAR)VConfigRecord.Section;
-// //                memset (&VSt.VConfig.Data[1], 0, sizeof (VSt.VConfig.Data) - 1);
-// //                VSt.VConfig.ConfigType = VCONFIG_SECTION;
-// //                VSend (&VSt, Route, TRUE);
-// //
-// //
-// //                /* Do a new Class address */
-// //                /* Invert The Address */
-// //                IAddress = 0;
-// //                for(i = 0; i < 16; i++)
-// //                {
-// //                   IAddress |= ((VConfigRecord.Class >> i) & 0x00000001) << (15 - i);
-// //                }
-// //
-// //                VSt.VConfig.Data[0] = HIBYTE (IAddress);
-// //                VSt.VConfig.Data[1] = LOBYTE (IAddress);
-// //                memset (&VSt.VConfig.Data[2], 0, sizeof (VSt.VConfig.Data) - 2);
-// //                VSt.VConfig.ConfigType = VCONFIG_CLASS;
-// //                VSend (&VSt, Route, TRUE);
-// //
-// //
-// //                /* Do a new Division address */
-// //                /* Invert The Address */
-// //                IAddress = 0;
-// //                for(i = 0; i < 16; i++)
-// //                {
-// //                   IAddress |= ((VConfigRecord.Division >> i) & 0x00000001) << (15 - i);
-// //                }
-// //
-// //                VSt.VConfig.Data[0] = HIBYTE (IAddress);
-// //                VSt.VConfig.Data[1] = LOBYTE (IAddress);
-// //                memset (&VSt.VConfig.Data[2], 0, sizeof (VSt.VConfig.Data) - 2);
-// //                VSt.VConfig.ConfigType = VCONFIG_DIVISION;
-// //                VSend (&VSt, Route, TRUE);
-// //
-// //                ConfigsDone++;
-// //
-// //                /* Check if we are to send this one to the logger */
-// //                if(VSt.Address != 0)
-// //                {
-// //                   sprintf (Buffer, "%012d        %20.20s",
-// //                            VSt.Address,
-// //                            VConfigRecord.VConfigName);
-// //
-// //                   SendTextToLogger ("Cfg", Buffer);
-// //                }
-// //
-// //
-// //             }
-// //             else
-// //             {
-// //                sprintf (Buffer, "Invalid Config      %20.20s", VConfigRecord.VConfigName);
-// //                SendTextToLogger ("Inf", Buffer);
-// //                printf ("Configuration not found\n");
-// //             }
          }
       }
 
       /* Send Results to the logger */
       if(ConfigsDone)
       {
-         sprintf (Buffer, "Configs Processed   %ld", ConfigsDone);
-         SendTextToLogger ("Inf", Buffer);
+          CTILOG_INFO(dout, "Configs Processed : "<< ConfigsDone);
       }
 
       if(ServicesDone)
       {
-         sprintf (Buffer, "Services Processed  %ld", ServicesDone);
-         SendTextToLogger ("Inf", Buffer);
+          CTILOG_INFO(dout, "Services Processed : "<< ServicesDone);
       }
 
       if(UtilIDsDone)
       {
-         sprintf (Buffer, "UtilityIDs Processed%ld", UtilIDsDone);
-         SendTextToLogger ("Inf", Buffer);
+          CTILOG_INFO(dout, "UtilityIDs Processed : "<< UtilIDsDone);
       }
 
-      SendTextToLogger ("Inf", "Processing Complete:VCONFIG.DAT");
+      CTILOG_INFO(dout, "Processing Complete: VCONFIG.DAT");
 
       /* Wait a bit for next file */
       CTISleep (1000L);
@@ -690,68 +613,29 @@ INT VSend (VSTRUCT *VSt,
    {
    case ' ':
       {
-#ifdef OLD_WAY
-         if(!(RouteGetFirst (&RouteRecord)))
-         {
-            do
-            {
-               if(RouteRecord.Timed || !CheckTimed)
-               {
-                  VSend2 (VSt, &RouteRecord);
-               }
-            }  while(!(RoutegetGT (&RouteRecord)));
-         }
-#else
 
-         {
-            CtiRouteManager::coll_type::reader_lock_guard_t guard(RouteManager.getLock());
+        CtiRouteManager::coll_type::reader_lock_guard_t guard(RouteManager.getLock());
 
-            CtiRouteManager::spiterator   rte_itr;
+        CtiRouteManager::spiterator   rte_itr;
 
-            /* Now do the routes */
-            for(rte_itr = RouteManager.begin() ; rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr) )
-            {
-               CtiRouteSPtr aRouteRecord = rte_itr->second;
+        /* Now do the routes */
+        for(rte_itr = RouteManager.begin() ; rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr) )
+        {
+           CtiRouteSPtr aRouteRecord = rte_itr->second;
 
-               // A timed route is the original nomenclature fro a default route. 072099 CGP
-               if(aRouteRecord->isValid() && (aRouteRecord->isDefaultRoute() || !CheckTimed))
-               {
-                  VSend2 (VSt, aRouteRecord);
-               }
-            }
-         }
-#endif
-         break;
+           // A timed route is the original nomenclature fro a default route. 072099 CGP
+           if(aRouteRecord->isValid() && (aRouteRecord->isDefaultRoute() || !CheckTimed))
+           {
+              VSend2 (VSt, aRouteRecord);
+           }
+        }
       }
+      break;
       /* Walk through the routes picking all timed routes */
    case '@':
       /* get this route macro */
-#ifdef OLD_WAY
-      memcpy (RouteMacroRecord.RouteMacroName, Route, STANDNAMLEN);
-      if(RouteMacrogetEqual (&RouteMacroRecord))
-      {
-         printf ("Unknown Route Macro\n");
-         break;
-      }
 
-      /* Send it on each route of the macro */
-      for(i = 0; i < 30; i++)
-      {
-         if(RouteMacroRecord.RouteName[i][0] != ' ')
-         {
-            VSend (VSt,
-                   RouteMacroRecord.RouteName[i],
-                   FALSE);
-         }
-      }
-#else
-
-      {
-          CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << "Route Macros were properly broken on 072199 by CGP " << endl;
-      }
-
-#endif
+      CTILOG_INFO(dout, "Route Macros were properly broken on 072199 by CGP");
 
       break;
 
@@ -799,10 +683,8 @@ INT VSend2 (VSTRUCT *VSt, CtiRouteSPtr RouteRecord)
       OutMessage.Buffer.VSt = *VSt;
 
       /* Build and send message */
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << "**** ADD CODE HERE Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      }
+      CTILOG_WARN(dout, "Functional code missing");
+
       return ClientErrors::None; //   return(VersacomSend (&OutMessage));
    }
 

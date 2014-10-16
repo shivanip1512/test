@@ -11,8 +11,11 @@
 *-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
+#include "boost/lexical_cast.hpp"
 #include "logger.h"
+#include "ctitime.h"
 #include "std_ansi_tbl_64.h"
+
 
 using std::string;
 using std::endl;
@@ -281,29 +284,14 @@ CtiAnsiTable64& CtiAnsiTable64::operator=(const CtiAnsiTable64& aRef)
 //=========================================================================================================================================
 void CtiAnsiTable64::printResult( const string& deviceName )
 {
-    int index, i, j;
-    int nbrBlkInts, startInt;
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
+    for (int index = 0; index < _nbrBlksSet1; index++)
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "================== "<<deviceName<<"  Std Table 64  ========================" << endl;
-    }
-
-    for (index = 0; index < _nbrBlksSet1; index++)
-    {
-        startInt = 0;
-        if ( ( !_descBlockOrder && index == (_nbrBlksSet1-1))
-              || (  _descBlockOrder && index == 0 )
-              )
+        int startInt = 0, nbrBlkInts;
+        if( (!_descBlockOrder && index == (_nbrBlksSet1-1)) || (_descBlockOrder && index == 0) )
         {
-            if (_descIntervalOrder)
+            if(_descIntervalOrder)
             {
                 startInt = _nbrBlkIntsSet1 - _nbrValidInts;
                 nbrBlkInts = _nbrBlkIntsSet1;
@@ -318,197 +306,117 @@ void CtiAnsiTable64::printResult( const string& deviceName )
             nbrBlkInts = _nbrBlkIntsSet1;
         }
 
+        itemList <<"B*L*O*C*K "<< index;
+
+        const CtiTime::DisplayOffset displayOffset = _timeZoneApplied
+                ? CtiTime::Gmt
+                : CtiTime::Local;
+
+        itemList.add("Block End Time") << CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time).asString(displayOffset, CtiTime::OmitTimezone);
+
+        if( _blkEndReadFlag )
         {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "  **B*L*O*C*K** : "<<index<<endl;
-                if (_timeZoneApplied)
-                {
-                    dout << "  **Block End Time: "<<CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time).asString(CtiTime::Gmt, CtiTime::OmitTimezone)<<endl;
-                }
-                else
-                {
-                    dout << "  **Block End Time: "<<CtiTime(_lp_data_set1_tbl.lp_data_sets1[index].blk_end_time).asString(CtiTime::Local, CtiTime::OmitTimezone)<<endl;
-                }
-        }
-        if (_blkEndReadFlag)
-        {
+            Cti::StreamBufferSink& block_end_read = itemList.add("Block End Reads");
+            for (int i = 0; i < _nbrChnsSet1; i++)
             {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "  **Block End Reads: ";
-            }
-            for (i = 0; i < _nbrChnsSet1; i++)
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "  "<<_lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_read;
-            }
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << endl;
+                block_end_read << _lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_read <<"  ";
             }
         }
-        if (_blkEndPulseFlag)
+
+        if( _blkEndPulseFlag )
         {
+            Cti::StreamBufferSink& block_end_pulse = itemList.add("Block End Pulse");
+            for (int i = 0; i < _nbrChnsSet1; i++)
             {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "  **Block End Pulse: ";
-            }
-            for (i = 0; i < _nbrChnsSet1; i++)
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "  "<< _lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_pulse;
-            }
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << endl;
+                block_end_pulse << _lp_data_set1_tbl.lp_data_sets1[index].end_readings[i].block_end_pulse <<"  ";
             }
         }
-        if (_closureStatusFlag)
+
+        if( _closureStatusFlag )
         {
+            itemList <<"Closure Status BitField";
+
+            Cti::StreamBufferSink& status = itemList.add("Status");
+            for (int i = 0; i < _nbrChnsSet1; i++)
             {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "  **Closure Status BitField: ";
-                dout << "             Status -  ";
+                status << _lp_data_set1_tbl.lp_data_sets1[index].closure_status[i].status <<"  ";
             }
-            for (i = 0; i < _nbrChnsSet1; i++)
+
+            Cti::StreamBufferSink& nbr_valid_interval = itemList.add("Nbr Valid Interval");
+            for (int i = 0; i < _nbrChnsSet1; i++)
             {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "  "<<_lp_data_set1_tbl.lp_data_sets1[index].closure_status[i].status;
-            }
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout <<endl<< "             Nbr Valid Interval -  ";
-            }
-            for (i = 0; i < _nbrChnsSet1; i++)
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "  "<<_lp_data_set1_tbl.lp_data_sets1[index].closure_status[i].nbr_valid_interval;
-            }
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout <<endl;
-            }
-            nbrBlkInts = _lp_data_set1_tbl.lp_data_sets1[index].closure_status[0].nbr_valid_interval;
-        }
-        if (_simpleIntStatusFlag)
-        {
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "  **Simple Interval Status: "<<_lp_data_set1_tbl.lp_data_sets1[index].set_simple_int_status<<endl;
+                nbr_valid_interval << _lp_data_set1_tbl.lp_data_sets1[index].closure_status[i].nbr_valid_interval <<"  ";
             }
         }
-        for (i = startInt; i < nbrBlkInts; i++)
+
+        if( _simpleIntStatusFlag )
         {
+            itemList.add("Simple Interval Status") << _lp_data_set1_tbl.lp_data_sets1[index].set_simple_int_status;
+        }
+
+        for( int i = startInt; i < nbrBlkInts; i++ )
+        {
+            itemList <<"BLOCK INTERVAL "<< i+1;
+
+            if( _extendedIntStatusFlag )
             {
-                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                    dout << "  **BLOCK INTERVAL: "<<i+1<<endl;
-            }
-            if (_extendedIntStatusFlag)
-            {
+                Cti::StreamBufferSink& extended_int_status = itemList.add("Extended Interval Status");
+                for (int j = 0; j < (_nbrChnsSet1/2)+1; j++ )
                 {
-                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                    dout << "    **Extended Interval Status: ";
-                }
-                for (j = 0; j < (_nbrChnsSet1/2)+1; j++ )
-                {
-                    {
-                        CtiLockGuard< CtiLogger > doubt_guard( dout );
-                        dout << "  "<<(int)_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[j];
-                    }
-                    {
-                        CtiLockGuard< CtiLogger > doubt_guard( dout );
-                        dout << " DSTFlag( "<<_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].dayLightSavingsFlag<<" )";
-                    }
-                }
-                {
-                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                    dout <<endl;
+                    extended_int_status << _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].extended_int_status[j] <<".DSTFlag("
+                                        << _lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].dayLightSavingsFlag <<")  ";
                 }
             }
+
+            Cti::StreamBufferSink& int_data = itemList.add("Interval Data");
+            for( int j = 0; j < _nbrChnsSet1; j++ )
             {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "    **Interval Data: ";
-            }
-            for (j = 0; j < _nbrChnsSet1; j++ )
-            {
+                if( const boost::optional<int> intervalFmtRecord = resolveIntervalFmtRecord(_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].int_data[j]) )
                 {
-                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                    dout << "  ";
+                    int_data << *intervalFmtRecord <<"  ";
                 }
-                printIntervalFmtRecord(_lp_data_set1_tbl.lp_data_sets1[index].lp_int[i].int_data[j]);
-            }
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << endl;
             }
         }
     }
+
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 64") <<
+            itemList
+            );
 }
-void CtiAnsiTable64::printIntervalFmtRecord(INT_FMT1_RCD intData)
+
+boost::optional<int> CtiAnsiTable64::resolveIntervalFmtRecord(INT_FMT1_RCD intData)
 {
     switch(_intFmtCde1)
     {
         case 1:
         {
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << (int)intData.u.s1.item;
-            }
-            break;
+            return (int)intData.u.s1.item;
         }
         case 2:
         {
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << (int)intData.u.s2.item;
-            }
-            break;
+            return (int)intData.u.s2.item;
         }
-
         case 4:
         {
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << (int)intData.u.s4.item;
-            }
-            break;
+            return (int)intData.u.s4.item;
         }
-
         case 8:
         {
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << (int)intData.u.s8.item;
-            }
-            break;
+            return (int)intData.u.s8.item;
         }
-
         case 16:
         {
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << (int)intData.u.s16.item;
-            }
-            break;
+            return (int)intData.u.s16.item;
         }
-
         case 32:
         {
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << (int)intData.u.s32.item;
-            }
-            break;
+            return (int)intData.u.s32.item;
         }
         case 64:
-        {
-            break;
-        }
         case 128:
-        {
-            break;
-        }
         default:
-            break;
+            return boost::none;
     }
 }
 

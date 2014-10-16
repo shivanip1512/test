@@ -170,10 +170,8 @@ void CtiFDRTextFileBase::sendLinkState (int aState)
 */
 bool CtiFDRTextFileBase::loadTranslationLists()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Seeing this error is bad, child class should have implemented the function loadTranslationLists()" << endl;
-    }
+    CTILOG_ERROR(dout, "Seeing this error is bad, child class should have implemented the function loadTranslationLists()");
+
     return true;
 }
 

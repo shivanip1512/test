@@ -189,32 +189,16 @@ CtiAnsiKV2ManufacturerTable000::RegisterFunction_e CtiAnsiKV2ManufacturerTable00
 }
 void CtiAnsiKV2ManufacturerTable000::printResult(  )
 {
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  kV2 MFG Table 0  ========================" << endl;
-    }
+    itemList.add("MFG Version Number")  << _mfgVersionNumber;
+    itemList.add("MFG Revision Number") << _mfgRevionsNumber;
+    itemList.add("Meter Type")          << _meterType;
+    itemList.add("Meter Mode")          << _meterMode;
+    itemList.add("Register Function")   << _registerFunction;
 
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   MFG Version Number: " << (int) _mfgVersionNumber<< endl;
-        dout << "   MFG Revision Number: " << (int) _mfgRevionsNumber << endl;
-        //dout << "   MFG Version Number: " << endl;
-
-
-        dout << "   Meter Type: " << (int) _meterType << endl;
-        dout << "   Meter Mode: " << (int) _meterMode << endl;
-        dout << "   Register Function: " << (int) _registerFunction << endl;
-    }
-
+    CTILOG_INFO(dout,
+            endl << formatTableName("kV2 MFG Table 0") <<
+            itemList
+            );
 }
-
-
-

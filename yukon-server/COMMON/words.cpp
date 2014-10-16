@@ -267,11 +267,8 @@ YukonError_t D_Words (
    {
       if( Code = NackTst (DWords[15], &Nack, CCU) )
       {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-         }
-         return(Code);
+          CTILOG_ERROR(dout, "NackTst failed with error code ("<< Code <<")");
+          return(Code);
       }
 
       if(Nack)
@@ -302,11 +299,8 @@ YukonError_t D_Words (
    {
       if( Code = NackTst (DWords[23], &Nack, CCU) )
       {
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-         }
-         return(Code);
+          CTILOG_ERROR(dout, "NackTst failed with error code ("<< Code <<")");
+          return(Code);
       }
 
       if(Nack)

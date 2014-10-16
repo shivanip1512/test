@@ -38,7 +38,7 @@ public:
 
    CtiRouteCCU();
 
-   virtual void DumpData();
+   virtual std::string toString() const override;
 
    CtiRepeaterList_t &getRepeaterList();
 

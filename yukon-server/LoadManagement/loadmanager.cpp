@@ -111,8 +111,7 @@ void CtiLoadManager::stop()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Shutting down load manager thread..." << endl;
+        CTILOG_DEBUG(dout, "Shutting down load manager thread...");
     }
 
     try
@@ -123,8 +122,7 @@ void CtiLoadManager::stop()
 
             if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Forced to terminate." << endl;
+                CTILOG_DEBUG(dout, "Forced to terminate.");
             }
         }
         else
@@ -135,14 +133,12 @@ void CtiLoadManager::stop()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Load manager thread shutdown." << endl;
+        CTILOG_DEBUG(dout, "Load manager thread shutdown.");
     }
 
     try
@@ -156,8 +152,7 @@ void CtiLoadManager::stop()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     try
@@ -171,8 +166,7 @@ void CtiLoadManager::stop()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     try
@@ -186,8 +180,7 @@ void CtiLoadManager::stop()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -203,10 +196,7 @@ void CtiLoadManager::controlLoop()
 {
     try
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " LoadManager Thread started TID: " << CurrentTID () << endl;
-        }
+        CTILOG_INFO(dout, "LoadManager Thread started");
 
         CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
         {
@@ -250,8 +240,7 @@ void CtiLoadManager::controlLoop()
                 }
                 catch( ... )
                 {
-                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime() << " **Checkpoint** " <<  " Caught '...' executing executor in main thread." << __FILE__ << "(" << __LINE__ << ")" << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "executor failed in main thread");
                 }
                 delete executor;
                 //Shorten how long to wait in case a message was processed to improve response time
@@ -270,8 +259,7 @@ void CtiLoadManager::controlLoop()
                 {
                     if( (currentDateTime.seconds()%1800) == 0 )//every five minutes tell the user if the manager thread is still alive
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Load Manager thread pulse" << endl;
+                        CTILOG_INFO(dout, "Load Manager thread pulse");
                     }
                 }
 
@@ -289,8 +277,7 @@ void CtiLoadManager::controlLoop()
                 }
                 catch( ... )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 try
@@ -300,8 +287,7 @@ void CtiLoadManager::controlLoop()
                 }
                 catch( ... )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 BOOL examinedControlAreaForControlNeededFlag = FALSE;
@@ -337,10 +323,7 @@ void CtiLoadManager::controlLoop()
                                 {
                                     if( currentControlArea->getControlAreaState() != CtiLMControlArea::FullyActiveState )
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - Attempting to reduce load in control area: " << currentControlArea->getPAOName() << "." << endl;
-                                        }
+                                        CTILOG_INFO(dout, "Attempting to reduce load in control area: " << currentControlArea->getPAOName() << ".");
                                         if( currentControlArea->getControlInterval() != 0 ||
                                             currentControlArea->isThresholdTriggerTripped() )
                                         {
@@ -366,8 +349,7 @@ void CtiLoadManager::controlLoop()
                                     {
                                         //all load reducing programs are currently running
                                         //can not reduce any more demand
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - All load reducing programs are currently running for control area: " << currentControlArea->getPAOName() << " can not reduce any more load." << endl;
+                                        CTILOG_INFO(dout, "All load reducing programs are currently running for control area: " << currentControlArea->getPAOName() << " can not reduce any more load.");
                                     }
                                 }
                                 else
@@ -429,16 +411,10 @@ void CtiLoadManager::controlLoop()
                             if( currentControlArea->getControlAreaState() == CtiLMControlArea::FullyActiveState ||
                                 currentControlArea->getControlAreaState() == CtiLMControlArea::PartiallyActiveState )
                             {
-//                            if( currentControlArea->isControlStillNeeded() )
+                                if( currentControlArea->maintainCurrentControl(secondsFromBeginningOfDay,currentDateTime,multiPilMsg,multiDispatchMsg,multiNotifMsg,examinedControlAreaForControlNeededFlag) )
                                 {
-                                    //CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    //dout << CtiTime() << " - Maintaining current load reduction in control area: " << currentControlArea->getPAOName() << "." << endl;
-                                    if( currentControlArea->maintainCurrentControl(secondsFromBeginningOfDay,currentDateTime,multiPilMsg,multiDispatchMsg,multiNotifMsg,examinedControlAreaForControlNeededFlag) )
-                                    {
-                                        currentControlArea->setUpdatedFlag(TRUE);
-                                    }
+                                    currentControlArea->setUpdatedFlag(TRUE);
                                 }
-
                             }
 
                             if( currentControlArea->getControlAreaState() == CtiLMControlArea::AttemptingControlState &&
@@ -454,25 +430,22 @@ void CtiLoadManager::controlLoop()
                         {
                             if( currentControlArea->stopAllControl(multiPilMsg,multiDispatchMsg, multiNotifMsg, currentDateTime) )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Left controllable time window in control area: " << currentControlArea->getPAOName() << ", stopping all control." << endl;
+                                CTILOG_INFO(dout, "Left controllable time window in control area: " << currentControlArea->getPAOName() << ", stopping all control.");
                                 currentControlArea->setUpdatedFlag(TRUE);
                             }
                         }
                     }
                     catch( ... )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
                 }
                 CtiTime controlAreaStop;
 
                 if( _LM_DEBUG & LM_DEBUG_TIMING && controlAreaStop.seconds() - controlAreaStart.seconds() > 2 )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Control area loop took: "
-                         << controlAreaStop.seconds() - controlAreaStart.seconds() << " seconds " << endl;
+                    CTILOG_DEBUG(dout, "Control area loop took: "
+                         << controlAreaStop.seconds() - controlAreaStart.seconds() << " seconds " );
                 }
 
                 try
@@ -486,8 +459,7 @@ void CtiLoadManager::controlLoop()
                 }
                 catch( ... )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 try
@@ -502,8 +474,7 @@ void CtiLoadManager::controlLoop()
                 }
                 catch( ... )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 try
@@ -518,8 +489,7 @@ void CtiLoadManager::controlLoop()
                 }
                 catch( ... )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 try
@@ -544,15 +514,13 @@ void CtiLoadManager::controlLoop()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " No Group Found for group in change list! " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl;
+                                CTILOG_INFO(dout, "No Group Found for group in change list! " << *changeIter);
                             }
                         }
 
                         if( _LM_DEBUG & LM_DEBUG_CLIENT && tempCount > 0 )
                         {
-                            CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << CtiTime() << "Found " << tempCount << " dirty dynamic groups to send to clients" << endl;
+                            CTILOG_DEBUG(dout, "Found " << tempCount << " dirty dynamic groups to send to clients");
                         }
                         tempCount = 0;
 
@@ -568,14 +536,12 @@ void CtiLoadManager::controlLoop()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " No Program Found for program in change list with id: " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl;
+                                CTILOG_INFO(dout, "No Program Found for program in change list with id: " << *changeIter);
                             }
                         }
                         if( _LM_DEBUG & LM_DEBUG_CLIENT && tempCount > 0 )
                         {
-                            CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << CtiTime() << "Found " << tempCount << " dirty programs to send to clients" << endl;
+                            CTILOG_DEBUG(dout, "Found " << tempCount << " dirty programs to send to clients");
                         }
                         tempCount = 0;
 
@@ -591,21 +557,19 @@ void CtiLoadManager::controlLoop()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " No Control Area Found for id in change list ID: " << *changeIter << " " << __FILE__ << " at:" << __LINE__ << endl;
+                                CTILOG_WARN(dout, "No Control Area Found for id in change list ID: " << *changeIter);
                             }
                         }
                         if( _LM_DEBUG & LM_DEBUG_CLIENT && tempCount > 0 )
                         {
-                            CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << CtiTime() << "Found " << tempCount << " dirty control areas to send to clients" << endl;
+                            CTILOG_DEBUG(dout, "Found " << tempCount << " dirty control areas to send to clients");
                         }
 
                         if( multi->getCount() > 0 )
                         {
                             if( _LM_DEBUG & LM_DEBUG_OUT_MESSAGES )
                             {
-                                multi->dump();
+                                CTILOG_DEBUG(dout, *multi);
                             }
                             sendMessageToClients(multi);
                             multi = 0;
@@ -626,8 +590,7 @@ void CtiLoadManager::controlLoop()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE && tempCount > 0 )
                         {
-                            CtiLockGuard<CtiLogger> dout_guard(dout);
-                            dout << CtiTime() << "Inserted " << tempCount << " history rows" << endl;
+                            CTILOG_DEBUG(dout, "Inserted " << tempCount << " history rows");
                         }
 
                         _CHANGED_CONTROL_AREA_LIST.clear();
@@ -637,8 +600,7 @@ void CtiLoadManager::controlLoop()
                 }
                 catch( ... )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
 
@@ -659,8 +621,7 @@ void CtiLoadManager::controlLoop()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -689,8 +650,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getDispatchConnection()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         return boost::shared_ptr<CtiClientConnection>();
     }
@@ -721,8 +681,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getPILConnection()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         return boost::shared_ptr<CtiClientConnection>();
     }
@@ -749,8 +708,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getNotificationConnection
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         return boost::shared_ptr<CtiClientConnection>();
     }
@@ -781,8 +739,7 @@ void CtiLoadManager::checkDispatch(CtiTime currentTime)
         }
         catch( ... )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
     while( !done );
@@ -813,8 +770,7 @@ void CtiLoadManager::checkPIL(CtiTime currentTime)
         }
         catch( ... )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
     while( !done );
@@ -829,8 +785,7 @@ void CtiLoadManager::registerForPoints(const vector<CtiLMControlArea*>& controlA
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Registering for point changes." << endl;
+        CTILOG_DEBUG(dout, "Registering for point changes.");
     }
 
     CtiPointRegistrationMsg* regMsg;
@@ -911,8 +866,7 @@ void CtiLoadManager::registerForPoints(const vector<CtiLMControlArea*>& controlA
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     regMsg = NULL;
@@ -968,15 +922,14 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
 
             if( _LM_DEBUG & LM_DEBUG_EXTENDED )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Porter return received." << endl;
+                CTILOG_DEBUG(dout, "Porter return received");
             }
             if( pcReturn->Status() &&
                 pcReturn->Status() != ClientErrors::DeviceInhibited &&
                 pcReturn->Status() != ClientErrors::RemoteInhibited &&
                 pcReturn->Status() != ClientErrors::PortInhibited )
             {
-                pcReturn->dump();
+                CTILOG_INFO(dout, *pcReturn);
             }
         }
         break;
@@ -984,8 +937,7 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
         {
             if( _LM_DEBUG & LM_DEBUG_EXTENDED )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Command Message received from Dispatch" << endl;
+                CTILOG_DEBUG(dout, "Command Message received from Dispatch");
             }
 
             cmdMsg = (CtiCommandMsg*)message;
@@ -993,8 +945,7 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
             {
                 if( _LM_DEBUG & LM_DEBUG_EXTENDED )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Replying to Are You There message." << endl;
+                    CTILOG_DEBUG(dout, "Replying to Are You There message.");
                 }
                 try
                 {
@@ -1002,15 +953,13 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
                 }
                 catch( ... )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
             }
             else
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Command Message with type = "
-                << cmdMsg->getOperation() << ") not supported from Dispatch" << endl;
+                CTILOG_INFO(dout, "Command Message with type = "
+                << cmdMsg->getOperation() << ") not supported from Dispatch" );
             }
         }
         break;
@@ -1036,11 +985,7 @@ void CtiLoadManager::parseMessage( CtiMessage *message, CtiTime currentTime )
         break; //we don't care.
     default:
         {
-            char tempstr[64] = "";
-            _itoa(message->isA(),tempstr,10);
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - message->isA() = " << tempstr << endl;
-            dout << CtiTime() << " - Unknown message type: parseMessage(CtiMessage *message) in controller.cpp" << endl;
+            CTILOG_WARN(dout, "Unknown message type " << message->isA());
         }
     }
     return;
@@ -1055,19 +1000,14 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
 {
     if( _LM_DEBUG & LM_DEBUG_POINT_DATA )
     {
-        char tempchar[80];
-        string outString = "Point Data, ID:";
-        _ltoa(pointID,tempchar,10);
-        outString += tempchar;
-        outString += " Val:";
-        int precision = 3;
-        _snprintf(tempchar,80,"%.*f",precision,value);
-        outString += tempchar;
-        outString += " Time: ";
-        outString += CtiTime(timestamp).asString();
+        Cti::FormattedList list;
 
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << outString.c_str() << endl;
+        list << "Point Data";
+        list.add("ID")      << pointID;
+        list.add("Val")     << value;
+        list.add("Time")    << timestamp;
+
+        CTILOG_DEBUG(dout, list);
     }
 
     CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
@@ -1156,15 +1096,11 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                         try
                         {
                             getDispatchConnection()->WriteConnQue(CTIDBG_new CtiSignalMsg(currentTrigger->getPointId(),0,text,additional,GeneralLogType,SignalEvent));
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << text << ", " << additional << " (" << currentControlArea->getPAOName() << ")" << endl;
-                            }
+                            CTILOG_INFO(dout, text << ", " << additional << " (" << currentControlArea->getPAOName() << ")");
                         }
                         catch( ... )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                         }
                     }
                 }
@@ -1211,10 +1147,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                                 _snprintf(tempchar,80,"%.*f",1,currentTrigger->getPointValue());
                                 additional += tempchar;
                                 CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                }
+                                CTILOG_INFO(dout, text << ", " << additional);
                             }
                         }
                     }
@@ -1252,10 +1185,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                             CtiLoadManager::getInstance()->sendMessageToDispatch(
                                 new CtiSignalMsg(currentTrigger->getThresholdPointId(), 0, text, additional, GeneralLogType, SignalEvent));
 
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << text << ", " << additional << endl;
-                            }
+                            CTILOG_INFO(dout, text << ", " << additional);
                         }
                     }
                 }
@@ -1307,8 +1237,7 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
             {
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
-                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime() << " Load Group: " << lm_group->getPAOName() << " has gone control complete."  << endl;
+                    CTILOG_DEBUG(dout, "Load Group: " << lm_group->getPAOName() << " has gone control complete." );
                 }
                 lm_group->setControlCompleteTime(currentTime);
             }
@@ -1327,17 +1256,15 @@ void CtiLoadManager::signalMsg( long pointID, unsigned tags, string text, string
 {
     if( _LM_DEBUG & LM_DEBUG_EXTENDED )
     {
-        char tempchar[64] = "";
-        string outString = "Signal Message received. Point ID:";
-        _ltoa(pointID,tempchar,10);
-        outString += tempchar;
-        outString += " Tags:";
-        _ultoa(tags,tempchar,10);
-        outString += tempchar;
+        Cti::FormattedList list;
 
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << outString.c_str() << "  Text: "
-        << text << " Additional Info: " << additional << endl;
+        list << "Signal Message received";
+        list.add("Point ID")    << pointID;
+        list.add("Tags")        << tags;
+        list.add("Text")        << text;
+        list.add("Additional Info") << additional;
+
+        CTILOG_DEBUG(dout, list);
     }
 }
 
@@ -1356,8 +1283,7 @@ void CtiLoadManager::sendMessageToDispatch( CtiMessage* message )
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1377,8 +1303,7 @@ void CtiLoadManager::sendMessageToPIL( CtiMessage* message )
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1397,8 +1322,7 @@ void CtiLoadManager::sendMessageToNotification( CtiMessage* message )
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1417,8 +1341,7 @@ void CtiLoadManager::sendMessageToClients( CtiMessage* message )
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1438,8 +1361,7 @@ void CtiLoadManager::loadControlLoopCParms()
         control_loop_delay = atoi(str.c_str());
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
 
@@ -1449,8 +1371,7 @@ void CtiLoadManager::loadControlLoopCParms()
         control_loop_inmsg_delay = atoi(str.c_str());
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
 
@@ -1460,8 +1381,7 @@ void CtiLoadManager::loadControlLoopCParms()
         control_loop_outmsg_delay = atoi(str.c_str());
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
 }

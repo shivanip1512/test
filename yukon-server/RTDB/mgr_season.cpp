@@ -65,8 +65,7 @@ bool CtiSeasonManager::isInSeason(const CtiDate& date, long season_sched_id)
     }
     else
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " **Checkpoint** " <<  " Couldn't locate season schedule id: " << season_sched_id << __FILE__ << "(" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Couldn't locate season schedule id: "<< season_sched_id);
     }
     return false;
 }
@@ -103,19 +102,9 @@ void CtiSeasonManager::refresh()
             }
         }
     }
-    catch(RWExternalErr e )
-    {
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;

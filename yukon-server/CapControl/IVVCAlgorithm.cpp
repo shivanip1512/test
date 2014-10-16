@@ -89,18 +89,14 @@ bool IVVCAlgorithm::checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSu
 
                 if ( state->isShowNoRegulatorAttachedMsg() )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                    dout << CtiTime() << " - IVVC Configuration Error. No Voltage Regulator attached to zone: " << zone->getName() << std::endl;
+                    CTILOG_ERROR(dout, "IVVC Configuration Error. No Voltage Regulator attached to zone: " << zone->getName());
                 }
             }
             catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
                 }
             }
         }
@@ -151,11 +147,8 @@ bool IVVCAlgorithm::isBusInDisabledIvvcState(IVVCStatePtr state, CtiCCSubstation
     {
         if ( state->isShowBusDisableMsg() )
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Suspended for bus: " << subbus->getPaoName()
-                     << ". The " << culprit << " is disabled." << std::endl;
-            }
+            CTILOG_INFO(dout, "IVVC Suspended for bus: " << subbus->getPaoName() << ". The " << culprit << " is disabled.");
+
             sendIVVCAnalysisMessage(IVVCAnalysisMessage::createSubbusDisabledMessage(subbus->getPaoId(), CtiTime::now()));
             sendDisableRemoteControl( subbus );
         }
@@ -236,9 +229,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 subbus->setDisableFlag(true);
                 subbus->setBusUpdatedFlag(true);
 
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Configuration Error: Algorithm cannot execute." << std::endl;
-                dout << CtiTime() << " - Disabling bus: " << subbus->getPaoName() << std::endl;
+                CTILOG_ERROR(dout, "IVVC Configuration Error: Algorithm cannot execute. Disabling bus: " << subbus->getPaoName());
 
                 return;
             }
@@ -258,8 +249,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 //We will be waiting for some scan responses in this request.
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Scanned Group Request made in IVVC State" << std::endl;
+                    CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Scanned Group Request made in IVVC State");
                 }
             }
             else
@@ -267,8 +257,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 //Regular request. Dispatch will send all current values to us.
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Group Request made in IVVC State" << std::endl;
+                    CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Group Request made in IVVC State");
                 }
             }
 
@@ -289,8 +278,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Control attempt." << std::endl;
+                CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Control attempt.");
             }
 
             //set next control time.
@@ -303,10 +291,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 //Not starting a new scan here. There should be retrys happening already.
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                    dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
-                         << "  Analysis Interval: Invalid Data." << std::endl;
+                    CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName()
+                         << "  Analysis Interval: Invalid Data.");
                 }
 
                 state->setCommsRetryCount(state->getCommsRetryCount() + 1);
@@ -323,8 +309,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                         if (_CC_DEBUG & CC_DEBUG_IVVC)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << "  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << std::endl;
+                            CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << "  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost.");
                         }
                     }
                 }
@@ -335,10 +320,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             }
             else if ( state->isCommsLost() )    // Currently good data but previously were comms lost
             {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Analysis Resuming for bus: " << subbus->getPaoName() << std::endl;
-                }
+                CTILOG_INFO(dout, "IVVC Analysis Resuming for bus: " << subbus->getPaoName());
 
                 state->setState(IVVCState::IVVC_WAIT);
                 state->setCommsRetryCount(0);
@@ -372,10 +354,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                    dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
-                         << "  Analysis Interval: One or more Voltage Regulators are in 'Auto' mode." << std::endl;
+                    CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName()
+                         << "  Analysis Interval: One or more Voltage Regulators are in 'Auto' mode.");
                 }
 
                 sendIVVCAnalysisMessage(IVVCAnalysisMessage::createRegulatorAutoModeMessage(subbus->getPaoId(), timeNow));
@@ -394,8 +374,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                         if (_CC_DEBUG & CC_DEBUG_IVVC)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << "  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost." << std::endl;
+                            CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << "  Analysis Interval: Retried comms " << _IVVC_COMMS_RETRY_COUNT << " time(s). Setting Comms lost.");
                         }
                     }
                 }
@@ -413,8 +392,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Data OK, moving on to Analyze." << std::endl;
+                    CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Analysis Interval: Data OK, moving on to Analyze.");
                 }
             }
         }
@@ -436,8 +414,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 state->setState(IVVCState::IVVC_WAIT);
 
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Controlled bank with ID: " << bankId << " not found." << std::endl;
+                CTILOG_WARN(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Controlled bank with ID: " << bankId << " not found.");
                 break;
             }
 
@@ -453,8 +430,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 state->setState(IVVCState::IVVC_WAIT);
 
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Controlled bank: " << bank->getPaoName()  << " not in pending state.  Resetting IVVC Control loop." << std::endl;
+                CTILOG_INFO(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Controlled bank: " << bank->getPaoName()  << " not in pending state.  Resetting IVVC Control loop.");
 
                 return;
             }
@@ -466,8 +442,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  isAlreadyControlled() true." << std::endl;
+                    CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  isAlreadyControlled() true.");
                 }
 
                 CtiMultiMsg_vec pointChanges;
@@ -501,8 +476,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                 {
                     if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Post control wait." << std::endl;
+                        CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Post control wait.");
                     }
                     state->setState(IVVCState::IVVC_POST_CONTROL_WAIT);
                 }
@@ -519,8 +493,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                     if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Var Check failed." << std::endl;
+                        CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Var Check failed.");
                     }
                 }
                 break;
@@ -536,8 +509,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Post control wait. Creating Post Scan " << std::endl;
+                CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Post control wait. Creating Post Scan ");
             }
 
             PointDataRequestPtr request(_requestFactory->createDispatchPointDataRequest(dispatchConnection));
@@ -568,9 +540,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
             {
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
-                         << " - Post Scan " << ( requestIsComplete ? "Complete" : "Timed Out" ) << std::endl;
+                    CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName()
+                         << " - Post Scan " << ( requestIsComplete ? "Complete" : "Timed Out" ));
                 }
 
                 // Update the point response data with whatever data we got back from the post scan
@@ -616,18 +587,14 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
                     {
                         errorCount++;
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
-                        }
+                        CTILOG_EXCEPTION_ERROR(dout, noRegulator);
                     }
                     catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
                     {
                         errorCount++;
                         if (missingAttribute.complain())
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                            CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
                         }
                     }
                 }
@@ -640,9 +607,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                     if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<" - Cancelling Tap Operations.  One or more regulators is missing, or is missing a required attribute." << std::endl;
+                        CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<" - Cancelling Tap Operations.  One or more regulators is missing, or is missing a required attribute.");
                     }
                 }
 
@@ -667,9 +632,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
-                                                      << " - Raising Tap on Voltage Regulator with ID: " << regulatorId << std::endl;
+                                    CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName()
+                                                      << " - Raising Tap on Voltage Regulator with ID: " << regulatorId);
                                 }
                             }
                             else
@@ -679,9 +643,8 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
 
                                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName()
-                                                      << " - Lowering Tap on Voltage Regulator with ID: " << regulatorId << std::endl;
+                                    CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName()
+                                                      << " - Lowering Tap on Voltage Regulator with ID: " << regulatorId);
                                 }
                             }
 
@@ -696,15 +659,13 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     }
                     catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+                        CTILOG_EXCEPTION_ERROR(dout, noRegulator);
                     }
                     catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
                     {
                         if (missingAttribute.complain())
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                            CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
                         }
                     }
                 }
@@ -721,8 +682,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
         {
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  default. " << std::endl;
+                CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  default. ");
             }
         }
     }//switch
@@ -770,9 +730,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
                 if ( ! subbus->getDisableFlag() )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                    dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+                    CTILOG_EXCEPTION_ERROR(dout, noRegulator);
                 }
             }
             catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
@@ -781,9 +739,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
                 if (missingAttribute.complain())
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
                 }
             }
         }
@@ -834,8 +790,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
         if (!subbus->getDisableFlag())
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Configuration Error: Missing Watt Point on Bus: " << subbus->getPaoName() << std::endl;
+            CTILOG_ERROR(dout, "IVVC Configuration Error: Missing Watt Point on Bus: " << subbus->getPaoName());
         }
     }
 
@@ -851,8 +806,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
             if (!subbus->getDisableFlag())
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Configuration Error: Missing Var Point on Bus: " << subbus->getPaoName() << std::endl;
+                CTILOG_ERROR(dout, "IVVC Configuration Error: Missing Var Point on Bus: " << subbus->getPaoName());
             }
         }
     }
@@ -877,8 +831,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
                 if (!subbus->getDisableFlag())
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Configuration Error: Missing Watt Point on Feeder: " << feeder->getPaoName() << std::endl;
+                    CTILOG_ERROR(dout, "IVVC Configuration Error: Missing Watt Point on Feeder: " << feeder->getPaoName());
                 }
             }
 
@@ -895,8 +848,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
 
                     if (!subbus->getDisableFlag())
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - IVVC Configuration Error: Missing Var Point on Feeder: " << feeder->getPaoName() << std::endl;
+                        CTILOG_ERROR(dout, "IVVC Configuration Error: Missing Var Point on Feeder: " << feeder->getPaoName());
                     }
                 }
             }
@@ -1035,26 +987,21 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 
                         if( _CC_DEBUG & CC_DEBUG_IVVC )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
-                                              << subbus->getPaoName() << std::endl;
+                            CTILOG_DEBUG(dout, "IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
+                                              << subbus->getPaoName());
                         }
                     }
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
             }
             catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
                 }
             }
         }
@@ -1081,26 +1028,21 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 
                         if( _CC_DEBUG & CC_DEBUG_IVVC )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
-                                              << subbus->getPaoName() << std::endl;
+                            CTILOG_DEBUG(dout, "IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
+                                              << subbus->getPaoName());
                         }
                     }
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
             }
             catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
                 }
             }
         }
@@ -1127,26 +1069,21 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 
                         if( _CC_DEBUG & CC_DEBUG_IVVC )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
-                                              << subbus->getPaoName() << std::endl;
+                            CTILOG_DEBUG(dout, "IVVC Algorithm: Voltage Regulator Keep Alive messages sent on bus: "
+                                              << subbus->getPaoName());
                         }
                     }
                 }
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
             }
             catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
                 }
             }
         }
@@ -1192,8 +1129,7 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
 
         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
         {
-           CtiLockGuard<CtiLogger> logger_guard(dout);
-           dout << CtiTime() << " - IVVC Algorithm: "<< subbus->getPaoName() <<" Performing Verification." <<std::endl;
+           CTILOG_DEBUG(dout, "IVVC Algorithm: "<< subbus->getPaoName() <<" Performing Verification.");
         }
         subbus->setCapBanksToVerifyFlags((long)subbus->getVerificationStrategy(), ccEvents);
         setupNextBankToVerify(state, subbus, ccEvents);
@@ -1219,8 +1155,7 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
         }
         catch (NotFoundException& e)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Error Updating PreOpValue for deltas. PointId not found: " << pointValuePair.first <<  std::endl;
+            CTILOG_ERROR(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Error Updating PreOpValue for deltas. PointId not found: " << pointValuePair.first);
         }
     }
 
@@ -1231,9 +1166,7 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
 
     if (_CC_DEBUG & CC_DEBUG_IVVC)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-        dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Operating Capbank: " << currentBank->getPaoName() << std::endl;
+        CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Operating Capbank: " << currentBank->getPaoName());
     }
 
     if (state->_verification.successCount == 0 && state->_verification.failureCount == 0)
@@ -1269,8 +1202,7 @@ void IVVCAlgorithm::setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBus
     {
         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
         {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " IVVC Algorithm: "<<subbus->getPaoName() <<" Performing Verification on CapBankId: "<< subbus->getCurrentVerificationCapBankId() << std::endl;
+                CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<" Performing Verification on CapBankId: "<< subbus->getCurrentVerificationCapBankId());
         }
 
         state->_verification = IVVCState::VerificationHelper(subbus->getCurrentVerificationCapBankId());
@@ -1284,8 +1216,7 @@ void IVVCAlgorithm::setupNextBankToVerify(IVVCStatePtr state, CtiCCSubstationBus
         CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, subbus->getPaoId()))->execute();
         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
         {
-           CtiLockGuard<CtiLogger> logger_guard(dout);
-           dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() << " has completed Verification." <<std::endl;
+           CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() << " has completed Verification.");
         }
     }
     return;
@@ -1327,12 +1258,8 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     }
     else    // this should never happen but if it does -- reset the state machine and bail out.
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-
-            dout << CtiTime() << " - IVVC: " << subbus->getPaoName()
-                 << " - Missing Watt point response.  Aborting analysis." << std::endl;
-        }
+        CTILOG_ERROR(dout, "IVVC: " << subbus->getPaoName()
+                 << " - Missing Watt point response.  Aborting analysis.");
 
         state->setState(IVVCState::IVVC_WAIT);
         state->setCommsRetryCount(0);
@@ -1351,12 +1278,8 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
         }
         else    // this should never happen but if it does -- reset the state machine and bail out.
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                dout << CtiTime() << " - IVVC: " << subbus->getPaoName()
-                     << " - Missing Var point response.  Aborting analysis." << std::endl;
-            }
+            CTILOG_ERROR(dout, "IVVC: " << subbus->getPaoName()
+                     << " - Missing Var point response.  Aborting analysis.");
 
             state->setState(IVVCState::IVVC_WAIT);
             state->setCommsRetryCount(0);
@@ -1389,12 +1312,8 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
             }
             else    // this should never happen but if it does -- reset the state machine and bail out.
             {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                    dout << CtiTime() << " - IVVC: " << feeder->getPaoName()
-                         << " - Missing Watt point response.  Aborting analysis." << std::endl;
-                }
+                CTILOG_ERROR(dout, "IVVC: " << feeder->getPaoName()
+                         << " - Missing Watt point response.  Aborting analysis.");
 
                 state->setState(IVVCState::IVVC_WAIT);
                 state->setCommsRetryCount(0);
@@ -1414,12 +1333,8 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                 }
                 else    // this should never happen but if it does -- reset the state machine and bail out.
                 {
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                        dout << CtiTime() << " - IVVC: " << feeder->getPaoName()
-                             << " - Missing Var point response.  Aborting analysis." << std::endl;
-                    }
+                    CTILOG_ERROR(dout, "IVVC: " << feeder->getPaoName()
+                         << " - Missing Var point response.  Aborting analysis.");
 
                     state->setState(IVVCState::IVVC_WAIT);
                     state->setCommsRetryCount(0);
@@ -1437,15 +1352,19 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
     // report voltages
     if (_CC_DEBUG & CC_DEBUG_IVVC)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
+        Cti::StreamBuffer s;
 
-        dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << " - Current measurement set." << std::endl;
+        s << "IVVC Algorithm: " << subbus->getPaoName() << " - Current measurement set.";
 
-        dout << "Voltages [ Point ID : Value ]" << std::endl;
+        Cti::FormattedList list;
+
+        list << "Voltages [ Point ID : Value ]";
         for ( PointValueMap::const_iterator b = pointValues.begin(), e = pointValues.end(); b != e; ++b )
         {
-            dout << b->first << " : " << b->second.value << std::endl;
+            list.add(CtiNumStr(b->first)) << b->second.value;
         }
+
+        CTILOG_DEBUG(dout, s << list);
     }
 
     // report bus stuff
@@ -1457,14 +1376,16 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
     if (_CC_DEBUG & CC_DEBUG_IVVC)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
+        Cti::FormattedList list;
 
-        dout << "Target PF VARs      : " << targetPowerFactorVars << std::endl;
-        dout << "Subbus Flatness     : " << Vf << std::endl;
-        dout << "Subbus ViolationCost: " << violationCost << std::endl;
-        dout << "Subbus Watts        : " << powerFactorData[0].wattValue << std::endl;
-        dout << "Subbus VARs         : " << powerFactorData[0].varValue << std::endl;
-        dout << "Subbus Power Factor : " << PFBus << std::endl;
+        list.add("Target PF VARs")       << targetPowerFactorVars;
+        list.add("Subbus Flatness")      << Vf;
+        list.add("Subbus ViolationCost") << violationCost;
+        list.add("Subbus Watts")         << powerFactorData[0].wattValue;
+        list.add("Subbus VARs")          << powerFactorData[0].varValue;
+        list.add("Subbus Power Factor")  << PFBus;
+
+        CTILOG_DEBUG(dout, list);
     }
 
     //  bus weight == ( voltage weight * flatness ) + voltage violation cost + .......
@@ -1499,11 +1420,13 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
+                Cti::FormattedList list;
 
-                dout << "Feeder Watts        : " << powerFactorData[i].wattValue << std::endl;
-                dout << "Feeder VARs         : " << powerFactorData[i].varValue << std::endl;
-                dout << "Feeder Power Factor : " << PFFeeder << std::endl;
+                list.add("Feeder Watts")        << powerFactorData[i].wattValue;
+                list.add("Feeder VARs")         << powerFactorData[i].varValue;
+                list.add("Feeder Power Factor") << PFFeeder;
+
+                CTILOG_DEBUG(dout, list);
             }
         }
     }
@@ -1512,9 +1435,11 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
     if (_CC_DEBUG & CC_DEBUG_IVVC)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
+        Cti::FormattedList list;
 
-        dout << "Subbus Weight       : " << currentBusWeight << std::endl;
+        list.add("Subbus Weight") << currentBusWeight;
+
+        CTILOG_DEBUG(dout, list);
     }
 
     //calculate estimated bus weights etc from historical data
@@ -1575,19 +1500,23 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                 // Log our estimated voltage changes if bank is operated.
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    Cti::StreamBuffer s;
 
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Estimated voltages if Capbank ID# "
-                         << currentBank->getPaoId() << " is " << (isCapBankOpen ? "CLOSED" : "OPENED") << std::endl;
+                    s << "IVVC Algorithm: "<<subbus->getPaoName() <<"  Estimated voltages if Capbank ID# "
+                         << currentBank->getPaoId() << " is " << (isCapBankOpen ? "CLOSED" : "OPENED");
 
-                    dout << "Estimated Voltages [ Point ID : Estimated Value ]" << std::endl;
+                    Cti::FormattedList list;
+
+                    list << "Estimated Voltages [ Point ID : Estimated Value ]";
                     for each (PointResponse currentResponse in responses)
                     {
                         if (deltas.find(currentResponse.getPointId()) != deltas.end())
                         {
-                            dout << currentResponse.getPointId() << " : " << deltas[ currentResponse.getPointId() ].value << std::endl;
+                            list.add(CtiNumStr(currentResponse.getPointId())) << deltas[ currentResponse.getPointId() ].value;
                         }
                     }
+
+                    CTILOG_DEBUG(dout, s << list);
                 }
 
                 // report estimated bus stuff
@@ -1598,10 +1527,12 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    Cti::FormattedList list;
 
-                    dout << "Estimated Subbus Flatness     : " << state->_estimated[currentBank->getPaoId()].flatness << std::endl;
-                    dout << "Estimated Subbus ViolationCost: " << state->_estimated[currentBank->getPaoId()].voltViolation << std::endl;
+                    list.add("Estimated Subbus Flatness")      << state->_estimated[currentBank->getPaoId()].flatness;
+                    list.add("Estimated Subbus ViolationCost") << state->_estimated[currentBank->getPaoId()].voltViolation;
+
+                    CTILOG_DEBUG(dout, list);
                 }
 
                 //calculate the VAR target window
@@ -1635,10 +1566,12 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    Cti::FormattedList list;
 
-                    dout << "Estimated Subbus VARs         : " << estVarValue << std::endl;
-                    dout << "Estimated Subbus Power Factor : " << state->_estimated[currentBank->getPaoId()].powerFactor << std::endl;
+                    list.add("Estimated Subbus VARs")         << estVarValue;
+                    list.add("Estimated Subbus Power Factor") << state->_estimated[currentBank->getPaoId()].powerFactor;
+
+                    CTILOG_DEBUG(dout, list);
                 }
 
                 //  bus weight == ( voltage weight * flatness ) + voltage violation cost + .......
@@ -1682,10 +1615,12 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
                         if (_CC_DEBUG & CC_DEBUG_IVVC)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            Cti::FormattedList list;
 
-                            dout << "Estimated Feeder VARs         : " << feederVarValue << std::endl;
-                            dout << "Estimated Feeder Power Factor : " << PFFeeder << std::endl;
+                            list.add("Estimated Feeder VARs")         << feederVarValue;
+                            list.add("Estimated Feeder Power Factor") << PFFeeder;
+
+                            CTILOG_DEBUG(dout, list);
                         }
                     }
                 }
@@ -1693,9 +1628,11 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                 // Log our estimated calculations
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    Cti::FormattedList list;
 
-                    dout << "Estimated Subbus Weight       : " << state->_estimated[currentBank->getPaoId()].busWeight << std::endl;
+                    list.add("Estimated Subbus Weight") << state->_estimated[currentBank->getPaoId()].busWeight;
+
+                    CTILOG_DEBUG(dout, list);
                 }
             }
         }
@@ -1721,19 +1658,23 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
+            Cti::StreamBuffer s;
 
-            dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << " - Estimated voltages for Multi-Tap solution." << std::endl;
-            dout << "Estimated Voltages [ Point ID : Estimated Value ]" << std::endl;
+            s << "IVVC Algorithm: " << subbus->getPaoName() << " - Estimated voltages for Multi-Tap solution.";
+
+            Cti::FormattedList list;
+
+            list << "Estimated Voltages [ Point ID : Estimated Value ]";
             for ( PointValueMap::const_iterator b = multiTapVoltages.begin(), e = multiTapVoltages.end(); b != e; ++b )
             {
-                dout << b->first << " : " << b->second.value << std::endl;
+                list.add(CtiNumStr(b->first)) << b->second.value;
             }
-            dout << "Tap Operations [ Regulator ID : Operation ]" << std::endl;
+            list << "Tap Operations [ Regulator ID : Operation ]";
             for ( IVVCState::TapOperationZoneMap::const_iterator b = state->_tapOps.begin(), e = state->_tapOps.end(); b != e; ++b )
             {
-                dout << b->first << " : " << b->second << std::endl;
+                list.add(CtiNumStr(b->first)) << b->second;
             }
+            CTILOG_DEBUG(dout, s << list);
         }
 
         double mt_Vf = calculateVf( multiTapVoltages );
@@ -1743,11 +1684,13 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
+            Cti::FormattedList list;
 
-            dout << "Estimated Subbus Flatness     : " << mt_Vf << std::endl;
-            dout << "Estimated Subbus ViolationCost: " << mt_violationCost << std::endl;
-            dout << "Estimated Subbus Weight       : " << multiTapEstBw << std::endl;
+            list.add("Estimated Subbus Flatness")      << mt_Vf;
+            list.add("Estimated Subbus ViolationCost") << mt_violationCost;
+            list.add("Estimated Subbus Weight")        << multiTapEstBw;
+
+            CTILOG_DEBUG(dout, list);
         }
     }
 
@@ -1785,8 +1728,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  No Operation - one or more voltage regulators in 'Auto' mode." << std::endl;
+                    CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  No Operation - one or more voltage regulators in 'Auto' mode.");
                 }
             }
         }
@@ -1798,8 +1740,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  No Tap Operations needed." << std::endl;
+                CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  No Tap Operations needed.");
             }
         }
         return true;
@@ -1823,8 +1764,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
             }
             catch (NotFoundException& e)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Error Updating PreOpValue for deltas. PointId not found: " << pointValuePair.first << std::endl;
+                CTILOG_ERROR(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Error Updating PreOpValue for deltas. PointId not found: " << pointValuePair.first);
             }
         }
 
@@ -1835,9 +1775,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
 
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-
-            dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  Operating Capbank ID# " << operatePaoId << std::endl;
+            CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Operating Capbank ID# " << operatePaoId);
         }
 
         //send cap bank command
@@ -1875,8 +1813,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
     {
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " IVVC Algorithm: "<<subbus->getPaoName() <<"  Not Operating Voltage Regulators due to minimum tap period." << std::endl;
+            CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  Not Operating Voltage Regulators due to minimum tap period.");
         }
 
         sendIVVCAnalysisMessage( IVVCAnalysisMessage::createNoTapOpMinTapPeriodMessage( subbusId, now, _IVVC_MIN_TAP_PERIOD_MINUTES ) );
@@ -1963,17 +1900,13 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
         }
         catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-
-            dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+            CTILOG_EXCEPTION_ERROR(dout, noRegulator);
         }
         catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
         {
             if (missingAttribute.complain())
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
             }
 
         }
@@ -1996,8 +1929,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  No Operation - one or more voltage regulators in 'Auto' mode." << std::endl;
+                CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  No Operation - one or more voltage regulators in 'Auto' mode.");
             }
         }
     }
@@ -2009,8 +1941,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
 
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Algorithm: "<<subbus->getPaoName() <<"  No Tap Operations needed." << std::endl;
+            CTILOG_DEBUG(dout, "IVVC Algorithm: "<<subbus->getPaoName() <<"  No Tap Operations needed.");
         }
     }
 }
@@ -2109,17 +2040,13 @@ bool IVVCAlgorithm::allRegulatorsInRemoteMode(const long subbusId) const
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
             }
             catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
                 }
             }
         }
@@ -2308,8 +2235,7 @@ void IVVCAlgorithm::sendDisableRemoteControl( CtiCCSubstationBusPtr subbus )
 
     if (_CC_DEBUG & CC_DEBUG_IVVC)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - IVVC Algorithm: "<< subbus->getPaoName() << " - Sending remote control disable. " << std::endl;
+        CTILOG_DEBUG(dout, "IVVC Algorithm: "<< subbus->getPaoName() << " - Sending remote control disable. ");
     }
 
     ZoneManager & zoneManager = store->getZoneManager();
@@ -2333,17 +2259,13 @@ void IVVCAlgorithm::sendDisableRemoteControl( CtiCCSubstationBusPtr subbus )
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
             }
             catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                    dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                    CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
                 }
             }
         }
@@ -2359,8 +2281,7 @@ void IVVCAlgorithm::handleCommsLost(IVVCStatePtr state, CtiCCSubstationBusPtr su
     {
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Algorithm: " << subbus->getPaoName() << " - Comms lost." << std::endl;
+            CTILOG_DEBUG(dout, "IVVC Algorithm: " << subbus->getPaoName() << " - Comms lost.");
         }
 
         sendDisableRemoteControl( subbus );
@@ -2755,17 +2676,13 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
     }
     catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-        dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+        CTILOG_EXCEPTION_ERROR(dout, noRegulator);
     }
     catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
     {
         if (missingAttribute.complain())
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-
-            dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+            CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
         }
     }
 }
@@ -2788,8 +2705,7 @@ bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow,
 
     if (_CC_DEBUG & CC_DEBUG_IVVC)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - IVVC Algorithm: Analysing Point Data Request Results." << std::endl;
+        CTILOG_DEBUG(dout, "IVVC Algorithm: Analysing Point Data Request Results.");
     }
 
     const Cti::CapControl::Phase phases[] =
@@ -2842,18 +2758,14 @@ bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow,
                 {
                     if ( ! subbus->getDisableFlag() )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                        dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+                        CTILOG_EXCEPTION_ERROR(dout, noRegulator);
                     }
                 }
                 catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
                 {
                     if ( missingAttribute.complain() )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                        dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+                        CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
                     }
                 }
             }
@@ -2935,8 +2847,7 @@ bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow,
     {
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Configuration Error: Missing Watt Point on Bus: " << subbus->getPaoName() << std::endl;
+            CTILOG_DEBUG(dout, "IVVC Configuration Error: Missing Watt Point on Bus: " << subbus->getPaoName());
         }
     }
 
@@ -2950,8 +2861,7 @@ bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow,
         {
             if (_CC_DEBUG & CC_DEBUG_IVVC)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - IVVC Configuration Error: Missing Var Point on Bus: " << subbus->getPaoName() << std::endl;
+                CTILOG_DEBUG(dout, "IVVC Configuration Error: Missing Var Point on Bus: " << subbus->getPaoName());
             }
         }
     }
@@ -2973,8 +2883,7 @@ bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow,
             {
                 if (_CC_DEBUG & CC_DEBUG_IVVC)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - IVVC Configuration Error: Missing Watt Point on Feeder: " << feeder->getPaoName() << std::endl;
+                    CTILOG_DEBUG(dout, "IVVC Configuration Error: Missing Watt Point on Feeder: " << feeder->getPaoName());
                 }
             }
 
@@ -2988,8 +2897,7 @@ bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow,
                 {
                     if (_CC_DEBUG & CC_DEBUG_IVVC)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - IVVC Configuration Error: Missing Var Point on Feeder: " << feeder->getPaoName() << std::endl;
+                        CTILOG_DEBUG(dout, "IVVC Configuration Error: Missing Var Point on Feeder: " << feeder->getPaoName());
                     }
                 }
             }
@@ -3071,8 +2979,7 @@ bool IVVCAlgorithm::analysePointRequestData( const long subbusID,
 
         if (_CC_DEBUG & CC_DEBUG_IVVC)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - IVVC Algorithm: " << logMessage << " for Request Type: " << type << std::endl;
+            CTILOG_DEBUG(dout, "IVVC Algorithm: " << logMessage << " for Request Type: " << type);
         }
     }
 

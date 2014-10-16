@@ -158,10 +158,8 @@ int CtiFDR_Valmet::readConfig()
         setTimeSyncVariation (atoi(tempStr.c_str()));
         if (getTimeSyncVariation() < 5)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Valmet max time sync variation of " << getTimeSyncVariation() << " second(s) is invalid, defaulting to 5 seconds" << endl;
-            }
+            CTILOG_ERROR(dout, "Valmet max time sync variation of "<< getTimeSyncVariation() <<" second(s) is invalid, defaulting to 5 seconds");
+
             // default to 5 seconds
             setTimeSyncVariation(5);
         }
@@ -195,28 +193,29 @@ int CtiFDR_Valmet::readConfig()
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Valmet port number " << getPortNumber() << endl;
-        dout << CtiTime() << " Valmet timestamp window " << getTimestampReasonabilityWindow() << endl;
-        dout << CtiTime() << " Valmet db reload rate " << getReloadRate() << endl;
-        dout << CtiTime() << " Valmet queue flush rate " << getQueueFlushRate() << " second(s) " << endl;
-        dout << CtiTime() << " Valmet send rate " << getOutboundSendRate() << endl;
-        dout << CtiTime() << " Valmet send interval " << getOutboundSendInterval() << " second(s) " << endl;
-        dout << CtiTime() << " Valmet max time sync variation " << getTimeSyncVariation() << " second(s) " << endl;
-        dout << CtiTime() << " Valmet link timeout " << getLinkTimeout() << " second(s) " << endl;
-        dout << CtiTime() << " Valmet force scan pointname " << sendAllPointsPointName << endl;
-        dout << CtiTime() << " Valmet scan device compare string " << scanDevicePointName << endl;
-
+        Cti::FormattedList loglist;
+        loglist.add("Valmet port number")                << getPortNumber();
+        loglist.add("Valmet timestamp window")           << getTimestampReasonabilityWindow();
+        loglist.add("Valmet db reload rate")             << getReloadRate();
+        loglist.add("Valmet queue flush rate")           << getQueueFlushRate() <<" second(s)";
+        loglist.add("Valmet send rate")                  << getOutboundSendRate();
+        loglist.add("Valmet send interval")              << getOutboundSendInterval() <<" second(s) ";
+        loglist.add("Valmet max time sync variation")    << getTimeSyncVariation() << " second(s) ";
+        loglist.add("Valmet link timeout")               << getLinkTimeout() << " second(s) ";
+        loglist.add("Valmet force scan pointname")       << sendAllPointsPointName;
+        loglist.add("Valmet scan device compare string") << scanDevicePointName;
 
         if (shouldUpdatePCTime())
-            dout << CtiTime() << " Valmet time sync will reset PC clock" << endl;
+            loglist <<"Valmet time sync will reset PC clock";
         else
-            dout << CtiTime() << " Valmet time sync will not reset PC clock" << endl;
+            loglist <<"Valmet time sync will not reset PC clock";
 
         if (isInterfaceInDebugMode())
-            dout << CtiTime() << " Valmet running in debug mode " << endl;
+            loglist <<"Valmet running in debug mode ";
         else
-            dout << CtiTime() << " Valmet running in normal mode "<< endl;
+            loglist <<"Valmet running in normal mode ";
+
+        CTILOG_DEBUG(dout, loglist);
     }
 
     return true;
@@ -262,12 +261,12 @@ bool CtiFDR_Valmet::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, 
         }   // invalid
     } // end try
 
-    catch (RWExternalErr e )
+    catch (const RWExternalErr& e )
     {
         getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  " << e.why() << endl;
+
+        CTILOG_EXCEPTION_ERROR(dout, e);
         RWTHROW(e);
     }
 
@@ -276,8 +275,8 @@ bool CtiFDR_Valmet::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, 
     {
         getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  (...) "<< endl;
+
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return successful;
 }
@@ -318,11 +317,10 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Analog/Calculated point " << aPoint.getPointID();
-                        dout << " queued as " << aPoint.getTranslateName(string (FDR_VALMET));
-                        dout << " value " << aPoint.getValue() << " with quality of " << ForeignQualityToString(ptr->Value.Quality);
-                        dout << " to " << getInterfaceName() << endl;
+                        CTILOG_DEBUG(dout, "Analog/Calculated point "<< aPoint.getPointID() <<
+                                " queued as "<< aPoint.getTranslateName(string (FDR_VALMET)) <<
+                                " value "<< aPoint.getValue() <<" with quality of "<< ForeignQualityToString(ptr->Value.Quality) <<
+                                " to "<< getInterfaceName());
                     }
                     break;
                 }
@@ -343,8 +341,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 
                             if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for interface " << getInterfaceName() << endl;
+                                CTILOG_DEBUG(dout, "Point "<< aPoint.getPointID() <<" State "<< aPoint.getValue() <<" is invalid for interface "<< getInterfaceName());
                             }
                         }
                         else
@@ -353,18 +350,20 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 
                              if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                              {
-                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                 dout << CtiTime() << " Control point " << aPoint.getPointID();
-                                 dout << " queued as " << aPoint.getTranslateName(string (FDR_VALMET));
+                                 Cti::StreamBuffer logmsg;
+
+                                 logmsg <<" Control point "<< aPoint.getPointID() <<" queued as "<< aPoint.getTranslateName(string (FDR_VALMET));
                                  if (aPoint.getValue() == STATE_OPENED)
                                  {
-                                     dout << " state of Open ";
+                                     logmsg << " state of Open ";
                                  }
                                  else
                                  {
-                                     dout << " state of Close ";
+                                     logmsg << " state of Close ";
                                  }
-                                 dout << "to " << getInterfaceName() << endl;;
+                                 logmsg << "to " << getInterfaceName();
+
+                                 CTILOG_DEBUG(dout, logmsg);
                              }
                         }
                     }
@@ -382,8 +381,7 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 
                             if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for interface " << getInterfaceName() << endl;
+                                CTILOG_DEBUG(dout, "Point "<< aPoint.getPointID() <<" State "<< aPoint.getValue() <<" is invalid for interface "<< getInterfaceName());
                             }
                         }
                         else
@@ -392,19 +390,20 @@ CHAR *CtiFDR_Valmet::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 
                              if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                              {
-                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                 dout << CtiTime() << " Status point " << aPoint.getPointID();
-                                 dout << " queued as " << aPoint.getTranslateName(string (FDR_VALMET));
+                                 Cti::StreamBuffer logmsg;
+
+                                 logmsg <<" Status point "<< aPoint.getPointID() << " queued as " << aPoint.getTranslateName(string (FDR_VALMET));
                                  if (aPoint.getValue() == STATE_OPENED)
                                  {
-                                     dout << " state of Open ";
+                                     logmsg <<" state of Open ";
                                  }
                                  else
                                  {
-                                     dout << " state of Close ";
+                                     logmsg <<" state of Close ";
                                  }
-                                 dout << "with quality of " << ForeignQualityToString(ptr->Status.Quality)<< " ";
-                                 dout << "to " << getInterfaceName() << endl;;
+                                 logmsg <<"with quality of "<< ForeignQualityToString(ptr->Status.Quality) <<" to "<< getInterfaceName();
+
+                                 CTILOG_DEBUG(dout, logmsg);
                              }
                         }
                     }
@@ -466,9 +465,9 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
     {
         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getInterfaceName() << "time sync request was invalid " <<  string (data->TimeStamp) << endl;
+            CTILOG_DEBUG(dout, getInterfaceName() <<" time sync request was invalid "<< data->TimeStamp);
         }
+
         desc = getInterfaceName() + string (" time sync request was invalid ") + string (data->TimeStamp);
         logEvent (desc,action,true);
         retVal = ClientErrors::Abnormal;
@@ -526,18 +525,12 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
                         action += "PC time reset to" + timestamp.asString();
                         logEvent (desc,action,true);
 
-//                        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getInterfaceName() << "'s request to change PC time to " << timestamp.asString() << " was processed" << endl;
-                        }
+                        CTILOG_INFO(dout, getInterfaceName() <<"'s request to change PC time to "<< timestamp <<" was processed");
                     }
                     else
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Unable to process time change from " << getInterfaceName();
-                        }
+                        CTILOG_ERROR(dout, "Unable to process time change from "<< getInterfaceName());
+
                         desc = getInterfaceName() + "'s request to change PC time to ";
                         desc += timestamp.asString() + " failed";
                         action = string ("System time update API failed");
@@ -547,10 +540,8 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Unable to process time change from " << getInterfaceName();
-                    }
+                    CTILOG_ERROR(dout, "Unable to process time change from "<< getInterfaceName());
+
                     desc = getInterfaceName() + "'s request to change PC time to ";
                     desc += timestamp.asString() + " failed";
                     action = string ("System time update API failed");
@@ -560,11 +551,7 @@ int CtiFDR_Valmet::processTimeSyncMessage(CHAR *aData)
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Time change requested from " << getInterfaceName();
-                    dout << " of " << timestamp.asString() << " is outside standard +-30 minutes " << endl;
-                }
+                CTILOG_ERROR(dout, "Time change requested from "<< getInterfaceName() <<" of "<< timestamp <<" is outside standard +-30 minutes");
 
                 //log we're way out of whack now
                 desc = getInterfaceName() + "'s request to change PC time to ";
@@ -634,8 +621,7 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getInterfaceName() << " analog value received with an invalid timestamp " <<  string (data->TimeStamp) << endl;
+                CTILOG_DEBUG(dout, getInterfaceName() <<" analog value received with an invalid timestamp "<<  data->TimeStamp);
             }
 
             desc = getInterfaceName() + " analog point received with an invalid timestamp ";
@@ -666,9 +652,8 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
 
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Analog point " << translationName;
-                dout << " value " << value << " from " << getInterfaceName() << " assigned to point " << point->getPointID() << endl;;
+                CTILOG_DEBUG(dout, "Analog point "<< translationName <<" value "<< value <<" from "<< getInterfaceName() <<
+                        " assigned to point "<< point->getPointID());
             }
         }
     }
@@ -678,11 +663,9 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Translation for analog point " << translationName;
-                    dout << " from " << getInterfaceName() << " was not found" << endl;
-                }
+                CTILOG_DEBUG(dout, "Translation for analog point "<< translationName <<" from "<< getInterfaceName() <<
+                        " was not found");
+
                 desc = getInterfaceName() + string (" analog point is not listed in the translation table");
                 _snprintf(action,60,"%s", translationName.c_str());
                 logEvent (desc,string (action));
@@ -692,11 +675,9 @@ int CtiFDR_Valmet::processValueMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Analog point " << translationName;
-                    dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point->getPointID() << endl;
-                }
+                CTILOG_DEBUG(dout, "Analog point "<< translationName <<" from "<< getInterfaceName() <<
+                        " was mapped incorrectly to non-analog point "<< point->getPointID());
+
                 CHAR pointID[20];
                 desc = getInterfaceName() + string (" analog point is incorrectly mapped to point ") + string (ltoa(point->getPointID(),pointID,10));
                 _snprintf(action,60,"%s", translationName.c_str());
@@ -757,8 +738,7 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getInterfaceName() << " status value received with an invalid timestamp " <<  string (data->TimeStamp) << endl;
+                CTILOG_DEBUG(dout, "status value received with an invalid timestamp "<<  data->TimeStamp);
             }
 
             desc = getInterfaceName() + string (" status point received with an invalid timestamp ") + string (data->TimeStamp);
@@ -782,26 +762,28 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
 
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Status point " << translationName;
+                Cti::StreamBuffer logmsg;
+                logmsg <<" Status point "<< translationName;
                 if (value == STATE_OPENED)
                 {
-                    dout << " new state: Open " ;
+                    logmsg <<" new state: Open ";
                 }
                 else if (value == STATE_CLOSED)
                 {
-                    dout << " new state: Closed " ;
+                    logmsg <<" new state: Closed ";
                 }
                 else if (value == STATE_INDETERMINATE)
                 {
-                    dout << " new state: Indeterminate " ;
+                    logmsg <<" new state: Indeterminate ";
                 }
                 else
                 {
-                    dout << " new state: " << value;
+                    logmsg <<" new state: "<< value;
                 }
 
-                dout <<" from " << getInterfaceName() << " assigned to point " << point->getPointID() << endl;;
+                logmsg <<" from "<< getInterfaceName() <<" assigned to point "<< point->getPointID();
+
+                CTILOG_DEBUG(dout, logmsg);
             }
         }
     }
@@ -811,11 +793,9 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Translation for status point " <<  translationName;
-                    dout << " from " << getInterfaceName() << " was not found" << endl;
-                }
+                CTILOG_DEBUG(dout, "Translation for status point "<< translationName <<" from "<< getInterfaceName() <<
+                        " was not found");
+
                 desc = getInterfaceName() + string (" status point is not listed in the translation table");
                 _snprintf(action,60,"%s", translationName.c_str());
                 logEvent (desc,string (action));
@@ -825,11 +805,9 @@ int CtiFDR_Valmet::processStatusMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Status point " << translationName;
-                    dout << " from " << getInterfaceName() << " was mapped incorrectly to non-status point " << point->getPointID() << endl;
-                }
+                CTILOG_DEBUG(dout, "Status point "<< translationName <<" from "<< getInterfaceName() <<
+                        " was mapped incorrectly to non-status point "<< point->getPointID());
+
                 CHAR pointID[20];
                 desc = getInterfaceName() + string (" status point is incorrectly mapped to point ") + string (ltoa(point->getPointID(),pointID,10));
                 _snprintf(action,60,"%s", translationName.c_str());
@@ -849,19 +827,20 @@ int CtiFDR_Valmet::processScanMessage(CHAR *aData)
 
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Received Scan Request for Translation Point: " << translationName << endl;
+        CTILOG_DEBUG(dout, "Received Scan Request for Translation Point: "<< translationName);
     }
+
     if (ciStringEqual(translationName, sendAllPointsPointName))
     {
         CtiFDRSingleSocket::getLayer()->sendAllPoints();
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Processed Scan Request for All Valmet Translation Points." << endl;
+            CTILOG_DEBUG(dout, "Processed Scan Request for All Valmet Translation Points.");
         }
+
         return ClientErrors::None;
     }
+
     return ClientErrors::None;
 }
 
@@ -904,11 +883,9 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
 
             if ((controlState != STATE_OPENED) && (controlState != STATE_CLOSED))
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Control point " << translationName;
-                    dout << " from " << getInterfaceName() << " has an invalid control state " << ntohs(data->Control.Value) << endl;
-                }
+                CTILOG_DEBUG(dout, "Control point "<< translationName <<" from "<< getInterfaceName() <<
+                        " has an invalid control state " << ntohs(data->Control.Value));
+
                 CHAR state[20];
                 desc = getInterfaceName() + string (" control point received with an invalid state ") + string (itoa (ntohs(data->Control.Value),state,10));
                 _snprintf(action,60,"%s for pointID %d",
@@ -943,10 +920,9 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
 
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Control point " << translationName;
-                    string controlString = (controlState == STATE_OPENED ? " control: Open " : " control: Closed ");
-                    dout << controlString <<" from " << getInterfaceName() << " and processed for point " << point->getPointID() << endl;;
+                    CTILOG_DEBUG(dout, "Control point " << translationName <<
+                            (controlState == STATE_OPENED ? " control: Open " : " control: Closed ")
+                            <<" from "<< getInterfaceName() <<" and processed for point "<< point->getPointID());
                 }
             }
         }
@@ -960,17 +936,16 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
                 dValue = ForeignToYukonStatus (data->Control.Value);
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Analog Output Point " << translationName << " with PointOffset " << point->getPointOffset() << " received value of c:" << controlState << " d: " << dValue;
+                    CTILOG_DEBUG(dout, "Analog Output Point "<< translationName <<" with PointOffset "<< point->getPointOffset() <<
+                            " received value of c:" << controlState <<" d: "<< dValue);
                 }
             }
             CtiCommandMsg *aoMsg = createAnalogOutputMessage(point->getPointID(), translationName, dValue);
             sendMessageToDispatch(aoMsg);
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Analog Output point with pointOffset " << point->getPointOffset() << " " << translationName;
-                dout << " value " << dValue << " from " << getInterfaceName() << " sending to device " << point->getPaoID() << endl;
+                CTILOG_DEBUG(dout, "Analog Output point with pointOffset "<< point->getPointOffset() <<" "<< translationName <<
+                        " value "<< dValue <<" from "<< getInterfaceName() <<" sending to device "<< point->getPaoID());
             }
         }
     }
@@ -980,11 +955,9 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Translation for control point " <<  translationName;
-                    dout << " from " << getInterfaceName() << " was not found" << endl;
-                }
+                CTILOG_DEBUG(dout, "Translation for control point "<< translationName <<" from "<< getInterfaceName() <<
+                        " was not found");
+
                 desc = getInterfaceName() + string (" control point is not listed in the translation table");
                 _snprintf(action,60,"%s", translationName.c_str());
                 logEvent (desc,string (action));
@@ -994,12 +967,9 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Control point " << translationName;
-                    dout << " received from " << getInterfaceName();
-                    dout << " was not configured receive for control for point " << point->getPointID() << endl;
-                }
+                CTILOG_DEBUG(dout, "Control point "<< translationName <<" received from "<< getInterfaceName() <<
+                        " was not configured receive for control for point "<< point->getPointID());
+
                 desc = getInterfaceName() + string (" control point is not configured to receive controls");
                 _snprintf(action,60,"%s for pointID %d",
                           translationName.c_str(),
@@ -1011,12 +981,9 @@ int CtiFDR_Valmet::processControlMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Control point " << translationName;
-                    dout << " received from " << getInterfaceName();
-                    dout << " was mapped to non-control point " <<  point->getPointID() << endl;;
-                }
+                CTILOG_DEBUG(dout, "Control point "<< translationName <<" received from "<< getInterfaceName() <<
+                        " was mapped to non-control point "<<  point->getPointID());
+
                 CHAR pointID[20];
                 desc = getInterfaceName() + string (" control point is incorrectly mapped to point ") + string (ltoa(point->getPointID(),pointID,10));
                 _snprintf(action,60,"%s", translationName.c_str());
@@ -1036,10 +1003,8 @@ bool CtiFDR_Valmet::alwaysSendRegistrationPoints()
 
 void CtiFDR_Valmet::updatePointQualitiesOnDevice(PointQuality_t quality, long paoId)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Updating All Point Qualities on Device with ID: "<< paoId <<" with Send Direction to Quality of " << quality << endl;
-    }
+    CTILOG_INFO(dout, "Updating All Point Qualities on Device with ID: "<< paoId <<" with Send Direction to Quality of "<< quality);
+
     {
         CtiFDRManager* mgrPtr = getSendToList().getPointList();
         CtiFDRManager::readerLock guard(mgrPtr->getLock());
@@ -1057,9 +1022,8 @@ void CtiFDR_Valmet::updatePointQualitiesOnDevice(PointQuality_t quality, long pa
             {
                 CtiPointDataMsg* localMsg = new CtiPointDataMsg (point->getPointID(), point->getValue(), quality, point->getPointType());
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                            {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Updating quality to: " << quality << " for PointId: "<<point->getPointID() << " for " << getInterfaceName() << " interface."<< endl;
+                {
+                    CTILOG_DEBUG(dout, "Updating quality to: "<< quality <<" for PointId: "<< point->getPointID() <<" for "<< getInterfaceName() <<" interface.");
                 }
                 sendMessageToDispatch (localMsg);
             }

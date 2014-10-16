@@ -7,6 +7,12 @@ class SAConnection;
 class SAException;
 
 namespace Cti {
+namespace Logging {
+
+std::string IM_EX_CTIBASE getExceptionCause(const SAException& x);
+
+}
+
 namespace Database {
 
 typedef std::set<long> id_set;

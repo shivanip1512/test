@@ -86,11 +86,7 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
     if( errorCode )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << std::endl;
-            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << std::endl;
-        }
+        CTILOG_ERROR(dout, "Couldn't come up with an operation for device " << getName() <<". Command: "<< pReq->CommandString());
 
         std::auto_ptr<CtiReturnMsg> executeError(
                 new CtiReturnMsg(
@@ -172,33 +168,6 @@ YukonError_t RfnDevice::executeGetValue(CtiRequestMsg *pReq, CtiCommandParser &p
 YukonError_t RfnDevice::executePutValue(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
-}
-
-
-void RfnDevice::logInfo( const std::string &note,
-                         const char* function,
-                         const char* file,
-                         int line ) const
-{
-    std::string functionName = (function) ? " " + std::string(function)  : "",
-                fileName     = (file)     ? " " + std::string(file)      : "",
-                lineNumber   = (line > 0) ? " (" + CtiNumStr(line) + ")" : "";
-
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-    dout << CtiTime() << " Device \"" << getName() << "\" - " << note << functionName << fileName << lineNumber << std::endl;
-}
-
-void RfnDevice::logInfo( int debugLevel,
-                         const std::string &note,
-                         const char* function,
-                         const char* file,
-                         int line ) const
-{
-    if( getDebugLevel() & debugLevel )
-    {
-        logInfo( note, function, file, line );
-    }
 }
 
 }

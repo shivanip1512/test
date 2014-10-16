@@ -194,74 +194,39 @@ int CtiAnsiTable22::getTotalTableSize( void )
 //=========================================================================================================================================
 void CtiAnsiTable22::printResult( const string& deviceName )
 {
-    int index;
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
+    Cti::StreamBuffer outLog;
+
+    outLog << endl << formatTableName(deviceName +" Std Table 22");
+
+    outLog << endl <<"** Summation_Select **"<< endl;
+    for( int index = 0; index < _numSums; index++ )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "==================== "<<deviceName<<"  Std Table 22 ========================" << endl;
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " ** Summation_Select ** "<<endl;
+        outLog << _summation_select[index] <<" ";
     }
 
-    for( index = 0; index < _numSums; index++ )
+    outLog << endl <<"** Demand_Select **"<< endl;
+    for( int index = 0; index < _numDemands; index++ )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<< (int)_summation_select[index];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl<<" ** Demand_Select ** "<<endl;
-    }
-    for( index = 0; index < _numDemands; index++ )
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<< (int)_demand_select[index];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl<<" ** Min or Max Flags ** "<<endl;
-    }
-    for( index = 0; index < ((_numDemands + 7) / 8); index++ )
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<< (int)_set[index];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl<<" ** Coincident_Select ** "<<endl;
-    }
-    for( index = 0; index < _numCoins; index++ )
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<< (int)_coincident_select[index];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl<<" ** Coin_Demand_Assoc ** "<<endl;
-    }
-    for( index = 0; index < _numCoins; index++ )
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<< (int)_coin_demand_assoc[index];
+        outLog << _demand_select[index] <<" ";
     }
 
+    outLog << endl <<"** Min or Max Flags **"<< endl;
+    for( int index = 0; index < ((_numDemands + 7) / 8); index++ )
+    {
+        outLog << _set[index] <<" ";
+    }
+
+    outLog << endl <<"** Coincident_Select **"<< endl;
+    for( int index = 0; index < _numCoins; index++ )
+    {
+        outLog << _coincident_select[index] <<" ";
+    }
+
+    outLog << endl <<"** Coin_Demand_Assoc **"<< endl;
+    for( int index = 0; index < _numCoins; index++ )
+    {
+        outLog << _coin_demand_assoc[index] <<" ";
+    }
+
+    CTILOG_INFO(dout, outLog);
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -1,27 +1,10 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_trace
-*
-* Date:   10/29/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_trace.cpp-arc  $
-* REVISION     :  $Revision: 1.8.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include <iostream>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include <rw\thr\mutex.h>
 #include <rw/collect.h>
-
 
 #include "dllbase.h"
 #include "collectable.h"
@@ -62,14 +45,16 @@ CtiMessage* CtiTraceMsg::replicateMessage() const
    return( (CtiMessage*)ret );
 }
 
-void CtiTraceMsg::dump() const
+std::string CtiTraceMsg::toString() const
 {
-   Inherited::dump();
+    Cti::FormattedList itemList;
 
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   dout << " Message Attributes            " << _attributes << endl;
-   dout << " Message End                   " << (_end ? "TRUE" : "FALSE") << endl;
-   dout << " Message Trace                 " << _trace << endl;
+    itemList <<"CtiTraceMsg";
+    itemList.add("Message Attributes") << _attributes;
+    itemList.add("Message End")        << _end;
+    itemList.add("Message Trace")      << _trace;
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 

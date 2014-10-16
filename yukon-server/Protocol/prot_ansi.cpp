@@ -68,11 +68,7 @@ CtiProtocolANSI::CtiProtocolANSI()
 
 void CtiProtocolANSI::destroyMe( void )
 {
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Ansi destroy started----" << endl;
-    }
+    CTILOG_INFO(dout, "Ansi destroy started----");
 
     _header.reset();
     _tables.clear();
@@ -107,10 +103,7 @@ void CtiProtocolANSI::destroyMe( void )
     _lpTimes  .clear();
     _lpQuality.clear();
 
-    {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << CtiTime() << " ----Ansi destroy finished" << endl;
-    }
+    CTILOG_INFO(dout, "----Ansi destroy finished");
 }
 
 
@@ -128,58 +121,48 @@ CtiProtocolANSI::~CtiProtocolANSI()
 
 void CtiProtocolANSI::reinitialize( void )
 {
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " Ansi reinit started----" << endl;
-   }
-   try
-   {
+    CTILOG_INFO(dout, "Ansi reinit started----");
 
-       getApplicationLayer().reinitialize();
-       destroyManufacturerTables();
-       destroyMe();
+    try
+    {
+        getApplicationLayer().reinitialize();
+        destroyManufacturerTables();
+        destroyMe();
 
-       _lpNbrLoadProfileChannels = 0;
-       _lpNbrIntvlsLastBlock = 0;
-       _lpNbrValidBlks = 0;
-       _lpLastBlockIndex = 0;
-       _lpNbrIntvlsPerBlock = 0;
-       _lpNbrBlksSet = 0;
-       _lpMaxIntervalTime = 0;
-       _lpStartBlockIndex = 0;
-       _lpBlockSize = 0;
-       _lpOffset = 0;
-       _lpNbrFullBlocks = 0;
-       _lpLastBlockSize = 0;
-       _currentTableNotAvailableFlag = false;
-       _ansiAbortOperation = false;
+        _lpNbrLoadProfileChannels = 0;
+        _lpNbrIntvlsLastBlock = 0;
+        _lpNbrValidBlks = 0;
+        _lpLastBlockIndex = 0;
+        _lpNbrIntvlsPerBlock = 0;
+        _lpNbrBlksSet = 0;
+        _lpMaxIntervalTime = 0;
+        _lpStartBlockIndex = 0;
+        _lpBlockSize = 0;
+        _lpOffset = 0;
+        _lpNbrFullBlocks = 0;
+        _lpLastBlockSize = 0;
+        _currentTableNotAvailableFlag = false;
+        _ansiAbortOperation = false;
 
-       if (!_stdTblsAvailable.empty())
-       {
-           _stdTblsAvailable.clear();
-           _stdTblsAvailable.push_back(0);
-       }
-       if (!_mfgTblsAvailable.empty())
-       {
-           _mfgTblsAvailable.clear();
-       }
+        if (!_stdTblsAvailable.empty())
+        {
+            _stdTblsAvailable.clear();
+            _stdTblsAvailable.push_back(0);
+        }
 
+        if (!_mfgTblsAvailable.empty())
+        {
+            _mfgTblsAvailable.clear();
+        }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
 
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " ----Ansi reinit finished" << endl;
-   }
-
+    CTILOG_INFO(dout, "Ansi reinit finished");
 }
 
 //=========================================================================================================================================
@@ -209,10 +192,7 @@ int CtiProtocolANSI::recvOutbound( OUTMESS *OutMessage )
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
@@ -256,10 +236,7 @@ void CtiProtocolANSI::buildWantedTableList( BYTE *aPtr )
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
@@ -334,10 +311,7 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
                }
                catch( ... )
                {
-                   {
-                       CtiLockGuard<CtiLogger> logger_guard(dout);
-                       dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                   }
+                   CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
                    autopsy(__FILE__, __LINE__);
 
@@ -370,10 +344,7 @@ bool CtiProtocolANSI::decode( CtiXfer &xfer, int status )
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
 
@@ -390,8 +361,7 @@ void CtiProtocolANSI::prepareApplicationLayer()
 {
     if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<  CtiTime() << " in " << __FUNCTION__ << " at " << __FILE__ << " (" << __LINE__ << ")";
+        CTILOG_DEBUG(dout, "Inside function");
     }
 
     if (_tables[_index].tableID == Constants ||
@@ -415,9 +385,7 @@ void CtiProtocolANSI::prepareApplicationLayer()
 
     if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<  CtiTime() << " in " << __FUNCTION__ << " at " << __FILE__ << " (" << __LINE__ << ")";
-        dout << "Initializing table request" << endl;
+        CTILOG_DEBUG(dout, "Initializing table request");
     }
 
     getApplicationLayer().initializeTableRequest (_tables[_index].tableID,
@@ -535,9 +503,10 @@ bool CtiProtocolANSI::setLoadProfileVariables()
 
    if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
    {
-           CtiLockGuard< CtiLogger > doubt_guard( dout );
-           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpNbrIntvlsLastBlock  " <<_lpNbrIntvlsLastBlock << endl;
-           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpLastBlockIndex  " <<_lpLastBlockIndex << endl;
+       CTILOG_DEBUG(dout, getApplicationLayer().getAnsiDeviceName() <<
+               endl <<"  ** _lpNbrIntvlsLastBlock  "<< _lpNbrIntvlsLastBlock <<
+               endl <<"  ** _lpLastBlockIndex  "<< _lpLastBlockIndex
+               );
    }
    _lpBlockSize = getSizeOfLPDataBlock(1);
    _lpLastBlockSize =  getSizeOfLastLPDataBlock(1);
@@ -545,9 +514,10 @@ bool CtiProtocolANSI::setLoadProfileVariables()
 
    if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
    {
-           CtiLockGuard< CtiLogger > doubt_guard( dout );
-           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpBlockSize  " <<_lpBlockSize << endl;
-           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** _lpLastBlockSize  " <<_lpLastBlockSize << endl;
+       CTILOG_DEBUG(dout, getApplicationLayer().getAnsiDeviceName() <<
+               endl <<"  ** _lpBlockSize  "<< _lpBlockSize <<
+               endl <<"  ** _lpLastBlockSize  "<< _lpLastBlockSize
+               );
    }
 
    if ((_lpStartBlockIndex = calculateLPDataBlockStartIndex(_header->lastLoadProfileTime)) < 0)
@@ -560,8 +530,9 @@ bool CtiProtocolANSI::setLoadProfileVariables()
        _lpOffset = _lpStartBlockIndex * _lpBlockSize;
        if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
        {
-           CtiLockGuard< CtiLogger > doubt_guard( dout );
-           dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** Nbr of Full Blocks  " <<_lpNbrFullBlocks << endl;
+           CTILOG_DEBUG(dout, getApplicationLayer().getAnsiDeviceName() <<
+                   endl <<"  ** Nbr of Full Blocks  "<< _lpNbrFullBlocks
+                   );
        }
    }
    return retVal;
@@ -1025,12 +996,14 @@ void CtiProtocolANSI::convertToTable(  )
                         if (getApplicationLayer().getPartialProcessLPDataFlag())
                         {
                             _lpNbrFullBlocks = (getApplicationLayer().getLPByteCount() / _lpBlockSize) - 1;
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " ####### LP Byte Count = " <<getApplicationLayer().getLPByteCount() << endl;
-                                dout << CtiTime() << " ####### LP Block Size = " <<_lpBlockSize << endl;
-                                dout << CtiTime() << " ####### LP Nbr Full Blocks = " <<_lpNbrFullBlocks << endl;
-                            }
+
+                            Cti::FormattedList itemsList;
+                            itemsList.add("LP Byte Count")      << getApplicationLayer().getLPByteCount();
+                            itemsList.add("LP Block Size")      << _lpBlockSize;
+                            itemsList.add("LP Nbr Full Blocks") << _lpNbrFullBlocks;
+
+                            CTILOG_INFO(dout, itemsList);
+
                             _lpNbrIntvlsLastBlock = 0;//_table61->getNbrBlkIntsSet(1);
                             validIntvls = _lpNbrIntvlsLastBlock;
                             getApplicationLayer().setPartialProcessLPDataFlag(false);
@@ -1073,10 +1046,7 @@ void CtiProtocolANSI::convertToTable(  )
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
 
@@ -1434,26 +1404,19 @@ void CtiProtocolANSI::updateBytesExpected( )
             else
             {
                 _currentTableNotAvailableFlag = true;
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout <<CtiTime() <<  "  **Table " << _tables[_index].tableID << " NOT present in meter -- 0 bytes expected" << endl;
-                }
 
+                CTILOG_INFO(dout, "Table "<< _tables[_index].tableID <<" NOT present in meter -- 0 bytes expected");
             }
 
         }
         if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
         {
-           CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << CtiTime() << "  **Table " << _tables[_index].tableID << " expected bytes " << (int)_tables[_index].bytesExpected << endl;
+            CTILOG_DEBUG(dout, "Table "<< _tables[_index].tableID <<" expected bytes "<< (int)_tables[_index].bytesExpected);
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
 
@@ -1656,10 +1619,7 @@ bool CtiProtocolANSI::retrieveDemand( int offset, double *value, double *timesta
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
@@ -1721,10 +1681,7 @@ bool CtiProtocolANSI::retrieveSummation( int offset, double *value,  double *tim
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
@@ -1784,10 +1741,7 @@ bool CtiProtocolANSI::retrievePresentValue( int offset, double *value )
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
             autopsy(__FILE__, __LINE__);
         }
@@ -1809,17 +1763,11 @@ bool CtiProtocolANSI::retrievePresentDemand( int offset, double *value )
     {
         try
         {
-            {
-                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                    dout << " NOT IMPLEMENTED FOR KV2 YET"<<endl;
-            }
+            CTILOG_WARN(dout, "NOT IMPLEMENTED FOR KV2 YET");
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
             autopsy(__FILE__, __LINE__);
         }
@@ -1861,10 +1809,7 @@ bool CtiProtocolANSI::retrievePresentDemand( int offset, double *value )
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
             autopsy(__FILE__, __LINE__);
         }
@@ -1907,10 +1852,7 @@ bool CtiProtocolANSI::retrieveBatteryLife( int offset, double *value )
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
@@ -1949,10 +1891,7 @@ bool CtiProtocolANSI::retrieveMeterTimeDiffStatus( int offset, double *status )
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
             autopsy(__FILE__, __LINE__);
         }
@@ -2038,8 +1977,7 @@ bool CtiProtocolANSI::retrieveLPDemand( int offset, int dataSet )
 
                                         if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
                                         {
-                                            CtiLockGuard< CtiLogger > doubt_guard( dout );
-                                            dout << endl <<"    **lpTime:  " << CtiTime(_lpTimes[y]) << "  lpValue: "<<_lpValues[y]<< "  lpQuality: "<<(int)_lpQuality[y]<<endl;
+                                            CTILOG_DEBUG(dout, "lpTime:  "<< CtiTime(_lpTimes[y]) <<"  lpValue: "<<_lpValues[y]<<"  lpQuality: "<<(int)_lpQuality[y]);
                                         }
 
                                         if (intvlIndex + 1 == intvlsPerBlk)
@@ -2080,10 +2018,7 @@ bool CtiProtocolANSI::retrieveLPDemand( int offset, int dataSet )
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
@@ -2496,10 +2431,7 @@ int CtiProtocolANSI::getSizeOfLastLPDataBlock(int dataSetNbr)
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
@@ -2534,10 +2466,7 @@ int CtiProtocolANSI::getSizeOfLPDataBlock(int dataSetNbr)
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
@@ -2562,10 +2491,7 @@ int CtiProtocolANSI::getSizeOfLPReadingsRcd()
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
@@ -2590,10 +2516,7 @@ int CtiProtocolANSI::getSizeOfLPIntSetRcd(int dataSetNbr)
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
@@ -2640,10 +2563,7 @@ int CtiProtocolANSI::getSizeOfLPIntFmtRcd(int dataSetNbr)
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
@@ -2678,12 +2598,13 @@ int CtiProtocolANSI::proc09RemoteReset(UINT8 actionFlag)
         BYTE *superTemp;
 
         superTemp = (BYTE *)reqData.proc.tbl_proc_nbr;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "tbl_proc_nbr = "<<(int)reqData.proc.tbl_proc_nbr<<endl;
-            dout << "std_vs_mfg_flag = " << (int)reqData.proc.std_vs_mfg_flag<<endl;
-            dout << "selector = "<<(int)reqData.proc.selector<<endl;
-        }
+
+        CTILOG_INFO(dout,
+                endl <<"tbl_proc_nbr = "<<    (int)reqData.proc.tbl_proc_nbr <<
+                endl <<"std_vs_mfg_flag = "<< (int)reqData.proc.std_vs_mfg_flag <<
+                endl <<"selector = "<<        (int)reqData.proc.selector
+                );
+
         getApplicationLayer().setProcBfld( reqData.proc );
         _seqNbr++;
         reqData.seq_nbr = _seqNbr;
@@ -2702,10 +2623,7 @@ int CtiProtocolANSI::proc09RemoteReset(UINT8 actionFlag)
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
@@ -2861,10 +2779,7 @@ void CtiProtocolANSI::setTablesAvailable(unsigned char * stdTblsUsed, int dimStd
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy(__FILE__, __LINE__);
     }
@@ -3098,8 +3013,7 @@ void CtiProtocolANSI::printDebugValue(double value, bool frozen)
 {
     if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )//DEBUGLEVEL_LUDICROUS )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << (frozen ? " frozen value =   " : " value =   ")<<value<<endl;
+        CTILOG_DEBUG(dout, (frozen ? " frozen value =   " : " value =   ")<<value);
     }
 }
 

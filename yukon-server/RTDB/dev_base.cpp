@@ -269,12 +269,7 @@ CtiPointSPtr CtiDeviceBase::getDevicePointOffsetTypeEqual(INT offset, CtiPointTy
 
 YukonError_t CtiDeviceBase::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "in dev_base ExecuteRequest" << endl;
-    }
-
+    CTILOG_TRACE(dout, "in dev_base ExecuteRequest");
     string resultString = getName() + " has no type specific ExecuteRequest Method";
 
     CtiReturnMsg* pRet =
@@ -300,11 +295,7 @@ YukonError_t CtiDeviceBase::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser
 // Porter side info to retrieve transmitter device bookkeeping!
 CtiTransmitterInfo* CtiDeviceBase::getTrxInfo()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "   ERROR!  Device type " << getType() << " " << getName() << " has no TrxInfo object" << endl;
-    }
+    CTILOG_ERROR(dout, "Device type "<< getType() <<" "<< getName() <<" has no TrxInfo object");
 
     return NULL;
 }
@@ -316,11 +307,7 @@ bool CtiDeviceBase::hasTrxInfo() const
 
 CtiTransmitterInfo* CtiDeviceBase::initTrxInfo() // Porter side info to setup transmitter device bookkeeping!
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "   ERROR!  Device type " << getType() << " " << getName() << " has no TrxInfo object" << endl;
-    }
+    CTILOG_ERROR(dout, "Device type "<< getType() <<" "<< getName() <<" has no TrxInfo object");
 
     return NULL;
 }
@@ -349,10 +336,7 @@ YukonError_t CtiDeviceBase::executeScan(CtiRequestMsg *pReq, CtiCommandParser &p
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid scan type \""<< parse.getiValue("scantype") <<"\" for device \""<< getName() <<"\"");
 
             return ClientErrors::NoMethod;
         }
@@ -447,10 +431,14 @@ void CtiDeviceBase::clearParameters()
  */
 
 
-void CtiDeviceBase::DumpData()
+std::string CtiDeviceBase::toString() const
 {
-    Inherited::DumpData();
-    _deviceBase.DumpData();
+    Cti::FormattedList itemList;
+
+    itemList<<"CtiDeviceBase";
+    itemList<< _deviceBase; // is a CtiTableDeviceBase
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 INT CtiDeviceBase::ReportError(INT mess)
@@ -604,11 +592,7 @@ int CtiDeviceBase::incResponsesOnTrxID(int trxid)
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  Response for transmission ID " << trxid << ".  " << getName() << " is expecting " << getCurrentTrxID() << endl;
-        }
+        CTILOG_ERROR(dout, "Response for transmission ID "<< trxid <<".  "<< getName() <<" is expecting "<< getCurrentTrxID());
     }
 
     return(getResponsesOnTrxID());
@@ -910,8 +894,7 @@ void CtiDeviceBase::addExclusion(CtiTablePaoExclusion &paox)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -925,8 +908,7 @@ void CtiDeviceBase::clearExclusions()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -952,8 +934,7 @@ bool CtiDeviceBase::isDeviceExcluded(long id) const
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return bstatus;
@@ -986,9 +967,9 @@ bool CtiDeviceBase::removeInfiniteProhibit(unsigned long id)
 
     if(gConfigParms.isTrue("DEBUG_EXCLUSION_PROHIBIT"))
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << getName() << " " << id << " removed. **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, getName() <<" "<< id <<" removed.");
     }
+
     return r;
 }
 
@@ -996,9 +977,9 @@ bool CtiDeviceBase::removeProhibit(unsigned long id)
 {
     if(gConfigParms.isTrue("DEBUG_EXCLUSION_PROHIBIT"))
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << getName() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, getName() <<" removing "<< id);
     }
+
     return _exclusion.removeProhibit(id);
 }
 
@@ -1006,10 +987,8 @@ void CtiDeviceBase::dumpProhibits(unsigned long id)
 {
     if(gConfigParms.isTrue("DEBUG_EXCLUSION_PROHIBIT"))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getName() << " / " << getID() << " prohibited by: " << endl;
-        }
+        CTILOG_DEBUG(dout, getName() <<" / "<< getID() <<" prohibited by:");
+
         _exclusion.dumpProhibits(id);
     }
     return;
@@ -1019,10 +998,7 @@ bool CtiDeviceBase::getOutMessage(CtiOutMessage *&OutMessage)
 {
     if(OutMessage)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "function not implemented");
 
         delete OutMessage;
         OutMessage = 0;

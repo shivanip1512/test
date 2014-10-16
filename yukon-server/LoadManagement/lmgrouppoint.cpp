@@ -117,10 +117,7 @@ CtiLMGroupPoint& CtiLMGroupPoint::setStartControlRawState(LONG startcontrolstate
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupPoint::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "Can not do this to an Load Management Point Group,");
     return NULL;
 }
 
@@ -133,10 +130,7 @@ CtiRequestMsg* CtiLMGroupPoint::createTimeRefreshRequestMsg(LONG refreshRate, LO
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupPoint::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "Can not do this to an Load Management Point Group,");
     return NULL;
 }
 
@@ -148,10 +142,7 @@ CtiRequestMsg* CtiLMGroupPoint::createSmartCycleRequestMsg(LONG percent, LONG pe
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupPoint::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "Can not do this to an Load Management Point Group,");
     return NULL;
 }
 
@@ -163,10 +154,7 @@ CtiRequestMsg* CtiLMGroupPoint::createRotationRequestMsg(LONG sendRate, LONG she
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupPoint::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not do this to an Load Management Point Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "Can not do this to an Load Management Point Group,");
     return NULL;
 }
 

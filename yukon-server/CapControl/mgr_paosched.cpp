@@ -14,8 +14,8 @@
 #include "database_util.h"
 #include "ThreadStatusKeeper.h"
 #include "ExecutorFactory.h"
-#include "MsgVerifyBanks.h" 
-#include "MsgVerifyInactiveBanks.h" 
+#include "MsgVerifyBanks.h"
+#include "MsgVerifyInactiveBanks.h"
 
 #include <boost/regex.hpp>
 
@@ -105,10 +105,7 @@ void CtiPAOScheduleManager::stop()
         {
             _scheduleThread.terminate();
 
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Pao Schedule Thread forced to terminate." << endl;
-            }
+            CTILOG_INFO(dout, "Pao Schedule Thread forced to terminate.");
         }
         else
         {
@@ -120,10 +117,7 @@ void CtiPAOScheduleManager::stop()
         {
             _resetThr.terminate();
 
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Pao Schedule Reset Thread forced to terminate." << endl;
-            }
+            CTILOG_INFO(dout, "Pao Schedule Reset Thread forced to terminate.");
         }
         else
         {
@@ -133,8 +127,7 @@ void CtiPAOScheduleManager::stop()
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -156,10 +149,7 @@ void CtiPAOScheduleManager::doResetThr()
 
                 if ( !isValid() && currentTime.seconds() >= lastPeriodicDatabaseRefresh.seconds()+30 )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Periodic restore of schedule list from the database" << endl;
-                    }
+                    CTILOG_INFO(dout, "Periodic restore of schedule list from the database");
                     refreshSchedulesFromDB();
                     refreshEventsFromDB();
 
@@ -182,8 +172,7 @@ void CtiPAOScheduleManager::doResetThr()
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -227,8 +216,7 @@ void CtiPAOScheduleManager::mainLoop()
 
                             if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - ScheduleID "<<currentSched->getScheduleId() << " NextRunTime about to occur (" << CtiTime(currentSched->getNextRunTime().seconds()) << ")." << endl;
+                                CTILOG_DEBUG(dout, "ScheduleID "<<currentSched->getScheduleId() << " NextRunTime about to occur (" << CtiTime(currentSched->getNextRunTime().seconds()) << ").");
                             }
                             myEvents.clear();
 
@@ -243,8 +231,7 @@ void CtiPAOScheduleManager::mainLoop()
                                         myEvents.pop_front();
                                         if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
                                         {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " -- EventID "<<currentEvent->getEventId()<<" about to run on SubBus "<<currentEvent->getPAOId()<<"."<<endl;
+                                            CTILOG_DEBUG(dout, "EventID "<<currentEvent->getEventId()<<" about to run on SubBus "<<currentEvent->getPAOId()<<".");
                                         }
                                         runScheduledEvent(currentEvent);
                                         delete currentEvent;
@@ -255,8 +242,7 @@ void CtiPAOScheduleManager::mainLoop()
                             }
                             catch(...)
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                             }
 
                         }
@@ -269,15 +255,13 @@ void CtiPAOScheduleManager::mainLoop()
                         }
                         catch(...)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                         }
                     }
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
             }
             try
@@ -297,8 +281,7 @@ void CtiPAOScheduleManager::mainLoop()
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             threadStatus.monitorCheck();
@@ -310,8 +293,7 @@ void CtiPAOScheduleManager::mainLoop()
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -387,8 +369,7 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return retVal;
 }
@@ -702,8 +683,7 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
         {
             //if( _CC_DEBUG )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Resetting PAOSchedules - sync with database..." << endl;
+                CTILOG_DEBUG(dout, "Resetting PAOSchedules - sync with database...");
             }
 
             static const string sql =  "SELECT PAS.scheduleid, PAS.schedulename, PAS.nextruntime, PAS.lastruntime, "
@@ -718,11 +698,7 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             CtiPAOSchedule* currentPAOSchedule = NULL;
@@ -733,16 +709,14 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
 
                 if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " -currentPAOSchedule.getScheduleId()" << currentPAOSchedule->getScheduleId()<<endl;
+                    CTILOG_DEBUG(dout, "-currentPAOSchedule.getScheduleId()" << currentPAOSchedule->getScheduleId());
                 }
                 tempSchedules.push_back(currentPAOSchedule);
             }
         }
         catch (...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
         _schedules.clear();
         _schedules.assign(tempSchedules.begin(), tempSchedules.end());
@@ -750,8 +724,7 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -772,8 +745,7 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
         {
             //if( _CC_DEBUG )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Resetting PAOEvents - sync with database..." << endl;
+                CTILOG_DEBUG(dout, "Resetting PAOEvents - sync with database...");
             }
 
             static const string sql = "SELECT PSA.eventid, PSA.scheduleid, PSA.paoid, PSA.command, PSA.disableovuv "
@@ -787,11 +759,7 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                string loggedSQLstring = rdr.asString();
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                }
+                CTILOG_INFO(dout, rdr.asString());
             }
 
             CtiPAOEvent* currentPAOEvent = NULL;
@@ -802,16 +770,14 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
 
                 if( _CC_DEBUG & CC_DEBUG_VERIFICATION )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " -currentPAOEvent.getEventId()" << currentPAOEvent->getEventId()<<endl;
+                    CTILOG_DEBUG(dout, "-currentPAOEvent.getEventId()" << currentPAOEvent->getEventId());
                 }
                 tempEvents.push_back(currentPAOEvent);
             }
         }
         catch (...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
         _events.clear();
@@ -820,8 +786,7 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -845,8 +810,7 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
 
             if ( ! conn.isValid() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                CTILOG_ERROR(dout, "Invalid Connection to Database");
 
                 return;
             }
@@ -884,8 +848,7 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 

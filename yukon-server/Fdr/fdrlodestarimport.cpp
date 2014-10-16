@@ -133,10 +133,9 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
 
     if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Number of pointDataList.entries(): " << nbrPoints << endl;
-        dout << CtiTime() << " savedStopTime.seconds() : " << savedStopTime.seconds() <<"savedStartTime.seconds() :"<< savedStartTime.seconds()<< endl;
-        dout << CtiTime() << " savedStartTime.seconds()+(pointDataList.entries()*stdLsSecondsPerInterval)-getSubtractValue() " << savedStartTime.seconds()+(nbrPoints*stdLsSecondsPerInterval)-getSubtractValue()<< endl;
+        CTILOG_DEBUG(dout, "Number of pointDataList.entries(): "<< nbrPoints <<
+                endl <<" savedStopTime.seconds() : "<< savedStopTime.seconds() <<"savedStartTime.seconds() :"<< savedStartTime.seconds() <<
+                endl <<" savedStartTime.seconds()+(pointDataList.entries()*stdLsSecondsPerInterval)-getSubtractValue() "<< savedStartTime.seconds()+(nbrPoints*stdLsSecondsPerInterval)-getSubtractValue());
     }
 
     msgPtr = new CtiMultiMsg;
@@ -147,8 +146,7 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
         currentPointData = (CtiPointDataMsg *)pointDataList[i];
         if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() <<"point: "<<i<<"currentPointData->getTime().seconds(): " <<currentPointData->getTime().seconds()<< " oldTimeStamp.seconds() " << oldTimeStamp.seconds() << endl;
+            CTILOG_DEBUG(dout, "point: "<< i <<"currentPointData->getTime().seconds(): "<<currentPointData->getTime().seconds()<<" oldTimeStamp.seconds() "<< oldTimeStamp.seconds());
         }
         if( currentPointData->getTime().seconds() <= oldTimeStamp.seconds() )
         {
@@ -158,10 +156,8 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
         }
         if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() <<"point: " <<i<< " currentPointData->getTime(): " << currentPointData->getTime() << endl;
+            CTILOG_DEBUG(dout, "point: "<< i <<" currentPointData->getTime(): "<< currentPointData->getTime());
         }
-
 
         pData = (CtiPointDataMsg *)currentPointData->replicateMessage();
 
@@ -190,12 +186,9 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
 
         if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() <<" returning FALSE!!!" << endl;
-            dout << CtiTime() <<" NBR of Points in file: ("<<nbrPoints<<") * Seconds Per Interval ("<<stdLsSecondsPerInterval
-                 <<") != StopTime ("<<savedStopTime<<") - StartTime ("<<savedStartTime<<") "<<endl;
-            dout << CtiTime() << " Calculation: "<<((nbrPoints*stdLsSecondsPerInterval)-getSubtractValue()) << " != "
-                              << (savedStopTime.seconds() - savedStartTime.seconds()) <<endl;
+            CTILOG_DEBUG(dout, "returning FALSE!!!" <<
+                    endl <<"NBR of Points in file: ("<<nbrPoints<<") * Seconds Per Interval ("<< stdLsSecondsPerInterval <<") != StopTime ("<<savedStopTime<<") - StartTime ("<<savedStartTime<<") "<<
+                    endl <<"Calculation: "<<((nbrPoints*stdLsSecondsPerInterval)-getSubtractValue()) <<" != "<< (savedStopTime.seconds() - savedStartTime.seconds()));
         }
         queueMessageToDispatch(new CtiSignalMsg(SYS_PID_SYSTEM,1,text,additional,GeneralLogType,SignalEvent,"fdr lodestar"));
 
@@ -292,22 +285,25 @@ int CtiFDR_LodeStarImportBase::readConfig( void )
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Text import file name " << getFileName() << endl;
-        dout << CtiTime() << " Text import directory " << getDriveAndPath() << endl;
-        dout << CtiTime() << " Text import interval " << getInterval() << endl;
-        dout << CtiTime() << " Text import dispatch queue flush rate " << getQueueFlushRate() << endl;
-        dout << CtiTime() << " Text import db reload rate " << getReloadRate() << endl;
+        Cti::FormattedList loglist;
+
+        loglist.add("Text import file name")                 << getFileName();
+        loglist.add("Text import directory")                 << getDriveAndPath();
+        loglist.add("Text import interval")                  << getInterval();
+        loglist.add("Text import dispatch queue flush rate") << getQueueFlushRate();
+        loglist.add("Text import db reload rate")            << getReloadRate();
 
         if (shouldDeleteFileAfterImport())
-            dout << CtiTime() << " Import file will be deleted after import" << endl;
+            loglist <<"Import file will be deleted after import";
         else
-            dout << CtiTime() << " Import file will NOT be deleted after import" << endl;
+            loglist <<"Import file will NOT be deleted after import";
 
         if (shouldRenameSaveFileAfterImport())
-            dout << CtiTime() << " Import file will be renamed and saved after import" << endl;
+            loglist <<"Import file will be renamed and saved after import";
         else
-            dout << CtiTime() << " Import file will NOT be rename and saved after import" << endl;
+            loglist <<"Import file will NOT be rename and saved after import";
+
+        CTILOG_DEBUG(dout, loglist);
     }
 
 
@@ -382,8 +378,7 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                         successful = true;
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                            CTILOG_DEBUG(dout, "No points defined for use by interface "<< getInterfaceName());
                         }
                     }
                 }
@@ -391,32 +386,28 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                CTILOG_ERROR(dout, "Could not load (Receive) points for "<< getInterfaceName() <<" : Empty data set returned");
                 successful = false;
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")"  << endl;
+            CTILOG_ERROR(dout, "Unable to load points from database for "<< getInterfaceName());
             successful = false;
         }
 
     }   // end try block
 
-    catch (RWExternalErr e )
+    catch (const RWExternalErr& e )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to load translation lists for "<< getInterfaceName());
         RWTHROW(e);
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load translation lists for "<< getInterfaceName());
     }
 
     return successful;
@@ -438,9 +429,8 @@ bool CtiFDR_LodeStarImportBase::translateSinglePoint(CtiFDRPointSPtr & translati
     {
         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+            CTILOG_DEBUG(dout, "Parsing Yukon Point ID "<< translationPoint->getPointID() <<
+                    " translate: " << translationPoint->getDestinationList()[x].getTranslation());
         }
         //123 1 C:/ASD ASD.EXE
         translationName = translationPoint->getDestinationList()[x].getTranslationValue("Customer");
@@ -490,12 +480,9 @@ bool CtiFDR_LodeStarImportBase::translateSinglePoint(CtiFDRPointSPtr & translati
         }
         translationPoint->getDestinationList()[x].setTranslation(translationName);
 
-
         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Point ID " << translationPoint->getPointID();
-            dout << " translated: " << translationName << endl;//
+            CTILOG_DEBUG(dout, "Point ID "<< translationPoint->getPointID() <<" translated: "<< translationName);
         }
     }
 
@@ -556,34 +543,30 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
 
                              if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                              {
-                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                 dout << "  ***** FILE_"<<fileIndex+1<<"   " << fileData->cFileName << " ***** "  << endl;
+                                 CTILOG_DEBUG(dout, "FILE_"<< fileIndex+1 <<"   "<< fileData->cFileName);
                              }
                          }
                          else
                          {
                              if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                              {
-                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                 dout << "  ***** FILE_"<<fileIndex+1<<"   " << fileName << " NOT FOUND ***** "  << endl;
+                                 CTILOG_DEBUG(dout, "FILE_"<< fileIndex+1 <<"   "<< fileName <<" NOT FOUND");
                              }
                          }
                      }
                      catch(...)
                      {
-                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                      }
+
                      try
-                 {
-                     //fptr = fopen(fileNameAndPath, "r");
-                     fptr = fopen(fileNameAndPath, "r");
-                 }
-                 catch(...)
-                 {
-                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-                 }
+                     {
+                         fptr = fopen(fileNameAndPath, "r");
+                     }
+                     catch(...)
+                     {
+                         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                     }
 
                      try
                      {
@@ -596,17 +579,14 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                      }
                      catch(...)
                      {
-                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                      }
+
                      try
                      {
                          if( fptr == NULL )
                          {
-                             /*{
-                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                 dout << CtiTime() << " " << getInterfaceName() << "'s file " << string (fileName) << " was either not found or could not be opened" << endl;
-                             }*/
+                             // CTILOG_ERROR(dout, getInterfaceName() <<"'s file "<< fileName <<" was either not found or could not be opened");
                          }
                          else
                          {
@@ -641,17 +621,14 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                  {
                                      if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                                      {
-                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                         dout << "LodeStar STANDARD total lines = "<< totalLines << endl;
+                                         CTILOG_DEBUG(dout, "LodeStar STANDARD total lines = "<< totalLines);
                                      }
-
                                  }
                                  else if ((string) tempTest2 == "00000001")
                                  {
                                      if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                                      {
-                                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                         dout << "LodeStar ENHANCED total lines = "<< totalLines << endl;
+                                         CTILOG_DEBUG(dout, "LodeStar ENHANCED total lines = "<< totalLines);
                                      }
                                  }
                                  else
@@ -706,10 +683,8 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                                      delete multiDispatchMsg;
                                                      multiDispatchMsg = new CtiMultiMsg();
                                                  }
-                                                 {
-                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                     dout << "Not sending a multi msg for customer: " << savedCustomerIdentifier << endl;
-                                                 }
+
+                                                 CTILOG_ERROR(dout, "Not sending a multi msg for customer: " << savedCustomerIdentifier);
                                              }
                                          }
                                          reinitialize();
@@ -729,8 +704,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                          {
                                              if (!::isspace(*charPtr))
                                              {
-                                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                 dout << "Invalid record type in interface " << getInterfaceName() << " record:" << recordVector[lineCnt] << " line number: " << lineCnt << endl;
+                                                 CTILOG_ERROR(dout, "Invalid record type in interface "<< getInterfaceName() <<" record:"<< recordVector[lineCnt] <<" line number: "<< lineCnt);
                                                  xyz = recordVector[lineCnt].length();
                                              }
                                              charPtr++;
@@ -767,10 +741,8 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                              delete multiDispatchMsg;
                                              multiDispatchMsg = NULL;
                                          }
-                                         {
-                                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                             dout << "Not sending a multi msg for customer: " << savedCustomerIdentifier << endl;
-                                         }
+
+                                         CTILOG_ERROR(dout, "Not sending a multi msg for customer: " << savedCustomerIdentifier);
                                      }
                                  }
                              }
@@ -782,12 +754,11 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                 CHAR* periodPtr = strchr(fileNameAndPath,'.');//reverse lookup
                                 if( periodPtr )
                                 {
-                                 *periodPtr = NULL;
+                                    *periodPtr = NULL;
                                 }
                                 else
                                 {
-                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                 dout << "Uh Sir" << endl;
+                                    CTILOG_ERROR(dout, "Invalid fileNameAndPath \""<< fileNameAndPath <<"\"");
                                 }
                                 CtiTime timestamp= CtiTime();
                                 string tempTime = timestamp.asString();
@@ -818,8 +789,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                 if ( !success )
                                 {
                                     DWORD lastError = GetLastError();
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << "Last Error Code: " << lastError << " for MoveFile()" << endl;
+                                    CTILOG_ERROR(dout, "MoveFile failed with error code: "<< lastError);
                                 }
                              }
                              if( shouldDeleteFileAfterImport() )
@@ -830,8 +800,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                      }
                      catch(...)
                      {
-                         CtiLockGuard<CtiLogger> logger_guard(dout);
-                         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                      }
                  }
                  refreshTime = CtiTime() - (CtiTime::now().seconds() % getInterval()) + getInterval();
@@ -839,17 +808,15 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
         }
     }
 
-    catch ( RWCancellation &cancellationMsg )
+    catch ( RWCancellation & )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION CtiFDRTextImport::threadFunctionReadFromFile in interface " <<getInterfaceName()<< endl;
+        CTILOG_INFO(dout, "CANCELLATION of threadFunctionReadFromFile in interface "<< getInterfaceName());
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Fatal Error:  CtiFDRTextIMport::threadFunctionReadFromFile  " << getInterfaceName() << " is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionReadFromFile in interface "<< getInterfaceName() <<" is dead!");
     }
 }
 

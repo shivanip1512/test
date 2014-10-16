@@ -134,8 +134,9 @@ void CtiIONNetworkLayer::setToOutput( CtiIONSerializable &payload, bool timeSync
     }
     else
     {
-        dout << CtiTime( ) << " (" << __FILE__ << ":" << __LINE__ << ") unable to allocate " << payloadSize << " bytes in CtiIONNetworkLayer ctor;"
-                                                                 << "  setting zero-length data payload, _ioState = Failed" << endl;
+        CTILOG_ERROR(dout, "unable to allocate "<< payloadSize <<" bytes in CtiIONApplicationLayer ctor;  "
+                "proceeding with zero-length ION data payload, setting valid = false");
+
         netSize = sizeof( _netOut.header );
 
         _ioState = Failed;
@@ -173,10 +174,7 @@ YukonError_t CtiIONNetworkLayer::generate( CtiXfer &xfer )
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONNetworkLayer::generate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown state "<< _ioState);
 
             _ioState = Failed;
             retVal = ClientErrors::BadRange;
@@ -200,8 +198,7 @@ YukonError_t CtiIONNetworkLayer::decode( CtiXfer &xfer, YukonError_t status )
     {
         if( isDebugLudicrous() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint -- _datalinkLayer.errorCondition() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "_datalinkLayer.errorCondition()");
         }
 
         //  error conditions propagate back up to the protocol object
@@ -245,10 +242,7 @@ YukonError_t CtiIONNetworkLayer::decode( CtiXfer &xfer, YukonError_t status )
                         }
                         else if( tmpMsgID < _msgCount )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - tmpMsgID(" << tmpMsgID << ") < _msgCount(" << _msgCount << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_ERROR(dout, "tmpMsgID("<< tmpMsgID <<") < _msgCount("<< _msgCount <<")");
 
                             //  try to read/catch up until we get the one we expected
                             _ioState = Input;
@@ -257,9 +251,7 @@ YukonError_t CtiIONNetworkLayer::decode( CtiXfer &xfer, YukonError_t status )
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - tmpMsgID(" << tmpMsgID << ") > _msgCount(" << _msgCount << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;}
+                            CTILOG_ERROR(dout, "tmpMsgID("<< tmpMsgID <<") < _msgCount("<< _msgCount <<")");
 
                             _ioState = Failed;
                         }
@@ -268,8 +260,7 @@ YukonError_t CtiIONNetworkLayer::decode( CtiXfer &xfer, YukonError_t status )
                     {
                         if( isDebugLudicrous() )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint -- network layer packet contains incorrect address **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            CTILOG_DEBUG(dout, "network layer packet contains incorrect address");
                         }
 
                         _ioState = Failed;
@@ -293,10 +284,7 @@ YukonError_t CtiIONNetworkLayer::decode( CtiXfer &xfer, YukonError_t status )
 
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONNetworkLayer::decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "unknown state "<< _ioState);
 
                 _ioState = Failed;
             }

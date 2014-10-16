@@ -10,7 +10,7 @@
 #include "dbmemobject.h"
 #include "utility.h"
 #include "database_connection.h"
-
+#include "loggable.h"
 
 /*
     #define LMAR_NEWCONTROL         "N"             // This is the first entry for any new control.
@@ -27,7 +27,7 @@
 
 #define LMAR_DISPATCH_MISSED_COMPLETION  LMAR_TIMED_RESTORE        // Control was active as dispatch shutdown.  It completed before restart.
 
-class IM_EX_CTIYUKONDB CtiTableLMControlHistory: public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTableLMControlHistory: public CtiMemDBObject, public Cti::Loggable
 {
 protected:
 
@@ -160,7 +160,7 @@ public:
     virtual bool Insert(Cti::Database::DatabaseConnection &conn);
     virtual bool Update();
 
-    void dump() const;
+    virtual std::string toString() const override;
     void DecodeOutstandingControls(Cti::RowReader &rdr);
 
     static bool deleteOutstandingControls();

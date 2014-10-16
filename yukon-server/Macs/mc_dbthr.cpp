@@ -35,10 +35,7 @@ CtiMCDBThread::~CtiMCDBThread()
 
 void CtiMCDBThread::run()
 {
-    {
-        CtiLockGuard< CtiLogger > g(dout);
-        dout << CtiTime() << " Database update thread starting up" << endl;
-    }
+    CTILOG_INFO(dout, "Database update thread starting");
 
     try
     {
@@ -46,8 +43,7 @@ void CtiMCDBThread::run()
         {
             if( gMacsDebugLevel & MC_DEBUG_DB )
             {
-                CtiLockGuard< CtiLogger > g(dout);
-                dout << CtiTime() << " Updating database..." << endl;
+                CTILOG_DEBUG(dout, "Updating database...");
             }
 
             _schedule_manager.updateAllSchedules();
@@ -55,16 +51,13 @@ void CtiMCDBThread::run()
             WaitForSingleObject( _startUpdateNow, _interval );
         }
 
-        {
-            CtiLockGuard< CtiLogger > g(dout);
-            dout << CtiTime() << " Saving schedules to the database and exiting update thread." << endl;
-        }
+        CTILOG_INFO(dout, "Saving schedules to the database and exiting update thread.");
+
         _schedule_manager.updateAllSchedules();
     }
     catch(...)
     {
-        CtiLockGuard< CtiLogger > g(dout);
-        dout << CtiTime() << " Unknown exception occurred in CtiMCDBThread::run()" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 

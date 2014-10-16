@@ -7,12 +7,14 @@
 #include "yukon.h"
 #include "row_reader.h"
 #include "database_connection.h"
+#include "loggable.h"
 
 
 #define CTITABLEDYNAMICPOINTALARMING_MAX_ACTION         60
 #define CTITABLEDYNAMICPOINTALARMING_MAX_DESCRIPTION    120
 
-class IM_EX_CTIYUKONDB CtiTableDynamicPointAlarming : public CtiMemDBObject, private boost::noncopyable
+
+class IM_EX_CTIYUKONDB CtiTableDynamicPointAlarming : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -91,6 +93,6 @@ public:
     std::string getUser() const;
     CtiTableDynamicPointAlarming& setUser(const std::string &str);
 
-    virtual void dump();
+    virtual std::string toString() const override;
 };
 

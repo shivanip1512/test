@@ -49,11 +49,7 @@ void CtiMCClientListener::interrupt(int id)
     }
     catch(...)
     {
-        if( gMacsDebugLevel & MC_DEBUG_CONN )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " Unknown exception in CtiMCClientListener::interrupt()" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -96,8 +92,7 @@ void CtiMCClientListener::BroadcastMessage( CtiMessage* msg, void *ConnectionPtr
             {
                 if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
                 {
-                    CtiLockGuard< CtiLogger > g(dout);
-                    dout << CtiTime() << " Broadcasting classID:  " << toSend->isA() << endl;
+                    CTILOG_DEBUG(dout, "Broadcasting classID: "<< toSend->isA());
                 }
 
                 conn->write(toSend.release());
@@ -113,8 +108,7 @@ void CtiMCClientListener::BroadcastMessage( CtiMessage* msg, void *ConnectionPtr
                 {
                     if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
                     {
-                        CtiLockGuard< CtiLogger > g(dout);
-                        dout << CtiTime() << " Broadcasting classID:  " << toSend->isA() << endl;
+                        CTILOG_DEBUG(dout, "Broadcasting classID: "<< toSend->isA());
                     }
 
                     connItr->write(toSend->replicateMessage());
@@ -124,9 +118,7 @@ void CtiMCClientListener::BroadcastMessage( CtiMessage* msg, void *ConnectionPtr
     }
     catch(...)
     {
-        CtiLockGuard< CtiLogger > g(dout);
-        dout << CtiTime() << __FILE__ << " (" << __LINE__ <<
-             ")  An unknown exception has occurred." << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -146,8 +138,7 @@ void CtiMCClientListener::checkConnections()
             itr = _connections.erase(itr); // Removing invalid connections.
             if( gMacsDebugLevel & MC_DEBUG_CONN )
             {
-                CtiLockGuard< CtiLogger > guard(dout);
-                dout << CtiTime() << " Removing invalid connection." << endl;
+                CTILOG_DEBUG(dout, "Removing invalid connection.");
             }
         }
         else
@@ -171,7 +162,7 @@ void CtiMCClientListener::run()
         for(;!_doquit;)
         {
             checkConnections();
-            
+
             if( !_listenerConnection.verifyConnection() )
             {
                 removeAllConnections();
@@ -191,34 +182,20 @@ void CtiMCClientListener::run()
                     _connections.push_back( new_connection.release() );
                 }
 
-                {
-                    CtiLockGuard< CtiLogger > guard(dout);
-                    dout << CtiTime() << " New connection established." << endl;
-                }
+                CTILOG_INFO(dout, "New connection established.");
             }
         }
     }
     catch(...)
     {
-        if( gMacsDebugLevel & MC_DEBUG_CONN )
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " An exception occurred in CtiMCClientListener::run()" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    {
-        CtiLockGuard< CtiLogger > logGuard(dout);
-        dout << CtiTime()  << " Closing all client connections."  << endl;
-    }
+    CTILOG_INFO(dout, "Closing all client connections.");
 
     removeAllConnections();
 
-    if( gMacsDebugLevel & MC_DEBUG_CONN )
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()  << " Exiting CtiMCClientListener::run()" << endl;
-    }
+    CTILOG_INFO(dout, "Exiting");
 }
 
 /*---------------------------------------------------------------------------

@@ -214,16 +214,23 @@ int CtiFDR_BEPC::readConfig( void )
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " BEPC directory " << getDriveAndPath() << endl;
-        dout << CtiTime() << " BEPC interval " << getInterval() << endl;
-        dout << CtiTime() << " BEPC dispatch queue flush rate " << getQueueFlushRate() << endl;
-        dout << CtiTime() << " BPEC db reload rate " << getReloadRate() << endl;
+        Cti::FormattedList loglist;
+
+        loglist.add("BEPC directory")                 << getDriveAndPath();
+        loglist.add("BEPC interval")                  << getInterval();
+        loglist.add("BEPC dispatch queue flush rate") << getQueueFlushRate();
+        loglist.add("BPEC db reload rate")            << getReloadRate();
 
         if (shouldAppendToFile())
-            dout << CtiTime() << " Export will append to existing" << endl;
+        {
+            loglist <<"Export will append to existing file";
+        }
         else
-            dout << CtiTime() << " Export will overwrite existing file" << endl;
+        {
+            loglist <<"Export will overwrite existing file";
+        }
+
+        CTILOG_DEBUG(dout, loglist);
     }
 
     return successful;
@@ -297,8 +304,7 @@ bool CtiFDR_BEPC::loadTranslationLists()
                         successful = true;
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                            CTILOG_DEBUG(dout, "No points defined for use by interface "<< getInterfaceName());
                         }
                     }
                 }
@@ -306,32 +312,28 @@ bool CtiFDR_BEPC::loadTranslationLists()
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                CTILOG_ERROR(dout, "Could not load (Receive) points for "<< getInterfaceName() <<" : Empty data set returned");
                 successful = false;
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Unable to load points from database for "<< getInterfaceName());
             successful = false;
         }
 
     }   // end try block
 
-    catch (RWExternalErr e )
+    catch( const RWExternalErr& e )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to load translation lists for "<< getInterfaceName());
         RWTHROW(e);
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load translation lists for "<< getInterfaceName());
     }
 
     return successful;
@@ -349,9 +351,8 @@ bool CtiFDR_BEPC::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool 
     {
         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Parsing " << x << "/" << size << ". Yukon Point ID "  << translationPoint->getPointID();
-            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+            CTILOG_DEBUG(dout, "Parsing "<< x <<"/"<< size <<". Yukon Point ID "  << translationPoint->getPointID() <<
+                    " translate: " << translationPoint->getDestinationList()[x].getTranslation());
         }
 
         coopId = translationPoint->getDestinationList()[x].getTranslationValue("Coop Id");
@@ -441,8 +442,7 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
     {
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Initializing CtiFDR_BEPC::threadFunctionWriteToFile " << endl;
+            CTILOG_DEBUG(dout, "Initializing threadFunctionWriteToFile");
         }
 
         // first output is 15 seconds after startup
@@ -478,8 +478,7 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
 
                     if ( fptr == NULL )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << getInterfaceName() << "'s file " << string (fileName) << " could not be opened" << endl;
+                        CTILOG_ERROR(dout, getInterfaceName() <<"'s file "<< fileName <<" could not be opened");
                     }
                     else
                     {
@@ -495,11 +494,8 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
                             // if data is older than 2001, it can't be valid
                             if (translationPoint.getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " PointId " << translationPoint.getPointID();
-                                    dout << " was not exported to  " << string (fileName) << " because the timestamp (" << translationPoint.getLastTimeStamp() << ") was out of range " << endl;
-                                }
+                                CTILOG_ERROR(dout, "PointId "<< translationPoint.getPointID() <<" was not exported to "<< fileName <<
+                                        " because the timestamp ("<< translationPoint.getLastTimeStamp() <<") is out of range");
                             }
                             else
                             {
@@ -512,9 +508,8 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
 
                                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Exporting pointid " << translationPoint.getDestinationList()[0].getTranslation() ;
-                                    dout << " value " << (int)translationPoint.getValue() << " to file " << string(fileName) << endl;
+                                    CTILOG_DEBUG(dout, "Exporting pointid "<< translationPoint.getDestinationList()[0].getTranslation() <<
+                                            " value "<< (int)translationPoint.getValue() <<" to file "<< fileName);
                                 }
 
                                 fprintf (fptr,workBuffer.c_str());
@@ -530,15 +525,13 @@ void CtiFDR_BEPC::threadFunctionWriteToFile( void )
 
     catch ( RWCancellation &cancellationMsg )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION CtiFDRBEPCBase::threadFunctionWriteToFile in interface " <<getInterfaceName()<< endl;
+        CTILOG_INFO(dout, "CANCELLATION of threadFunctionWriteToFile in interface "<< getInterfaceName());
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Fatal Error:  CtiFDRBEPCBase::threadFunctionWriteToFile  " << getInterfaceName() << " is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionWriteToFile in interface "<< getInterfaceName() <<" is dead!");
     }
 }
 

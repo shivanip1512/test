@@ -31,7 +31,8 @@ YukonError_t CtiSignalExecutor::ServerExecute(CtiServer *Svr)
 
     try
     {
-        switch(getMessage()->isA())
+        const int msgType = getMessage()->isA();
+        switch( msgType )
         {
         case MSG_SIGNAL:
             {
@@ -40,23 +41,14 @@ YukonError_t CtiSignalExecutor::ServerExecute(CtiServer *Svr)
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                break;
+                CTILOG_ERROR(dout, "Unexpected Message Type ("<< msgType <<")");
             }
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
 
     return nRet;
 }

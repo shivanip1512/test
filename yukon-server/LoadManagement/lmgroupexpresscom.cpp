@@ -38,9 +38,7 @@ boost::optional<std::string> getSetPointMode( const CtiLMProgramThermostatGear &
 
     if ( settings.length() != 4 )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " *** CHECKPOINT *** LM Gear: " << gear.getGearName() << " - corrupted settings (invalid length): "
-             << settings << " [" << __FILE__ << ":" << __LINE__ << "]" << std::endl;
+        CTILOG_ERROR(dout, "LM Gear: " << gear.getGearName() << " - corrupted settings (invalid length): "<< settings);
 
         return boost::none;
     }
@@ -55,9 +53,7 @@ boost::optional<std::string> getSetPointMode( const CtiLMProgramThermostatGear &
 
         if ( ! ( hasHeat || hasCool ) )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " *** CHECKPOINT *** LM Gear: " << gear.getGearName() << " - missing (heat|cool) mode setting: "
-                 << settings << " [" << __FILE__ << ":" << __LINE__ << "]" << std::endl;
+            CTILOG_ERROR(dout, "LM Gear: " << gear.getGearName() << " - missing (heat|cool) mode setting: "<< settings);
 
             return boost::none;
         }
@@ -70,9 +66,7 @@ boost::optional<std::string> getSetPointMode( const CtiLMProgramThermostatGear &
 
         if ( ! ( hasHeat ^ hasCool ) )    // either-or but not both or neither
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " *** CHECKPOINT *** LM Gear: " << gear.getGearName() << " - invalid (heat|cool) mode setting: "
-                 << settings << " [" << __FILE__ << ":" << __LINE__ << "]" << std::endl;
+            CTILOG_ERROR(dout, "LM Gear: " << gear.getGearName() << " - invalid (heat|cool) mode setting: "<< settings);
 
             return boost::none;
         }
@@ -83,9 +77,7 @@ boost::optional<std::string> getSetPointMode( const CtiLMProgramThermostatGear &
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " *** CHECKPOINT *** LM Gear: " << gear.getGearName() << " - unsupported control method: "
-             << gear.getControlMethod() << " [" << __FILE__ << ":" << __LINE__ << "]" << std::endl;
+        CTILOG_ERROR(dout, "LM Gear: " << gear.getGearName() << " - unsupported control method: "<< gear.getControlMethod());
 
         return boost::none;
     }
@@ -384,8 +376,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTimeRefreshRequestMsg(LONG refreshRat
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending time refresh command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -424,8 +415,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSmartCycleRequestMsg(LONG percent, LO
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending smart cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -464,8 +454,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTrueCycleRequestMsg(LONG percent, LON
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending true cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending true cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -571,8 +560,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending target cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending target cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -592,11 +580,8 @@ CtiRequestMsg* CtiLMGroupExpresscom::createStopCycleMsg(LONG period, CtiTime &cu
     const int priority = 11;
     string controlString("control xcom cycle 0 count 1 period ");
     controlString += buildPeriodString(period);
-    
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Sending terminate to LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
-    }
+
+    CTILOG_INFO(dout, "Sending terminate to LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
 
     setLastControlString(controlString);
     setLastControlSent(currentTime);
@@ -617,8 +602,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createRotationRequestMsg(LONG sendRate, LON
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending rotation command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -644,8 +628,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createMasterCycleRequestMsg(LONG offTime, L
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending master cycle command, LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString,
@@ -672,10 +655,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(const CtiLMProgram
 
     if ( ! mode )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-        dout << CtiTime() << " *** ERROR *** LM Group " << getPAOName()
-             << " has improperly configured thermostat gear mode." << std::endl;
+        CTILOG_ERROR(dout, "LM Group " << getPAOName() << " has improperly configured thermostat gear mode.");
 
         return 0;
     }
@@ -694,8 +674,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(const CtiLMProgram
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString.str() << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString.str() << ", priority: " << priority);
     }
     return CTIDBG_new CtiRequestMsg(getPAOId(),
                                     controlString.str(),
@@ -720,10 +699,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(const CtiLMProgramT
 
     if ( ! mode )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-        dout << CtiTime() << " *** ERROR *** LM Group " << getPAOName()
-             << " has improperly configured thermostat gear mode." << std::endl;
+        CTILOG_ERROR(dout, "LM Group " << getPAOName() << " has improperly configured thermostat gear mode.");
 
         return 0;
     }
@@ -734,10 +710,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(const CtiLMProgramT
 
     if ( const boost::optional<std::string> errorMessage = calculateSetPointSimpleProfileSettings( profile, totalTime ) )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-        dout << CtiTime() << " *** ERROR *** LM Group: " << getPAOName()
-             << " - " << *errorMessage << std::endl;
+        CTILOG_ERROR(dout, "LM Group: " << getPAOName() << " - " << *errorMessage);
 
         return 0;
     }
@@ -759,8 +732,7 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(const CtiLMProgramT
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString.str() << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending set point command, LM Group: " << getPAOName() << ", string: " << controlString.str() << ", priority: " << priority);
     }
 
     return CTIDBG_new CtiRequestMsg(getPAOId(),
@@ -832,8 +804,7 @@ bool CtiLMGroupExpresscom::sendBeatThePeakCommandToPorter(std::string command)
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending BTP command: " << command << endl;
+        CTILOG_DEBUG(dout, "Sending BTP command: " << command);
     }
 
     setLastControlSent(CtiTime());

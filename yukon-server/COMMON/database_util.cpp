@@ -3,6 +3,7 @@
 #include "database_exceptions.h"
 #include "database_util.h"
 #include "database_reader.h"
+#include "logger.h"
 
 namespace Cti {
 namespace Database {
@@ -16,22 +17,12 @@ bool executeCommand( T& command, const char* file, const int line, const LogDebu
 {
     if( logDebug == LogDebug::Enable )
     {
-        std::string loggedSQLstring = command.asString();
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " **** DEBUG **** DB command : " << file << " (" << line << ")" << std::endl
-                 << loggedSQLstring << std::endl;
-        }
+        CTILOG_DEBUG(dout, "DB command:\n" << command.asString());
     }
 
     if( ! command.execute() )
     {
-        std::string loggedSQLstring = command.asString();
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " **** ERROR **** DB command : " << file << " (" << line << ")" << std::endl
-                 << loggedSQLstring << std::endl;
-        }
+        CTILOG_ERROR(dout, "DB command:\n" << command.asString());
         return false;
     }
 
@@ -68,12 +59,7 @@ bool executeUpdater( DatabaseWriter& updater, const char* file, const int line, 
     {
         if( logNoRowsAffected == LogNoRowsAffected::Enable )
         {
-            std::string loggedSQLstring = updater.asString();
-            {
-                CtiLockGuard<CtiLogger> guard(dout);
-                dout << CtiTime() << " **** ERROR **** DB update no rows affected : " << file << " (" << line << ")" << std::endl
-                     << loggedSQLstring << std::endl;
-            }
+            CTILOG_ERROR(dout, "DB update no rows affected:\n" << updater.asString());
         }
         return false;
     }
@@ -105,12 +91,7 @@ void executeWriter( DatabaseWriter &writer, const char* file, const int line, co
 {
     if( logDebug == LogDebug::Enable )
     {
-        std::string loggedSQLstring = writer.asString();
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " **** DEBUG **** DB command : " << file << " (" << line << ")" << std::endl
-                 << loggedSQLstring << std::endl;
-        }
+        CTILOG_DEBUG(dout, "DB command:\n" << writer.asString());
     }
 
     try
@@ -119,12 +100,7 @@ void executeWriter( DatabaseWriter &writer, const char* file, const int line, co
     }
     catch( DatabaseException& )
     {
-        std::string loggedSQLstring = writer.asString();
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " **** ERROR **** DB command : " << file << " (" << line << ")" << std::endl
-                 << loggedSQLstring << std::endl;
-        }
+        CTILOG_ERROR(dout, "DB command:\n" << writer.asString());
         throw;
     }
 }
@@ -193,8 +169,7 @@ void executeUpsert(DatabaseConnection &conn,
         {
             if( logDebug == LogDebug::Enable )
             {
-                CtiLockGuard<CtiLogger> guard(dout);
-                dout << CtiTime() << " DB Insert has fail for primary key violation, will try Update : " << file << " (" << line << ")" << std::endl;
+                CTILOG_WARN(dout, "DB Insert has fail for primary key violation, will try Update");
             }
 
             // if the error is a primary violation the row could already be there, retry with update first
@@ -212,8 +187,7 @@ void executeUpsert(DatabaseConnection &conn,
         {
             if( logDebug == LogDebug::Enable )
             {
-                CtiLockGuard<CtiLogger> guard(dout);
-                dout << CtiTime() << " DB Update no rows affected, will try Insert : " << file << " (" << line << ")" << std::endl;
+                CTILOG_WARN(dout, "DB Update no rows affected, will try Insert");
             }
 
             DatabaseWriter inserter(conn);

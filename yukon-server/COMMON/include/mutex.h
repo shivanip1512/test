@@ -1,16 +1,13 @@
 #pragma once
 
-#ifdef _WINDOWS
-    
-    #if !defined (NOMINMAX)
-    #define NOMINMAX
-    #endif
-
-    #include <windows.h>
+#if !defined (NOMINMAX)
+#define NOMINMAX
 #endif
 
-#include <assert.h>
 #include "dlldefs.h"
+
+#include <windows.h>
+#include <assert.h>
 
 class IM_EX_CTIBASE CtiMutex
 {
@@ -23,18 +20,15 @@ public:
     void release();
     void reset();
 
-
-/// #ifdef _DEBUG
+    // For debug:
+    // returns the last TID or the current TID
     DWORD lastAcquiredByTID() const;
-/// #endif
 
 private:
-
-#ifdef _WINDOWS
     HANDLE hMutex;
-/// #ifdef _DEBUG
-    DWORD  _threadID[3];
-/// #endif
-#endif
+
+    // For debug:
+    // contains the 3 last TID
+    DWORD _threadIDs[3];
 };
 

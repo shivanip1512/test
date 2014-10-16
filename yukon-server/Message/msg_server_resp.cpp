@@ -1,6 +1,7 @@
 #include "precompiled.h"
-#include "msg_server_resp.h"
+
 #include "logger.h"
+#include "msg_server_resp.h"
 
 using std::endl;
 using std::string;
@@ -16,14 +17,16 @@ CtiServerResponseMsg::CtiServerResponseMsg(const CtiServerResponseMsg& resp)
     operator=(resp);
 }
 
-void CtiServerResponseMsg::dump() const
+std::string CtiServerResponseMsg::toString() const
 {
-    Inherited::dump();
+    Cti::FormattedList itemList;
 
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << " Response ID:  " << _id << endl;
-    dout << " Status:  " << endl;
-    dout << " Message:  " << endl;
+    itemList <<"CtiServerResponseMsg";
+    itemList.add("Response ID") << _id;
+    itemList.add("Status")      << _status;
+    itemList.add("Message")     << _message;
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 CtiMessage* CtiServerResponseMsg::replicateMessage() const

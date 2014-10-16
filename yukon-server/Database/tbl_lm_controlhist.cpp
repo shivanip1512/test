@@ -409,8 +409,7 @@ void CtiTableLMControlHistory::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["paobjectid"]          >> _paoID;
@@ -434,8 +433,7 @@ void CtiTableLMControlHistory::DecodeControlTimes(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["stopdatetime"]        >> _prevLogTime;
@@ -527,17 +525,17 @@ bool CtiTableLMControlHistory::Insert(Cti::Database::DatabaseConnection &conn)
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Unable to insert LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << inserter.asString() << endl;
+            CTILOG_ERROR(dout, "Unable to insert LM Control History for PAO id "<< getPAOID() <<
+                    endl <<"SQL query: "<< inserter.asString()
+                    );
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** LMControlHistory cannot record negative control times. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl;
-        dump();
+        CTILOG_ERROR(dout, "LMControlHistory cannot record negative control times (startTime="<< getStartTime() <<", stopTime="<< getStopTime() <<")"<<
+                endl <<"SQL query: "<< inserter.asString() <<
+                *this // we are loggable
+                );
     }
 
     return success;
@@ -693,8 +691,7 @@ LONG CtiTableLMControlHistory::getNextSOE()
             }
             else
             {
-                RWMutexLock::LockGuard  guard(coutMux);
-                cout << "**** Checkpoint: Invalid Reader **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Invalid Reader");
             }
 
             init_id = TRUE;
@@ -704,11 +701,7 @@ LONG CtiTableLMControlHistory::getNextSOE()
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Unable to acquire mutex for LMControlHistoryGen" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire mutex for LMControlHistoryGen");
     }
 
     return nextsoe;
@@ -735,30 +728,29 @@ bool CtiTableLMControlHistory::isNewControl() const
     return _isNewControl;
 }
 
-void CtiTableLMControlHistory::dump() const
+std::string CtiTableLMControlHistory::toString() const
 {
+    Cti::FormattedList itemList;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " paobjectid            " << getPAOID() << endl;
-        dout << " lmctrlhistid          " << getLMControlHistoryID() << endl;
-        dout << " startdatetime         " << getStartTime() << endl;
-        dout << " stopdatetime          " << getStopTime() << endl;
-        dout << " controlcompletetime   " << getControlCompleteTime() << endl;
-        dout << " previouslogtime       " << getPreviousLogTime() << endl;
-        dout << " soe_tag               " << getSoeTag() << endl;
-        dout << " controlduration       " << (INT)(getControlCompleteTime().seconds() - getStartTime().seconds()) << endl;
-        dout << " controltype           " << getControlType() << endl;
-        dout << " currentdailytime      " << getCurrentDailyTime() << endl;
-        dout << " currentmonthlytime    " << getCurrentMonthlyTime() << endl;
-        dout << " currentseasonaltime   " << getCurrentSeasonalTime() << endl;
-        dout << " currentannualtime     " << getCurrentAnnualTime() << endl;
-        dout << " activerestore         " << getActiveRestore() << endl;
-        dout << " reductionvalue        " << getReductionValue() << endl;
-        dout << " protocolpriority      " << getControlPriority() << endl;
-    }
+    itemList <<"CtiTableLMControlHistory";
+    itemList.add("paobjectid")          << getPAOID();
+    itemList.add("lmctrlhistid")        << getLMControlHistoryID();
+    itemList.add("startdatetime")       << getStartTime();
+    itemList.add("stopdatetime")        << getStopTime();
+    itemList.add("controlcompletetime") << getControlCompleteTime();
+    itemList.add("previouslogtime")     << getPreviousLogTime();
+    itemList.add("soe_tag")             << getSoeTag();
+    itemList.add("controlduration")     << (getControlCompleteTime().seconds() - getStartTime().seconds());
+    itemList.add("controltype")         << getControlType();
+    itemList.add("currentdailytime")    << getCurrentDailyTime();
+    itemList.add("currentmonthlytime")  << getCurrentMonthlyTime();
+    itemList.add("currentseasonaltime") << getCurrentSeasonalTime();
+    itemList.add("currentannualtime")   << getCurrentAnnualTime();
+    itemList.add("activerestore")       << getActiveRestore();
+    itemList.add("reductionvalue")      << getReductionValue();
+    itemList.add("protocolpriority")    << getControlPriority();
 
-    return;
+    return itemList.toString();
 }
 
 void CtiTableLMControlHistory::DecodeOutstandingControls(Cti::RowReader &rdr)
@@ -887,17 +879,17 @@ bool CtiTableLMControlHistory::InsertDynamic(Cti::Database::DatabaseConnection &
 
         if( ! success )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Unable to insert Dynamic LM Control History for PAO id " << getPAOID() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << inserter.asString() << endl;
+            CTILOG_ERROR(dout, "Unable to insert Dynamic LM Control History for PAO id "<< getPAOID() <<
+                    endl <<"SQL query: "<< inserter.asString()
+                    );
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** DynamicLMControlHistory cannot record negative control times. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl;
-        dump();
+        CTILOG_ERROR(dout, "DynamicLMControlHistory cannot record negative control times (startTime="<< getStartTime() <<", stopTime="<< getStopTime() <<")"<<
+                endl <<"SQL query: "<< inserter.asString() <<
+                *this // we are loggable
+                );
     }
 
     return success;

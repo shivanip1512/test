@@ -11,12 +11,14 @@
 #include "ctibase.h"
 #include "portglob.h"
 #include "cparms.h"
-
-#include "logger.h"
+#include "logManager.h"
 #include "guard.h"
-
 #include "connection_base.h"
-// Close all yukon messaging connections when this object is destroyed
+
+// Shutdown logging when this object is destroyed
+Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
+
+// Close all messaging connections when this object is destroyed
 Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
 using namespace std;
@@ -37,38 +39,25 @@ int main(int argc, char* argv[] )
 {
    InitYukonBaseGlobals();
 
-   dout.start();     // fire up the logger thread
-   dout.setOwnerInfo(CompileInfo);
-   dout.setOutputPath(gLogDirectory);
-   dout.setRetentionLength(gLogRetention);
-   dout.setOutputFile("porter");
-   dout.setToStdOut(true);
-   dout.setWriteInterval(15000);
+   doutManager.setOwnerInfo     ( CompileInfo );
+   doutManager.setOutputPath    ( gLogDirectory );
+   doutManager.setRetentionDays ( gLogRetention );
+   doutManager.setOutputFile    ( "porter" );
+   doutManager.setToStdOut      ( true );
+   doutManager.start(); // fire up the logger thread
 
    string dbglogdir(gLogDirectory + "\\Debug");
    // Create a subdirectory called Comm beneath Log.
    CreateDirectoryEx( gLogDirectory.c_str(), dbglogdir.c_str(), NULL);
 
-   slog.start();     // fire up the simulator thread
-   slog.setOwnerInfo(CompileInfo);
-   slog.setOutputPath(dbglogdir.c_str());
-   slog.setRetentionLength(gLogRetention);
-   slog.setOutputFile("simulate");
-   slog.setToStdOut( (bool)(gConfigParms.getValueAsInt("YUKON_SIMULATE_TOSTDOUT",0)) );
-   slog.setWriteInterval(15000);
+   slogManager.setOwnerInfo     ( CompileInfo );
+   slogManager.setOutputPath    ( dbglogdir );
+   slogManager.setRetentionDays ( gLogRetention );
+   slogManager.setOutputFile    ( "simulate" );
+   slogManager.setToStdOut      ( gConfigParms.getValueAsInt("YUKON_SIMULATE_TOSTDOUT",0) );
+   slogManager.start(); // fire up the simulator thread
 
-   blog.start();
-   blog.setOwnerInfo(CompileInfo);
-   blog.setOutputPath(dbglogdir.c_str());
-   blog.setRetentionLength(gLogRetention);
-   blog.setOutputFile("comstats");
-   blog.setToStdOut( false );
-   blog.setWriteInterval(15000);
-
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(slog);
-       slog << endl << CtiTime() << " **** Simulator Started **** " << endl;
-   }
+   CTILOG_INFO(slog, "Simulator Started");
 
    if( Cti::setConsoleTitle(CompileInfo) ) // We are a console application
    {
@@ -87,7 +76,6 @@ int main(int argc, char* argv[] )
       }
       else
       {
-         dout.setWriteInterval(0);
          CtiPorterService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
 
          RunningInConsole = TRUE;
@@ -113,17 +101,11 @@ int main(int argc, char* argv[] )
 
 int install(DWORD dwStart)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime()  << " - Installing as a service..." << endl;
-    }
+    CTILOG_INFO(dout, "Installing as a service...");
 
     CServiceConfig si(szServiceName, szDisplayName, szDesc);
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Installing porter Service Using LocalSystem Account." << endl;
-    }
+    CTILOG_INFO(dout, "Installing porter Service Using LocalSystem Account.");
 
     // test using the LocalSystem account
     si.Install(SERVICE_WIN32_OWN_PROCESS,
@@ -137,10 +119,7 @@ int install(DWORD dwStart)
 
 int remove()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime()  << " - Removing service..." << endl;
-    }
+    CTILOG_INFO(dout, "Removing service...");
 
     CServiceConfig si(szServiceName, szDisplayName);
     si.Remove();

@@ -124,10 +124,7 @@ public:
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
         _interruptBlockingRead = true;
@@ -146,10 +143,7 @@ public:
                 }
                 catch(...)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-                    }
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 try
@@ -161,10 +155,7 @@ public:
                 }
                 catch(...)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-                    }
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 /*if(!gConfigParms.isTrue("YUKON_NOSORT_QUEUES"))
@@ -175,10 +166,6 @@ public:
                     }
                     catch(...)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ") q.size() " << getCollection().size() << std::endl;
-                        }
                         resetCollection();     // Dump the queue?
                     }
                 }*/
@@ -188,7 +175,8 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;}
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+
             resetCollection();     // Dump the queue?
         }
     }
@@ -215,14 +203,12 @@ public:
             pval = (getCollection().begin())->dataPointer;
             getCollection().erase(getCollection().begin());
 
-            // cerr << "Number of entries " << getCollection().entries() << endl;
-
             // make sure the interrupt flag is false
             _interruptBlockingRead = false;
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;}
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
         return pval;
@@ -274,7 +260,7 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;}
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
         return pval;
     }
@@ -299,7 +285,7 @@ public:
         }
         catch(...)
         {
-            {   CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;}
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
         return putWasDone;
@@ -407,10 +393,7 @@ public:
                 }
                 catch(...)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-                    }
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 try
@@ -419,10 +402,7 @@ public:
                 }
                 catch(...)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-                    }
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 delete _col;
@@ -430,10 +410,7 @@ public:
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
         _col = 0;     // No matter what, I exit leaving the old one behind!
@@ -455,10 +432,7 @@ public:
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 };
@@ -489,7 +463,7 @@ private:
         }
         catch(...)
         {
-            std::cerr << CtiTime() << " **** EXCEPTION Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 
@@ -522,7 +496,7 @@ public:
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 
@@ -542,7 +516,7 @@ public:
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
         return pval;
@@ -584,7 +558,7 @@ public:
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
         return pval;
     }
@@ -605,7 +579,7 @@ public:
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " **** Exception **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
         return putWasDone;

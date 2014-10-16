@@ -2,6 +2,7 @@
 
 #include "encryption_oneway.h"
 #include "CtiDate.h"
+#include "CtiTime.h"
 
 BOOST_AUTO_TEST_SUITE( test_encryption_oneway )
 

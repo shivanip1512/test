@@ -131,11 +131,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
 
                         if(getPreviousState() == StateEnd)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-                            }
+                            CTILOG_WARN(dout, "no response from snpp quit command, all others responded");
                             status = ClientErrors::None;//quit command failed, all others passed, return normal
                         }
 
@@ -149,11 +145,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
 
                     if(getPreviousState() == StateEnd)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - no response from snpp quit command, all others responded" << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-                        }
+                        CTILOG_WARN(dout, "no response from snpp quit command, all others responded");
                         status = ClientErrors::None;//quit command failed, all others passed, return normal
                     }
                 }
@@ -167,12 +159,13 @@ YukonError_t CtiDeviceSnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
         }
     }
     catch (...)
-    {//reset and throw to regular error catcher.
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+        //reset and throw to regular error catcher.
         resetStates();
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - Exception thrown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         throw;
     }
+
     return status;
 }
 
@@ -446,10 +439,10 @@ YukonError_t CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
         }
     }
     catch(...)
-    {//reset state settings and throw error to regular catcher.
-        resetStates();
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - Exception thrown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+
+        resetStates(); //reset state settings and throw error to regular catcher.
         throw;
     }
     return status;
@@ -479,11 +472,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - invalid OutMessage in CtiDeviceSnppPagingTerminal::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
+        CTILOG_ERROR(dout, "NULL OutMessage");
         retVal = ClientErrors::Memory;
     }
 
@@ -544,10 +533,7 @@ YukonError_t CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, Ct
         }
     case ControlRequest:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Unexpected ControlRequest command");
         }
     case GetStatusRequest:
     case LoopbackRequest:

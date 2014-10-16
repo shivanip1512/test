@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_port_settings
-*
-* Date:   9/6/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_settings.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "tbl_port_settings.h"
@@ -113,11 +98,6 @@ INT CtiTablePortSettings::getStopBits() const
 
 void CtiTablePortSettings::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
-    {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
 
     rdr["baudrate"]         >> _baudRate;
     rdr["cdwait"]           >> _cdWait;
@@ -125,10 +105,15 @@ void CtiTablePortSettings::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << " Baud Rate            = " << _baudRate << endl;
-        dout << " CD Wait Time         = " << _cdWait << endl;
-        dout << " Line Parameters      = " << _lineSettings << endl;
+        Cti::FormattedList itemList;
+
+        itemList.add("Baud Rate")       << _baudRate;
+        itemList.add("CD Wait Time")    << _cdWait;
+        itemList.add("Line Parameters") << _lineSettings;
+
+        CTILOG_DEBUG(dout, "Decoding DB read from PortSettings"<<
+                itemList
+                );
     }
 }
 

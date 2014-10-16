@@ -53,11 +53,7 @@ void ZoneDBLoader::loadCore(const long Id, ZoneManager::ZoneMap &zones)
 
     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
     {
-        std::string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << endl;
-        }
+        CTILOG_INFO(dout, rdr.asString());
     }
 
     while ( rdr() )
@@ -112,11 +108,7 @@ void ZoneDBLoader::loadBankParameters(const long Id, ZoneManager::ZoneMap &zones
 
     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
     {
-        std::string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << endl;
-        }
+        CTILOG_INFO(dout, rdr.asString());
     }
 
     while ( rdr() )
@@ -164,11 +156,7 @@ void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zone
 
     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
     {
-        std::string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << endl;
-        }
+        CTILOG_INFO(dout, rdr.asString());
     }
 
     while ( rdr() )
@@ -201,11 +189,8 @@ void ZoneDBLoader::loadPointParameters(const long Id, ZoneManager::ZoneMap &zone
             */
             if ( phase == Phase_Unknown || phase == Phase_Poly )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                dout << CtiTime() << " - Zone: " << zone->second->getName() << " has assigned voltage point ID: " << Id
-                     << " assigned with phase: " << std::string( phase == Phase_Unknown ? "(?) unknown" : "(*) polyphase" )
-                     << std::endl;
+                CTILOG_WARN(dout, "Zone: " << zone->second->getName() << " has assigned voltage point ID: " << Id
+                     << " assigned with phase: " << ( phase == Phase_Unknown ? "(?) unknown" : "(*) polyphase" ));
             }
 
             if ( rdr.isValid() )                    // reader is ~still~ valid
@@ -242,11 +227,7 @@ void ZoneDBLoader::loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &
 
     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
     {
-        std::string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << endl;
-        }
+        CTILOG_INFO(dout, rdr.asString());
     }
 
     while ( rdr() )
@@ -288,9 +269,7 @@ void ZoneDBLoader::loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &
             }
             catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-
-                dout << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+                CTILOG_EXCEPTION_ERROR(dout, noRegulator);
             }
         }
     }

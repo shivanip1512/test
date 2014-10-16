@@ -171,12 +171,11 @@ YukonError_t CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime Sca
    case MASTERSCANALL:
    case MASTERRESET:
       {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " Unsupported MasterCom Request to TCU " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      }
-      /* TCU is unaware of these */
-      break;
+          CTILOG_ERROR(dout, getName() << " Unsupported MasterCom Request to TCU");
 
+          /* TCU is unaware of these */
+          break;
+      }
    case MASTERSCANINT:
       {
          if(useScanFlags())
@@ -189,8 +188,7 @@ YukonError_t CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime Sca
 
                if(*Msg == NULL)
                {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << CtiTime() << " " << getName() << " scanned but has no points in the DB" << endl;
+                   CTILOG_ERROR(dout, getName() << " scanned but has no points in the DB");
                }
                else
                {
@@ -199,7 +197,7 @@ YukonError_t CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime Sca
             }
             else
             {
-               dout << CtiTime() << " TCU response unexpected.. " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               CTILOG_ERROR(dout, "TCU response unexpected..");
 
                /* Something screwed up message goes here */
                resetScanFlag(ScanRateGeneral);
@@ -211,7 +209,6 @@ YukonError_t CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime Sca
 
             if(Msg != NULL)
             {
-               // Msg->dump();
                retList.push_back(Msg);
             }
          }
@@ -239,7 +236,8 @@ YukonError_t CtiDeviceTCU::TCUDecode (const INMESS &InMessage, const CtiTime Sca
       }
    default:
       /* This should never happen so reset the scan */
-      dout << "This is peculiar " << __FILE__ << " (" << __LINE__ << ")" << endl;
+      CTILOG_ERROR(dout, "unknown data "<< InMessage.Buffer.InMessage[2]);
+
       if(useScanFlags())
       {
          resetScanFlag();
@@ -320,10 +318,7 @@ YukonError_t CtiDeviceTCU::ExecuteRequest(CtiRequestMsg     *pReq,
          // Get a scan done maybe?
          if((nRet = TCUScanAll(OutMessage)) != 0)
          {
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " error scanning " << getName()<< endl;
-            }
+            CTILOG_ERROR(dout, "Could not scan "<< getName());
 
             vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,
                                            pReq->getSOE(),
@@ -372,10 +367,8 @@ YukonError_t CtiDeviceTCU::ExecuteRequest(CtiRequestMsg     *pReq,
                // Get a scan done maybe?
                if((nRet = TCULoop(OutMTemp)) != 0)
                {
-                  {
-                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                     dout << CtiTime() << " error looping " << getName()<< endl;
-                  }
+                  CTILOG_ERROR(dout, "Could not loop "<< getName());
+
                   retList.push_back( CTIDBG_new CtiReturnMsg(getID(),
                                                    string(OutMessage->Request.CommandStr),
                                                    string(getName() + " / ping failed to TCU"),
@@ -520,13 +513,6 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(const INMESS &InMessage)
             sprintf(temp,"Error %s (%d)", __FILE__, __LINE__);
          }
 
-#if 0
-         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << temp << endl;
-         }
-#endif
-
          pData = CTIDBG_new CtiPointDataMsg(PointRecord->getPointID(),
                                      PValue,
                                      NormalQuality,
@@ -543,15 +529,6 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(const INMESS &InMessage)
             {
                pPIL->PointData().push_back(pData);
                pData = NULL;  // We just put it on the list...
-            }
-            else
-            {
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << "ERROR: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-               }
-               delete pData;
-               pData = NULL;
             }
          }
       }

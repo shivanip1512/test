@@ -275,10 +275,7 @@ YukonError_t IDLC::generate( CtiXfer &xfer )
 
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unhandled state (" << _io_operation << ") in Cti::Protocol::IDLC::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "unhandled state ("<< _io_operation <<")");
 
                 retval = ClientErrors::BadRange;
             }
@@ -373,10 +370,7 @@ YukonError_t IDLC::decode( CtiXfer &xfer, YukonError_t status )
 
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unhandled operation (" << _io_operation << ") in  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "unhandled operation ("<< _io_operation <<")");
 
                 _protocol_errors++;
                 _io_operation  = IO_Operation_Failed;
@@ -436,10 +430,7 @@ YukonError_t IDLC::decode_control( CtiXfer &xfer, YukonError_t status )
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - unhandled frame [" << CtiNumStr(_in_frame.header.control.code).hex(2) << "] in Cti::Protocol::IDLC::decode_control() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "unhandled frame ["<< CtiNumStr(_in_frame.header.control.code).hex(2) <<"]");
 
                     _protocol_errors++;
 
@@ -492,10 +483,7 @@ YukonError_t IDLC::process_control( frame in_frame )
     }*/
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - unhandled control frame [" << CtiNumStr(in_frame.header.control.code).hex(2) << "] in Cti::Protocol::IDLC::decode_control() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "unhandled control frame ["<< CtiNumStr(in_frame.header.control.code).hex(2) <<"]");
 
         _protocol_errors++;
 

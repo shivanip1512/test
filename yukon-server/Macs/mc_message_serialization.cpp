@@ -251,8 +251,7 @@ MessagePtr<Thrift::MCSchedule>::type populateThrift( const ::CtiMCSchedule& imsg
 
     if( !imsg.checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< imsg.getScheduleID() <<")");
     }
 
     return omsg;
@@ -300,8 +299,7 @@ MessagePtr<::CtiMCSchedule>::type populateMessage( const Thrift::MCSchedule& ims
 
     if( !omsg->checkSchedule() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Schedule is invalid ("<< omsg->getScheduleID() <<")");
     }
 
     return omsg;

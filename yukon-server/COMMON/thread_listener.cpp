@@ -47,11 +47,6 @@ void CtiThreadListener::run( void )
 void CtiThreadListener::registerThread( string name, int id, fooptr shutdown, fooptr alt, ULONG freq )
 { /* CtiThreadRegData  temp;
 
-   {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      dout << "Thread " << name << " has registered" << endl;
-   }
-
    temp.setName( name );
    temp.setId( id );
    temp.setShutdownFunc( shutdown );

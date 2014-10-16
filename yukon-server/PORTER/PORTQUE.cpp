@@ -61,8 +61,6 @@ static const ULONG MAX_CCU_QUEUE_TIME = 1800;
 static const ULONG QUEUED_MSG_REQ_ID_BASE = 0xFFFFFF00;
 USHORT QueSequence = 0x8000;
 
-static CHAR tempstr[100];
-
 bool findAllQueueEntries(void *unused, void *d);
 bool findReturnNexusMatch(void *nid, void *d);
 void cleanupOrphanOutMessages(void *unusedptr, void* d);
@@ -71,10 +69,8 @@ int  ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT 
 
 void blitzNexusFromQueue(HCTIQUEUE q, const StreamConnection *Nexus)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Attempting to remove all queue entries for bad nexus 0x" << Nexus << endl;
-    }
+    CTILOG_INFO(dout, "Attempting to remove all queue entries for bad nexus 0x"<< Nexus);
+
     CleanQueue( q, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
 }
 
@@ -88,28 +84,21 @@ void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, const StreamConnection *Nexus)
         {
             ULONG QueEntCnt;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Attempting to remove all queue entries for bad nexus 0x" << Nexus << endl;
-            }
+            CTILOG_INFO(dout, "Attempting to remove all queue entries for bad nexus 0x"<< Nexus);
 
             QueryQueue(pInfo->QueueHandle, &QueEntCnt);
             if(QueEntCnt)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    CCU:  " << Device->getName() << "  PURGING " << QueEntCnt << " queue queue entries" << endl;
-                }
+                CTILOG_INFO(dout, "CCU: "<< Device->getName() <<" PURGING "<< QueEntCnt <<" queue queue entries");
+
                 CleanQueue( pInfo->QueueHandle, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
             }
 
             QueryQueue(pInfo->ActinQueueHandle, &QueEntCnt);
             if(QueEntCnt)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    CCU:  " << Device->getName() << "  PURGING " << QueEntCnt << " actin queue entries" << endl;
-                }
+                CTILOG_INFO(dout, "CCU: "<< Device->getName() <<" PURGING "<< QueEntCnt <<" actin queue entries");
+
                 CleanQueue( pInfo->ActinQueueHandle, (void*)Nexus, findReturnNexusMatch, cleanupOrphanOutMessages );
             }
 
@@ -142,7 +131,10 @@ struct buildLGRPQ
                     if( ccu->hasWaitingWork()
                         && ccu->buildCommand(OutMessage, Ccu721Device::Command_LoadQueue) )
                     {
-                        PortManager.writeQueue(OutMessage);
+                        if(PortManager.writeQueue(OutMessage))
+                        {
+                            CTILOG_ERROR(dout, "Could write queue for Port "<< OutMessage->Port);
+                        }
                     }
                     else
                     {
@@ -179,26 +171,22 @@ struct buildLGRPQ
                                     if( reqCount > 0 )
                                     {
                                         pInfo->setINLGRPQWarning(CtiTime::now().seconds() + 300 ); //Yuck, but ok?
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, entry found, NOT removing entry **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                                        CTILOG_WARN(dout, "INLGRPQ - entry found, NOT removing entry");
                                     }
                                     else
                                     {
                                         pInfo->clearStatus(INLGRPQ);
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, no queue entry found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                        }
+
+                                        CTILOG_WARN(dout, "INLGRPQ - no queue entry found");
                                     }
 
                                 }
                                 else
                                 {
                                     pInfo->clearStatus(INLGRPQ);
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, unknown port **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    }
+
+                                    CTILOG_WARN(dout, "INLGRPQ - unknown port");
                                 }
                             }
 
@@ -222,10 +210,7 @@ void QueueThread (void *Arg)
     USHORT Port, Remote;
     DWORD  dwWait = 0;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Queue Thread Starting as TID " << CurrentTID() << endl;
-    }
+    CTILOG_INFO(dout, "Queue Thread Starting");
 
     HANDLE hQueueArray[] = {
         hPorterEvents[P_QUIT_EVENT],
@@ -287,7 +272,6 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
     USHORT Offset;
     ULONG ActinQueueCount, QueueCount;
     USHORT AlgStatus[8];
-    CHAR Message[50];
     ULONG TimeAdder;
 
     CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
@@ -324,11 +308,8 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
             if(!detected)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Orphaned CCU queue entry response on device \"" << Dev->getName() << "\".  It will be ignored.  InMessage.Sequence 0x" << hex << (int)InMessage.Sequence << dec << endl;
-                    dout << "  Not found in any queue slot" << endl;
-                }
+                CTILOG_WARN(dout, "Orphaned CCU queue entry response on device \""<< Dev->getName() <<"\". It will be ignored. "
+                        "InMessage.Sequence 0x"<< hex << (int)InMessage.Sequence <<" Not found in any queue slot");
             }
         }
     }
@@ -362,16 +343,9 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
         {
             pInfo->setStatus (POWERFAILED);
 
-            _snprintf(tempstr, 99,"Power Fail Detected on Port: %2hd Remote: %3hd... Resetting\n", InMessage.Port, InMessage.Remote);
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << tempstr << endl;
-            }
-            IDLCFunction(Dev, 0, DEST_BASE, CLPWR);
+            CTILOG_WARN(dout, Dev->getName() <<" - Power Fail Detected on Port: "<< InMessage.Port <<" Remote: "<< InMessage.Remote <<"... Resetting");
 
-            /* Now send a message to logger */
-            _snprintf(Message, 50, "%0.20s Power Fail Detected", Dev->getName().c_str());
-            SendTextToLogger ("Inf", Message);
+            IDLCFunction(Dev, 0, DEST_BASE, CLPWR);
         }
     }
     else
@@ -389,11 +363,9 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
             if(!(pInfo->getStatus(TIMESYNCED)))
             {
                 pInfo->setStatus(TIMESYNCED);
-                _snprintf(tempstr, 99,"Time Sync Loss Detected on Port: %2hd Remote: %3hd... Issuing Time Sync\n", InMessage.Port, InMessage.Remote);
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << tempstr << endl;
-                }
+
+                CTILOG_WARN(dout, Dev->getName() <<" - Time Sync Loss Detected on Port: "<< InMessage.Port <<" Remote: "<< InMessage.Remote <<"... Issuing Time Sync");
+
                 CtiOutMessage *TimeSyncMessage = CTIDBG_new OUTMESS;
                 /* Allocate some memory */
                 if(TimeSyncMessage != NULL)
@@ -416,11 +388,8 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                     {
                         if(PortManager.writeQueue(TimeSyncMessage))
                         {
-                            _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", InMessage.Port);
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << tempstr << endl;
-                            }
+                            CTILOG_ERROR(dout, Dev->getName() <<" - Could not write to queue for Port "<< TimeSyncMessage->Port);
+
                             delete (TimeSyncMessage);
                         }
                         else
@@ -430,10 +399,6 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                         }
                     }
                 }
-
-                /* Now send a message to logger */
-                _snprintf(Message, 50,  "%0.20s Time Sync Loss", Dev->getName().c_str());
-                SendTextToLogger ("Inf", Message);
             }
         }
         else
@@ -449,15 +414,8 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
         if(!(pInfo->getStatus(LOWBATTRY)))
         {
             pInfo->setStatus(LOWBATTRY);
-            _snprintf(tempstr, 99,"Low Battery Detected on Port: %2hd Remote: %3hd... Replace Logic Card\n", InMessage.Port, InMessage.Remote);
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << tempstr << endl;
-            }
 
-            /* Now send a message to logger */
-            _snprintf(Message, 50,  "%0.20s Low Battery Detected", Dev->getName().c_str());
-            SendTextToLogger ("Inf", Message);
+            CTILOG_WARN(dout, Dev->getName() <<" - Low Battery Detected on Port: "<< InMessage.Port <<" Remote: "<< InMessage.Remote <<"... Replace Logic Card");
         }
     }
     else
@@ -486,47 +444,25 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
         if(!(InMessage.IDLCStat[6] & STAT_COLDST) && pInfo->getLastColdStartTime() + gConfigParms.getValueAsInt("COLD_START_FREQUENCY", 300) < CtiTime::now().seconds()
            && !(pInfo->FreeSlots < MAXQUEENTRIES && !pInfo->PortQueueEnts))
         {
-            /* Issue a cold start */
-            _snprintf(tempstr, 99,"Reset Needed on Port: %2hd Remote: %3hd... Cold Starting\n", InMessage.Port, InMessage.Remote);
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << tempstr << endl;
-            }
+            CTILOG_WARN(dout, Dev->getName() <<" - Reset Needed on Port: "<< InMessage.Port <<" Remote: "<< InMessage.Remote <<"... Cold Starting");
 
             IDLCFunction(Dev, 0, DEST_BASE, COLD);
-
-            /* Now send a message to logger */
-            if( Dev )
-            {
-                _snprintf(Message, 50,  "%0.20s Cold Start Sent", Dev->getName().c_str());
-                SendTextToLogger ("Inf", Message);
-            }
         }
         else if(!(pInfo->getStatus(RESETTING)))
         {
             pInfo->setStatus(RESETTING);
             if(InMessage.IDLCStat[6] & STAT_FAULTC)
             {
-                printf ("Fault Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage.Port, InMessage.Remote);
+                CTILOG_WARN(dout, Dev->getName() <<" - Fault Detected on Port: "<< InMessage.Port <<" Remote: "<< InMessage.Remote <<"... Reloading");
 
                 /* Yup */
                 IDLCFunction(Dev, 0, DEST_BASE, CLFLT);
-
-                /* Now send a message to logger */
-                if( Dev )
-                {
-                    _snprintf(Message, 50,  "%0.20s FAULTC Detected", Dev->getName().c_str());
-                    SendTextToLogger ("Inf", Message);
-                }
             }
 
             if(InMessage.IDLCStat[6] & STAT_COLDST)
             {
-                _snprintf(tempstr, 99,"Cold Start Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage.Port, InMessage.Remote);
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << tempstr << endl;
-                }
+                CTILOG_WARN(dout, Dev->getName() <<" - Cold Start Detected on Port: "<< InMessage.Port <<" Remote: "<< InMessage.Remote <<"... Reloading");
+
                 IDLCFunction(Dev, 0, DEST_BASE, CLCLD);
 
                 /* Assume this could be a new chip */
@@ -534,34 +470,16 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
                 /* Best to flush the queues */
                 QueueFlush(Dev);
-
-                /* Now send a message to logger */
-                if( Dev )
-                {
-                    _snprintf(Message, 50,  "%0.20s Cold Start Detected", Dev->getName().c_str());
-                    SendTextToLogger ("Inf", Message);
-                }
             }
 
             if(InMessage.IDLCStat[6] & STAT_DEADMN)
             {
-                _snprintf(tempstr, 99,"Dead Man Detected on Port: %2hd Remote: %3hd... Reloading\n", InMessage.Port, InMessage.Remote);
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << tempstr << endl;
-                }
+                CTILOG_WARN(dout, Dev->getName() <<" - Dead Man Detected on Port: "<< InMessage.Port <<" Remote: "<< InMessage.Remote <<"... Reloading");
 
                 IDLCFunction(Dev, 0, DEST_BASE, CLDMN);
 
                 /* Best to flush the queues */
                 QueueFlush(Dev);
-
-                /* Now send a message to logger */
-                if( Dev )
-                {
-                    _snprintf(Message, 50,  "%0.20s Deadman Detected", Dev->getName().c_str());
-                    SendTextToLogger ("Inf", Message);
-                }
             }
 
             /* Load the delay sets if any */
@@ -612,19 +530,12 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
         {
             IDLCFunction (Dev, 0, DEST_DLC, START_ALGORITHM);
 
-            if(Dev)   /* Now send a message to logger */
-            {
-                _snprintf(Message, 50,  "%0.20s DLC Alg Restarted", Dev->getName().c_str());
-                SendTextToLogger ("Inf", Message);
-            }
+            CTILOG_INFO(dout, Dev->getName() <<" - DLC Alg Restarted");
         }
 
         if( ccu->checkForTimeSyncLoop(AlgStatus[DEST_TSYNC]) )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - time sync loop detected on device \"" << Dev->getName() << "\", sending cold start **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_WARN(dout, "Time sync loop detected on device \""<< Dev->getName() <<"\"... sending cold start");
 
             //  Send a cold start, the time sync algorithm has been set to 0 seconds
             IDLCFunction(Dev, 0, DEST_BASE, COLD);
@@ -637,12 +548,8 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 if(AlgStatus[DEST_TSYNC] == ALGO_HALTED)
                 {
                     IDLCFunction(Dev, 0, DEST_TSYNC, ENPRO);
-                    /* Now send a message to logger */
-                    if( Dev )
-                    {
-                        _snprintf(Message, 50,  "%0.20s TS Alg ENABLED", Dev->getName().c_str());
-                        SendTextToLogger ("Inf", Message);
-                    }
+
+                    CTILOG_INFO(dout, Dev->getName() <<" - TS Alg ENABLED");
                 }
                 else if(AlgStatus[DEST_TSYNC] == ALGO_RUNNING || AlgStatus[DEST_TSYNC] == ALGO_SUSPENDED)
                 {
@@ -656,12 +563,7 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
         {
             IDLCFunction(Dev, 0, DEST_LM, ENPRO);
 
-            /* Now send a message to logger */
-            if( Dev )
-            {
-                _snprintf(Message, 50,  "%0.20s LM Alg ENPRO", Dev->getName().c_str());
-                SendTextToLogger ("Inf", Message);
-            }
+            CTILOG_INFO(dout, Dev->getName() <<" - LM Alg ENPRO");
         }
     }
 
@@ -674,11 +576,8 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
         if(!(pInfo->getStatus(DLCFAULT)))
         {
             pInfo->setStatus(DLCFAULT);
-            _snprintf(tempstr, 99,"Persistent DLC Fault Detected on Port: %2hd Remote: %3hd\n", InMessage.Port, InMessage.Remote);
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << tempstr << endl;
-            }
+
+            CTILOG_WARN(dout, Dev->getName() <<" - Persistent DLC Fault Detected on Port: "<< InMessage.Port <<" Remote: "<< InMessage.Remote);
         }
     }
     else
@@ -700,11 +599,8 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
             //  CCU's queues are messed up and need to be reset
             IDLCFunction(Dev, 0, DEST_BASE, COLD);
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - CCU \"" << Dev->getName() << "\"'s internal queue is corrupt, sending cold start ";
-                dout << " (NCsets = " << pInfo->NCsets << ", NCOcts = " << pInfo->NCOcts << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_WARN(dout, "CCU \""<< Dev->getName() <<"\"'s internal queue is corrupt, sending cold start "
+                    "(NCsets = "<< pInfo->NCsets <<", NCOcts = "<< pInfo->NCOcts <<")");
         }
     }
 
@@ -713,11 +609,7 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 
     if(InMessage.IDLCStat[6] & STAT_REQACK)
     {
-        _snprintf(tempstr,99,"REQACK Detected on Port: %2hd Remote: %3hd\n", InMessage.Port, InMessage.Remote);
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << tempstr << endl;
-        }
+        CTILOG_WARN(dout, Dev->getName() <<" - REQACK Detected on Port: "<< InMessage.Port <<" Remote: "<< InMessage.Remote);
 
         if( !foreignCCU )
         {
@@ -730,15 +622,14 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                     if(InMessage.IDLCStat[3] - 14 < 15)
                     {
                         pInfo->RColQMin = 15;
-                        /* Now send a message to logger */
-                        _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust ", Dev->getName().c_str());
-                        SendTextToLogger ("Inf", Message);
+
+                        CTILOG_INFO(dout, Dev->getName() <<" - Bad Firmware Adjust");
                     }
                     else if(InMessage.IDLCStat[3] - 14 < 61)
                     {
                         pInfo->RColQMin = 61;
-                        _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName().c_str());
-                        SendTextToLogger ("Inf", Message);
+
+                        CTILOG_INFO(dout, Dev->getName() <<" - Bad Firmware Adjust2");
                     }
                 }
                 else if(pInfo->RColQMin == 15)
@@ -746,8 +637,8 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                     if(InMessage.IDLCStat[3] - 14 >= 15 && InMessage.IDLCStat[3] - 14 < 61)
                     {
                         pInfo->RColQMin = 61;
-                        _snprintf(Message, 50,  "%0.20s Bad Firmware Adjust2", Dev->getName().c_str());
-                        SendTextToLogger ("Inf", Message);
+
+                        CTILOG_INFO(dout, Dev->getName() <<" - Bad Firmware Adjust2");
                     }
                 }
             }
@@ -756,19 +647,16 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 // REQACK was possibly due to full CCU Queue.
                 // We must send an RCOLQ to empty it out!
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " REQACK with outstanding NCOcts on device \"" << Dev->getName() << "\".  Will RCOLQ." << endl;
-                }
+                CTILOG_WARN(dout, "REQACK with outstanding NCOcts on device \""<< Dev->getName() <<"\".  Will RCOLQ.");
 
                 if(pInfo->NCsets || pInfo->ReadyN)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " CCU " << Dev->getName() << endl;
-                        dout << CtiTime() << "   CCU Command Sets Complete (NCSets)   " << pInfo->NCsets << endl;
-                        dout << CtiTime() << "   CCU Command Slots Available (ReadyN) " << pInfo->ReadyN << endl;
-                    }
+                    Cti::FormattedList logItems;
+                    logItems.add("CCU Command Sets Complete (NCSets)")   << pInfo->NCsets;
+                    logItems.add("CCU Command Slots Available (ReadyN)") << pInfo->ReadyN;
+
+                    CTILOG_INFO(dout, "CCU "<< Dev->getName() <<
+                            logItems);
                 }
                 // And do the RCOLQ.  CGP -> Should be HIGHEST priority!
                 IDLCRColQ(Dev, MAXPRIORITY);
@@ -783,13 +671,11 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
             /* Put it back on the queue for this port */
             if(PortManager.writeQueue(OutMessage))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Error Requeing Command on device \"" << Dev->getName() << "\"" << endl;
+                CTILOG_ERROR(dout, Dev->getName() <<" - Could not requeue Command for Port "<< OutMessage->Port);
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " REQACK'd LGRPQ message has been requeued for retry on " << Dev->getName() << endl;
+                CTILOG_INFO(dout, "REQACK'd LGRPQ message has been requeued for retry on "<< Dev->getName());
             }
 
             return ClientErrors::RetrySubmitted;
@@ -833,10 +719,8 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 // 20020703 CGP. // if((QueTabEnt = MAKEUSHORT (InMessage.Buffer.InMessage[Offset + 1], InMessage.Buffer.InMessage[Offset])) > MAXQUEENTRIES - 1)
                 if((QueTabEnt = MAKEUSHORT (InMessage.Buffer.InMessage[Offset], 0)) > MAXQUEENTRIES - 1)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Wrong Offset into CCU Queue Entry Table on device \"" << Dev->getName() << "\"" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Wrong Offset into CCU Queue Entry Table on device \""<< Dev->getName() <<"\"");
+
                     Offset += setL - 1;
                     continue;
                 }
@@ -850,10 +734,8 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 /* Make sure this entry is in use */
                 if(!(pInfo->QueTable[QueTabEnt].InUse))                        // Make sure we think we are using this one!
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Entry Received into Unused CCU Queue Entry on \"" << Dev->getName() << "\"" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Entry Received into Unused CCU Queue Entry on \""<< Dev->getName() <<"\"");
+
                     Offset += setL - 3;                                         // Hop over this set and process the next one!
                     continue;
                 }
@@ -863,10 +745,8 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                    LOBYTE(pInfo->QueTable[QueTabEnt].OriginalOutMessageSequence) != OriginalOutMessageSequence)
                 {
                     /* Things are screwed up beyond all recognition */
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Unknown Queue Entry Received... Ignoring on \"" << Dev->getName() << "\"" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Unknown Queue Entry Received... Ignoring on \""<< Dev->getName() <<"\"");
+
                     Offset += setL - 3;
                     continue;
                 }
@@ -1052,27 +932,30 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                         SnipeDynamicInfo(ResultMessage);
                     }
 
-                    int bytesWritten = 0;
-                    boost::optional<std::string> errorReason;
+                    boost::optional<std::string> writeError;
 
                     try
                     {
                         /* this is a completed result so send it to originating process */
-                        bytesWritten = ResultMessage.ReturnNexus->write(&ResultMessage, sizeof(ResultMessage), Chrono::seconds(60));
+                        const size_t bytesWritten = ResultMessage.ReturnNexus->write(&ResultMessage, sizeof(ResultMessage), Chrono::seconds(60));
+                        if( bytesWritten != sizeof(ResultMessage) )
+                        {
+                            std::string reason = Cti::StreamBuffer() <<"Timeout (Wrote "<< bytesWritten <<"/"<< sizeof(ResultMessage) <<" bytes)";
+
+                            writeError = "";
+                            writeError->swap(reason);
+                        }
                     }
                     catch( const StreamConnectionException &ex )
                     {
-                        errorReason = ex.what();
+                        writeError = ex.what();
                     }
 
-                    if( bytesWritten != sizeof(ResultMessage) )
+                    if( writeError )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error writing to nexus. CCUResponseDecode() on device \"" << Dev->getName() << "\".  "
-                                 << "Wrote " << bytesWritten << "/" << sizeof(ResultMessage) << " bytes." << endl;
-                            dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
-                        }
+                        CTILOG_ERROR(dout, "Could not write to the Return Nexus on device \""<< Dev->getName() <<"\""<<
+                                endl <<"Reason: "<< *writeError);
+
                         status = ClientErrors::SocketWrite;
                     }
 
@@ -1092,10 +975,7 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 if(pInfo->QueTable[QueTabEnt].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
                 if(pInfo->FreeSlots > MAXQUEENTRIES)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Unexpected pInfo->FreeSlots > MAXQUEENTRIES ("<< pInfo->FreeSlots <<" > "<< MAXQUEENTRIES <<")");
                 }
                 pInfo->QueTable[QueTabEnt].InUse = 0;
                 pInfo->QueTable[QueTabEnt].TimeSent = -1L;
@@ -1106,18 +986,14 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
 #ifdef DEBUG
         if(pInfo->FreeSlots != 32)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Port: " << InMessage.Port <<
-                "  Remote: " << InMessage.Remote <<
-                "  FreeSlots: " << pInfo->FreeSlots <<
-                "  PortQueEnts: " << pInfo->PortQueueEnts <<
-                "  PortQueueConts: " << pInfo->PortQueueConts << endl;
-            }
+            Cti::FormattedList logItems;
+            logItems.add("Port")            << InMessage.Port;
+            logItems.add("Remote")          << InMessage.Remote;
+            logItems.add("FreeSlots")       << pInfo->FreeSlots;
+            logItems.add("PortQueEnts")     << pInfo->PortQueueEnts;
+            logItems.add("PortQueueConts")  << pInfo->PortQueueConts;
+
+            CTILOG_DEBUG(dout, logItems);
         }
 #endif
 
@@ -1197,7 +1073,10 @@ struct kick
             if( ccu->hasRemoteWork()
                 && ccu->buildCommand(OutMessage, Ccu721Device::Command_ReadQueue) )
             {
-                PortManager.writeQueue(OutMessage);
+                if(PortManager.writeQueue(OutMessage))
+                {
+                    CTILOG_ERROR(dout, ccu_device->getName() <<" - Could not write to queue for Port "<< OutMessage->Port);
+                }
             }
             else
             {
@@ -1219,20 +1098,14 @@ struct kick
             {
                 if((pInfo->QueTable[offset].InUse & INUSE) && (pInfo->QueTable[offset].TimeSent <= nowtime - MAX_CCU_QUEUE_TIME))
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << ccu_device->getName() << " INUSE queue entry is more than " << MAX_CCU_QUEUE_TIME << " seconds old. " << endl;
-                    }
+                    CTILOG_WARN(dout, ccu_device->getName() <<" INUSE queue entry is more than "<< MAX_CCU_QUEUE_TIME <<" seconds old");
 
                     /* send a message to the calling process */
                     if(pInfo->QueTable[offset].EventCode & RESULT) ReturnQueuedResult(ccu_device, pInfo, offset);
                     if(pInfo->QueTable[offset].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
                     if(pInfo->FreeSlots > MAXQUEENTRIES)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "Unexpected pInfo->FreeSlots > MAXQUEENTRIES ("<< pInfo->FreeSlots <<" > "<< MAXQUEENTRIES <<")");
                     }
                     pInfo->QueTable[offset].InUse = 0;
                     pInfo->QueTable[offset].TimeSent = -1L;
@@ -1264,8 +1137,7 @@ struct kick
 
             if( FreeQents != (OldFreeEnts = InterlockedExchange(&(pInfo->FreeSlots), FreeQents)) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** FREESLOTS CORRECTION!  **** " << __FILE__ << " (" << __LINE__ << ") " << OldFreeEnts << " != " << FreeQents << endl;
+                CTILOG_WARN(dout, "FREESLOTS CORRECTION (previous "<< OldFreeEnts <<" != new "<< FreeQents <<")");
             }
 
             if(!rcol_sent && pInfo->FreeSlots == MAXQUEENTRIES && pInfo->NCOcts)
@@ -1286,10 +1158,7 @@ void KickerThread (void *Arg)
 
     ThreadStatusKeeper threadStatus("CCU Kicker Thread");
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Queue Kicker Thread Starting as TID:  " << CurrentTID() << endl;
-    }
+    CTILOG_INFO(dout, "Queue Kicker Thread Starting");
 
     SetThreadName(-1, "KickerThd");
 
@@ -1336,10 +1205,7 @@ INT QueueFlush (CtiDeviceSPtr Dev)
 
     if(pInfo->FreeSlots < MAXQUEENTRIES)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Flushing " << Dev->getName() << "'s INUSE Porter Queue Table" << endl;
-        }
+        CTILOG_WARN(dout, "Flushing "<< Dev->getName() <<"'s INUSE Porter Queue Table");
 
         /* walk through the entry table for this ccu */
         for(QueTabEnt = 0; QueTabEnt < MAXQUEENTRIES; QueTabEnt++)
@@ -1378,11 +1244,8 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
 
     if(QueryQueue (pInfo->QueueHandle, &Count))
     {
-        _snprintf(tempstr, 99,"Error Querying Queue Port: %2hd Remote: %3hd\n", Dev->getPortID(), Dev->getAddress());
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << tempstr << endl;
-        }
+        CTILOG_ERROR(dout, "Could not Query Queue Port: "<< Dev->getPortID() <<" Remote: "<< Dev->getAddress());
+
         return ClientErrors::Abnormal;
     }
 
@@ -1396,19 +1259,14 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
             {
                 if(ReadFrontElement(pInfo->QueueHandle, &Length, (PVOID *) &MyOutMessage, DCWW_WAIT, &Priority))
                 {
-                    _snprintf(tempstr, 99,"Error Reading Queue\n");
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << tempstr << endl;
-                    }
+                    CTILOG_ERROR(dout, "Could not Read Queue");
+
                     return ClientErrors::QueueRead;
                 }
+
                 delete (MyOutMessage);
-                _snprintf(tempstr, 99,"Broadcast Entry Received on Queue Queue for Port:  %hd\n", Dev->getPortID());
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << tempstr << endl;
-                }
+
+                CTILOG_INFO(dout, "Broadcast Entry Received on Queue Queue for Port: "<< Dev->getPortID());
             }
             return ClientErrors::None;
         }
@@ -1444,24 +1302,15 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
             /* get the client submitted entry from the queue */
             if(ReadFrontElement(pInfo->QueueHandle, &Length, (PVOID *) &MyOutMessage, DCWW_WAIT, &Priority))
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Error Reading Device Queue of " << Dev->getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Could not Read Device Queue of "<< Dev->getName());
+
                 return ClientErrors::QueueRead;
             }
 
             /* if this is first in the group get memory for it */
             if(Offset == PREIDL)
             {
-                if(!OutMessage && (OutMessage = CTIDBG_new OUTMESS(*MyOutMessage)) == NULL)
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Error Allocating Memory" << endl;
-                    }
-                    return ClientErrors::MemoryAccess;
-                }
+                OutMessage = new OUTMESS(*MyOutMessage);
 
                 OutMessage->Priority       = Priority;
                 OutMessage->DeviceID       = Dev->getID();
@@ -1496,27 +1345,18 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
              */
             if(QueTabEnt == MAXQUEENTRIES)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << Dev->getName() << "'s CCU QueTable is already full.  Cannot do a LGrpQ. Requeuing the command for later execution." << endl;
-                }
+                CTILOG_WARN(dout, Dev->getName() <<"'s CCU QueTable is already full.  Cannot do a LGrpQ. Requeuing the command for later execution.");
 
                 // Replace the MyOutMessage at the rear of its priority on the CCU Queue.
                 if(WriteQueue(pInfo->QueueHandle, MyOutMessage->Request.GrpMsgID, sizeof (*MyOutMessage), (char *) MyOutMessage, MyOutMessage->Priority))
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Unable to requeue OM to the CCU->QueueHandle* " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Unable to requeue OM to the CCU->QueueHandle* ");
 
                     delete MyOutMessage;
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << Dev->getName() << " re-queued an OM to the CCU->QueueHandle. Count = " << Count << " iteration " << i << endl;
-                    }
+                    CTILOG_INFO(dout, "re-queued an OM to the CCU->QueueHandle. Count = "<< Count <<" iteration "<< i);
                 }
             }
             else
@@ -1646,13 +1486,10 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                     OutMessage->Priority = gConfigParms.getValueAsInt("PORTER_MINIMUM_CCUQUEUE_PRIORITY",11);
 
                 PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
-                if(PortManager.writeQueue (OutMessage))
+                if(PortManager.writeQueue(OutMessage))
                 {
-                    _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", OutMessage->Port);
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << tempstr << endl;
-                    }
+                    CTILOG_ERROR(dout, "Could not write to queue for Port "<< OutMessage->Port);
+
                     delete OutMessage;                      // Starting over, so we'd better bop the OM.
                     OutMessage = 0;
                     Offset = PREIDL;
@@ -1685,7 +1522,6 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
 {
     ULONG Length;
     ULONG Count;
-    OUTMESS *MyOutMessage, *OutMessage;
     USHORT Lastset;
     USHORT Offset;
     BYTE Priority;
@@ -1695,36 +1531,24 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
 
     if(QueryQueue (pInfo->ActinQueueHandle, &Count))
     {
-        _snprintf(tempstr, 99,"Error Querying Actin Queue Port: %2hd Remote: %3hd\n", Dev->getPortID(), Dev->getAddress());
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << tempstr << endl;
-        }
+        CTILOG_ERROR(dout, Dev->getName() <<" - Could not query Actin Queue Port: "<< Dev->getPortID() <<" Remote: "<< Dev->getAddress());
+
         return ClientErrors::QueueRead;
     }
 
     while(Count)
     {
+        OUTMESS * MyOutMessage = NULL;
+
         /* get the entry from the queue */
         if(ReadFrontElement(pInfo->ActinQueueHandle, &Length, (PVOID *) &MyOutMessage, DCWW_WAIT, &Priority))
         {
-            _snprintf(tempstr, 99,"Error Reading Actin Queue\n");
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << tempstr << endl;
-            }
+            CTILOG_ERROR(dout, Dev->getName() <<" - Could not read Actin Queue");
+
             return ClientErrors::QueueRead;
         }
 
-        if((OutMessage = CTIDBG_new OUTMESS(*MyOutMessage)) == NULL)
-        {
-            _snprintf(tempstr, 99,"Error Allocating Memory\n");
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << tempstr << endl;
-            }
-            return ClientErrors::MemoryAccess;
-        }
+        OUTMESS * OutMessage = new OUTMESS(*MyOutMessage);
 
         /* Seed the priority entry */
         if(Dev->getAddress() != CCUGLOBAL)
@@ -1776,11 +1600,7 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
 
         if(PortManager.writeQueue(OutMessage))
         {
-            _snprintf(tempstr, 99,"Error Writing to Queue for Port %2hd\n", Dev->getPortID());
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << tempstr << endl;
-            }
+            CTILOG_ERROR(dout, Dev->getName() <<" - Could not write to queue for Port "<< OutMessage->Port);
 
             return ClientErrors::QueueWrite;
         }
@@ -1793,11 +1613,8 @@ INT BuildActinShed (CtiDeviceSPtr Dev)
         /* check for entries on the queue again */
         if(QueryQueue (pInfo->ActinQueueHandle, &Count))
         {
-            _snprintf(tempstr, 99,"Error Querying Actin Queue Port: %2hd Remote: %3hd\n", Dev->getPortID(), Dev->getAddress());
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << tempstr << endl;
-            }
+            CTILOG_ERROR(dout, Dev->getName() <<" - Could not query Actin Queue Port: "<< Dev->getPortID() <<" Remote: "<< Dev->getAddress());
+
             return ClientErrors::QueueRead;
         }
     }
@@ -1866,27 +1683,31 @@ YukonError_t DeQueue (INMESS &InMessage)
 
                         PorterStatisticsManager.newCompletion( ResultMessage.Port, InMessage.DeviceID, ResultMessage.TargetID, ResultMessage.ErrorCode, ResultMessage.MessageFlags );
 
-                        /* Now send it back */
-                        int bytesWritten = 0;
-                        boost::optional<std::string> errorReason;
+                  		boost::optional<std::string> writeError;
 
+                        /* Now send it back */
                         try
                         {
-                            bytesWritten = ResultMessage.ReturnNexus->write(&ResultMessage, sizeof(ResultMessage), Chrono::seconds(60));
+                            /* this is a completed result so send it to originating process */
+                            const size_t bytesWritten = ResultMessage.ReturnNexus->write(&ResultMessage, sizeof(ResultMessage), Chrono::seconds(60));
+                            if( bytesWritten != sizeof(ResultMessage) )
+                            {
+                                std::string reason = Cti::StreamBuffer() <<"Timeout (Wrote "<< bytesWritten <<"/"<< sizeof(ResultMessage) <<" bytes)";
+
+                                writeError = "";
+                                writeError->swap(reason);
+                            }
                         }
                         catch( const StreamConnectionException &ex )
                         {
-                            errorReason = ex.what();
+                            writeError = ex.what();
                         }
-
-                        if( bytesWritten != sizeof(ResultMessage) )
+                        
+                        if( writeError )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Error writing to return nexus.  DeQueue().  "
-                                     << "Wrote " << bytesWritten << "/" << sizeof(ResultMessage) << " bytes." << endl;
-                                dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
-                            }
+                            CTILOG_ERROR(dout, "Could not write to the Return Nexus"<<
+                                    endl <<"Reason: "<< *writeError);
+
                             status = ClientErrors::SocketWrite;
                         }
                     }
@@ -1894,10 +1715,7 @@ YukonError_t DeQueue (INMESS &InMessage)
                     if(pInfo->QueTable[i].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
                     if(pInfo->FreeSlots > MAXQUEENTRIES)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "Unexpected pInfo->FreeSlots > MAXQUEENTRIES ("<< pInfo->FreeSlots <<" > "<< MAXQUEENTRIES <<")");
                     }
                     pInfo->QueTable[i].InUse = 0;
                     pInfo->QueTable[i].TimeSent = -1L;
@@ -1928,8 +1746,7 @@ void cleanupOrphanOutMessages(void *unusedptr, void* d)
 
     if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " OutMessage being cleaned up. " << endl;
+        CTILOG_DEBUG(dout, "OutMessage being cleaned up.");
     }
 
     OutMessage->Request.RetryMacroOffset = MacroOffset::none; //Do not resend this on macro route!
@@ -1945,8 +1762,7 @@ void cancelOutMessages(void *doSendError, void* om)
 
     if(PorterDebugLevel & PORTER_DEBUG_VERBOSE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " OutMessage being cleaned up. " << endl;
+        CTILOG_DEBUG(dout, "OutMessage being cleaned up.");
     }
 
     OutMessage->Request.RetryMacroOffset = MacroOffset::none; //Do not resend this on macro route!
@@ -1989,10 +1805,7 @@ int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT Q
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
         try
@@ -2003,25 +1816,28 @@ int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT Q
             }
 
             /* send message back to originating process */
-            int bytesWritten = 0;
-            boost::optional<std::string> errorReason;
+            boost::optional<std::string> writeError;
 
             try
             {
-                bytesWritten = InMessage.ReturnNexus->write(&InMessage, sizeof(InMessage), Chrono::seconds(60));
+                const size_t bytesWritten = InMessage.ReturnNexus->write(&InMessage, sizeof(InMessage), Chrono::seconds(60));
+                if( bytesWritten != sizeof(InMessage) )
+                {
+                    std::string reason = Cti::StreamBuffer() <<"Timeout (Wrote "<< bytesWritten <<"/"<< sizeof(InMessage) <<" bytes)";
+
+                    writeError = "";
+                    writeError->swap(reason);
+                }
             }
             catch( const StreamConnectionException &ex )
             {
-                errorReason = ex.what();
+                writeError = ex.what();
             }
 
-            if( bytesWritten != sizeof(InMessage) )
+            if( writeError )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Error Writing to nexus on device \"" << Dev->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
-                }
+                CTILOG_ERROR(dout, "Could not write to the Return Nexus on device \""<< Dev->getName() <<"\""<<
+                        endl <<"Reason: "<< *writeError);
 
                 // if it is StreamSocketConnection and the error was caused by a timeout, which is not considered an error.
                 // close the connection
@@ -2033,18 +1849,12 @@ int ReturnQueuedResult(CtiDeviceSPtr Dev, CtiTransmitter711Info *pInfo, USHORT Q
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return ClientErrors::None;

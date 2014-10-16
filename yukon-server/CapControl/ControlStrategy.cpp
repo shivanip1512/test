@@ -542,9 +542,7 @@ void ControlStrategy::printError(const char *function) const
     {
         _printOnce = false;
 
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-        dout <<  "\n ** WARNING: Calling deprecated function: " << function << "()\n" << std::endl;
+        CTILOG_DEBUG(dout, "Deprecated function: " << function << " called in strategy " << _strategyName << " ID " << _strategyID);
     }
 }
 

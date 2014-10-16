@@ -143,3 +143,10 @@ std::ostream& operator<< (std::ostream& os, const CtiFDRDestination& dest)
     return os << "[destination " << dest.getDestination()
         << " for " << *dest.getParentPoint() << "]";
 }
+
+string CtiFDRDestination::toString() const
+{
+    std::ostringstream oss;
+    oss << *this;
+    return oss.str();
+}

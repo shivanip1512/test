@@ -1,7 +1,5 @@
-
-
-
 #include "precompiled.h"
+
 #include "ansi_focus_mtable_024.h"
 #include "logger.h"
 
@@ -37,23 +35,17 @@ CtiAnsiFocusMfgTable24::~CtiAnsiFocusMfgTable24()
 //=========================================================================================================================================
 void CtiAnsiFocusMfgTable24::printResult(  )
 {
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Focus MFG Table 24  ========================" << endl;
-        dout << " VH IH FH Constant : " << _vh_ih_fh_const.asString()  << endl;
-        dout << " Number of Relays  : " << (int) _nbr_of_relays  << endl;
-        dout << " X.Y Format        : Q" << (int) _x_dot_y_format.xBits << "." << (int) _x_dot_y_format.yBits << endl;
-        dout << " DSP Sample Period : " <<  _dsp_sample_period.numerator <<" / " << _dsp_sample_period.denominator;
-        dout << " = " << getDSPSamplePeriod() << endl;
-    }
+    itemList.add("VH IH FH Constant") << _vh_ih_fh_const.asString();
+    itemList.add("Number of Relays")  << _nbr_of_relays;
+    itemList.add("X.Y Format")        <<"Q"<< _x_dot_y_format.xBits <<"."<< _x_dot_y_format.yBits;
+    itemList.add("DSP Sample Period") << _dsp_sample_period.numerator <<" / "<< _dsp_sample_period.denominator <<" = "<< getDSPSamplePeriod();
+
+    CTILOG_INFO(dout,
+            endl << formatTableName("Focus MFG Table 24") <<
+            itemList
+            );
 }
 
 float CtiAnsiFocusMfgTable24::getDSPSamplePeriod()

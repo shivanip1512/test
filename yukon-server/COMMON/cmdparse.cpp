@@ -159,12 +159,10 @@ void  CtiCommandParser::parse()
 
             if(!(strnum = token.match(re_hexnum)).empty())
             {
-                // dout << __LINE__ << " " << strnum << endl;
                 serial = strtoul(strnum.c_str(), &p, 16);
             }
             else if(!(strnum = token.match(re_num)).empty())
             {
-                // dout << __LINE__ << " " << strnum << endl;
                 serial = strtoul(strnum.c_str(), &p, 10);
             }
             _cmd["serial"] = CtiParseValue( serial );
@@ -992,8 +990,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     else
     {
         // Something went WAY wrong....
-
-        dout << "This better not ever be seen by mortals... " << endl;
+        CTILOG_ERROR(dout, "This better not ever be seen by mortals...");
     }
 
     setFlags(flag);
@@ -1098,8 +1095,7 @@ void  CtiCommandParser::doParseGetStatus(const string &_CmdStr)
     else
     {
         // Something went WAY wrong....
-
-        dout << "This better not ever be seen by mortals... " << endl;
+        CTILOG_ERROR(dout, "This better not ever be seen by mortals...");
     }
 
     setFlags(flag);
@@ -1160,8 +1156,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "Invalid delay ("<< iValue <<")");
                 }
             }
         }
@@ -1208,8 +1203,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
 
                 if(shedTime == -1.0)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Command Parameter Assumed.  Shed for 1 hour. " << endl;
+                    CTILOG_WARN(dout, "Command Parameter Assumed.  Shed for 1 hour.");
                     shedTime = 360;
                 }
 
@@ -1242,10 +1236,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
             else
             {
                 // Something went kinda wrong....
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Command Parameter Assumed.  Cycle control at 50 percent cycle. " << endl;
-                }
+                CTILOG_WARN(dout, "Command Parameter Assumed.  Cycle control at 50 percent cycle.");
                 iValue = 50;
             }
 
@@ -1408,11 +1399,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
     else
     {
         // Something went WAY wrong....
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "This better not ever be seen by mortals... " << endl;
-        }
+        CTILOG_ERROR(dout, "This better not ever be seen by mortals...");
     }
 
     setFlags(flag);
@@ -1557,9 +1544,7 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
     else
     {
         // Something went WAY wrong....
-
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "This better not ever be seen by mortals... " << endl;
+        CTILOG_ERROR(dout, "This better not ever be seen by mortals...");
     }
 }
 
@@ -1608,18 +1593,12 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
             case ProtocolSA205Type:
             case ProtocolSA305Type:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Putstatus not supported for this device type " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Putstatus not supported for this device type");
                 break;
             }
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Putstatus to unknown device type " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Putstatus to unknown device type ");
                 break;
             }
         }
@@ -1700,10 +1679,7 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
     else
     {
         // Something went WAY wrong....
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unexpected command \""<< token <<"\", expected \"putstatus\"");
     }
 }
 
@@ -2001,10 +1977,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
     else
     {
         // Something went WAY wrong....
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unexpected command \""<< token <<"\", expected \"getconfig\"");
     }
 }
 
@@ -2237,10 +2210,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
         case ProtocolGolayType:
         case ProtocolFisherPierceType:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Putconfig not supported for this device type " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Putconfig not supported for this device type");
                 break;
             }
         case ProtocolEmetconType:
@@ -2250,10 +2220,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Putconfig to unknown device type " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Putconfig to unknown device type ");
                 break;
             }
         }
@@ -2261,10 +2228,7 @@ void  CtiCommandParser::doParsePutConfig(const string &_CmdStr)
     else
     {
         // Something went WAY wrong....
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unexpected command \""<< token <<"\", expected \"putconfig\"");
     }
 }
 
@@ -3220,7 +3184,7 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     else
     {
         // Something went WAY wrong....
-        dout << "This better not ever be seen by mortals... " << endl;
+        CTILOG_ERROR(dout, "This better not ever be seen by mortals...");
     }
 }
 void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
@@ -3358,13 +3322,10 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 
                 class_tok();   // Get over the class entry
 
-                // dout << __LINE__ << " " << token << endl;
-
                 for(int i = 0; i < 16 && !(temp = class_tok(", \n\0")).empty() ; i++)
                 {
                     val = atoi( temp.c_str() );
 
-                    // dout << "Masking in " << temp << " " << val << endl;
                     if(val > 0)
                     {
                         _num |= (mask << (val - 1));
@@ -3432,13 +3393,10 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 
                 division_tok();   // Get over the "division" entry
 
-                // dout << __LINE__ << " " << token << endl;
-
                 for(int i = 0; i < 16 && !(temp = division_tok(", \n\0")).empty() ; i++)
                 {
                     val = atoi( temp.c_str() );
 
-                    // dout << "Masking in " << temp << " " << val << endl;
                     if(val > 0)
                     {
                         _num |= (mask << (val - 1));
@@ -3549,7 +3507,6 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
             if(!(token = CmdStr.match("assign"\
                                       "(( [uascd][ =]*(0x)?[0-9a-f]+)*)+")).empty())
             {
-                // dout << token << endl;
                 _cmd["vcassign"] = CtiParseValue( TRUE );
 
                 if(!(strnum = token.match(" u[ =]*(0x)?[0-9a-f]+")).empty())
@@ -3748,10 +3705,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 
                                         if(startaddr <= serialnumber && serialnumber <= stopaddr)
                                         {
-                                            {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << " Range " << startaddr << " to " << stopaddr << " found and recorded for VersaCom Extended Addressing" << endl;
-                                            }
+                                            CTILOG_INFO(dout, "Range " << startaddr << " to " << stopaddr << " found and recorded for VersaCom Extended Addressing");
 
                                             // This is a supported versacom switch and we can continue!
                                             offhourssupported = true;
@@ -3763,11 +3717,8 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 
                                     if(loopcnt++ > 256)
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " **** ERROR **** Problem found with configuration item LCR_VERSACOM_EXTENDED_TSERVICE_RANGES : \"" << gConfigParms.getValueAsString("LCR_VERSACOM_EXTENDED_TSERVICE_RANGES") << "\"" << endl;
-                                            break;
-                                        }
+                                        CTILOG_ERROR(dout, "Problem found with configuration item LCR_VERSACOM_EXTENDED_TSERVICE_RANGES : \"" << gConfigParms.getValueAsString("LCR_VERSACOM_EXTENDED_TSERVICE_RANGES") << "\"");
+                                        break;
                                     }
                                 }
                             }
@@ -3892,8 +3843,6 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                                       "( *r[123][ =]*[0-9]+[ =]*[hms]?)?" \
                                       "( *r[123][ =]*[0-9]+[ =]*[hms]?)?")).empty())
             {
-                // dout << token << endl;
-
                 if(!(strnum = token.match("r1[ =]*[0-9]+[ =]*[hms]?")).empty())
                 {
                     strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
@@ -4122,7 +4071,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
     else
     {
         // Something went WAY wrong....
-        dout << "This better not ever be seen by mortals... " << endl;
+        CTILOG_ERROR(dout, "This better not ever be seen by mortals...");
     }
 
     if(!(CmdStr.match("test_mode_flag")).empty())
@@ -4183,7 +4132,7 @@ void  CtiCommandParser::doParsePutStatusEmetcon(const string &_CmdStr)
     else
     {
         // Something went WAY wrong....
-        dout << "This better not ever be seen by mortals... " << endl;
+        CTILOG_ERROR(dout, "This better not ever be seen by mortals...");
     }
 }
 
@@ -4258,10 +4207,7 @@ void  CtiCommandParser::doParsePutStatusVersacom(const string &_CmdStr)
     else
     {
         // Something went WAY wrong....
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unexpected command \""<< token <<"\", expected \"putstatus\"");
     }
 }
 
@@ -4307,10 +4253,7 @@ void  CtiCommandParser::doParsePutStatusFisherP(const string &_CmdStr)
     else
     {
         // Something went WAY wrong....
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unexpected command \""<< token <<"\", expected \"putstatus\"");
     }
 }
 
@@ -4400,10 +4343,7 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
                             if(startaddr <= serialnumber && serialnumber <= stopaddr)
                             {
                                 // This is a versacom switch and we can continue!
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << " Range " << startaddr << " to " << stopaddr << " found and recorded for VersaCom" << endl;
-                                }
+                                CTILOG_INFO(dout, "Range " << startaddr << " to " << stopaddr << " found and recorded for VersaCom");
 
                                 _cmd["type"] = CtiParseValue( "versacom", ProtocolVersacomType );
                                 break;
@@ -4414,11 +4354,8 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
 
                         if(loopcnt++ > 256)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** ERROR **** Problem found with configuration item LCR_VERSACOM_RANGES : \"" << gConfigParms.getValueAsString("LCR_VERSACOM_RANGES") << "\"" << endl;
-                                break;
-                            }
+                            CTILOG_ERROR(dout, "Problem found with configuration item LCR_VERSACOM_RANGES : \"" << gConfigParms.getValueAsString("LCR_VERSACOM_RANGES") << "\"");
+                            break;
                         }
                     }
 
@@ -4443,11 +4380,8 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
                             if(startaddr <= serialnumber && serialnumber <= stopaddr)
                             {
                                 // This is a versacom switch and we can continue!
+                                CTILOG_INFO(dout, "Range " << startaddr << " to " << stopaddr << " found and recorded for ExpressCom");
 
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << " Range " << startaddr << " to " << stopaddr << " found and recorded for ExpressCom" << endl;
-                                }
                                 _cmd["type"] = CtiParseValue( "expresscom", ProtocolExpresscomType );
                                 break;
                             }
@@ -4457,11 +4391,8 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
 
                         if(loopcnt++ > 256)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** ERROR **** Problem found with configuration item LCR_EXPRESSCOM_RANGES : \"" << gConfigParms.getValueAsString("LCR_EXPRESSCOM_RANGES") << "\"" << endl;
-                                break;
-                            }
+                            CTILOG_ERROR(dout, "Problem found with configuration item LCR_EXPRESSCOM_RANGES : \"" << gConfigParms.getValueAsString("LCR_EXPRESSCOM_RANGES") << "\"");
+                            break;
                         }
                     }
                 }
@@ -4509,11 +4440,8 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
 
                         if(loopcnt++ > 256)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** ERROR **** Problem found with configuration item LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES : \"" << gConfigParms.getValueAsString("LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES") << "\"" << endl;
-                                break;
-                            }
+                            CTILOG_ERROR(dout, "Problem found with configuration item LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES : \"" << gConfigParms.getValueAsString("LCR_EXPRESSCOM_SERIAL_PREFIX_RANGES") << "\"");
+                            break;
                         }
                     }
                 }
@@ -4640,37 +4568,6 @@ string CtiCommandParser::asString()
 
     return rstr;
 }
-
-void CtiCommandParser::Dump()
-{
-    CHAR  oldFill = dout.fill();
-
-    dout.fill('0');
-
-    map_itr_type itr = _cmd.begin();
-
-    for(; itr != _cmd.end() ; ++itr )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Key " << (*itr).first << " Value (str) " << (*itr).second.getString() <<
-            " (int) " << (int)((*itr).second.getInt()) <<
-            " (dbl) " << (*itr).second.getReal() <<
-            " (bytes) ";
-        }
-
-        for(int i = 0; i < (*itr).second.getString().length(); i++ )
-        {
-            dout << hex << setw(2) << (INT)((*itr).second.getString()[i]) << " ";
-        }
-
-        dout << endl;
-    }
-
-    dout << dec << endl;
-    dout.fill(oldFill);
-}
-
 
 int CtiCommandParser::getControlled() const
 {
@@ -4884,10 +4781,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
         else
         {
             // Something went kinda wrong....
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Command Parameter Assumed.  Cycle control at 50 percent cycle. " << endl;
-            }
+            CTILOG_WARN(dout, "Command Parameter Assumed.  Cycle control at 50 percent cycle. ");
             iValue = 50;
         }
 
@@ -5103,10 +4997,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
         else
         {
             // Something went really wrong....
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Command Parameter Assumed.  Cycle Control 0kw load. " << endl;
-            }
+            CTILOG_ERROR(dout, "Command Parameter Assumed.  Cycle Control 0kw load. ");
             dValue = 0;
         }
 
@@ -6476,7 +6367,6 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
 
         if(!(token = CmdStr.match(((const boost::regex)to_be_matched_CtiString))).empty())
         {
-            // dout << token << endl;
             _cmd["sa_tamper"] = TRUE;
 
             if(!(strnum = token.match( (const boost::regex)( CtiString("f1[ =]*") + str_num )  )).empty())
@@ -6967,10 +6857,10 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "One or more of ov, uv, or timer not specified."
+                               " ov = " << ov <<
+                               " uv = " << uv <<
+                               " timer = " << timer);
         }
     }
     else if(!(token = CmdStr.match( (const boost::regex)  (CtiString(" ovuv control trigger time[ =]+") + str_num )  )).empty())
@@ -7115,11 +7005,9 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
         valStr = CtiString("Time control ") + (iValue ? CtiString("enable") : CtiString("disable"));
         _actionItems.push_back(valStr);
 
+        // FIXME Can we remove this?
+        CTILOG_WARN(dout, "Incomplete");
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ACH Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
         xcraw += "0x22 0x" + CtiNumStr(iValue).hex();
         _cmd["xcrawconfig"] = xcraw;
     }
@@ -7151,11 +7039,7 @@ void  CtiCommandParser::doParsePutConfigCBC(const string &_CmdStr)
         }
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << endl << " XCRAW: " << xcraw << endl << endl;
-    }
+    CTILOG_INFO(dout, "XCRAW: " << xcraw);
     return;
 }
 
@@ -7193,8 +7077,7 @@ double CtiCommandParser::getDurationInSeconds( std::string token_ )
 
     if((token = token.match( (const boost::regex) (str_floatnum + CtiString(" *[hms]?( |$)")) )).empty() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Invalid time format: " << token_ << endl;
+        CTILOG_ERROR(dout, "Invalid time format: " << token_);
         return -1.0;
     }
 

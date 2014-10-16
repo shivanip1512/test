@@ -146,10 +146,9 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                         {
 
                             status = ClientErrors::Unknown;
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - invalid data recived during hanshake when using " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+
+                            CTILOG_ERROR(dout, "Invalid data received during handshake");
+
                             // perhaps we could clear out the buffer here instead of erroring, and then try again...
                             _command = Fail;
                             break;
@@ -159,8 +158,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                     {
                         status = ClientErrors::PageNoResponse;
                         _command = Fail;
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - no response received " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "No response received");
                         break;
                     }
                 }
@@ -171,10 +169,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                         //this is a loop? Bad.
                         status = ClientErrors::Abnormal;
                         _command = Fail;
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - invalid state reached in " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "Invalid state reached");
                     }
                     else
                     {
@@ -222,20 +217,16 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                         }
                         else if(xfer.getInBuffer()[0] == *_NAK)//bad crc or other error, re-send!
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - NAK received from TNPP terminal: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_ERROR(dout, "NAK received from TNPP terminal");
+
                             _retryCount++;
                             if(_retryCount>2)
                             {
                                 _retryCount = 0;
                                 status = ClientErrors::PageRS;
                                 _command = Fail; //Transaction Complete
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint - NAK received 3 times, giving up " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
+
+                                CTILOG_ERROR(dout, "NAK received 3 times, giving up");
                             }
                             else
                             {
@@ -244,20 +235,16 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                         }
                         else if(xfer.getInBuffer()[0] == *_CAN)//fatal error!!!
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - TNPP Device had a fatal error: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_ERROR(dout, "TNPP Device had a fatal error");
+
                             _retryCount = 0;
                             _command = Fail;
                             status = ClientErrors::Unknown;
                         }
                         else if(xfer.getInBuffer()[0] == *_RS)//buffer full
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - TNPP device buffer is full: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_ERROR(dout, "TNPP device buffer is full");
+
                             _retryCount = 0;
                             _command = Fail;
                             status = ClientErrors::Unknown;
@@ -266,17 +253,15 @@ YukonError_t CtiDeviceTnppPagingTerminal::decode(CtiXfer &xfer, YukonError_t com
                         {
                             status = ClientErrors::Unknown;
                             _command = Fail; //Transaction Complete
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - TNPP Device had a fatal unknown error: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+
+                            CTILOG_ERROR(dout, "TNPP Device had a fatal unknown error");
                         }
 
                     }
                     else
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - No response from TNPP device: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "No response from TNPP device");
+
                         status = ClientErrors::PageNoResponse;
                         _command = Fail; //Transaction Complete
                     }
@@ -440,11 +425,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::recvCommRequest( OUTMESS *OutMessage )
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - invalid OutMessage in CtiDeviceTnppPagingTerminal::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
+        CTILOG_ERROR(dout, "NULL OutMessage");
         retVal = ClientErrors::Memory;
     }
 
@@ -470,10 +451,7 @@ YukonError_t CtiDeviceTnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, Ct
     {
         case ControlRequest:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Unexpected ControlRequest command");
             }
         case GetStatusRequest:
         case LoopbackRequest:
@@ -551,8 +529,7 @@ string CtiDeviceTnppPagingTerminal::getPagerProtocol()
     {
         if(strstr(_table.getPagerProtocol().c_str(),_type_golay) == NULL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Golay is not supported by this device, attempting anyway: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_WARN(dout, "Golay is not supported by this device, attempting anyway");
         }
         return _type_golay;
     }
@@ -568,8 +545,7 @@ string CtiDeviceTnppPagingTerminal::getPagerDataFormat()
     {
         if(strstr(_table.getPagerProtocol().c_str(),_type_golay) == NULL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Golay is not supported by this device, attempting anyway: " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_WARN(dout, "Golay is not supported by this device, attempting anyway");
         }
         return _type_beep;
     }
@@ -916,8 +892,7 @@ void CtiDeviceTnppPagingTerminal::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 
     _table.DecodeDatabaseReader(rdr);

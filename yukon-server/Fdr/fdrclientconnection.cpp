@@ -7,6 +7,7 @@
 #include "fdrclientconnection.h"
 #include "fdrdebuglevel.h"
 #include "socket_helper.h"
+#include "win_helper.h"
 
 using std::string;
 using std::endl;
@@ -103,8 +104,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
         // Create the queue for handling incoming messages
         if (CreateQueue (&iQueueHandle))
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Unable to allocate space for " << getParent()->getName() << " out queue" << endl;
+            CTILOG_ERROR(dout, "Unable to allocate space for "<< getParent()->getName() <<" out queue");
         }
         else
         {
@@ -120,12 +120,11 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                 // we're ready to fly now
                 setConnectionStatus(CtiFDRSocketConnection::Ok);
 
-
                 if (getParent()->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() <<" Initializing FDRClientConnection::threadFunctionSendDataTo for " << getParent()->getName()  << endl;
+                    CTILOG_DEBUG(dout, "Initializing threadFunctionSendDataTo for "<< getParent()->getName());
                 }
+
                 // this will all non-control points to the foreign system
                 int retFlag = getParent()->sendAllPoints();
                 int dispatchErr=0;
@@ -141,9 +140,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                         dispatchErr++;
                         if (dispatchErr >= 20)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Connection to dispatch is invalid" <<endl;
-                            dout << CtiTime() << " Unable to upload requested points to " << getParent()->getName() << endl;
+                            CTILOG_ERROR(dout, "Connection to dispatch is invalid - Unable to upload requested points to "<< getParent()->getName());
                             dispatchErr=0;
                         }
                     }
@@ -153,9 +150,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                         notRegErr++;
                         if (notRegErr >= 20)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Client for " << getParent()->getName() << " has not registered" <<endl;
-                            dout << CtiTime() << " Unable to upload requested points " << endl;
+                            CTILOG_ERROR(dout, "Client for "<< getParent()->getName() <<" has not registered - Unable to upload requested points");
                             notRegErr=0;
                         }
                     }
@@ -177,8 +172,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                     {
                         if (bytesRead == 0 && queueReturn != ERROR_QUE_EMPTY)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error reading from " << getParent()->getName() << " out queue" << queueReturn << endl;
+                            CTILOG_ERROR(dout, "Could not read "<< getParent()->getName() <<" out queue ("<< queueReturn <<")");
                         }
                         else if (queueReturn == ClientErrors::None)
                         {
@@ -194,10 +188,9 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                             {
                                 // closes and marks as failed
                                 closeAndFailConnection();
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Write failed - client " << getParent()->getName() << endl;
-                                }
+
+                                CTILOG_ERROR(dout, "writeSocket() failed - client "<< getParent()->getName());
+
                                 outCount=0;
                             }
                             else
@@ -207,18 +200,13 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                                     //don't call sleep routine if nothing is set
                                     if (getParent()->getOutboundSendInterval())
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Maximum throughput of " << getParent()->getOutboundSendRate() << " entries per ";
-                                            dout << getParent()->getOutboundSendInterval() << " second(s) reached, waiting one interval " << endl;
-                                        }
+                                        CTILOG_WARN(dout, "Maximum throughput of " << getParent()->getOutboundSendRate() <<" entries per "<<
+                                                getParent()->getOutboundSendInterval() << " second(s) reached, waiting one interval");
 
                                         pSelf.sleep (getParent()->getOutboundSendInterval()*1000);
                                     }
                                     outCount =0;
                                 }
-    //                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-    //                            dout << CtiTime() << " FIX FIX FIX bytes sent - " << bytesSent << endl;
                             }
 
                             // do this no matter what
@@ -251,28 +239,21 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unable to open connection semaphore for " << getParent()->getName() << " loading interface failed" << endl;
+                CTILOG_ERROR(dout, "Unable to open connection semaphore for "<< getParent()->getName() <<" loading interface failed");
             }
         }
     }
 
-    catch ( RWCancellation &cancellationMsg )
+    catch ( RWCancellation & )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "CANCELLATION of FDRClientConnection::threadFunctionSendDataTo for " << getParent()->getName() << endl;
-        }
+        CTILOG_INFO(dout, "CANCELLATION of threadFunctionSendDataTo for "<< getParent()->getName());
         CloseQueue (iQueueHandle);
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Fatal Error:  FDRClientConnection::threadFunctionSendDataTo for " << getParent()->getName() << " is dead! " << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionSendDataTo for "<< getParent()->getName() <<" is dead!");
         CloseQueue (iQueueHandle);
     }
 
@@ -303,8 +284,7 @@ void CtiFDRClientConnection::threadFunctionSendHeartbeat( void )
 
         if (getParent()->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() <<" Initializing FDRClientConnection::threadFunctionSendHeartbeat for " << getParent()->getName()  << endl;
+            CTILOG_DEBUG(dout, "Initializing threadFunctionSendHeartbeat for "<< getParent()->getName());
         }
 
         for ( ; ; )
@@ -332,16 +312,14 @@ void CtiFDRClientConnection::threadFunctionSendHeartbeat( void )
 
                         if (getParent()->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error sending heartbeat to "<< getParent()->getName() << " at " <<  getAddr().toString() << endl;
+                            CTILOG_DEBUG(dout, "Could not send heartbeat to "<< getParent()->getName() <<" at "<<  getAddr());
                         }
                     }
                     else
                     {
                         if (getParent()->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Sending heartbeat to  "<< getParent()->getName()<< " at " <<   getAddr().toString() << endl;
+                            CTILOG_DEBUG(dout, "Sent heartbeat to "<< getParent()->getName() <<" at "<<  getAddr());
                         }
                     }
                 }
@@ -351,17 +329,14 @@ void CtiFDRClientConnection::threadFunctionSendHeartbeat( void )
 
     catch ( RWCancellation &cancellationMsg )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION of FDRClientConnection::threadFunctionSendHeartbeat for " << getParent()->getName()  << endl;
+        CTILOG_INFO(dout, "CANCELLATION of threadFunctionSendHeartbeat for "<< getParent()->getName());
     }
     // try and catch the thread death
     catch ( ... )
     {
         setConnectionStatus(CtiFDRSocketConnection::Failed);
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Fatal Error:  FDRClientConnection::threadFunctionSendHeartbeat for " << getParent()->getName() << " is dead! " << endl;
-        }
+
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionSendHeartbeat for "<< getParent()->getName() <<" is dead!");
     }
 }
 
@@ -391,10 +366,8 @@ int CtiFDRClientConnection::initializeConnection( const Cti::SocketAddress& aAdd
         Cti::AddrInfo ai = Cti::makeTcpClientSocketAddress(hostIp, getParent()->getConnectPortNumber());
         if( !ai )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error, " << ai.getError() << ", while resolving host IP: " << hostIp << endl;
-            }
+            CTILOG_ERROR(dout, "Failed to resolve host IP: "<< hostIp <<" (Error: "<< ai.getError() <<")");
+
             shutdown(tmpConnection, SD_BOTH);
             closesocket(tmpConnection);
             return SOCKET_ERROR;
@@ -403,19 +376,14 @@ int CtiFDRClientConnection::initializeConnection( const Cti::SocketAddress& aAdd
         if( bind( tmpConnection, ai->ai_addr, ai->ai_addrlen ) == SOCKET_ERROR )
         {
             const int errorCode = WSAGetLastError();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error, " << errorCode << ", binding to " << ai.toString() << endl;
-            }
+            CTILOG_ERROR(dout, "Failed to bind to: "<< ai <<" (Error: "<< ai.getError() <<")");
+
             shutdown(tmpConnection, SD_BOTH);
             closesocket(tmpConnection);
             return SOCKET_ERROR;
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Successful bind on the return connection to " << ai.toString() << endl;
-        }
+        CTILOG_INFO(dout, "Successful bind on the return connection to "<< ai);
     }
 
     if( connect( tmpConnection, &aAddr._addr.sa, aAddr._addrlen ) == SOCKET_ERROR )
@@ -450,15 +418,15 @@ INT CtiFDRClientConnection::writeSocket (CHAR *aBuffer, ULONG length, ULONG &aBy
 
         if (bytesSent == SOCKET_ERROR)
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Socket Error on write, WSAGetLastError() == " << WSAGetLastError() << endl;
+            const DWORD error = WSAGetLastError();
+            CTILOG_DEBUG(dout, "Socket send() failed with error code "<< error <<" / "<< Cti::getSystemErrorMessage(error));
 
             retVal =  SOCKET_ERROR;
         }
         else if( bytesSent != length)
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Socket Error on write, wrote " << bytesSent << " bytes, intended to write " << length << ", WSAGetLastError() == " << WSAGetLastError() << endl;
+            const DWORD error = WSAGetLastError();
+            CTILOG_DEBUG(dout, "Socket send() wrote "<< bytesSent <<" bytes, intended to write "<< length);
 
             retVal = SOCKET_ERROR;
         }
@@ -470,8 +438,7 @@ INT CtiFDRClientConnection::writeSocket (CHAR *aBuffer, ULONG length, ULONG &aBy
     }
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout)
     }
 
     return retVal;

@@ -155,10 +155,7 @@ SAConnection* createDBConnection()
         delete connection;
     }
 
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Database connection unsuccessful " << std::endl;
-    }
+    CTILOG_ERROR(dout, "Database connection unsuccessful");
 
     return NULL;
 }
@@ -196,10 +193,7 @@ SAConnection* getNewConnection()
     if(connHolder.connection != NULL)
     {
         connectionList.push_back(connHolder);
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Database connection " << connectionList.size() << " created " << std::endl;
-        }
+        CTILOG_INFO(dout, "Database connection " << connectionList.size() << " created ");
     }
 
     return connHolder.connection;
@@ -218,8 +212,5 @@ void releaseDBConnection(SAConnection *connection)
             return;
         }
     }
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << " **** CHECKPOINT **** Attempted to release a connection that could not be found " << __FILE__ << " " << __LINE__ << std::endl;
-    }
+    CTILOG_ERROR(dout, "Attempted to release a connection that could not be found ");
 }

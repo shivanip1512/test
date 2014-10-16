@@ -81,7 +81,9 @@ unsigned char CtiIONStruct::getStructClassDescriptor( void ) const
 {
     unsigned char retVal;
 
-    switch( getStructType() )
+    const CtiIONStruct::StructTypes structType = getStructType();
+
+    switch( structType )
     {
         case StructType_LogRecord:      retVal = ClassDescriptor_Struct_LogRecord;      break;
         case StructType_Alarm:          retVal = ClassDescriptor_Struct_Alarm;          break;
@@ -97,10 +99,7 @@ unsigned char CtiIONStruct::getStructClassDescriptor( void ) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Unknown structType ("<< structType <<")");
 
             retVal = 0xff;
 
@@ -241,10 +240,7 @@ CtiIONValue *CtiIONStruct::restoreStruct( unsigned char ionClass, unsigned char 
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown class descriptor ("<< classDescriptor <<")");
 
             newStruct = NULL;
             pos = len;

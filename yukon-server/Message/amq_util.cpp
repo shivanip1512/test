@@ -146,11 +146,7 @@ void ManagedConnection::closeConnection()
             }
 
             // log an error if close() has failed
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime::now() << " Error closing ActiveMQ connection: \"" << e.what() << "\" "
-                     << ((attempt != maxAttempt) ? ", will retry " : " ") << __FILE__ << " ("<< __LINE__ << ")" << endl;
-            }
+            CTILOG_EXCEPTION_ERROR(dout, e, "Error closing ActiveMQ connection"<< ((attempt != maxAttempt) ? " (will retry)" : ""));
         }
 
         if( attempt == maxAttempt )
@@ -217,10 +213,7 @@ void ManagedConnection::start()
             // print exception about every 5 min or if exception message changes
             if( attempt % loggingFreq == 1 || e.getMessage() != prevMessage )
             {
-                {
-                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime::now() << " Error starting ActiveMQ connection: \"" << e.what() << "\" "<< __FILE__ << " ("<< __LINE__ << ")" << endl;
-                }
+                CTILOG_EXCEPTION_ERROR(dout, e, "Error starting ActiveMQ connection");
 
                 prevMessage = e.getMessage();
             }

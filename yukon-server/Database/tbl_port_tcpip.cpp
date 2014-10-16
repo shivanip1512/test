@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_port_tcpip
-*
-* Date:   8/28/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2008/08/06 18:26:49 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "tbl_port_tcpip.h"
@@ -82,18 +67,21 @@ void CtiTablePortTCPIP::DecodeDatabaseReader(Cti::RowReader &rdr)
 
         if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " IP Address           : " << _ipAddress << endl;
-            dout << " IP Port              : " << _ipPort << endl;
-            dout << " Encoding Key         : " << _encodingKey << endl;
-            dout << " Encoding Type        : " << _encodingType << endl;
+            Cti::FormattedList itemList;
+
+            itemList.add("IP Address")    << _ipAddress;
+            itemList.add("IP Port")       << _ipPort;
+            itemList.add("Encoding Key")  << _encodingKey;
+            itemList.add("Encoding Type") << _encodingType;
+
+            CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName() <<
+                    itemList
+                    );
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 

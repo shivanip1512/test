@@ -112,17 +112,16 @@ unsigned char CtiIONStructArray::getStructArrayClassDescriptor( void ) const
 {
     unsigned char retVal;
 
-    switch( getStructArrayType() )
+    const StructArrayTypes structArrayType = getStructArrayType();
+
+    switch( structArrayType )
     {
         case StructArrayType_AlarmArray:    retVal = ClassDescriptor_StructArray_Alarm;         break;
         case StructArrayType_LogArray:      retVal = ClassDescriptor_StructArray_LogRecord;     break;
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown structArrayType ("<< structArrayType <<")" );
 
             retVal = 0xff;
 
@@ -214,10 +213,7 @@ CtiIONValue *CtiIONStructArray::restoreStructArray( unsigned char ionClass, unsi
 
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "unknown classDescriptor ("<< classDescriptor <<")");
 
                 newStructArray = NULL;
             }
@@ -230,9 +226,13 @@ CtiIONValue *CtiIONStructArray::restoreStructArray( unsigned char ionClass, unsi
     }
     else
     {
+        if(pos >= len)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "pos >= len ("<< pos <<">="<< len <<")");
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "buf["<< pos <<"] << != StructArrayEnd ("<< buf[pos] <<"!="<< StructArrayEnd <<")");
         }
 
         while( !structArrayElements.empty() )

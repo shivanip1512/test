@@ -96,8 +96,7 @@ unsigned determineDWordCount(unsigned length)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - invalid length (" << length << ") in Protocols::EmetconProtocol::determineDWordCount() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "invalid length ("<< length <<")");
     }
 
     return count;

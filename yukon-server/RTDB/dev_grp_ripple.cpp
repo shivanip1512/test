@@ -72,8 +72,7 @@ void CtiDeviceGroupRipple::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
@@ -173,10 +172,7 @@ YukonError_t CtiDeviceGroupRipple::ExecuteRequest(CtiRequestMsg *pReq, CtiComman
                                                      CtiMultiMsg_vec());
         retList.push_back( pRet );
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << Reply << endl;
-        }
+        CTILOG_ERROR(dout, Reply);
     }
 
     return nRet;
@@ -194,8 +190,7 @@ void CtiDeviceGroupRipple::contributeToBitPattern(BYTE *bptr, bool shed) const
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -249,20 +244,12 @@ INT CtiDeviceGroupRipple::processTrxID( int trx, CtiMessageList  &vgList )
         }
         else if( erdb )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << getName() << " is probably setShed(INVALID)" << endl;
-            }
+            CTILOG_WARN(dout, getName() <<" is probably setShed(INVALID)");
         }
     }
     else if(erdb)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  " << getName() << ": TrxID is not equal to the current group TrxID" << endl;
-        }
+        CTILOG_ERROR(dout, getName() <<": TrxID is not equal to the current group TrxID");
     }
 
     return count;

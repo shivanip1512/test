@@ -342,10 +342,8 @@ YukonError_t CtiDeviceDR87::generateCommandHandshake (CtiXfer  &Transfer, CtiMes
 
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateHandshakeAbort);
@@ -380,10 +378,8 @@ YukonError_t CtiDeviceDR87::generateCommand (CtiXfer  &Transfer, CtiMessageList 
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid command "<< getCurrentCommand() <<" scanning "<< getName());
+
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
@@ -452,10 +448,8 @@ YukonError_t CtiDeviceDR87::generateCommandScan (CtiXfer  &Transfer, CtiMessageL
         }
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             setRequestedState (StateScanAbort);
             generateCommandTerminate (Transfer, traceList);
             retCode = ClientErrors::Abnormal;
@@ -475,10 +469,7 @@ INT CtiDeviceDR87::generateCommandTerminate (CtiXfer  &Transfer, CtiMessageList 
     // if this is negative, we don't have it yet
     if (worker.sh == -1)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Unable to generate a terminate, letting " << getName() << " hang up on its own " << endl;
-        }
+        CTILOG_WARN(dout, "Unable to generate a terminate, letting "<< getName() <<" hang up on its own");
 
         Transfer.setOutCount (0);
         Transfer.setInCountExpected (0);
@@ -673,20 +664,16 @@ YukonError_t CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, CtiM
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Error calculating intervals to collect for " << getName() << " no data will be collected this scan" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Could not calculate intervals to collect for "<< getName() <<" no data will be collected this scan");
+
                     setRequestedState (StateScanAbort);
                     generateCommandTerminate(Transfer, traceList);
                 }
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
-                }
+                CTILOG_WARN(dout, "Load profile for "<< getName() <<" will not be collected this scan");
+
                 setRequestedState (StateScanComplete);
                 generateCommandTerminate(Transfer, traceList);
             }
@@ -711,10 +698,8 @@ YukonError_t CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, CtiM
             */
             if (localLP->config.blockSize > 256)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Error calculating bytes to collect for " << getName() << " no data will be collected this scan" << endl;
-                }
+                CTILOG_ERROR(dout, "Could not calculate bytes to collect for "<< getName() <<" no data will be collected this scan");
+
                 setRequestedState (StateScanAbort);
                 generateCommandTerminate(Transfer, traceList);
             }
@@ -749,10 +734,8 @@ YukonError_t CtiDeviceDR87::generateCommandLoadProfile (CtiXfer  &Transfer, CtiM
         }
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             setRequestedState (StateScanAbort);
             generateCommandTerminate (Transfer, traceList);
             retCode = ClientErrors::Abnormal;
@@ -822,10 +805,8 @@ YukonError_t CtiDeviceDR87::decodeResponseHandshake (CtiXfer  &Transfer, YukonEr
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                 setCurrentState (StateHandshakeAbort);
                 break;
             }
@@ -864,10 +845,8 @@ YukonError_t CtiDeviceDR87::decodeResponse (CtiXfer  &Transfer, YukonError_t com
 
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid command "<< getCurrentCommand() <<" scanning "<< getName());
+
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
@@ -971,15 +950,26 @@ YukonError_t CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, YukonError_t
 
                         if( DebugLevel & 0x0001 )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() <<"  ----- DR-87 Configuration ------ " << endl;
-                            dout << "Channels " << localData->numberOfChannels << endl;
-                            dout << "Channel    scale factor  kvalue (w/p)    usage" << endl;
-                            for (x=0; x < localData->numberOfChannels; x++)
+                            Cti::FormattedTable table;
+
+                            table.setCell(0, 0) << "Channel";
+                            table.setCell(0, 1) << "scale factor";
+                            table.setCell(0, 2) << "kvalue (w/p)";
+                            table.setCell(0, 3) << "usage"; //FIXME usage or total pulses
+
+                            int row = 1;
+                            for (x=0; x < localData->numberOfChannels; x++, row++)
                             {
-                                dout << "     " << x <<  "            " << localData->scaleFactor[x] << "        "  << localData->kvalue[x];
-                                dout << "       "  << localData->totalPulses[x] << endl;
+                                table.setCell(row, 0) << x;
+                                table.setCell(row, 1) << localData->scaleFactor[x];
+                                table.setCell(row, 2) << localData->kvalue[x];
+                                table.setCell(row, 3) << localData->totalPulses[x];
                             }
+
+                            CTILOG_DEBUG(dout, "----- DR-87 Configuration -----"<<
+                                    endl <<"Channels : "<< localData->numberOfChannels <<
+                                    table
+                                    );
                         }
 
                         setCurrentState (StateScanComplete);
@@ -1002,10 +992,8 @@ YukonError_t CtiDeviceDR87::decodeResponseScan (CtiXfer  &Transfer, YukonError_t
                     }
 
                     default:
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                        }
+                        CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                         setCurrentState (StateScanAbort);
                         retCode = ClientErrors::Abnormal;
                 }
@@ -1106,12 +1094,15 @@ YukonError_t CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, Yukon
 
                         if( DebugLevel & 0x0001 )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << "  ----- DR-87 Configuration ------ " << endl;
-                            dout << "Mass Memory Range" << endl;
-                            dout << "Start   : " << getMassMemoryStart() << endl;
-                            dout << "Stop    : " << getMassMemoryStop() << endl;
-                            dout << "Logoff  : " << getLogoffFunction() << endl;
+                            Cti::FormattedList list;
+                            list.add("Start")  << getMassMemoryStart();
+                            list.add("Stop")   << getMassMemoryStop();
+                            list.add("Logoff") << getLogoffFunction();
+
+                            CTILOG_DEBUG(dout, "----- DR-87 Configuration -----"<<
+                                    endl <<"Mass Memory Range"<<
+                                    list
+                                    );
                         }
                         setCurrentState (StateScanValueSet2FirstScan);
                         break;
@@ -1177,19 +1168,33 @@ YukonError_t CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, Yukon
 
                         if( DebugLevel & 0x0001 )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "  ----- DR-87 Configuration ------ " << endl;
-                            dout << "Channels " << localLP->config.numberOfChannels << endl;
-                            dout << "Interval " << localLP->config.intervalLength << endl;
-                            dout << "Last Interval " << CtiTime(localLP->config.lastIntervalTime).asString() << endl;
-                            dout << "Old Mem Ptr " << getOldestIntervalByteOffset() << endl;
+                            Cti::FormattedList itemlist;
 
-                            dout << "Channel    scale factor  kvalue (w/p)    usage" << endl;
-                            for (x=0; x < localLP->config.numberOfChannels; x++)
+                            itemlist <<"----- DR-87 Configuration -----";
+
+                            Cti::FormattedTable table;
+                            table.setCell(0, 0) << "Channel";
+                            table.setCell(0, 1) << "scale factor";
+                            table.setCell(0, 2) << "kvalue (w/p)";
+                            table.setCell(0, 3) << "usage";
+
+                            int row=1;
+                            for (x=0; x < localLP->config.numberOfChannels; x++, row++)
                             {
-                                dout << "     " << x <<  "            " << localLP->config.scaleFactor[x] << "        "  << localLP->config.kvalue[x];
-                                dout << "       "  << localLP->channelUsage[x] << endl;
+                                table.setCell(row, 0) << x;
+                                table.setCell(row, 1) << localLP->config.scaleFactor[x];
+                                table.setCell(row, 2) << localLP->config.kvalue[x];
+                                table.setCell(row, 3) << localLP->channelUsage[x];
                             }
+
+                            itemlist << table;
+
+                            itemlist.add("Channels")       << localLP->config.numberOfChannels;
+                            itemlist.add("Interval")       << localLP->config.intervalLength;
+                            itemlist.add("Last Interval")  << CtiTime(localLP->config.lastIntervalTime);
+                            itemlist.add("Old Mem ptr")    << getOldestIntervalByteOffset();
+
+                            CTILOG_DEBUG(dout, itemlist);
                         }
                         setCurrentState (StateScanValueSet3FirstScan);
                         break;
@@ -1208,11 +1213,14 @@ YukonError_t CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, Yukon
                                 {
                                     if( DebugLevel & 0x0001 )
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << "  ----- DR-87 wrapped around going to get more lp data ------ " << endl;
-                                        dout << " Current Byte Offset: " << getCurrentByteOffset() << endl;
-                                        dout << " Block size: " << localLP->config.blockSize << endl;
-                                        dout << " Oldest byte offset:  " << (getOldestIntervalByteOffset()-0x1ff) << endl;
+                                        Cti::FormattedList itemlist;
+
+                                        itemlist <<"----- DR-87 wrapped around going to get more lp data -----";
+                                        itemlist.add("Current Byte Offset") << getCurrentByteOffset();
+                                        itemlist.add("Block size")          << localLP->config.blockSize;
+                                        itemlist.add("Oldest byte offset")  << (getOldestIntervalByteOffset()-0x1ff);
+
+                                        CTILOG_DEBUG(dout, itemlist);
                                     }
 
                                     // we're not done yet
@@ -1235,11 +1243,14 @@ YukonError_t CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, Yukon
                             {
                                 if( DebugLevel & 0x0001 )
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << "  ----- DR-87 Going to get more lp data ------ " << endl;
-                                    dout << " Current Byte Offset: " << getCurrentByteOffset() << endl;
-                                    dout << " Block size: " << localLP->config.blockSize << endl;
-                                    dout << " Oldest byte offset:  " << (getOldestIntervalByteOffset()-0x1ff) << endl;
+                                    Cti::FormattedList itemlist;
+
+                                    itemlist <<"----- DR-87 Going to get more lp data -----";
+                                    itemlist.add("Current Byte Offset") << getCurrentByteOffset();
+                                    itemlist.add("Block size")          << localLP->config.blockSize;
+                                    itemlist.add("Oldest byte offset")  << (getOldestIntervalByteOffset()-0x1ff);
+
+                                    CTILOG_DEBUG(dout, itemlist);
                                 }
 
                                 // we're not done yet
@@ -1271,10 +1282,8 @@ YukonError_t CtiDeviceDR87::decodeResponseLoadProfile (CtiXfer  &Transfer, Yukon
                         }
 
                     default:
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                        }
+                        CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                         setCurrentState (StateScanAbort);
                         retCode = ClientErrors::Abnormal;
                 }
@@ -1347,10 +1356,7 @@ YukonError_t CtiDeviceDR87::GeneralScan(CtiRequestMsg     *pReq,
 {
     YukonError_t status = ClientErrors::None;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " General Scan of device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "General Scan of device "<< getName() <<" in progress");
 
     ULONG BytesWritten;
 
@@ -1507,21 +1513,14 @@ YukonError_t CtiDeviceDR87::ResultDecode(const INMESS   &InMessage,
     {
         case CmdScanData:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Scan decode for device " << getName() << " in progress " << endl;
-                }
+                CTILOG_INFO(dout, "Scan decode for device "<< getName() <<" in progress ");
 
                 decodeResultScan (InMessage, TimeNow, vgList, retList, outList);
                 break;
             }
         case CmdLoadProfileData:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " LP decode for device " << getName() << " in progress " << endl;
-                }
-
+                CTILOG_INFO(dout, "LP decode for device "<< getName() <<" in progress ");
 
                 // just in case we're getting an empty message
                 if (tmpCurrentState == StateScanReturnLoadProfile)
@@ -1530,20 +1529,14 @@ YukonError_t CtiDeviceDR87::ResultDecode(const INMESS   &InMessage,
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " LP decode failed device " << getName() << " invalid state " << getCurrentState() << endl;
-                    }
+                    CTILOG_ERROR(dout, "LP decode failed device "<< getName() <<" invalid state "<< getCurrentState());
                 }
 
                 break;
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "(" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid decode for " << getName());
             }
     }
     return ClientErrors::None;
@@ -1553,10 +1546,7 @@ YukonError_t CtiDeviceDR87::ErrorDecode (const INMESS   &InMessage,
                                 const CtiTime   TimeNow,
                                 CtiMessageList &retList)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "ErrorDecode for device "<< getName() <<" in progress");
 
     YukonError_t retCode = ClientErrors::None;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
@@ -1684,9 +1674,7 @@ INT CtiDeviceDR87::decodeResultScan (const INMESS   &InMessage,
                     {
                         if( DebugLevel & 0x0001 )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() <<" " << __LINE__ << " Point " << pNumericPoint->getPointID();
-                            dout << " Value " << PValue << " mulitplier " << PValue * pNumericPoint->getMultiplier() << endl;
+                            CTILOG_DEBUG(dout, "Point " << pNumericPoint->getPointID() << " Value " << PValue << " mulitplier " << PValue * pNumericPoint->getMultiplier());
                         }
 
                         verifyAndAddPointToReturnMsg (pNumericPoint->getPointID(),
@@ -1786,10 +1774,7 @@ INT CtiDeviceDR87::decodeResultLoadProfile (const INMESS   &InMessage,
             * invalid
             ************************
             */
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Aborting scan: Invalid last interval timestamp " << getName()  << " " << CtiTime (ptr->config.lastIntervalTime).asString() << endl;
-            }
+            CTILOG_WARN(dout, "Aborting scan: Invalid last interval timestamp " << getName() << " " << CtiTime(ptr->config.lastIntervalTime));
         }
         else
         {
@@ -1851,10 +1836,7 @@ INT CtiDeviceDR87::decodeResultLoadProfile (const INMESS   &InMessage,
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Parity calculation failed " << getName() << endl;
-                            }
+                            CTILOG_ERROR(dout, "Parity calculation failed "<< getName());
                         }
 
                         offset--;
@@ -1987,9 +1969,9 @@ BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, Cti
                 aValue = aScanData->totalPulses[channel] * aScanData->scaleFactor[channel] * aScanData->kvalue[channel] / 1000.0;
                 if( DebugLevel & 0x0001 )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() <<" ----- Channel 1 ------ " << endl;
-                    dout << "Pulses " << aScanData->totalPulses[channel] << " Scale factor " << aScanData->scaleFactor[channel] << " K Factor " << aScanData->kvalue[channel] << endl;
+                    CTILOG_DEBUG(dout, "----- Channel 1 -----"<<
+                            endl <<"Pulses "<< aScanData->totalPulses[channel] <<" Scale factor "<< aScanData->scaleFactor[channel] <<" K Factor "<< aScanData->kvalue[channel]
+                            );
                 }
 
                 // check how many channels it was configured for, this may not be valid data
@@ -2010,9 +1992,9 @@ BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, Cti
 
                 if( DebugLevel & 0x0001 )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() <<" ----- Channel 2 ------ " << endl;
-                    dout << "Pulses " << aScanData->totalPulses[channel] << " Scale factor " << aScanData->scaleFactor[channel] << " K Factor " << aScanData->kvalue[channel] << endl;
+                    CTILOG_DEBUG(dout, "----- Channel 2 -----"<<
+                            endl <<"Pulses "<< aScanData->totalPulses[channel] <<" Scale factor "<< aScanData->scaleFactor[channel] <<" K Factor "<< aScanData->kvalue[channel]
+                            );
                 }
 
                 // check how many channels it was configured for, this may not be valid data
@@ -2033,9 +2015,9 @@ BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, Cti
 
                 if( DebugLevel & 0x0001 )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() <<" ----- Channel 3 ------ " << endl;
-                    dout << "Pulses " << aScanData->totalPulses[channel] << " Scale factor " << aScanData->scaleFactor[channel] << " K Factor " << aScanData->kvalue[channel] << endl;
+                    CTILOG_DEBUG(dout, "----- Channel 3 -----"<<
+                            endl <<"Pulses "<< aScanData->totalPulses[channel] <<" Scale factor "<< aScanData->scaleFactor[channel] <<" K Factor "<< aScanData->kvalue[channel]
+                            );
                 }
 
                 // check how many channels it was configured for, this may not be valid data
@@ -2053,11 +2035,12 @@ BOOL CtiDeviceDR87::getMeterDataFromScanStruct (int aOffset, DOUBLE &aValue, Cti
             {
                 channel = 3;
                 aValue = aScanData->totalPulses[channel] * aScanData->scaleFactor[channel] * aScanData->kvalue[channel] / 1000.0;
+
                 if( DebugLevel & 0x0001 )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() <<" ----- Channel 4 ------ " << endl;
-                    dout << "Pulses " << aScanData->totalPulses[channel] << " Scale factor " << aScanData->scaleFactor[channel] << " K Factor " << aScanData->kvalue[channel] << endl;
+                    CTILOG_DEBUG(dout, "----- Channel 4 -----"<<
+                            endl <<"Pulses "<< aScanData->totalPulses[channel] <<" Scale factor "<< aScanData->scaleFactor[channel] <<" K Factor "<< aScanData->kvalue[channel]
+                            );
                 }
 
                 // check how many channels it was configured for, this may not be valid data
@@ -2131,7 +2114,7 @@ BOOL CtiDeviceDR87::verifyAndAddPointToReturnMsg (LONG   aPointId,
 
             if( DebugLevel & 0x0001 )
             {
-                pData->dump();
+                CTILOG_DEBUG(dout, pData);
             }
 
             // aData is deleted in this function

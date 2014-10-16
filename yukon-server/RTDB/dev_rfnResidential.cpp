@@ -175,8 +175,7 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg
 
     if( demand_interval_minutes < 0 )
     {
-        logInfo("Missing \"demandinterval\" parameter.",
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing \"demandinterval\" parameter.");
 
         return ClientErrors::MissingParameter;
     }
@@ -189,8 +188,7 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageProfile( CtiRequestMsg
 
     if( load_profile_interval_minutes < 0 )
     {
-        logInfo("Missing \"lpinterval\" parameter.",
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing \"lpinterval\" parameter.");
 
         return ClientErrors::MissingParameter;
     }
@@ -246,8 +244,7 @@ YukonError_t RfnResidentialDevice::executeGetValueVoltageProfile( CtiRequestMsg 
     }
     else
     {
-        logInfo("Missing voltage profile start date.",
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing voltage profile start date");
 
         return ClientErrors::MissingParameter;
     }
@@ -336,9 +333,7 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageAveragingInterval( Cti
 
         if ( ! configValue  )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing value for config key \""<< configKey <<"\"");
             return ClientErrors::NoConfigData;
         }
 
@@ -351,17 +346,13 @@ YukonError_t RfnResidentialDevice::executePutConfigVoltageAveragingInterval( Cti
 
         if ( ! configValue  )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - Missing value for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing value for config key \""<< configKey <<"\"");
             return ClientErrors::NoConfigData;
         }
 
         if ( *configValue < 0 || *configValue > std::numeric_limits<unsigned>::max() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Invalid value (" << *configValue << ") for config key \"" << configKey << "\"");
             return ClientErrors::InvalidConfigData;
         }
 
@@ -477,15 +468,13 @@ YukonError_t RfnResidentialDevice::executePutConfigDemandFreezeDay( CtiRequestMs
     }
     catch( const MissingConfigDataException &e )
     {
-        logInfo( e.what(),
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
         return ClientErrors::NoConfigData;
     }
     catch( const InvalidConfigDataException &e )
     {
-        logInfo( e.what(),
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
         return ClientErrors::InvalidConfigData;
     }
@@ -542,15 +531,13 @@ YukonError_t RfnResidentialDevice::executeTouCriticalPeak( CtiRequestMsg     * p
 
         if ( parsedHour == -1 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - Missing hour value. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing hour value");
 
             return ClientErrors::BadParameter;
         }
         if ( parsedMinute == -1 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - Missing minute value. " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing minute value");
 
             return ClientErrors::BadParameter;
         }
@@ -600,8 +587,7 @@ YukonError_t RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq
     //
     if( ! parse.isKeyValid("tou_days") )
     {
-        logInfo("Missing day table.",
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing day table");
 
         return ClientErrors::BadParameter;
     }
@@ -618,8 +604,7 @@ YukonError_t RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq
     //
     if( ! parse.isKeyValid("tou_default") )
     {
-        logInfo("Missing TOU default rate.",
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Missing TOU default rate");
 
         return ClientErrors::BadParameter;
     }
@@ -648,8 +633,7 @@ YukonError_t RfnResidentialDevice::executePutConfigTou( CtiRequestMsg     * pReq
         {
             if( change_nbr > rates.size() )
             {
-                logInfo("Schedule " + CtiNumStr(schedule_nbr) + " has an invalid rate change.",
-                        __FUNCTION__, __FILE__, __LINE__ );
+                CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Schedule "<< schedule_nbr <<" has an invalid rate change");
 
                 return ClientErrors::BadParameter;
             }
@@ -727,8 +711,7 @@ YukonError_t RfnResidentialDevice::executePutConfigHoliday( CtiRequestMsg     * 
 
         if( holiday_nbr >= holidays.size() )
         {
-            logInfo("Holiday " + holiday_str + " specified.",
-                    __FUNCTION__, __FILE__, __LINE__ );
+            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Holiday "<< holiday_str <<" specified");
 
             return ClientErrors::BadParameter;
         }
@@ -914,8 +897,7 @@ YukonError_t RfnResidentialDevice::executePutConfigInstallTou( CtiRequestMsg    
     }
     catch( const MissingConfigDataException &e )
     {
-        logInfo( e.what(),
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
         return ClientErrors::NoConfigData;
     }
@@ -1166,15 +1148,13 @@ YukonError_t RfnResidentialDevice::executePutConfigOvUv( CtiRequestMsg    * pReq
     }
     catch( const MissingConfigDataException &e )
     {
-        logInfo( e.what(),
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
         return ClientErrors::NoConfigData;
     }
     catch( const InvalidConfigDataException &e )
     {
-        logInfo( e.what(),
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
         return ClientErrors::InvalidConfigData;
     }
@@ -1335,15 +1315,13 @@ YukonError_t RfnResidentialDevice::executePutConfigDisconnect( CtiRequestMsg    
     }
     catch( const MissingConfigDataException &e )
     {
-        logInfo( e.what(),
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
         return ClientErrors::NoConfigData;
     }
     catch( const InvalidConfigDataException &e )
     {
-        logInfo( e.what(),
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
         return ClientErrors::InvalidConfigData;
     }
@@ -1469,9 +1447,7 @@ std::string RfnResidentialDevice::getDisconnectModeString( Commands::RfnRemoteDi
 
     if( ! disconnectStr )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Device \"" << getName() << "\" - Unable to determine db value for disconnect mode ("
-             << disconnectMode << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Unable to determine db value for disconnect mode ("<< disconnectMode <<")");
 
         return "(unknown)";
     }
@@ -1485,9 +1461,7 @@ std::string RfnResidentialDevice::getReconnectParamString( Commands::RfnRemoteDi
 
     if( ! reconnectStr )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Device \"" << getName() << "\" - Unable to determine db value for reconnect param ("
-             << reconnectMode << " " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Unable to determine db value for reconnect param ("<< reconnectMode <<")");
 
         return "(unknown)";
     }

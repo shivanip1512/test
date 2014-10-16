@@ -55,14 +55,14 @@ void main( int argc, char **argv )
                     CtiMultiMsg *pChg = dynamic_cast<CtiMultiMsg*>(imsg.get());
                     for each( CtiMessage* x in pChg->getData() )
                     {
-                        x->dump();
+                        cout << x->toString();
                     }
                 }
                 else if(imsg->isA() == MSG_SIGNAL)
                 {
                     CtiSignalMsg* pSig = dynamic_cast<CtiSignalMsg*>(imsg.get());
                     cout << CtiTime() << " **** SIGNAL RECEIVED **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    pSig->dump();
+                    cout << pSig->toString();
                 }
             }
             else

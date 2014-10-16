@@ -100,10 +100,7 @@ bool KlondikeProtocol::commandStateValid()
         if( _current_command.command_code == CommandCode_CheckStatus
             && _waiting_requests.empty() )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_LoadQueue/CommandCode_CheckStatus : _waiting_requests.empty() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Command_LoadQueue/CommandCode_CheckStatus : _waiting_requests.empty()");
 
             command_valid = false;
         }
@@ -111,10 +108,7 @@ bool KlondikeProtocol::commandStateValid()
         if( _current_command.command_code == CommandCode_WaitingQueueWrite
             && _device_queue_entries_available == 0 )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_LoadQueue/CommandCode_CheckStatus : _device_queue_entries_available == 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Command_LoadQueue/CommandCode_CheckStatus : _device_queue_entries_available == 0");
 
             command_valid = false;
         }
@@ -132,21 +126,14 @@ bool KlondikeProtocol::commandStateValid()
                 !_device_status.plc_transmitting_buffer_message &&
                 !_remote_requests.empty() )
             {
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_ReadQueue/CommandCode_ReplyQueueRead : device reports empty - purging _remote_requests **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Command_ReadQueue/CommandCode_ReplyQueueRead : device reports empty - purging _remote_requests");
 
                 remote_work_t::iterator remote_itr = _remote_requests.begin(),
                                         remote_end = _remote_requests.end();
 
                 while( remote_itr != remote_end )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_LoadRoutes/CommandCode_RoutingTableWrite : lost queue entry " << remote_itr->first << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Command_LoadRoutes/CommandCode_RoutingTableWrite : lost queue entry "<< remote_itr->first);
 
                     queue_entry_t &failed_entry = remote_itr->second;
 
@@ -170,10 +157,7 @@ bool KlondikeProtocol::commandStateValid()
     {
         if( _routes.empty() )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::commandStateValid() : Command_LoadRoutes/CommandCode_RoutingTableWrite : _routes.empty() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Command_LoadRoutes/CommandCode_RoutingTableWrite : _routes.empty()");
 
             command_valid = false;
         }
@@ -213,10 +197,7 @@ YukonError_t KlondikeProtocol::setCommand( int command, byte_buffer_t payload, u
 
     if( itr == _command_states.end() )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - invalid command (" << command << ") in Klondike::setCommand() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "invalid command ("<< command <<")");
 
         _current_command.command = Command_Invalid;
         _current_command.state = 0;
@@ -326,8 +307,7 @@ YukonError_t KlondikeProtocol::generate( CtiXfer &xfer )
             case IO_Input:   doInput (_current_command.command_code, xfer);  break;
             default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::generate() : unknown _io_state (" << _io_state << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "unknown _io_state ("<< _io_state <<")");
             }
         }
     }
@@ -488,11 +468,7 @@ void KlondikeProtocol::doOutput(CommandCode command_code)
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unhandled command (" << _current_command.command << ") in Cti::Protocol::Klondike::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            break;
+            CTILOG_ERROR(dout, "unhandled command ("<< _current_command.command <<")");
         }
     }
 
@@ -596,10 +572,7 @@ YukonError_t KlondikeProtocol::decode( CtiXfer &xfer, YukonError_t status )
                     //  process DTRAN response ACK/NACK
                     if( inbound.size() > WrapLengthMaximum )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::decode() : inbound.size() > WrapLengthMaximum ("
-                                          << inbound.size() << " > " << WrapLengthMaximum
-                                          << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "inbound.size() > WrapLengthMaximum ("<< inbound.size() <<" > "<< WrapLengthMaximum <<")");
                     }
                     else if( inbound.size() > 0 )
                     {
@@ -747,10 +720,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
 
                     default:
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_DirectMessageRequest : unhandled NAK code (" << nak_code << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "CommandCode_DirectMessageRequest : unhandled NAK code ("<< nak_code <<")");
 
                         _error = Error_Unknown;
                     }
@@ -831,8 +801,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
 
                             if( pending_itr == _pending_requests.end() )
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_WaitingQueueWrite : could not find rejected queue entry (" << rejected_nak_code << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                CTILOG_ERROR(dout, "CommandCode_WaitingQueueWrite : could not find rejected queue entry ("<< rejected_nak_code <<")");
                             }
                             else
                             {
@@ -855,8 +824,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
                                             case NAK_LoadBuffer_NoRoutes:               error = Error_NoRoutes;                  break;
                                             default:
                                             {
-                                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_WaitingQueueWrite : unhandled NAK code (" << rejected_nak_code << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                                CTILOG_ERROR(dout, "CommandCode_WaitingQueueWrite : unhandled NAK code ("<< rejected_nak_code <<")");
                                             }
                                         }
 
@@ -884,8 +852,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
             }
             else if( response_command == CommandCode_ACK_NoData )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_WaitingQueueWrite : CommandCode_ACK_NoData **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_INFO(dout, "CommandCode_WaitingQueueWrite : CommandCode_ACK_NoData");
             }
             else if( response_command == CommandCode_ACK_Data )
             {
@@ -915,8 +882,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
 
                 if( accepted )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_WaitingQueueWrite : accept > _pending_requests.size() in Cti::Protocol::Klondike::decode() (" << accepted << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "CommandCode_WaitingQueueWrite : accept > _pending_requests.size() in Cti::Protocol::Klondike::decode() ("<< accepted <<" > "<< _pending_requests.size() <<")");
                 }
 
                 _pending_requests.clear();
@@ -943,10 +909,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
 
                 unsigned char nak_code = *inbound_itr++;
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_ReplyQueueRead : CommandCode_NAK (" << nak_code << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "CommandCode_ReplyQueueRead : CommandCode_NAK ("<< nak_code <<")");
 
                 _error = Error_Unknown;
             }
@@ -959,10 +922,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
 
                 _read_toggle = *inbound_itr++ ^ 0x01;  //  we'll echo this bit back to the CCU when we read or ack next
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - Cti::Protocol::Klondike::processResponse() : CommandCode_ReplyQueueRead : CommandCode_ACK_NoData **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "CommandCode_ReplyQueueRead : CommandCode_ACK_NoData");
             }
             else if( response_command == CommandCode_ACK_Data )
             {
@@ -984,32 +944,31 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
                                            inbound_end);
 
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - read queue response (seq, timestamp, signal strength, result, message) "
-                                 << "(" << setfill('0') << hex
-                                        << setw(4) << q.sequence           << ", "
-                                        <<            CtiTime(q.timestamp) << ", "
-                                        << setw(4) << q.signal_strength    << ", "
-                                        << setw(2) << (unsigned)q.result   << ", ";
+                            Cti::StreamBuffer outLog;
+
+                            outLog <<"read queue response (seq, timestamp, signal strength, result, message) ("<< setfill('0') << hex
+                                   << setw(4) << q.sequence         <<", "
+                                   << CtiTime(q.timestamp)          <<", "
+                                   << setw(4) << q.signal_strength  <<", "
+                                   << setw(2) << (unsigned)q.result <<", ";
 
                             byte_buffer_t::iterator message_itr = q.message.begin();
 
                             while( message_itr != q.message.end() )
                             {
-                                dout << hex << setw(2) << (unsigned)*message_itr++;
+                                outLog << setw(2) << (unsigned)*message_itr++;
                             }
 
-                            dout << dec;
+                            outLog <<")";
 
-                            dout <<  ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            CTILOG_INFO(dout, outLog);
                         }
 
                         remote_work_t::iterator remote_itr = _remote_requests.find(q.sequence);
 
                         if( remote_itr == _remote_requests.end() )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - unknown sequence (" << hex << setw(4) <<  q.sequence << ") received **** " << dec << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            CTILOG_ERROR(dout, "unknown sequence ("<< hex << setw(4) << q.sequence <<") received");
                         }
                         else
                         {
@@ -1028,8 +987,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
                     }
                     catch( std::range_error &re )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - " << re.what() << " restoring at position " << inbound_itr - inbound.begin() << "/" << inbound.size() << endl;
+                        CTILOG_EXCEPTION_ERROR(dout, re, "range error, restoring at position "<< inbound_itr - inbound.begin() <<"/"<< inbound.size());
 
                         return;
                     }
@@ -1053,12 +1011,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unhandled command code (" << _current_command.command_code << ") in Cti::Protocol::Klondike::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
+            CTILOG_ERROR(dout, "unhandled command code ("<< _current_command.command_code <<")");
         }
     }
 }

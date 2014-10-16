@@ -218,10 +218,8 @@ YukonError_t CtiDeviceAnsi::DemandReset( CtiRequestMsg *pReq, CtiCommandParser &
       return ClientErrors::MemoryAccess;
    }
 
-   {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << "outList.size() = " <<outList.size()<< endl;
-   }
+    CTILOG_INFO(dout, "outList.size() = "<< outList.size());
+
    return ClientErrors::None;
 }
 
@@ -258,14 +256,9 @@ YukonError_t CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg    *pReq,
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unsupported command on Ansi Device route. Command = " << parse.getCommand( ) << endl;
-            }
-            nRet = ClientErrors::NoMethod;
+            CTILOG_ERROR(dout, "Unsupported command on Ansi Device route. Command = " << parse.getCommand());
 
-            break;
+            nRet = ClientErrors::NoMethod;
         }
     }
 
@@ -273,11 +266,7 @@ YukonError_t CtiDeviceAnsi::ExecuteRequest( CtiRequestMsg    *pReq,
     {
         string resultString;
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
-            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
-        }
+        CTILOG_ERROR(dout, "Couldn't come up with an operation for device "<< getName() <<". Command = "<< parse.getCommand());
 
         resultString = "NoMethod or invalid command.";
         retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
@@ -370,33 +359,30 @@ YukonError_t CtiDeviceAnsi::ResultDecode( const INMESS &InMessage, const CtiTime
 
            try
            {
-
                if (lastLpTime != NULL && *lastLpTime != 0)
                {
-                  if (CtiTime(*lastLpTime).isValid())
-                  {
+                   if (CtiTime(*lastLpTime).isValid())
+                   {
                        setLastLPTime(CtiTime(*lastLpTime));
                        if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
+                           CTILOG_DEBUG(dout, "ResultDecode for "<< getName() <<" lastLPTime: "<<getLastLPTime());
                        }
-                  }
+                   }
                }
                else
                {
                    if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                    {
-                       CtiLockGuard<CtiLogger> doubt_guard(dout);
-                       dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: 0 ERROR"<< endl;
+                       CTILOG_DEBUG(dout, "ResultDecode for "<< getName() <<" lastLPTime: 0 ERROR");
                    }
                }
            }
            catch(...)
            {
-               CtiLockGuard<CtiLogger> logger_guard(dout);
-               dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+               CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
            }
+
            resetScanFlag(ScanRateGeneral);
         }
 
@@ -407,15 +393,10 @@ YukonError_t CtiDeviceAnsi::ResultDecode( const INMESS &InMessage, const CtiTime
         retList.push_back(retMsg);
         retMsg = NULL;
     }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << CtiTime::now() << " ==============================================" << endl;
-        dout << CtiTime::now() << " ==========The " << getName() << " responded with data=========" << endl;
-        dout << CtiTime::now() << " ==============================================" << endl;
-    }
 
-    return ClientErrors::None;
-}
+    CTILOG_INFO(dout, getName() <<" responded with data");
+
+    return ClientErrors::None;}
 YukonError_t CtiDeviceAnsi::sendCommResult( INMESS &InMessage)
 {
     if (getANSIProtocol().getScanOperation() >= CtiProtocolANSI::demandReset ) //2= demand Reset, 3=loopback
@@ -449,8 +430,7 @@ YukonError_t CtiDeviceAnsi::sendCommResult( INMESS &InMessage)
 
                 if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Send Comm Result for " << getName() <<" Last LP Time: "<<CtiTime(_lastLPTime)<< endl;
+                    CTILOG_DEBUG(dout, "Send Comm Result for "<< getName() <<" Last LP Time: "<< CtiTime(_lastLPTime));
                 }
             }
             else
@@ -495,19 +475,14 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
 
     try
     {
-        {
-          CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << CtiTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
-        }
+        CTILOG_INFO(dout, "Process Dispatch Message In Progress For "<< getName());
 
         while (x <= OFFSET_METER_TIME_STATUS)
         {
             if( const CtiPointAnalogSPtr pAnalogPoint = boost::dynamic_pointer_cast<CtiPointAnalog>(getDevicePointOffsetTypeEqual(x, AnalogPointType)) )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << endl << CtiTime() << " " << getName() << " Point Offset ==> " << x;
-                }
+                CTILOG_INFO(dout, getName() <<" Point Offset ==> "<< x);
+
                 switch (x)
                 {
                     case OFFSET_TOTAL_KWH:
@@ -608,8 +583,7 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
                         gotValue = getANSIProtocol().retrieveBatteryLife(x, &value);
                         if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getName() <<" Battery Life Value =  "<< value<< endl;
+                            CTILOG_DEBUG(dout, getName() <<" Battery Life Value =  "<< value);
                         }
                         break;
                     }
@@ -637,9 +611,9 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
             {
                 if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << endl << CtiTime() << " " << getName() << " Point Offset ==> " << x;
+                    CTILOG_DEBUG(dout, getName() <<" Point Offset ==> "<< x);
                 }
+
                 if (x == OFFSET_METER_TIME_STATUS)
                 {
                     gotValue = getANSIProtocol().retrieveMeterTimeDiffStatus(x, &value);
@@ -681,14 +655,12 @@ void CtiDeviceAnsi::processDispatchReturnMessage( list< CtiReturnMsg* > &retList
         getANSIProtocol().setLastLoadProfileTime(_lastLPTime);
         if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << CtiTime() << " " << getName() <<" Last LP Time "<<CtiTime(_lastLPTime)<< endl;
+            CTILOG_DEBUG(dout, getName() <<" Last LP Time "<< CtiTime(_lastLPTime));
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 void CtiDeviceAnsi::createPointData(const CtiPointAnalog &analogPoint, double value, double timestamp, unsigned int archiveFlag, list< CtiReturnMsg* > &retList)
@@ -700,9 +672,9 @@ void CtiDeviceAnsi::createPointData(const CtiPointAnalog &analogPoint, double va
 
     if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_DATA_INFO) )
     {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << " : " << _result_string;
+       CTILOG_DEBUG(dout, _result_string);
     }
+
     std::auto_ptr<CtiPointDataMsg> pData(
             new CtiPointDataMsg(
                     analogPoint.getID(),

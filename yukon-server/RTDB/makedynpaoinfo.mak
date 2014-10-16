@@ -1252,7 +1252,8 @@ dev_fulcrum.obj:	precompiled.h ctidate.h dlldefs.h logger.h thread.h \
 		database_reader.h boost_time.h rte_base.h ctibase.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
 		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
-		desolvers.h msg_signal.h string_utility.h \
+		desolvers.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h msg_signal.h string_utility.h \
 		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
@@ -2512,7 +2513,8 @@ dev_quantum.obj:	precompiled.h ctidate.h dlldefs.h logger.h thread.h \
 		database_reader.h boost_time.h rte_base.h ctibase.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
 		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
-		desolvers.h msg_signal.h string_utility.h \
+		desolvers.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h msg_signal.h string_utility.h \
 		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
@@ -3132,7 +3134,8 @@ dev_vectron.obj:	precompiled.h ctidate.h dlldefs.h logger.h thread.h \
 		database_reader.h boost_time.h rte_base.h ctibase.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
 		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
-		desolvers.h msg_signal.h string_utility.h \
+		desolvers.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h msg_signal.h string_utility.h \
 		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
@@ -3551,6 +3554,24 @@ port_rf_da.obj:	precompiled.h logger.h dlldefs.h thread.h mutex.h \
 		db_entry_defines.h desolvers.h msg_signal.h string_utility.h \
 		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
+		logManager.h tbl_port_base.h xfer.h counter.h devicetypes.h
+port_rf_da.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
+		string_util.h dllbase.h dsm2.h streamConnection.h yukon.h \
+		types.h ctidbgmem.h netports.h timing_util.h immutable.h \
+		readers_writer_lock.h critical_section.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		exception_helper.h port_rf_da.h port_base.h dev_base.h \
+		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
+		boostutil.h tbl_paoexclusion.h row_reader.h rwutil.h \
+		database_connection.h dbaccess.h database_reader.h \
+		boost_time.h rte_base.h dbmemobject.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h \
+		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
+		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
+		msg_signal.h string_utility.h tbl_static_paoinfo.h \
+		pointdefs.h encryption.h tbl_base.h tbl_scanrate.h \
+		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h logManager.h \
 		tbl_port_base.h xfer.h counter.h devicetypes.h \
 		rfn_identifier.h tbl_rfnidentifier.h
 port_serial.obj:	precompiled.h port_serial.h port_base.h dev_base.h \
@@ -4200,6 +4221,7 @@ test_cmd_rfn_focusallcdconfiguration.obj:	ctidate.h dlldefs.h logger.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
 		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
+		logger.h streamBuffer.h string_util.h exception_helper.h \
 		msg_signal.h string_utility.h tbl_static_paoinfo.h \
 		pointdefs.h encryption.h tbl_base.h tbl_scanrate.h \
 		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h msg_pcrequest.h \
@@ -4246,6 +4268,7 @@ test_cmd_rfn_ovuvconfiguration.obj:	ctidate.h dlldefs.h logger.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
 		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
+		logger.h streamBuffer.h string_util.h exception_helper.h \
 		msg_signal.h string_utility.h tbl_static_paoinfo.h \
 		pointdefs.h encryption.h tbl_base.h tbl_scanrate.h \
 		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h msg_pcrequest.h \
@@ -4269,6 +4292,7 @@ test_cmd_rfn_remotedisconnect.obj:	ctidate.h dlldefs.h logger.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
 		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
+		logger.h streamBuffer.h string_util.h exception_helper.h \
 		msg_signal.h string_utility.h tbl_static_paoinfo.h \
 		pointdefs.h encryption.h tbl_base.h tbl_scanrate.h \
 		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h msg_pcrequest.h \
@@ -4292,6 +4316,7 @@ test_cmd_rfn_temperaturealarm.obj:	ctidate.h dlldefs.h logger.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
 		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
 		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
+		logger.h streamBuffer.h string_util.h exception_helper.h \
 		msg_signal.h string_utility.h tbl_static_paoinfo.h \
 		pointdefs.h encryption.h tbl_base.h tbl_scanrate.h \
 		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h msg_pcrequest.h \
@@ -5009,8 +5034,7 @@ test_dev_rfn420centron.obj:	dev_rfn420centron.h dev_rfnResidential.h \
 		connection_base.h worker_thread.h xfer.h exceptions.h \
 		rfn_asid.h cmd_rfn_LoadProfile.h ctidate.h \
 		cmd_rfn_DemandFreeze.h cmd_rfn_TouConfiguration.h \
-		cmd_rfn_OvUvConfiguration.h cmd_rfn_RemoteDisconnect.h \
-		cmd_rfn_CentronLcdConfiguration.h rtdb_test_helpers.h \
+		cmd_rfn_OvUvConfiguration.h rtdb_test_helpers.h \
 		mgr_dyn_paoinfo.h boost_test_helpers.h millisecond_timer.h
 test_dev_rfn420focus_al.obj:	dev_rfn420focus_al.h dev_rfnResidential.h \
 		dev_rfnMeter.h dev_rfn.h rfn_identifier.h logger.h dlldefs.h \

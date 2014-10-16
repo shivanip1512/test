@@ -34,7 +34,7 @@ class SimulatorLogger : public Logger
 {
 public:
 
-    SimulatorLogger(CtiLogger &logger);
+    SimulatorLogger(Logging::LoggerPtr &logger);
     ~SimulatorLogger();
 
     virtual void log(const std::string &str);
@@ -62,7 +62,7 @@ protected:
 
 private:
 
-    CtiLogger &_logger;
+    Logging::LoggerPtr &_logger;
 };
 
 }

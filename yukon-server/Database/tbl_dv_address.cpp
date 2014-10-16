@@ -78,8 +78,7 @@ void CtiTableDeviceAddress::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["deviceid"]      >> _deviceID;
@@ -95,30 +94,21 @@ string CtiTableDeviceAddress::getTableName()
 
 bool CtiTableDeviceAddress::Insert()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
 
     return false;
 }
 
 bool CtiTableDeviceAddress::Update()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
 
     return false;
 }
 
 bool CtiTableDeviceAddress::Delete()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
 
     return false;
 }

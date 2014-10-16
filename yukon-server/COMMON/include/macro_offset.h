@@ -1,70 +1,31 @@
 #pragma once
 
 #include "dlldefs.h"
-#include "boost/optional/optional.hpp"
 
 namespace Cti {
 
 class IM_EX_CTIBASE MacroOffset
 {
     unsigned _value;
-
     bool     _initialized;
 
 public:
 
-    /// create uninitialized macro offset
-    MacroOffset() :
-        _initialized(false)
-    {}
+    MacroOffset();
+    MacroOffset( unsigned const aVal );
+    MacroOffset( MacroOffset const& aRef );
+    ~MacroOffset();
 
-    /// create initialized macro offset
-    MacroOffset( unsigned const aVal ) :
-        _initialized(false)
-    {
-        *this = aVal;
-    }
+    operator bool() const;
 
-    /// copy macro offset
-    MacroOffset( MacroOffset const& aRef ) :
-        _initialized(false)
-    {
-        *this = aRef;
-    }
+    MacroOffset& operator=(unsigned const rhs);
+    MacroOffset& operator=(MacroOffset const& rhs);
 
-    ~MacroOffset()
-    {}
+    unsigned& operator*();
 
-    operator bool() const
-    {
-        return _initialized;
-    }
+    unsigned const& operator*() const;
 
-    MacroOffset& operator=(unsigned const rhs)
-    {
-        _value       = rhs;
-        _initialized = true;
-        return *this;
-    }
-
-    MacroOffset& operator=(MacroOffset const& rhs)
-    {
-        _value       = rhs._value;
-        _initialized = rhs._initialized;
-        return *this;
-    }
-
-    unsigned& operator*()
-    {
-        assert( _initialized );
-        return _value;
-    }
-
-    unsigned const& operator*() const
-    {
-        assert( _initialized );
-        return _value;
-    }
+    std::string asString() const;
 
     /// uninitialized macro offset
     static MacroOffset const none;

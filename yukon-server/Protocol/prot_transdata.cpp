@@ -101,8 +101,7 @@ void CtiProtocolTransdata::processBillingData( BYTE *data )
    {
       if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
       {
-          CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << CtiTime() << " Whoa! The billing bytes are too big! # bytes = " << _numBilling << endl;
+          CTILOG_DEBUG(dout, "Billing bytes too large - bytes = "<< _numBilling);
       }
    }
    else
@@ -125,8 +124,7 @@ void CtiProtocolTransdata::processLPData( BYTE *data )
    {
       if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
       {
-          CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << CtiTime() << " Whoa! The lp bytes are too big! # bytes = " << _numLoadProfile << endl;
+          CTILOG_DEBUG(dout, "LP bytes too large - bytes = "<< _numLoadProfile);
       }
    }
    else
@@ -212,8 +210,7 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( const INMESS &InM
 
        if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
        {
-           CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << CtiTime() << " Scanner thinks last lp time is = " << _lastLPTime << endl;
+           CTILOG_DEBUG(dout, "Scanner thinks last lp time is = "<< _lastLPTime);
        }
 
        while( *ptr != NULL && ptr < pEND )
@@ -233,10 +230,7 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( const INMESS &InM
    }
    else
    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** WARNING **** Decode attempted to assign a last LP timestamp of " << lp->lastLP << " to the device. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+       CTILOG_WARN(dout, "Decode attempted to assign a last LP timestamp of "<< lp->lastLP <<" to the device");
    }
 
    //we're done with this guy

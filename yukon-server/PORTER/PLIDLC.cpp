@@ -190,7 +190,7 @@ YukonError_t GenReply (PBYTE Reply,            /* reply message */
 
    if(RemoteAddress != (Reply[1] >> 1))
    {
-      cerr <<" Progress: " << __FILE__ << " " << __LINE__ << endl;
+      CTILOG_WARN(dout, "Address mismatch, possible extended address - RemoteAddress = " << RemoteAddress << ", Reply[1] = " << Reply[1]);
       return ClientErrors::BadCcu;
    }
 
@@ -254,9 +254,6 @@ YukonError_t RTUReply (PBYTE Reply, USHORT Length)
 
    Save = Reply[Length-2] << 8 | Reply[Length-1];
 
-   // CtiLockGuard<CtiLogger> doubt_guard(dout);
-   // dout << "CRC Bytes : " << hex << (INT)Reply[Length-2] << (INT)Reply[Length-1] << dec << endl;
-
    /* check the crc */
    if(Save != NCrcCalc_C ((Reply+1), Length-3))
    {
@@ -274,7 +271,7 @@ YukonError_t RTUReplyHeader (USHORT Type, USHORT RemoteAddress, PBYTE  Message, 
 
    if(RemoteAddress != (Message[1] >> 1))
    {
-      cerr <<" Progress: " << __FILE__ << " " << __LINE__ << endl;
+      CTILOG_WARN(dout, "Address mismatch, possible extended address - RemoteAddress = " << RemoteAddress << ", Message[1] = " << Message[1]);
       return ClientErrors::BadCcu;
    }
 

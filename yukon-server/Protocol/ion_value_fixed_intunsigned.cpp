@@ -46,10 +46,8 @@ CtiIONUnsignedInt::CtiIONUnsignedInt( const unsigned char *byteStream, unsigned 
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "streamLength > 4 ("<< streamLength <<")");
+
         setValid(false);
     }
     memset( &_string, 0, sizeof(_string) );

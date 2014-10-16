@@ -47,37 +47,31 @@ CtiAnsiTable51& CtiAnsiTable51::operator=(const CtiAnsiTable51& aRef)
 //=========================================================================================================================================
 void CtiAnsiTable51::printResult( const string& deviceName )
 {
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 51  ========================" << endl;
-        dout << " ** Actual Time and TOU Table ** "<<endl;
+    itemList.add("tou_self_read_flag")        << (bool)_time_tou.time_func_flag1.tou_self_read_flag;
+    itemList.add("season_self_read_flag")     << (bool)_time_tou.time_func_flag1.season_self_read_flag;
+    itemList.add("season_demand_reset_flag")  << (bool)_time_tou.time_func_flag1.season_demand_reset_flag;
+    itemList.add("season_chng_armed_flag")    << (bool)_time_tou.time_func_flag1.season_chng_armed_flag;
+    itemList.add("sort_dates_flag")           << (bool)_time_tou.time_func_flag1.sort_dates_flag;
+    itemList.add("anchor_date_flag")          << (bool)_time_tou.time_func_flag1.anchor_date_flag;
+    itemList.add("cap_dst_auto_flag")         << (bool)_time_tou.time_func_flag2.cap_dst_auto_flag;
+    itemList.add("separate_weekdays_flag")    << (bool)_time_tou.time_func_flag2.separate_weekdays_flag;
+    itemList.add("separate_sum_demands_flag") << (bool)_time_tou.time_func_flag2.separate_sum_demands_flag;
+    itemList.add("sort_tier_switches_flag")   << (bool)_time_tou.time_func_flag2.sort_tier_switches_flag;
+    itemList.add("cap_tm_zn_offset_flag")     << (bool)_time_tou.time_func_flag2.cap_tm_zn_offset_flag;
+    itemList.add("nbr_seasons")               <<       _time_tou.calendar_func.nbr_seasons;
+    itemList.add("nbr_special_sched")         <<       _time_tou.calendar_func.nbr_special_sched;
+    itemList.add("nbr_non_recurr_dates")      <<       _time_tou.nbr_non_recurr_dates;
+    itemList.add("nbr_recurr_dates")          <<       _time_tou.nbr_recurr_dates;
+    itemList.add("nbr_tier_switches")         <<       _time_tou.nbr_tier_switches;
+    itemList.add("calendar_tbl_size")         <<       _time_tou.calendar_tbl_size;
 
-        dout << "           tou_self_read_flag         "<<(bool)_time_tou.time_func_flag1.tou_self_read_flag<<endl;
-        dout << "           season_self_read_flag      "<<(bool)_time_tou.time_func_flag1.season_self_read_flag<<endl;
-        dout << "           season_demand_reset_flag   "<<(bool)_time_tou.time_func_flag1.season_demand_reset_flag<<endl;
-        dout << "           season_chng_armed_flag     "<<(bool)_time_tou.time_func_flag1.season_chng_armed_flag<<endl;
-        dout << "           sort_dates_flag            "<<(bool)_time_tou.time_func_flag1.sort_dates_flag<<endl;
-        dout << "           anchor_date_flag           "<<(bool)_time_tou.time_func_flag1.anchor_date_flag<<endl;
-        dout << "           cap_dst_auto_flag          "<<(bool)_time_tou.time_func_flag2.cap_dst_auto_flag<<endl;
-        dout << "           separate_weekdays_flag     "<<(bool)_time_tou.time_func_flag2.separate_weekdays_flag<<endl;
-        dout << "           separate_sum_demands_flag  "<<(bool)_time_tou.time_func_flag2.separate_sum_demands_flag<<endl;
-        dout << "           sort_tier_switches_flag    "<<(bool)_time_tou.time_func_flag2.sort_tier_switches_flag<<endl;
-        dout << "           cap_tm_zn_offset_flag      "<<(bool)_time_tou.time_func_flag2.cap_tm_zn_offset_flag<<endl;
-        dout << "           nbr_seasons                "<<(int)_time_tou.calendar_func.nbr_seasons<<endl;
-        dout << "           nbr_special_sched          "<<(int)_time_tou.calendar_func.nbr_special_sched<<endl;
-        dout << "           nbr_non_recurr_dates       "<<(int)_time_tou.nbr_non_recurr_dates<<endl;
-        dout << "           nbr_recurr_dates           "<<(int)_time_tou.nbr_recurr_dates<<endl;
-        dout << "           nbr_tier_switches          "<<(int)_time_tou.nbr_tier_switches<<endl;
-        dout << "           calendar_tbl_size          "<<(int)_time_tou.calendar_tbl_size<<endl;
-    }
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 51") <<
+            endl <<"** Actual Time and TOU Table **"<<
+            itemList
+            );
 
 }
 

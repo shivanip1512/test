@@ -153,9 +153,7 @@ void CtiFDRSimple::threadFunctionGetData()
         {
           if( isDebugLevel( MIN_DETAIL_FDR_DEBUGLEVEL ) )
           {
-            CtiLockGuard<CtiLogger> doubt_guard( dout );
-            logNow() << "Connection down, waiting "
-              << secondsBeforeReconnect << " seconds for reconnect" << endl;
+              CTILOG_DEBUG(dout, logNow() <<"Connection down, waiting "<< secondsBeforeReconnect <<" seconds for reconnect");
           }
         }
       }
@@ -165,15 +163,14 @@ void CtiFDRSimple::threadFunctionGetData()
   {
     if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Cancelling thread threadFunctionGetData" << endl;
+        CTILOG_DEBUG(dout, logNow() <<"Thread CANCELLATION");
     }
+
     return;
   }
   catch (...)
   {
-    CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Caught unknown exception in CtiFDRSimple::threadFunctionGetData()." << endl;
+      CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, logNow() <<"Caught Unhandle Exception");
   }
 }
 
@@ -190,8 +187,7 @@ bool CtiFDRSimple::loadTranslationLists()
   if (!isConnected()) {
     if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Skipping loadTranslationLists(), not connected " << endl;
+        CTILOG_DEBUG(dout, logNow() <<"Skipping loadTranslationLists(), not connected");
     }
     // Returning false would cause the caller to keep attempting to reload the
     // translation lists. When we get reconnected, they'll be reloaded anyway.
@@ -213,10 +209,8 @@ bool CtiFDRSimple::loadTranslationLists()
       {
         if( isDebugLevel( MIN_DETAIL_FDR_DEBUGLEVEL ) )
         {
-          const int oldSize = aList.getPointList()->entries();
-          CtiLockGuard<CtiLogger> doubt_guard( dout );
-          logNow() << "Got an unexpected empty list from the database (old size="
-            << oldSize << ")" << endl;
+            const int oldSize = aList.getPointList()->entries();
+            CTILOG_DEBUG(dout, logNow() <<"Got an unexpected empty list from the database (old size="<< oldSize << ")");
         }
       }
       else
@@ -249,17 +243,16 @@ bool CtiFDRSimple::loadTranslationLists()
     }
     else
     {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      logNow() << "error in db read code " << endl;
-      successful = false;
+        CTILOG_ERROR(dout, logNow() << "Unable to load points from database");
+        successful = false;
     }
   }   // end try block
 
   catch (RWExternalErr e )
   {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    logNow() << "loadTranslationList():  " << e.why() << endl;
-    RWTHROW(e);
+      CTILOG_EXCEPTION_ERROR(dout, e, logNow() <<"Could not load point list");
+
+      RWTHROW(e);
   }
   return( successful );
 }
@@ -300,14 +293,6 @@ void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint,
                                 quality,
                                 ctiPoint->getPointType());
 
-
-    if (!pData)
-    {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to allocate memory for CtiPointDataMsg (CtiFDRSimple::handleUpdate()) " << endl;
-      return;
-    }
-
     // This no longer needs to be saved for the handleNonUpdate() method.
     //ctiPoint->setValue(valueConverted);
     //ctiPoint->setLastTimeStamp(time);
@@ -318,9 +303,7 @@ void CtiFDRSimple::handleUpdate(CtiFDRPoint *ctiPoint,
 
     if( isDebugLevel( MAJOR_DETAIL_FDR_DEBUGLEVEL ) )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "new value " << value << " for "
-        << *ctiPoint << " queued" << endl;
+        CTILOG_DEBUG(dout, logNow() <<"new value "<< value <<" for "<< *ctiPoint <<" queued");
     }
   }
 }
@@ -335,13 +318,6 @@ void CtiFDRSimple::handleNonUpdate(CtiFDRPoint *ctiPoint,
 {
   CtiCommandMsg *pMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
 
-  if (pMsg == NULL)
-  {
-    CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Unable to allocate memory for CtiPointDataMsg (CtiFDRSimple::handleUpdate()) " << endl;
-    return;
-  }
-
   pMsg->insert( -1 );             // This is the dispatch token and is unimplemented at this time
   pMsg->insert(CtiCommandMsg::OP_POINTID);       // OP_POINTID indicates a point fail situation.
   pMsg->insert(ctiPoint->getPointID());  // The pointid which failed
@@ -353,9 +329,7 @@ void CtiFDRSimple::handleNonUpdate(CtiFDRPoint *ctiPoint,
 
   if( isDebugLevel( MAJOR_DETAIL_FDR_DEBUGLEVEL ) )
   {
-    CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "UpdateFailed command for " <<
-      *ctiPoint << " queued" << endl;
+      CTILOG_DEBUG(dout, logNow() << "UpdateFailed command for "<< *ctiPoint <<" queued");
   }
 }
 
@@ -376,11 +350,12 @@ void CtiFDRSimple::readThisConfig()
 
   if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
   {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << "----------------FDRSimple Configs------------------------------" << endl;
-    dout << "  " << keyDbReloadRate << ": " << getReloadRate() << "         (secs)" << endl;
-    dout << "  " << keyDebugMode << ": " << (isInterfaceInDebugMode() ? "TRUE" : "FALSE") << endl;
-    dout << endl;
+      Cti::FormattedList loglist;
+      loglist.add(keyDbReloadRate) << getReloadRate() <<" seconds";
+      loglist.add(keyDebugMode)    << (bool)isInterfaceInDebugMode();
+
+      CTILOG_DEBUG(dout, "FDRSimple Configs:"<<
+              loglist);
   }
 }
 
@@ -408,8 +383,7 @@ void CtiFDRSimple::setConnected( bool conn )
      sendLinkState(conn);
      if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
      {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Setting " << (conn?"":"dis") << "connected" << endl;
+        CTILOG_DEBUG(dout, logNow() <<"Setting "<< (conn?"":"dis") << "connected");
      }
    _connected = conn;
    }
@@ -421,10 +395,7 @@ void CtiFDRSimple::setConnected( bool conn )
  */
 BOOL CtiFDRSimple::run()
 {
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      logNow() << "Starting Interface -------------------------" << endl;
-   }
+    CTILOG_INFO(dout, logNow() <<"Starting Interface");
 
    init();
 

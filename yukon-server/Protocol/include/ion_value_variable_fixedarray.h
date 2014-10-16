@@ -132,10 +132,7 @@ private:
         else if( Fixed::isFixedType(&element,  Fixed::Fixed_UnsignedInt) )      setFixedArrayType(FixedArray_UnsignedInt);
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variable type");
 
             retVal = false;
         }
@@ -183,10 +180,7 @@ protected:
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid array type");
 
             pos = len;
         }

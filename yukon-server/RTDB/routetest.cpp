@@ -16,7 +16,7 @@
 #include <iostream>
 
 
-#include "logger.h"
+#include "logManager.h"
 #include "mgr_route.h"
 #include "rtdb.h"
 
@@ -32,30 +32,22 @@ void main(int argc, char** argv)
     if(argc > 1) cnt = atoi(argv[1]);
     if(argc > 2) stime = atoi(argv[2]);
 
-    dout.start();     // fire up the logger thread
-    dout.setOutputPath("c:\\temp\\");
-    dout.setOutputFile("temp");
-    dout.setToStdOut(true);
-    dout.setWriteInterval(0);
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Route Tester is starting up now" << endl;
-    }
+    doutManager.setOutputPath("c:\\temp\\");
+    doutManager.setOutputFile("temp");
+    doutManager.setToStdOut(true);
+    doutManager.start();     // fire up the logger thread
+
+    CTILOG_INFO(dout, "Route Tester is starting up now");
 
     for(int i = 0; i < cnt; i++)
     {
         RouteManager.RefreshList();
-        RouteManager.DumpList();
+        CTILOG_INFO(dout, RouteManager);
 
         if(stime > 0)
         {
             Sleep(stime);
         }
     }
-
-    dout.interrupt(CtiThread::SHUTDOWN);
-    dout.join();
-
-    return;
 }

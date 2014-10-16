@@ -63,8 +63,7 @@ void CtiDeviceGroupPoint::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 }
 
@@ -83,19 +82,14 @@ YukonError_t CtiDeviceGroupPoint::ExecuteRequest(CtiRequestMsg *pReq, CtiCommand
     // Add these two items to the list for control accounting!
     if(control)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** CONTROL START! Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << _loadGroup.getControlStartString() << endl;
-        }
+        CTILOG_INFO(dout, "CONTROL START: "<< _loadGroup.getControlStartString());
+
         parse.setValue("control_interval", 86400);  // I do not have any idea how long this will control!
         parse.setValue("control_reduction", 100 );
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** CONTROL STOP!! Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << _loadGroup.getControlStopString() << endl;
-        }
+        CTILOG_INFO(dout, "CONTROL STOP: "<< _loadGroup.getControlStopString());
 
         parse.setValue("control_reduction", 0 );
         parse.setValue("control_interval", 0);
@@ -121,20 +115,16 @@ INT CtiDeviceGroupPoint::generateRequest(CtiRequestMsg *pReq, CtiCommandParser &
     // Add these two items to the list for control accounting!
     if(control)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** CONTROL START! Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << _loadGroup.getControlStartString() << endl;
-        }
+        CTILOG_INFO(dout, "CONTROL START: "<< _loadGroup.getControlStartString());
+
         pReq->setDeviceId( _loadGroup.getControlDevice() );
         pReq->setCommandString( _loadGroup.getControlStartString().c_str() + string(" select pointid " + CtiNumStr(_loadGroup.getControlPoint())));
         pReq->setMessagePriority( MAXPRIORITY - 1 );    // Make it sing!
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** CONTROL STOP!! Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << _loadGroup.getControlStopString() << endl;
-        }
+        CTILOG_INFO(dout, "CONTROL STOP: "<< _loadGroup.getControlStopString());
+
         pReq->setDeviceId( _loadGroup.getControlDevice() );
         pReq->setCommandString( _loadGroup.getControlStopString().c_str() + string(" select pointid " + CtiNumStr(_loadGroup.getControlPoint())));
         pReq->setMessagePriority( MAXPRIORITY - 1 );    // Make it sing!

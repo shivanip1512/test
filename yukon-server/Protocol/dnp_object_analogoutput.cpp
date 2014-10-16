@@ -38,12 +38,11 @@ int AnalogOutputStatus::restore(const unsigned char *buf, int len)
 
     _valid = true;
 
-    if( len < getSerializedLen() )
+    const int serializedLen = getSerializedLen();
+
+    if( len < serializedLen )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "len < serializedLen ("<< len <<" < "<< serializedLen <<")");
 
         _valid = false;
         pos = len;
@@ -109,10 +108,7 @@ int AnalogOutputStatus::restoreVariation(const unsigned char *buf, int len, int 
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
 
             _valid = false;
             pos = len;
@@ -181,12 +177,7 @@ int AnalogOutputStatus::serializeVariation(unsigned char *buf, int variation) co
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -196,7 +187,9 @@ int AnalogOutputStatus::serializeVariation(unsigned char *buf, int variation) co
 
 int AnalogOutputStatus::getSerializedLen(void) const
 {
-    switch(getVariation())
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case AOS_32Bit:  return 5;
         case AOS_16Bit:  return 3;
@@ -206,8 +199,7 @@ int AnalogOutputStatus::getSerializedLen(void) const
 
         default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -219,8 +211,9 @@ CtiPointDataMsg *AnalogOutputStatus::getPoint( const TimeCTO *cto ) const
 {
     double val = 0.0;
     int quality = NormalQuality;
+    const int variation = getVariation();
 
-    switch(getVariation())
+    switch(variation)
     {
         case AOS_32Bit:
         case AOS_16Bit:
@@ -238,12 +231,7 @@ CtiPointDataMsg *AnalogOutputStatus::getPoint( const TimeCTO *cto ) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -254,9 +242,7 @@ CtiPointDataMsg *AnalogOutputStatus::getPoint( const TimeCTO *cto ) const
 
     if( gDNPVerbose )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Analog output, value " << val << endl;
+        CTILOG_INFO(dout, "Analog output, value "<< val);
     }
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
@@ -279,12 +265,11 @@ int AnalogOutput::restore(const unsigned char *buf, int len)
 
     _valid = true;
 
-    if( len < getSerializedLen() )
+    const int serializedLen = getSerializedLen();
+
+    if( len < serializedLen )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "len < serializedLen ("<< len <<" < "<< serializedLen <<")");
 
         _valid = false;
         pos = len;
@@ -352,10 +337,7 @@ int AnalogOutput::restoreVariation(const unsigned char *buf, int len, int variat
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
 
             _valid = false;
             pos = len;
@@ -424,12 +406,7 @@ int AnalogOutput::serializeVariation(unsigned char *buf, int variation) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -439,7 +416,9 @@ int AnalogOutput::serializeVariation(unsigned char *buf, int variation) const
 
 int AnalogOutput::getSerializedLen(void) const
 {
-    switch(getVariation())
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case AO_32Bit:  return 5;
         case AO_16Bit:  return 3;
@@ -449,8 +428,7 @@ int AnalogOutput::getSerializedLen(void) const
 
         default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -466,6 +444,8 @@ unsigned char AnalogOutput::getStatus() const
 
 double AnalogOutput::getValue() const
 {
+    const int variation = getVariation();
+
     switch(getVariation())
     {
         case AO_32Bit:
@@ -482,8 +462,7 @@ double AnalogOutput::getValue() const
 
         default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 

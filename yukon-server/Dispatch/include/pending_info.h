@@ -8,7 +8,7 @@
 #include "msg_signal.h"
 #include "tbl_lm_controlhist.h"
 
-class CtiPendingPointOperations
+class CtiPendingPointOperations : public Cti::Loggable
 {
 public:
 
@@ -55,7 +55,7 @@ public:
     }
     CtiPendingOpType_t;
 
-    void dump() const;
+    virtual std::string toString() const override;
 
 protected:
 

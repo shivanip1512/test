@@ -46,32 +46,20 @@ CtiAnsiTable91& CtiAnsiTable91::operator=(const CtiAnsiTable91& aRef)
 //=========================================================================================================================================
 void CtiAnsiTable91::printResult( const string& deviceName )
 {
-    int index, i, j;
-    int nbrBlkInts;
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 91  ========================" << endl;
-    }
+    itemList.add("Answer Flag")         << (bool)_telephoneTbl.telephoneFlags.answer_flag;
+    itemList.add("S Anchor Date Flag")  << (bool)_telephoneTbl.telephoneFlags.s_anchor_date_flag;
+    itemList.add("OffHook Detect Flag") << (bool)_telephoneTbl.telephoneFlags.offhook_detect_flag;
+    itemList.add("Bit Rate")            << getBitRate();
+    itemList.add("ID in Purpose")       << (bool)_telephoneTbl.telephoneFlags.id_in_purpose;
+    itemList.add("No Lockout Parm")     << (bool)_telephoneTbl.telephoneFlags.no_lockout_parm;
 
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  ** Actual Telephone Table ** : "<<endl;
-        dout << "                  Answer Flag -"<< (bool) _telephoneTbl.telephoneFlags.answer_flag<<endl;
-        dout << "                  S Anchor Date Flag -"<< (bool)_telephoneTbl.telephoneFlags.s_anchor_date_flag <<endl;
-        dout << "                  OffHook Detect Flag -"<< (bool) _telephoneTbl.telephoneFlags.offhook_detect_flag<<endl;
-        dout << "                  Bit Rate -"<< getBitRate()<<endl;
-        dout << "                  ID in Purpose -"<< (bool) _telephoneTbl.telephoneFlags.id_in_purpose<<endl;
-        dout << "                  No Lockout Parm  -"<< (bool) _telephoneTbl.telephoneFlags.no_lockout_parm<<endl;
-    }
-
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 91") <<
+            endl <<"** Actual Telephone Table **"<< 
+            itemList
+            );
 }
 
 int CtiAnsiTable91::getBitRate()

@@ -27,8 +27,7 @@ void ChangeOpStateExecutor::execute()
     CtiCCCapBankPtr capBankPtr = store->findCapBankByPAObjectID(_bankId);
     if( capBankPtr == NULL )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Capbank does not exist, cannot change operational state." << endl;
+        CTILOG_INFO(dout, "Capbank does not exist, cannot change operational state.  Bank ID " << _bankId);
         return;
     }
     capBankPtr->setOperationalState(_newState);
@@ -45,16 +44,14 @@ void ChangeOpStateExecutor::execute()
     CtiCCFeederPtr feederPtr = store->findFeederByPAObjectID( capBankPtr->getParentId() );
     if( feederPtr == NULL )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " WARNING: Changed operational state of an orphaned Cap Bank." << endl;
+        CTILOG_WARN(dout, "Changed operational state of an orphaned Cap Bank.  Bank ID " << _bankId);
         return;
     }
 
     CtiCCSubstationBusPtr subbusPtr = store->findSubBusByPAObjectID( feederPtr->getParentId() );
     if( subbusPtr == NULL )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " WARNING: Changed operational state of an orphaned Cap Bank." << endl;
+        CTILOG_WARN(dout, "Changed operational state of an orphaned Cap Bank.  Bank ID " << _bankId);
         return;
     }
 

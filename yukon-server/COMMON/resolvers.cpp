@@ -493,8 +493,7 @@ INT resolveDeviceType(const string& _rwsTemp)
 
     if( ! isKnownUnsupportedDevice(_rwsTemp) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unsupported DEVICE type \"" << typestr << "\" " << endl;
+        CTILOG_ERROR(dout, "Unsupported DEVICE type \"" << typestr << "\"");
     }
 
     return 0;
@@ -556,10 +555,7 @@ INT resolveCapControlType(const string& _rwsTemp)
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Unsupported CAP CONTROL type \"" << rwsTemp << "\" " << endl;
-        }
+        CTILOG_ERROR(dout, "Unsupported CAP CONTROL type \"" << rwsTemp << "\"");
     }
 
     return nRet;
@@ -596,10 +592,7 @@ INT resolveLoadManagementType(const string& _rwsTemp)
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Unsupported LOAD MANAGEMENT type \"" << rwsTemp << "\" " << endl;
-        }
+        CTILOG_ERROR(dout, "Unsupported LOAD MANAGEMENT type \"" << rwsTemp << "\"");
     }
 
     return nRet;
@@ -640,8 +633,7 @@ INT resolveScanType(const string& _rwsTemp)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unsupported scan rate type \"" << rwsTemp << "\" " << endl;
+        CTILOG_ERROR(dout, "Unsupported scan rate type \"" << rwsTemp << "\"");
         nRet = ScanRateInvalid;
     }
 
@@ -670,8 +662,7 @@ LONG resolveDeviceWindowType(const string& _rwsTemp)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unsupported device window type \"" << rwsTemp << "\" " << endl;
+        CTILOG_ERROR(dout, "Unsupported device window type \"" << rwsTemp << "\"");
         nRet = DeviceWindowInvalid;
     }
 
@@ -749,8 +740,7 @@ INT resolvePAOClass(const string& _rwsTemp)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unsupported device class \"" << rwsTemp << "\" " << endl;
+        CTILOG_ERROR(dout, "Unsupported device class \"" << rwsTemp << "\"");
         nRet = PAOClassInvalid;
     }
 
@@ -774,9 +764,7 @@ INT resolveProtocol(const string& _str)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Unknown port protocol wrap " << str << endl;
+        CTILOG_ERROR(dout, "Unknown port protocol wrap " << str);
     }
 
     return nRet;
@@ -963,9 +951,7 @@ bool resolveIsDeviceTypeSingle(INT Type)
         }
         default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Unable to determine whether device type " << Type <<  " is a targetable device type!" << endl;
+            CTILOG_ERROR(dout, "Unable to determine whether device type " << Type <<  " is a targetable device type!");
         }
     }
 
@@ -1080,9 +1066,7 @@ INT resolveAddressUsage(const string& _str, int type)
         }
     default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "    Invalid address usage type " << str << endl;
+            CTILOG_ERROR(dout, "Invalid address usage type " << str);
             break;
         }
     }
@@ -1125,11 +1109,7 @@ INT resolveAWordTime(INT Seconds)
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Time " << Seconds << " is not an Emetcon standard time.  Using 1 hour." << endl;
-            // Fall through
-        }
+        CTILOG_WARN(dout, "Time " << Seconds << " is not an Emetcon standard time.  Using 1 hour.");
         nRet = TIME_60;
     }
 
@@ -1321,8 +1301,7 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
             else
             {
                 slaveAddress = -1;
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** ERROR Slave Address not defined **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Slave Address not defined");
             }
 
             break;
@@ -1356,8 +1335,7 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
             else
             {
                 slaveAddress = -1;
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** ERROR Slave Address not defined **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Slave Address not defined");
             }
 
             break;
@@ -1398,8 +1376,7 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
             else
             {
                 slaveAddress = 0;
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** ERROR Slave Address not defined **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Slave Address not defined");
             }
             break;
         }
@@ -1440,12 +1417,8 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Device Type " << DeviceType << " not resolved **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Device Type " << DeviceType << " not resolved" );
             break;
-
         }
     }
 
@@ -1472,9 +1445,7 @@ CtiControlType_t  resolveControlType(const string& _str)
 
     if( itr == ControlTypes.end() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Unknown control type \"" << str << "\"" << endl;
-
+        CTILOG_ERROR(dout, "Unknown control type \"" << str << "\"");
         return ControlType_Invalid;
     }
 

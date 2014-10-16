@@ -130,8 +130,7 @@ double CtiRegression::regression( double xprojection ) const
 
             if(gConfigParms.getValueAsULong("DEBUGLEVEL_REGRESSION",0,16) & 0x00000001)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << " " << xtemp << ", " << vt.second << endl;
+                CTILOG_DEBUG(dout, xtemp << ", " << vt.second);
             }
 
             sum_x += xtemp;
@@ -150,9 +149,7 @@ double CtiRegression::regression( double xprojection ) const
 
             if(gConfigParms.getValueAsULong("DEBUGLEVEL_REGRESSION",0,16) & 0x00000001)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << endl << "Forecast: for " << CtiTime((ULONG)xprojection) << " = offset " << xoffset << ", " << y << endl;
-                dout << endl;
+                CTILOG_DEBUG(dout, "Forecast: for " << CtiTime((ULONG)xprojection) << " = offset " << xoffset << ", " << y );
             }
         }
     }
@@ -191,8 +188,7 @@ bool CtiRegression::linearConstantIntervalRegression( double &slope, double &int
 
             if(gConfigParms.getValueAsULong("DEBUGLEVEL_REGRESSION",0,16) & 0x00000001)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << " " << xtemp << ", " << vt.second << endl;
+                CTILOG_DEBUG(dout, xtemp << ", " << vt.second);
             }
 
             sum_x += xtemp;
@@ -209,9 +205,7 @@ bool CtiRegression::linearConstantIntervalRegression( double &slope, double &int
 
             if(gConfigParms.getValueAsULong("DEBUGLEVEL_REGRESSION",0,16) & 0x00000001)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << endl << "Line Formula: Y =  " << m << " * X + " << b << endl;
-                dout << endl;
+                CTILOG_DEBUG(dout, "Line Formula: Y =  " << m << " * X + " << b );
             }
             retVal = true;
         }

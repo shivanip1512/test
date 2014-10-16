@@ -7,6 +7,7 @@
 #include "yukon.h"
 #include "row_reader.h"
 #include "database_connection.h"
+#include "loggable.h"
 
 
 #define CTITABLETAGLOG_MAX_USERNAME       60
@@ -16,7 +17,8 @@
 #define CTITABLETAGLOG_MAX_REFSTR         60
 #define CTITABLETAGLOG_MAX_FORSTR         60
 
-class IM_EX_CTIYUKONDB CtiTableTagLog : public CtiMemDBObject, private boost::noncopyable
+
+class IM_EX_CTIYUKONDB CtiTableTagLog : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -91,7 +93,7 @@ public:
     static int getMaxInstanceId();
     static int getLastMaxInstanceId();
 
-    virtual void dump();
+    virtual std::string toString() const override;
 
 };
 

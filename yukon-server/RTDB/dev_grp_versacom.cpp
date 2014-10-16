@@ -170,10 +170,7 @@ YukonError_t CtiDeviceGroupVersacom::ExecuteRequest(CtiRequestMsg     *pReq,
             OutMessage = NULL;
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << resultString << endl;
-        }
+        CTILOG_ERROR(dout, resultString);
     }
 
     return nRet;
@@ -249,8 +246,7 @@ void CtiDeviceGroupVersacom::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 
     VersacomGroup.DecodeDatabaseReader(rdr);

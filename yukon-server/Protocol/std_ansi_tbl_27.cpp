@@ -125,49 +125,23 @@ unsigned char* CtiAnsiTable27::getValueSelect(  )
 //=========================================================================================================================================
 void CtiAnsiTable27::printResult( const string& deviceName )
 {
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
+    Cti::FormattedList itemList;
+
+    Cti::StreamBufferSink& demands = itemList.add("Demand Src Indices");
+    for( int index = 0; index < _nbrPresentDemands; index++ )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "==================== "<<deviceName<<"  Std Table 27 ========================" << endl;
+        demands << _presentDemandSelect[index] <<"  ";
     }
+
+    Cti::StreamBufferSink& values = itemList.add("Value Src Indices");
+    for( int index = 0; index < _nbrPresentValues; index++ )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " ** Present Register Select ** "<<endl;
-        dout << "        Demand Src Indices: ";
+        values << _presentValueSelect[index] <<"  ";
     }
-    for (int i = 0; i < _nbrPresentDemands; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<(int)_presentDemandSelect[i];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl<<"         Value Src Indices: ";
-    }
-    for (int i = 0; i < _nbrPresentValues; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<(int)_presentValueSelect[i];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-    }
+
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 27") <<
+            endl <<"** Present Register Select **"<<
+            itemList
+            );
 }
-
-
-
-
-
-
-
-
-
-
-

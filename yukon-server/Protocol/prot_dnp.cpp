@@ -276,10 +276,7 @@ YukonError_t DNPInterface::generate( CtiXfer &xfer )
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - invalid control point in DNPInterface::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "invalid control point");
 
                     _command = Command_Invalid;
                 }
@@ -334,10 +331,7 @@ YukonError_t DNPInterface::generate( CtiXfer &xfer )
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - invalid control point in DNPInterface::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "invalid control point");
 
                     _command = Command_Invalid;
                 }
@@ -346,10 +340,7 @@ YukonError_t DNPInterface::generate( CtiXfer &xfer )
             }
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - invalid command " << _command << " in DNPInterface::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "invalid command "<< _command);
 
                 _command = Command_Invalid;
             }
@@ -487,10 +478,7 @@ YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
                             }
                             else
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint - empty command parameters for SBO operate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
+                                CTILOG_ERROR(dout, "empty command parameters for SBO operate");
 
                                 _string_results.push_back(CTIDBG_new string("Empty command parameter list for operate"));
                                 retVal = ClientErrors::Abnormal;
@@ -590,10 +578,7 @@ YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
 
                     CtiTime t(cto->getSeconds());
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - Cti::Protocol::DNPInterface::decode() - found CTO object in stream for device \"" << _name << "\" (" << t << ", " << cto->getMilliseconds() << "ms) **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_WARN(dout, "found CTO object in stream for device \""<< _name <<"\" ("<< t <<", "<< cto->getMilliseconds() <<"ms)");
                 }
                 else if( ob->getGroup()     == DNP::Time::Group &&
                          ob->getVariation() == DNP::Time::T_TimeAndDate )
@@ -627,10 +612,8 @@ YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
                         {
                             _last_complaint = now.seconds();
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - Cti::Protocol::DNPInterface::decode() - large time differential for device \"" << _name << "\" (" << t << "); will not complain again until " << CtiTime(_last_complaint + ComplaintInterval) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_WARN(dout, "large time differential for device \""<< _name <<"\" ("<< t <<"); "
+                                    "will not complain again until "<< CtiTime(_last_complaint + ComplaintInterval));
                         }
 
                         _string_results.push_back(CTIDBG_new string(s));
@@ -1166,10 +1149,7 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
             case Command_SetDigitalOut_SBO_Operate:
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - invalid command " << getCommand() << " in DNPSlaveInterface::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "invalid command "<< getCommand());
 
                 setSlaveCommand(Command_Invalid);
             }

@@ -73,8 +73,8 @@ YukonError_t CtiRouteCCU::ExecuteRequest(CtiRequestMsg            *pReq,
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ERROR: Route " << getName() << " has no  associated transmitter device" << endl;
+        CTILOG_ERROR(dout, "Route "<< getName() <<" has no associated transmitter device");
+
         status = ClientErrors::NoTransmitterForRoute;
     }
 
@@ -436,11 +436,7 @@ YukonError_t CtiRouteCCU::assembleDLCRequest(CtiCommandParser     &parse,
 
                 if(OutMessage->InLength <= 0)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " 062101 CGP CHECK CHECK CHECK " << endl;
-                    }
+                    CTILOG_WARN(dout, "062101 CGP CHECK CHECK CHECK");
 
                     OutMessage->InLength = 2;
                 }
@@ -992,14 +988,18 @@ CtiRouteCCU::CtiRouteCCU()
 {
 }
 
-void CtiRouteCCU::DumpData()
+std::string CtiRouteCCU::toString() const
 {
-    Inherited::DumpData();
-
-    Carrier.DumpData();
+    Cti::FormattedList itemList;
+    itemList <<"CtiRouteCCU";
+    itemList << Carrier;
 
     for(int i = 0; i < RepeaterList.length(); i++)
-        RepeaterList[i].DumpData();
+    {
+        itemList << RepeaterList[i];
+    }
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 CtiRouteCCU::CtiRepeaterList_t&  CtiRouteCCU::getRepeaterList()
@@ -1029,9 +1029,9 @@ void CtiRouteCCU::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
+
     Carrier.DecodeDatabaseReader(rdr);
 }
 

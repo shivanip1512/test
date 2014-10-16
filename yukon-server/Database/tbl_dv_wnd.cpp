@@ -1,90 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-*    FILE NAME: tbl_scanwindow.cpp
-*
-*    DATE: 10/03/2001
-*
-*    PVCS KEYWORDS:
-*    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_dv_wnd.cpp-arc  $
-*    REVISION     :  $Revision: 1.14 $
-*    DATE         :  $Date: 2005/12/20 17:16:06 $
-*
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: Memory image of scan window table
-*
-*    DESCRIPTION: This class implements a a window that some function is valid for a device
-*
-*    ---------------------------------------------------
-*    History:
-      $Log: tbl_dv_wnd.cpp,v $
-      Revision 1.14  2005/12/20 17:16:06  tspar
-      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-
-      Revision 1.13  2005/11/23 15:27:43  cplender
-      Altered ExecuteUpdater to not cause a false error case.
-
-      Revision 1.12  2005/10/20 21:41:27  cplender
-      Added ExecuteUpdater ad ExecuteInserter to wrap the updater.execute and insert.execute and print on error.
-      Revision 1.11.2.3  2005/08/12 19:53:39  jliu
-      Date Time Replaced
-
-      Revision 1.11.2.2  2005/07/14 22:26:53  jliu
-      RWCStringRemoved
-
-      Revision 1.11.2.1  2005/07/12 21:08:32  jliu
-      rpStringWithoutCmpParser
-
-      Revision 1.11  2005/04/15 18:28:40  mfisher
-      got rid of magic number debuglevel checks
-
-      Revision 1.10  2005/02/10 23:23:48  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.9  2004/06/28 16:40:40  cplender
-      Added toUpper on the string responses to FORCE case insensitivity.
-
-      Revision 1.8  2003/05/23 22:12:10  cplender
-      Workning on making the alternatescan rate logic scan immediately and then at the alternate interval.
-
-      Revision 1.7  2002/11/15 14:07:51  cplender
-      CRTDBG_new is being used in place of new
-
-      Revision 1.6  2002/09/09 21:44:07  cplender
-      These guys have multiple entries per pao.  Brain cramp on last change.  undid it.
-
-      Revision 1.4  2002/05/02 17:02:34  cplender
-      DBAccess no longer uses connection Lockguard to limit the number of connections
-      It uses the CTIDBG_new CtiSemaphore object to limit them to 5 (default)
-
-      Revision 1.3  2002/04/16 15:58:01  softwarebuild
-      20020416_1031_2_16
-
-      Revision 1.2  2002/04/15 15:18:32  cplender
-
-      This is an update due to the freezing of PVCS on 4/13/2002
-
-
-      Rev 2.3   28 Feb 2002 11:52:18   cplender
-   DBMemObject no longer inherits RWMonitor, removed table monitors.
-
-      Rev 2.2   19 Oct 2001 09:55:24   dsutton
-   updated the way we handle the windows when open and close are equal
-
-      Rev 2.1   17 Oct 2001 13:45:30   dsutton
-   initial revision
-*
-*
-*
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-*-----------------------------------------------------------------------------*
-*/
 #include "precompiled.h"
 
 #include "tbl_dv_wnd.h"
-
 #include "database_connection.h"
 #include "database_reader.h"
 
@@ -287,8 +203,7 @@ void CtiTableDeviceWindow::DecodeDatabaseReader(Cti::RowReader &aRdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     string rwstemp;
@@ -326,16 +241,18 @@ void CtiTableDeviceWindow::DecodeDatabaseReader(Cti::RowReader &aRdr)
     _updated = TRUE;                    // _ONLY_ _ONLY_ place this is set.
 }
 
-void CtiTableDeviceWindow::DumpData()
+std::string CtiTableDeviceWindow::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    Cti::FormattedList itemList;
 
-    dout << "DumpData" << endl;
-    dout << " Window Type                                 : " << desolveDeviceWindowType( _type) << endl;
-    dout << " Open                                        : " << _open  << endl;
-    dout << " Duration                                    : " << _duration << endl;
-    dout << " Alternate Open                              : " << _alternateOpen  << endl;
-    dout << " Alternate Duration                          : " << _alternateDuration << endl;
+    itemList <<"CtiTableDeviceWindow";
+    itemList.add("Window Type")        << desolveDeviceWindowType(_type);
+    itemList.add("Open")               << _open;
+    itemList.add("Duration")           << _duration;
+    itemList.add("Alternate Open")     << _alternateOpen;
+    itemList.add("Alternate Duration") << _alternateDuration;
+
+    return itemList.toString();
 }
 
 bool CtiTableDeviceWindow::addSignaledRateActive(int rate) const

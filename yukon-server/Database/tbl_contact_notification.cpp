@@ -1,30 +1,12 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_contact_notification
-*
-* Date:   2/3/2002
-*
-* Author: Corey G. Plender
-*         Aaron Lauinger
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_contact_notification.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:05 $
-*
-* Copyright (c) 1999-2003 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
 #include "database_connection.h"
 #include "database_reader.h"
-
 #include "dbaccess.h"
 #include "dllbase.h"
 #include "tbl_contact_notification.h"
 #include "logger.h"
+
 
 using std::string;
 using std::endl;
@@ -123,15 +105,19 @@ CtiTableContactNotification& CtiTableContactNotification::setDirty( bool dirt ) 
   return *this;
 }
 
-void CtiTableContactNotification::dump() const {
-  CtiLockGuard<CtiLogger> doubt_guard(dout);
+std::string CtiTableContactNotification::toString() const
+{
+    Cti::FormattedList itemList;
 
-  dout << "NotificationCategoryID: " << getNotificationCategoryID() << endl;
-  dout << "ContactID: " << getContactID() << endl;
-  dout << "NotificationCategoryID: " << getNotificationCategoryID() << endl;
-  dout << "Disabled: " << isDisabled() << endl;
-  dout << "Notification: " << getNotification() << endl;
-  dout << "Dirty: " << isDirty() << endl;
+    itemList <<"CtiTableContactNotification";
+    itemList.add("NotificationCategoryID") << getNotificationCategoryID();
+    itemList.add("ContactID")              << getContactID();
+    itemList.add("NotificationCategoryID") << getNotificationCategoryID();
+    itemList.add("Disabled")               << isDisabled();
+    itemList.add("Notification")           << getNotification();
+    itemList.add("Dirty")                  << isDirty();
+
+    return itemList.toString();
 }
 
 bool CtiTableContactNotification::Restore()

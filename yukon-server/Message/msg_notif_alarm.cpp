@@ -132,19 +132,23 @@ CtiMessage* CtiNotifAlarmMsg::replicateMessage() const
     return (CtiMessage*) ret;
 }
 
-void CtiNotifAlarmMsg::dump() const
+std::string CtiNotifAlarmMsg::toString() const
 {
-    dout << CtiTime() << " CtiNotifAlarmMsg -" << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiNotifAlarmMsg";
     for(vector<int>::const_iterator i = _notif_group_ids.begin(); i != _notif_group_ids.end(); i++)
     {
-        dout << "  Notification Group ID: " <<  *i << endl;
+        itemList.add("Notification Group ID") << *i;
     }
 
-    dout << "  Alarm Category ID: " << _category_id << endl;
-    dout << "  Point ID: " << _point_id << endl;
-    dout << "  Condition:  " << _condition << endl;
-    dout << "  Value:  " << _value << endl;
-    dout << "  Alarm Timestamp:  " << _alarm_timestamp << endl;
-    dout << "  Acknowledged:  " << _acknowledged << endl;
-    dout << "  Abnormal:  " << _abnormal << endl;
+    itemList.add("Alarm Category ID") << _category_id;
+    itemList.add("Point ID")          << _point_id;
+    itemList.add("Condition")         << _condition;
+    itemList.add("Value")             << _value;
+    itemList.add("Alarm Timestamp")   << _alarm_timestamp;
+    itemList.add("Acknowledged")      << _acknowledged;
+    itemList.add("Abnormal")          << _abnormal;
+
+    return (Inherited::toString() += itemList.toString());
 }

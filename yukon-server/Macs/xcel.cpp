@@ -51,14 +51,11 @@ bool DecodePMSIFile(const string& fileName, std::vector<std::string*>* commandLi
     if( commandList == NULL )
         return false;
 
-// cout << "file to open is:  " << fileName << endl;
-
     // open file
     if( (fptr = fopen( fileName.c_str(), "r")) == NULL )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "unable to open file" << endl;
-            return false;
+        CTILOG_ERROR(dout, "Unable to open file");
+        return false;
     }
 
     // retrieve each line in order
@@ -126,7 +123,6 @@ bool DecodePMSIFile(const string& fileName, std::vector<std::string*>* commandLi
         }
     }
 
-//    cout << "closing file now!" << endl;
     fclose(fptr);
 
     if( ferror( fptr ) != 0 )

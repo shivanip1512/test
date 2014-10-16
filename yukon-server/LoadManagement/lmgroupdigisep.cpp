@@ -91,8 +91,7 @@ bool LMGroupDigiSEP::sendSEPCycleControl(long controlMinutes, long cyclePercent,
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending SEP Cycle command, LM Group: " << getPAOName() << ", control minutes: " << controlMinutes << ", percent: " << cyclePercent << endl;
+        CTILOG_DEBUG(dout, "Sending SEP Cycle command, LM Group: " << getPAOName() << ", control minutes: " << controlMinutes << ", percent: " << cyclePercent);
     }
 
     setLastControlSent(CtiTime());
@@ -144,8 +143,7 @@ bool LMGroupDigiSEP::sendSEPTempOffsetControl(long controlMinutes, long heatOffs
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Invalid temperature settings, both heat and cool offset have non zero values, defaulting to cool: " << getPAOName() << endl;
+        CTILOG_INFO(dout, "Invalid temperature settings, both heat and cool offset have non zero values, defaulting to cool: " << getPAOName());
     }
 
     StreamableMessage::auto_type msg(
@@ -163,8 +161,7 @@ bool LMGroupDigiSEP::sendSEPTempOffsetControl(long controlMinutes, long heatOffs
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending SEP Thermostat command, LM Group: " << getPAOName() << ", control minutes: " << controlMinutes << ", heat: " << heatString << " cool: "  << coolString << endl;
+        CTILOG_DEBUG(dout, "Sending SEP Thermostat command, LM Group: " << getPAOName() << ", control minutes: " << controlMinutes << ", heat: " << heatString << " cool: "  << coolString);
     }
 
     setLastControlSent(CtiTime());
@@ -193,8 +190,7 @@ bool LMGroupDigiSEP::sendStopControl(bool stopImmediately)
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending SEP Stop command, LM Group: " << getPAOName() << ", stop immediately: " << (stopImmediately ? "TRUE" : "FALSE") << endl;
+        CTILOG_DEBUG(dout, "Sending SEP Stop command, LM Group: " << getPAOName() << ", stop immediately: " << (stopImmediately ? "TRUE" : "FALSE"));
     }
 
     setLastControlSent(CtiTime::now());
@@ -216,8 +212,7 @@ bool LMGroupDigiSEP::sendShedControl(long controlMinutes)
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending SEP Shed command, LM Group: " << getPAOName() << ", control minutes: " << CtiNumStr(controlMinutes) << endl;
+        CTILOG_DEBUG(dout, "Sending SEP Shed command, LM Group: " << getPAOName() << ", control minutes: " << controlMinutes);
     }
 
     setLastControlSent(CtiTime::now());
@@ -236,36 +231,24 @@ bool LMGroupDigiSEP::doesStopRequireCommandAt(const CtiTime &currentTime) const
 
 CtiRequestMsg* LMGroupDigiSEP::createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not Time Refresh a Digi SEP Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "Can not Time Refresh a Digi SEP Group,");
     return NULL;
 }
 
 CtiRequestMsg* LMGroupDigiSEP::createSmartCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not Smart Cycle a Digi SEP Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "Can not Smart Cycle a Digi SEP Group,");
     return NULL;
 }
 
 CtiRequestMsg* LMGroupDigiSEP::createRotationRequestMsg(LONG sendRate, LONG shedTime, int priority) const
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not Rotation a Digi SEP Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "Can not Rotation a Digi SEP Group,");
     return NULL;
 }
 
 CtiRequestMsg* LMGroupDigiSEP::createMasterCycleRequestMsg(LONG offTime, LONG period, int priority) const
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not Master Cycle a Digi SEP Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "Can not Master Cycle a Digi SEP Group,");
     return NULL;
 }

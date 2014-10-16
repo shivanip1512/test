@@ -237,11 +237,9 @@ bool CtiFDR_Dsm2Filein::processFunctionOne (string &aLine, CtiMessage **aRetMsg)
                     {
                         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Translation for point " << translationName;
-                                dout << " from " << getFileName() << " was not found" << endl;
-                            }
+                            CTILOG_DEBUG(dout, "Translation for point "<< translationName <<
+                                    " from "<< getFileName() <<" was not found");
+
                             desc = getFileName() + string ("'s point ") + translationName + string( " is not listed in the translation table");
                             _snprintf(action,60,"%s", translationName.c_str());
                             logEvent (desc,string (action));
@@ -348,11 +346,7 @@ bool CtiFDR_Dsm2Filein::processFunctionTwo (string &aLine, CtiMessage **aRetMsg)
                     {
                         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Translation for point " << translationName;
-                                dout << " from " << getFileName() << " was not found" << endl;
-                            }
+                            CTILOG_DEBUG(dout, "Translation for point "<< translationName <<" from "<< getFileName() <<" was not found");
 
                             desc = getFileName().c_str() + string ("'s point ") + translationName + string( " is not listed in the translation table");
                             _snprintf(action,60,"%s", translationName.c_str());
@@ -443,9 +437,8 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
 
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Analog point " << aTranslationName;
-                dout << " value " << value << " from " << getFileName() << " assigned to point " << aPoint.getPointID() << endl;;
+                CTILOG_DEBUG(dout, "Analog point " << aTranslationName <<
+                        " value "<< value <<" from "<< getFileName() <<" assigned to point "<< aPoint.getPointID());
             }
             retCode = true;
             break;
@@ -460,18 +453,21 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                 {
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Control point " << aTranslationName;
+                        Cti::StreamBuffer logmsg;
+                        logmsg <<" Control point "<< aTranslationName;
+
                         if (aValue == STATE_OPENED)
                         {
-                            dout << " control: Open " ;
+                            logmsg <<" control: Open ";
                         }
                         else
                         {
-                            dout << " control: Closed " ;
+                            logmsg <<" control: Closed ";
                         }
 
-                        dout <<" from " << getFileName() << " and processed for point " << aPoint.getPointID() << endl;;
+                        logmsg <<" from "<< getFileName() <<" and processed for point "<< aPoint.getPointID();
+
+                        CTILOG_DEBUG(dout, logmsg);
                     }
 
                     // build the command message and send the control
@@ -488,11 +484,8 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                 {
                     if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Invalid control state " << aValue;
-                            dout << " for " << aTranslationName << " received from " << getFileName() << endl;
-                        }
+                        CTILOG_DEBUG(dout, "Invalid control state "<< aValue <<
+                                " for "<< aTranslationName <<" received from "<< getFileName());
 
                         CHAR state[20];
                         _snprintf (state,20,"%.0f",aValue);
@@ -524,23 +517,20 @@ bool CtiFDR_Dsm2Filein::buildAndAddPoint (CtiFDRPoint &aPoint,
                                             ((CtiPointDataMsg*)*aRetMsg)->setTime(aTimestamp);
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Status point " << aTranslationName;
-                        dout << " new state: " << tracestate;
-                        dout <<" from " << getFileName() << " assigned to point " << aPoint.getPointID() << endl;;
+                        CTILOG_DEBUG(dout, "Status point "<< aTranslationName <<
+                                " new state: "<< tracestate <<
+                                " from "<< getFileName() <<" assigned to point "<< aPoint.getPointID());
                     }
                     retCode = true;
                 }
                 else
                 {
                     if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                   {
-                       {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Status point " << aTranslationName;
-                            dout << " received an invalid state " << (int)aValue;
-                            dout <<" from " << getFileName() << " for point " << aPoint.getPointID() << endl;;
-                       }
+                    {
+                        CTILOG_DEBUG(dout, "Status point "<< aTranslationName <<
+                                " received an invalid state "<< (int)aValue <<
+                                " from "<< getFileName() <<" for point "<< aPoint.getPointID());
+
                         CHAR state[20];
                         _snprintf (state,20,"%.0f",aValue);
                         desc = getFileName() + string (" status point received with an invalid state ") + string (state);
@@ -603,9 +593,7 @@ bool CtiFDR_Dsm2Filein::validateAndDecodeLine (string &aLine, CtiMessage **aRetM
             }
             default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unknown function number from import file" << endl;
-                break;
+                CTILOG_ERROR(dout, "Unknown function number from import file ("<< function <<")");
             }
         }
     }
@@ -700,26 +688,26 @@ int CtiFDR_Dsm2Filein::readConfig( void )
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " DSM2 filein file name " << getFileName() << endl;
-        dout << CtiTime() << " DSM2 filein directory " << getDriveAndPath() << endl;
-        dout << CtiTime() << " DSM2 filein interval " << getInterval() << endl;
-        dout << CtiTime() << " DSM2 filein dispatch queue flush rate " << getQueueFlushRate() << endl;
-        dout << CtiTime() << " DSM2 filein db reload rate " << getReloadRate() << endl;
+        Cti::FormattedList loglist;
+
+        loglist.add("DSM2 filein file name")                 << getFileName();
+        loglist.add("DSM2 filein directory")                 << getDriveAndPath();
+        loglist.add("DSM2 filein interval")                  << getInterval();
+        loglist.add("DSM2 filein dispatch queue flush rate") << getQueueFlushRate();
+        loglist.add("DSM2 filein db reload rate")            << getReloadRate();
 
         if (shouldDeleteFileAfterImport())
-            dout << CtiTime() << " DSM2 filein file will be deleted after import" << endl;
+            loglist <<"DSM2 filein file will be deleted after import";
         else
-            dout << CtiTime() << " DSM2 filein file will NOT be deleted after import" << endl;
+            loglist <<"DSM2 filein file will NOT be deleted after import";
+
         if (useSystemTime())
-            dout << CtiTime() << " DSM2 filein will stamp data with time at import" << endl;
+            loglist <<" DSM2 filein will stamp data with time at import";
         else
-            dout << CtiTime() << " DSM2 filein file stamp data according to time included in the import" << endl;
+            loglist <<" DSM2 filein file stamp data according to time included in the import";
 
-
+        CTILOG_DEBUG(dout, loglist);
     }
-
-
 
     return successful;
 }
@@ -786,8 +774,7 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
                         successful = true;
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                            CTILOG_DEBUG(dout, "No points defined for use by interface "<< getInterfaceName());
                         }
                     }
                 }
@@ -795,32 +782,28 @@ bool CtiFDR_Dsm2Filein::loadTranslationLists()
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                CTILOG_ERROR(dout, "Could not load (Receive) points for " << getInterfaceName() << " : Empty data set returned");
                 successful = false;
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Unable to load points from database for "<< getInterfaceName());
             successful = false;
         }
 
     }   // end try block
 
-    catch (RWExternalErr e )
+    catch (const RWExternalErr& e )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to load translation lists for "<< getInterfaceName());
         RWTHROW(e);
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load translation lists for "<< getInterfaceName());
     }
 
     return successful;
@@ -836,11 +819,10 @@ bool CtiFDR_Dsm2Filein::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
     {
         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-            //dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+            CTILOG_DEBUG(dout, "Parsing Yukon Point ID " << translationPoint->getPointID() <<
+                    " translate: " << translationPoint->getDestinationList()[x].getTranslation());
         }
+
         tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Option Number");
         if (!tempString2.empty())
         {
@@ -902,10 +884,7 @@ void CtiFDR_Dsm2Filein::threadFunctionReadFromFile( void )
 
                 if( fptr == NULL )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << getInterfaceName() << "'s file " << string (fileName) << " was either not found or could not be opened" << endl;
-                    }
+                    CTILOG_ERROR(dout, getInterfaceName() <<"'s file "<< fileName <<" was either not found or could not be opened");
                 }
                 else
                 {
@@ -951,17 +930,15 @@ void CtiFDR_Dsm2Filein::threadFunctionReadFromFile( void )
         }
     }
 
-    catch ( RWCancellation &cancellationMsg )
+    catch ( RWCancellation & )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION CtiFDRDsm2Filein::threadFunctionReadFromFile in interface " <<getInterfaceName()<< endl;
+        CTILOG_INFO(dout, "CANCELLATION of threadFunctionReadFromFile in interface "<< getInterfaceName());
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Fatal Error:  CtiFDRTextIMport::threadFunctionReadFromFile  " << getInterfaceName() << " is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionReadFromFile in interface "<< getInterfaceName() <<" is dead!");
     }
 }
 

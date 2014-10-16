@@ -98,12 +98,12 @@ void CtiProtocolSixnet::DisplayMsg(void)
 {
     if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " receive message OK, len:" << _rxLength
-        << " dest:" << _rxDest << " source:" << _rxSrc
-        << " sess:" << _rxSession << " seq:" << _rxSequence << endl
-        << "   " << " cmd:" << _rxCmd << " data len:" << _rxdata.size()
-        << " crc:" << hex << _rxCRC << dec << endl;
+        CTILOG_DEBUG(dout, "receive message OK, len:"<< _rxLength
+                 <<", dest:"<< _rxDest <<", source:"<< _rxSrc
+                 <<", sess:"<< _rxSession <<", seq:"<< _rxSequence
+                 << endl <<"  cmd:"<< _rxCmd
+                 <<", data len:"<< _rxdata.size() <<" crc:"<< hex << _rxCRC
+                 );
     }
 }
 
@@ -220,15 +220,21 @@ int CtiProtocolSixnet::disassemble(int nRcv)
             _state = GETLEAD;
         }
 
+        //FIXME: ????? replace both
+        // if(nRcv == 0 && _state == GETLEAD && ++nTimeOutCount > 5)
+        // else if(nRcv == 0 && _state != GETLEAD && ++nTimeOutCount > 5)
+        // with:
+        // if(nRcv == 0 && ++nTimeOutCount > 5)
+
         // check for time out
         if(nRcv == 0 && _state == GETLEAD && ++nTimeOutCount > 5)
         {
             // discard partial message
             if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " receive message timed out" << endl << flush;
+                CTILOG_DEBUG(dout, "receive message timed out");
             }
+
             _state = GETTIMEOUT;
             // empty the receive buffer
             pNextRx = pRx;
@@ -241,9 +247,9 @@ int CtiProtocolSixnet::disassemble(int nRcv)
             // discard partial message
             if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " receive message timed out" << endl << flush;
+                CTILOG_DEBUG(dout, "receive message timed out");
             }
+
             _state = GETTIMEOUT;
             // empty the receive buffer
             pNextRx = pRx;
@@ -257,8 +263,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
 
             if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " received " << nRcv << " byte(s)" << endl << flush;
+                CTILOG_DEBUG(dout, "received "<< nRcv <<"-byte(s)");
             }
 
             while(pNextRx < pNextRcv        // at least one byte is available and
@@ -276,8 +281,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
                         // may be new lead char, but is NOT valid here in message
                         if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " receive HEX message aborted" << endl << flush;
+                            CTILOG_DEBUG(dout, "receive HEX message aborted");
                         }
                         _state = GETLEAD;
                     }
@@ -360,9 +364,9 @@ int CtiProtocolSixnet::disassemble(int nRcv)
                     {
                         if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << "receive message length bad " << _rxLength << endl << flush;
+                            CTILOG_DEBUG(dout, "receive message length bad "<< _rxLength);
                         }
+
                         _state = GETLEAD;
                         pNextRx = pRx + 1; // look for new start of message
                     }
@@ -457,8 +461,7 @@ int CtiProtocolSixnet::disassemble(int nRcv)
                     {
                         if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Processing starting!" << endl << flush;
+                            CTILOG_DEBUG(dout, "Processing starting!");
                         }
 
                         ProcessMessage();
@@ -495,11 +498,7 @@ uint32 CtiProtocolSixnet::getBytesLeftInRead() const
 
     if(bl > 260)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
+        CTILOG_ERROR(dout, "bytes left > 260 ("<< bl <<"), returning 0");
         bl = 0;
     }
 
@@ -858,8 +857,7 @@ int CtiProtocolSixnet::FsGetAliasGenerate(string szName, string szOptions)
 
     if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Requesting file " << szName << endl;
+        CTILOG_DEBUG(dout, "Requesting file "<< szName);
     }
 
     // also copy terminating '\0'
@@ -893,21 +891,18 @@ int CtiProtocolSixnet::FsGetAliasProcess()
 
             if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  ALIAS RECEIVED " << _alias << endl;
+                CTILOG_DEBUG(dout, "ALIAS RECEIVED: "<< _alias);
             }
         }
         else        // error, no valid alias
         {
             _alias = 0;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  Error " << _error << endl;
-                dout << "  Data bytes " << _rxdata.size() << endl;
-            }
+
+            CTILOG_ERROR(dout, "no valid alias"<<
+                    endl <<"  Error:      "<< _error <<
+                    endl <<"  Data bytes: "<< _rxdata.size()
+                    );
         }
     }
 
@@ -1011,7 +1006,7 @@ int CtiProtocolSixnet::DlMOVETAILGenerate(uint32 tail)
     send32(_alias);
     send32(tail);
     if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
-        cerr << "moving tail to: " << tail << endl << flush;
+        cerr << "moving tail to: "<< tail << endl << flush;
 
 
     return( assemble() == 0 ? pNextTx - pTx : 0);
@@ -1035,8 +1030,9 @@ int CtiProtocolSixnet::DlMoveTailProcess()
         uint32 newtail = get32(1);
 
         if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
-            cerr << "tail moved to: " << newtail << endl << flush;
-
+        {
+            CTILOG_DEBUG(dout, "tail moved to: "<< newtail);
+        }
 
         setAcked(true);
     }
@@ -1102,9 +1098,7 @@ int CtiProtocolSixnet::DlGetRecsProcess()
 
             if(getDebugLevel() & DEBUGLEVEL_SIXNET_PROTOCOL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  Collected " << _numRecs << " records beginning from " << _first << endl;
+                CTILOG_DEBUG(dout, "Collected "<< _numRecs <<" records beginning from "<< _first);
             }
         }
         else
@@ -1153,11 +1147,7 @@ int CtiProtocolSixnet::ProcessMessage()
             case FILESYS_MEMAVAIL:
             default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    break;
+                    CTILOG_ERROR(dout, "unknown _txSubCommand ("<< _txSubCommand <<")");
                 }
             }
             break;
@@ -1183,11 +1173,7 @@ int CtiProtocolSixnet::ProcessMessage()
             case DLOG_NEW_RECORDS:
             default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    break;
+                    CTILOG_ERROR(dout, "unknown _txSubCommand ("<< _txSubCommand <<")");
                 }
             }
 
@@ -1195,12 +1181,7 @@ int CtiProtocolSixnet::ProcessMessage()
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")  " << endl;
-            }
-
-            break;
+            CTILOG_ERROR(dout, "unknown _txCmd ("<< _txCmd <<")");
         }
     }
 

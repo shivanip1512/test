@@ -18,7 +18,6 @@
 using namespace std;
 
 DLLIMPORT extern BOOL  bGCtrlC;
-DLLIMPORT extern CtiLogger dout;
 
 static _CRT_ALLOC_HOOK pfnOldCrtAllocHook = NULL;
 
@@ -51,7 +50,7 @@ int DispatchMainFunction(int argc, char **argv)
         {
             CreateMiniDump("dispatch");
 
-            cerr << "***** EXCEPTION ******* Terminating Dispatch" << endl;
+            CTILOG_ERROR(dout, "Could not Join Dispatch - Terminating");
             VanGogh.terminate();
         }
 
@@ -61,7 +60,7 @@ int DispatchMainFunction(int argc, char **argv)
     }
     catch(const RWxmsg& x)
     {
-        cout << "main() Exception: " << x.why() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, x);
     }
 
     return 0;

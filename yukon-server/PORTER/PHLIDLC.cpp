@@ -48,10 +48,8 @@ INT IDLCInit (CtiPortSPtr      PortRecord,        /* Port record */
         return ClientErrors::RemoteInhibited;
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Reset Request to " << RemoteRecord->getName() << endl;
-    }
+    CTILOG_INFO(dout, "Reset Request to "<< RemoteRecord->getName());
+
     /* build the message to send to the ccu */
     IDLCSArm (Message, RemoteRecord->getAddress());
 
@@ -93,14 +91,7 @@ INT IDLCFunction (CtiDeviceSPtr &Dev,
 {
     INT status = ClientErrors::None;
 
-    OUTMESS *OutMessage;
-
-    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
-    {
-        printf ("Error Allocating Memory\n");
-        return ClientErrors::MemoryAccess;
-    }
-
+    OUTMESS *OutMessage = new OUTMESS;
 
     OutMessage->Priority      = MAXPRIORITY;
     OutMessage->DeviceID      = Dev->getID();
@@ -125,10 +116,7 @@ INT IDLCFunction (CtiDeviceSPtr &Dev,
     /* Now output message to appropriate port queue */
     if(PortManager.writeQueue(OutMessage))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Error writing to port queue for device " << Dev->getName() << endl;
-        }
+        CTILOG_ERROR(dout, "Could not write to port queue for Device "<< Dev->getName() <<" / Port "<< OutMessage->Port);
 
         delete (OutMessage);
         status = ClientErrors::QueueWrite;
@@ -143,8 +131,7 @@ INT IDLCFunction (CtiDeviceSPtr &Dev,
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "p711Info is Null");
         }
     }
 
@@ -156,18 +143,13 @@ INT IDLCFunction (CtiDeviceSPtr &Dev,
 INT IDLCRCont (CtiDeviceSPtr &Dev)
 {
     INT status = ClientErrors::None;
-    OUTMESS *OutMessage;
     ULONG i;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
     if(p711Info->PortQueueConts)
         return ClientErrors::None;
 
-    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
-    {
-        printf ("Error Allocating Memory\n");
-        return ClientErrors::MemoryAccess;
-    }
+    OUTMESS* OutMessage = new OUTMESS;
 
     OutMessage->DeviceID = Dev->getID();
 
@@ -204,7 +186,7 @@ INT IDLCRCont (CtiDeviceSPtr &Dev)
     /* Now output message to appropriate port queue */
     if(PortManager.writeQueue(OutMessage))
     {
-        printf ("Error Writing to Port Queue\n");
+        CTILOG_ERROR(dout, "Could not write to port queue for Device "<< Dev->getName() <<" / Port "<< OutMessage->Port);
 
         delete (OutMessage);
         status = ClientErrors::QueueWrite;
@@ -223,17 +205,12 @@ INT IDLCRCont (CtiDeviceSPtr &Dev)
 INT IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
 {
     INT status = ClientErrors::None;
-    OUTMESS *OutMessage;
     ULONG i;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
     if(!p711Info->getStatus(INRCOLQ))
     {
-        if((OutMessage = CTIDBG_new OUTMESS) == NULL)
-        {
-            printf ("Error Allocating Memory\n");
-            return ClientErrors::MemoryAccess;
-        }
+        OUTMESS *OutMessage = new OUTMESS;
 
         OutMessage->DeviceID = Dev->getID();
 
@@ -310,7 +287,8 @@ INT IDLCRColQ (CtiDeviceSPtr &Dev, INT priority)
         /* Now output message to appropriate port queue */
         if(PortManager.writeQueue(OutMessage))
         {
-            printf ("Error Writing to Port Queue\n");
+            CTILOG_ERROR(dout, "Could not write to port queue for Device "<< Dev->getName() <<" / Port "<< OutMessage->Port);
+
             delete (OutMessage);
             return ClientErrors::QueueWrite;
         }
@@ -331,15 +309,10 @@ INT IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT
 {
     INT status = ClientErrors::None;
     USHORT Index;
-    OUTMESS *OutMessage;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
     /* Allocate some memory */
-    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
-    {
-        printf ("Error Allocating Memory\n");
-        return ClientErrors::MemoryAccess;
-    }
+    OUTMESS * OutMessage = new OUTMESS;
 
     /* Load up the queue structure */
     OutMessage->DeviceID = Dev->getID();
@@ -394,7 +367,7 @@ INT IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT
     PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
     if(PortManager.writeQueue(OutMessage))
     {
-        printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
+        CTILOG_ERROR(dout, "Could not write to port queue for Device "<< Dev->getName() <<" / Port "<< OutMessage->Port);
 
         delete (OutMessage);
         return ClientErrors::QueueWrite;
@@ -413,15 +386,10 @@ INT IDLCSetTSStores (CtiDeviceSPtr &Dev, USHORT Priority, USHORT Trigger, USHORT
 INT IDLCSetBaseSList (CtiDeviceSPtr &Dev)
 {
     USHORT Index;
-    OUTMESS *OutMessage;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
     /* Allocate some memory */
-    if((OutMessage = CTIDBG_new OUTMESS) == NULL)
-    {
-        printf ("Error Allocating Memory\n");
-        return ClientErrors::MemoryAccess;
-    }
+    OUTMESS * OutMessage = new OUTMESS;
 
     /* Load up the queue structure */
     OutMessage->DeviceID      = Dev->getID();
@@ -466,7 +434,7 @@ INT IDLCSetBaseSList (CtiDeviceSPtr &Dev)
     PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
     if(PortManager.writeQueue(OutMessage))
     {
-        printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
+        CTILOG_ERROR(dout, "Could not write to port queue for Device "<< Dev->getName() <<" / Port "<< OutMessage->Port);
 
         delete (OutMessage);
         return ClientErrors::QueueWrite;
@@ -542,7 +510,6 @@ INT IDLCSetDelaySets (CtiDeviceSPtr &Dev)
     bool filefound = false;
     bool devfound = false;
     USHORT Index;
-    OUTMESS *OutMessage;
     CtiTransmitter711Info *p711Info = (CtiTransmitter711Info *)Dev->getTrxInfo();
 
     /* Defines for file handle */
@@ -560,10 +527,7 @@ INT IDLCSetDelaySets (CtiDeviceSPtr &Dev)
     /* attempt to open the OLD file */
     if((HFile = fopen ("DATA\\DELAY.DAT", "r")) != NULL)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " DELAY.DAT MUST be moved to SERVER\\CONFIG\\DELAY.DAT" << endl;
-        }
+        CTILOG_WARN(dout, "DELAY.DAT MUST be moved to SERVER\\CONFIG\\DELAY.DAT");
 
         fclose (HFile);
         HFile = NULL;
@@ -578,10 +542,8 @@ INT IDLCSetDelaySets (CtiDeviceSPtr &Dev)
         {
             if(fscanf (HFile,"%d,%hd,%hd,%hd,%hd,%hd,%hd", &MyPort,  &MyRemote, &T_RTSOn, &T_CTSTo, &T_KeyOff, &T_IntraTo, &BA_Trig) != 7)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Device not detected in delay.dat file **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Device not detected in delay.dat file");
+
                 T_RTSOn      = 180;
                 T_CTSTo      = 168;
                 T_KeyOff     = 32;
@@ -604,11 +566,7 @@ INT IDLCSetDelaySets (CtiDeviceSPtr &Dev)
 
     if(!filefound && PorterDebugLevel & PORTER_DEBUG_CCUCONFIG)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " No delay.dat file was found.  Port Control was looking here " << gDelayDatFile << endl;
-        }
+        CTILOG_DEBUG(dout, "No delay.dat file was found.  Port Control was looking here "<< gDelayDatFile);
     }
 
     if(devfound)
@@ -616,21 +574,19 @@ INT IDLCSetDelaySets (CtiDeviceSPtr &Dev)
         /* If we get here we got one */
         if(PorterDebugLevel & PORTER_DEBUG_CCUCONFIG)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " " << Dev->getName() << " (" << Dev->getPortID() << "," << Dev->getAddress() << ") timings being set to: " << endl;
-            dout << " T_RTSOn    " << T_RTSOn << endl;
-            dout << " T_CTSTo    " << T_CTSTo << endl;
-            dout << " T_KeyOff   " << T_KeyOff << endl;
-            dout << " T_IntraTo  " << T_IntraTo << endl;
-            dout << " BA_Trig    " << BA_Trig << endl;
+            Cti::FormattedList items;
+            items.add("T_RTSOn")   << T_RTSOn;
+            items.add("T_CTSTo")   << T_CTSTo;
+            items.add("T_KeyOff")  << T_KeyOff;
+            items.add("T_IntraTo") << T_IntraTo;
+            items.add("BA_Trig")   << BA_Trig;
+
+            CTILOG_DEBUG(dout, Dev->getName() <<" ("<< Dev->getPortID() <<","<< Dev->getAddress() <<") timings being set to:"<<
+                    items);
         }
 
         /* Allocate some memory */
-        if((OutMessage = CTIDBG_new OUTMESS) == NULL)
-        {
-            printf ("Error Allocating Memory\n");
-            return ClientErrors::MemoryAccess;
-        }
+        OUTMESS *OutMessage = new OUTMESS;
 
         /* Load up the queue structure */
         OutMessage->DeviceID      = Dev->getID();
@@ -738,7 +694,8 @@ INT IDLCSetDelaySets (CtiDeviceSPtr &Dev)
         PorterStatisticsManager.newRequest(OutMessage->Port, OutMessage->DeviceID, 0, OutMessage->MessageFlags);
         if(PortManager.writeQueue(OutMessage))
         {
-            printf ("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
+            CTILOG_ERROR(dout, "Could not write to port queue for Device "<< Dev->getName() <<" / Port "<< OutMessage->Port);
+
             delete (OutMessage);
             return ClientErrors::QueueWrite;
         }

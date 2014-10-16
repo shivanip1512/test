@@ -1,9 +1,9 @@
-
 #include "precompiled.h"
+
 #include "ctitime.h"
 #include "ctidate.h"
 #include <time.h>
-
+#include "logger.h"
 
 using namespace boost::gregorian;
 using std::endl;
@@ -26,9 +26,7 @@ CtiDate::CtiDate(unsigned int dd, unsigned int mm, unsigned int yy) :
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - exception in CtiDate(day,month,year) (" << dd << "," << mm << "," << yy << ") - setting date to 1/1/1970 " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
+        CTILOG_UNKNOWN_EXCEPTION_WARN(dout, "exception in CtiDate(day,month,year) (" << dd << "," << mm << "," << yy << ") - setting date to 1/1/1970");
         bdate = date(1970, 1, 1);
     }
 }
@@ -42,9 +40,7 @@ CtiDate::CtiDate(unsigned int dd, unsigned int yy) :
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - exception in CtiDate(days,year) (" << dd << "," << yy << ") - setting date to 1/1/1970 " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
+        CTILOG_UNKNOWN_EXCEPTION_WARN(dout, "exception in CtiDate(days,year) (" << dd << "," << yy << ") - setting date to 1/1/1970");
         bdate = date(1970, 1, 1);
     }
 }
@@ -77,9 +73,7 @@ CtiDate::CtiDate(const CtiTime& ct) :
             }
             catch( ... )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - exception in CtiDate(ct) (" << ct << ") - setting date to 1/1/1970 " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
+                CTILOG_UNKNOWN_EXCEPTION_WARN(dout, "exception in CtiDate(ct) (" << ct << ") - setting date to 1/1/1970");
                 bdate = date(1970, 1, 1);
             }
         }
@@ -226,8 +220,7 @@ unsigned int CtiDate::daysInMonthYear(unsigned mm, unsigned yy)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - exception in CtiDate::daysInMonthYear(month,year) (" << mm << "," << yy << ") - returning 0 " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_WARN(dout, "exception in CtiDate::daysInMonthYear(month,year) (" << mm << "," << yy << ") - returning 0");
     }
 
     return days_in_month;

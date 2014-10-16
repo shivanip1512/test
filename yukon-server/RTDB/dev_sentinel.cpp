@@ -170,10 +170,8 @@ YukonError_t CtiDeviceSentinel::DemandReset( CtiRequestMsg *pReq, CtiCommandPars
       return ClientErrors::MemoryAccess;
    }
 
-   {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << "outList.size() = " <<outList.size()<< endl;
-   }
+   CTILOG_INFO(dout, "outList.size() = "<< outList.size());
+
    return ClientErrors::None;
 }
 
@@ -248,11 +246,8 @@ YukonError_t CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg     *pReq,
         */
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unsupported command on EMETCON route. Command = " << parse.getCommand( ) << endl;
-            }
+            CTILOG_ERROR(dout, "Unsupported command: "<< parse.getCommand());
+
             nRet = ClientErrors::NoMethod;
 
             break;
@@ -263,11 +258,7 @@ YukonError_t CtiDeviceSentinel::ExecuteRequest( CtiRequestMsg     *pReq,
     {
         string resultString;
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
-            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
-        }
+        CTILOG_ERROR(dout, "Couldn't come up with an operation for device "<< getName() <<". Command: " << pReq->CommandString());
 
         resultString = "NoMethod or invalid command.";
         retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
@@ -372,32 +363,28 @@ YukonError_t CtiDeviceSentinel::ResultDecode( const INMESS &InMessage, const Cti
 
                 try
                 {
-
-                if (lastLpTime != NULL && *lastLpTime != 0)
-                {
+                    if (lastLpTime != NULL && *lastLpTime != 0)
+                    {
                         if (CtiTime(*lastLpTime).isValid())
                         {
-                    setLastLPTime(CtiTime(*lastLpTime));
-                    if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
-                    {
-                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                         dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: "<<getLastLPTime()<< endl;
-                     }
-                }
+                            setLastLPTime(CtiTime(*lastLpTime));
+                            if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
+                            {
+                                 CTILOG_DEBUG(dout, "ResultDecode for "<< getName() <<" lastLPTime: "<<getLastLPTime());
+                            }
+                        }
                     }
-                else
-                {
-                    if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
+                    else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " ResultDecode for " << getName() <<" lastLPTime: 0 ERROR"<< endl;
+                        if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
+                        {
+                            CTILOG_DEBUG(dout, "ResultDecode for "<< getName() <<" lastLPTime: 0 ERROR");
+                        }
                     }
                 }
-            }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
             }
             resetScanFlag(ScanRateGeneral);
@@ -410,13 +397,8 @@ YukonError_t CtiDeviceSentinel::ResultDecode( const INMESS &InMessage, const Cti
         retList.push_back(retMsg);
         retMsg = NULL;
     }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << CtiTime::now() << " ==============================================" << endl;
-        dout << CtiTime::now() << " ==========The " << getName() << " responded with data=========" << endl;
-        dout << CtiTime::now() << " ==============================================" << endl;
-    }
 
+    CTILOG_INFO(dout, getName() <<" responded with data");
 
     return ClientErrors::None;
 }
@@ -454,8 +436,7 @@ YukonError_t CtiDeviceSentinel::sendCommResult( INMESS &InMessage)
 
                 if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Send Comm Result for " << getName() <<" Last LP Time: "<<CtiTime(_lastLPTime)<< endl;
+                    CTILOG_DEBUG(dout, "Send Comm Result for "<< getName() <<" Last LP Time: "<< CtiTime(_lastLPTime));
                 }
             }
             else
@@ -543,10 +524,8 @@ void CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
         if (  getLastLPTime().seconds() > CtiTime().seconds() + (3600 * 12)  || // 12 hours ahead
               getLastLPTime().seconds() < CtiTime().seconds() - (86400 * 90)  ) // 3 months old
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ** INVALID LAST LP TIME ** Adjusting" << getName() <<"'s Last LP Time from: "<<getLastLPTime()<< endl;
-            }
+            CTILOG_WARN(dout, "** INVALID LAST LP TIME ** Adjusting" << getName() <<"'s lastLPTime from: "<<getLastLPTime());
+
             setLastLPTime( CtiTime(CtiTime().seconds() - (86400 * 30)) );
         }
     }
@@ -560,8 +539,7 @@ void CtiDeviceSentinel::buildScannerTableRequest (BYTE *aMsg, UINT flags)
     {
         if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getName() <<" Last LP Time "<<getLastLPTime()<< endl;
+            CTILOG_DEBUG(dout, getName() <<" lastLPTime "<<getLastLPTime());
         }
     }
 

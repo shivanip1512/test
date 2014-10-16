@@ -32,6 +32,7 @@
 // this class header
 #include "fdrvalmetmulti.h"
 #include "fdrvalmetutil.h"
+#include "win_helper.h"
 
 using std::string;
 using std::endl;
@@ -170,8 +171,7 @@ int CtiFDR_ValmetMulti::readConfig()
     {
         if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Valmet max time sync variation of " << getTimeSyncVariation() << " second(s) is invalid, defaulting to 5 seconds" << endl;
+            CTILOG_DEBUG(dout, "Valmet max time sync variation of "<< getTimeSyncVariation() <<" second(s) is invalid, defaulting to 5 seconds");
         }
         // default to 5 seconds
         setTimeSyncVariation(5);
@@ -198,28 +198,35 @@ int CtiFDR_ValmetMulti::readConfig()
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Valmet Multi timestamp window " << getTimestampReasonabilityWindow() << endl;
-        dout << CtiTime() << " Valmet Multi db reload rate " << getReloadRate() << endl;
-        dout << CtiTime() << " Valmet Multi queue flush rate " << getQueueFlushRate() << " second(s) " << endl;
-        dout << CtiTime() << " Valmet Multi send rate " << getOutboundSendRate() << endl;
-        dout << CtiTime() << " Valmet Multi send interval " << getOutboundSendInterval() << " second(s) " << endl;
-        dout << CtiTime() << " Valmet Multi max time sync variation " << getTimeSyncVariation() << " second(s) " << endl;
-        dout << CtiTime() << " Valmet Multi link timeout " << getLinkTimeout() << " second(s) " << endl;
-        dout << CtiTime() << " Valmet Multi force scan pointname " << _sendAllPointsPointName << endl;
-        dout << CtiTime() << " Valmet Multi scan device compare string " << _scanDevicePointName << endl;
-        dout << CtiTime() << " Valmet time sync will " + string(shouldUpdatePCTime() ? "" : "not ") + "reset PC clock" << endl;
-        dout << CtiTime() << " Valmet running in " + string(isInterfaceInDebugMode() ? "debug" : "normal") + " mode" << endl;
+        Cti::FormattedList loglist;
+
+        loglist.add("Valmet Multi timestamp window")           << getTimestampReasonabilityWindow();
+        loglist.add("Valmet Multi db reload rate")             << getReloadRate();
+        loglist.add("Valmet Multi queue flush rate")           << getQueueFlushRate() <<" second(s)";
+        loglist.add("Valmet Multi send rate")                  << getOutboundSendRate();
+        loglist.add("Valmet Multi send interval")              << getOutboundSendInterval() <<" second(s) ";
+        loglist.add("Valmet Multi max time sync variation")    << getTimeSyncVariation() <<" second(s) ";
+        loglist.add("Valmet Multi link timeout")               << getLinkTimeout() <<" second(s) ";
+        loglist.add("Valmet Multi force scan pointname")       << _sendAllPointsPointName;
+        loglist.add("Valmet Multi scan device compare string") << _scanDevicePointName;
+
+        loglist <<"Valmet time sync will "<< string(shouldUpdatePCTime() ? "" : "not") <<" reset PC clock";
+        loglist <<"Valmet running in "<< string(isInterfaceInDebugMode() ? "debug" : "normal") <<" mode";
+
         if (_specificPortLoggingEnabled)
         {
-            dout << CtiTime() << " Valmet Multi logging only these ports: ";
+            Cti::StreamBuffer sb;
+            sb <<"Valmet Multi logging only these ports: ";
+
             for each(int port in _portsToLog)
             {
-               dout << port << " ";
+                sb << port << " ";
             }
-            dout << endl;
+
+            loglist << sb;
         }
 
+        CTILOG_DEBUG(dout, loglist);
     }
 
     return true;
@@ -252,8 +259,7 @@ bool CtiFDR_ValmetMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint
 
         if (portNumber.empty() || pointName.empty())
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Unable to add destination " << pointDestination << " due to misconfiguration in the database. Missing the Point Name or Port" << endl;
+            CTILOG_ERROR(dout, logNow() <<"Unable to add destination "<< pointDestination <<" due to misconfiguration in the database. Missing the Point Name or Port");
             return false;
         }
 
@@ -282,8 +288,7 @@ bool CtiFDR_ValmetMulti::translateSinglePoint(CtiFDRPointSPtr & translationPoint
                 if(getDebugLevel() & TRANSLATION_LOADING_DEBUGLEVEL)
                 {
                     // We don't have this point in our translation list yet, add it!
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << " Point [" << upperPointName << "," << pointId << "] added to translation map." << endl;
+                    CTILOG_DEBUG(dout, logNow() <<" Point [" << upperPointName << "," << pointId << "] added to translation map.");
                 }
                 _receiveNameToPointId.insert(std::make_pair(upperPointName, pointId));
             }
@@ -334,10 +339,9 @@ CtiFDRClientServerConnectionSPtr CtiFDR_ValmetMulti::createNewConnection(SOCKET 
 
     if( getsockname(newSocket, &addr._addr.sa, &addr._addrlen) == SOCKET_ERROR )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "CtiFDR_ValmetMulti::createNewConnection - getsockname() has failed" << endl;
-        }
+        const DWORD error = WSAGetLastError();
+        CTILOG_DEBUG(dout, "getsockname() failed with error code "<< error <<" / "<< Cti::getSystemErrorMessage(error));
+
         return CtiFDRClientServerConnectionSPtr(); // return NULL pointer if there is an error
     }
 
@@ -433,11 +437,10 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
 
                 if (isPortLoggingNotRestricted(destination) && getDebugLevel () & DATA_SEND_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Analog/Calculated point " << point.getPointID();
-                    dout << " queued as " << ptr->Value.Name;
-                    dout << " value " << point.getValue() << " with quality of " << ForeignQualityToString(ptr->Value.Quality);
-                    dout << " to " << getInterfaceName() << " on Port " << atoi(destination.getTranslationValue("Port").c_str()) << endl;
+                    CTILOG_DEBUG(dout, "Analog/Calculated point "<< point.getPointID() <<
+                            " queued as "<< ptr->Value.Name <<
+                            " value "<< point.getValue() <<" with quality of "<< ForeignQualityToString(ptr->Value.Quality) <<
+                            " to "<< getInterfaceName() <<" on Port "<< atoi(destination.getTranslationValue("Port").c_str()));
                 }
                 break;
             }
@@ -458,8 +461,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
 
                         if (isPortLoggingNotRestricted(destination) && getDebugLevel() & DATA_SEND_ERR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Point " << point.getPointID() << " State " << point.getValue() << " is invalid for interface " << getInterfaceName() << endl;
+                            CTILOG_ERROR(dout, "Point "<< point.getPointID() <<" State "<< point.getValue() <<" is invalid for interface "<< getInterfaceName());
                         }
                     }
                     else
@@ -468,18 +470,20 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
 
                          if (isPortLoggingNotRestricted(destination) && getDebugLevel () & DATA_SEND_DEBUGLEVEL)
                          {
-                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                             dout << CtiTime() << " Control point " << point.getPointID();
-                             dout << " queued as " << ptr->Control.Name;
+                             Cti::StreamBuffer logmsg;
+
+                             logmsg <<"Control point "<< point.getPointID() <<" queued as " << ptr->Control.Name;
                              if (point.getValue() == STATE_OPENED)
                              {
-                                 dout << " state of Open ";
+                                 logmsg <<" state of Open ";
                              }
                              else
                              {
-                                 dout << " state of Close ";
+                                 logmsg <<" state of Close ";
                              }
-                             dout << "to " << getInterfaceName() << " on Port " << atoi(destination.getTranslationValue("Port").c_str()) << endl;;
+                             logmsg <<"to "<< getInterfaceName() <<" on Port "<< atoi(destination.getTranslationValue("Port").c_str());
+
+                             CTILOG_DEBUG(dout, logmsg);
                          }
                     }
                 }
@@ -497,8 +501,7 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
 
                         if (isPortLoggingNotRestricted(destination) && getDebugLevel() & DATA_SEND_ERR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Point " << point.getPointID() << " State " << point.getValue() << " is invalid for interface " << getInterfaceName() << endl;
+                            CTILOG_ERROR(dout, "Point "<< point.getPointID() <<" State "<< point.getValue() <<" is invalid for interface "<< getInterfaceName());
                         }
                     }
                     else
@@ -507,19 +510,20 @@ bool CtiFDR_ValmetMulti::buildForeignSystemMessage(const CtiFDRDestination& dest
 
                          if (isPortLoggingNotRestricted(destination) && getDebugLevel () & DATA_SEND_DEBUGLEVEL)
                          {
-                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                             dout << CtiTime() << " Status point " << point.getPointID();
-                             dout << " queued as " << point.getTranslateName(string (FDR_VALMETMULTI));
+                             Cti::StreamBuffer logmsg;
+
+                             logmsg <<" Status point " << point.getPointID() <<" queued as "<< point.getTranslateName(string (FDR_VALMETMULTI));
                              if (point.getValue() == STATE_OPENED)
                              {
-                                 dout << " state of Open ";
+                                 logmsg << " state of Open ";
                              }
                              else
                              {
-                                 dout << " state of Close ";
+                                 logmsg << " state of Close ";
                              }
-                             dout << "with quality of " << ForeignQualityToString(ptr->Status.Quality)<< " ";
-                             dout << "to " << getInterfaceName() << endl;;
+                             logmsg <<"with quality of "<< ForeignQualityToString(ptr->Status.Quality) <<" to "<< getInterfaceName();
+
+                             CTILOG_DEBUG(dout, logmsg);
                          }
                     }
                 }
@@ -584,8 +588,7 @@ bool CtiFDR_ValmetMulti::processTimeSyncMessage(Cti::Fdr::ServerConnection& conn
     {
         if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getInterfaceName() << "time sync request was invalid " <<  string (data->TimeStamp) << endl;
+            CTILOG_ERROR(dout, getInterfaceName() <<" time sync request was invalid "<< data->TimeStamp);
         }
         desc = getInterfaceName() + string (" time sync request was invalid ") + string (data->TimeStamp);
         logEvent (desc,action,true);
@@ -646,17 +649,16 @@ bool CtiFDR_ValmetMulti::processTimeSyncMessage(Cti::Fdr::ServerConnection& conn
 
                         if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getInterfaceName() << "'s request to change PC time to " << timestamp.asString() << " was processed" << endl;
+                            CTILOG_DEBUG(dout, getInterfaceName() <<"'s request to change PC time to "<< timestamp <<" was processed");
                         }
                     }
                     else
                     {
                         if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Unable to process time change from " << getInterfaceName();
+                            CTILOG_ERROR(dout, "Unable to process time change from " << getInterfaceName());
                         }
+
                         desc = getInterfaceName() + "'s request to change PC time to ";
                         desc += timestamp.asString() + " failed";
                         action = string ("System time update API failed");
@@ -668,9 +670,9 @@ bool CtiFDR_ValmetMulti::processTimeSyncMessage(Cti::Fdr::ServerConnection& conn
                 {
                     if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Unable to process time change from " << getInterfaceName();
+                        CTILOG_ERROR(dout, "Unable to process time change from "<< getInterfaceName());
                     }
+
                     desc = getInterfaceName() + "'s request to change PC time to ";
                     desc += timestamp.asString() + " failed";
                     action = string ("System time update API failed");
@@ -682,9 +684,7 @@ bool CtiFDR_ValmetMulti::processTimeSyncMessage(Cti::Fdr::ServerConnection& conn
             {
                 if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Time change requested from " << getInterfaceName();
-                    dout << " of " << timestamp.asString() << " is outside standard +-30 minutes " << endl;
+                    CTILOG_ERROR(dout, "Time change requested from "<< getInterfaceName() <<" of "<< timestamp <<" is outside standard +-30 minutes");
                 }
 
                 //log we're way out of whack now
@@ -750,8 +750,7 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
             {
                 if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getInterfaceName() << " analog value received with an invalid timestamp " <<  string (data->TimeStamp) << endl;
+                    CTILOG_ERROR(dout, getInterfaceName() <<" analog value received with an invalid timestamp "<<  data->TimeStamp);
                 }
 
                 desc = getInterfaceName() + " analog point received with an invalid timestamp ";
@@ -782,9 +781,8 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
 
                 if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Analog point " << translationName;
-                    dout << " value " << value << " from " << getInterfaceName() << " assigned to point " << point->getPointID() << endl;;
+                    CTILOG_DEBUG(dout, "Analog point "<< translationName <<" value "<< value <<" from "<< getInterfaceName() <<
+                            " assigned to point "<< point->getPointID());
                 }
             }
         }
@@ -792,11 +790,9 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
         {
             if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Analog point " << translationName;
-                    dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point->getPointID() << endl;
-                }
+                CTILOG_ERROR(dout, "Analog point "<< translationName <<" from "<< getInterfaceName() <<
+                        " was mapped incorrectly to non-analog point " << point->getPointID());
+
                 CHAR pointID[20];
                 desc = getInterfaceName() + string (" analog point is incorrectly mapped to point ") + string (ltoa(point->getPointID(),pointID,10));
                 _snprintf(action,60,"%s", translationName.c_str());
@@ -809,11 +805,9 @@ bool CtiFDR_ValmetMulti::processValueMessage(Cti::Fdr::ServerConnection& connect
     {
         if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Translation for analog point " << translationName;
-                dout << " from " << getInterfaceName() << " was not found" << endl;
-            }
+            CTILOG_ERROR(dout, "Translation for analog point "<< translationName <<" from "<< getInterfaceName() <<
+                    " was not found");
+
             desc = getInterfaceName() + string (" analog point is not listed in the translation table");
             _snprintf(action,60,"%s", translationName.c_str());
             logEvent (desc,string (action));
@@ -852,8 +846,7 @@ bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connec
             {
                 if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getInterfaceName() << " status value received with an invalid timestamp " <<  string (data->TimeStamp) << endl;
+                    CTILOG_ERROR(dout, getInterfaceName() <<" status value received with an invalid timestamp "<< data->TimeStamp);
                 }
 
                 desc = getInterfaceName() + string (" status point received with an invalid timestamp ") + string (data->TimeStamp);
@@ -877,26 +870,29 @@ bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connec
 
                 if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Status point " << translationName;
+                    Cti::StreamBuffer logmsg;
+
+                    logmsg <<" Status point "<< translationName;
                     if (value == STATE_OPENED)
                     {
-                        dout << " new state: Open " ;
+                        logmsg << " new state: Open " ;
                     }
                     else if (value == STATE_CLOSED)
                     {
-                        dout << " new state: Closed " ;
+                        logmsg << " new state: Closed " ;
                     }
                     else if (value == STATE_INDETERMINATE)
                     {
-                        dout << " new state: Indeterminate " ;
+                        logmsg << " new state: Indeterminate " ;
                     }
                     else
                     {
-                        dout << " new state: " << value;
+                        logmsg << " new state: " << value;
                     }
 
-                    dout <<" from " << getInterfaceName() << " assigned to point " << point->getPointID() << endl;;
+                    logmsg <<" from " << getInterfaceName() << " assigned to point " << point->getPointID();
+
+                    CTILOG_DEBUG(dout, logmsg);
                 }
             }
         }
@@ -904,11 +900,9 @@ bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connec
         {
             if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Status point " << translationName;
-                    dout << " from " << getInterfaceName() << " was mapped incorrectly to non-status point " << point->getPointID() << endl;
-                }
+                CTILOG_ERROR(dout, "Status point " << translationName <<" from "<< getInterfaceName() <<
+                        " was mapped incorrectly to non-status point " << point->getPointID());
+
                 CHAR pointID[20];
                 desc = getInterfaceName() + string (" status point is incorrectly mapped to point ") + string (ltoa(point->getPointID(),pointID,10));
                 _snprintf(action,60,"%s", translationName.c_str());
@@ -921,11 +915,9 @@ bool CtiFDR_ValmetMulti::processStatusMessage(Cti::Fdr::ServerConnection& connec
     {
         if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Translation for status point " <<  translationName;
-                dout << " from " << getInterfaceName() << " was not found" << endl;
-            }
+            CTILOG_ERROR(dout, "Translation for status point "<<  translationName <<" from "<< getInterfaceName() <<
+                    " was not found");
+
             desc = getInterfaceName() + string (" status point is not listed in the translation table");
             _snprintf(action,60,"%s", translationName.c_str());
             logEvent (desc,string (action));
@@ -977,8 +969,7 @@ int CtiFDR_ValmetMulti::processScanMessage(CtiFDRClientServerConnection* connect
     {
         if (isPortLoggingNotRestricted(*((Cti::Fdr::ServerConnection*)connection)) && getDebugLevel () & DATA_RECV_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Submitting Scan Request to process. Translation Point: " << translationName << " on " << connection->getName() << endl;
+            CTILOG_DEBUG(dout, "Submitting Scan Request to process. Translation Point: "<< translationName <<" on "<< connection->getName());
         }
 
         //Put an InitiateScan command on Dispatch inQueue, this will cause the send thread to build up the points to send
@@ -994,8 +985,7 @@ int CtiFDR_ValmetMulti::processScanMessage(CtiFDRClientServerConnection* connect
     {
         if (isPortLoggingNotRestricted(*((Cti::Fdr::ServerConnection*)connection)) && getDebugLevel () & DATA_RECV_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Ignored bad Scan Request for Translation Point: " << translationName << " on " << connection->getName() << endl;
+            CTILOG_DEBUG(dout, "Ignored bad Scan Request for Translation Point: "<< translationName <<" on "<< connection->getName());
         }
     }
     return ClientErrors::None;
@@ -1028,9 +1018,8 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
             {
                 if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Control point " << translationName;
-                    dout << " from " << getInterfaceName() << " has an invalid control state " << ntohs(data->Control.Value) << endl;
+                    CTILOG_ERROR(dout, "Control point "<< translationName <<" from "<< getInterfaceName() <<
+                            " has an invalid control state " << ntohs(data->Control.Value));
                 }
                 CHAR state[20];
                 desc = getInterfaceName() + string (" control point received with an invalid state ") + string (itoa (ntohs(data->Control.Value),state,10));
@@ -1066,10 +1055,9 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
 
                 if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Control point " << translationName;
-                    string controlString = (controlState == STATE_OPENED ? " control: Open " : " control: Closed ");
-                    dout << controlString <<" from " << getInterfaceName() << " and processed for point " << point->getPointID() << endl;;
+                    CTILOG_DEBUG(dout, "Control point "<< translationName <<
+                            (controlState == STATE_OPENED ? " control: Open " : " control: Closed ") <<
+                            " from "<< getInterfaceName() <<" and processed for point " << point->getPointID());
                 }
             }
         }
@@ -1083,17 +1071,16 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
                 dValue = ForeignToYukonStatus (data->Control.Value);
                 if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Analog Output Point " << translationName << " with PointOffset " << point->getPointOffset() << " received value of c:" << controlState << " d: " << dValue;
+                    CTILOG_DEBUG(dout, "Analog Output Point " << translationName <<" with PointOffset "<< point->getPointOffset() <<
+                            " received value of c:" << controlState << " d: " << dValue);
                 }
             }
             CtiCommandMsg *aoMsg = createAnalogOutputMessage(point->getPointID(), translationName, dValue);
             sendMessageToDispatch(aoMsg);
             if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Analog Output point with pointOffset " << point->getPointOffset() << " " << translationName;
-                dout << " value " << dValue << " from " << getInterfaceName() << " sending to device " << point->getPaoID() << endl;
+                CTILOG_DEBUG(dout, "Analog Output point with pointOffset "<< point->getPointOffset() <<" "<< translationName<<
+                        " value "<< dValue <<" from "<< getInterfaceName() <<" sending to device "<< point->getPaoID());
             }
         }
     }
@@ -1103,11 +1090,9 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
         {
             if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Translation for control point " <<  translationName;
-                    dout << " from " << getInterfaceName() << " was not found" << endl;
-                }
+                CTILOG_ERROR(dout, "Translation for control point "<<  translationName <<" from "<< getInterfaceName() <<
+                        " was not found");
+
                 desc = getInterfaceName() + string (" control point is not listed in the translation table");
                 _snprintf(action,60,"%s", translationName.c_str());
                 logEvent (desc,string (action));
@@ -1117,12 +1102,9 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
         {
             if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Control point " << translationName;
-                    dout << " received from " << getInterfaceName();
-                    dout << " was not configured receive for control for point " << point->getPointID() << endl;
-                }
+                CTILOG_ERROR(dout, "Control point "<< translationName <<" received from "<< getInterfaceName() <<
+                        " was not configured receive for control for point " << point->getPointID());
+
                 desc = getInterfaceName() + string (" control point is not configured to receive controls");
                 _snprintf(action,60,"%s for pointID %d",
                           translationName.c_str(),
@@ -1134,12 +1116,9 @@ bool CtiFDR_ValmetMulti::processControlMessage(Cti::Fdr::ServerConnection& conne
         {
             if (isPortLoggingNotRestricted(connection) && getDebugLevel () & DATA_RECV_ERR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Control point " << translationName;
-                    dout << " received from " << getInterfaceName();
-                    dout << " was mapped to non-control point " <<  point->getPointID() << endl;;
-                }
+                CTILOG_ERROR(dout, "Control point "<< translationName <<" received from "<< getInterfaceName() <<
+                        " was mapped to non-control point "<<  point->getPointID());
+
                 CHAR pointID[20];
                 desc = getInterfaceName() + string (" control point is incorrectly mapped to point ") + string (ltoa(point->getPointID(),pointID,10));
                 _snprintf(action,60,"%s", translationName.c_str());
@@ -1157,8 +1136,7 @@ void CtiFDR_ValmetMulti::updatePointQualitiesOnDevice(PointQuality_t quality, lo
 {
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Updating All Point Qualities on Device with ID: "<< paoId <<" with Send Direction to Quality of " << quality << endl;
+        CTILOG_DEBUG(dout, "Updating All Point Qualities on Device with ID: "<< paoId <<" with Send Direction to Quality of "<< quality);
     }
 
     CtiFDRManager* mgrPtr = getSendToList().getPointList();
@@ -1177,9 +1155,8 @@ void CtiFDR_ValmetMulti::updatePointQualitiesOnDevice(PointQuality_t quality, lo
         {
             CtiPointDataMsg* localMsg = new CtiPointDataMsg (point->getPointID(), point->getValue(), quality, point->getPointType());
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                        {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Updating quality to: " << quality << " for PointId: "<<point->getPointID() << " for " << getInterfaceName() << " interface."<< endl;
+            {
+                CTILOG_DEBUG(dout, "Updating quality to: "<< quality <<" for PointId: "<<point->getPointID() <<" for "<< getInterfaceName() <<" interface.");
             }
             sendMessageToDispatch (localMsg);
         }
@@ -1202,8 +1179,7 @@ void CtiFDR_ValmetMulti::threadListenerStartupMonitor( void )
     {
         if (getDebugLevel () & CONNECTION_INFORMATION_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << " Initializing CtiFDR_ValmetMulti::threadListenerStartupMonitor " << endl;
+            CTILOG_DEBUG(dout, logNow() <<"Initializing threadListenerStartupMonitor");
         }
 
         for ( ; ; )
@@ -1219,15 +1195,13 @@ void CtiFDR_ValmetMulti::threadListenerStartupMonitor( void )
             }
         }
     }
-    catch ( RWCancellation &cancellationMsg )
+    catch ( RWCancellation & )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "threadListenerStartupMonitor shutdown" << endl;
+        CTILOG_INFO(dout, logNow() <<"threadListenerStartupMonitor shutdown");
     }
     catch ( ... ) // try and catch the thread death
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Fatal Error: threadListenerStartupMonitor is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, logNow() <<"threadListenerStartupMonitor is dead!");
     }
 }
 

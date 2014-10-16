@@ -35,12 +35,18 @@ CtiRouteMacro::CtiRouteMacro()
 {
 }
 
-void CtiRouteMacro::DumpData()
+std::string CtiRouteMacro::toString() const
 {
-    Inherited::DumpData();
+    Cti::FormattedList itemList;
+    itemList <<"CtiRouteMacro";
 
     for(int i = 0; i < RouteList.length(); i++)
-        RouteList[i].DumpData();
+    {
+        itemList <<"Route "<< (i+1) <<":";
+        itemList << RouteList[i];
+    }
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 CtiRouteMacro::CtiRouteList_t & CtiRouteMacro::getRouteList()
@@ -69,8 +75,7 @@ void CtiRouteMacro::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 }
 
@@ -97,76 +102,60 @@ YukonError_t CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser
                 {
                     if(pRoute->getType() != RouteTypeMacro)
                     {
-                        OUTMESS *NewOMess = CTIDBG_new OUTMESS(*OutMessage); // Construct and copy.
+                        OUTMESS *NewOMess = new OUTMESS(*OutMessage); // Construct and copy.
 
-                        if(NewOMess)
+                        if( (*offset + 1) < RoutePtrList.length() )
                         {
-                            if( (*offset + 1) < RoutePtrList.length() )
-                            {
-                                NewOMess->Request.RetryMacroOffset = *offset + 1;    // Ask for this next (if needed) please.
-                            }
-                            else
-                            {
-                                NewOMess->Request.RetryMacroOffset = MacroOffset::none;    // None left MAKE IT STOP!.
-                            }
-
-                            if(getDebugLevel() & DEBUGLEVEL_MGR_ROUTE)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Execute Macro Route Target \"" << pRoute->getName() << "\" " << pRoute->getRouteID()<< endl;
-                            }
-
-                            YukonError_t status = pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
-
-                            if(status == ClientErrors::DeviceInhibited && NewOMess && NewOMess->Request.RetryMacroOffset )
-                            {
-                                std::list< CtiMessage* >::iterator iter;
-                                for(iter = retList.begin(); iter != retList.end(); iter++)
-                                {
-                                    if((*iter)->isA() == MSG_PCRETURN)
-                                    {
-                                        ((CtiReturnMsg*)(*iter))->setExpectMore(true);
-                                    }
-                                }
-                                ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
-                            }
-
-                            if(NewOMess)
-                            {
-                                if(status != ClientErrors::DeviceInhibited && isDebugLudicrous())
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << "  Route " << pRoute->getName() << " did not clean up his mess." << endl;
-                                }
-                                delete NewOMess;
-                                NewOMess = 0;
-                            }
+                            NewOMess->Request.RetryMacroOffset = *offset + 1;    // Ask for this next (if needed) please.
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " ERROR!!!! CTIDBG_new memory failure " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            NewOMess->Request.RetryMacroOffset = MacroOffset::none;    // None left MAKE IT STOP!.
+                        }
+
+                        if(getDebugLevel() & DEBUGLEVEL_MGR_ROUTE)
+                        {
+                            CTILOG_DEBUG(dout, "Execute Macro Route Target \""<< pRoute->getName() <<"\" "<< pRoute->getRouteID());
+                        }
+
+                        YukonError_t status = pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
+
+                        if(status == ClientErrors::DeviceInhibited && NewOMess && NewOMess->Request.RetryMacroOffset )
+                        {
+                            std::list< CtiMessage* >::iterator iter;
+                            for(iter = retList.begin(); iter != retList.end(); iter++)
+                            {
+                                if((*iter)->isA() == MSG_PCRETURN)
+                                {
+                                    ((CtiReturnMsg*)(*iter))->setExpectMore(true);
+                                }
+                            }
+                            ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
+                        }
+
+                        if(NewOMess)
+                        {
+                            if(status != ClientErrors::DeviceInhibited && isDebugLudicrous())
+                            {
+                                CTILOG_DEBUG(dout, "Route "<< pRoute->getName() <<" did not clean up his mess");
+                            }
+
+                            delete NewOMess;
+                            NewOMess = 0;
                         }
                     }
                     else
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  SKIPPING MACRO ROUTE IN MACRO ROUTE " << endl;
-                        }
+                        CTILOG_WARN(dout, "Skipping macro route in macro route")
+
                         nRet = ClientErrors::SubRouteIsMacro;
                     }
                 }
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "   NO MORE ROUTES IN THIS MACRO." << endl;
-                }
+                CTILOG_WARN(dout, "No more routes in this macro");
+
                 nRet = ClientErrors::RouteOffsetOutOfRange;
             }
         }
@@ -178,26 +167,17 @@ YukonError_t CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser
 
                 if(pRoute && pRoute.get() != this)  // No jerking around here thank you.
                 {
-                    OUTMESS *NewOMess = CTIDBG_new OUTMESS(*OutMessage); // Construct and copy.
+                    OUTMESS *NewOMess = new OUTMESS(*OutMessage); // Construct and copy.
 
-                    if(NewOMess)
+                    NewOMess->Request.RouteID          = pRoute->getRouteID();
+                    NewOMess->Request.RetryMacroOffset = MacroOffset::none; // No retry offset necessary, since we are already broadcasting to all routes
+
+                    if(getDebugLevel() & DEBUGLEVEL_MGR_ROUTE)
                     {
-                        NewOMess->Request.RouteID          = pRoute->getRouteID();
-                        NewOMess->Request.RetryMacroOffset = MacroOffset::none; // No retry offset necessary, since we are already broadcasting to all routes
-
-                        if(getDebugLevel() & DEBUGLEVEL_MGR_ROUTE)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Execute Macro Route Target \"" << RoutePtrList[i]->getName() << "\" " << RoutePtrList[i]->getRouteID()<< endl;
-                        }
-
-                        pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
+                        CTILOG_DEBUG(dout, "Execute Macro Route Target \""<< RoutePtrList[i]->getName() <<"\" "<< RoutePtrList[i]->getRouteID());
                     }
-                    else
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " ERROR!!!! CTIDBG_new memory failure " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+
+                    pRoute->ExecuteRequest(pReq, parse, NewOMess, vgList, retList, outList);
 
                     if(NewOMess)
                     {
@@ -210,8 +190,8 @@ YukonError_t CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser
         else
         {
             nRet = ClientErrors::NoRoutesInMacro;
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ERROR: Macro Route " << getName() << " has not resolved any sub-routes. " << endl;
+
+            CTILOG_ERROR(dout, "Macro Route "<< getName() <<" has not resolved any sub-routes");
         }
 
         /* if(OutMessage)       // 20050217 CGP.  This OM will be deleted elsewhere dev_base.cpp as OutMessageTemplate.
@@ -222,10 +202,7 @@ YukonError_t CtiRouteMacro::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return nRet;
@@ -238,8 +215,7 @@ void CtiRouteMacro::DecodeMacroReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 
     MacroRoute.DecodeDatabaseReader(rdr);

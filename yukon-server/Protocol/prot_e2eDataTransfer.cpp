@@ -97,10 +97,7 @@ boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtoc
 
     if( indication_pdu->hdr->code >= COAP_RESPONSE_400_BAD_REQUEST )
     {
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Unexpected header code (" << indication_pdu->hdr->code << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-        }
+        CTILOG_ERROR(dout, "Unexpected header code ("<< indication_pdu->hdr->code <<") for endpointId "<< endpointId);
 
         return boost::none;
     }
@@ -111,8 +108,7 @@ boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtoc
         {
             if( indication_pdu->hdr->id != _outboundIds[endpointId] )
             {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Unexpected ACK (" << indication_pdu->hdr->id << " != " << _outboundIds[endpointId] << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                CTILOG_ERROR(dout, "Unexpected ACK ("<< indication_pdu->hdr->id <<" != "<< _outboundIds[endpointId] <<") for endpointId "<< endpointId);
 
                 return boost::none;
             }
@@ -121,15 +117,11 @@ boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtoc
         }
         case COAP_MESSAGE_NON:
         {
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Received NONconfirmable packet (" << indication_pdu->hdr->id << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_INFO(dout, "Received NONconfirmable packet ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
 
             if( _inboundIds.count(endpointId) && _inboundIds[endpointId] == indication_pdu->hdr->id )
             {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " NONconfirmable packet was duplicate (" << indication_pdu->hdr->id << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                CTILOG_WARN(dout, "NONconfirmable packet was duplicate ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
 
                 return boost::none;
             }
@@ -140,15 +132,11 @@ boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtoc
         }
         case COAP_MESSAGE_CON:
         {
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Received CONfirmable packet (" << indication_pdu->hdr->id << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_INFO(dout, "Received CONfirmable packet ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
 
             if( _inboundIds.count(endpointId) && _inboundIds[endpointId] == indication_pdu->hdr->id )
             {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " CONfirmable packet was duplicate (" << indication_pdu->hdr->id << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                CTILOG_WARN(dout, "CONfirmable packet was duplicate ("<< indication_pdu->hdr->id <<") for endpointId "<< endpointId);
             }
 
             _inboundIds[endpointId] = indication_pdu->hdr->id;
@@ -160,8 +148,7 @@ boost::optional<E2eDataTransferProtocol::EndpointResponse> E2eDataTransferProtoc
         }
         default:
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " E2eIndicationMsg ID mismatch (" << indication_pdu->hdr->id << " != " << _outboundIds[endpointId] << ") for endpointId " << endpointId << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_WARN(dout, "E2eIndicationMsg ID mismatch ("<< indication_pdu->hdr->id <<" != "<< _outboundIds[endpointId] <<") for endpointId "<< endpointId);
 
             return boost::none;
         }

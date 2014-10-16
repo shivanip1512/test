@@ -36,10 +36,7 @@ void PorterInterfaceThread (void *Arg)
     UINT sanity = 0;
     CtiTime lastTickleTime, lastReportTime;
 
-   {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " PorterInterfaceThread started as TID  " << CurrentTID() << endl;
-   }
+   CTILOG_INFO(dout, "PorterInterfaceThread started");
 
    SetThreadName(-1, "PrtIntrfc");
 
@@ -63,8 +60,7 @@ void PorterInterfaceThread (void *Arg)
 
             if(PIL.join(5000) == RW_THR_TIMEOUT) // Wait until I am shutdown as a whole....
             {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << "PIL Threads failed to shutdown! " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "PIL Threads failed to shutdown!");
             }
 
             break;
@@ -75,8 +71,7 @@ void PorterInterfaceThread (void *Arg)
    }
    catch(const RWxmsg& x)
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << "PorterInterfaceThread Exception: " << x.why() << endl;
+      CTILOG_EXCEPTION_ERROR(dout, x);
    }
 
    return;

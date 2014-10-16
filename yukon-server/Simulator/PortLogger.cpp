@@ -9,7 +9,7 @@ using namespace std;
 namespace Cti {
 namespace Simulator {
 
-PortLogger::PortLogger(CtiLogger &logger, int portNumber) :
+PortLogger::PortLogger(Logging::LoggerPtr &logger, int portNumber) :
     SimulatorLogger(logger)
 {
     ostringstream uid_generator;

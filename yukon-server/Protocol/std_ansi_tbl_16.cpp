@@ -132,34 +132,33 @@ bool CtiAnsiTable16::getConstToBeAppliedFlag( int index )
 //=========================================================================================================================================
 void CtiAnsiTable16::printResult( const string& deviceName )
 {
-    int integer;
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "==================== "<<deviceName<<"  Std Table 16 ========================" << endl;
-    }
-    {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << " **SourceLink** "<<endl;
-            dout << "idx uomEntryFlg dmndCtrlFlg dataCtrlFlg constantsFlg pulseEngrFlg constToBeApp"<<endl;
-    }
+    Cti::FormattedTable table;
+
+    table.setCell(0, 0) << "idx";
+    table.setCell(0, 1) << "uomEntryFlg";
+    table.setCell(0, 2) << "dmndCtrlFlg";
+    table.setCell(0, 3) << "dataCtrlFlg";
+    table.setCell(0, 4) << "constantsFlg";
+    table.setCell(0, 5) << "pulseEngrFlg";
+    table.setCell(0, 6) << "constToBeApp";
+
     for( int index = 0; index < _numberOfConstants; index++ )
     {
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout <<index<<"           "<<getUOMEntryFlag( index )<<"           ";
-            dout <<getDemandCtrlFlag( index )<<"          "<<getDataCtrlFlag( index );
-            dout <<"           "<<getConstantsFlag( index )<<"           ";
-            dout <<getPulseEngrFlag( index )<<"           "<<getConstToBeAppliedFlag( index )<<endl;
-        }
+        const unsigned row = index + 1;
 
+        table.setCell(row, 0) << index;
+        table.setCell(row, 1) << getUOMEntryFlag(index);
+        table.setCell(row, 2) << getDemandCtrlFlag(index);
+        table.setCell(row, 3) << getDataCtrlFlag(index);
+        table.setCell(row, 4) << getConstantsFlag(index);
+        table.setCell(row, 5) << getPulseEngrFlag(index);
+        table.setCell(row, 6) << getConstToBeAppliedFlag(index);
     }
 
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 16") <<
+            endl <<"** SourceLink **"<<
+            table
+            );
 }
 

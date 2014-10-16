@@ -122,8 +122,7 @@ YukonError_t Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
             if( configValue < 0x00 ||
                 configValue > 0xff )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << configValue << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - Invalid value ("<< configValue <<") for config key \""<< configKey <<"\"");
 
                 return ClientErrors::InvalidConfigData;
             }
@@ -138,10 +137,7 @@ YukonError_t Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
         if( config_cycle_delay < 0x00 ||
             config_cycle_delay > 0x0f )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << config_cycle_delay << ") for config key \"" << Config::RfnStrings::LcdCycleTime << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_ERROR(dout, "Device \"" << getName() << "\" - Invalid value (" << config_cycle_delay << ") for config key \"" << Config::RfnStrings::LcdCycleTime << "\"");
 
             return ClientErrors::InvalidConfigData;
         }
@@ -149,8 +145,7 @@ YukonError_t Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
         if( config_display_digits < 4 ||
             config_display_digits > 6 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << config_display_digits << ") for config key \"" << Config::RfnStrings::DisplayDigits << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_ERROR(dout, "Device \"" << getName() << "\" - Invalid value (" << config_display_digits << ") for config key \"" << Config::RfnStrings::DisplayDigits << "\"");
 
             return ClientErrors::InvalidConfigData;
         }
@@ -193,8 +188,7 @@ YukonError_t Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
 
         if( ! displayDigits )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << config_display_digits << ") for display digit lookup " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_ERROR(dout, "Device \"" << getName() << "\" - Invalid value (" << config_display_digits << ") for display digit lookup");
 
             return ClientErrors::InvalidConfigData;
         }
@@ -215,8 +209,7 @@ YukonError_t Rfn420CentronDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
     }
     catch( const MissingConfigDataException &e )
     {
-        logInfo( e.what(),
-                 __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
         return ClientErrors::NoConfigData;
     }

@@ -1,24 +1,6 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_notif_email
-*
-* Date:   1/22/2004
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7.4.1 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
 #include <iostream>
-#include <iomanip>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include "utility.h"
@@ -46,16 +28,18 @@ CtiNotifEmailMsg::~CtiNotifEmailMsg()
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiNotifEmailMsg::dump() const
+std::string CtiNotifEmailMsg::toString() const
 {
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
+    Cti::FormattedList itemList;
 
-   dout << " ------- Message ------- " << isA() << endl;
-   dout << "Notification Group ID    " << _notifGroupID << endl;
-   dout << "To                       " << _to << endl;
-   dout << "Subject                  " << _subject << endl;
-   dout << "CC                       " << _toCC << endl;
-   dout << "BCC                      " << _toBCC << endl;
+    itemList << "CtiNotifEmailMsg";
+    itemList.add("Notification Group ID") << _notifGroupID;
+    itemList.add("To")                    << _to;
+    itemList.add("Subject")               << _subject;
+    itemList.add("CC")                    << _toCC;
+    itemList.add("BCC")                   << _toBCC;
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 //=====================================================================================================================
@@ -188,16 +172,18 @@ CtiCustomerNotifEmailMsg::~CtiCustomerNotifEmailMsg()
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiCustomerNotifEmailMsg::dump() const
+std::string CtiCustomerNotifEmailMsg::toString() const
 {
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
+    Cti::FormattedList itemList;
 
-   dout << " ------- Message ------- " << isA() << endl;
-   dout << "Customer ID              " << _customerID << endl;
-   dout << "To                       " << _to << endl;
-   dout << "Subject                  " << _subject << endl;
-   dout << "CC                       " << _toCC << endl;
-   dout << "BCC                      " << _toBCC << endl;
+    itemList <<"-- Customer Notification Email --";
+    itemList.add("Customer ID") << _customerID;
+    itemList.add("To")          << _to;
+    itemList.add("Subject")     << _subject;
+    itemList.add("CC")          << _toCC;
+    itemList.add("BCC")         << _toBCC;
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 //=====================================================================================================================

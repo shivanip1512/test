@@ -127,8 +127,8 @@ bool CtiDeviceWctpTerminal::devicePacingExceeded()
             if(!_pacingReport)
             {
                 _pacingReport = true;
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << " Configuration PAGES_PER_MINUTE limits paging to " << pagesPerMinute << " pages per minute.  Next page allowed at " << _pacingTimeStamp << endl;
+
+                CTILOG_WARN(dout, getName() << " Configuration PAGES_PER_MINUTE limits paging to "<< pagesPerMinute <<" pages per minute.  Next page allowed at "<< _pacingTimeStamp);
             }
 
             toofast = true;
@@ -208,10 +208,7 @@ YukonError_t CtiDeviceWctpTerminal::ExecuteRequest(CtiRequestMsg     *pReq,
         }
     case ControlRequest:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Unexpected ControlRequest command");
         }
     case GetStatusRequest:
     case LoopbackRequest:
@@ -436,8 +433,7 @@ void CtiDeviceWctpTerminal::destroyBuffers()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -792,10 +788,7 @@ INT CtiDeviceWctpTerminal::readLine(CHAR *str, CHAR *buf, INT bufLen)
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         autopsy( __FILE__, __LINE__ );
     }
@@ -910,12 +903,14 @@ YukonError_t CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, CtiMessageLi
             timeEllapsed++;
 
             {
-                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                slog << CtiTime() << " " <<  getName() << ": " << _outMessage->Request.CommandStr << endl;
+                Cti::StreamBuffer slogMessage;
+                slogMessage << getName() <<": "<< _outMessage->Request.CommandStr;
                 if(_outMessage->TargetID != 0 && _outMessage->TargetID != _outMessage->DeviceID)
                 {
-                    slog << CtiTime() << "    Group Id: " << _outMessage->TargetID << endl;
+                    slogMessage << endl <<"Group Id: "<< _outMessage->TargetID;
                 }
+
+                CTILOG_INFO(slog, slogMessage);
             }
 
             setCurrentState( StateScanDecode1 );
@@ -942,11 +937,7 @@ YukonError_t CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, CtiMessageLi
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") "<< endl;
-                dout << "  " << getName() << "  Failed at state " << getCurrentState() << endl;
-            }
+            CTILOG_ERROR(dout, getName() <<" Failed at state "<< getCurrentState());
 
             setCurrentState(StateScanAbort);
 
@@ -1220,11 +1211,7 @@ YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t 
                 }
             default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Failed at state " << getCurrentState() << endl;
-                    }
+                    CTILOG_ERROR(dout, getName() <<" Failed at state "<< getCurrentState());
 
                     setCurrentState(StateScanAbort);
                     if(xfer.doTrace(commReturnValue))
@@ -1237,25 +1224,13 @@ YukonError_t CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, YukonError_t 
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Yukon Status **** " << status << " " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, getName() <<" status is "<< status);
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " WCTP getCurrentState " << getCurrentState() << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "WCTP getCurrentState "<< getCurrentState());
     }
-
 
     return status;
 }
@@ -1267,10 +1242,7 @@ CtiDeviceIED& CtiDeviceWctpTerminal::setInitialState (const LONG oldid)
     {
         if(isDebugLudicrous())
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  Port has indicated a connected device swap. " << endl;
-            dout << "  " << getName() << " has replaced DEVID " << oldid << " as the currently connected device" << endl;
+            CTILOG_DEBUG(dout, "Port has indicated a connected device swap. "<< getName() <<" has replaced DEVID "<< oldid <<" as the currently connected device");
         }
         setCurrentState(StateHandshakeComplete);     // TAP is already connected on this port
         setLogOnNeeded(false);                       // We will skip the logon, and proceed to <STX>

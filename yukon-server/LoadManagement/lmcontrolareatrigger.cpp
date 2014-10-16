@@ -554,69 +554,12 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
                     double tempProjectedValue = (slope*inputX)+intersect;
                     setProjectedPointValue(tempProjectedValue);
 
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - calculateProjectedValue() debug info: " << endl;
-                        /*dout << " - ProjectionPointEntriesQueue entries: " << endl;
-                        for(int j=0;j<getProjectionPointEntriesQueue().entries();j++)
-                        {
-                            dout << " Entry number: " << j << " value: " << getProjectionPointEntriesQueue()[j].getValue() << " timestamp: " << getProjectionPointEntriesQueue()[j].getTimestamp() << endl;
-                        }
-                        dout << " x: " << x << endl;
-                        dout << " delta: " << delta << endl;
-                        dout << " sumX: " << sumX << endl;
-                        dout << " sumY: " << sumY << endl;
-                        dout << " sumXX: " << sumXX << endl;
-                        dout << " sumXY: " << sumXY << endl;
-                        dout << " Slope: " << slope << endl;
-                        dout << " Intercept: " << intersect << endl;
-                        dout << " Input x: " << inputX << endl;*/
-                        dout << " Projected Value: " << tempProjectedValue << endl;
-                    }
-                    //From Corey's projection method, don't think we need all this
-                    /*long secondsFromBeginningOfRegression = 0;
-                    for(int i=0;i<getProjectionPointEntriesQueue().entries();i++)
-                    {
-                        dtemp = ( getProjectionPointEntriesQueue()[i].getValue() - intersect - slope * secondsFromBeginningOfRegression);
-                        sigmaY2 += (dtemp * dtemp);
-                        if( i+1 < getProjectionPointEntriesQueue().entries() )
-                        {
-                            secondsFromBeginningOfRegression += getProjectionPointEntriesQueue()[i+1].getTimestamp().seconds() - getProjectionPointEntriesQueue()[i].getTimestamp().seconds();
-                        }
-                    }
-                    sigmaY2 = sigmaY2 / (x - 2);
-                    if(sigmaY2 > 0.0)
-                    {
-                        regress->sigma_y = sqrt( sigmaY2 );
-                    }
-                    else
-                    {
-                       regress->sigma_y = 0;
-                    }
-                    dtemp = x * sigmaY2 / delta;
-                    if(dtemp > 0.0)
-                    {
-                       regress->sigma_m = sqrt( dtemp );
-                    }
-                    else
-                    {
-                       regress->sigma_m = 0.0;
-                    }
-                    dtemp = sigmaY2 * sumXX / delta;
-                    if(dtemp > 0.0)
-                    {
-                       regress->sigma_b = sqrt( dtemp );
-                    }
-                    else
-                    {
-                       regress->sigma_b = 0.0;
-                    }*/
+                    CTILOG_INFO(dout, "trigger ID " << getTriggerId() << " projected value: " << tempProjectedValue);
                 }
             }
             else
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Not enough getProjectionPointEntriesQueue().entries(): " << getProjectionPointEntriesQueue().size() << " need getProjectionPoints(): " << getProjectionPoints() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_INFO(dout, "Not enough getProjectionPointEntriesQueue().entries(): " << getProjectionPointEntriesQueue().size() << " need getProjectionPoints(): " << getProjectionPoints());
                 if( getProjectionPointEntriesQueue().size() > 0 )
                 {
                     setProjectedPointValue(getProjectionPointEntriesQueue()[0].getValue());
@@ -626,8 +569,7 @@ void CtiLMControlAreaTrigger::calculateProjectedValue()
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unknown Projection Type: " << getProjectionType() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_ERROR(dout, "Unknown Projection Type: " << getProjectionType() << " for trigger ID " << getTriggerId());
         }
     }
 }
@@ -789,10 +731,7 @@ void CtiLMControlAreaTrigger::dumpDynamicData(Cti::Database::DatabaseConnection&
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Inserted control area trigger into DynamicLMControlAreaTrigger PAO ID: " << getPAOId() << " TriggerNumber: " << getTriggerNumber() << endl;
-        }
+        CTILOG_INFO(dout, "Inserted control area trigger into DynamicLMControlAreaTrigger PAO ID: " << getPAOId() << " TriggerNumber: " << getTriggerNumber());
 
         static const std::string sql_insert = "insert into dynamiclmcontrolareatrigger values (?, ?, ?, ?, ?, ?, ?)";
 

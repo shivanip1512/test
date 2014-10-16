@@ -36,7 +36,7 @@ CtiListenerConnection::~CtiListenerConnection()
     }
     catch(...)
     {
-        logException( __FILE__, __LINE__, "", "error closing." );
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - Error closing the connection.");
     }
 }
 
@@ -71,7 +71,10 @@ void CtiListenerConnection::start()
                 _connection.reset( new ManagedConnection( Broker::flowControlURI ));
             }
 
-            logDebug( __FUNCTION__, "connecting to the broker." );
+            if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
+            {
+                CTILOG_DEBUG(dout, who() << " - connecting to the broker.")
+            }
 
             //
             // connect to the broker
@@ -106,19 +109,19 @@ void CtiListenerConnection::start()
                 _valid = true;
             }
 
-            logStatus( __FUNCTION__, "successfully connected." );
+            CTILOG_INFO(dout, who() << " - successfully connected.");
 
             return;
         }
         catch( cms::CMSException& e )
         {
-            logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
+            CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - Error while starting listener connection");
         }
         catch( ConnectionException& e )
         {
             if( !_closed )
             {
-                logStatus( __FUNCTION__, "unable to connect to the broker. Will try to reconnect." );
+                CTILOG_EXCEPTION_WARN(dout, e, who() <<" - unable to connect to the broker. Will try to reconnect..");
             }
         }
 
@@ -160,7 +163,7 @@ void CtiListenerConnection::close()
         releaseResources();
     }
 
-    logStatus( __FUNCTION__, "has closed." );
+    CTILOG_INFO(dout, who() << " - has closed.");
 }
 
 /**
@@ -217,7 +220,7 @@ bool CtiListenerConnection::acceptClient()
     }
     catch( cms::CMSException& e )
     {
-        logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
+        CTILOG_EXCEPTION_ERROR(dout, e, who() << " - Error while accepting new client connection");
 
         return _valid = false;
     }
@@ -294,57 +297,6 @@ string CtiListenerConnection::who() const
 string CtiListenerConnection::getServerQueueName() const
 {
     return _serverQueueName;
-}
-
-/**
- * log status
- * @param funcName function name that will appear in the log
- * @param note additional detail to log
- */
-void CtiListenerConnection::logStatus( string funcName, string note ) const
-{
-    string whoStr = who();
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << funcName << " : " << whoStr << " " << note << endl;
-    }
-}
-
-/**
- * log debug
- * @param funcName function name that will appear in the log
- * @param note additional detail to log
- */
-void CtiListenerConnection::logDebug( string funcName, string note ) const
-{
-    if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
-    {
-        logStatus( funcName, note );
-    }
-}
-
-/**
- * log exception
- * @param fileName file name
- * @param line line number
- * @param exceptionName exception name
- * @param note additional detail to log
- */
-void CtiListenerConnection::logException( string fileName, int line, string exceptionName, string note ) const
-{
-    string whoStr = who();
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << whoStr << " " << fileName << " (" << line << ") ";
-
-        if(!exceptionName.empty())
-            dout << " " << exceptionName;
-
-        if(!note.empty())
-            dout << " : " << note;
-
-        dout << endl;
-    }
 }
 
 /**

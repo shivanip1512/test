@@ -130,10 +130,7 @@ YukonError_t CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser
 
                 default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Invalid scan type \""<< parse.getiValue("scantype") <<"\" for device \""<< getName() <<"\"");
 
                     break;
                 }
@@ -277,11 +274,7 @@ YukonError_t CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unsupported command. Command = " << parse.getCommand() << endl;
-            }
+            CTILOG_ERROR(dout, "Unsupported command. Command = "<< parse.getCommand());
 
             break;
         }
@@ -321,11 +314,7 @@ YukonError_t CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser
     {
         nRet = ClientErrors::NoMethod;
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Couldn't come up with an operation for device " << getName() << endl;
-            dout << CtiTime() << "   Command: " << pReq->CommandString() << endl;
-        }
+        CTILOG_ERROR(dout, "Couldn't come up with an operation for device "<< getName() <<". Command: " << pReq->CommandString());
 
         resultString = "NoMethod or invalid command.";
         retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
@@ -368,8 +357,7 @@ void CtiDeviceION::initEventLogPosition( void )
             {
                 if( isDebugLudicrous() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint: Invalid Reader/No DynamicPointDispatch for EventLog Point - reading ALL events **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, "Invalid Reader/No DynamicPointDispatch for EventLog Point - reading ALL events");
                 }
             }
         }
@@ -383,8 +371,7 @@ YukonError_t CtiDeviceION::GeneralScan( CtiRequestMsg *pReq, CtiCommandParser &p
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "GeneralScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString("scan general");
@@ -409,8 +396,7 @@ YukonError_t CtiDeviceION::IntegrityScan( CtiRequestMsg *pReq, CtiCommandParser 
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "IntegrityScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString("scan integrity");
@@ -434,8 +420,7 @@ YukonError_t CtiDeviceION::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandParse
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Accumulator (EventLog) Scan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Accumulator (EventLog) Scan for \""<< getName() <<"\"");
     }
 
     pReq->setCommandString("scan accumulator");
@@ -475,8 +460,7 @@ YukonError_t CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime 
             {
                 if( isDebugLudicrous() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, "processing CtiProtocolION::Command_ExternalPulseTrigger");
                 }
 
                 expectMore = true;
@@ -582,8 +566,7 @@ YukonError_t CtiDeviceION::ResultDecode( const INMESS &InMessage, const CtiTime 
                 {
                     if( isDebugLudicrous() )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - submitting request for additional event logs **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_DEBUG(dout, "submitting request for additional event logs");
                     }
 
                     expectMore = true;
@@ -828,10 +811,7 @@ YukonError_t CtiDeviceION::ErrorDecode(const INMESS &InMessage, const CtiTime Ti
     CtiCommandMsg    *pMsg;
     string         resultString;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "ErrorDecode for device "<< getName() <<" in progress");
 
     retMsg = CTIDBG_new CtiReturnMsg(getID(),
                                      string(InMessage.Return.CommandStr),
@@ -933,8 +913,7 @@ void CtiDeviceION::DecodeDatabaseReader(Cti::RowReader &rdr)
 
    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
    {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       CTILOG_DEBUG(dout, "Decoding DB reader");
    }
 
    _ion.setAddresses(_address.getMasterAddress(), _address.getSlaveAddress());

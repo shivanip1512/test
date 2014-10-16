@@ -121,7 +121,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &))
                 // Make sure all objects that that store results
                 if(DebugLevel & 0x00040000)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CCU, LCU, TCU, & CCURPT Routes" << endl;
+                    CTILOG_DEBUG(dout, "Looking for CCU, LCU, TCU, & CCURPT Routes");
                 }
 
                 string sql = CtiRouteCCU::getSQLCoreStatement();
@@ -133,18 +133,19 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &))
 
                 rdr.execute();
 
-                if(DebugLevel & 0x00040000 || !rdr.isValid())
+                if( ! rdr.isValid() )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
+                    CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
                 }
+                else if( DebugLevel & 0x00040000 )
+                {
+                    CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
+                }
+
                 RefreshRoutes(rowFound, rdr, Factory);
                 if(DebugLevel & 0x00040000)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for CCU, LCU, TCU, & CCURPT Routes" << endl;
+                    CTILOG_DEBUG(dout, "Done looking for CCU, LCU, TCU, & CCURPT Routes");
                 }
             }
 
@@ -152,7 +153,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &))
                 // Make sure all objects that that store results
                 if(DebugLevel & 0x00040000)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Versacom Routes" << endl;
+                    CTILOG_DEBUG(dout, "Looking for Versacom Routes");
                 }
 
                 static const string sql = CtiTableVersacomRoute::getSQLCoreStatement();
@@ -160,18 +161,20 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &))
                 Cti::Database::DatabaseConnection connection;
                 Cti::Database::DatabaseReader rdr(connection, sql);
                 rdr.execute();
-                if(DebugLevel & 0x00040000 || !rdr.isValid())
+
+                if( ! rdr.isValid() )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
+                    CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
                 }
+                else if( DebugLevel & 0x00040000 )
+                {
+                    CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
+                }
+
                 RefreshVersacomRoutes(rowFound, rdr);
                 if(DebugLevel & 0x00040000)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Versacom Routes" << endl;
+                    CTILOG_DEBUG(dout, "Done looking for Versacom Routes");
                 }
             }
 
@@ -179,25 +182,27 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &))
                 // Make sure all objects that that store results
                 if(DebugLevel & 0x00040000)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Repeater Information" << endl;
+                    CTILOG_DEBUG(dout, "Looking for Repeater Information");
                 }
 
                 static const string sql = CtiTableRepeaterRoute::getSQLCoreStatement();
                 Cti::Database::DatabaseConnection connection;
                 Cti::Database::DatabaseReader rdr(connection, sql);
                 rdr.execute();
-                if(DebugLevel & 0x00040000 || !rdr.isValid())
+
+                if( ! rdr.isValid() )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
+                    CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
                 }
+                else if( DebugLevel & 0x00040000 )
+                {
+                    CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
+                }
+
                 RefreshRepeaterRoutes(rowFound, rdr);
                 if(DebugLevel & 0x00040000)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Repeater Information" << endl;
+                    CTILOG_DEBUG(dout, "Done looking for Repeater Information");
                 }
             }
 
@@ -205,7 +210,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &))
                 // Make sure all objects that that store results
                 if(DebugLevel & 0x00040000)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Macro Routes" << endl;
+                    CTILOG_DEBUG(dout, "Looking for Macro Routes");
                 }
 
                 static const string sql = CtiTableMacroRoute::getSQLCoreStatement();
@@ -213,18 +218,20 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &))
                 Cti::Database::DatabaseConnection connection;
                 Cti::Database::DatabaseReader rdr(connection, sql);
                 rdr.execute();
-                if(DebugLevel & 0x00040000 || !rdr.isValid())
+
+                if( ! rdr.isValid() )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << loggedSQLstring << endl;
-                    }
+                    CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
                 }
+                else if( DebugLevel & 0x00040000 )
+                {
+                    CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
+                }
+
                 RefreshMacroRoutes(rowFound, rdr);
                 if(DebugLevel & 0x00040000)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Macro Routes" << endl;
+                    CTILOG_DEBUG(dout, "Done looking for Macro Routes");
                 }
             }
 
@@ -258,10 +265,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &))
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -409,10 +413,7 @@ CtiRouteManager::ptr_type CtiRouteManager::getRouteById( LONG Rte )
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return p;
@@ -446,24 +447,26 @@ CtiRouteManager::ptr_type CtiRouteManager::getRouteByName( string rname )
 }
 
 
-void CtiRouteManager::DumpList(void)
+std::string CtiRouteManager::toString() const
 {
+    Cti::FormattedList itemList;
+    itemList << "CtiRouteManager";
     try
     {
-        spiterator itr;
-
+        unsigned index=0;
+        const_spiterator itr;
         for(itr = begin(); itr != end(); itr++)
         {
-            itr->second->DumpData();
+            itemList <<"Route"<< ++index;
+            itemList << *(itr->second);
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
+
+    return itemList.toString();
 }
 
 void CtiRouteManager::apply(void (*applyFun)(const long, ptr_type, void*), void* d)
@@ -474,8 +477,7 @@ void CtiRouteManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -489,6 +491,15 @@ CtiRouteManager::spiterator CtiRouteManager::begin()
     return _smartMap.getMap().begin();
 }
 CtiRouteManager::spiterator CtiRouteManager::end()
+{
+    return _smartMap.getMap().end();
+}
+
+CtiRouteManager::const_spiterator CtiRouteManager::begin() const
+{
+    return _smartMap.getMap().begin();
+}
+CtiRouteManager::const_spiterator CtiRouteManager::end() const
 {
     return _smartMap.getMap().end();
 }
@@ -524,11 +535,10 @@ bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, list< CtiMes
                 if(ccuroute->getCCUVarBits() == 7)
                 {
                     string resStr = "*** WARNING *** " + ccuroute->getName() + " Has CCU variable bits set to 7 AND has repeaters. ";
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << resStr << endl;
-                        dout << "  It will be skipped. for role generation." << endl;
-                    }
+
+                    CTILOG_WARN(dout, resStr <<
+                            endl << "It will be skipped. for role generation."
+                            );
 
                     retList.push_back( CTIDBG_new CtiReturnMsg( Req.DeviceId(),
                                                       Req.CommandString(),
@@ -615,7 +625,7 @@ void CtiRouteManager::refreshStaticPaoInfo(const Cti::Database::id_set &paoids)
     {
         if(DebugLevel & 0x00020000)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Static PAO Info" << endl;
+            CTILOG_DEBUG(dout, "Looking for Static PAO Info");
         }
 
         Cti::Database::DatabaseConnection connection;
@@ -637,13 +647,13 @@ void CtiRouteManager::refreshStaticPaoInfo(const Cti::Database::id_set &paoids)
             return;
         }
 
-        if(DebugLevel & 0x00020000 || !rdr.isValid())
+        if( ! rdr.isValid() )
         {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << loggedSQLstring << endl;
-            }
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
+        else if( DebugLevel & 0x00020000 )
+        {
+            CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
         }
 
         if(rdr.isValid())
@@ -663,21 +673,18 @@ void CtiRouteManager::refreshStaticPaoInfo(const Cti::Database::id_set &paoids)
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - no parent found for static PAO info record (pao " << tmp_paobjectid << ", entryid " << tmp_entryid << ")  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "no parent found for static PAO info record (pao " << tmp_paobjectid << ", entryid " << tmp_entryid << ")");
                 }
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Error reading Static PAO Info from database. " <<  endl;
+            CTILOG_ERROR(dout, "Could not read Static PAO Info from database");
         }
 
         if(DebugLevel & 0x00020000)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Static PAO Info" << endl;
+            CTILOG_DEBUG(dout, "Done looking for Static PAO Info");
         }
     }
 }
@@ -691,8 +698,7 @@ void CtiRouteManager::refreshRouteEncryptionKeys( const Cti::Database::id_set & 
 
     if ( DebugLevel & 0x00020000 )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << CtiTime() << "Loading Route Encryption Keys." << std::endl;
+        CTILOG_DEBUG(dout, "Loading Route Encryption Keys");
     }
 
     // clear out the existing keys...
@@ -718,13 +724,13 @@ void CtiRouteManager::refreshRouteEncryptionKeys( const Cti::Database::id_set & 
 
     rdr.execute();
 
-    if ( DebugLevel & 0x00020000 || !rdr.isValid() )
+    if( ! rdr.isValid() )
     {
-        std::string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << loggedSQLstring << std::endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed: "<< rdr.asString());
+    }
+    else if( DebugLevel & 0x00020000 )
+    {
+        CTILOG_DEBUG(dout, "DB read: "<< rdr.asString());
     }
 
     if ( rdr.isValid() )
@@ -755,30 +761,22 @@ void CtiRouteManager::refreshRouteEncryptionKeys( const Cti::Database::id_set & 
                 }
                 catch ( Cti::Encryption::Error e )
                 {
-                    CtiLockGuard< CtiLogger > doubt_guard( dout );
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")\n"
-                         << "Error decrypting Encryption Key named: " << name
-                         << "\nException caught: " << e.what() << std::endl;
+                    CTILOG_EXCEPTION_ERROR(dout, e, "Error decrypting Encryption Key named: "<< name);
                 }
             }
             else
             {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")\n"
-                     << "No Route found for Encryption Key named: " << name <<  std::endl;
+                CTILOG_ERROR(dout, "No Route found for Encryption Key named: "<< name);
             }
         }
     }
     else
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")\n"
-             << "Error reading Route Encryption Keys from database." << std::endl;
+        CTILOG_ERROR(dout, "Error reading Route Encryption Keys from database");
     }
 
     if ( DebugLevel & 0x00020000 )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << CtiTime() << "Done loading Route Encryption Keys." << std::endl;
+        CTILOG_DEBUG(dout, "Done loading Route Encryption Keys");
     }
 }

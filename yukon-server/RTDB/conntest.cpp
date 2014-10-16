@@ -18,6 +18,7 @@
 #include "amq_constants.h"
 #include "msg_cmd.h"
 #include "msg_trace.h"
+#include "logManager.h"
 
 std::vector<CtiServerConnection*> connections;
 
@@ -36,7 +37,6 @@ enum OperationMode
 
 bool bGCtrlC;
 CtiConnection::Que_t MainQueue_;
-DLLIMPORT extern CtiLogger dout;
 
 // CtrlHandler handles is used to catch ctrl-c when run in a console
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
@@ -92,20 +92,10 @@ void ConnectionHandlerThread( string name )
             }
         }
     }
-    catch(RWxmsg& msg )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << "ConnectionHandler Failed: " << msg.why() << endl;
-        }
-        exit(-1);
-    }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_FATAL(dout);
+
         exit(-1);
     }
 }
@@ -124,7 +114,7 @@ void runServer( string name )
 
         if( msg != NULL )
         {
-            msg->dump();
+            CTILOG_INFO(dout, msg);
         }
     }
 
@@ -132,8 +122,8 @@ void runServer( string name )
 
     if(RW_THR_TIMEOUT == ConnThread_.join(2000))
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Terminating connection thread " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_WARN(dout, "Terminating connection thread");
+
         ConnThread_.terminate();
     }
 
@@ -200,12 +190,11 @@ void main(void)
     cin  >> operationMode;
 
     // fire up the logger thread
-    dout.start              ();
-    dout.setOutputPath      ( gLogDirectory );
-    dout.setRetentionLength ( gLogRetention );
-    dout.setOutputFile      ( "conntest" );
-    dout.setToStdOut        ( true );
-    dout.setWriteInterval   ( 1000 );
+    doutManager.setOutputPath    ( gLogDirectory );
+    doutManager.setRetentionDays ( gLogRetention );
+    doutManager.setOutputFile    ( "conntest" );
+    doutManager.setToStdOut      ( true );
+    doutManager.start();
 
     if( operationMode == Server )
     {

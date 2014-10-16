@@ -39,6 +39,7 @@
 *-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
+#include "boost/lexical_cast.hpp"
 #include "logger.h"
 #include "std_ansi_tbl_14.h"
 
@@ -118,35 +119,20 @@ CtiAnsiTable14& CtiAnsiTable14::operator=(const CtiAnsiTable14& aRef)
 //=========================================================================================================================================
 void CtiAnsiTable14::printResult( const string& deviceName )
 {
-    int integer;
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 14 ========================" << endl;
-    }
+    Cti::FormattedList itemList;
 
     for( int index = 0; index < _controlEntries; index++ )
     {
+        Cti::StreamBufferSink& values = itemList.add("DATA_RCD "+ boost::lexical_cast<string>(index));
+        for(int cnt = 0; cnt < _controlLength; cnt++)
         {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "  DATA_RCD " <<index<<" : ";
-        }
-        for( int cnt = 0; cnt < _controlLength; cnt++ )
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "   "<<(int)_data_control_record.data_rcd[index].source_id[cnt];
-        }
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout <<endl;
+            values << _data_control_record.data_rcd[index].source_id[cnt] <<" ";
         }
     }
 
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 14") <<
+            itemList
+            );
 }
 

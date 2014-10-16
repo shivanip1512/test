@@ -2,6 +2,7 @@
 
 #include "message.h"
 #include "amq_constants.h"
+#include "logger.h"
 
 #include <thrift/thrift.h>
 #include <thrift/transport/TBufferTransports.h>
@@ -95,10 +96,7 @@ public:
             }
             catch( apache::thrift::TException &e )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Thrift EXCEPTION **** while serializing object type \"" << typeid(imsg).name() << "\" " << __FILE__ << " (" << __LINE__ << ")" << e.what() << std::endl;
-                }
+                CTILOG_EXCEPTION_ERROR(dout, e, "Failed to serialize object type \""<< typeid(imsg).name() <<"\"");
             }
         }
 
@@ -120,10 +118,7 @@ public:
             }
             catch( apache::thrift::TException &e )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Thrift EXCEPTION **** while deserializing message type \"" << msgType << "\" " << __FILE__ << " (" << __LINE__ << ")" << e.what() << std::endl;
-                }
+                CTILOG_EXCEPTION_ERROR(dout, e, "Failed to deserialize message type \""<< msgType <<"\"");
             }
         }
 

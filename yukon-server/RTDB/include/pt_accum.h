@@ -35,10 +35,7 @@ public:
          {
             if( ! _pointHistory->Insert() )     // Maybe it doesn't exist... Try this then bail
             {
-              CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-               dout << "**** ERROR **** Unable to insert dynamic accumulator data for " << getName() << std::endl;
-               dout << "     ERROR **** " << FO(__FILE__) << " (" << __LINE__ << ")" <<std::endl;
+                CTILOG_ERROR(dout, "Unable to insert dynamic accumulator data for "<< getName());
             }
          }
       }
@@ -76,11 +73,11 @@ public:
 
    virtual void DecodeDatabaseReader(Cti::RowReader &rdr)
    {
-      Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
+       Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
+
        if(getDebugLevel() & DEBUGLEVEL_DATABASE)
        {
-          CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+           CTILOG_DEBUG(dout, "Decoding DB reader");
        }
 
        _pointAccumulator.DecodeDatabaseReader(rdr);
@@ -100,10 +97,7 @@ public:
          }
          else
          {
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " **** MEMORY ERROR **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_ERROR(dout, "Unexpected _pointHistory is NULL");
          }
       }
    }

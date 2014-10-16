@@ -31,10 +31,7 @@ int DeviceConfigurationLoadProfileData::getLoadProfileDemandRate() const
 
     if( lpInterval_minutes <= 0 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** getLoadProfileDemandRate() - \"" << MCTStrings::ProfileInterval << "\" returned \"" << lpInterval_minutes << "\", returning 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "\""<< MCTStrings::ProfileInterval <<"\" returned \""<< lpInterval_minutes <<"\", returning 0");
 
         return 0;
     }
@@ -44,20 +41,14 @@ int DeviceConfigurationLoadProfileData::getLoadProfileDemandRate() const
 
 int DeviceConfigurationLoadProfileData::getVoltageDemandInterval() const
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Unsupported Operation. getVoltageDemandInterval() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "Unsupported Operation");
 
     return 0;
 }
 
 int DeviceConfigurationLoadProfileData::getVoltageProfileRate() const
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Unsupported Operation. getVoltageProfileRate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "Unsupported Operation");
 
     return 0;
 }

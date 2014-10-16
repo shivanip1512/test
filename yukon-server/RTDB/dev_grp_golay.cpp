@@ -63,9 +63,9 @@ void CtiDeviceGroupGolay::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
+
     _loadGroup.DecodeDatabaseReader(rdr);
 }
 
@@ -99,10 +99,7 @@ YukonError_t CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommand
                                                      CtiMultiMsg_vec());
         retList.push_back( pRet );
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << resultString << endl;
-        }
+        CTILOG_ERROR(dout, resultString);
     }
     else
     {
@@ -175,10 +172,7 @@ YukonError_t CtiDeviceGroupGolay::ExecuteRequest(CtiRequestMsg *pReq, CtiCommand
                                                          CtiMultiMsg_vec());
             retList.push_back( pRet );
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << resultString << endl;
-            }
+            CTILOG_ERROR(dout, resultString);
         }
     }
 

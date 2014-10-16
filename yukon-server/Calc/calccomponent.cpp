@@ -28,10 +28,7 @@ _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
 
     if( componentPointId <= 0 && ciStringEqual(componentType,"operation" ) )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "ERROR creating CtiCalcComponent - operation with ComponentPointID of 0 - setting invalid flag" << endl;
-        }
+        CTILOG_ERROR(dout, "Failed to create CtiCalcComponent - operation with ComponentPointID of 0 - setting invalid flag");
         _valid = FALSE;
     }
     else if( ciStringEqual(componentType,"operation") )
@@ -52,17 +49,13 @@ _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
         else if( ciStringEqual(operationType,"push" ) )  _operationType = push;
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Invalid Operation Type: " << operationType << " ComponentPointID = " << componentPointId << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid Operation Type: "<< operationType <<" ComponentPointID = "<< componentPointId);
             _valid = FALSE;
         }
 
         if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Adding CtiCalcComponent - Normal Operation ComponentPointID = " << componentPointId << endl;
+            CTILOG_DEBUG(dout, "Adding CtiCalcComponent - Normal Operation ComponentPointID = "<< componentPointId);
         }
 
     }
@@ -79,17 +72,13 @@ _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
         else if( ciStringEqual(operationType,"push" ) )  _operationType = push;
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Invalid Operation Type: " << operationType << " ComponentPointID = " << componentPointId << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid Operation Type: "<< operationType <<" ComponentPointID = "<< componentPointId);
             _valid = FALSE;
         }
 
         if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Adding CtiCalcComponent - Constant ComponentPointID = " << componentPointId << " Const: " << _constantValue << endl;
+            CTILOG_DEBUG(dout, "Adding CtiCalcComponent - Constant ComponentPointID = "<< componentPointId <<" Const: "<< _constantValue);
         }
     }
     else if( ciStringEqual(componentType,"function" ) )
@@ -101,12 +90,8 @@ _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
     }
     else
     {
+        CTILOG_ERROR(dout, "Invalid CtiCalcComponent - ComponentPointID = "<< componentPointId <<" ComponentType: "<< componentType);
         _valid = FALSE;
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Invalid CtiCalcComponent - ComponentPointID = " << componentPointId << " ComponentType: " << componentType << endl;
-        }
     }
 }
 
@@ -166,8 +151,7 @@ BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const CtiTime &calcsLastU
         {
             if( _CALC_DEBUG & CALC_DEBUG_POINTDATA_QUALITY )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " - Point quality is constant or non-updated, Point ID: " << componentPointPtr->getPointNum() << endl;
+                CTILOG_DEBUG(dout, "Point quality is constant or non-updated, Point ID: "<< componentPointPtr->getPointNum());
             }
             return TRUE;
         }
@@ -175,8 +159,7 @@ BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const CtiTime &calcsLastU
         {
             if( _CALC_DEBUG & CALC_DEBUG_POINTDATA_QUALITY )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " - Point tags mark component disabled, Point ID: " << componentPointPtr->getPointNum() << endl;
+                CTILOG_DEBUG(dout, "Point tags mark component disabled, Point ID: "<< componentPointPtr->getPointNum());
             }
             return TRUE;
         }
@@ -272,8 +255,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, CtiTim
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << __FILE__ << " (" << __LINE__ << ")  attempt to \'push\' with no parent pointer - returning \'input\'" << endl;
+           CTILOG_WARN(dout, "attempt to \'push\' with no parent pointer - returning \'input\'");
         }
 
         switch( _operationType )
@@ -291,8 +273,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, CtiTim
         }
         if( _CALC_DEBUG & CALC_DEBUG_COMPONENT_POSTCALC_VALUE )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " CtiCalcComponent::calculate(); constant operation; input:" << orignal << ",   constant:" << _constantValue << ",   return: " << input << endl;
+            CTILOG_DEBUG(dout, "constant operation; input:"<< orignal <<",   constant:"<< _constantValue <<",   return: "<< input);
         }
     }
     else if( _componentType == function )
@@ -301,8 +282,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, CtiTim
         input = _doFunction( _functionName, calcValid );
         if( _CALC_DEBUG & CALC_DEBUG_COMPONENT_POSTCALC_VALUE )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " CtiCalcComponent::calculate(); function return: " << input << endl;
+            CTILOG_DEBUG(dout, "calculate returns: "<< input);
         }
     }
 
@@ -431,8 +411,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             if( UpdateFreq < 0.001 )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << __FILE__ << " (" << __LINE__ << ")  in \'XfrmThermAge\' function -  parameter UpdateFreq < 0.001, setting to 1.0e10 to prevent runaway transformer aging" << endl;
+                CTILOG_WARN(dout, "in \'XfrmThermAge\' function -  parameter UpdateFreq < 0.001, setting to 1.0e10 to prevent runaway transformer aging");
                 UpdateFreq = 1.0e10;
             }
 
@@ -456,8 +435,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             if( Rating == 0.0 )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << __FILE__ << " (" << __LINE__ << ")  in \'HotSpot\' function - Rating parameter equal to zero, setting to 1" << endl;
+                CTILOG_WARN(dout, "in \'HotSpot\' function - Rating parameter equal to zero, setting to 1");
                 Rating = 1.0;
             }
 
@@ -694,10 +672,8 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             else
             {
                 validCalc = false;
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+
+                CTILOG_ERROR(dout, "Cannot divide by zero - COS from P/Q => Q is zero");
             }
         }
         else if( ciStringEqual(functionName,"sin") )
@@ -1082,30 +1058,23 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
         {
             // We do not have a function.
             validCalc = false;
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Function " << functionName << " not implemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+
+            CTILOG_ERROR(dout, "Function "<< functionName <<" not implemented");
+
             retVal = _calcpoint->pop();     // Do a pop() to allow a retVal push() below to keep the stack sane.
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION performing component calculate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  Failed point: " << _calcpoint->getPointId() << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to perform component calculate(). Failed point: "<< _calcpoint->getPointId());
     }
 
     //added 7/31/03 JW
     if( _isnan(retVal) || !_finite(retVal) )        // !_finite should be thought of as isInfinite(retVal)  We cannot have that!
     {
         retVal = 0.0;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << __FILE__ << " (" << __LINE__ << ")  _doFunction tried to return a NaN/INF for Calc Point Id: " << _calcpoint->getPointId() << endl;
-        }
+
+        CTILOG_ERROR(dout, "_doFunction tried to return a NaN/INF for Calc Point Id: "<< _calcpoint->getPointId());
     }
 
     _calcpoint->push( retVal );       // Return result to the stack so it can be used properly by another callee/component.
@@ -1165,8 +1134,7 @@ void CtiCalcComponent::primeHistoricalRegression(CtiCalc *calcPoint, CtiTime &po
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - TIMESTAMP ERROR: " << timeStamp.asString() << " = " << pointTime.asString() << endl;
+                        CTILOG_ERROR(dout, "Timestamp are equal timeStamp != pointTime ("<< timeStamp.asString() <<" = "<< pointTime.asString() <<")");
                     }
                 }
 
@@ -1178,16 +1146,9 @@ void CtiCalcComponent::primeHistoricalRegression(CtiCalc *calcPoint, CtiTime &po
                 }
 
             }
-            catch( RWxmsg &msg )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Exception while reading calc last updated time from database: " << msg.why( ) << endl;
-                exit( -1 );
-            }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
         }
     }

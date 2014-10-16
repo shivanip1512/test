@@ -504,8 +504,7 @@ BOOL CtiLMProgramCurtailment::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMu
     else
     {
         returnBool = FALSE;
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Trying to stop curtailment on a program that isn't in the StoppingState state is: " << getProgramState() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_INFO(dout, "Trying to stop curtailment on a program that isn't in the StoppingState state is: " << getProgramState());
     }
 
     return returnBool;
@@ -531,10 +530,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(CtiTime currentTime, CtiMultiM
             setRunStatus(CtiLMProgramCurtailment::NotifiedRunStatus);
             dumpDynamicData();
 
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Curtailment notification sent to all customers in program: " << getPAOName() << endl;
-            }
+            CTILOG_INFO(dout, "Curtailment notification sent to all customers in program: " << getPAOName());
         }
     }
     else if( getProgramState() == CtiLMProgramBase::NotifiedState )
@@ -546,8 +542,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(CtiTime currentTime, CtiMultiM
             setRunStatus(CtiLMProgramCurtailment::ActiveRunStatus);
             dumpDynamicData();
 
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Curtailment went active in program: " << getPAOName() << endl;
+            CTILOG_INFO(dout, "Curtailment went active in program: " << getPAOName());
         }
     }
     else if( getProgramState() == CtiLMProgramBase::ManualActiveState )
@@ -561,8 +556,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(CtiTime currentTime, CtiMultiM
 
             if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Curtailment ended in program: " << getPAOName() << endl;
+                CTILOG_DEBUG(dout, "Curtailment ended in program: " << getPAOName());
             }
         }
     }
@@ -574,8 +568,7 @@ BOOL CtiLMProgramCurtailment::handleManualControl(CtiTime currentTime, CtiMultiM
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Invalid manual control state: " << getProgramState() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_INFO(dout, "Invalid manual control state: " << getProgramState());
     }
 
     return returnBoolean;
@@ -674,8 +667,7 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiNotificati
         else
         {
             emailBody = "THIS CURTAILMENT HAS BEEN CANCELED";
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Could not determine type of stop notification to send, sent default.  Run status: " << getRunStatus() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            CTILOG_INFO(dout, "Could not determine type of stop notification to send, sent default.  Run status: " << getRunStatus());
         }
         emailBody += "\r\n\r\n";// 2 return lines
         emailBody += getMessageHeader();
@@ -737,11 +729,7 @@ void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
 
     if( _LM_DEBUG & LM_DEBUG_DATABASE )
     {
-        string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << endl;
-        }
+        CTILOG_DEBUG(dout, rdr.asString());
     }
 
     if( rdr() )
@@ -755,10 +743,7 @@ void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
         setCurtailReferenceId(1);
     }
 
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Inserting a program curtailment entry into LMCurtailProgramActivity: " << getPAOName() << " with curtail reference id: " << getCurtailReferenceId() << endl;
-    }
+    CTILOG_INFO(dout, "Inserting a program curtailment entry into LMCurtailProgramActivity: " << getPAOName() << " with curtail reference id: " << getCurtailReferenceId());
 
     {
         static const std::string sql_insert = "insert into lmcurtailprogramactivity values (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -778,8 +763,7 @@ void CtiLMProgramCurtailment::addLMCurtailProgramActivityTable()
 
         if( _LM_DEBUG & LM_DEBUG_DYNAMIC_DB )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << inserter.asString() << endl;
+            CTILOG_DEBUG(dout, inserter.asString());
         }
 
         inserter.execute();
@@ -828,11 +812,7 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(Cti::Database:
 
         if( _LM_DEBUG & LM_DEBUG_DATABASE )
         {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << loggedSQLstring << endl;
-            }
+            CTILOG_DEBUG(dout, rdr.asString());
         }
 
         if( rdr() )
@@ -846,10 +826,7 @@ void CtiLMProgramCurtailment::updateLMCurtailProgramActivityTable(Cti::Database:
             setCurtailReferenceId(1);
         }
 
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Inserting a program curtailment entry into LMCurtailProgramActivity: " << getPAOName() << " with curtail reference id: " << getCurtailReferenceId() << endl;
-        }
+        CTILOG_INFO(dout, "Inserting a program curtailment entry into LMCurtailProgramActivity: " << getPAOName() << " with curtail reference id: " << getCurtailReferenceId());
 
         {
             static const std::string sql_insert = "insert into lmcurtailprogramactivity values (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -1042,11 +1019,7 @@ void CtiLMProgramCurtailment::restoreDynamicData()
 
         if( _LM_DEBUG & LM_DEBUG_DATABASE )
         {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << loggedSQLstring << endl;
-            }
+            CTILOG_DEBUG(dout, rdr.asString());
         }
 
         if(rdr())

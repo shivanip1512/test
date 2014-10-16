@@ -901,8 +901,7 @@ BOOL CtiLMControlArea::isControlStillNeeded()
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unknown Trigger Type in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_INFO(dout, "Unknown Trigger Type");
         }
 
 
@@ -1139,10 +1138,7 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
                         _snprintf(tempchar,80,"%.*f",1,currentTrigger->getPointValue());
                         additional += tempchar;
                         CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << text << ", " << additional << endl;
-                        }
+                        CTILOG_INFO(dout, text << ", " << additional);
                     }
                 }
             }
@@ -1160,8 +1156,7 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unknown Trigger Type in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_INFO(dout, "Unknown Trigger Type");
         }
 
 
@@ -1170,8 +1165,7 @@ DOUBLE CtiLMControlArea::calculateLoadReductionNeeded()
             returnLoadReductionNeeded = 0.0;
             if( _LM_DEBUG & LM_DEBUG_CONTROL_PARAMS )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - LM Control Area: " << getPAOName() << " has at least one trigger active but cannot automatically start control because not all triggers are active in accordance with the RequireAllTriggersActiveFlag" << endl;
+                CTILOG_DEBUG(dout, "LM Control Area: " << getPAOName() << " has at least one trigger active but cannot automatically start control because not all triggers are active in accordance with the RequireAllTriggersActiveFlag");
             }
         }
     }
@@ -1217,8 +1211,7 @@ bool CtiLMControlArea::shouldReduceControl()
 
     if( _lmcontrolareatriggers.size() == 0 )
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " **Checkpoint** " << "shouldReduceControl() - decision cannot be made since there are no triggers on this control area!" << __FILE__ << "(" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "decision cannot be made since there are no triggers on this control area!");
         return false;
     }
 
@@ -1290,10 +1283,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                     signal->setSOE(1);
 
                     multiDispatchMsg->insert(signal);
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                    }
+                    CTILOG_INFO(dout, text << ", " << additional);
                 }
 
                 if( currentLMProgram->getProgramState() != CtiLMProgramBase::FullyActiveState &&
@@ -1322,10 +1312,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                                     CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
                                     multiDispatchMsg->insert(signal);
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                    }
+                                    CTILOG_INFO(dout, text << ", " << additional);
                                 }
                                 setCurrentStartPriority(lmProgramDirect->getStartPriority());
 
@@ -1368,8 +1355,7 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                     }
                     else if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Load Management can not automatically manage curtailment programs yet. in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_INFO(dout, "Load Management can not automatically manage curtailment programs yet.");
                         /*CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgram;
                         expectedLoadReduced = lmProgramCurtailment->reduceProgramLoad(loadReductionNeeded, multiPilMsg);
                         if( currentLMProgram->getStartPriority() > getCurrentStartPriority() )
@@ -1383,16 +1369,14 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Unknown LM Program Type in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_INFO(dout, "Unknown LM Program Type");
                     }
                 }
                 else
                 {
                     if( _LM_DEBUG & LM_DEBUG_CONTROL_PARAMS )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - LM Program: " << currentLMProgram->getPAOName() << " already fully active, can not control any further, state: " << currentLMProgram->getProgramState() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_DEBUG(dout, "LM Program: " << currentLMProgram->getPAOName() << " already fully active, can not control any further, state: " << currentLMProgram->getProgramState());
                     }
                 }
             }
@@ -1404,18 +1388,14 @@ DOUBLE CtiLMControlArea::reduceControlAreaLoad(DOUBLE loadReductionNeeded, LONG 
         else if ( !(ciStringEqual(currentLMProgram->getControlType(), CtiLMProgramBase::ManualOnlyType) ||
                     ciStringEqual(currentLMProgram->getControlType(), CtiLMProgramBase::AutomaticType) ||
                     ciStringEqual(currentLMProgram->getControlType(), CtiLMProgramBase::TimedType)) )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unknown LM Program Control Type: " << currentLMProgram->getControlType() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_INFO(dout, "Unknown LM Program Control Type: " << currentLMProgram->getControlType());
     }
 
     updateStateFromPrograms();
 
     if( getControlAreaState() == CtiLMControlArea::AttemptingControlState )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Control cannot go active because no programs are currently available " << endl;
+        CTILOG_INFO(dout, "Control cannot go active because no programs are currently available ");
     }
 
     //setUpdatedFlag(TRUE);
@@ -1434,8 +1414,7 @@ void CtiLMControlArea::reduceControlAreaControl(CtiTime currentTime, CtiMultiMsg
 
     if( cur_stop_priority < 0 )
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " Control Area: " << getPAOName() <<  ", Current stop priority is " << cur_stop_priority << " not reducing control" << endl;
+        CTILOG_INFO(dout, "Control Area: " << getPAOName() <<  ", Current stop priority is " << cur_stop_priority << " not reducing control");
         return;
     }
 
@@ -1457,8 +1436,7 @@ void CtiLMControlArea::reduceControlAreaControl(CtiTime currentTime, CtiMultiMsg
 
             if( _LM_DEBUG && LM_DEBUG_STANDARD )
             {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " " <<  text << " - " << additional << endl;
+                CTILOG_DEBUG(dout, text << " - " << additional);
             }
 
             if( lm_program->getPAOType() == TYPE_LMPROGRAM_DIRECT )
@@ -1492,10 +1470,7 @@ void CtiLMControlArea::reduceControlAreaControl(CtiTime currentTime, CtiMultiMsg
         signal->setSOE(1);
 
         multiDispatchMsg->insert(signal);
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << text << ", " << additional << endl;
-        }
+        CTILOG_INFO(dout, text << ", " << additional);
     }
     setUpdatedFlag(TRUE);
     return;
@@ -1537,10 +1512,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                     signal->setSOE(1);
 
                     multiDispatchMsg->insert(signal);
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                    }
+                    CTILOG_INFO(dout, text << ", " << additional);
                 }
 
                 if( currentLMProgram->getProgramState() != CtiLMProgramBase::FullyActiveState &&
@@ -1569,18 +1541,14 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                                 CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
                                 multiDispatchMsg->insert(signal);
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - " << text << ", " << additional << endl;
-                                }
+                                CTILOG_INFO(dout, text << ", " << additional);
                             }
                             setCurrentStartPriority(currentLMProgram->getStartPriority());
                         }
                     }
                     else if( currentLMProgram->getPAOType() == TYPE_LMPROGRAM_CURTAILMENT )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Load Management can not automatically manage curtailment programs yet. in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_INFO(dout, "Load Management can not automatically manage curtailment programs yet.");
                         /*CtiLMProgramCurtailment* lmProgramCurtailment = (CtiLMProgramCurtailment*)currentLMProgram;
                         expectedLoadReduced = lmProgramCurtailment->reduceProgramLoad(loadReductionNeeded, multiPilMsg);
                         if( currentLMProgram->getStartPriority() > getCurrentStartPriority() )
@@ -1594,8 +1562,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Unknown LM Program Type in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_INFO(dout, "Unknown LM Program Type");
                     }
 
                     if( getControlAreaState() != CtiLMControlArea::FullyActiveState &&
@@ -1608,8 +1575,7 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
                 {
                     if( _LM_DEBUG & LM_DEBUG_CONTROL_PARAMS )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - LM Program: " << currentLMProgram->getPAOName() << " already fully active, can not control any further, state: " << currentLMProgram->getProgramState() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_DEBUG(dout, "LM Program: " << currentLMProgram->getPAOName() << " already fully active, can not control any further, state: " << currentLMProgram->getProgramState());
                     }
                 }
             }
@@ -1620,18 +1586,14 @@ DOUBLE CtiLMControlArea::takeAllAvailableControlAreaLoad(LONG secondsFromBeginni
         }
         else if( !(ciStringEqual(currentLMProgram->getControlType(), CtiLMProgramBase::ManualOnlyType)) &&
                  !(ciStringEqual(currentLMProgram->getControlType(), CtiLMProgramBase::TimedType)))
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unknown LM Program Control Type in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_INFO(dout, "Unknown LM Program Control Type");
     }
 
     updateStateFromPrograms();
 
     if( getControlAreaState() == CtiLMControlArea::AttemptingControlState )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Control cannot go active because no programs are currently available " << endl;
+        CTILOG_INFO(dout, "Control cannot go active because no programs are currently available ");
     }
 
     return expectedLoadReduced;
@@ -1668,10 +1630,7 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
                         signal->setSOE(1);
 
                         multiDispatchMsg->insert(signal);
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << text << ", " << additional << endl;
-                        }
+                        CTILOG_INFO(dout, text << ", " << additional);
                     }
 
                     if( currentLMProgram->getProgramState() == CtiLMProgramBase::InactiveState &&
@@ -1721,8 +1680,7 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
 
         if( getControlAreaState() == CtiLMControlArea::AttemptingControlState )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Control cannot go active because no programs are currently available " << endl;
+            CTILOG_INFO(dout, "Control cannot go active because no programs are currently available ");
         }
     }
 }
@@ -1745,10 +1703,7 @@ void CtiLMControlArea::manuallyStopAllProgramsNow(LONG secondsFromBeginningOfDay
 
             multiDispatchMsg->insert(signal);
 
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << text << ", " << additional << endl;
-            }
+            CTILOG_INFO(dout, text << ", " << additional);
 
             if( forceAll &&
                 (currentLMProgram->getProgramState() != CtiLMProgramBase::InactiveState ||
@@ -1867,8 +1822,7 @@ BOOL CtiLMControlArea::stopProgramsBelowThreshold(CtiTime currentTime, CtiMultiM
 
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
-                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime() << " " <<  text << " - " << additional << endl;
+                    CTILOG_DEBUG(dout, text << " - " << additional);
                 }
 
                 lm_program_direct->setChangeReason("Threshold Stop");
@@ -1952,10 +1906,7 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, Ct
             CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
             multiDispatchMsg->insert(signal);
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << text << ", " << additional << endl;
-            }
+            CTILOG_INFO(dout, text << ", " << additional);
         }
         setCurrentStartPriority(newPriority);
     }
@@ -1979,7 +1930,7 @@ BOOL CtiLMControlArea::maintainCurrentControl(LONG secondsFromBeginningOfDay, Ct
     {
         setControlAreaState(CtiLMControlArea::PartiallyActiveState);
     }
-    
+
     return returnBoolean;
 }
 
@@ -2025,10 +1976,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
                     signal->setSOE(1);
 
                     multiDispatchMsg->insert(signal);
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                    }
+                    CTILOG_INFO(dout, text << ", " << additional);
                     sentSignalMsg = true;
                 }
 
@@ -2040,10 +1988,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
                     signal->setSOE(i+2);
 
                     multiDispatchMsg->insert(signal);
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                    }
+                    CTILOG_INFO(dout, text << ", " << additional);
                 }
             }
         }
@@ -2082,10 +2027,7 @@ BOOL CtiLMControlArea::stopAllControl(CtiMultiMsg* multiPilMsg, CtiMultiMsg* mul
                 CtiSignalMsg* signal = CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent);
 
                 multiDispatchMsg->insert(signal);
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << text << ", " << additional << endl;
-                }
+                CTILOG_INFO(dout, text << ", " << additional);
             }
             setCurrentStartPriority(newPriority);
         }
@@ -2167,10 +2109,7 @@ void CtiLMControlArea::handleManualControl(CtiTime currentTime, CtiMultiMsg* mul
                 signal->setSOE(1);
 
                 multiDispatchMsg->insert(signal);
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << text << ", " << additional << endl;
-                }
+                CTILOG_INFO(dout, text << ", " << additional);
             }
             setUpdatedFlag(TRUE);
         }
@@ -2187,10 +2126,7 @@ void CtiLMControlArea::handleManualControl(CtiTime currentTime, CtiMultiMsg* mul
             signal->setSOE(1);
 
             multiDispatchMsg->insert(signal);
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << text << ", " << additional << endl;
-            }
+            CTILOG_INFO(dout, text << ", " << additional);
             setCurrentStartPriority(-1);
             setUpdatedFlag(TRUE);
         }
@@ -2221,10 +2157,7 @@ void CtiLMControlArea::handleManualControl(CtiTime currentTime, CtiMultiMsg* mul
                 signal->setSOE(1);
 
                 multiDispatchMsg->insert(signal);
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << text << ", " << additional << endl;
-                }
+                CTILOG_INFO(dout, text << ", " << additional);
                 setUpdatedFlag(TRUE);
             }
         }
@@ -2294,10 +2227,7 @@ void CtiLMControlArea::handleTimeBasedControl(CtiTime currentTime, LONG secondsF
                 signal->setSOE(1);
 
                 multiDispatchMsg->insert(signal);
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << text << ", " << additional << endl;
-                }
+                CTILOG_INFO(dout, text << ", " << additional);
             }
             setUpdatedFlag(TRUE);
         }
@@ -2314,10 +2244,7 @@ void CtiLMControlArea::handleTimeBasedControl(CtiTime currentTime, LONG secondsF
             signal->setSOE(1);
 
             multiDispatchMsg->insert(signal);
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << text << ", " << additional << endl;
-            }
+            CTILOG_INFO(dout, text << ", " << additional);
 
             // This is different than the manual control. Time based control does not currently schedule while manual does.
             // In the case of timed control we still want the timed stop message even though something is scheduled.
@@ -2353,10 +2280,7 @@ void CtiLMControlArea::handleTimeBasedControl(CtiTime currentTime, LONG secondsF
                 signal->setSOE(1);
 
                 multiDispatchMsg->insert(signal);
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << text << ", " << additional << endl;
-                }
+                CTILOG_INFO(dout, text << ", " << additional);
                 setUpdatedFlag(TRUE);
             }
         }
@@ -2488,7 +2412,7 @@ void CtiLMControlArea::updateStateFromPrograms()
 
   Updates the start/stop time of all the timed programs in this control
   area based on both program and control area windows
- 
+
   Now also schedules start and stop notifications.
 
   If a manual control was received, this will not override it.
@@ -2593,10 +2517,7 @@ void CtiLMControlArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, 
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted control area into DynamicLMControlArea: " << getPAOName() << endl;
-            }
+            CTILOG_INFO(dout, "Inserted control area into DynamicLMControlArea: " << getPAOName());
 
             static const std::string sql_insert = "insert into dynamiclmcontrolarea values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 

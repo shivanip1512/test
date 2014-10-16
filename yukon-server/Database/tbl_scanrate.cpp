@@ -1,22 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_scanrate
-*
-* Date:   8/16/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_scanrate.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "tbl_scanrate.h"
-
 #include "database_connection.h"
 #include "database_reader.h"
 
@@ -138,8 +122,7 @@ void CtiTableDeviceScanRate::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     string rwstemp;
@@ -154,14 +137,17 @@ void CtiTableDeviceScanRate::DecodeDatabaseReader(Cti::RowReader &rdr)
         _updated = TRUE;                    // _ONLY_ _ONLY_ place this is set.
     }
 
-void CtiTableDeviceScanRate::DumpData()
+std::string CtiTableDeviceScanRate::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    Cti::FormattedList itemList;
 
-    dout << " Scan Type                                   : " << desolveScanType( _scanType) << endl;
-    dout << " Scan Rate                                   : " << _scanRate  << endl;
-    dout << " Scan Group                                  : " << _scanGroup << endl;
-    dout << " Alternate Rate                              : " << _alternateRate << endl;
+    itemList <<"CtiTableDeviceScanRate";
+    itemList.add("Scan Type")      << desolveScanType(_scanType);
+    itemList.add("Scan Rate")      << _scanRate;
+    itemList.add("Scan Group")     << _scanGroup;
+    itemList.add("Alternate Rate") << _alternateRate;
+
+    return itemList.toString();
 }
 
 LONG CtiTableDeviceScanRate::getDeviceID() const

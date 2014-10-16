@@ -2,8 +2,10 @@
 
 #include "row_reader.h"
 #include "rwutil.h"
+#include "loggable.h"
 
-class IM_EX_CTIYUKONDB CtiTablePaoExclusion
+
+class IM_EX_CTIYUKONDB CtiTablePaoExclusion : public Cti::Loggable
 {
 protected:
 
@@ -64,7 +66,7 @@ public:
 
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    void dump() const;
+    virtual std::string toString() const override;
 
     enum
     {

@@ -209,10 +209,7 @@ int CtiFDRSocketInterface::sendAllPoints()
 
     Sleep (2000);
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Uploading all requested points to " << getInterfaceName() << endl;
-    }
+    CTILOG_INFO(dout, "Uploading all requested points to "<< getInterfaceName());
 
     CtiFDRPointSPtr point;
     CtiFDRManager* mgrPtr = getSendToList().getPointList();
@@ -230,9 +227,8 @@ int CtiFDRSocketInterface::sendAllPoints()
             {
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " PointId " << point->getPointID();
-                    dout << " was not sent to " << getInterfaceName() << " because it hasn't been initialized " << endl;
+                    CTILOG_DEBUG(dout, "PointId "<< point->getPointID() <<" was not sent to "<< getInterfaceName() <<
+                            " because it hasn't been initialized");
                 }
             }
             else
@@ -244,9 +240,8 @@ int CtiFDRSocketInterface::sendAllPoints()
         {
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Control point Id " << point->getPointID();
-                dout << " was not sent to " << getInterfaceName() << " because a database reload triggered the send " << endl;
+                CTILOG_DEBUG(dout, "Control point Id "<< point->getPointID() <<" was not sent to "<< getInterfaceName() <<
+                        " because a database reload triggered the send");
             }
         }
     }
@@ -268,8 +263,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
 
     if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " DEBUG: Message received from yukon for sending. " << endl;
+        CTILOG_DEBUG(dout, "Message received from yukon for sending.");
     }
 
     // if requested, check the timestamp and value to see if we should forward this message
@@ -285,9 +279,9 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
             {
                 if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " DEBUG: Point not being forwarded to connection. " << endl;
+                    CTILOG_DEBUG(dout, "Point not being forwarded to connection.");
                 }
+
                 forwardPointData = false;
             }
         }
@@ -305,9 +299,9 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
 
             if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Point registration response tag set, point " << localMsg->getId() << " will not be sent to " << getInterfaceName() << endl;
+                CTILOG_DEBUG(dout, "Point registration response tag set, point "<< localMsg->getId() <<" will not be sent to "<< getInterfaceName());
             }
+
             retVal = false;
         }
         else
@@ -319,8 +313,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
             {
                 if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Translation for point " << localMsg->getId() << " to " << getInterfaceName() << " not found " << endl;;
+                    CTILOG_DEBUG(dout, "Translation for point "<< localMsg->getId() <<" to "<< getInterfaceName() <<" not found");
                 }
             }
             else
@@ -335,9 +328,7 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
                 {
                     if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " PointId " << point.getPointID();
-                        dout << " was not sent to " << getInterfaceName() << " because it hasn't been initialized " << endl;
+                        CTILOG_DEBUG(dout, "PointId "<< point.getPointID() <<" was not sent to "<< getInterfaceName() <<" because it hasn't been initialized");
                     }
                     retVal = false;
                 }
@@ -352,14 +343,12 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
                         }
                         catch (...)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** building msg error" << endl;
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to build message");
                         }
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** Not Registered" << endl;
+                        CTILOG_ERROR(dout, "Not Registered");
                     }
                 }
             }

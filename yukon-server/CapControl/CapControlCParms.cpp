@@ -84,31 +84,12 @@ void refreshGlobalCParms()
 
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-    }
-
-    strcpy(var, "CAP_CONTROL_LOG_FILE");
-    if ( !(str = gConfigParms.getValueAsString(var)).empty() )
-    {
-        dout.setOutputFile(str.c_str());
-
-        if ( _CC_DEBUG & CC_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
-        }
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _DB_RELOAD_WAIT = 5;  // seconds
@@ -120,14 +101,12 @@ void refreshGlobalCParms()
 
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _IGNORE_NOT_NORMAL_FLAG = false;
@@ -140,14 +119,12 @@ void refreshGlobalCParms()
 
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _SEND_TRIES = 1;
@@ -159,14 +136,12 @@ void refreshGlobalCParms()
 
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _USE_FLIP_FLAG = false;
@@ -179,14 +154,12 @@ void refreshGlobalCParms()
 
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _POST_CONTROL_WAIT = 30;    // seconds
@@ -197,14 +170,12 @@ void refreshGlobalCParms()
         _POST_CONTROL_WAIT = atoi(str.c_str()) + 1;
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _POINT_AGE = 3;  // minutes
@@ -215,14 +186,12 @@ void refreshGlobalCParms()
         _POINT_AGE = atoi(str.c_str()) + 1;
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _SCAN_WAIT_EXPIRE = 1;  // minutes
@@ -233,14 +202,12 @@ void refreshGlobalCParms()
         _SCAN_WAIT_EXPIRE = atoi(str.c_str()) + 1;
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _ALLOW_PARALLEL_TRUING = false;
@@ -252,14 +219,12 @@ void refreshGlobalCParms()
         _ALLOW_PARALLEL_TRUING = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _RETRY_FAILED_BANKS = false;
@@ -271,28 +236,24 @@ void refreshGlobalCParms()
         _RETRY_FAILED_BANKS = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _MAX_KVAR = gConfigParms.getValueAsULong("CAP_CONTROL_MAX_KVAR", -1);
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_MAX_KVAR: " << _MAX_KVAR << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_MAX_KVAR: " << _MAX_KVAR);
     }
 
     _MAX_KVAR_TIMEOUT = gConfigParms.getValueAsULong("CAP_CONTROL_MAX_KVAR_TIMEOUT", 300);
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_MAX_KVAR_TIMEOUT: " << _MAX_KVAR_TIMEOUT << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_MAX_KVAR_TIMEOUT: " << _MAX_KVAR_TIMEOUT);
     }
 
     _USE_PHASE_INDICATORS = false;
@@ -304,14 +265,12 @@ void refreshGlobalCParms()
         _USE_PHASE_INDICATORS = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _LOG_MAPID_INFO = false;
@@ -323,14 +282,12 @@ void refreshGlobalCParms()
         _LOG_MAPID_INFO = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _LIKEDAY_OVERRIDE_TIMEOUT = 604800;  // seconds: 7 days
@@ -341,14 +298,12 @@ void refreshGlobalCParms()
         _LIKEDAY_OVERRIDE_TIMEOUT = atoi(str.c_str());
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _RETRY_ADJUST_LAST_OP_TIME = true;
@@ -360,36 +315,31 @@ void refreshGlobalCParms()
         _RETRY_ADJUST_LAST_OP_TIME = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _REFUSAL_TIMEOUT = gConfigParms.getValueAsULong("CAP_CONTROL_REFUSAL_TIMEOUT", 240);    // minutes
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_REFUSAL_TIMEOUT: " << _REFUSAL_TIMEOUT << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_REFUSAL_TIMEOUT: " << _REFUSAL_TIMEOUT);
     }
 
     _MSG_PRIORITY = gConfigParms.getValueAsULong("CAP_CONTROL_MSG_PRIORITY", 13);
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_MSG_PRIORITY: " << _MSG_PRIORITY << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_MSG_PRIORITY: " << _MSG_PRIORITY);
     }
 
     //DO NOT PRINT THIS OUT TO DEBUG unless true
     CC_TERMINATE_THREAD_TEST = gConfigParms.isTrue("CC_TERMINATE_THREAD_TEST", false);
     if ( CC_TERMINATE_THREAD_TEST )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CC_TERMINATE_THREAD_TEST: " << CC_TERMINATE_THREAD_TEST << endl;
+        CTILOG_INFO(dout, "CC_TERMINATE_THREAD_TEST: " << CC_TERMINATE_THREAD_TEST);
     }
 
     _OP_STATS_USER_DEF_PERIOD = 0;  // minutes
@@ -400,14 +350,12 @@ void refreshGlobalCParms()
         _OP_STATS_USER_DEF_PERIOD = atoi(str.c_str());
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _OP_STATS_REFRESH_RATE = 3600;  // seconds
@@ -418,21 +366,18 @@ void refreshGlobalCParms()
         _OP_STATS_REFRESH_RATE = atoi(str.c_str());
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _OP_STATS_DYNAMIC_UPDATE = gConfigParms.isTrue("CAP_CONTROL_OP_STATS_DYNAMIC_UPDATE", false);
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_OP_STATS_DYNAMIC_UPDATE: " << _OP_STATS_DYNAMIC_UPDATE << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_OP_STATS_DYNAMIC_UPDATE: " << _OP_STATS_DYNAMIC_UPDATE);
     }
 
     _LINK_STATUS_TIMEOUT = 5;   // minutes
@@ -443,28 +388,24 @@ void refreshGlobalCParms()
         _LINK_STATUS_TIMEOUT = atoi(str.c_str()) + 1;
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _RATE_OF_CHANGE = gConfigParms.isTrue("CAP_CONTROL_RATE_OF_CHANGE");
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_RATE_OF_CHANGE: " << _RATE_OF_CHANGE << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_RATE_OF_CHANGE: " << _RATE_OF_CHANGE);
     }
 
     _RATE_OF_CHANGE_DEPTH = gConfigParms.getValueAsULong("CAP_CONTROL_RATE_OF_CHANGE_DEPTH", 10);
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_RATE_OF_CHANGE_DEPTH: " << _RATE_OF_CHANGE_DEPTH << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_RATE_OF_CHANGE_DEPTH: " << _RATE_OF_CHANGE_DEPTH);
     }
 
 
@@ -476,14 +417,12 @@ void refreshGlobalCParms()
         _VOLT_REDUCTION_SYSTEM_POINTID = atol(str.c_str());
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _AUTO_VOLT_REDUCTION = false;
@@ -495,14 +434,12 @@ void refreshGlobalCParms()
         _AUTO_VOLT_REDUCTION = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _VOLT_REDUCTION_COMMANDS = 0; // number of command/retries for disable ovuv
@@ -513,14 +450,12 @@ void refreshGlobalCParms()
         _VOLT_REDUCTION_COMMANDS = atoi(str.c_str());
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _VOLT_REDUCTION_COMMAND_DELAY = 0;  //delay between commands sent.
@@ -531,14 +466,12 @@ void refreshGlobalCParms()
         _VOLT_REDUCTION_COMMAND_DELAY = atoi(str.c_str());
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _MAXOPS_ALARM_CAT   = "(NONE)";
@@ -552,14 +485,12 @@ void refreshGlobalCParms()
 
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _ENABLE_IVVC = false;
@@ -571,90 +502,77 @@ void refreshGlobalCParms()
         _ENABLE_IVVC = (str == "true" );
         if ( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     _IVVC_MIN_TAP_PERIOD_MINUTES = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_MIN_TAP_PERIOD_MINUTES", 15);
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_MIN_TAP_PERIOD_MINUTES: " << _IVVC_MIN_TAP_PERIOD_MINUTES << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_IVVC_MIN_TAP_PERIOD_MINUTES: " << _IVVC_MIN_TAP_PERIOD_MINUTES);
     }
 
     _IVVC_COMMS_RETRY_COUNT = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_COMMS_RETRY_COUNT", 3);
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_COMMS_RETRY_COUNT: " << _IVVC_COMMS_RETRY_COUNT << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_IVVC_COMMS_RETRY_COUNT: " << _IVVC_COMMS_RETRY_COUNT);
     }
 
     _IVVC_NONWINDOW_MULTIPLIER = gConfigParms.getValueAsDouble("CAP_CONTROL_IVVC_NONWINDOW_MULTIPLIER", 1.5);
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_NONWINDOW_MULTIPLIER: " << _IVVC_NONWINDOW_MULTIPLIER << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_IVVC_NONWINDOW_MULTIPLIER: " << _IVVC_NONWINDOW_MULTIPLIER);
     }
 
     _IVVC_BANKS_REPORTING_RATIO = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO", 100) / 100.0; //store as 0-1.0
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO: " << _IVVC_BANKS_REPORTING_RATIO * 100 << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_IVVC_BANKS_REPORTING_RATIO: " << _IVVC_BANKS_REPORTING_RATIO * 100);
     }
 
     _IVVC_REGULATOR_REPORTING_RATIO = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_REGULATOR_REPORTING_RATIO", 100) / 100.0; //store as 0-1.0
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_REGULATOR_REPORTING_RATIO: " << _IVVC_REGULATOR_REPORTING_RATIO * 100 << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_IVVC_REGULATOR_REPORTING_RATIO: " << _IVVC_REGULATOR_REPORTING_RATIO * 100);
     }
 
     _IVVC_VOLTAGEMONITOR_REPORTING_RATIO = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_VOLTAGEMONITOR_REPORTING_RATIO", 100) / 100.0; //store as 0-1.0
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_VOLTAGEMONITOR_REPORTING_RATIO: " << _IVVC_VOLTAGEMONITOR_REPORTING_RATIO * 100 << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_IVVC_VOLTAGEMONITOR_REPORTING_RATIO: " << _IVVC_VOLTAGEMONITOR_REPORTING_RATIO * 100);
     }
 
     _IVVC_DEFAULT_DELTA = gConfigParms.getValueAsDouble("CAP_CONTROL_IVVC_DEFAULT_DELTA", 0);
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_DEFAULT_DELTA: " << _IVVC_DEFAULT_DELTA << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_IVVC_DEFAULT_DELTA: " << _IVVC_DEFAULT_DELTA);
     }
     _LIMIT_ONE_WAY_COMMANDS = gConfigParms.isTrue("CAP_CONTROL_LIMIT_ONE_WAY_COMMANDS", false);
     if ( _CC_DEBUG & CC_DEBUG_STANDARD)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_LIMIT_ONE_WAY_COMMANDS: " << _LIMIT_ONE_WAY_COMMANDS << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_LIMIT_ONE_WAY_COMMANDS: " << _LIMIT_ONE_WAY_COMMANDS);
     }
 
     _IVVC_STATIC_DELTA_VOLTAGES = gConfigParms.isTrue("CAP_CONTROL_IVVC_STATIC_DELTA_VOLTAGES");
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_STATIC_DELTA_VOLTAGES: " << _IVVC_STATIC_DELTA_VOLTAGES << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_IVVC_STATIC_DELTA_VOLTAGES: " << _IVVC_STATIC_DELTA_VOLTAGES);
     }
 
     _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS = gConfigParms.isTrue("CAP_CONTROL_IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS");
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS: " << _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS: " << _IVVC_INDIVIDUAL_DEVICE_VOLTAGE_TARGETS);
     }
 
     _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY = gConfigParms.getValueAsULong("CAP_CONTROL_IVVC_REGULATOR_AUTO_MODE_MSG_DELAY", 2);    // seconds
     if ( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CAP_CONTROL_IVVC_REGULATOR_AUTO_MODE_MSG_DELAY: " << _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY << " seconds." << endl;
+        CTILOG_DEBUG(dout, "CAP_CONTROL_IVVC_REGULATOR_AUTO_MODE_MSG_DELAY: " << _IVVC_REGULATOR_AUTO_MODE_MSG_DELAY << " seconds.");
     }
 }
 

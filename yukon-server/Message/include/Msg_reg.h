@@ -49,5 +49,5 @@ public:
    int         getAppExpirationDelay() const;
    void        setAppExpirationDelay(int d);
 
-   virtual void dump() const;
+   virtual std::string toString() const override;
 };

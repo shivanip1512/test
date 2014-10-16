@@ -4,6 +4,10 @@
 #define NOMINMAX
 #endif
 
+#include "loggable.h"
+#include "StreamBuffer.h"
+#include "ctitime.h"
+
 #include <windows.h>
 #include <iostream>
 #include <string.h>
@@ -20,7 +24,7 @@
 
 /* set up file layout structures */
 
-class SYSTEMLOGMESS
+class SYSTEMLOGMESS : public Cti::Loggable
 {
 public:
     ULONG TimeStamp;
@@ -37,14 +41,41 @@ public:
     {
         ::memset( EventLable, '\0', sizeof(EventLable) );
     }
+
+    virtual std::string toString() const override
+    {
+        Cti::StreamBuffer out;
+
+        out << CtiTime( TimeStamp ); //  << " " << sl.DeviceName << " " << sl.PointName;
+
+        if( EventLable[0] != '\0' )
+        {
+            out << " " << EventLable;
+        }
+
+        if( ! DeviceName.empty() )
+        {
+            out << " " << DeviceName;
+        }
+
+        if(! PointName.empty() )
+        {
+            out << " " << PointName;
+        }
+
+        if( ! LogMessage1.empty() )
+        {
+            out << " " << LogMessage1;
+        }
+
+        if( ! LogMessage2.empty() )
+        {
+            out << " " << LogMessage2;
+        }
+
+        return out;
+    }
 };
 
-/* Prototypes from ELOG_CLI.C */
-IM_EX_CTIBASE std::ostream& operator<<( std::ostream& ostrm, SYSTEMLOGMESS &sl );
-
 int IM_EX_CTIBASE LogEvent (SYSTEMLOGMESS *);
-IM_EX_CTIBASE int SendTextToLogger (PCHAR Source,
-                                    PCHAR Message = NULL,
-                                    const std::string& majorName = std::string(""),
-                                    const std::string& minorName = std::string(""));
 

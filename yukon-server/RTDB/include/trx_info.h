@@ -108,10 +108,7 @@ public:
             _status &= ~INRCOLQ;
             _inrcolq_expiration = YUKONEOT;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - INRCOLQ expired in CtiTransmitterInfo::getStatus() **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_WARN(dout, "INRCOLQ expired");
         }
 
         if( (_status & INLGRPQ) && (_inlgrpq_expiration < now_seconds) )
@@ -120,10 +117,7 @@ public:
             _inlgrpq_expiration = YUKONEOT;
             _inlgrpq_warning    = YUKONEOT;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - INLGRPQ expired in CtiTransmitterInfo::getStatus() **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_WARN(dout, "INLGRPQ expired");
         }
 
         return (_status & mask);

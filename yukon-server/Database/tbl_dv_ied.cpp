@@ -56,11 +56,9 @@ void CtiTableDeviceIED::DecodeDatabaseReader(const INT DeviceType, Cti::RowReade
 {
     string temp;
 
-
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["password"]         >> temp;

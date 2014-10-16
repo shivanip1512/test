@@ -46,10 +46,7 @@ CtiTagManager::~CtiTagManager()
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** CtiTagManager Destructor Attempting to acquire exclusion **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -83,10 +80,7 @@ int CtiTagManager::processTagMsg(CtiTagMsg &tag)
         CtiLockGuard< CtiMutex > tlg(_mux, 5000);
         while(!tlg.isAcquired())
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
             tlg.tryAcquire(5000);
         }
 
@@ -113,12 +107,7 @@ int CtiTagManager::processTagMsg(CtiTagMsg &tag)
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " Unknown tag action " << tag.getAction() << " ACH!" << endl;
-                }
-
+                CTILOG_ERROR(dout, "Unknown tag action "<< tag.getAction() <<" ACH!");
                 break;
             }
 
@@ -142,10 +131,7 @@ int CtiTagManager::processTagMsg(CtiTagMsg &tag)
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return resultAction;
@@ -156,14 +142,11 @@ CtiTagMsg* CtiTagManager::getTagMsg(long instanceid) const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
-    CtiTagMsg *pTagMsg = 0;
+    std::auto_ptr<CtiTagMsg> pTagMsg;
 
     try
     {
@@ -177,21 +160,16 @@ CtiTagMsg* CtiTagManager::getTagMsg(long instanceid) const
 
             if(pOriginalTag)
             {
-                pTagMsg = (CtiTagMsg*)(pOriginalTag->replicateMessage());
+                pTagMsg.reset((CtiTagMsg*)(pOriginalTag->replicateMessage()));
             }
         }
     }
     catch(...)
     {
-        delete pTagMsg;
-        pTagMsg = 0;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    return pTagMsg;
+    return pTagMsg.release();
 }
 
 size_t CtiTagManager::entries() const
@@ -199,10 +177,7 @@ size_t CtiTagManager::entries() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -214,10 +189,7 @@ bool CtiTagManager::empty() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -229,10 +201,7 @@ bool CtiTagManager::dirty() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -244,10 +213,7 @@ void CtiTagManager::setDirty(bool flag)
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -276,8 +242,7 @@ void CtiTagManager::run()
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             sleep( 5000 );
@@ -285,14 +250,10 @@ void CtiTagManager::run()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " CtiTagManager::run() is exiting." << endl;
-    }
+    CTILOG_INFO(dout, "exiting");
 
     set(TM_THREAD_TERMINATED);
 }
@@ -313,7 +274,7 @@ bool CtiTagManager::addInstance(int instance, CtiTagMsg &tag)
     return failure;
 }
 
-bool CtiTagManager::addTag(CtiTagMsg *&pTag)
+bool CtiTagManager::addTag(CtiTagMsg *pTag)
 {
     bool failure = true;
 
@@ -324,8 +285,7 @@ bool CtiTagManager::addTag(CtiTagMsg *&pTag)
     {
         if(isDebugLudicrous())
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** INSERT COLLISION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "INSERT COLLISION");
         }
 
         TagMgrMap_t::iterator itr = ip.first;
@@ -338,11 +298,7 @@ bool CtiTagManager::addTag(CtiTagMsg *&pTag)
             {
                 if(isDebugLudicrous())
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " ORIGINAL :" << endl;
-
-                    pOriginalTag->dump();
+                    CTILOG_DEBUG(dout, "ORIGINAL: "<< *pOriginalTag);
                 }
 
                 *pOriginalTag = *pTag;
@@ -350,11 +306,7 @@ bool CtiTagManager::addTag(CtiTagMsg *&pTag)
 
                 if(isDebugLudicrous())
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " NEW :" << endl;
-
-                    pOriginalTag->dump();
+                    CTILOG_DEBUG(dout, "NEW: "<< *pOriginalTag);
                 }
 
             }
@@ -529,10 +481,7 @@ void CtiTagManager::queueDynamicTagLogEntry(const CtiTagMsg &Tag)
 
             oldTag = tlog;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Updated the dynamic table map!  Tag intance " << oldTag.getInstanceId() << endl;
-            }
+            CTILOG_INFO(dout, "Updated the dynamic table map!  Tag intance " << oldTag.getInstanceId());;
         }
     }
 }
@@ -548,9 +497,7 @@ void CtiTagManager::processDynamicQueue()
 
             if ( ! conn.isValid() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+                CTILOG_ERROR(dout, "Invalid Connection to Database");
                 return;
             }
 
@@ -563,11 +510,8 @@ void CtiTagManager::processDynamicQueue()
 
                 if( ! Tag.Update(conn) )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        Tag.dump();
-                    }
+                    CTILOG_ERROR(dout, "DB Update failed"<<
+                            Tag);
                     ++itr;
                 }
                 else
@@ -590,9 +534,7 @@ void CtiTagManager::processTagLogQueue()
 
             if ( ! conn.isValid() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+                CTILOG_ERROR(dout, "Invalid Connection to Database");
                 return;
             }
 
@@ -602,11 +544,8 @@ void CtiTagManager::processTagLogQueue()
             {
                 if( ! pTag->Update(conn) )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** SQL Update Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        pTag->dump();
-                    }
+                    CTILOG_ERROR(dout, "DB Update failed"<<
+                            *pTag);
                     break;
                 }
             }
@@ -633,14 +572,6 @@ void CtiTagManager::processDynamicRemovals()
                 removeit = _dynamicLogRemovals.back();
                 _dynamicLogRemovals.pop_back();
 
-#if 0
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " Trying to remove " << removeit << endl;
-                }
-#endif
-
                 CtiTableDynamicTag removeTag;
 
                 removeTag.setInstanceId(removeit);
@@ -655,15 +586,11 @@ CtiMultiMsg* CtiTagManager::getPointTags(long pointid) const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
-    CtiMultiMsg *pMulti = 0;
-    CtiTagMsg *pTag = 0;
+    std::auto_ptr<CtiMultiMsg> pMulti;
     TagMgrMap_t::const_iterator itr;
 
     try
@@ -676,30 +603,23 @@ CtiMultiMsg* CtiTagManager::getPointTags(long pointid) const
 
             if(pOriginalTag && pOriginalTag->getPointID() == pointid)
             {
-                pTag = (CtiTagMsg*)(pOriginalTag->replicateMessage());
+                std::auto_ptr<CtiTagMsg> pTag((CtiTagMsg*)(pOriginalTag->replicateMessage()));
 
-                if(!pMulti)
+                if( ! pMulti.get() )
                 {
-                    pMulti = new CtiMultiMsg;
+                    pMulti.reset(new CtiMultiMsg);
                 }
-                if(pMulti)
-                {
-                    pMulti->insert(pTag);
-                }
+
+                pMulti->insert(pTag.release());
             }
         }
     }
     catch(...)
     {
-        delete pTag;
-        pTag = 0;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    return pMulti;
+    return pMulti.release();
 }
 
 CtiMultiMsg* CtiTagManager::getAllPointTags() const
@@ -707,15 +627,11 @@ CtiMultiMsg* CtiTagManager::getAllPointTags() const
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
-    CtiMultiMsg *pMulti = 0;
-    CtiTagMsg *pTag = 0;
+    std::auto_ptr<CtiMultiMsg> pMulti;
     TagMgrMap_t::const_iterator itr;
 
     try
@@ -726,32 +642,25 @@ CtiMultiMsg* CtiTagManager::getAllPointTags() const
             TagMgrMap_t::key_type   key = vt.first;
             CtiTagMsg *pOriginalTag = vt.second;
 
-            if(pOriginalTag)
+            if( pOriginalTag )
             {
-                pTag = (CtiTagMsg*)(pOriginalTag->replicateMessage());
+                std::auto_ptr<CtiTagMsg> pTag((CtiTagMsg*)(pOriginalTag->replicateMessage()));
 
-                if(!pMulti)
+                if( ! pMulti.get() )
                 {
-                    pMulti = new CtiMultiMsg;
+                    pMulti.reset(new CtiMultiMsg);
                 }
-                if(pMulti)
-                {
-                    pMulti->insert(pTag);
-                }
+
+                pMulti->insert(pTag.release());
             }
         }
     }
     catch(...)
     {
-        delete pTag;
-        pTag = 0;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    return pMulti;
+    return pMulti.release();
 }
 
 
@@ -766,22 +675,12 @@ int CtiTagManager::loadDynamicTags()
         Cti::Database::DatabaseReader rdr(connection, sql);
         rdr.execute();
 
-        if(!rdr.isValid())
-        {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << loggedSQLstring << endl;
-            }
-        }
-
         while( rdr() )
         {
             CtiTableDynamicTag dynTag;
             dynTag.DecodeDatabaseReader(rdr);
 
-            CtiTagMsg *pTag = new CtiTagMsg;
+            std::auto_ptr<CtiTagMsg> pTag(new CtiTagMsg);
 
             pTag->setInstanceID(dynTag.getInstanceId());
             pTag->setPointID(dynTag.getPointId());
@@ -793,8 +692,12 @@ int CtiTagManager::loadDynamicTags()
             pTag->setReferenceStr(dynTag.getReferenceStr());
             pTag->setTaggedForStr(dynTag.getTaggedForStr());
 
-            if( !addTag( pTag ) ) loadcount++;
+            if( ! addTag(pTag.release()) ) loadcount++;
+        }
 
+        if( ! rdr.isValid() )
+        {
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
         }
     }
 
@@ -812,16 +715,6 @@ int CtiTagManager::loadStaticTags()
         Cti::Database::DatabaseReader rdr(connection, sql);
         rdr.execute();
 
-        if(!rdr.isValid())
-        {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << loggedSQLstring << endl;
-            }
-        }
-
         while( rdr() )
         {
             CtiTableTag staticTag;
@@ -832,11 +725,13 @@ int CtiTagManager::loadStaticTags()
 
             if(ip.second != true)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** CtiTableTag **** Insert collision. " << endl;
-                }
+                CTILOG_WARN(dout, "Insert collision");
             }
+        }
+
+        if( ! rdr.isValid() )
+        {
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
         }
     }
 
@@ -858,10 +753,7 @@ bool CtiTagManager::verifyTagMsg(CtiTagMsg &pTag)
         CtiLockGuard< CtiMutex > tlg(_mux, 5000);
         while(!tlg.isAcquired())
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
             tlg.tryAcquire(5000);
         }
 
@@ -894,10 +786,7 @@ bool CtiTagManager::isPointControlInhibited(LONG pid)
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** CtiTagManager isPointControlInhibited() attempting to acquire exclusion **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to acquire exclusion lock. Will retry");
         tlg.tryAcquire(5000);
     }
 
@@ -922,13 +811,6 @@ bool CtiTagManager::isPointControlInhibited(LONG pid)
                     if( Tag.getInhibit() )
                     {
                         // This tag causes inhibits to occur!
-                        #if 0
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << " Point " << pid << " is control inhibited due to tag instance " << pTagMsg->getInstanceID() << endl;
-                        }
-                        #endif
 
                         inhibit = true;
                         break;                  // The for loop!

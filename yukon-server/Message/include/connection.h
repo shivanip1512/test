@@ -130,10 +130,6 @@ protected:
 
     void setupAdvisoryListener();
 
-    void logStatus    ( std::string funcName, std::string note ) const;
-    void logDebug     ( std::string funcName, std::string note ) const;
-    void logException ( std::string fileName, int line, std::string exceptionName = "", std::string note = "" ) const;
-
     boost::scoped_ptr<CtiMessage> _outMessage;
 
 public:

@@ -1,12 +1,12 @@
 #pragma once
 
 #include "row_reader.h"
-
+#include "loggable.h"
 #include "dlldefs.h"
 #include "dllbase.h"
 #include "dbaccess.h"
 
-class IM_EX_CTIYUKONDB CtiTableRepeaterRoute
+class IM_EX_CTIYUKONDB CtiTableRepeaterRoute : public Cti::Loggable
 {
 private:
 
@@ -19,7 +19,7 @@ public:
 
    CtiTableRepeaterRoute(Cti::RowReader &rdr);
 
-   void DumpData();
+   virtual std::string toString() const override;
 
    LONG getDeviceID()      const {  return DeviceID;       };
    LONG getRouteID()       const {  return _routeID;       };

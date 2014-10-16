@@ -66,11 +66,7 @@ void StrategyDBLoader::loadCore(const long ID, StrategyManager::StrategyMap &str
 
     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
     {
-        std::string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << endl;
-        }
+        CTILOG_INFO(dout, rdr.asString());
     }
 
     while ( rdr() )
@@ -120,8 +116,7 @@ void StrategyDBLoader::loadCore(const long ID, StrategyManager::StrategyMap &str
             }
             else
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Unsupported Strategy Type: " << controlUnits << endl;
+                CTILOG_WARN(dout, "Unsupported Strategy Type: " << controlUnits);
             }
 
             if (strategy != 0)
@@ -218,11 +213,7 @@ void StrategyDBLoader::loadParameters(const long ID, StrategyManager::StrategyMa
 
     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
     {
-        std::string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << endl;
-        }
+        CTILOG_INFO(dout, rdr.asString());
     }
 
     while ( rdr() )

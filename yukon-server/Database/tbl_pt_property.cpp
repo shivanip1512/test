@@ -1,20 +1,8 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pt_property
-*
-* Date:   2/13/08
-*
-* PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/10/30 19:54:26 $
-*
-* Copyright (c) 2008 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "tbl_pt_property.h"
 #include "logger.h"
+
 using namespace std;
 
 CtiTablePointProperty::~CtiTablePointProperty()
@@ -24,8 +12,7 @@ CtiTablePointProperty::CtiTablePointProperty(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["pointid"]  >> _pointID;
@@ -40,12 +27,16 @@ _floatAttributeValue(attributeValue)
 {
 }
 
-void CtiTablePointProperty::dump() const
+std::string CtiTablePointProperty::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << " PointID      : " << _pointID << endl;
-    dout << " Property ID  : " << _propertyID << endl;
-    dout << " Value        : " << _floatAttributeValue << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTablePointProperty";
+    itemList.add("PointID")    << _pointID;
+    itemList.add("PropertyID") << _propertyID;
+    itemList.add("Value")      << _floatAttributeValue;
+
+    return itemList.toString();
 }
 
 string CtiTablePointProperty::getSQLCoreStatement()

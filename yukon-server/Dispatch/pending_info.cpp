@@ -47,44 +47,45 @@ _signal(NULL)
 }
 
 
-void CtiPendingPointOperations::dump() const
+std::string CtiPendingPointOperations::toString() const
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " Point ID                  " << getPointID() << endl;
-        dout << " PPO Time                  " << getTime() << endl;
+    Cti::FormattedList itemList;
 
-        switch(getType())
+    itemList.add("Point ID") << getPointID();
+    itemList.add("PPO Time") << getTime();
+
+    switch(getType())
+    {
+    case pendingLimit:
+    case pendingLimit + 1:
+    case pendingLimit + 2:
+    case pendingLimit + 3:
+    case pendingLimit + 4:
+    case pendingLimit + 5:
+    case pendingLimit + 6:
+    case pendingLimit + 7:
+    case pendingLimit + 8:
+    case pendingLimit + 9:
         {
-        case pendingLimit:
-        case pendingLimit + 1:
-        case pendingLimit + 2:
-        case pendingLimit + 3:
-        case pendingLimit + 4:
-        case pendingLimit + 5:
-        case pendingLimit + 6:
-        case pendingLimit + 7:
-        case pendingLimit + 8:
-        case pendingLimit + 9:
-            {
-                dout << " PPO Type                  pendingLimit " << getType() - pendingLimit + 1 << endl;
-                dout << " PPO Limit Timed           " << getLimitBeingTimed() << endl;
-                break;
-            }
-        case pendingControl:
-            {
-                dout << " PPO Type                  pendingControl" << endl;
-                dout << " PPO Control State         " << getControlState() << endl;
-                getControl().dump();
-                break;
-            }
-        case pendingPointData:
-            {
-                dout << " PPO Type                  pendingPointData" << endl;
-                break;
-            }
+            itemList.add("PPO Type")          << "pendingLimit " << getType() - pendingLimit + 1;
+            itemList.add("PPO Limit Timed")   << getLimitBeingTimed();
+            break;
+        }
+    case pendingControl:
+        {
+            itemList.add("PPO Type")          <<"pendingControl";
+            itemList.add("PPO Control State") << getControlState();
+            itemList << getControl();
+            break;
+        }
+    case pendingPointData:
+        {
+            itemList.add("PPO Type")          <<"pendingPointData";
+            break;
         }
     }
+
+    return itemList.toString();
 }
 
 LONG CtiPendingPointOperations::getPointID() const
@@ -335,14 +336,6 @@ bool CtiPendingPointOperations::operator<(const CtiPendingPointOperations& y) co
 #endif
     }
 
-/*
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << " XPID " << getPointID() << " Type " << getType() << " Time " << xt << endl;
-        dout << " YPID " << y.getPointID() << " Type " << y.getType() << " Time " << yt << endl;
-    }
-*/
     return( isLess );
 }
 

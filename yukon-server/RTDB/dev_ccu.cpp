@@ -168,13 +168,7 @@ YukonError_t CtiDeviceCCU::ResultDecode(const INMESS &InMessage, const CtiTime T
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** ACH. Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "InMessage.Sequence = " << InMessage.Sequence << endl;
-            }
-
-            break;
+            CTILOG_ERROR(dout, "Unexpected InMessage.Sequence = "<< InMessage.Sequence);
         }
     }
 

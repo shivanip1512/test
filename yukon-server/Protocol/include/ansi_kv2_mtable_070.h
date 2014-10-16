@@ -77,7 +77,7 @@ public:
     int getRawPrimaryDisplay( void );
     int getNbrRightDigits( Digits_Bfld_t bitfield );
     int getNbrLeftDigits( Digits_Bfld_t bitfield );
-    void displayDigitPlaces( Digits_Bfld_t bitfield );
+    std::string displayDigitPlaces( Digits_Bfld_t bitfield );
 
 private:
 

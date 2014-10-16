@@ -16,6 +16,7 @@
 *-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
+#include <fstream>
 #include "dev_meter.h"
 using namespace std;
 
@@ -78,8 +79,7 @@ void CtiDeviceMeter::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 
     MeterGroup.DecodeDatabaseReader(rdr);
@@ -149,11 +149,9 @@ YukonError_t CtiDeviceMeter::ExecuteRequest(CtiRequestMsg     *pReq,
 
     if( nRet )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Couldn't come up with an operation for device " << getName() << endl;
-            dout << CtiTime() << "   Command: " << pReq->CommandString() << endl;
-        }
+        CTILOG_ERROR(dout, "Couldn't come up with an operation for device "<< getName() <<
+                endl <<"Command: "<< pReq->CommandString()
+                );
 
         resultString = "NoMethod or invalid command.";
         retList.push_back(CTIDBG_new CtiReturnMsg(getID(),

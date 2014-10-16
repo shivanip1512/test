@@ -432,6 +432,15 @@ tbl_lmg_sasimple.obj:	precompiled.h logger.h dlldefs.h thread.h \
 		timing_util.h immutable.h atomic.h critical_section.h \
 		dsm2err.h words.h optional.h macro_offset.h dbaccess.h \
 		resolvers.h pointtypes.h db_entry_defines.h row_reader.h
+tbl_lmg_sasimple.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
+		string_util.h dllbase.h dsm2.h streamConnection.h yukon.h \
+		types.h ctidbgmem.h netports.h timing_util.h immutable.h \
+		readers_writer_lock.h critical_section.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		exception_helper.h tbl_lmg_sasimple.h dbmemobject.h \
+		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
+		row_reader.h
 tbl_lmprogramhistory.obj:	precompiled.h row_reader.h ctitime.h \
 		dlldefs.h tbl_lmprogramhistory.h dbmemobject.h dbaccess.h \
 		dllbase.h dsm2.h streamConnection.h yukon.h types.h \

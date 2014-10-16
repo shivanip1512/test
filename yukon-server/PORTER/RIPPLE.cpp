@@ -178,13 +178,11 @@ void applyLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
             {
                 if( lcu->getNextCommandTime() > CtiTime::now() )  // In this location, we must use this lcu's nextcommand time.
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << lcu->getName() << " blocking " << pOtherLCU->getName() << " until " << lcu->getNextCommandTime() + 1L << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_INFO(dout, lcu->getName() <<" blocking "<< pOtherLCU->getName() <<" until "<< lcu->getNextCommandTime() + 1L);
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << lcu->getName() << " releasing block on " << pOtherLCU->getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_INFO(dout, lcu->getName() <<" releasing block on "<< pOtherLCU->getName());
                 }
             }
 
@@ -205,10 +203,8 @@ void applyLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << pOtherLCU->getName() << " should transmit on this port due to BROADCAST control" << endl;
-                }
+                CTILOG_INFO(dout, pOtherLCU->getName() <<" should transmit on this port due to BROADCAST control");
+
                 MPCPointSet( SEQUENCE_ACTIVE, pOtherLCU, true );
                 pOtherLCU->setFlags( LCUTRANSMITSENT );    // Global address will make this LCU squawk
 
@@ -245,8 +241,7 @@ void applyLCUSet(const long key, CtiDeviceSPtr Dev, void* vpTXlcu)
 
                 if(gConfigParms.isTrue("RIPPLE_REPORT_LCU_TXSENT"))
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Command on lcu " << lcu->getName() << " has caused " << lcu->getNumberStarted() << " lcus to be targeted for control" << endl;
+                    CTILOG_INFO(dout, "Command on lcu "<< lcu->getName() <<" has caused "<< lcu->getNumberStarted() <<" lcus to be targeted for control");
                 }
             }
         }
@@ -321,18 +316,18 @@ INT LCUPreSend(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
 
         if(StageOutMessage != NULL)      // Only STANDARD LCU's return non-NULL on the above call.  And only when needed
         {
-            if( PortManager.writeQueue(StageOutMessage) )
+            if(PortManager.writeQueue(StageOutMessage))
             {
-                printf ("\nError putting \"Staging LCU\" entry onto Queue\n");
+                CTILOG_ERROR(dout, "Could not write \"Staging LCU\" entry onto for DeviceID "<< Dev->getID());
             }
 
             /*
              * Write the control OutMessage back to the queue util the staging operation completes.
              * At which time, the getStageTime() will be set to current time, or 0 if the stage command fails...
              */
-            if( PortManager.writeQueue(OutMessage) )
+            if(PortManager.writeQueue(OutMessage))
             {
-                printf ("\nError Replacing entry onto Queue\n");
+                CTILOG_ERROR(dout, "Could not replace entry onto queue");
             }
 
             /* Force main routine to continue */
@@ -411,8 +406,7 @@ YukonError_t LCUResultDecode (OUTMESS *OutMessage, const INMESS &InMessage, CtiD
 
         if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << lcu->getName() << " just completed sending a ripple message. " << endl;
+            CTILOG_DEBUG(dout, lcu->getName() <<" just completed sending a ripple message.");
         }
 
         if(lcu->isGlobalLCU() && gConfigParms.isTrue("RIPPLE_LCU_GLOBAL_SYNCHRONIZE"))
@@ -437,10 +431,7 @@ YukonError_t LCUResultDecode (OUTMESS *OutMessage, const INMESS &InMessage, CtiD
 
         if(lcu->isGlobalLCU())
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " LCUGLOBAL is transmitting on the port! " << endl;
-            }
+            CTILOG_INFO(dout, "LCUGLOBAL is transmitting on the port!");
 
             if(gConfigParms.isTrue("RIPPLE_LCU_GLOBAL_SYNCHRONIZE"))
             {
@@ -458,11 +449,6 @@ YukonError_t LCUResultDecode (OUTMESS *OutMessage, const INMESS &InMessage, CtiD
             list< CtiMessage* >       vgList;
             CtiDeviceLCU::CtiLCUResult_t    resultCode = CtiDeviceLCU::eLCUInvalid;
 
-            /*{
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }*/
-
             lcu->lcuFastScanDecode(OutMessage, InMessage, resultCode, (bool)GlobalLCUDev, vgList); // Note: resultCode is modified here!!!
             SubmitDataToDispatch(vgList);
             LCUProcessResultCode(Dev, GlobalLCUDev, OutMessage, resultCode );
@@ -473,8 +459,7 @@ YukonError_t LCUResultDecode (OUTMESS *OutMessage, const INMESS &InMessage, CtiD
             {
                 if(mayqueuescans)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << lcu->getName() << " Queued for fast scan on port " << OutMessage->Port << endl;
+                    CTILOG_INFO(dout, lcu->getName() <<" Queued for fast scan on port "<< OutMessage->Port);
                 }
                 Dev->dumpProhibits();
                 QueueForScan( Dev, mayqueuescans );    // Make porter do a fast scan!
@@ -879,10 +864,7 @@ bool ResetLCUsForControl(CtiDeviceSPtr splcu)
 
     if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << splcu->getName() << " Releasing all exclusions. "  << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_DEBUG(dout, splcu->getName() <<" Releasing all exclusions");
     }
 
     CtiDeviceManager::coll_type::reader_lock_guard_t dev_guard(DeviceManager.getLock());       // Protect our iteration!
@@ -1119,10 +1101,7 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
         {
             if(lcu->getNextCommandTime() < CtiTime())
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << lcu->getName() << " getNextCommandTime() < now " << endl;
-                }
+                CTILOG_INFO(dout, lcu->getName() <<" getNextCommandTime() < now");
             }
 
             break;
@@ -1245,11 +1224,7 @@ INT LCUProcessResultCode(CtiDeviceSPtr splcu, CtiDeviceSPtr GlobalLCUDev, OUTMES
         }
     case CtiDeviceLCU::eLCUAlternateRate:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
+            CTILOG_ERROR(dout, "Unexpected result code CtiDeviceLCU::eLCUAlternateRate");
             break;
         }
     default:
@@ -1299,12 +1274,10 @@ INT RequeueLCUCommand( CtiDeviceSPtr splcu )
             lcu->setExecutionProhibited(lcu->getID(), CtiTime(0UL));
             lcu->resetFlags(LCUTRANSMITSENT | LCUWASTRANSMITTING);
 
-            if( PortManager.writeQueue(OutMessage) )
+            if(PortManager.writeQueue(OutMessage))
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Error Writing Retry into Queue " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Could not write to port queue for DeviceID "<< OutMessage->DeviceID <<" / Port "<< OutMessage->Port);
+
                 successflag = FALSE;
 
                 // Reconnect the OutMessage, it failed to get queued..
@@ -1321,10 +1294,7 @@ INT RequeueLCUCommand( CtiDeviceSPtr splcu )
         else
         {
             lcu->setFlags( LCUNEVERRETRY );     // failed on all retries.. so set flag
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << lcu->getName() << " has been marked as LCUNEVERRETRY" << endl;
-            }
+            CTILOG_WARN(dout, lcu->getName() <<" has been marked as LCUNEVERRETRY");
 
             CtiPointSPtr pnt = lcu->getDevicePointOffsetTypeEqual(CtiDeviceLCU::LCU_POINTOFFSET_NEVERRETRY, StatusPointType);
 
@@ -1387,10 +1357,7 @@ INT ReportCompletionStateToLMGroup(CtiDeviceSPtr splcu)     // f.k.a. ReturnTrxI
     else
     {
         Send4PartToDispatch ("Xxx", (char*)lcu->getName().data(), "Transmission Id", "Was Not found");
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << lcu->getName() << " The transmission ID was not where it was expected" << endl;
-        }
+        CTILOG_ERROR(dout, lcu->getName() <<" The transmission ID was not where it was expected");
     }
 
     lcu->deleteLastControlMessage();                // Do not report it again for this lcu.
@@ -1418,10 +1385,8 @@ INT QueueForScan( CtiDeviceSPtr splcu, bool mayqueuescans )
 
                 if(PortManager.writeQueueWithPriority(ScanOutMessage, MAXPRIORITY - 1))
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Unable to queue for fast scan." << endl;
-                    }
+                    CTILOG_ERROR(dout, "Could not write to port queue for fast scan, DeviceID "<< ScanOutMessage->DeviceID <<" / Port "<< ScanOutMessage->Port);
+
                     delete ScanOutMessage;
                     status = ClientErrors::QueueWrite;
                 }
@@ -1521,10 +1486,7 @@ void Send4PartToDispatch(string Source, string MajorName, string MinorName, stri
         fullString = fullString + string(" ") + Message2;
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << sourceandname << " " << fullString << endl;
-    }
+    CTILOG_INFO(dout, sourceandname <<" "<< fullString);
 
     CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(SYS_PID_DISPATCH, 0, sourceandname, fullString );
 
@@ -1562,10 +1524,7 @@ INT SendTextToDispatch(PCHAR Source, PCHAR Message, string majorName, string min
         fullString = string(Message);
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << sourceandname << " " << fullString << endl;
-    }
+    CTILOG_INFO(dout, sourceandname <<" "<< fullString);
 
     CtiSignalMsg *pSig = CTIDBG_new CtiSignalMsg(SYS_PID_DISPATCH, 0, sourceandname, fullString );
 

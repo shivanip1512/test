@@ -242,33 +242,28 @@ int CtiFDR_TextExport::readConfig( void )
         }
     }
 
-
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        Cti::FormattedList loglist;
 
-        dout << CtiTime() << " Text Export file name " << getFileName() << endl;
-        dout << CtiTime() << " Text Export directory " << getDriveAndPath() << endl;
-        dout << CtiTime() << " Text Export interval " << getInterval() << endl;
-        dout << CtiTime() << " Text Export dispatch queue flush rate " << getQueueFlushRate() << endl;
-        dout << CtiTime() << " Text Export db reload rate " << getReloadRate() << endl;
+        loglist.add("Text Export file name")                 << getFileName();
+        loglist.add("Text Export directory")                 << getDriveAndPath();
+        loglist.add("Text Export interval")                  << getInterval();
+        loglist.add("Text Export dispatch queue flush rate") << getQueueFlushRate();
+        loglist.add("Text Export db reload rate")            << getReloadRate();
+
         if (_format == survalent)
-        {
-            dout << CtiTime() << " Text Export format set to Survalent" << endl;
-        }
+            loglist <<"Text Export format set to Survalent";
         else
-        {
-            dout << CtiTime() << " Text Export format set to default" << endl;
-        }
+            loglist <<"Text Export format set to default";
 
         if (shouldAppendToFile())
-            dout << CtiTime() << " Export will append to existing" << endl;
+            loglist <<"Export will append to existing";
         else
-            dout << CtiTime() << " Export will overwrite existing file" << endl;
+            loglist <<"Export will overwrite existing file";
 
+        CTILOG_DEBUG(dout, loglist)
     }
-
-
 
     return successful;
 }
@@ -338,48 +333,40 @@ bool CtiFDR_TextExport::loadTranslationLists()
                         successful = true;
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                            CTILOG_DEBUG(dout, "No points defined for use by interface " << getInterfaceName());
                         }
                     }
                     else
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Error in translating points " << getInterfaceName() << endl;
-                        }
+                        CTILOG_ERROR(dout, "Failed to translate points for interface "<< getInterfaceName());
                     }
                 }
                 setLinkStatusID(getClientLinkStatusID (getInterfaceName()));
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                CTILOG_ERROR(dout, "Could not load receive points for "<< getInterfaceName() <<" : Empty data set returned");
                 successful = false;
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Unable to load points from database for "<< getInterfaceName());
             successful = false;
         }
 
     }   // end try block
 
-    catch (RWExternalErr e )
+    catch (const RWExternalErr& e )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to load translation lists for "<< getInterfaceName());
         RWTHROW(e);
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load translation lists for "<< getInterfaceName());
     }
 
     return successful;
@@ -394,10 +381,8 @@ bool CtiFDR_TextExport::translateSinglePoint(CtiFDRPointSPtr & translationPoint,
     {
         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-            //dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
-            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+            CTILOG_DEBUG(dout, "Parsing Yukon Point ID "<< translationPoint->getPointID() <<
+                    " translate: "<< translationPoint->getDestinationList()[x].getTranslation());
         }
 
         tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("Point ID");
@@ -448,8 +433,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
     {
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Initializing CtiFDR_TextExport::threadFunctionWriteToFile " << endl;
+            CTILOG_DEBUG(dout, "Initializing Thread for interface "<< getInterfaceName());
         }
 
         // first output is 15 seconds after startup
@@ -465,11 +449,6 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
             // now is the time to write the file
             if (timeNow >= refreshTime)
             {
-//                {
-//                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-//                    dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** dumping file" << endl;
-//                }
-
                 _snprintf (fileName, 200, "%s\\%s",getDriveAndPath().c_str(),getFileName().c_str());
 
                 // check if we need to append
@@ -484,8 +463,7 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
 
                 if ( fptr == NULL )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getInterfaceName() << "'s file " << string (fileName) << " could not be opened" << endl;
+                    CTILOG_ERROR(dout, getInterfaceName() <<"'s file " << fileName <<" could not be opened");
                 }
                 else
                 {
@@ -562,12 +540,8 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                             // if data is older than 2001, it can't be valid
                             if (translationPoint->getLastTimeStamp() < CtiTime(CtiDate(1,1,2001)))
                             {
-                                //if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " PointId " << translationPoint->getPointID();
-                                    dout << " was not exported to  " << string(fileName) << " because the timestamp (" << translationPoint->getLastTimeStamp() << ") was out of range " << endl;
-                                }
+                                CTILOG_ERROR(dout, "PointId " << translationPoint->getPointID() <<
+                                        " was not exported to  " << fileName <<" because the timestamp (" << translationPoint->getLastTimeStamp() << ") was out of range");
                             }
                             else
                             {
@@ -585,9 +559,8 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
 
                                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                         {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
-                                            dout << " value " << (int)translationPoint->getValue() << " to file " << string(fileName) << endl;
+                                            CTILOG_DEBUG(dout, "Exporting pointid "<< translationPoint->getDestinationList()[x].getTranslation() <<
+                                                    " value "<< (int)translationPoint->getValue() <<" to file "<< fileName);
                                         }
                                     }
                                     else
@@ -601,9 +574,8 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
                                                    );
                                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                         {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Exporting pointid " << translationPoint->getDestinationList()[x].getTranslation() ;
-                                            dout << " value " << translationPoint->getValue() << " to file " << string(fileName) << endl;
+                                            CTILOG_DEBUG(dout, "Exporting pointid "<< translationPoint->getDestinationList()[x].getTranslation() <<
+                                                    " value "<< translationPoint->getValue() <<" to file "<< fileName);
                                         }
                                     }
                                     fprintf (fptr,workBuffer);
@@ -619,17 +591,15 @@ void CtiFDR_TextExport::threadFunctionWriteToFile( void )
         }
     }
 
-    catch ( RWCancellation &cancellationMsg )
+    catch ( RWCancellation & )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION CtiFDRTextExportBase::threadFunctionWriteToFile in interface " <<getInterfaceName()<< endl;
+        CTILOG_INFO(dout, "Thread CANCELLATION for interface "<< getInterfaceName());
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Fatal Error:  CtiFDRTextExportBase::threadFunctionWriteToFile  " << getInterfaceName() << " is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Thread for interface"<< getInterfaceName() <<" is dead!");
     }
 }
 
@@ -687,9 +657,8 @@ void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPointSPtr
 
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Exporting status pointid " << aPoint->getDestinationList()[0].getTranslation() ;
-                dout << " value " << (int)aPoint->getValue() << " to Survalent file" << endl;
+                CTILOG_DEBUG(dout, "Exporting status pointid "<< aPoint->getDestinationList()[0].getTranslation() <<
+                        " value "<< (int)aPoint->getValue() <<" to Survalent file");
             }
         }
         else
@@ -700,17 +669,15 @@ void CtiFDR_TextExport::processPointToSurvalent (FILE* aFilePtr, CtiFDRPointSPtr
                        quality);
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Exporting analog pointid " << aPoint->getDestinationList()[0].getTranslation() ;
-                dout << " value " << aPoint->getValue() << " to Survalent file " << endl;
+                CTILOG_DEBUG(dout, "Exporting analog pointid "<< aPoint->getDestinationList()[0].getTranslation() <<
+                        " value "<< aPoint->getValue() <<" to Survalent file");
             }
         }
         fprintf (aFilePtr,workBuffer);
     }
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " CtiFDRTextExport::processPointToSurvalent() function has an un-caught exception " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }

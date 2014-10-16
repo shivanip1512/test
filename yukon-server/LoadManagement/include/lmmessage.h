@@ -145,12 +145,14 @@ public:
     LONG getStartPriority() const;
     const std::string& getAdditionalInfo() const;
     LONG getConstraintCmd() const;
-    virtual void dump() const;
+    std::string toString() const override;
 
     virtual CtiMessage* replicateMessage() const;
 
     CtiLMManualControlRequest& operator=(const CtiLMManualControlRequest& right);
 private:
+
+    typedef CtiLMMessage Inherited;
 
     LONG _command;
     LONG _paoid;
@@ -380,7 +382,7 @@ public:
 public:
     CtiLMDynamicGroupDataMsg(CtiLMGroupPtr group);
 
-    void dump() const;
+    std::string toString() const override;
 
     virtual CtiMessage* replicateMessage() const;
 
@@ -399,6 +401,7 @@ public:
     LONG getDailyOps() const                        { return _daily_ops; };
 
 private:
+    typedef CtiMessage Inherited;
     CtiLMDynamicGroupDataMsg() {};
     LONG _paoid;
     BOOL _disableflag;
@@ -424,7 +427,7 @@ public:
 public:
     CtiLMDynamicProgramDataMsg(CtiLMProgramDirectSPtr program);
 
-    void dump() const;
+    std::string toString() const override;
 
     virtual CtiMessage* replicateMessage() const;
 
@@ -441,6 +444,7 @@ public:
     const CtiTime& getStartedRampingOutTime() const { return _startedrampingouttime; };
 
 private:
+    typedef CtiMessage Inherited;
     CtiLMDynamicProgramDataMsg() {};
     LONG _paoid;
     BOOL _disableflag;
@@ -463,7 +467,7 @@ public:
 public:
     CtiLMDynamicTriggerDataMsg(CtiLMControlAreaTrigger *trigger);
 
-    void dump() const;
+    std::string toString() const override;
 
     virtual CtiMessage* replicateMessage() const;
 
@@ -478,6 +482,7 @@ public:
     DOUBLE getProjectedPointValue() const                 { return _projectedpointvalue; }
 
 private:
+    typedef CtiMessage Inherited;
     CtiLMDynamicTriggerDataMsg() {};
     LONG _paoid;
     LONG _triggernumber;
@@ -498,7 +503,7 @@ public:
 public:
     CtiLMDynamicControlAreaDataMsg(CtiLMControlArea *controlArea);
 
-    void dump() const;
+    std::string toString() const override;
 
     virtual CtiMessage* replicateMessage() const;
 
@@ -512,6 +517,7 @@ public:
     const std::vector<CtiLMDynamicTriggerDataMsg>& getTriggers() const { return _triggers; };
 
 private:
+    typedef CtiMessage Inherited;
     CtiLMDynamicControlAreaDataMsg() {};
     LONG _paoid;
     BOOL _disableflag;

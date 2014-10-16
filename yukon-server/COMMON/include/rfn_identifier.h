@@ -1,16 +1,29 @@
 #pragma once
 
-#include "logger.h"
-
+#include "streamBuffer.h"
 #include <boost/tuple/tuple_comparison.hpp>
 
 namespace Cti {
 
-struct RfnIdentifier
+struct RfnIdentifier : public Loggable
 {
     std::string manufacturer;
     std::string model;
     std::string serialNumber;
+
+    virtual std::string toString() const override
+    {
+        //  matches RfnIdentifier.java toString()
+        /*
+        StreamBuffer() << "RfnIdentifier ["
+            "sensorManufacturer=" << rfnId.manufacturer << ", "
+            "sensorModel="        << rfnId.model << ", "
+            "sensorSerialNumber=" << rfnId.serialNumber << "]";
+        */
+
+        //  matches RfnIdentifier.java getCombinedIdentifier()
+        return StreamBuffer() << manufacturer << "_" << model << "_" << serialNumber;
+    }
 
     bool operator<(const RfnIdentifier &rhs) const
     {
@@ -18,19 +31,5 @@ struct RfnIdentifier
              < boost::tie(rhs.manufacturer, rhs.model, rhs.serialNumber);
     }
 };
-
-inline std::ostream &operator<<(std::ostream &os, const RfnIdentifier &rfnId)
-{
-    //  matches RfnIdentifier.java toString()
-    /*
-    return l << "RfnIdentifier ["
-        "sensorManufacturer=" << rfnId.manufacturer << ", "
-        "sensorModel="        << rfnId.model << ", "
-        "sensorSerialNumber=" << rfnId.serialNumber << "]";
-    */
-
-    //  matches RfnIdentifier.java getCombinedIdentifier()
-    return os << rfnId.manufacturer << "_" << rfnId.model << "_" << rfnId.serialNumber;
-}
 
 }

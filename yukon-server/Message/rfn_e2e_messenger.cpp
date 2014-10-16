@@ -36,10 +36,7 @@ void E2eMessenger::registerE2eDtHandler(Indication::Callback callback)
 
 void E2eMessenger::registerDnpHandler(Indication::Callback callback, const RfnIdentifier rfnid)
 {
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " Registering DNP callback for RfnIdentifier " << rfnid << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-    }
+    CTILOG_INFO(dout, "Registering DNP callback for RfnIdentifier " << rfnid);
 
     {
         readers_writer_lock_t::writer_lock_guard_t lock(gE2eMessenger->_callbackMux);
@@ -78,19 +75,13 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 {
     using Serialization::MessagePtr;
 
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " Got new SerializedMessage " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-    }
+    CTILOG_INFO(dout, "Got new SerializedMessage");
 
     MessagePtr<E2eMsg>::type e2eMsg = rfnMessageFactory.deserialize("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataIndication", msg);
 
     if( E2eDataIndicationMsg *indicationMsg = dynamic_cast<E2eDataIndicationMsg *>(e2eMsg.get()) )
     {
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Got new RfnE2eDataIndicationMsg " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-        }
+        CTILOG_INFO(dout, "Got new RfnE2eDataIndicationMsg");
 
         {
             readers_writer_lock_t::reader_lock_guard_t lock(_callbackMux);
@@ -103,9 +94,7 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
             {
                 if( ! _e2edtCallback )
                 {
-                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime() << " WARNING - E2EDT ASID " << asid << " unhandled, no E2EDT callback registered " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+                    CTILOG_WARN(dout, "WARNING - E2EDT ASID " << asid << " unhandled, no E2EDT callback registered");
                     return;
                 }
 
@@ -123,9 +112,7 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
 
                 if( ! dnp3Callback )
                 {
-                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime() << " WARNING - DNP3 ASID " << asid << " unhandled, no callback registered for RfnIdentifier " << indicationMsg->rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+                    CTILOG_WARN(dout, "WARNING - DNP3 ASID " << asid << " unhandled, no callback registered for RfnIdentifier " << indicationMsg->rfnIdentifier);
                     return;
                 }
 
@@ -137,10 +124,7 @@ void E2eMessenger::handleRfnE2eDataIndicationMsg(const SerializedMessage &msg)
                 return (*dnp3Callback)(ind);
             }
 
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " WARNING - unknown ASID " << asid << " unhandled " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_WARN(dout, "WARNING - unknown ASID " << asid << " unhandled");
         }
     }
 }
@@ -167,19 +151,13 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg, Conf
 {
     using Serialization::MessagePtr;
 
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " Got new SerializedMessage " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-    }
+    CTILOG_INFO(dout, "Got new SerializedMessage");
 
     MessagePtr<E2eMsg>::type e2eMsg = rfnMessageFactory.deserialize("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataConfirm", msg);
 
     if( E2eDataConfirmMsg *confirmMsg = dynamic_cast<E2eDataConfirmMsg *>(e2eMsg.get()) )
     {
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Got new RfnE2eDataConfirmMsg " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-        }
+        CTILOG_INFO(dout, "Got new RfnE2eDataConfirmMsg");
 
         Confirm c;
 

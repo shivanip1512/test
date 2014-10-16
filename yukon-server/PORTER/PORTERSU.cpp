@@ -64,10 +64,8 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
 {
     if(!OutMessage)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " SendError generally requires an OutMessage." << endl;
-        }
+        CTILOG_WARN(dout, "SendError generally requires an OutMessage.");
+
         return ClientErrors::None;
     }
 
@@ -113,28 +111,37 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
 
             if(tempDev)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " SendError returning an Inmessage for " << tempDev->getName() << " error " << ErrorCode << endl;
+                CTILOG_DEBUG(dout, "SendError returning an Inmessage for "<< tempDev->getName() <<" error "<< ErrorCode);
             }
         }
 
         /* send message back to originating process */
         if( InMessage.ReturnNexus != NULL )
         {
-            int bytesWritten = 0;
-            boost::optional<std::string> errorReason;
+            boost::optional<std::string> writeError;
 
             try
             {
-                bytesWritten = InMessage.ReturnNexus->write(&InMessage, sizeof(INMESS), Chrono::seconds(30));
+                const size_t bytesWritten  = InMessage.ReturnNexus->write(&InMessage, sizeof(INMESS), Chrono::seconds(30));
+                if( bytesWritten != sizeof(INMESS) )
+                {
+                    std::string reason = Cti::StreamBuffer() <<"Timeout (Wrote "<< bytesWritten <<"/"<< sizeof(INMESS) <<" bytes)";
+
+                    writeError = "";
+                    writeError->swap(reason);
+                }
             }
             catch( const StreamConnectionException &ex )
             {
-                errorReason = ex.what();
+                writeError = ex.what();
             }
 
-            if( bytesWritten != sizeof(INMESS) )
+            if( writeError )
             {
+                CTILOG_INFO(dout, "Returning error condition to client"<<
+                        endl <<"DeviceID "<< OutMessage->DeviceID <<" TargetID "<< OutMessage->TargetID <<" Command "<< OutMessage->Request.CommandStr <<
+                        endl <<"Reason: "<< *writeError);
+
                 if( ! InMessage.ReturnNexus->isValid() )
                 {
                     extern void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, const StreamConnection *Nexus);
@@ -142,21 +149,13 @@ YukonError_t SendError (OUTMESS *&OutMessage, YukonError_t ErrorCode, INMESS *Pa
                     blitzNexusFromCCUQueue( tempDev, InMessage.ReturnNexus );
                 }
                 // 111901 CGP.  You better not close this.. It is the OutMessage's!
-
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime()  << " TID: " << GetCurrentThreadId() << " Error - returning error condition to client " << endl;
-                dout << "  DeviceID " << OutMessage->DeviceID << " TargetID " << OutMessage->TargetID << " " << OutMessage->Request.CommandStr  << endl;
-                dout << "  Reason: " << (errorReason ? errorReason->c_str() : "Timeout") << endl;
             }
         }
     }
 
     if(PorterDebugLevel & PORTER_DEBUG_SENDERROR)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " DeviceID / TargetID " << OutMessage->DeviceID << " / " << OutMessage->TargetID << ", Error " << ErrorCode << " " << GetErrorString(ErrorCode) << endl;
-        }
+        CTILOG_DEBUG(dout, "DeviceID / TargetID "<< OutMessage->DeviceID <<" / "<< OutMessage->TargetID <<", Error "<< ErrorCode <<" -> "<< GetErrorString(ErrorCode));
     }
 
     //If using statistics, send an error attempt.

@@ -75,146 +75,145 @@ void CtiProtocol711::describeSlaveResponse() const
             memcpy(statd, &_slaveToMaster[10], 6);
             memcpy(statp, &_slaveToMaster[16], 2);
 
+            std::ostringstream outLog;
+            outLog.fill('0');
+
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[0] << dec <<" IDLC Frame header is valid ";
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[1] << dec <<" Reply from CCU Address "<< (INT)address;
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[2] << dec <<"   Control Word (rrrfsss0): ";
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[2] << dec <<"      Expected Sequence of Next Request (rrr) "<< (INT)rrr;
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[2] << dec <<"      Sequence of Current Frame (sss) "<< (INT)sss;
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[2] << dec <<"      This "<< (final ? "IS" : "IS NOT") <<" the final frame (f)";
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[3] << dec <<"   "<< (INT)length <<" bytes follow in this message ";
+
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[4] << dec <<"   SRC/DES Word (mmdddddd): ";
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[4] << dec <<"      Master Station Subprocess (mm) "<< (INT)src;
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[4] << dec <<"      CCU Subprocess (dddddd) "<< (INT)dest <<": ";
+
+            switch(dest)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                char oldfill = dout.fill('0');
-
-                dout << hex << setw(2) << (INT)_slaveToMaster[0] << dec << " IDLC Frame header is valid " << endl;
-                dout << hex << setw(2) << (INT)_slaveToMaster[1] << dec << " Reply from CCU Address " << (INT)address << endl;
-                dout << hex << setw(2) << (INT)_slaveToMaster[2] << dec << "   Control Word (rrrfsss0): "  << endl;
-                dout << hex << setw(2) << (INT)_slaveToMaster[2] << dec << "      Expected Sequence of Next Request (rrr) " << (INT)rrr << endl;
-                dout << hex << setw(2) << (INT)_slaveToMaster[2] << dec << "      Sequence of Current Frame (sss) " << (INT)sss << endl;
-                dout << hex << setw(2) << (INT)_slaveToMaster[2] << dec << "      This " << (final ? "IS" : "IS NOT") << " the final frame (f)" << endl;
-                dout << hex << setw(2) << (INT)_slaveToMaster[3] << dec << "   " << (INT)length << " bytes follow in this message " << endl;
-
-                dout << hex << setw(2) << (INT)_slaveToMaster[4] << dec << "   SRC/DES Word (mmdddddd): " << endl;
-                dout << hex << setw(2) << (INT)_slaveToMaster[4] << dec << "      Master Station Subprocess (mm) " << (INT)src << endl;
-                dout << hex << setw(2) << (INT)_slaveToMaster[4] << dec << "      CCU Subprocess (dddddd) " << (INT)dest << ": ";
-
-                switch(dest)
+            case 0:
                 {
-                case 0:
-                    {
-                        dout << "BASE STORES / IDLC CONTROL" << endl;
-                        break;
-                    }
-                case 1 :
-                    {
-                        dout << "QUEUING CONTROL" << endl;
-                        break;
-                    }
-                case 2:
-                    {
-                        dout << "DLC CONTROL" << endl;
-                        break;
-                    }
-                case 4:
-                    {
-                        dout << "TIME SYNC" << endl;
-                        break;
-                    }
-                case 5:
-                    {
-                        dout << "LOAD MANAGEMENT CONTROL" << endl;
-                        break;
-                    }
+                    outLog <<"BASE STORES / IDLC CONTROL";
+                    break;
                 }
-
-                dout << hex << setw(2) << (INT)_slaveToMaster[5] << dec << "   CMND (Command) (1ggggttt): " << (INT)cmnd;
-
-                switch(cmnd)
+            case 1 :
                 {
-                case CMND_ACTIN:
-                    {
-                        dout << "      ACTIN CMND Vol. 1 / pp. 4-41 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_WMEMY:
-                    {
-                        dout << "      WMEMY CMND Vol. 1 / pp. 4-54 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_RMEMY:
-                    {
-                        dout << "      RMEMY CMND Vol. 1 / pp. 4-55 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_RCONT:
-                    {
-                        dout << "      RCONT CMND Vol. 1 / pp. 4-57 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_WMEMS:
-                    {
-                        dout << "      WSETS CMND Vol. 1 / pp. 4-59 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_RMEMS:
-                    {
-                        dout << "      RSETS CMND Vol. 1 / pp. 4-61 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_DTRAN:
-                    {
-                        dout << "      DTRAN CMND Vol. 1 / pp. 4-83 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_XTIME:
-                    {
-                        dout << "      XTIME CMND Vol. 1 / pp. 4-91 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_ITIME:
-                    {
-                        dout << "      ITIME CMND Vol. 1 / pp. 4-65 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_CQENS:
-                    {
-                        dout << "      CQENS CMND Vol. 1 / pp. 4-68 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_RQENS:
-                    {
-                        dout << "      RQENS CMND Vol. 1 / pp. 4-69 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_RQDIR:
-                    {
-                        dout << "      RQDIR CMND Vol. 1 / pp. 4-81 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_RCOLQ:
-                    {
-                        dout << "      RCOLQ CMND Vol. 1 / pp. 4-86 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_LGRPQ:
-                    {
-                        dout << "      LGRPQ CMND Vol. 1 / pp. 4-92 " << (INT)cmnd << endl;
-                        break;
-                    }
-                default:
-                    {
-                        dout << "      Unknown " << (INT)cmnd << endl;
-                        break;
-                    }
+                    outLog <<"QUEUING CONTROL";
+                    break;
                 }
-
-                dout << hex << setw(2) << (INT)_slaveToMaster[6] << dec<< " through " << hex << setw(2) << (INT)_slaveToMaster[9] << dec << "  STATS " << endl;
-                describeSlaveStatS(&_slaveToMaster[6]);
-                dout << hex << setw(2) << (INT)_slaveToMaster[10] << dec<< " through " << hex << setw(2) << (INT)_slaveToMaster[15] << dec << "  STATD " << endl;
-                describeSlaveStatD(&_slaveToMaster[10]);
-                dout << hex << setw(2) << (INT)_slaveToMaster[16] << dec<< " through " << hex << setw(2) << (INT)_slaveToMaster[17] << dec << "  STATP " << endl;
-                describeSlaveStatP(&_slaveToMaster[16]);
-                dout.fill(oldfill);
+            case 2:
+                {
+                    outLog <<"DLC CONTROL";
+                    break;
+                }
+            case 4:
+                {
+                    outLog <<"TIME SYNC";
+                    break;
+                }
+            case 5:
+                {
+                    outLog <<"LOAD MANAGEMENT CONTROL";
+                    break;
+                }
             }
+
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[5] << dec <<"   CMND (Command) (1ggggttt): "<< (INT)cmnd;
+
+            switch(cmnd)
+            {
+            case CMND_ACTIN:
+                {
+                    outLog <<"      ACTIN CMND Vol. 1 / pp. 4-41 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_WMEMY:
+                {
+                    outLog <<"      WMEMY CMND Vol. 1 / pp. 4-54 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_RMEMY:
+                {
+                    outLog <<"      RMEMY CMND Vol. 1 / pp. 4-55 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_RCONT:
+                {
+                    outLog <<"      RCONT CMND Vol. 1 / pp. 4-57 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_WMEMS:
+                {
+                    outLog <<"      WSETS CMND Vol. 1 / pp. 4-59 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_RMEMS:
+                {
+                    outLog <<"      RSETS CMND Vol. 1 / pp. 4-61 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_DTRAN:
+                {
+                    outLog <<"      DTRAN CMND Vol. 1 / pp. 4-83 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_XTIME:
+                {
+                    outLog <<"      XTIME CMND Vol. 1 / pp. 4-91 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_ITIME:
+                {
+                    outLog <<"      ITIME CMND Vol. 1 / pp. 4-65 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_CQENS:
+                {
+                    outLog <<"      CQENS CMND Vol. 1 / pp. 4-68 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_RQENS:
+                {
+                    outLog <<"      RQENS CMND Vol. 1 / pp. 4-69 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_RQDIR:
+                {
+                    outLog <<"      RQDIR CMND Vol. 1 / pp. 4-81 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_RCOLQ:
+                {
+                    outLog <<"      RCOLQ CMND Vol. 1 / pp. 4-86 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_LGRPQ:
+                {
+                    outLog <<"      LGRPQ CMND Vol. 1 / pp. 4-92 "<< (INT)cmnd;
+                    break;
+                }
+            default:
+                {
+                    outLog <<"      Unknown "<< (INT)cmnd;
+                    break;
+                }
+            }
+
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[6]  << dec <<" through "<< hex << setw(2) << (INT)_slaveToMaster[9]  << dec <<"  STATS ";
+            describeSlaveStatS(&_slaveToMaster[6], outLog);
+
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[10] << dec <<" through "<< hex << setw(2) << (INT)_slaveToMaster[15] << dec <<"  STATD ";
+            describeSlaveStatD(&_slaveToMaster[10], outLog);
+
+            outLog << endl << hex << setw(2) << (INT)_slaveToMaster[16] << dec <<" through "<< hex << setw(2) << (INT)_slaveToMaster[17] << dec <<"  STATP ";
+            describeSlaveStatP(&_slaveToMaster[16], outLog);
 
             switch(cmnd)
             {
             case CMND_RCOLQ:
                 {
-                    describeRCOLQResponse(data, data_len);
+                    describeRCOLQResponse(data, data_len, outLog);
                     break;
                 }
             case CMND_LGRPQ:
@@ -224,7 +223,7 @@ void CtiProtocol711::describeSlaveResponse() const
                 }
             case CMND_ACTIN:
                 {
-                    describeACTNResponse();
+                    describeACTNResponse(outLog);
                     break;
                 }
             case CMND_WMEMY:
@@ -238,17 +237,17 @@ void CtiProtocol711::describeSlaveResponse() const
             case CMND_RQDIR:
             default:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << " ACH: Define rest of protocol" << endl;
+                    outLog << endl <<" ACH: Define rest of protocol";
                     break;
                 }
             }
+
+            CTILOG_INFO(dout, outLog);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " IDLC Error " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "IDLC Error");
     }
 }
 void CtiProtocol711::describeMasterRequest() const
@@ -277,179 +276,176 @@ void CtiProtocol711::describeMasterRequest() const
             const BYTE *data = &_masterToSlave[6];
             INT  data_len = length - 2;
 
+            std::ostringstream outLog;
+            outLog.fill('0');
+
+            outLog << endl << hex << setw(2) << (INT)_masterToSlave[0] << dec <<" IDLC Frame header is valid ";
+            outLog << endl << hex << setw(2) << (INT)_masterToSlave[1] << dec <<" Request to CCU Address "<< (INT)address;
+            outLog << endl << hex << setw(2) << (INT)_masterToSlave[2] << dec <<"   Control Word (rrrfsss0):";
+            outLog << endl << hex << setw(2) << (INT)_masterToSlave[2] << dec <<"      Expected Sequence of Next Request (rrr) "<< (INT)rrr;
+            outLog << endl << hex << setw(2) << (INT)_masterToSlave[2] << dec <<"      Sequence of Current Frame (sss) "<< (INT)sss;
+            outLog << endl << hex << setw(2) << (INT)_masterToSlave[2] << dec <<"      This "<< (final ? "IS" : "IS NOT") <<" the final frame (f)";
+            outLog << endl << hex << setw(2) << (INT)_masterToSlave[3] << dec <<"   "<< (INT)length <<" bytes follow in this message ";
+
+            outLog << endl << hex << setw(2) << (INT)_masterToSlave[4] << dec <<"   SRC/DES Word (mmdddddd):";
+            outLog << endl << hex << setw(2) << (INT)_masterToSlave[4] << dec <<"      Master Station Subprocess (mm) "<< (INT)src;
+            outLog << endl << hex << setw(2) << (INT)_masterToSlave[4] << dec <<"      CCU Subprocess (dddddd) "<< (INT)dest <<": ";
+
+            switch(dest)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                char oldfill = dout.fill('0');
-                dout << hex << setw(2) << (INT)_masterToSlave[0] << dec << " IDLC Frame header is valid " << endl;
-                dout << hex << setw(2) << (INT)_masterToSlave[1] << dec << " Request to CCU Address " << (INT)address << endl;
-                dout << hex << setw(2) << (INT)_masterToSlave[2] << dec << "   Control Word (rrrfsss0):"  << endl;
-                dout << hex << setw(2) << (INT)_masterToSlave[2] << dec << "      Expected Sequence of Next Request (rrr) " << (INT)rrr << endl;
-                dout << hex << setw(2) << (INT)_masterToSlave[2] << dec << "      Sequence of Current Frame (sss) " << (INT)sss << endl;
-                dout << hex << setw(2) << (INT)_masterToSlave[2] << dec << "      This " << (final ? "IS" : "IS NOT") << " the final frame (f)" << endl;
-                dout << hex << setw(2) << (INT)_masterToSlave[3] << dec << "   " << (INT)length << " bytes follow in this message " << endl;
-
-                dout << hex << setw(2) << (INT)_masterToSlave[4] << dec << "   SRC/DES Word (mmdddddd):" << endl;
-                dout << hex << setw(2) << (INT)_masterToSlave[4] << dec << "      Master Station Subprocess (mm) " << (INT)src << endl;
-                dout << hex << setw(2) << (INT)_masterToSlave[4] << dec << "      CCU Subprocess (dddddd) " << (INT)dest << ": ";
-
-                switch(dest)
+            case 0:
                 {
-                case 0:
-                    {
-                        dout << "BASE STORES / IDLC CONTROL" << endl;
-                        break;
-                    }
-                case 1 :
-                    {
-                        dout << "QUEUING CONTROL" << endl;
-                        break;
-                    }
-                case 2:
-                    {
-                        dout << "DLC CONTROL" << endl;
-                        break;
-                    }
-                case 4:
-                    {
-                        dout << "TIME SYNC" << endl;
-                        break;
-                    }
-                case 5:
-                    {
-                        dout << "LOAD MANAGEMENT CONTROL" << endl;
-                        break;
-                    }
+                    outLog <<"BASE STORES / IDLC CONTROL";
+                    break;
+                }
+            case 1 :
+                {
+                    outLog <<"QUEUING CONTROL";
+                    break;
+                }
+            case 2:
+                {
+                    outLog <<"DLC CONTROL";
+                    break;
+                }
+            case 4:
+                {
+                    outLog <<"TIME SYNC";
+                    break;
+                }
+            case 5:
+                {
+                    outLog <<"LOAD MANAGEMENT CONTROL";
+                    break;
+                }
+            }
+
+            outLog << endl << hex << setw(2) << (INT)_masterToSlave[5] << dec <<"   CMND (Command) (0ggggttt): "<< (INT)cmnd;
+
+            switch(cmnd)
+            {
+            case CMND_ACTIN:
+                {
+                    outLog <<"      ACTIN CMND Vol. 1 / pp. 4-41 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_WMEMY:
+                {
+                    outLog <<"      WMEMY CMND Vol. 1 / pp. 4-54 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_RMEMY:
+                {
+                    outLog <<"      RMEMY CMND Vol. 1 / pp. 4-55 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_RCONT:
+                {
+                    outLog <<"      RCONT CMND Vol. 1 / pp. 4-57 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_WMEMS:
+                {
+                    outLog <<"      WSETS CMND Vol. 1 / pp. 4-59 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_RMEMS:
+                {
+                    outLog <<"      RSETS CMND Vol. 1 / pp. 4-61 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_DTRAN:
+                {
+                    outLog <<"      DTRAN CMND Vol. 1 / pp. 4-83 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_XTIME:
+                {
+                    outLog <<"      XTIME CMND Vol. 1 / pp. 4-91 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_ITIME:
+                {
+                    outLog <<"      ITIME CMND Vol. 1 / pp. 4-65 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_CQENS:
+                {
+                    outLog <<"      CQENS CMND Vol. 1 / pp. 4-68 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_RQENS:
+                {
+                    outLog <<"      RQENS CMND Vol. 1 / pp. 4-69 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_RQDIR:
+                {
+                    outLog <<"      RQDIR CMND Vol. 1 / pp. 4-81 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_RCOLQ:
+                {
+                    outLog <<"      RCOLQ CMND Vol. 1 / pp. 4-86 "<< (INT)cmnd;
+                    break;
+                }
+            case CMND_LGRPQ:
+                {
+                    outLog <<"      LGRPQ CMND Vol. 1 / pp. 4-92 "<< (INT)cmnd;
+                    break;
+                }
+            default:
+                {
+                    outLog <<"      Unknown "<< (INT)cmnd;
+                    break;
+                }
+            }
+
+            if(data_len > 0)
+            {
+                outLog << endl <<"     CMND data. Bytes 7 through "<< 7 + data_len;
+                outLog << endl <<"     "<< hex;
+
+                for(i = 0; i < data_len; i++)
+                {
+                    outLog <<" "<< setw(2) << (INT)data[i] ;
                 }
 
-                dout << hex << setw(2) << (INT)_masterToSlave[5] << dec << "   CMND (Command) (0ggggttt): " << (INT)cmnd;
-
-                switch(cmnd)
-                {
-                case CMND_ACTIN:
-                    {
-                        dout << "      ACTIN CMND Vol. 1 / pp. 4-41 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_WMEMY:
-                    {
-                        dout << "      WMEMY CMND Vol. 1 / pp. 4-54 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_RMEMY:
-                    {
-                        dout << "      RMEMY CMND Vol. 1 / pp. 4-55 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_RCONT:
-                    {
-                        dout << "      RCONT CMND Vol. 1 / pp. 4-57 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_WMEMS:
-                    {
-                        dout << "      WSETS CMND Vol. 1 / pp. 4-59 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_RMEMS:
-                    {
-                        dout << "      RSETS CMND Vol. 1 / pp. 4-61 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_DTRAN:
-                    {
-                        dout << "      DTRAN CMND Vol. 1 / pp. 4-83 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_XTIME:
-                    {
-                        dout << "      XTIME CMND Vol. 1 / pp. 4-91 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_ITIME:
-                    {
-                        dout << "      ITIME CMND Vol. 1 / pp. 4-65 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_CQENS:
-                    {
-                        dout << "      CQENS CMND Vol. 1 / pp. 4-68 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_RQENS:
-                    {
-                        dout << "      RQENS CMND Vol. 1 / pp. 4-69 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_RQDIR:
-                    {
-                        dout << "      RQDIR CMND Vol. 1 / pp. 4-81 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_RCOLQ:
-                    {
-                        dout << "      RCOLQ CMND Vol. 1 / pp. 4-86 " << (INT)cmnd << endl;
-                        break;
-                    }
-                case CMND_LGRPQ:
-                    {
-                        dout << "      LGRPQ CMND Vol. 1 / pp. 4-92 " << (INT)cmnd << endl;
-                        break;
-                    }
-                default:
-                    {
-                        dout << "      Unknown " << (INT)cmnd << endl;
-                        break;
-                    }
-                }
-
-                if(data_len > 0)
-                {
-                    dout << "     CMND data. Bytes " << 7 << " through " << 7 + data_len << endl;
-                    dout << "      ";
-
-                    for(i = 0; i < data_len; i++)
-                    {
-                        dout << hex << setw(2) << (INT)data[i] << " ";
-                    }
-                    dout << dec << endl;
-                }
-
-                dout.fill(oldfill);
+                outLog << dec;
             }
 
             switch(cmnd)
             {
             case CMND_RCOLQ:
                 {
-                    describeRCOLQRequest(data, data_len);
+                    describeRCOLQRequest(data, data_len, outLog);
                     break;
                 }
             case CMND_LGRPQ:
                 {
-                    describeLGRPQRequest(data, data_len);
+                    describeLGRPQRequest(data, data_len, outLog);
                     break;
                 }
             case CMND_XTIME:
                 {
-                    describeXTIMERequest(data, data_len);
+                    describeXTIMERequest(data, data_len, outLog);
                     break;
                 }
             case CMND_ACTIN:
                 {
-                    describeACTNRequest(data, data_len);
+                    describeACTNRequest(data, data_len, outLog);
                     break;
                 }
             case CMND_RCONT:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << endl << "RCONT CMND: Vol. 1 / pp. 4-57 " << endl;
-                    dout << "  Continue Extended Read from CCU" << endl;
-
+                    outLog << endl;
+                    outLog << endl <<"RCONT CMND: Vol. 1 / pp. 4-57 ";
+                    outLog << endl <<"  Continue Extended Read from CCU";
                     break;
                 }
             case CMND_DTRAN:
                 {
-                    describeDTRANRequest(data, data_len);
+                    describeDTRANRequest(data, data_len, outLog);
                     break;
                 }
             case CMND_WMEMY:
@@ -462,33 +458,29 @@ void CtiProtocol711::describeMasterRequest() const
             case CMND_RQDIR:
             default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** ACH: Command type not yet decoded **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    outLog << endl <<" **** ACH: Command type not yet decoded **** "<< __FILE__ <<" ("<< __LINE__ <<")";
                     break;
                 }
             }
+
+            CTILOG_INFO(dout, outLog);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " IDLC Error " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "IDLC Error");
     }
 }
 
 
-void CtiProtocol711::describeRCOLQRequest(const BYTE *data, INT len) const
+void CtiProtocol711::describeRCOLQRequest(const BYTE *data, INT len, std::ostringstream &outLog) const
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << "RCOLQ CMND: Vol. 1 / pp. 4-86 " << endl;
-        dout << hex << setw(2) << (INT)data[0] << dec << "  RLEN (reply length RLEN + 14 returned from CCU " << (INT)data[0] << endl;
-    }
+    outLog << endl;
+    outLog << endl <<"RCOLQ CMND: Vol. 1 / pp. 4-86 ";
+    outLog << endl << hex << setw(2) << (INT)data[0] << dec <<"  RLEN (reply length RLEN + 14 returned from CCU "<< (INT)data[0];
 }
 
-void CtiProtocol711::describeRCOLQResponse(const BYTE *data, INT len) const
+void CtiProtocol711::describeRCOLQResponse(const BYTE *data, INT len, std::ostringstream &outLog) const
 {
     INT byte_offset;
     INT setl = data[0];
@@ -499,141 +491,135 @@ void CtiProtocol711::describeRCOLQResponse(const BYTE *data, INT len) const
     BYTE ts[2];
     INT L[3] = {0, 0, 0};
 
+    char oldfill = outLog.fill('0');
+
+    outLog << endl;
+    outLog << endl <<"RCOLQ CMND: Vol. 1 / pp. 4-86 ";
+    outLog << endl << hex << setw(2) << (INT)data[0] << dec <<"  SETL (set length) "<< setl;
+
+    if(setl > 0)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        char oldfill = dout.fill('0');
+        outLog << endl << hex << setw(2) << (INT)data[1] << dec <<" through "<< hex << setw(2) << (INT)data[4] << dec <<"  QENID ";
+        outLog << endl << hex << setw(2) << (INT)data[1] << dec <<" & "<< hex << setw(2) << (INT)data[2] <<"  Porter (internal TrxInfo queue entry) "<< MAKEUSHORT(data[2], data[1]);
+        outLog << endl << hex << setw(2) << (INT)data[3] << dec <<" & "<< hex << setw(2) << (INT)data[4] <<"  OUTMESS->Sequence "<< MAKEUSHORT(data[4], data[3]);
+        outLog << endl << hex << setw(2) << (INT)data[5] << dec <<" ENSTA: ";
 
-        dout << endl << "RCOLQ CMND: Vol. 1 / pp. 4-86 " << endl;
-
-        dout << hex << setw(2) << (INT)data[0] << dec << "  SETL (set length) " << setl << endl;
-
-        if(setl > 0)
+        switch(ensta)
         {
-            dout << hex << setw(2) << (INT)data[1] << dec<< " through " << hex << setw(2) << (INT)data[4] << dec << "  QENID " << endl;
-            dout << hex << setw(2) << (INT)data[1] << dec << " & " << hex << setw(2) << (INT)data[2] << "  Porter (internal TrxInfo queue entry) " << MAKEUSHORT(data[2], data[1]) << endl;
-            dout << hex << setw(2) << (INT)data[3] << dec << " & " << hex << setw(2) << (INT)data[4] << "  OUTMESS->Sequence " << MAKEUSHORT(data[4], data[3]) << endl;
-            dout << hex << setw(2) << (INT)data[5] << dec << " ENSTA: ";
-
-            switch(ensta)
+        case 12:
             {
-            case 12:
-                {
-                    dout << "  REQUEST REJECT: - UNDEF. (Completed)  " << endl;
-                    break;
-                }
-            case 13:
-                {
-                    dout << "  REQUEST REJECT: - UNDEF. (Completed)  " << endl;
-                    break;
-                }
-            case 14:
-                {
-                    dout << "  REQUEST REJECT: - FUNCTION ERROR. (Completed)  " << endl;
-                    break;
-                }
-            case 15:
-                {
-                    dout << "  ACTION COMPLETE:  " << endl;
-                    break;
-                }
-            default:
-                {
-                    dout << "  UNDEFINED COMPLETION STATE " << endl;
-                    break;
-                }
+                outLog <<"  REQUEST REJECT: - UNDEF. (Completed)  ";
+                break;
             }
-
-            dout << hex << setw(2) << (INT)data[6] << " through " << setw(2) << (INT)data[8] << dec << "  STIME 1st (8 hr period of week) 2-3 (second into period)" << endl;
-
-            if(data[9] == 255)
+        case 13:
             {
-                dout << hex << setw(2) << (INT)data[9] << dec << "  ROUTE defined by request " << endl;
+                outLog <<"  REQUEST REJECT: - UNDEF. (Completed)  ";
+                break;
             }
-            else
+        case 14:
             {
-                dout << hex << setw(2) << (INT)data[9] << dec << "  ROUTE " << endl;
+                outLog <<"  REQUEST REJECT: - FUNCTION ERROR. (Completed)  ";
+                break;
             }
-            dout << hex << setw(2) << nfunc << dec << "  NFUNC - number of functions in this request  " << endl;
-
-            dout.fill(oldfill);
+        case 15:
+            {
+                outLog <<"  ACTION COMPLETE:  ";
+                break;
+            }
+        default:
+            {
+                outLog <<"  UNDEFINED COMPLETION STATE ";
+                break;
+            }
         }
+
+        outLog << endl << hex << setw(2) << (INT)data[6] <<" through "<< setw(2) << (INT)data[8] << dec <<"  STIME 1st (8 hr period of week) 2-3 (second into period)";
+
+        if(data[9] == 255)
+        {
+            outLog << endl << hex << setw(2) << (INT)data[9] << dec <<"  ROUTE defined by request ";
+        }
+        else
+        {
+            outLog << endl << hex << setw(2) << (INT)data[9] << dec <<"  ROUTE ";
+        }
+
+        outLog << endl << hex << setw(2) << nfunc << dec <<"  NFUNC - number of functions in this request  ";
+        outLog.fill(oldfill);
     }
 }
 
-void CtiProtocol711::describeACTNRequest(const BYTE *data, INT len) const
+void CtiProtocol711::describeACTNRequest(const BYTE *data, INT len, std::ostringstream &outLog) const
 {
     INT i;
 
+    char oldfill = outLog.fill('0');
+
+    outLog << endl;
+    outLog << endl <<"ACTIN CMND: Vol. 1 / pp. 4-41 ";
+
+    for(i = 0; i < len; i++)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        char oldfill = dout.fill('0');
+        outLog << endl << hex << setw(2) << (INT)data[i] << dec <<"  ACTN:  "<< (INT)data[i];
 
-        dout << endl << "ACTIN CMND: Vol. 1 / pp. 4-41 " << endl;
-
-
-        for(i = 0; i < len; i++)
+        switch(data[i])
         {
-            dout << hex << setw(2) << (INT)data[i] << dec << "  ACTN:  " << (INT)data[i];
-
-            switch(data[i])
+        case 0:
             {
-            case 0:
-                {
-                    dout << "  No-Op  " << (INT)data[i] << endl;
-                    break;
-                }
-            case 1:
-                {
-                    dout << "  CLRAL - Init. process control stores  " << (INT)data[i] << endl;
-                    break;
-                }
-            case 2:
-                {
-                    dout << "  CLRDY - Init. process dynamic control stores  " << (INT)data[i] << endl;
-                    break;
-                }
-            case 3:
-                {
-                    dout << "  START - Start process.  " << (INT)data[i] << endl;
-                    break;
-                }
-            case 4:
-                {
-                    dout << "  HOPRO - Halt orderly, process  " << (INT)data[i] << endl;
-                    break;
-                }
-            case 5:
-                {
-                    dout << "  ENPRO - Enable execution of process  " << (INT)data[i] << endl;
-                    break;
-                }
-            case 6:
-                {
-                    dout << "  DSPRO - Disable execution of process  " << (INT)data[i] << endl;
-                    break;
-                }
-            case 7:
-                {
-                    dout << "  CJOUR - Clear journal  " << (INT)data[i] << endl;
-                    break;
-                }
-            default:
-                {
-                    dout << "  ACTIN code not yet defined  " << (INT)data[i] << endl;
-                    break;
-                }
+                outLog <<"  No-Op  "<< (INT)data[i];
+                break;
             }
-
-            dout.fill(oldfill);
+        case 1:
+            {
+                outLog <<"  CLRAL - Init. process control stores  "<< (INT)data[i];
+                break;
+            }
+        case 2:
+            {
+                outLog <<"  CLRDY - Init. process dynamic control stores  "<< (INT)data[i];
+                break;
+            }
+        case 3:
+            {
+                outLog <<"  START - Start process.  "<< (INT)data[i];
+                break;
+            }
+        case 4:
+            {
+                outLog <<"  HOPRO - Halt orderly, process  "<< (INT)data[i];
+                break;
+            }
+        case 5:
+            {
+                outLog <<"  ENPRO - Enable execution of process  "<< (INT)data[i];
+                break;
+            }
+        case 6:
+            {
+                outLog <<"  DSPRO - Disable execution of process  "<< (INT)data[i];
+                break;
+            }
+        case 7:
+            {
+                outLog <<"  CJOUR - Clear journal  "<< (INT)data[i];
+                break;
+            }
+        default:
+            {
+                outLog <<"  ACTIN code not yet defined  "<< (INT)data[i];
+                break;
+            }
         }
+
+        outLog.fill(oldfill);
     }
 }
 
-void CtiProtocol711::describeACTNResponse() const
+void CtiProtocol711::describeACTNResponse(std::ostringstream &outLog) const
 {
 }
 
-void CtiProtocol711::describeDTRANRequest(const BYTE *data, INT len) const
+void CtiProtocol711::describeDTRANRequest(const BYTE *data, INT len, std::ostringstream &outlog) const
 {
     INT i;
 
@@ -645,29 +631,22 @@ void CtiProtocol711::describeDTRANRequest(const BYTE *data, INT len) const
         INT rtf = data[2] & 0x07;
         INT ctf = data[3] & 0x3f;
 
+        char oldfill = outlog.fill('0');
 
-
-
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        char oldfill = dout.fill('0');
-
-        dout << endl << "DTRAN CMND: Vol. 1 / pp. 4-83 " << endl;
-
-        dout << "  RLEN  " << rlen << " reply length expected " << endl;
-        dout << "  PREAMBLE: " << endl;
-        dout << "    Feeder            " << feeder << endl;
-        dout << "    Amp               " << amp << endl;
-        dout << "    Stages to Follow  " << rtf << endl;
-        dout << "    Number of chars   " << ctf << endl;
-
-        dout << "    ";
+        outlog << endl;
+        outlog << endl <<"DTRAN CMND: Vol. 1 / pp. 4-83 ";
+        outlog << endl <<"  RLEN  "<< rlen <<" reply length expected ";
+        outlog << endl <<"  PREAMBLE: ";
+        outlog << endl <<"    Feeder            "<< feeder;
+        outlog << endl <<"    Amp               "<< amp;
+        outlog << endl <<"    Stages to Follow  "<< rtf;
+        outlog << endl <<"    Number of chars   "<< ctf;
+        outlog << endl <<"    " ;
 
         for(i = 4; i < ctf + 4; i++)
         {
-            dout << hex << setw(2) << (INT)data[i] << " ";
+            outlog << hex << setw(2) << (INT)data[i] <<" ";
         }
-
-        dout << endl;
 
         INT wordt = (data[4] >> 4) & 0x0e;
 
@@ -687,14 +666,13 @@ void CtiProtocol711::describeDTRANRequest(const BYTE *data, INT len) const
                 INT func = ((data[8] & 0x0f) << 4) | (data[9] >> 4);
                 INT io = (data[9] & 0x0c) >> 2;
 
-
-                dout << "  BWORD: " << endl;
-                dout << "    Variable bits    " << hex << setw(2) << (INT)var << endl;
-                dout << "    Fixed    bits    " << hex << setw(2) << (INT)fix << endl;
-                dout << "    Address          " << dec << address << endl;
-                dout << "    Words to follow  " << words << endl;
-                dout << "    Function/Address " << hex << setw(2) << func << endl;
-                dout << "    IO               " << hex << setw(2) << io << endl;
+                outlog << endl <<"  BWORD: ";
+                outlog << endl <<"    Variable bits    "<< hex << setw(2) << (INT)var;
+                outlog << endl <<"    Fixed    bits    "<< hex << setw(2) << (INT)fix;
+                outlog << endl <<"    Address          "<< dec << address;
+                outlog << endl <<"    Words to follow  "<< words;
+                outlog << endl <<"    Function/Address "<< hex << setw(2) << func;
+                outlog << endl <<"    IO               "<< hex << setw(2) << io;
 
                 break;
             }
@@ -705,14 +683,11 @@ void CtiProtocol711::describeDTRANRequest(const BYTE *data, INT len) const
             }
         }
 
-
-
-
-        dout.fill(oldfill);
+        outlog.fill(oldfill);
     }
 }
 
-void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
+void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len, std::ostringstream &outlog) const
 {
     INT      i;
     BYTE     setl = data[0];
@@ -731,10 +706,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
 
     if(shortformat)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ACH: short format does not compute **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        outlog << endl <<" **** ACH: short format does not compute **** "<< __FILE__ <<" ("<< __LINE__ <<")";
     }
     else  // long format LGRPQ
     {
@@ -742,10 +714,7 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
 
         if(data[9] & 0x80)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** ACH: does not compute **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            outlog << endl <<" **** ACH: does not compute **** "<< __FILE__ <<" ("<< __LINE__ <<")";
         }
         else
         {
@@ -755,25 +724,22 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
             RRR = data[11] & 0x07;
             nfunc = data[12];
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                char oldfill = dout.fill('0');
-                dout << endl << "LGRPQ CMND: Vol. 1 / pp. 4-92 " << endl;
-
-                dout << hex << setw(2) << (INT)data[0] << dec << "  SETL (set length) " << (INT)setl << endl;
-                dout << hex << setw(2) << (INT)data[1] << dec << (shortformat ? "  Short Format " : "  Long Format") << endl;
-                dout << hex << setw(2) << (INT)data[1] << dec<< " through " << hex << setw(2) << (INT)data[4] << dec << "  QENID " << endl;
-                dout << hex << setw(2) << (INT)data[1] << dec << " and " << hex << setw(2) << (INT)data[2] << "  Porter (internal TrxInfo queue entry) " << MAKEUSHORT(data[2], data[1]) << endl;
-                dout << hex << setw(2) << (INT)data[3] << dec << " and " << hex << setw(2) << (INT)data[4] << "  OUTMESS->Sequence " << MAKEUSHORT(data[4], data[3]) << endl;
-                dout << hex << setw(2) << (INT)data[5] << dec << "  Priority (0 - 15 max) " << (INT)priority << endl;
-                dout << hex << setw(2) << (INT)data[6] << dec << " through " << hex << (INT)data[8] << dec << "  DLC remote address " << (INT)dlcaddr << endl;
-                dout << hex << setw(2) << (INT)data[9] << dec << "  Feeder " << (INT)feeder << endl;
-                dout << hex << setw(2) << (INT)data[10] << dec << "  Variable Bits " << (INT)vvv << endl;
-                dout << hex << setw(2) << (INT)data[10] << dec << "  Fixed Bits " << (INT)fffff << endl;
-                dout << hex << setw(2) << (INT)data[11] << dec << "  Repeaters to follow " << (INT)RRR << endl;
-                dout << hex << setw(2) << (INT)data[12] << dec << "  NFUNC: number of functions to follow " << (INT)nfunc << endl;
-                dout.fill(oldfill);
-            }
+            char oldfill = outlog.fill('0');
+            outlog << endl;
+            outlog << endl <<"LGRPQ CMND: Vol. 1 / pp. 4-92 ";
+            outlog << endl << hex << setw(2) << (INT)data[0]  << dec <<"  SETL (set length) "<< (INT)setl;
+            outlog << endl << hex << setw(2) << (INT)data[1]  << dec << (shortformat ? "  Short Format " : "  Long Format");
+            outlog << endl << hex << setw(2) << (INT)data[1]  << dec <<" through "<< hex << setw(2) << (INT)data[4] << dec <<"  QENID ";
+            outlog << endl << hex << setw(2) << (INT)data[1]  << dec <<" and "<< hex << setw(2) << (INT)data[2] <<"  Porter (internal TrxInfo queue entry) "<< MAKEUSHORT(data[2], data[1]);
+            outlog << endl << hex << setw(2) << (INT)data[3]  << dec <<" and "<< hex << setw(2) << (INT)data[4] <<"  OUTMESS->Sequence "<< MAKEUSHORT(data[4], data[3]);
+            outlog << endl << hex << setw(2) << (INT)data[5]  << dec <<"  Priority (0 - 15 max) "<< (INT)priority;
+            outlog << endl << hex << setw(2) << (INT)data[6]  << dec <<" through "<< hex << (INT)data[8] << dec <<"  DLC remote address "<< (INT)dlcaddr;
+            outlog << endl << hex << setw(2) << (INT)data[9]  << dec <<"  Feeder "<< (INT)feeder;
+            outlog << endl << hex << setw(2) << (INT)data[10] << dec <<"  Variable Bits "<< (INT)vvv;
+            outlog << endl << hex << setw(2) << (INT)data[10] << dec <<"  Fixed Bits "<< (INT)fffff;
+            outlog << endl << hex << setw(2) << (INT)data[11] << dec <<"  Repeaters to follow "<< (INT)RRR;
+            outlog << endl << hex << setw(2) << (INT)data[12] << dec <<"  NFUNC: number of functions to follow "<< (INT)nfunc;
+            outlog.fill(oldfill);
         }
 
         if(0 < nfunc && nfunc <= 3 )
@@ -794,122 +760,110 @@ void CtiProtocol711::describeLGRPQRequest(const BYTE *data, INT len) const
                 io =  (data[nfunc_offset] & 0x18) >> 3;
                 dlclen = data[nfunc_offset + 3];
 
+                char oldfill = outlog.fill('0');
+                outlog << endl << hex << setw(2) << (INT)data[nfunc_offset] <<" through "<< setw(2) << (INT)data[nfunc_offset + 4] << dec <<"  DLC COMMAND: ";
+
+                switch(dlcword)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    char oldfill = dout.fill('0');
-                    dout << hex << setw(2) << (INT)data[nfunc_offset] << " through " << setw(2) << (INT)data[nfunc_offset + 4] << dec << "  DLC COMMAND: " << endl;
-
-                    switch(dlcword)
+                case 0x00:
                     {
-                    case 0x00:
-                        {
-                            dout << CtiTime() << " **** ACH: UNUSED/ERROR! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            break;
-                        }
-                    case 0x02:
-                        {
-                            dout << hex << setw(2) << (INT)data[nfunc_offset] << dec << " bits 7-6 indicate a BWORD COMMAND " << endl;
-                            break;
-                        }
-                    case 0x03:
-                        {
-                            dout << CtiTime() << " **** ACH: Word type GWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                    case 0x01:
-                        {
-                            dout << CtiTime() << " **** ACH: Word type AWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                    default:
-                        {
-                            {
-                                dout << CtiTime() << " **** ACH: Word type not yet decoded! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                            break;
-                        }
+                        outlog << endl <<" **** ACH: UNUSED/ERROR! **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                        break;
                     }
-
-                    dout << hex << setw(2) << (INT)data[nfunc_offset] << dec << " bit 5 indicates command " << (dblrpt ? "WILL" : "WILL NOT") << " be double'd" << endl;
-                    dout << hex << setw(2) << (INT)data[nfunc_offset] << dec << " bits 4-3 indicate io type ";
-
-                    switch(io)
+                case 0x02:
                     {
-                    case 0:
-                        {
-                            dout << "WRITE" << endl;
-                            break;
-                        }
-                    case 1:
-                        {
-                            dout << "READ" << endl;
-                            break;
-                        }
-                    case 2:
-                        {
-                            dout << "FUNCTION WRITE" << endl;
-                            break;
-                        }
-                    case 3:
-                        {
-                            dout << "FUNCTION READ" << endl;
-                            break;
-                        }
+                        outlog << endl << hex << setw(2) << (INT)data[nfunc_offset] << dec <<" bits 7-6 indicate a BWORD COMMAND ";
+                        break;
                     }
-
-                    switch(dlcword)
+                case 0x03:
                     {
-                    case 0x00:
-                        {
-                            dout << CtiTime() << " **** ACH: UNUSED/ERROR! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            break;
-                        }
-                    case 0x02:
-                        {
-                            dout << hex << setw(2) << (INT)data[nfunc_offset+2] << " BWORD FUNCTION " << (INT)bwordcmd << dec << endl;
-                            dout << hex << setw(2) << (INT)data[nfunc_offset+3] << dec << " BWORD LENGTH " << (INT)dlclen << endl;
-                            break;
-                        }
-                    case 0x03:
-                        {
-                            dout << CtiTime() << " **** ACH: Word type GWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                    case 0x01:
-                        {
-                            dout << CtiTime() << " **** ACH: Word type AWORD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                    default:
-                        {
-                            {
-                                dout << CtiTime() << " **** ACH: Word type not yet decoded! **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                            break;
-                        }
+                        outlog << endl <<" **** ACH: Word type GWORD **** "<< __FILE__ <<" ("<< __LINE__ <<")";
                     }
-
-                    dout.fill(oldfill);
+                case 0x01:
+                    {
+                        outlog << endl <<" **** ACH: Word type AWORD **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                    }
+                    // FIXME break missing here?
+                default:
+                    {
+                        outlog << endl <<" **** ACH: Word type not yet decoded! **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                        break;
+                    }
                 }
+
+                outlog << endl << hex << setw(2) << (INT)data[nfunc_offset] << dec <<" bit 5 indicates command "<< (dblrpt ? "WILL" : "WILL NOT") <<" be double'd";
+                outlog << endl << hex << setw(2) << (INT)data[nfunc_offset] << dec <<" bits 4-3 indicate io type ";
+
+                switch(io)
+                {
+                case 0:
+                    {
+                        outlog <<"WRITE";
+                        break;
+                    }
+                case 1:
+                    {
+                        outlog <<"READ";
+                        break;
+                    }
+                case 2:
+                    {
+                        outlog <<"FUNCTION WRITE";
+                        break;
+                    }
+                case 3:
+                    {
+                        outlog <<"FUNCTION READ";
+                        break;
+                    }
+                }
+
+                switch(dlcword)
+                {
+                case 0x00:
+                    {
+                        outlog << endl <<" **** ACH: UNUSED/ERROR! **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                        break;
+                    }
+                case 0x02:
+                    {
+                        outlog << endl << hex << setw(2) << (INT)data[nfunc_offset+2] <<" BWORD FUNCTION "<< (INT)bwordcmd << dec;
+                        outlog << endl << hex << setw(2) << (INT)data[nfunc_offset+3] << dec <<" BWORD LENGTH "<< (INT)dlclen;
+                        break;
+                    }
+                case 0x03:
+                    {
+                        outlog << endl <<" **** ACH: Word type GWORD **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                    }
+                case 0x01:
+                    {
+                        outlog << endl <<" **** ACH: Word type AWORD **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                    }
+                default:
+                    {
+                        outlog << endl <<" **** ACH: Word type not yet decoded! **** "<< __FILE__ <<" ("<< __LINE__ <<")";
+                        break;
+                    }
+                }
+
+                outlog.fill(oldfill);
 
                 nfunc_offset += 4;
             }
 
             if(len > nfunc_offset + 1)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << hex << setw(2) << (INT)data[nfunc_offset] << dec << " to end.  Data to be written to the DLC device" << endl;
-                }
+                outlog << endl << hex << setw(2) << (INT)data[nfunc_offset] << dec <<" to end.  Data to be written to the DLC device";
             }
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** ACH: Unknown CTL function Vol. 1 / pp. 4-96 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            outlog << endl <<" **** ACH: Unknown CTL function Vol. 1 / pp. 4-96 **** "<< __FILE__ <<" ("<< __LINE__ <<")";
         }
     }
 }
 
-void CtiProtocol711::describeXTIMERequest(const BYTE *data, INT len) const
+void CtiProtocol711::describeXTIMERequest(const BYTE *data, INT len, std::ostringstream &outLog) const
 {
     INT year = (INT)MAKEUSHORT(data[1], data[0]);
     INT juln = (INT)MAKEUSHORT(data[3], data[2]);
@@ -925,82 +879,37 @@ void CtiProtocol711::describeXTIMERequest(const BYTE *data, INT len) const
     INT minute = (tsec - (hour * 3600)) / 60;
     INT second = (tsec - (hour * 3600) - (minute * 60));
 
-    CHAR day[10];
-
-    switch(dow)
-    {
-    case 1:
-        {
-            strcpy(day, "Sunday");
-            break;
-        }
-    case 2:
-        {
-            strcpy(day, "Monday");
-            break;
-        }
-    case 3:
-        {
-            strcpy(day, "Tuesday");
-            break;
-        }
-    case 4:
-        {
-            strcpy(day, "Wednesday");
-            break;
-        }
-    case 5:
-        {
-            strcpy(day, "Thursday");
-            break;
-        }
-    case 6:
-        {
-            strcpy(day, "Friday");
-            break;
-        }
-    case 7:
-        {
-            strcpy(day, "Saturday");
-            break;
-        }
-    }
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << endl << "XTIME CMND: Vol. 1 / pp. 4-92 " << endl;
-        dout << hex << setw(2) << (INT)data[0] << " & " << setw(2) << (INT)data[1] << dec << "  YEAR (year) " << (INT)year << endl;
-        dout << hex << setw(2) << (INT)data[2] << " & " << setw(2) << (INT)data[3] << dec << "  JULN (julian day-of-year number) " << (INT)juln << endl;
-        dout << hex << setw(2) << (INT)data[4] << dec << "  DOW (day-of-week number. 1 = Sun.): " << (INT)day << endl;
-        dout << hex << setw(2) << (INT)data[5] << dec << "  PERD (period of day). Seconds since midnight: " << period << endl;
-        dout << hex << setw(2) << (INT)data[2] << " & " << setw(2) << (INT)data[3] << dec << "  SEC (seconds into period) " << (INT)sec << endl;
-
-        dout << dec << "        Time set to " << setw(2) << hour << ":" << setw(2) << minute << ":" << setw(2) << second << endl;
-    }
-
+    outLog << endl;
+    outLog << endl <<"XTIME CMND: Vol. 1 / pp. 4-92 ";
+    outLog << endl << hex << setw(2) << (INT)data[0] <<" & "<< setw(2) << (INT)data[1] << dec <<"  YEAR (year) "<< (INT)year;
+    outLog << endl << hex << setw(2) << (INT)data[2] <<" & "<< setw(2) << (INT)data[3] << dec <<"  JULN (julian day-of-year number) "<< (INT)juln;
+    outLog << endl << hex << setw(2) << (INT)data[4] << dec <<"  DOW (day-of-week number. 1 = Sun.): "<< (INT)dow;
+    outLog << endl << hex << setw(2) << (INT)data[5] << dec <<"  PERD (period of day). Seconds since midnight: "<< period;
+    outLog << endl << hex << setw(2) << (INT)data[2] <<" & "<< setw(2) << (INT)data[3] << dec <<"  SEC (seconds into period) "<< (INT)sec;
+    outLog << endl << dec <<"        Time set to "<< setw(2) << hour <<":"<< setw(2) << minute <<":"<< setw(2) << second;
 }
 
 // You MUST own the dout mutex to call this function
-void CtiProtocol711::describeSlaveStatS(const BYTE *stat) const
+void CtiProtocol711::describeSlaveStatS(const BYTE *stat, std::ostringstream &outLog) const
 {
-    dout << "  STATS:" << endl;
-    dout << "    AC Power                  " << (stat[0] & 0x01 ? "outage detected": "good / outage not detected") << endl;
-    dout << "    Slave fault               " << (stat[0] & 0x02 ? "detected": "not detected") << endl;
-    dout << "    Deadman circuit           " << (stat[0] & 0x04 ? "activated": "inactive") << endl;
-    dout << "    Cold start                " << (stat[0] & 0x08 ? "detected": "not detected") << endl;
-    dout << "    Sequence adjust           " << (stat[0] & 0x10 ? "detected": "not detected") << endl;
-    dout << "    Alg. fault                " << (stat[0] & 0x20 ? "detected": "not detected") << endl;
-    dout << "    Sequence adjust           " << (stat[0] & 0x10 ? "detected": "not detected") << endl;
+    outLog << endl <<"  STATS:";
+    outLog << endl <<"    AC Power                  "<< (stat[0] & 0x01 ? "outage detected": "good / outage not detected");
+    outLog << endl <<"    Slave fault               "<< (stat[0] & 0x02 ? "detected": "not detected");
+    outLog << endl <<"    Deadman circuit           "<< (stat[0] & 0x04 ? "activated": "inactive");
+    outLog << endl <<"    Cold start                "<< (stat[0] & 0x08 ? "detected": "not detected");
+    outLog << endl <<"    Sequence adjust           "<< (stat[0] & 0x10 ? "detected": "not detected");
+    outLog << endl <<"    Alg. fault                "<< (stat[0] & 0x20 ? "detected": "not detected");
+    outLog << endl <<"    Sequence adjust           "<< (stat[0] & 0x10 ? "detected": "not detected");
 }
 
 // You MUST own the dout mutex to call this function
-void CtiProtocol711::describeSlaveStatD(const BYTE *stat) const
+void CtiProtocol711::describeSlaveStatD(const BYTE *stat, std::ostringstream &outLog) const
 {
-    dout << "  STATD Not yet decoded" << endl;
+    outLog << endl <<"  STATD Not yet decoded";
 }
 
 // You MUST own the dout mutex to call this function
-void CtiProtocol711::describeSlaveStatP(const BYTE *stat) const
+void CtiProtocol711::describeSlaveStatP(const BYTE *stat, std::ostringstream &outLog) const
 {
-    dout << "  STATP Not yet decoded" << endl;
+    outLog << endl <<"  STATP Not yet decoded";
 }

@@ -228,8 +228,7 @@ CtiCCFeeder::~CtiCCFeeder()
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -922,8 +921,7 @@ CtiCCFeeder& CtiCCFeeder::setCurrentVarLoadPointValue(double currentvarval, CtiT
         regression.appendWithoutFill(std::make_pair((double)timestamp.seconds(),currentvarval));
         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " RATE OF CHANGE: Adding to regression  " << timestamp.seconds() << "  and " << currentvarval << endl;
+            CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regression  " << timestamp.seconds() << "  and " << currentvarval);
         }
     }
     return *this;
@@ -1388,10 +1386,9 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMult
                     if ((newValue <= leadLevel))
                     {
                         //This would cause another operation, so try a different bank.
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " CapBank skipped because it was too large for the lead/lag range. Name: " << currentCapBank->getPaoName() << " Id: " << currentCapBank->getPaoId() << " size: " << currentCapBank->getBankSize() << endl;
-                        }
+
+                        CTILOG_INFO(dout, "CapBank skipped because it was too large for the lead/lag range. Name: " << currentCapBank->getPaoName() << " Id: " << currentCapBank->getPaoId() << " size: " << currentCapBank->getBankSize());
+
                         break;
                     }
                 }
@@ -1401,10 +1398,9 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(double kvarSolution,  CtiMult
                     if ((newValue >= lagLevel))
                     {
                         //This would cause another operation, so try a different bank.
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " CapBank skipped because it was too large for the lead/lag range. Name: " << currentCapBank->getPaoName() << " Id: " << currentCapBank->getPaoId() << " size: " << currentCapBank->getBankSize() << endl;
-                        }
+
+                        CTILOG_INFO(dout, "CapBank skipped because it was too large for the lead/lag range. Name: " << currentCapBank->getPaoName() << " Id: " << currentCapBank->getPaoId() << " size: " << currentCapBank->getBankSize());
+
                         break;
                     }
                 }
@@ -1548,8 +1544,7 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". "  << endl;
+        CTILOG_INFO(dout, "Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". " );
         return 0;
     }
 
@@ -1607,9 +1602,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Cap Bank: " << capBank->getPaoName()
-        << " DeviceID: " << capBank->getPaoId() << " doesn't have a status point!" << endl;
+        CTILOG_ERROR(dout, "Cap Bank: " << capBank->getPaoName()
+        << " DeviceID: " << capBank->getPaoId() << " doesn't have a status point!");
     }
 
     if( capBank->getOperationAnalogPointId() > 0 )
@@ -1648,15 +1642,13 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". "  << endl;
+        CTILOG_INFO(dout, "Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". " );
         return 0;
     }
 
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ***VERIFICATION INFO***  CBid: "<<capBank->getPaoId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Open Sent Now " << endl;
+        CTILOG_DEBUG(dout, "***VERIFICATION INFO***  CBid: "<<capBank->getPaoId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Open Sent Now ");
     }
     setLastCapBankControlledDeviceId(capBank->getPaoId());
     //capBank->setControlStatus(CtiCCCapBank::OpenPending);
@@ -1708,9 +1700,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Cap Bank: " << capBank->getPaoName()
-        << " DeviceID: " << capBank->getPaoId() << " doesn't have a status point!" << endl;
+        CTILOG_ERROR(dout, "Cap Bank: " << capBank->getPaoName()
+        << " DeviceID: " << capBank->getPaoId() << " doesn't have a status point!");
     }
 
     if( capBank->getOperationAnalogPointId() > 0 )
@@ -1747,15 +1738,13 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". "  << endl;
+        CTILOG_INFO(dout, "Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". " );
         return 0;
     }
 
     if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ***VERIFICATION INFO***  CBid: "<<capBank->getPaoId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Close Sent Now " << endl;
+        CTILOG_DEBUG(dout, "***VERIFICATION INFO***  CBid: "<<capBank->getPaoId()<<" vCtrlIdx: "<< capBank->getVCtrlIndex() <<"  CurrControlStatus: " << capBank->getControlStatus() << "  Control Close Sent Now ");
     }
     setLastCapBankControlledDeviceId(capBank->getPaoId());
     //capBank->setControlStatus(CtiCCCapBank::ClosePending);
@@ -1807,9 +1796,8 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Cap Bank: " << capBank->getPaoName()
-        << " DeviceID: " << capBank->getPaoId() << " doesn't have a status point!" << endl;
+        CTILOG_WARN(dout, "Cap Bank: " << capBank->getPaoName()
+        << " DeviceID: " << capBank->getPaoId() << " doesn't have a status point!" );
     }
 
     if( capBank->getOperationAnalogPointId() > 0 )
@@ -1857,8 +1845,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". "  << endl;
+        CTILOG_INFO(dout, "Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". " );
         return 0;
     }
 
@@ -1916,9 +1903,8 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Cap Bank: " << capBank->getPaoName()
-        << " DeviceID: " << capBank->getPaoId() << " doesn't have a status point!" << endl;
+        CTILOG_WARN(dout, "Cap Bank: " << capBank->getPaoName()
+        << " DeviceID: " << capBank->getPaoId() << " doesn't have a status point!" );
     }
 
     if( capBank->getOperationAnalogPointId() > 0 )
@@ -1964,8 +1950,7 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
     //Determine if we are at max KVAR and don't create the request if we are.
     if( checkForMaxKvar(capBank->getPaoId(), capBank->getBankSize() ) == false )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". "  << endl;
+        CTILOG_INFO(dout, "Exceeded Max Kvar of "<< _MAX_KVAR<< ", not doing control on bank: "<< capBank->getPaoName() << ". " );
         return 0;
     }
 
@@ -2032,9 +2017,8 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Cap Bank: " << capBank->getPaoName()
-        << " DeviceID: " << capBank->getPaoId() << " doesn't have a status point!" << endl;
+        CTILOG_WARN(dout, "Cap Bank: " << capBank->getPaoName()
+        << " DeviceID: " << capBank->getPaoId() << " doesn't have a status point!" );
     }
 
     if( capBank->getOperationAnalogPointId() > 0 )
@@ -2225,10 +2209,7 @@ void CtiCCFeeder::updateIntegrationVPoint(const CtiTime &currentDateTime, const 
         {
             //integration not implemented.
             controlVvalue = 0;
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " **DEBUG** integration not implemented for this controlUnit method " << endl;
-            }
+            CTILOG_INFO(dout, "**DEBUG** integration not implemented for this controlUnit method ");
         }
 
         if (getStrategy()->getControlInterval() > 0)
@@ -2264,8 +2245,7 @@ void CtiCCFeeder::updateIntegrationVPoint(const CtiTime &currentDateTime, const 
     }
     if( _CC_DEBUG & CC_DEBUG_INTEGRATED )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " " << getPaoName() <<": iVControlTot = " <<getIVControlTot() <<" iVCount = "<<getIVCount()<< endl;
+        CTILOG_DEBUG(dout, getPaoName() <<": iVControlTot = " <<getIVControlTot() <<" iVCount = "<<getIVCount());
     }
 }
 
@@ -2309,8 +2289,7 @@ void CtiCCFeeder::updateIntegrationWPoint(const CtiTime &currentDateTime, const 
     }
     if( _CC_DEBUG & CC_DEBUG_INTEGRATED )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " " << getPaoName() <<":  iWControlTot = " <<getIWControlTot() <<" iWCount = "<<getIWCount()<< endl;
+        CTILOG_DEBUG(dout, getPaoName() <<":  iWControlTot = " <<getIWControlTot() <<" iWCount = "<<getIWCount());
     }
 }
 
@@ -2427,11 +2406,10 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
 
         if( _CC_DEBUG & CC_DEBUG_INTEGRATED )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " " << getPaoName() <<"  USING INTEGRATED CONTROL - iVControl=iVControlTot/iVCount ( "<<
-                    getIVControl()<<" = "<< getIVControlTot() <<" / "<<getIVCount()<<" )"<< endl;
-            dout << CtiTime()  << " " << getPaoName() <<" USING INTEGRATED CONTROL - iWControl=iWControlTot/iWCount ( "<<
-                    getIWControl()<<" = "<< getIWControlTot() <<" / "<<getIWCount()<<" )"<< endl;
+            CTILOG_DEBUG(dout, getPaoName() << "  USING INTEGRATED CONTROL - iVControl=iVControlTot/iVCount ( "<<
+                                   getIVControl()<<" = "<< getIVControlTot() <<" / "<<getIVCount()<<" )"<< endl
+                            << getPaoName() <<" USING INTEGRATED CONTROL - iWControl=iWControlTot/iWCount ( "<<
+                                   getIWControl()<<" = "<< getIWControlTot() <<" / "<<getIWCount()<<" )");
         }
      //resetting integration total...
         if (ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit))
@@ -2483,16 +2461,12 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         //if( _CC_DEBUG )
                         if( ciStringEqual(feederControlUnits, ControlStrategy::KVarControlUnit) )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Attempting to Decrease Var level in feeder: " << getPaoName().data() << endl;
+                            CTILOG_INFO(dout, "Attempting to Decrease Var level in feeder: " << getPaoName().data());
                         }
                         else
                         {
                             setKVARSolution(-1);
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Attempting to Increase Volt level in feeder: " << getPaoName().data() << endl;
-                            }
+                            CTILOG_INFO(dout, "Attempting to Increase Volt level in feeder: " << getPaoName().data());
                         }
 
                         CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(),!(ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit)));
@@ -2501,13 +2475,16 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                             capBank->getRecloseDelay() > 0 &&
                             currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Can Not Close Cap Bank: " << capBank->getPaoName() << " because it has not passed its reclose delay." << endl;
+                            CTILOG_INFO(dout, "Can Not Close Cap Bank: " << capBank->getPaoName() << " because it has not passed its reclose delay.");
                             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                             {
-                                dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime() << endl;
-                                dout << " Reclose Delay:           " << capBank->getRecloseDelay() << endl;
-                                dout << " Current Date Time:       " << currentDateTime << endl;
+                                Cti::FormattedList list;
+
+                                list.add("Last Status Change Time") << capBank->getLastStatusChangeTime();
+                                list.add("Reclose Delay")           << capBank->getRecloseDelay();
+                                list.add("Current Date Time")       << currentDateTime;
+
+                                CTILOG_DEBUG(dout, list);
                             }
                         }
                         else
@@ -2538,16 +2515,12 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         //if( _CC_DEBUG )
                         if( ciStringEqual(feederControlUnits,ControlStrategy::KVarControlUnit) )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Attempting to Increase Var level in feeder: " << getPaoName().data() << endl;
+                            CTILOG_INFO(dout, "Attempting to Increase Var level in feeder: " << getPaoName().data());
                         }
                         else
                         {
                             setKVARSolution(1);
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Attempting to Decrease Volt level in feeder: " << getPaoName().data() << endl;
-                            }
+                            CTILOG_INFO(dout, "Attempting to Decrease Volt level in feeder: " << getPaoName().data());
                         }
 
                         CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), !(ciStringEqual(feederControlUnits,ControlStrategy::VoltsControlUnit)));
@@ -2574,8 +2547,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     {
                         if (_CC_DEBUG & CC_DEBUG_EXTENDED)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Max Daily Ops Hit. Control Inhibited on: " << getPaoName() << endl;
+                            CTILOG_DEBUG(dout, "Max Daily Ops Hit. Control Inhibited on: " << getPaoName());
                         }
                     }
 
@@ -2592,8 +2564,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
             }
         }
@@ -2607,8 +2578,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
             {
                 //if( _CC_DEBUG )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Attempting to Decrease Var level in feeder: " << getPaoName() << endl;
+                    CTILOG_DEBUG(dout, "Attempting to Decrease Var level in feeder: " << getPaoName());
                 }
 
                 CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), ciStringEqual(feederControlUnits,ControlStrategy::KVarControlUnit));
@@ -2617,13 +2587,16 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     if( capBank->getRecloseDelay() > 0 &&
                         currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Can Not Close Cap Bank: " << capBank->getPaoName() << " because it has not passed its reclose delay." << endl;
+                        CTILOG_INFO(dout, "Can Not Close Cap Bank: " << capBank->getPaoName() << " because it has not passed its reclose delay.");
                         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                         {
-                            dout << " Last Status Change Time: " << capBank->getLastStatusChangeTime() << endl;
-                            dout << " Reclose Delay:           " << capBank->getRecloseDelay() << endl;
-                            dout << " Current Date Time:       " << currentDateTime << endl;
+                            Cti::FormattedList list;
+
+                            list.add("Last Status Change Time") << capBank->getLastStatusChangeTime();
+                            list.add("Reclose Delay")           << capBank->getRecloseDelay();
+                            list.add("Current Date Time")       << currentDateTime;
+
+                            CTILOG_DEBUG(dout, list);
                         }
                     }
                     else
@@ -2636,8 +2609,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         }
                         else
                         {//cap bank too big
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Cap Bank: " << capBank->getPaoName() << ", KVAR size too large to switch" << endl;
+                            CTILOG_INFO(dout, "Cap Bank: " << capBank->getPaoName() << ", KVAR size too large to switch");
                         }
                     }
                 }
@@ -2656,8 +2628,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
             {
                 //if( _CC_DEBUG )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Attempting to Increase Var level in feeder: " << getPaoName() << endl;
+                    CTILOG_DEBUG(dout, "Attempting to Increase Var level in feeder: " << getPaoName());
                 }
 
                 CtiCCCapBank* capBank = findCapBankToChangeVars(getKVARSolution(), pointChanges, leadLevel, lagLevel, getCurrentVarLoadPointValue(), ciStringEqual(feederControlUnits,ControlStrategy::KVarControlUnit));
@@ -2671,8 +2642,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     }
                     else
                     {//cap bank too big
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Cap Bank: " << capBank->getPaoName() << ", KVAR size too large to switch" << endl;
+                        CTILOG_INFO(dout, "Cap Bank: " << capBank->getPaoName() << ", KVAR size too large to switch");
                     }
                 }
 
@@ -2690,8 +2660,7 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
             {
                 if (_CC_DEBUG & CC_DEBUG_EXTENDED)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Max Daily Ops Hit. Control Inhibited on: " << getPaoName() << endl;
+                    CTILOG_DEBUG(dout, "Max Daily Ops Hit. Control Inhibited on: " << getPaoName());
                 }
 
             }
@@ -2708,22 +2677,44 @@ bool CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid control units: " << feederControlUnits << ", in feeder: " << getPaoName() << endl;
+            CTILOG_INFO(dout, "Invalid control units: " << feederControlUnits << ", in feeder: " << getPaoName());
         }
     }
     else
     {
         if ( _IGNORE_NOT_NORMAL_FLAG && !arePointsNormalQuality  )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Control Inhibited on Feeder: "<<getPaoName()<< " by Abnormal Point Quality " <<endl;
+            Cti::StreamBuffer s;
+
+            s << "Control Inhibited on Feeder: "<<getPaoName()<< " by Abnormal Point Quality";
+
             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
-                dout << " Var PointId: " <<getCurrentVarLoadPointId()  <<" (" << getCurrentVarPointQuality()
-                    <<")  Watt PointId: "<<getCurrentWattLoadPointId() <<" (" << getCurrentWattPointQuality()
-                    <<")  Volt PointId: "<<getCurrentVoltLoadPointId() <<" (" << getCurrentVoltPointQuality() <<")"<< endl;
+                Cti::FormattedTable table;
+
+                table.setHorizontalBorders(Cti::FormattedTable::Borders_Outside_Bottom, 0);
+                table.setVerticalBorders(Cti::FormattedTable::Borders_Inside);
+
+                table.setCell(0, 0) << "Type";
+                table.setCell(0, 1) << "ID";
+                table.setCell(0, 2) << "Quality";
+
+                table.setCell(1, 0) << "Var";
+                table.setCell(1, 1) << getCurrentVarLoadPointId();
+                table.setCell(1, 2) << getCurrentVarPointQuality();
+
+                table.setCell(2, 0) << "Watt";
+                table.setCell(2, 1) << getCurrentWattLoadPointId();
+                table.setCell(2, 2) << getCurrentWattPointQuality();
+
+                table.setCell(3, 0) << "Volt";
+                table.setCell(3, 1) << getCurrentVoltLoadPointId();
+                table.setCell(3, 2) << getCurrentVoltPointQuality();
+
+                s << table;
             }
+
+            CTILOG_INFO(dout, s);
         }
     }
 
@@ -2775,8 +2766,7 @@ bool CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Even
 
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Rate of Change Value: " << varValueBC << endl;
+                            CTILOG_DEBUG(dout, "Rate of Change Value: " << varValueBC);
                         }
 
                         // is estimated within Percent of currentVar?
@@ -2788,14 +2778,12 @@ bool CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Even
                     }
                     if( _RATE_OF_CHANGE && !reg.depthMet() )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Rate of Change Depth not met: " << reg.getCurDepth() << " / " << reg.getRegDepth() << endl;
+                        CTILOG_INFO(dout, "Rate of Change Depth not met: " << reg.getCurDepth() << " / " << reg.getRegDepth());
                     }
 
                     if( change < 0 )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<": Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        CTILOG_INFO(dout, ""<< currentCapBank->getPaoName() <<": Var change in wrong direction?");
                     }
 
                     ratio = change/currentCapBank->getBankSize();
@@ -2808,37 +2796,27 @@ bool CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Even
                             if (currentCapBank->getControlStatusQuality() != CC_CommFail)
                             {
                                 currentCapBank->setControlStatusQuality(CC_Fail);
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - CapBank Control Status: OpenFail: "<<currentCapBank->getPaoName() << endl;
+                                CTILOG_INFO(dout, "CapBank Control Status: OpenFail: "<<currentCapBank->getPaoName());
                             }
                         }
                         else if( minConfirmPercent != 0 )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                             currentCapBank->setControlStatusQuality(CC_Significant);
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - CapBank Control Status: OpenQuestionable: "<<currentCapBank->getPaoName() << endl;
-                            }
+                            CTILOG_INFO(dout, "CapBank Control Status: OpenQuestionable: "<<currentCapBank->getPaoName());
                         }
                         else
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::Open);
                             currentCapBank->setControlStatusQuality(CC_Normal);
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - CapBank Control Status: Open: "<<currentCapBank->getPaoName() << endl;
-                            }
+                            CTILOG_INFO(dout, "CapBank Control Status: Open: "<<currentCapBank->getPaoName());
                         }
                     }
                     else
                     {
                         currentCapBank->setControlStatus(CtiCCCapBank::Open);
                         currentCapBank->setControlStatusQuality(CC_Normal);
-                        {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - CapBank Control Status: Open: "<<currentCapBank->getPaoName() << endl;
-                        }
+                        CTILOG_INFO(dout, "CapBank Control Status: Open: "<<currentCapBank->getPaoName());
                     }
                     text = createControlStatusUpdateText(currentCapBank->getControlStatusText(), currentVarLoadPointValue,ratio);
 
@@ -2877,8 +2855,7 @@ bool CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Even
 
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Rate of Change Value: " << varValueBC << endl;
+                            CTILOG_DEBUG(dout, "Rate of Change Value: " << varValueBC);
                         }
                         // is estimated within Percent of currentVar?
                         change = varValueBC - currentVarLoadPointValue;
@@ -2889,14 +2866,12 @@ bool CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Even
                     }
                     if( _RATE_OF_CHANGE && !reg.depthMet() )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Rate of Change Depth not met: " << reg.getCurDepth() << " / " << reg.getRegDepth() << endl;
+                        CTILOG_INFO(dout, "Rate of Change Depth not met: " << reg.getCurDepth() << " / " << reg.getRegDepth());
                     }
 
                     if( change < 0 )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        CTILOG_INFO(dout, ""<< currentCapBank->getPaoName() <<":Var change in wrong direction?");
                     }
 
                     ratio = change/currentCapBank->getBankSize();
@@ -2907,39 +2882,29 @@ bool CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Even
                             //currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
                             store->setControlStatusAndIncrementFailCount(pointChanges, CtiCCCapBank::CloseFail, currentCapBank);
                             if (currentCapBank->getControlStatusQuality() != CC_CommFail)
-                                currentCapBank->setControlStatusQuality(CC_Fail);
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - CapBank Control Status: CloseFail: "<<currentCapBank->getPaoName() << endl;
+                                currentCapBank->setControlStatusQuality(CC_Fail);
                             }
+                            CTILOG_INFO(dout, "CapBank Control Status: CloseFail: "<<currentCapBank->getPaoName());
                         }
                         else if( minConfirmPercent != 0 )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                             currentCapBank->setControlStatusQuality(CC_Significant);
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - CapBank Control Status: CloseQuestionable: "<<currentCapBank->getPaoName() << endl;
-                            }
+                            CTILOG_INFO(dout, "CapBank Control Status: CloseQuestionable: "<<currentCapBank->getPaoName());
                         }
                         else
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::Close);
                             currentCapBank->setControlStatusQuality(CC_Normal);
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - CapBank Control Status: Close: "<<currentCapBank->getPaoName() << endl;
-                            }
+                            CTILOG_INFO(dout, "CapBank Control Status: Close: "<<currentCapBank->getPaoName());
                         }
                     }
                     else
                     {
                         currentCapBank->setControlStatus(CtiCCCapBank::Close);
                         currentCapBank->setControlStatusQuality(CC_Normal);
-                        {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - CapBank Control Status: Close: "<<currentCapBank->getPaoName() << endl;
-                        }
+                        CTILOG_INFO(dout, "CapBank Control Status: Close: "<<currentCapBank->getPaoName());
                     }
 
                     text = createControlStatusUpdateText(currentCapBank->getControlStatusText(), currentVarLoadPointValue, ratio);
@@ -2969,10 +2934,7 @@ bool CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Even
             else
             {
                 returnBoolean = false;
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Last Cap Bank ("<< currentCapBank->getPaoName() <<") controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
-                }
+                CTILOG_INFO(dout, "Last Cap Bank ("<< currentCapBank->getPaoName() <<") controlled not in pending status");
                 text += "Var: ";
                 text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
                 text += " - control was not pending, " ;
@@ -2998,9 +2960,8 @@ bool CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Even
             }
             else
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
             }
 
             found = true;
@@ -3012,8 +2973,7 @@ bool CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, Even
 
     if (found == false)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Last Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+        CTILOG_WARN(dout, "Last Cap Bank controlled NOT FOUND");
         returnBoolean = false;
     }
 
@@ -3084,10 +3044,14 @@ bool CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         int size =  currentCapBank->getBankSize()/3;
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << timeNow << " - Rate of Change  Phase A: " << varValueAbc << endl;
-                            dout << timeNow << "                   Phase B: " << varValueBbc << endl;
-                            dout << timeNow << "                   Phase C: " << varValueCbc << endl;
+                            Cti::FormattedList list;
+
+                            list << "Rate of Change";
+                            list.add("Phase A") << varValueAbc;
+                            list.add("Phase B") << varValueBbc;
+                            list.add("Phase C") << varValueCbc;
+
+                            CTILOG_DEBUG(dout, list);
                         }
                     }
                     changeA = varAValue - varValueAbc;
@@ -3096,18 +3060,26 @@ bool CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
 
                     if( _RATE_OF_CHANGE && (!regA.depthMet() || !regB.depthMet() || !regC.depthMet()) )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        CtiTime timeNow;
-                        dout << timeNow << " - Rate of Change Depth not met. Phase A: " << regA.getCurDepth() << " / " << regA.getRegDepth() << endl;
-                        dout << timeNow << "                                 Phase B: " << regB.getCurDepth() << " / " << regB.getRegDepth() << endl;
-                        dout << timeNow << "                                 Phase C: " << regC.getCurDepth() << " / " << regC.getRegDepth() << endl;
+                        Cti::FormattedList list;
+
+                        list << "Rate of Change Depth not met.";
+                        list.add("Phase A") << regA.getCurDepth() << " / " << regA.getRegDepth();
+                        list.add("Phase B") << regB.getCurDepth() << " / " << regB.getRegDepth();
+                        list.add("Phase C") << regC.getCurDepth() << " / " << regC.getRegDepth();
+
+                        CTILOG_INFO(dout, list);
                     }
 
                     if( changeA < 0 ||  changeB < 0 ||  changeC < 0)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? changeA:"<<changeA<<" changeB:"<<changeB<<" changeC:"
-                            <<changeC<<" in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        Cti::FormattedList list;
+
+                        list << currentCapBank->getPaoName() <<":Var change in wrong direction?";
+                        list.add("changeA") << changeA;
+                        list.add("changeB") << changeB;
+                        list.add("changeC") << changeC;
+
+                        CTILOG_WARN(dout, list);
                     }
                     ratioA = changeA/(currentCapBank->getBankSize() /3);
                     ratioB = changeB/(currentCapBank->getBankSize() /3);
@@ -3189,10 +3161,14 @@ bool CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
 
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << timeNow << " - Rate of Change  Phase A: " << varValueAbc << endl;
-                            dout << timeNow << "                   Phase B: " << varValueBbc << endl;
-                            dout << timeNow << "                   Phase C: " << varValueCbc << endl;
+                            Cti::FormattedList list;
+
+                            list << "Rate of Change";
+                            list.add("Phase A") << varValueAbc;
+                            list.add("Phase B") << varValueBbc;
+                            list.add("Phase C") << varValueCbc;
+
+                            CTILOG_DEBUG(dout, list);
                         }
                     }
                     changeA = (varValueAbc) - varAValue;
@@ -3201,17 +3177,17 @@ bool CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
 
                     if( _RATE_OF_CHANGE && (!regA.depthMet() || !regB.depthMet() || !regC.depthMet()) )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        CtiTime timeNow;
-                        dout << timeNow << " - Rate of Change Depth not met. Phase A: " << regA.getCurDepth() << " / " << regA.getRegDepth() << endl;
-                        dout << timeNow << "                                 Phase B: " << regB.getCurDepth() << " / " << regB.getRegDepth() << endl;
-                        dout << timeNow << "                                 Phase C: " << regC.getCurDepth() << " / " << regC.getRegDepth() << endl;
+                        Cti::FormattedList list;
+
+                        list << "Rate of Change Depth not met.";
+                        list.add("Phase A") << regA.getCurDepth() << " / " << regA.getRegDepth();
+                        list.add("Phase B") << regB.getCurDepth() << " / " << regB.getRegDepth();
+                        list.add("Phase C") << regC.getCurDepth() << " / " << regC.getRegDepth();
                     }
 
                     if( changeA < 0 ||  changeB < 0 ||  changeC < 0)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        CTILOG_WARN(dout, currentCapBank->getPaoName() <<":Var change in wrong direction?");
                     }
                     ratioA = changeA/(currentCapBank->getBankSize() /3);
                     ratioB = changeB/(currentCapBank->getBankSize() /3);
@@ -3279,10 +3255,7 @@ bool CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
             else
             {
                 returnBoolean = false;
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Last Cap Bank ("<< currentCapBank->getPaoName() <<") controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
-                }
+                CTILOG_INFO(dout, "Last Cap Bank ("<< currentCapBank->getPaoName() <<") controlled not in pending status");
                 text += "Var: ";
                 text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
                 text += " - control was not pending, " ;
@@ -3311,9 +3284,8 @@ bool CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
             }
             else
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
             }
             found = true;
 
@@ -3324,8 +3296,7 @@ bool CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
     }
     if (found == false)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Last Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+        CTILOG_WARN(dout, "Last Cap Bank controlled NOT FOUND");
     }
 
     setRecentlyControlledFlag(false);
@@ -3373,8 +3344,7 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
 
                             if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Rate of Change Value: " << varValueReg << endl;
+                                CTILOG_DEBUG(dout, "Rate of Change Value: " << varValueReg);
                             }
                             // is estimated within Percent of currentVar?
                             change = getCurrentVarLoadPointValue() - varValueReg;
@@ -3385,15 +3355,11 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                         }
                         if( _RATE_OF_CHANGE && !regression.depthMet() )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Rate of Change Depth not met: " << regression.getCurDepth() << " / " << regression.getRegDepth() << endl;
+                            CTILOG_INFO(dout, "Rate of Change Depth not met: " << regression.getCurDepth() << " / " << regression.getRegDepth());
                         }
                         if( change < 0 )
                         {
-                            {
-                               CtiLockGuard<CtiLogger> logger_guard(dout);
-                               dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
-                            }
+                            CTILOG_INFO(dout, ""<< currentCapBank->getPaoName() <<":Var change in wrong direction?");
                             if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG &&
                                currentCapBank->getVCtrlIndex() == 1)
                             {
@@ -3491,10 +3457,7 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                         {
                             //This will only be called if we intend to do rate of change and the regression depth is met.
                             double varValueReg = regression.regression( CtiTime().seconds() );
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Rate of Change Value: " << varValueReg << endl;
-                            }
+                            CTILOG_INFO(dout, "Rate of Change Value: " << varValueReg);
                             // is estimated within Percent of currentVar?
                             change = varValueReg - getCurrentVarLoadPointValue();
                         }
@@ -3504,15 +3467,11 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                         }
                         if( _RATE_OF_CHANGE && !regression.depthMet() )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Rate of Change Depth not met: " << regression.getCurDepth() << " / " << regression.getRegDepth() << endl;
+                            CTILOG_INFO(dout, "Rate of Change Depth not met: " << regression.getCurDepth() << " / " << regression.getRegDepth());
                         }
                         if( change < 0 )
                         {
-                            {
-                               CtiLockGuard<CtiLogger> logger_guard(dout);
-                               dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
-                            }
+                            CTILOG_INFO(dout, ""<< currentCapBank->getPaoName() <<":Var change in wrong direction?");
                             if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG &&
                                currentCapBank->getVCtrlIndex() == 1)
                             {
@@ -3602,10 +3561,7 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                }
                else
                {
-                   {
-                       CtiLockGuard<CtiLogger> logger_guard(dout);
-                       dout << CtiTime() << " - Last Cap Bank ("<< currentCapBank->getPaoName() <<") controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
-                   }
+                   CTILOG_INFO(dout, "Last Cap Bank ("<< currentCapBank->getPaoName() <<") controlled not in pending status");
                    if( currentCapBank->getPerformingVerificationFlag() )
                    {
                        text += "Var: ";
@@ -3646,9 +3602,8 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                }
                else
                {
-                   CtiLockGuard<CtiLogger> logger_guard(dout);
-                   dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                   << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                   CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                   << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
                }
 
                if (currentCapBank->updateVerificationState())
@@ -3667,8 +3622,7 @@ bool CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
 
         if (foundCap == false)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Last Verification Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+            CTILOG_WARN(dout, "Last Verification Cap Bank controlled NOT FOUND");
             returnBoolean = true;
         }
     }
@@ -3728,10 +3682,14 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                         int size =  currentCapBank->getBankSize()/3;
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << timeNow << " - Rate of Change  Phase A: " << varValueAbc << endl;
-                            dout << timeNow << "                   Phase B: " << varValueBbc << endl;
-                            dout << timeNow << "                   Phase C: " << varValueCbc << endl;
+                            Cti::FormattedList list;
+
+                            list << "Rate of Change";
+                            list.add("Phase A") << varValueAbc;
+                            list.add("Phase B") << varValueBbc;
+                            list.add("Phase C") << varValueCbc;
+
+                            CTILOG_DEBUG(dout, list);
                         }
                     }
                     changeA = varAValue - varValueAbc;
@@ -3741,10 +3699,7 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
 
                     if( changeA < 0 ||  changeB < 0 ||  changeC < 0)
                     {
-                        {
-                           CtiLockGuard<CtiLogger> logger_guard(dout);
-                           dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
-                        }
+                        CTILOG_INFO(dout, ""<< currentCapBank->getPaoName() <<":Var change in wrong direction?");
                         if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG &&
                            currentCapBank->getVCtrlIndex() == 1)
                         {
@@ -3864,10 +3819,14 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                         int size =  currentCapBank->getBankSize()/3;
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << timeNow << " - Rate of Change  Phase A: " << varValueAbc << endl;
-                            dout << timeNow << "                   Phase B: " << varValueBbc << endl;
-                            dout << timeNow << "                   Phase C: " << varValueCbc << endl;
+                            Cti::FormattedList list;
+
+                            list << "Rate of Change";
+                            list.add("Phase A") << varValueAbc;
+                            list.add("Phase B") << varValueBbc;
+                            list.add("Phase C") << varValueCbc;
+
+                            CTILOG_DEBUG(dout, list);
                         }
                     }
                     changeA = varValueAbc - varAValue;
@@ -3876,10 +3835,7 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
 
                     if( changeA < 0 ||  changeB < 0 ||  changeC < 0)
                     {
-                        {
-                           CtiLockGuard<CtiLogger> logger_guard(dout);
-                           dout << CtiTime() << " - "<< currentCapBank->getPaoName() <<":Var change in wrong direction? in: " << __FILE__ << " at: " << __LINE__ << endl;
-                        }
+                        CTILOG_INFO(dout, ""<< currentCapBank->getPaoName() <<":Var change in wrong direction?");
                         if (stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 701") && _USE_FLIP_FLAG &&
                            currentCapBank->getVCtrlIndex() == 1)
                         {
@@ -3985,10 +3941,7 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
            }
            else
            {
-               {
-                   CtiLockGuard<CtiLogger> logger_guard(dout);
-                   dout << CtiTime() << " - Last Cap Bank ("<< currentCapBank->getPaoName() <<") controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
-               }
+               CTILOG_INFO(dout, "Last Cap Bank ("<< currentCapBank->getPaoName() <<") controlled not in pending status");
                text += "Var: ";
                text += CtiNumStr(getCurrentVarLoadPointValue(), getDecimalPlaces()).toString();
                text += " - control was not pending, " ;
@@ -4025,9 +3978,8 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
            }
            else
            {
-               CtiLockGuard<CtiLogger> logger_guard(dout);
-               dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-               << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+               CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+               << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
            }
 
            if (currentCapBank->updateVerificationState())
@@ -4046,8 +3998,7 @@ bool CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
 
     if (foundCap == false)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Last Verification Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+        CTILOG_WARN(dout, "Last Verification Cap Bank controlled NOT FOUND");
         returnBoolean = true;
     }
 
@@ -4122,13 +4073,16 @@ CtiRequestMsg*  CtiCCFeeder::createCapBankVerificationControl(const CtiTime& cur
     if( control == CtiCCCapBank::Close && currentCapBank->getRecloseDelay() > 0 &&
         currentDateTime.seconds() < currentCapBank->getLastStatusChangeTime().seconds() + currentCapBank->getRecloseDelay() )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can Not Close Cap Bank: " << currentCapBank->getPaoName() << " yet...because it has not passed its reclose delay." << endl;
+        CTILOG_INFO(dout, "Can Not Close Cap Bank: " << currentCapBank->getPaoName() << " yet...because it has not passed its reclose delay.");
         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
         {
-            dout << " Last Status Change Time: " << currentCapBank->getLastStatusChangeTime() << endl;
-            dout << " Reclose Delay:           " << currentCapBank->getRecloseDelay() << endl;
-            dout << " Current Date Time:       " << currentDateTime << endl;
+            Cti::FormattedList list;
+
+            list.add("Last Status Change Time") << currentCapBank->getLastStatusChangeTime();
+            list.add("Reclose Delay")           << currentCapBank->getRecloseDelay();
+            list.add("Current Date Time")       << currentDateTime;
+
+            CTILOG_DEBUG(dout, list);
         }
 
         setWaitForReCloseDelayFlag(true);
@@ -4419,8 +4373,7 @@ bool CtiCCFeeder::isAlreadyControlled(long minConfirmPercent, long currentVarPoi
                 {
                     if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " Regression Value: " << reg.regression(timeSeconds) << endl;
+                        CTILOG_DEBUG(dout, "Regression Value: " << reg.regression(timeSeconds));
                     }
                     change = fabs(reg.regression(timeSeconds) - newVarValue);
                 }
@@ -4432,8 +4385,7 @@ bool CtiCCFeeder::isAlreadyControlled(long minConfirmPercent, long currentVarPoi
                 ratio = change/banksize;
                 if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " Change Value: " << change << " Ratio Value: " << ratio << " ?>= Min Confirm: " << minConfirmPercent << endl;
+                    CTILOG_DEBUG(dout, "Change Value: " << change << " Ratio Value: " << ratio << " ?>= Min Confirm: " << minConfirmPercent);
                 }
                 if( ratio >= minConfirmPercent*.01 )
                 {
@@ -4443,15 +4395,13 @@ bool CtiCCFeeder::isAlreadyControlled(long minConfirmPercent, long currentVarPoi
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Last Cap Bank: " << bankId << " controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+            CTILOG_WARN(dout, "Last Cap Bank: " << bankId << " controlled not in pending status");
             return true;
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Last Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+        CTILOG_WARN(dout, "Last Cap Bank controlled NOT FOUND");
         return true;
     }
 
@@ -4555,8 +4505,7 @@ bool CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Last Cap Bank: "<<getLastCapBankControlledDeviceId()<<" controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        CTILOG_INFO(dout, "Last Cap Bank: "<<getLastCapBankControlledDeviceId()<<" controlled not in pending status");
                         returnBoolean = false;
                     }
 
@@ -4617,8 +4566,7 @@ bool CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
             }
             if (found == false)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Last Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                CTILOG_WARN(dout, "Last Cap Bank controlled NOT FOUND");
                 returnBoolean = true;
             }
         }
@@ -4677,9 +4625,8 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                            << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                            CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                            << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
                         }
 
                         pilMessages.push_back(
@@ -4720,9 +4667,8 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                            << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                            CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                            << " DeviceID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
                         }
 
                         pilMessages.push_back(
@@ -4737,14 +4683,12 @@ bool CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
                     }
                     else if( _CC_DEBUG && CC_DEBUG_EXTENDED )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Cannot Resend Control for Cap Bank: "<< currentCapBank->getPaoName() <<", Not Pending in: " << __FILE__ << " at: " << __LINE__ << endl;
+                        CTILOG_DEBUG(dout, "Cannot Resend Control for Cap Bank: "<< currentCapBank->getPaoName() <<", Not Pending");
                     }
                 }
                 else if( _CC_DEBUG && CC_DEBUG_EXTENDED )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Cannot Resend Control for Cap Bank: "<< currentCapBank->getPaoName() <<", Past Confirm Time in: " << __FILE__ << " at: " << __LINE__ << endl;
+                    CTILOG_DEBUG(dout, "Cannot Resend Control for Cap Bank: "<< currentCapBank->getPaoName() <<", Past Confirm Time");
                 }
                 break;
             }
@@ -4988,8 +4932,7 @@ CtiCCFeeder& CtiCCFeeder::setPhaseAValue(double value, CtiTime timestamp)
         regressionA.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " RATE OF CHANGE: Adding to regressionA  " << timestamp.seconds() << "  and " << value << endl;
+            CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regressionA  " << timestamp.seconds() << "  and " << value);
         }
     }
     return *this;
@@ -5008,8 +4951,7 @@ CtiCCFeeder& CtiCCFeeder::setPhaseBValue(double value, CtiTime timestamp)
         regressionB.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " RATE OF CHANGE: Adding to regressionB  " << timestamp.seconds() << "  and " << value << endl;
+            CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regressionB  " << timestamp.seconds() << "  and " << value);
         }
     }
     return *this;
@@ -5028,8 +4970,7 @@ CtiCCFeeder& CtiCCFeeder::setPhaseCValue(double value, CtiTime timestamp)
         regressionC.appendWithoutFill(std::make_pair((double)timestamp.seconds(),value));
         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " RATE OF CHANGE: Adding to regressionC  " << timestamp.seconds() << "  and " << value << endl;
+            CTILOG_DEBUG(dout, "RATE OF CHANGE: Adding to regressionC  " << timestamp.seconds() << "  and " << value);
         }
     }
     return *this;
@@ -5181,15 +5122,11 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                               point.getValue() + pResponse.getDelta() >= point.getLowerBandwidth() ) ||
                               point.getValue() + pResponse.getDelta() < point.getUpperBandwidth() )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " Attempting to Increase Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<parentBank->getPaoName() << endl;
-                            }
+                            CTILOG_INFO(dout, "Attempting to Increase Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<parentBank->getPaoName());
 
                             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" Parent CapBank: "<<parentBank->getPaoName() <<" selected to Close" << endl;
+                                CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" Parent CapBank: "<<parentBank->getPaoName() <<" selected to Close");
                             }
 
                             //Check other monitor point responses using this potential capbank
@@ -5214,8 +5151,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                     }
                     catch (NotFoundException& e)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " PointResponse not found. CapBank: "<< parentBank->getPaoName() <<  " pointId: " << point.getPointId() << endl;
+                        CTILOG_WARN(dout, "PointResponse not found. CapBank: "<< parentBank->getPaoName() <<  " pointId: " << point.getPointId());
                     }
                 }
                 else
@@ -5245,15 +5181,11 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                                       pResponse.getDelta() == 0 ||
                                       point.getValue() + pResponse.getDelta() < point.getUpperBandwidth() )
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " Attempting to Increase Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<currentCapBank->getPaoName() << endl;
-                                    }
+                                    CTILOG_INFO(dout, "Attempting to Increase Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<currentCapBank->getPaoName());
 
                                     if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                                     {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" CapBank: "<<currentCapBank->getPaoName() <<" selected to Close" << endl;
+                                        CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" CapBank: "<<currentCapBank->getPaoName() <<" selected to Close");
                                     }
                                     //Check other monitor point responses using this potential capbank
                                     if (areOtherMonitorPointResponsesOk(point.getPointId(), currentCapBank, CtiCCCapBank::Close))
@@ -5269,8 +5201,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                             }
                             catch (NotFoundException& e)
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " PointResponse not found. CapBank: "<< currentCapBank->getPaoName() <<  " pointId: " << point.getPointId() << endl;
+                                CTILOG_WARN(dout, "PointResponse not found. CapBank: "<< currentCapBank->getPaoName() <<  " pointId: " << point.getPointId());
                             }
                         }
                         if (request != NULL)
@@ -5283,10 +5214,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             }
             if (request == NULL)
             {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " No Banks Available to Close on Feeder: "<<getPaoName() << endl;
-                }
+                CTILOG_WARN(dout, "No Banks Available to Close on Feeder: "<<getPaoName());
             }
         }
         else if (point.getValue() > point.getUpperBandwidth())
@@ -5310,15 +5238,11 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                               //pRespone.getDelta() == 0 ||
                               point.getValue() - pResponse.getDelta() > point.getLowerBandwidth() )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " Attempting to Decrease Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<parentBank->getPaoName() << endl;
-                            }
+                            CTILOG_INFO(dout, "Attempting to Decrease Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<parentBank->getPaoName());
 
                             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" Parent CapBank: "<<parentBank->getPaoName() <<" selected to Open" << endl;
+                                CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" Parent CapBank: "<<parentBank->getPaoName() <<" selected to Open");
                             }
                             //Check other monitor point responses using this potential capbank
                             if (areOtherMonitorPointResponsesOk(point.getPointId(), parentBank, CtiCCCapBank::Open))
@@ -5338,8 +5262,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                     }
                     catch (NotFoundException& e)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " PointResponse not found. CapBank: "<< parentBank->getPaoName() <<  " pointId: " << point.getPointId() << endl;
+                        CTILOG_WARN(dout, "PointResponse not found. CapBank: "<< parentBank->getPaoName() <<  " pointId: " << point.getPointId());
                     }
                 }
                 else
@@ -5367,15 +5290,11 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                                       pResponse.getDelta() == 0 ||
                                       point.getValue() - pResponse.getDelta() > point.getLowerBandwidth() )
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " Attempting to Decrease Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<currentCapBank->getPaoName() << endl;
-                                    }
+                                    CTILOG_INFO(dout, "Attempting to Decrease Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<currentCapBank->getPaoName());
 
                                     if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                                     {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" CapBank: "<<currentCapBank->getPaoName() <<" selected to Open" << endl;
+                                        CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<point.getDeviceId()<<"/"<<point.getPointId()<<" CapBank: "<<currentCapBank->getPaoName() <<" selected to Open");
                                     }
                                     //Check other monitor point responses using this potential capbank
                                     if (areOtherMonitorPointResponsesOk(point.getPointId(), currentCapBank, CtiCCCapBank::Open))
@@ -5391,8 +5310,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                             }
                             catch (NotFoundException& e)
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " PointResponse not found. CapBank: "<< currentCapBank->getPaoName() <<  " pointId: " << point.getPointId() << endl;
+                                CTILOG_WARN(dout, "PointResponse not found. CapBank: "<< currentCapBank->getPaoName() <<  " pointId: " << point.getPointId());
                             }
                         }
                         if (request != NULL)
@@ -5406,10 +5324,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             //3.  If there are no banks avail which put UpperBW > mp->value > LowerBW...just settle for bestFit..
             if (request == NULL)
             {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " MULTIVOLT: No Banks Available to Open on Feeder: "<<getPaoName() << endl;
-                }
+                CTILOG_INFO(dout, "MULTIVOLT: No Banks Available to Open on Feeder: "<<getPaoName());
             }
        }
 
@@ -5431,8 +5346,7 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return retVal;
 
@@ -5463,10 +5377,7 @@ bool CtiCCFeeder::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* p
                             {
 
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Feeder: "<<getPaoName()<<" CapBank: "<<potentialCap->getPaoName() << endl;
-                                    dout << CtiTime() << " MULTIVOLT: otherPoint: "<<otherPoint.getPointId()<<" "<<otherPoint.getDeviceId()<<" Value: "<<otherPoint.getValue()<<" Delta: "<<pResponse.getDelta()<<" pResponse: "<<pResponse.getPointId()<<" "<<pResponse.getDeviceId() << endl;
-                                }
+                                    CTILOG_INFO(dout, "OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Feeder: "<<getPaoName()<<" CapBank: "<<potentialCap->getPaoName() << " MULTIVOLT: otherPoint: "<<otherPoint.getPointId()<<" "<<otherPoint.getDeviceId()<<" Value: "<<otherPoint.getValue()<<" Delta: "<<pResponse.getDelta()<<" pResponse: "<<pResponse.getPointId()<<" "<<pResponse.getDeviceId());                                }
                                 retVal = false;
                                 break;
                             }
@@ -5488,10 +5399,7 @@ bool CtiCCFeeder::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* p
                                 otherPoint.getValue() - pResponse.getDelta() < otherPoint.getLowerBandwidth())
                             {
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Feeder: "<<getPaoName()<<" CapBank: "<<potentialCap->getPaoName() << endl;
-                                    dout << CtiTime() << " MULTIVOLT: otherPoint: "<<otherPoint.getPointId()<<" "<<otherPoint.getDeviceId()<<" Value: "<<otherPoint.getValue()<<" Delta: "<<pResponse.getDelta()<<" pResponse: "<<pResponse.getPointId()<<" "<<pResponse.getDeviceId() << endl;
-                                }
+                                    CTILOG_INFO(dout, "OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Feeder: "<<getPaoName()<<" CapBank: "<<potentialCap->getPaoName() << " MULTIVOLT: otherPoint: "<<otherPoint.getPointId()<<" "<<otherPoint.getDeviceId()<<" Value: "<<otherPoint.getValue()<<" Delta: "<<pResponse.getDelta()<<" pResponse: "<<pResponse.getPointId()<<" "<<pResponse.getDeviceId());                                }
                                 retVal = false;
                                 break;
                             }
@@ -5528,18 +5436,14 @@ bool CtiCCFeeder::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPo
             {
                 if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " MULTIVOLT: Monitor Point: "<<point->getPointId()<<" on CapBank: "<<point->getDeviceId()<<" is inside limits.  Current value: "<<point->getValue() << endl;
+                    CTILOG_DEBUG(dout, "MULTIVOLT: Monitor Point: "<<point->getPointId()<<" on CapBank: "<<point->getDeviceId()<<" is inside limits.  Current value: "<<point->getValue());
                 }
                 retVal = true;
             }
             else
             {
 
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " ** WARNING ** Monitor Point: "<<point->getPointId()<<" on CapBank: "<<point->getDeviceId()<<" is OUTSIDE limits.  Current value: "<<point->getValue() << endl;
-                }
+                CTILOG_WARN(dout, "Monitor Point: "<<point->getPointId()<<" on CapBank: "<<point->getDeviceId()<<" is OUTSIDE limits.  Current value: "<<point->getValue());
                 oorPoint = point;
                 retVal = false;
                 break;
@@ -5548,19 +5452,14 @@ bool CtiCCFeeder::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPo
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return retVal;
 }
 
 void CtiCCFeeder::updatePointResponsePreOpValues(CtiCCCapBank* capBank)
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Updating POINT RESPONSE PREOPVALUES for CapBank: " <<capBank->getPaoName() << endl;
-        dout << CtiTime() << " Device ID: " << capBank->getPaoName() << " has " << capBank->getPointResponses().size() << " point responses" << endl;
-    }
+    CTILOG_INFO(dout, "Updating POINT RESPONSE PREOPVALUES for CapBank: " <<capBank->getPaoName() << " Device ID: " << capBank->getPaoName() << " has " << capBank->getPointResponses().size() << " point responses");
 
     for (int i = 0; i < _multipleMonitorPoints.size(); i++)
     {
@@ -5570,14 +5469,12 @@ void CtiCCFeeder::updatePointResponsePreOpValues(CtiCCCapBank* capBank)
         {
             if (capBank->updatePointResponsePreOpValue(point.getPointId(),point.getValue()))
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " Device ID: " << capBank->getPaoName() << " Point ID: " << point.getPointId( )<< " Value: " << point.getValue() << endl;
+                CTILOG_INFO(dout, "Device ID: " << capBank->getPaoName() << " Point ID: " << point.getPointId( )<< " Value: " << point.getValue());
             }
         }
         catch (NotFoundException& e)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Error Updating PreOpValue for deltas. PointId not found: " << point.getPointId() << endl;
+            CTILOG_WARN(dout, "Error Updating PreOpValue for deltas. PointId not found: " << point.getPointId());
         }
     }
 }
@@ -5597,8 +5494,7 @@ void CtiCCFeeder::updatePointResponseDeltas()
            {
                if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                {
-                   CtiLockGuard<CtiLogger> logger_guard(dout);
-                   dout << CtiTime() << " MULTIVOLT: Updating POINT RESPONSE DELTAS for CapBank: " <<currentCapBank->getPaoName() << endl;
+                   CTILOG_DEBUG(dout, "MULTIVOLT: Updating POINT RESPONSE DELTAS for CapBank: " <<currentCapBank->getPaoName());
                }
                for (int j = 0; j < _multipleMonitorPoints.size(); j++)
                {
@@ -5609,8 +5505,7 @@ void CtiCCFeeder::updatePointResponseDeltas()
                     }
                     catch (NotFoundException& e)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " Error Updating delta value. PointId not found: " << point.getPointId() << endl;
+                        CTILOG_WARN(dout, "Error Updating delta value. PointId not found: " << point.getPointId());
                     }
                }
                break;
@@ -5619,8 +5514,7 @@ void CtiCCFeeder::updatePointResponseDeltas()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -5643,8 +5537,7 @@ bool CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
             }
             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " ALL MONITOR POINTS ARE NEW ENOUGH on Feeder: " <<getPaoName() << endl;
+                CTILOG_DEBUG(dout, "ALL MONITOR POINTS ARE NEW ENOUGH on Feeder: " <<getPaoName());
             }
             retVal = true;
         }
@@ -5672,8 +5565,7 @@ bool CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
             {
                 if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                 {
-                   CtiLockGuard<CtiLogger> logger_guard(dout);
-                   dout << CtiTime() << " ALL MONITOR POINTS ARE NEW ENOUGH on Feeder: " <<getPaoName() << endl;
+                   CTILOG_DEBUG(dout, "ALL MONITOR POINTS ARE NEW ENOUGH on Feeder: " <<getPaoName());
                 }
                 bool scanInProgress = false;
                 for (int i = 0; i < _multipleMonitorPoints.size(); i++)
@@ -5690,8 +5582,7 @@ bool CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return retVal;
 }
@@ -5738,8 +5629,7 @@ bool CtiCCFeeder::scanAllMonitorPoints()
                             CtiCapController::getInstance()->sendMessageToDispatch(pAltRate);
                             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " MULTIVOLT: Requesting scans at the alternate scan rate for " << currentCapBank->getPaoName() << endl;
+                                CTILOG_DEBUG(dout, "MULTIVOLT: Requesting scans at the alternate scan rate for " << currentCapBank->getPaoName());
                             }
                             //CtiCapController::getInstance()->sendMessageToDispatch(createPorterRequestMsg(currentCapBank->getControlDeviceId(), "scan general"));
                             point.setScanInProgress(true);
@@ -5752,16 +5642,14 @@ bool CtiCCFeeder::scanAllMonitorPoints()
             {
                 if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " MULTIVOLT: monPoint: "<<point.getPointId()<< " Scannable? " << point.isScannable() << "ScanInProgress? "<<point.getScanInProgress() << endl;
+                    CTILOG_DEBUG(dout, "MULTIVOLT: monPoint: "<<point.getPointId()<< " Scannable? " << point.isScannable() << "ScanInProgress? "<<point.getScanInProgress());
                 }
             }
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     //set MonitorPointScanTime
     return retVal;
@@ -5923,10 +5811,7 @@ void CtiCCFeeder::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTi
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted Feeder into DynamicCCFeeder: " << getPaoName() << endl;
-            }
+            CTILOG_INFO(dout, "Inserted Feeder into DynamicCCFeeder: " << getPaoName());
             static const string inserterSql = "insert into dynamicccfeeder values ( "
                                               "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                                               "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
@@ -6963,16 +6848,28 @@ void CtiCCFeeder::createCannotControlBankText(string text, string commandString,
 
     if (_CC_DEBUG & CC_DEBUG_EXTENDED)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can Not "<< text << " level for feeder: " << getPaoName()
-        << " any further.  All cap banks are already in the "<< commandString <<" state in: " << __FILE__ << " at: " << __LINE__ << endl;
+        Cti::FormattedTable table;
+
+        table.setCell(0, 0) << "CapBank";
+        table.setCell(0, 1) << "ControlStatus";
+        table.setCell(0, 2) << "OperationalState";
+        table.setCell(0, 3) << "DisableFlag";
+        table.setCell(0, 4) << "ControlInhibitFlag";
 
         CtiCCCapBank* currentCapBank = NULL;
         for(int i=0;i<_cccapbanks.size();i++)
         {
             currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
-            dout << "CapBank: " << currentCapBank->getPaoName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"true":"false") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"true":"false") << endl;
+            table.setCell(i + 1, 0) << currentCapBank->getPaoName();
+            table.setCell(i + 1, 1) << currentCapBank->getControlStatus();
+            table.setCell(i + 1, 2) << currentCapBank->getOperationalState();
+            table.setCell(i + 1, 3) << currentCapBank->getDisableFlag();
+            table.setCell(i + 1, 4) << currentCapBank->getControlInhibitFlag();
         }
+
+        CTILOG_DEBUG(dout,
+                     "Can Not "<< text << " level for feeder: " << getPaoName() << " any further.  All cap banks are already in the "<< commandString <<" state"
+                     << table);
     }
     if (!getCorrectionNeededNoBankAvailFlag())
     {

@@ -109,7 +109,7 @@ BOOST_AUTO_TEST_CASE( test_ccu710_addressing )
         header.push_back(0x9c);
 
         // Bad non-extended data in byte 1.
-        BOOST_CHECK_EQUAL( testCcu710::extractAddress(header, address), "Invalid non-extended address data received." );
+        BOOST_CHECK_EQUAL( testCcu710::extractAddress(header, address), "Invalid non-extended address data received" );
         BOOST_CHECK_EQUAL( address, 0 );
     }
 }

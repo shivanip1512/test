@@ -324,8 +324,7 @@ bool CtiFDRFtpInterface::loadTranslationLists()
                         successful = true;
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                            CTILOG_DEBUG(dout, "No points defined for use by interface "<< getInterfaceName());
                         }
                     }
                 }
@@ -333,15 +332,13 @@ bool CtiFDRFtpInterface::loadTranslationLists()
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                CTILOG_ERROR(dout, "Could not load (received) points for "<< getInterfaceName() <<" : Empty data set returned");
                 successful = false;
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "loadPointList() failed");
             successful = false;
         }
 
@@ -349,16 +346,14 @@ bool CtiFDRFtpInterface::loadTranslationLists()
 
     catch (RWExternalErr e )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to load translation lists for " << getInterfaceName());
         RWTHROW(e);
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load translation lists for " << getInterfaceName());
     }
 
     return successful;
@@ -374,9 +369,8 @@ bool CtiFDRFtpInterface::translateSinglePoint(CtiFDRPointSPtr & translationPoint
     {
         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+            CTILOG_DEBUG(dout, "Parsing Yukon Point ID "<< translationPoint->getPointID() <<
+                    " translate: "<< translationPoint->getDestinationList()[x].getTranslation());
         }
 
         /********************
@@ -447,8 +441,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
     INT retVal=0,tries=0;
     CtiTime         timeNow;
     CtiTime         refreshTime(PASTDATE);
-    ULONG  errorNum, errorLength=500;
-    CHAR errorBuffer[500];
+
     int fileNumber=0;
     CHAR fileName[200];
     ULONG timeout=120000;  // 2 minutes in milli seconds
@@ -499,13 +492,13 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
 
                 if (iInitialHandle == NULL)
                 {
-                    errorNum=GetLastError();
-                    InternetGetLastResponseInfo (&errorNum,errorBuffer,&errorLength);
+                    CHAR   errorBuffer[500];
+                    DWORD  errorNum = 0;
+                    DWORD  errorLength= sizeof(errorBuffer);
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Error connecting to " <<getInterfaceName() << " " << string (errorBuffer) << endl;
-                    }
+                    InternetGetLastResponseInfo (&errorNum, errorBuffer, &errorLength);
+
+                    CTILOG_ERROR(dout, "Could not connect to "<< getInterfaceName() <<" "<< errorNum <<" / "<< errorBuffer);
 
                     action = getInterfaceName() + ": Failed to connect";
                     desc = "Error connecting to " + getIPAddress();
@@ -533,10 +526,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                     // wait at most 2 minutes
                     if ( workerThreadReturnStatus == RW_THR_TIMEOUT )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Timeout error connecting to " << getInterfaceName() << endl;
-                        }
+                        CTILOG_ERROR(dout, "Timeout connecting to "<< getInterfaceName());
 
                         action = getInterfaceName() + ": Timeout error";
                         desc = "Timeout error connecting to " + getIPAddress();
@@ -563,10 +553,7 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                         workerThreadCompletionState = iThreadInternetConnect.getCompletionState();
                         if ( workerThreadCompletionState != RW_THR_NORMAL)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Error connecting to " <<getInterfaceName() << endl;
-                            }
+                            CTILOG_ERROR(dout, "Failed to connect to "<<getInterfaceName());
 
                             action = getInterfaceName() + ": Failed to connect";
                             desc = "Error connecting to " + getIPAddress();
@@ -592,10 +579,8 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                             // wait at most 2 minutes
                             if ( workerThreadReturnStatus == RW_THR_TIMEOUT )
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Timeout error retrieving file " << iServerFileName << " for " << getInterfaceName() << endl;
-                                }
+                                CTILOG_ERROR(dout, "Timeout retrieving file "<< iServerFileName <<" for "<< getInterfaceName());
+
                                 action = getInterfaceName() + ": Timeout error";
                                 desc = "Timeout retrieving file " + iServerFileName ;
                                 logEvent (desc, action, true);
@@ -622,10 +607,8 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
                                 workerThreadCompletionState = iThreadFTPGetFile.getCompletionState();
                                 if ( workerThreadCompletionState != RW_THR_NORMAL)
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Error connecting to " <<getInterfaceName() << " " << string (errorBuffer) << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "Failed to connect to "<< getInterfaceName());
+
                                     action = getInterfaceName() + ": Timeout error";
                                     desc = "Error retrieving file " + iServerFileName ;
                                     logEvent (desc, action, true);
@@ -661,19 +644,17 @@ void CtiFDRFtpInterface::threadFunctionRetrieveFrom( void )
         }
     }
 
-    catch ( RWCancellation &cancellationMsg )
+    catch ( RWCancellation & )
     {
         InternetCloseHandle (iInitialHandle);
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION CtiFDRFtpInterface::threadFunctionRetrieveFrom in interface " <<getInterfaceName()<< endl;
+        CTILOG_INFO(dout, "CANCELLATION of threadFunctionRetrieveFrom in "<< getInterfaceName());
     }
 
     // try and catch the thread death
     catch ( ... )
     {
         InternetCloseHandle (iInitialHandle);
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Fatal Error:  CtiFDRFtpInterface::threadFunctionRetrieveFrom " << getInterfaceName() << " is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionRetrieveFrom in "<< getInterfaceName() <<" is dead!");
     }
 }
 
@@ -705,42 +686,39 @@ RWCompletionState CtiFDRFtpInterface::threadFunctionWorkerInternetConnection( vo
                     retCode = RW_THR_NORMAL;
                 }
             }
-            catch ( RWCancellation &cancellationMsg )
+            catch ( RWCancellation & )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << " InternetConnect blew " <<getInterfaceName()<< endl;
+                // FIXME: is it even possible to get here?
+                CTILOG_INFO(dout, "CANCELLATION of threadFunctionWorkerInternetConnection for "<< getInterfaceName());
                 retCode = RW_THR_TERMINATED;
             }
 
             // try and catch the thread death
             catch ( ... )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << " Fatal Error:InternetConnect blew " <<getInterfaceName()<< endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "InternetConnect blew for " <<getInterfaceName());
                 retCode = RW_THR_TERMINATED;
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Internet connection iInitialHandle set to null " << getInterfaceName() << endl;
+            CTILOG_ERROR(dout, "Internet connection iInitialHandle set to null for "<< getInterfaceName());
         }
     }
 
     catch ( RWCancellation &cancellationMsg )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION CtiFDRFtpInterface::threadFunctionWorkerInternetConnection in interface " <<getInterfaceName()<< endl;
+        CTILOG_INFO(dout, "CANCELLATION of threadFunctionWorkerInternetConnection for "<< getInterfaceName());
         retCode = RW_THR_TERMINATED;
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Fatal Error:  CtiFDRFtpInterface::threadFunctionWorkerInternetConnection " << getInterfaceName() << " is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionWorkerInternetConnection for "<< getInterfaceName() <<" is dead!");
         retCode = RW_THR_TERMINATED;
     }
+
     return retCode;
 }
 
@@ -775,23 +753,20 @@ RWCompletionState CtiFDRFtpInterface::threadFunctionWorkerFTPGetFile()
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " FTP Get File iSessionHandle set to null " << getInterfaceName() << endl;
+            CTILOG_ERROR(dout, "iSessionHandle set to null "<< getInterfaceName());
         }
     }
 
-    catch ( RWCancellation &cancellationMsg )
+    catch ( RWCancellation & )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION CtiFDRFtpInterface::threadFunctionWorkerInternetConnection in interface " <<getInterfaceName()<< endl;
+        CTILOG_INFO(dout, "CANCELLATION of threadFunctionWorkerFTPGetFile for "<< getInterfaceName());
         retCode = RW_THR_TERMINATED;
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Fatal Error:  CtiFDRFtpInterface::threadFunctionWorkerInternetConnection " << getInterfaceName() << " is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionWorkerFTPGetFile for "<< getInterfaceName() <<" is dead!");
         retCode = RW_THR_TERMINATED;
     }
 

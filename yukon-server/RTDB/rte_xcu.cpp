@@ -50,9 +50,12 @@ CtiRouteXCU&  CtiRouteXCU::setDevicePointer(CtiDeviceSPtr p)
     return *this;
 }
 
-void CtiRouteXCU::DumpData()
+std::string CtiRouteXCU::toString() const
 {
-    Inherited::DumpData();
+    Cti::FormattedList itemList;
+    itemList <<"CtiRouteXCU";
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 void CtiRouteXCU::DecodeDatabaseReader(Cti::RowReader &rdr)
@@ -61,9 +64,9 @@ void CtiRouteXCU::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
+
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
 }
 
@@ -138,19 +141,14 @@ YukonError_t CtiRouteXCU::ExecuteRequest(CtiRequestMsg        *pReq,
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ERROR: Route " << getName() << " has no associated transmitter device" << endl;
-            }
+            CTILOG_ERROR(dout, "Route "<< getName() <<" has no associated transmitter device");
+
             status = ClientErrors::NoTransmitterForRoute;
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return status;
@@ -256,10 +254,7 @@ YukonError_t CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *p
                     /* Build MasterComm header */
                     if( status = MasterHeader (NewOutMessage->Buffer.OutMessage + PREIDLEN, NewOutMessage->Remote, MASTERSEND, Length) )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") Error: " << status << endl;
-                        }
+                        CTILOG_ERROR(dout, "MasterHeader Returned Error: "<< status);
 
                         delete NewOutMessage;
                     }
@@ -282,10 +277,7 @@ YukonError_t CtiRouteXCU::assembleVersacomRequest(CtiRequestMsg               *p
                 }
             default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << "  Cannot send versacom to TYPE:" << /*desolveDeviceType(*/_transmitterDevice->getType()/*)*/ << endl;
-                    }
+                    CTILOG_ERROR(dout, "Cannot send versacom to TYPE: "<< _transmitterDevice->getType());
 
                     break;
                 }
@@ -471,10 +463,7 @@ YukonError_t CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg             
             {
             case TYPE_WCTP:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_WARN(dout, "Transmitter Device Type is TYPE_WCTP"); // FIXME: is this unexpected?
 
                     // FALL THROUGH ???? Probably true....
                 }
@@ -495,13 +484,16 @@ YukonError_t CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg             
 
                     if(getDebugLevel() & 0x00000002 )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " FP-CBC TAP Message:  ";
+                        std::ostringstream oss;
+
+                        oss <<"FP-CBC TAP Message:"<< hex << setfill('0');
+
                         for(i = 0; i < Length; i++)
                         {
-                            dout << NewOutMessage->Buffer.TAPSt.Message[i];
+                            oss <<" "<< setw(2) << NewOutMessage->Buffer.TAPSt.Message[i];
                         }
-                        dout << endl;
+
+                        CTILOG_DEBUG(dout, oss);
                     }
 
                     /* Now add it to the collection of outbound messages */
@@ -511,10 +503,8 @@ YukonError_t CtiRouteXCU::assembleFisherPierceRequest(CtiRequestMsg             
                 }
             default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Invalid Transmitter Type ("<< _transmitterDevice->getType() <<")");
+
                     break;
                 }
             }
@@ -748,10 +738,7 @@ YukonError_t CtiRouteXCU::assembleExpresscomRequest(CtiRequestMsg *pReq, CtiComm
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "  Cannot send expresscom to TYPE:" << /*desolveDeviceType(*/_transmitterDevice->getType()/*)*/ << endl;
-                }
+                CTILOG_ERROR(dout, "Cannot send expresscom to TYPE: "<< _transmitterDevice->getType());
 
                 break;
             }
@@ -886,19 +873,9 @@ YukonError_t CtiRouteXCU::assembleSA305Request(CtiRequestMsg *pReq,
 
                     break;
                 }
-            case TYPE_SERIESVLMIRTU:
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
             default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << "  Cannot send SA305 to TYPE:" << _transmitterDevice->getType() << endl;
-                    }
+                    CTILOG_ERROR(dout, "Cannot send SA305 to TYPE: "<< _transmitterDevice->getType());
 
                     break;
                 }
@@ -1000,22 +977,9 @@ YukonError_t CtiRouteXCU::assembleSA105205Request(CtiRequestMsg *pReq,
         }
     case TYPE_WCTP:
     case TYPE_TAPTERM:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << "  Cannot send SA PROTOCOLS to TYPE: " << _transmitterDevice->getType() << endl;
-            }
-
-            break;
-        }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << "  Cannot send to TYPE:" << _transmitterDevice->getType() << endl;
-            }
+            CTILOG_ERROR(dout, "Cannot send SA PROTOCOLS to TYPE: "<< _transmitterDevice->getType());
 
             break;
         }
@@ -1128,22 +1092,9 @@ YukonError_t CtiRouteXCU::assembleSASimpleRequest(CtiRequestMsg *pReq,
         }
     case TYPE_WCTP:
     case TYPE_TAPTERM:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
-            }
-
-            break;
-        }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << "  Cannot send SA PROTOCOLS to TYPE:" << _transmitterDevice->getType() << endl;
-            }
+            CTILOG_ERROR(dout, "Cannot send SA PROTOCOLS to TYPE: "<< _transmitterDevice->getType());
 
             break;
         }

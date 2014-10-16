@@ -158,12 +158,9 @@ void CtiTableDeviceMCTIEDPort::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     string temp;
 
-
-
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["deviceid"]     >> _deviceID;
@@ -208,33 +205,21 @@ string CtiTableDeviceMCTIEDPort::getTableName()
 
 bool CtiTableDeviceMCTIEDPort::Insert()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "CtiTableDeviceMCTIEDPort::Insert() not implemented" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
 
     return false;
 }
 
 bool CtiTableDeviceMCTIEDPort::Update()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "CtiTableDeviceMCTIEDPort::Update() not implemented" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
 
     return false;
 }
 
 bool CtiTableDeviceMCTIEDPort::Delete()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "CtiTableDeviceMCTIEDPort::Delete() not implemented" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
 
     return false;
 }

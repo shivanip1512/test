@@ -1,7 +1,5 @@
 #pragma once
 
-#include "logger.h"
-#include "ctitime.h"
 #include "database_writer.h"
 
 namespace Cti {

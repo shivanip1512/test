@@ -31,14 +31,18 @@ using boost::shared_ptr;
 
 DEFINE_COLLECTABLE( CtiMultiMsg, MSG_MULTI );
 
-void CtiMultiMsg::dump() const
+std::string CtiMultiMsg::toString() const
 {
-   Inherited::dump();
+   Cti::FormattedList itemList;
 
+   itemList <<"CtiMultiMsg";
    for(int i = 0; i < _bag.size(); i++)
    {
-      ((CtiMessage*)_bag[i])->dump();
+       itemList <<"Message "<< i;
+       itemList << *((CtiMessage*)_bag[i]);
    }
+
+   return (Inherited::toString() += itemList.toString());
 }
 
 CtiMultiMsg&  CtiMultiMsg::setData(const CtiMultiMsg_vec& Data)
@@ -53,8 +57,7 @@ CtiMultiMsg&  CtiMultiMsg::setData(const CtiMultiMsg_vec& Data)
        }
        else
        {
-          CtiLockGuard<CtiLogger> doubt_guard(dout);
-          dout << CtiTime() << " setPointData failed to copy an element of type " << Data[i]->isA() << endl;
+          CTILOG_ERROR(dout, "setPointData failed to copy an element of type "<< Data[i]->isA() );
        }
    }
 

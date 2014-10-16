@@ -168,7 +168,7 @@ public:
     virtual void DecodeDeviceWindowDatabaseReader(Cti::RowReader &rdr);
     void applySignaledRateChange(LONG aOpen, LONG aDuration);
 
-    virtual void DumpData();
+    virtual std::string toString() const override;
 
     /*
      *  Things which make me into a scannable object.

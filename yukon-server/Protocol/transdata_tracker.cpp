@@ -222,8 +222,7 @@ bool CtiTransdataTracker::decodeYModem( CtiXfer &xfer, int status )
          {
             if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_DEBUG(dout, "bytes >= 2000");
             }
          }
       }
@@ -360,8 +359,7 @@ bool CtiTransdataTracker::processData( BYTE *data, int bytes )
             {
                if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
                {
-                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << CtiTime() << " Our world is ending!" << endl;
+                   CTILOG_DEBUG(dout, "Our world is ending!");
                }
             }
 
@@ -372,8 +370,7 @@ bool CtiTransdataTracker::processData( BYTE *data, int bytes )
             {
                if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
                {
-                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                   CTILOG_DEBUG(dout, "!_CrtCheckMemory()");
                }
             }
 
@@ -522,8 +519,7 @@ bool CtiTransdataTracker::loadProfile( CtiXfer &xfer )
 
          if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
          {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ recs " << formatRecNums( _lp->numLpRecs ) << endl;
+            CTILOG_DEBUG(dout, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~ recs "<< formatRecNums( _lp->numLpRecs ));
          }
       }
       break;
@@ -760,8 +756,7 @@ bool CtiTransdataTracker::grabTime( BYTE *data, int bytes )
 
          if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
          {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ meter time " << t << endl;
+            CTILOG_DEBUG(dout, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~ meter time "<< t);
          }
 
          _lp->meterTime = t.seconds();
@@ -795,8 +790,7 @@ void CtiTransdataTracker::setLastLPTime( ULONG lpTime )
 
    if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ tracker thinks lastlptime is " << CtiTime( lpTime ) << endl;
+      CTILOG_DEBUG(dout, "~~~~~~~~~~~~~~~~~~~~~~~~~~~~ tracker thinks lastlptime is "<< CtiTime( lpTime ));
    }
 }
 

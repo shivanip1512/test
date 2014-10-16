@@ -16,7 +16,7 @@ class CtiTime;
 
 typedef boost::shared_ptr<CtiFDRPoint> CtiFDRPointSPtr;
 
-class IM_EX_FDRBASE CtiFDRPoint
+class IM_EX_FDRBASE CtiFDRPoint : public Cti::Loggable
 {
 
 public:
@@ -73,6 +73,8 @@ public:
     std::string      getTranslateName(int aIndex);
 
     bool isCommStatus();
+
+    std::string toString() const;
 
 private:
 

@@ -43,9 +43,8 @@ bool DecodeCFDATAFile(const string& file, std::vector<std::string*>* ordered)
 
     if( (fptr = fopen( file.c_str(), "r")) == NULL )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "unable to open file" << endl;
-            return false;
+        CTILOG_ERROR(dout, "Unable to open file");
+        return false;
     }
 
     while( fgets( (char*) l_buf, 36, fptr) != NULL )
@@ -84,8 +83,7 @@ bool DecodeEOIFile(const string& file, std::vector<std::string*>* ordered)
 
     if( (fptr = fopen( file.c_str(), "r")) == NULL )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "unable to open file" << endl;
+        CTILOG_ERROR(dout, "Unable to open file");
         return false;
     }
 
@@ -116,9 +114,8 @@ bool DecodeWepcoFile(const string& file, std::vector<std::string*>* ordered)
 
     if( (fptr = fopen( file.c_str(), "r")) == NULL )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "unable to open file" << endl;
-            return false;
+        CTILOG_ERROR(dout, "Unable to open file");
+        return false;
     }
 
     while( fgets( (char*) l_buf, 1000, fptr) != NULL )
@@ -148,8 +145,7 @@ bool DecodeWepcoFileService(const string& file, std::vector<std::string*>* resul
 
     if ( (fptr = fopen( file.c_str(), "r")) == NULL )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "unable to open file" << endl;
+        CTILOG_ERROR(dout, "Unable to open file");
         return false;
     }
 
@@ -182,8 +178,7 @@ bool DecodeWepcoFileConfig(const string& file, std::vector<std::string*>* result
 
     if ( (fptr = fopen( file.c_str(), "r")) == NULL )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "unable to open file" << endl;
+        CTILOG_ERROR(dout, "Unable to open file");
         return false;
     }
 

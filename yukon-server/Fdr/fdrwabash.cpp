@@ -24,8 +24,7 @@ BOOL FDRWabash::init()
     //get FDRManager, pass in the interface name/type call get
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " FDRWabash has started. \n";
+        CTILOG_DEBUG(dout, "FDRWabash has started");
     }
 
     CtiFDRManager   *recList = new CtiFDRManager(getInterfaceName(),string(FDR_INTERFACE_SEND));
@@ -36,8 +35,7 @@ BOOL FDRWabash::init()
 
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " FDRWabash has initialized. \n";
+        CTILOG_DEBUG(dout, "FDRWabash has initialized");
     }
     setReloadRate(300);
     readConfig();
@@ -72,8 +70,7 @@ int FDRWabash::readConfig()
 FDRWabash::~FDRWabash(){
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " FDRWabash has deconstructed. \n";
+        CTILOG_DEBUG(dout, "FDRWabash has deconstructed");
     }
 }
 
@@ -104,14 +101,15 @@ bool FDRWabash::loadTranslationLists()
                     getSendToList().setPointList (pointList);
                 }
             }
-        }else{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - FDR - Wabash - in Loading Translation**** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-
-     }catch(...){
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " **** Checkpoint - FDR - Wabash - in Loading Translation**** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        else
+        {
+            CTILOG_ERROR(dout, "Could not load point list");
+        }
+     }
+     catch(...)
+     {
+         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Could not load translation point list");
      }
 
      resetForInitialLoad();
@@ -142,12 +140,12 @@ bool FDRWabash::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool se
             _path = drivePath;
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " PointId: " << pointID << " at : " << _path << " " << _fileName << std::endl;
+                CTILOG_DEBUG(dout, "PointId: "<< pointID <<" at : "<< _path <<" "<< _fileName);
             }
             //Also the last point loaded gets the final say in the path and filename
         }
     }
+
     return true;
 }
 
@@ -178,10 +176,9 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
     CtiPointDataMsg* aMessage = (CtiPointDataMsg*)msg;
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " FDR has sent a message to wabash. \n";
+        CTILOG_DEBUG(dout, "FDR has sent a message to wabash");
     }
-    ////
+
     // Do the formating we can before locking the mux to get the schedName;
 
     //get the status/command to string START || STOP from pointdata
@@ -197,9 +194,8 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
     {
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Warning: Data will not be sent for Id: " << aMessage->getId() << endl;
-            dout << CtiTime() << "          Expected a 0 or 1, got: " << aMessage->getValue() << endl;
+            CTILOG_DEBUG(dout, "Data will not be sent for Id: "<< aMessage->getId() <<" - "<< endl <<
+                    "expected a 0 or 1, got: "<< aMessage->getValue());
         }
 
         return false;
@@ -228,8 +224,7 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
         {
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Warning: FDRWabash will not write data to the file. Point is not in the watch list." << std::endl;
+                CTILOG_DEBUG(dout, "Will not write data to the file. Point is not in the watch list.");
             }
 
             return false;
@@ -270,8 +265,7 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
         {
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " FDRWabash: Initial Data will not be written to the file. FDR_WABASH_WRITE_INITIAL_LOAD is false. \n";
+                CTILOG_DEBUG(dout, "Initial Data will not be written to the file. FDR_WABASH_WRITE_INITIAL_LOAD is false.");
             }
         }
     }
@@ -285,8 +279,7 @@ bool FDRWabash::sendMessageToForeignSys( CtiMessage *msg )
         {
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " FDRWabash: Data will not be written to file. Duplicate data.\n";
+                CTILOG_DEBUG(dout, "Data will not be written to file. Duplicate data.");
             }
         }
     }
@@ -335,13 +328,8 @@ bool FDRWabash::writeDataToFile( string cmd )
 
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " FDRWabash: New Data written to the file.\n";
-
-        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-        {
-            dout << CtiTime() << " Data:" << cmd << endl;
-        }
+        CTILOG_DEBUG(dout, "New Data written to the file."<<
+                endl <<" Data:"<< cmd);
     }
 
     return true;
@@ -349,9 +337,8 @@ bool FDRWabash::writeDataToFile( string cmd )
 
 int FDRWabash::processMessageFromForeignSystem( char* )
 {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " FDRWabash is trying to process a message from FS. Not supposed to happen!\n";
-        return 0;
+    CTILOG_ERROR(dout, "trying to process a message from FS. This is not supposed to happen!");
+    return 0;
 }
 
 /****************************************************************************************

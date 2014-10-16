@@ -46,10 +46,7 @@ CtiTime CtiDeviceSingle::adjustNextScanTime(const INT scanType)
             {
                 setNextScan(scanType, firstScan(Now+120, scanType));
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - infinite loop averted in adjustNextScanTime **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_WARN(dout, "infinite loop averted in adjustNextScanTime");
             }
         }
         else
@@ -204,8 +201,7 @@ YukonError_t CtiDeviceSingle::initiateAccumulatorScan(OutMessageList &outList, I
         {
             if( SCANNER_DEBUG_ACCUMSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Accumulator Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
+                CTILOG_DEBUG(dout, "Accumulator Scan aborted due to scan in progress, device \""<< getName() <<"\"");
             }
 
             if( getScanRate(ScanRateAccum) < 60 )
@@ -296,20 +292,12 @@ YukonError_t CtiDeviceSingle::initiateIntegrityScan(OutMessageList &outList, INT
 
         if(isInhibited())
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Integrity Scan aborted due to inhibited device: " << getName() << endl;
-            }
+            CTILOG_WARN(dout, "Integrity Scan aborted due to inhibited device: " << getName());
 
             nRet =  ClientErrors::ScanDeviceInhibited;
-
         }
         else if(!isWindowOpen())
         {
-            //          {
-            //             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            //             dout << CtiTime() << " " << getName() << "'s scan window is closed " << endl;
-            //          }
             nRet=ClientErrors::ScanWindowClosed;
         }
         else // if(isInhibited()) ... so it isn't inhibited
@@ -327,21 +315,13 @@ YukonError_t CtiDeviceSingle::initiateIntegrityScan(OutMessageList &outList, INT
                     return ClientErrors::ScanGlobalAddress; // Cannot scan a global address.
                 }
 
-#if 0
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Integrity Scan. Port: " << getPortID() << " Device: " << getID() << ": " << getName() << endl;
-                }
-#endif
-
                 // Do the devices integrity scan!
                 nRet = IntegrityScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority);
                 OutMessage = NULL;      // Memory may be forgotten
 
                 if(nRet)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Integrity Scan error " << nRet << endl;
+                    CTILOG_ERROR(dout, "Integrity Scan error "<< nRet);
                 }
                 else
                 {
@@ -353,8 +333,7 @@ YukonError_t CtiDeviceSingle::initiateIntegrityScan(OutMessageList &outList, INT
             {
                 if(  SCANNER_DEBUG_INTEGRITYSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Integrity Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
+                    CTILOG_DEBUG(dout, "Integrity Scan aborted due to scan in progress, device \""<< getName() <<"\"");
                 }
 
                 if( getScanRate(ScanRateIntegrity) < 60 )
@@ -478,10 +457,7 @@ YukonError_t CtiDeviceSingle::initiateGeneralScan(OutMessageList &outList, INT S
                     }
                     else     // Error occured
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << Now << " Error " << GetErrorString(nRet) << " sending general scan to " << getName() << endl;
-                        }
+                        CTILOG_ERROR(dout, "Error "<< GetErrorString(nRet) <<" sending general scan to "<< getName());
 
                         // Report the comm error and plug any points!
                         // FIX FIX FIX CGP 082999
@@ -492,8 +468,7 @@ YukonError_t CtiDeviceSingle::initiateGeneralScan(OutMessageList &outList, INT S
                 {
                     if(  SCANNER_DEBUG_GENERALSCAN & gConfigParms.getValueAsULong("SCANNER_DEBUGLEVEL",0,16) )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " General Scan aborted due to scan in progress, device \"" << getName() << "\"" << endl;
+                        CTILOG_DEBUG(dout, "General Scan aborted due to scan in progress, device \""<< getName() <<"\"");
                     }
 
                     if( getScanRate(ScanRateGeneral) < 60 )
@@ -570,20 +545,12 @@ YukonError_t CtiDeviceSingle::initiateLoadProfileScan(OutMessageList &outList, I
 
         if(isInhibited())
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Load Profile Scan aborted due to inhibited device: " << getName() << endl;
-            }
+            CTILOG_WARN(dout, "Load Profile Scan aborted due to inhibited device: "<< getName());
 
             nRet =  ClientErrors::ScanDeviceInhibited;
-
         }
         else if(!isWindowOpen())
         {
-            //          {
-            //             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            //             dout << CtiTime() << " " << getName() << "'s scan window is closed " << endl;
-            //          }
             nRet = ClientErrors::ScanWindowClosed;
         }
         else // if(isInhibited()) ... so it isn't inhibited
@@ -601,29 +568,18 @@ YukonError_t CtiDeviceSingle::initiateLoadProfileScan(OutMessageList &outList, I
                     return ClientErrors::ScanGlobalAddress; // Cannot scan a global address.
                 }
 
-#if 0
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Load Profile Scan. Port: " << getPortID() << " Device: " << getID() << ": " << getName() << endl;
-                }
-#endif
-
                 // Do the devices load profile scan!
                 nRet = LoadProfileScan(pReq, parse, OutMessage, vgList, retList, outList, ScanPriority);
                 OutMessage = NULL;      // Memory may be forgotten
 
                 if(nRet)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Load Profile Scan error " << nRet << endl;
+                    CTILOG_ERROR(dout, "Load Profile Scan error "<< nRet);
                 }
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Load Profile Scan aborted due to scan in progress " << endl;
-                }
+                CTILOG_WARN(dout, "Load Profile Scan aborted due to scan in progress");
             }
         }
     }
@@ -676,11 +632,8 @@ YukonError_t CtiDeviceSingle::decode(CtiXfer &xfer, YukonError_t status)
     }
     catch ( MissingConfigException &e )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - DNP configuration missing for DNP device \"" << getName()
-                 << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "DNP configuration missing for DNP device \""<< getName() << "\"");
+
         retval = ClientErrors::MissingConfig;
     }
 
@@ -844,11 +797,7 @@ YukonError_t CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
 
             if( status = beginExecuteRequestFromTemplate(&pReq, CtiCommandParser(pReq.CommandString()), vgList, retList, outList, OutTemplate) )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << CtiTime() << "   Status = " << status << ": " << GetErrorString(status) << endl;
-                }
+                CTILOG_ERROR(dout, "beginExecuteRequestFromTemplate return error = "<< status <<": "<< GetErrorString(status));
             }
 
             if( cnt == outList.size() && status )
@@ -869,10 +818,7 @@ YukonError_t CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
         }
         else if( CmdStr.find("scan")!=string::npos && hasLongScanRate( CmdStr ))
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "invalid scan rate (cmdstr = "<< CmdStr <<")");
         }
         else
         {
@@ -884,8 +830,7 @@ YukonError_t CtiDeviceSingle::ProcessResult(const INMESS   &InMessage,
             /* something went wrong so start by printing error */
             if( InMessage.ErrorCode != ClientErrors::PortSimulated)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << TimeNow << " Error (" << InMessage.ErrorCode << ") to Remote: " << getName() <<": " << GetErrorString(nRet) << endl;
+                CTILOG_ERROR(dout, "Error (" << InMessage.ErrorCode << ") to Remote: " << getName() <<": " << GetErrorString(nRet));
             }
 
             CtiReturnMsg *Ret = CTIDBG_new CtiReturnMsg(getID(),
@@ -989,10 +934,7 @@ BOOL CtiDeviceSingle::isScanFlagSet(int scantype) const
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return val;
 }
@@ -1016,10 +958,7 @@ BOOL     CtiDeviceSingle::setScanFlag(int scantype, BOOL b)
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return val;
@@ -1093,10 +1032,8 @@ CtiTime  CtiDeviceSingle::getLastLPTime()
 
             if(getScanData().getLastLPTime() > dispatchTime)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Moving Last LP Time (" << getScanData().getLastLPTime() << ") back to " << dispatchTime << endl;
-                }
+                CTILOG_INFO(dout, "Moving Last LP Time ("<< getScanData().getLastLPTime() <<") back to "<< dispatchTime);
+
                 setLastLPTime(dispatchTime);
             }
 
@@ -1106,8 +1043,7 @@ CtiTime  CtiDeviceSingle::getLastLPTime()
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "getLastLPTime() called, but scanFlags not set - returning now + 86400");
     }
     return rt;
 }
@@ -1137,10 +1073,7 @@ CtiDeviceSingle& CtiDeviceSingle::setNextScan(INT a, const CtiTime &b)
 
     if( !isWindowOpen(Now, When) )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getName() << " scan window opens at " << When << ".  Scanning suspended." << endl;
-        }
+        CTILOG_WARN(dout, getName() <<" scan window opens at "<< When <<" -  Scanning suspended");
 
         getScanData().setNextScan(a, When);
     }
@@ -1162,13 +1095,11 @@ CtiTime CtiDeviceSingle::nextRemoteScan() const
         {
             if(nt < CtiTime(YUKONEOT))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << left << setw(30) << getName() << right << "'s next scan is to occur at " << nt << endl;
+                CTILOG_DEBUG(dout, getName() <<"'s next scan is to occur at "<< nt);
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << left << setw(30) << getName() << right << " is pending completion. " << endl;
+                CTILOG_DEBUG(dout, getName() <<" is pending completion");
             }
         }
     }
@@ -1201,10 +1132,7 @@ void CtiDeviceSingle::deleteNonUpdatedScanRates()
         {
             if(_scanRateTbl[i]->getUpdated() == FALSE)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << " deleting scanrate. Scantype " << i << endl;
-                }
+                CTILOG_INFO(dout, getName() <<" deleting scanrate. Scantype "<< i);
 
                 delete _scanRateTbl[i];
                 _scanRateTbl[i] = NULL;
@@ -1289,8 +1217,7 @@ CtiDeviceSingle::~CtiDeviceSingle()
         {
             if( ! _scanData.Insert() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unable to insert or update scandata for device " << this->getName() << endl;
+                CTILOG_ERROR(dout, "Unable to insert or update scandata for device "<< getName());
             }
         }
     }
@@ -1320,13 +1247,7 @@ LONG CtiDeviceSingle::getScanRate(int rate) const
         {
             // FirstScanInSignaledAlternateRate scan GOES NOW, once scheduled we report the normal rate.
             INT altrate = bScanIsScheduled ? _scanRateTbl[rate]->getAlternateRate() : 1L;
-#if 0
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << getName() << " is using an altrate of " << altrate << endl;
-            }
-#endif
+
             return altrate;
         }
         else
@@ -1367,10 +1288,7 @@ BOOL CtiDeviceSingle::isWindowOpen(CtiTime &aNow, CtiTime &opensAt, CtiDeviceWin
 
                 if(open == close)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** DB Config Error **** " << getName() << " has a zero time scan window defined. "<< endl;
-                    }
+                    CTILOG_ERROR(dout, "DB Config Error: "<< getName() <<" has a zero time scan window defined");
                 }
                 else if((aNow < open) || (aNow > close))
                 {
@@ -1382,10 +1300,8 @@ BOOL CtiDeviceSingle::isWindowOpen(CtiTime &aNow, CtiTime &opensAt, CtiDeviceWin
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+
         status = FALSE;
     }
 
@@ -1482,8 +1398,7 @@ CtiTime CtiDeviceSingle::getNextWindowOpen() const
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return windowOpens;
@@ -1543,19 +1458,16 @@ void CtiDeviceSingle::applySignaledRateChange(LONG aOpen, LONG aDuration)
 
         if(aOpen == -1)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << now << " " << getName() << " changing to alternate scan rate starting now for " << aDuration << " seconds" << endl;
+            CTILOG_INFO(dout, getName() <<" changing to alternate scan rate starting now for "<< aDuration <<" seconds");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << now << " " << getName() << " changing to alternate scan rate starting " << CtiTime(lastMidnight.seconds()+aOpen) << " for " << aDuration << " seconds" << endl;
+            CTILOG_INFO(dout, getName() <<" changing to alternate scan rate starting "<< CtiTime(lastMidnight.seconds()+aOpen) <<" for "<< aDuration <<" seconds");
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << now << " Signaled alternate scan rate stop time has already passed for " << getName() << " " << CtiTime(lastMidnight.seconds()+aOpen+aDuration) << endl;
+        CTILOG_WARN(dout, "Signaled alternate scan rate stop time has already passed for "<< getName() <<" "<< CtiTime(lastMidnight.seconds()+aOpen+aDuration));
     }
 }
 
@@ -1568,8 +1480,7 @@ void CtiDeviceSingle::DecodeDatabaseReader(Cti::RowReader &rdr)
     CtiLockGuard<CtiMutex> guard(_classMutex);
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 }
 
@@ -1581,8 +1492,7 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 
     if(!rdr["scantype"].isNull())
@@ -1608,8 +1518,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Decoding device windows " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding device windows");
     }
 
     if(!rdr["type"].isNull())
@@ -1625,10 +1534,7 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(Cti::RowReader &rdr)
         */
         if(newWindow.getDuration() == 0)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << "'s device window is invalid, open and close times are equal " << endl;
-            }
+            CTILOG_ERROR(dout, getName() <<"'s device window is invalid, open and close times are equal");
         }
         else
         {
@@ -1639,24 +1545,23 @@ void CtiDeviceSingle::DecodeDeviceWindowDatabaseReader(Cti::RowReader &rdr)
 }
 
 
-void CtiDeviceSingle::DumpData()
+std::string CtiDeviceSingle::toString() const
 {
-    int i;
-    Inherited::DumpData();
+    Cti::FormattedList itemList;
+    itemList <<"CtiDeviceSingle";
 
-    CtiLockGuard<CtiMutex> guard(_classMutex);
-
-    for(i = 0; i < ScanRateInvalid; i++)
     {
-        if(_scanRateTbl[i])
+        CtiLockGuard<CtiMutex> guard(_classMutex);
+        for(int i = 0; i < ScanRateInvalid; i++)
         {
+            if(_scanRateTbl[i])
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Scan Rate Record                            : " << i  << endl;
+                itemList <<"Device \""<< getName() <<"\" Scan Rate Record "<< i <<":" << _scanRateTbl[i];
             }
-            _scanRateTbl[i]->DumpData();
         }
     }
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 BOOL CtiDeviceSingle::useScanFlags() const
@@ -1701,16 +1606,15 @@ INT CtiDeviceSingle::validateScanData()
 
     if( !isScanFlagSet(ScanDataValid) )
     {
+        const int deviceId = getID();
+
         _scanData.setDeviceID(getID());
         setScanFlag(ScanDataValid, true);
         if( !_scanData.Restore() )
         {
             if( ! _scanData.Insert() )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "_scanData insert into DB failed for device \""<< getName() <<"\" (device Id: "<< getID() <<")");
             }
         }
     }
@@ -1754,9 +1658,7 @@ CtiTime CtiDeviceSingle::peekDispatchTime() const
 
     if(isDebugLudicrous())
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "   Oldest dispatch write time is " << dispatchTime << endl;
+        CTILOG_DEBUG(dout, "Oldest dispatch write time is "<< dispatchTime << " for device \""<< getName() <<"\" (device Id: "<< getID() <<")");
     }
 
     return dispatchTime;
@@ -1780,10 +1682,8 @@ bool CtiDeviceSingle::validatePendingStatus(bool status, int scantype, CtiTime &
         {
             if(getScanData().getLastCommunicationTime(scantype) + getTardyTime(scantype) < now )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << "'s pending flags (" << scantype << ") reset due to timeout on prior scan (" << getScanData().getLastCommunicationTime(scantype) << " + " << getTardyTime(scantype) << " < " << now << ")" << endl;
-                }
+                CTILOG_WARN(dout, getName() <<"'s pending flags ("<< scantype <<") reset due to timeout on prior scan ("<< getScanData().getLastCommunicationTime(scantype) <<" + "<< getTardyTime(scantype) <<" < "<< now << ")");
+
                 resetForScan(scantype);
                 getScanData().setLastCommunicationTime(scantype, now);
                 status = true;
@@ -2098,8 +1998,7 @@ void CtiDeviceSingle::insertPointDataReport(CtiPointType_t type, int offset, Cti
             }
             else if( getDebugLevel() & DEBUGLEVEL_MGR_DEVICE )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - invalid time " << timestamp << " for point " << pointname << " in CtiDeviceSingle::insertPointDataReport() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_DEBUG(dout, "invalid time "<< timestamp <<" for point "<< pointname <<" (point Id "<< p->getID() <<")");
             }
 
             pdm->setTags(tags);

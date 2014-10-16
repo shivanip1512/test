@@ -36,7 +36,7 @@ public:
 
     CtiMessage*       replicateMessage() const;
 
-    virtual void dump() const;
+    virtual std::string toString() const override;
 
     // Defines OpArg[1] for the Operation "UpdateFailed"
     enum Operation

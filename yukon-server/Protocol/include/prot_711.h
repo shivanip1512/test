@@ -33,15 +33,15 @@ public:
 
    void describeSlaveResponse() const;
    void describeMasterRequest() const;
-   void describeACTNRequest(const BYTE *data, INT len) const;
-   void describeDTRANRequest(const BYTE *data, INT len) const;
-   void describeLGRPQRequest(const BYTE *data, INT len) const;
-   void describeRCOLQRequest(const BYTE *data, INT len) const;
-   void describeXTIMERequest(const BYTE *data, INT len) const;
-   void describeSlaveStatS(const BYTE *stat) const;
-   void describeSlaveStatD(const BYTE *stat) const;
-   void describeSlaveStatP(const BYTE *stat) const;
+   void describeACTNRequest(const BYTE *data, INT len, std::ostringstream &outLog) const;
+   void describeDTRANRequest(const BYTE *data, INT len, std::ostringstream &outLog) const;
+   void describeLGRPQRequest(const BYTE *data, INT len, std::ostringstream &outLog) const;
+   void describeRCOLQRequest(const BYTE *data, INT len, std::ostringstream &outLog) const;
+   void describeXTIMERequest(const BYTE *data, INT len, std::ostringstream &outLog) const;
+   void describeSlaveStatS(const BYTE *stat, std::ostringstream &outLog) const;
+   void describeSlaveStatD(const BYTE *stat, std::ostringstream &outLog) const;
+   void describeSlaveStatP(const BYTE *stat, std::ostringstream &outLog) const;
 
-   void describeRCOLQResponse(const BYTE *data, INT len) const;
-   void describeACTNResponse() const;
+   void describeRCOLQResponse(const BYTE *data, INT len, std::ostringstream &outLog) const;
+   void describeACTNResponse(std::ostringstream &outLog) const;
 };

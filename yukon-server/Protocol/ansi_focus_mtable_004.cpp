@@ -27,21 +27,16 @@ CtiAnsiFocusMfgTable04::~CtiAnsiFocusMfgTable04()
 //=========================================================================================================================================
 void CtiAnsiFocusMfgTable04::printResult(  )
 {
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Focus MFG Table 4  ========================" << endl;
-        dout << endl << "Instant Voltage 1: " <<_instantVoltage1 << " (units of 1/8 volt) " << endl;
-        dout << endl << "Instant Voltage 2: " <<_instantVoltage2 <<  " (units of 1/8 volt) " <<endl;
-        dout << endl << "Instant Power    : " <<_instantPower <<  " (units of Watt) " <<endl;
-    }
+    itemList.add("Instant Voltage 1") << _instantVoltage1 <<" (units of 1/8 volt)";
+    itemList.add("Instant Voltage 2") << _instantVoltage2 <<" (units of 1/8 volt)";
+    itemList.add("Instant Power")     << _instantPower    <<" (units of Watt)";
+
+    CTILOG_INFO(dout,
+            endl << formatTableName("Focus MFG Table 4") <<
+            itemList
+            );
 }
 
 UINT16 CtiAnsiFocusMfgTable04::getInstantVoltage(int index)

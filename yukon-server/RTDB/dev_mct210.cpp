@@ -87,11 +87,8 @@ YukonError_t Mct210Device::ModelDecode(const INMESS &InMessage, const CtiTime Ti
 
             if( status )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
+                CTILOG_DEBUG(dout, "IM->Sequence = "<< InMessage.Sequence <<" for "<< getName());
             }
-            break;
         }
     }
 

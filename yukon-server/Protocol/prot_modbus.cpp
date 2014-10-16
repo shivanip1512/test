@@ -95,10 +95,7 @@ YukonError_t ModbusProtocol::generate( CtiXfer &xfer )
             case Command_Error:
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unused command " << _command << " in ModbusProtocol::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "unused command "<< _command);
 
                 _command = Command_Error;
             }
@@ -160,8 +157,8 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                             int crc = CRC16(xfer.getInBuffer(),xfer.getInCountActual()-2);//calc on all but crc
                             if((crc>>8) != xfer.getInBuffer()[xfer.getInCountActual()-2] || (crc&0x00FF) != xfer.getInBuffer()[xfer.getInCountActual()-1])
                             {//CRC ERROR!!!!
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - crc error in received data " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                CTILOG_ERROR(dout, "crc error in received data");
+
                                 retVal = ClientErrors::Unknown;//some error code should be set!
 
                                 if(++_retries>Retries_Default)//retry and if that doesnt work, quit!
@@ -195,7 +192,6 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                             else if(xfer.getInBuffer()[0] == xfer.getOutBuffer()[0] && xfer.getInBuffer()[1] == (xfer.getOutBuffer()[1] | 0x80))
                             {
                                 //this means error code was set, but response was right. Report the error code
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 _string_results.push_back(CTIDBG_new string("There is a read with function " + CtiNumStr((*_points_start).pointType) + " starting at point " + CtiNumStr((*_points_start).pointOffset) +
                                                                             " that cannot be read."));
                                 retVal = ClientErrors::Unknown;//some error code should be set!
@@ -213,13 +209,13 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                             else
                             {
                                 //unknown data??
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - unknown data received " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                CTILOG_ERROR(dout, "unknown data received");
+
                                 retVal = ClientErrors::Unknown;//some error code should be set, we can retry!
 
                                 if(_retries++>Retries_Default)//retry and if that doesnt work, quit!
                                 {
-                                    _string_results.push_back(CTIDBG_new string("Unknown data received."));
+                                    _string_results.push_back(new std::string("Unknown data received"));
                                     clearPoints();
                                     _status = End;
                                 }
@@ -233,8 +229,8 @@ YukonError_t ModbusProtocol::decode( CtiXfer &xfer, YukonError_t status )
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - ascii decode unimplemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            CTILOG_ERROR(dout, "ascii decode unimplemented");
+
                             retVal = ClientErrors::NoMethod;//some error code should be set!
                             _status = End;
                             clearPoints();
@@ -439,8 +435,7 @@ void ModbusProtocol::assemblePointData(CtiXfer &xfer)
                 else
                 {
                     //add code here someday!!!
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - ascii decode unimplemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "ascii decode unimplemented");
                 }
                 break;
             }
@@ -475,8 +470,7 @@ void ModbusProtocol::assemblePointData(CtiXfer &xfer)
                 else
                 {
                     //add code here someday!!!
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - ascii decode unimplemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "ascii decode unimplemented");
                 }
                 break;
             }

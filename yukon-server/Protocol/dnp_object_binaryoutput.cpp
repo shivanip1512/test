@@ -34,7 +34,9 @@ int BinaryOutput::restore(const unsigned char *buf, int len)
 
     _valid = true;
 
-    switch( getVariation() )
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BO_WithStatus:
         {
@@ -45,10 +47,7 @@ int BinaryOutput::restore(const unsigned char *buf, int len)
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
 
             _valid = false;
             pos = len;
@@ -66,7 +65,9 @@ int BinaryOutput::restoreBits(const unsigned char *buf, int bitoffset, int len)
     bitpos = bitoffset;
     _valid = true;
 
-    switch( getVariation() )
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BO_SingleBit:
         {
@@ -78,15 +79,10 @@ int BinaryOutput::restoreBits(const unsigned char *buf, int bitoffset, int len)
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
 
             _valid = false;
             bitpos = len * 8;
-
-            break;
         }
     }
 
@@ -98,7 +94,9 @@ int BinaryOutput::serialize(unsigned char *buf) const
 {
     int pos = 0;
 
-    switch(getVariation())
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BO_WithStatus:
         {
@@ -109,12 +107,7 @@ int BinaryOutput::serialize(unsigned char *buf) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -124,9 +117,11 @@ int BinaryOutput::serialize(unsigned char *buf) const
 
 int BinaryOutput::getSerializedLen(void) const
 {
-    int retVal;
+    int retVal = 0;
 
-    switch(getVariation())
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BO_WithStatus:
         {
@@ -136,13 +131,7 @@ int BinaryOutput::getSerializedLen(void) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            retVal = 0;
-            break;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -155,7 +144,9 @@ CtiPointDataMsg *BinaryOutput::getPoint( const TimeCTO *cto ) const
     double val = 0.0;
     int quality = NormalQuality;
 
-    switch(getVariation())
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BO_WithStatus:
         case BO_SingleBit:
@@ -166,12 +157,7 @@ CtiPointDataMsg *BinaryOutput::getPoint( const TimeCTO *cto ) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -182,9 +168,7 @@ CtiPointDataMsg *BinaryOutput::getPoint( const TimeCTO *cto ) const
 
     if( gDNPVerbose )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Binary output, value " << val << endl;
+        CTILOG_INFO(dout, "Binary output, value "<< val);
     }
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
@@ -224,7 +208,9 @@ int BinaryOutputControl::restore(const unsigned char *buf, int len)
 
     _valid = true;
 
-    switch( getVariation() )
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BOC_ControlRelayOutputBlock:
         case BOC_PatternControlBlock:
@@ -239,10 +225,7 @@ int BinaryOutputControl::restore(const unsigned char *buf, int len)
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
 
             _valid = false;
             pos = len;
@@ -260,7 +243,9 @@ int BinaryOutputControl::restoreBits(const unsigned char *buf, int bitoffset, in
     bitpos = bitoffset;
     _valid = true;
 
-    switch( getVariation() )
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BOC_PatternMask:
         {
@@ -273,15 +258,10 @@ int BinaryOutputControl::restoreBits(const unsigned char *buf, int bitoffset, in
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
 
             _valid = false;
             bitpos = len * 8;
-
-            break;
         }
     }
 
@@ -293,7 +273,9 @@ int BinaryOutputControl::serialize(unsigned char *buf) const
 {
     int pos = 0;
 
-    switch(getVariation())
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BOC_ControlRelayOutputBlock:
         case BOC_PatternControlBlock:
@@ -308,12 +290,7 @@ int BinaryOutputControl::serialize(unsigned char *buf) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -323,9 +300,11 @@ int BinaryOutputControl::serialize(unsigned char *buf) const
 
 int BinaryOutputControl::getSerializedLen(void) const
 {
-    int retVal;
+    int retVal = 0;
 
-    switch(getVariation())
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BOC_ControlRelayOutputBlock:
         case BOC_PatternControlBlock:
@@ -336,13 +315,7 @@ int BinaryOutputControl::getSerializedLen(void) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            retVal = 0;
-            break;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 

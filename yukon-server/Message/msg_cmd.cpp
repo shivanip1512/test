@@ -10,32 +10,34 @@
 
 #include <iostream>
 
+
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 DEFINE_COLLECTABLE( CtiCommandMsg, MSG_COMMAND );
 
-void CtiCommandMsg::dump() const
+std::string CtiCommandMsg::toString() const
 {
-   Inherited::dump();
+   Cti::FormattedList itemList;
 
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   dout << " Message Operation             " << iOperation << endl;
-   dout << " Message String                " << iOpString << endl;
+   itemList <<"CtiCommandMsg";
+   itemList.add("Message Operation") << iOperation;
+   itemList.add("Message String")    << iOpString;
 
    if(iOpArgList.size())
    {
-      dout << " Message Vector Size           " << iOpArgList.size() << endl;
+       itemList.add("Message Vector Size") << iOpArgList.size();
 
-      for(std::vector<int>::const_iterator itr = iOpArgList.begin(); itr != iOpArgList.end(); ++itr)
-      {
-         dout << " Message Vector                " << *itr << endl;
-      }
+       for(std::vector<int>::const_iterator itr = iOpArgList.begin(); itr != iOpArgList.end(); ++itr)
+       {
+           itemList.add("Message Vector") << *itr;
+       }
    }
    else
    {
-      dout << " Message Vector                EMPTY" << endl;
+       itemList.add("Message Vector Size") <<"EMPTY";
    }
 
+   return (Inherited::toString() += itemList.toString());
 }
 
 // Return a new'ed copy of this message!

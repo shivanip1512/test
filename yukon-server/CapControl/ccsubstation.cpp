@@ -60,8 +60,7 @@ CtiCCSubstation::~CtiCCSubstation()
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -189,10 +188,7 @@ void CtiCCSubstation::dumpDynamicData(Cti::Database::DatabaseConnection& conn, C
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted substation into dynamicCCSubstation: " << getPaoName() << endl;
-            }
+            CTILOG_INFO(dout, "Inserted substation into dynamicCCSubstation: " << getPaoName());
             string addFlags ="NNNNNNNNNNNNNNNNNNNN";
 
             static const string inserterSql = "insert into dynamicccsubstation values (?, ?, ?)";
@@ -519,8 +515,7 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
         }

@@ -126,8 +126,7 @@ void CtiFDRService::RunInConsole( DWORD argc, LPTSTR *argv )
     if( !SetConsoleCtrlHandler( (PHANDLER_ROUTINE)MyCtrlHandler,  TRUE ) )
     {
         iGoodStatus = FALSE;
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " FDR Could not install control handler" << endl;
+        CTILOG_ERROR(dout, "FDR Could not install control handler");
     }
 
 
@@ -166,16 +165,14 @@ void CtiFDRService::Init( )
 
         if ( !(gConfigParms.isOpt(CPARM_NAME_FDR_INTERFACES)) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "No interfaces specified in config file " << CPARM_NAME_FDR_INTERFACES << endl;
+            CTILOG_ERROR(dout, "No interfaces specified in config file " << CPARM_NAME_FDR_INTERFACES);
             return;
         }
 
         interfaces = gConfigParms.getValueAsString(CPARM_NAME_FDR_INTERFACES);
         if(interfaces.length() == 0)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "No interfaces specified in config file (len = 0)" << endl;
+            CTILOG_ERROR(dout, "No interfaces specified in config file (len = 0)");
             return;
         }
 
@@ -200,22 +197,17 @@ void CtiFDRService::Init( )
             if( !(hInterfaceLib = LoadLibrary( myInterfaceName.c_str() )) )
             {
                 DWORD errCode = GetLastError();
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unable to locate: \"" << myInterfaceName << "\" error code " << errCode << endl;
+                CTILOG_ERROR(dout, "Unable to locate: \"" << myInterfaceName << "\" error code " << errCode);
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Loaded Interface: " << myInterfaceName << endl;
-                }
+                CTILOG_INFO(dout, "Loaded Interface: " << myInterfaceName);
 
                 //  make sure the DLL has the startup routine
                 interfacesList[iInterfaceCount].StartFunction = (int (FAR WINAPI *)())GetProcAddress( hInterfaceLib, "RunInterface" );
                 if( !interfacesList[iInterfaceCount].StartFunction )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Unable to find routine RunInterface() in: " << myInterfaceName << endl;
+                    CTILOG_ERROR(dout, "Unable to find routine RunInterface() in: " << myInterfaceName);
                 }
                 else
                 {
@@ -223,8 +215,7 @@ void CtiFDRService::Init( )
                     interfacesList[iInterfaceCount].StopFunction = (int (FAR WINAPI *)())GetProcAddress( hInterfaceLib, "StopInterface" );
                     if( !interfacesList[iInterfaceCount].StopFunction)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Unable to find routine StopInterface() in: " << myInterfaceName << endl;
+                        CTILOG_ERROR(dout, "Unable to find routine StopInterface() in: " << myInterfaceName);
                     }
 
                     // track the interfaces loaded
@@ -235,11 +226,9 @@ void CtiFDRService::Init( )
         } // end for
 
     }
-    catch( RWxmsg &msg )
+    catch( RWxmsg &e )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception in FDR Service init(): ";
-        dout << msg.why() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, e, "FDR Service init() failed");
     }
 
 
@@ -275,10 +264,6 @@ void CtiFDRService::OnStop( )
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
     ThreadMonitor.join();
 
-    // stop dout thread
-    dout.interrupt(CtiThread::SHUTDOWN);
-    dout.join();
-
     CloseHandle(iShutdown);
 
     SetStatus( SERVICE_STOPPED );
@@ -300,9 +285,7 @@ void CtiFDRService::Run( )
         {
             if ( writeLogMessage )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " - Database connection attempt failed." << std::endl;
-
+                CTILOG_ERROR(dout, "Database connection attempt failed");
                 writeLogMessage = false;
             }
             Sleep( 5000 );
@@ -352,10 +335,7 @@ void CtiFDRService::Run( )
                 {
                     FdrVanGoghConnection.WriteConnQue(msg->replicateMessage());
 
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " FDR Service Replied to Are You There message." << endl;
-                    }
+                    CTILOG_INFO(dout, "FDR Service Replied to Are You There message.");
                 }
 
                 delete msg;
@@ -366,11 +346,9 @@ void CtiFDRService::Run( )
 
         FdrVanGoghConnection.close();
     }
-    catch( RWxmsg &msg )
+    catch( const RWxmsg &e )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception in FDR Run() Service: ";
-        dout << msg.why() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, e, "FDR Run() Service failed")
     }
 
 }
@@ -380,10 +358,7 @@ void CtiFDRService::Run( )
 void CtiFDRService::startInterfaces( )
 {
     // start all interfaces
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Starting All FDR Interfaces" << endl;
-    }
+    CTILOG_INFO(dout, "Starting All FDR Interfaces");
 
     for (int i=0; i < iInterfaceCount; i++)
     {
@@ -399,10 +374,7 @@ void CtiFDRService::startInterfaces( )
 void CtiFDRService::stopInterfaces( )
 {
     // stop all interfaces
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Stopping All FDR Interfaces" << endl;
-    }
+    CTILOG_INFO(dout, "Stopping All FDR Interfaces");
 
     for (int i=0; i < iInterfaceCount; i++)
     {

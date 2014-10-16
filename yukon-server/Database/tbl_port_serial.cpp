@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_port_serial
-*
-* Date:   9/6/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_serial.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "tbl_port_serial.h"
@@ -37,18 +22,17 @@ CtiTablePortLocalSerial&   CtiTablePortLocalSerial::setPhysicalPort(const string
 
 void CtiTablePortLocalSerial::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
-   {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
-   }
-
    rdr["physicalport"] >> _physicalPort;
 
    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
    {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      dout << " Physical Port Desc.  = " << _physicalPort << endl;
+       Cti::FormattedList itemList;
+
+       itemList.add("Physical Port Desc") << _physicalPort;
+
+       CTILOG_DEBUG(dout, "Decoding DB read from PortLocalSerial"<<
+               itemList
+               );
    }
 }
 

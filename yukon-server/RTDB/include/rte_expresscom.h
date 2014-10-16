@@ -27,7 +27,7 @@ public:
 
    CtiRouteExpresscom();
 
-   virtual void DumpData();
+   virtual std::string toString() const override;
 
    YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList) override;
 

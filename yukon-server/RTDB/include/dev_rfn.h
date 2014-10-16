@@ -49,17 +49,6 @@ protected:
     virtual YukonError_t executePutStatus(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests);
 
     RfnIdentifier _rfnId;
-
-    void logInfo( const std::string &note,
-                  const char* function,
-                  const char* file,
-                  int line ) const;
-
-    void logInfo( int debugLevel,
-                  const std::string &note,
-                  const char* function,
-                  const char* file,
-                  int line ) const;
 };
 
 }

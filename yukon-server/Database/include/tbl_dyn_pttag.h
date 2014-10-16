@@ -1,6 +1,5 @@
 #pragma once
 
-
 #include "ctibase.h"
 #include "dlldefs.h"
 #include "dbmemobject.h"
@@ -8,6 +7,7 @@
 #include "yukon.h"
 #include "row_reader.h"
 #include "database_connection.h"
+#include "loggable.h"
 
 
 #define CTITABLEDYNAMICTAG_MAX_USERNAME       60
@@ -17,7 +17,8 @@
 #define CTITABLEDYNAMICTAG_MAX_REFSTR         60
 #define CTITABLEDYNAMICTAG_MAX_FORSTR         60
 
-class IM_EX_CTIYUKONDB CtiTableDynamicTag : public CtiMemDBObject
+
+class IM_EX_CTIYUKONDB CtiTableDynamicTag : public CtiMemDBObject, public Cti::Loggable
 {
 protected:
 
@@ -85,7 +86,7 @@ public:
     CtiTableDynamicTag& setReferenceStr(const std::string& str);      // job id, etc, user field
     CtiTableDynamicTag& setTaggedForStr(const std::string& str);
 
-    virtual void dump();
+    virtual std::string toString() const override;
 
 };
 

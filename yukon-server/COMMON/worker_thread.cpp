@@ -7,6 +7,7 @@
 
 namespace Cti {
 
+
 /**
  * class constructor
  *
@@ -102,7 +103,7 @@ void WorkerThread::tryJoinOrTerminateFor( const Timing::Chrono &duration )
 {
     if( ! tryJoinFor( duration ))
     {
-        logEvent( "**** WARNING **** Join did not complete for " + duration.toString() + ", terminating", __FILE__, __LINE__ );
+        CTILOG_WARN(dout, "Join did not complete for " << duration << ", terminating thread " << _function._name);
 
         terminate();
     }
@@ -220,15 +221,15 @@ void WorkerThread::executeWrapper()
         SetThreadPriority( GetCurrentThread(), *_function._priority );
     }
 
-    if( _function._name )
+    if( !_function._name.empty() )
     {
-        SetThreadName( -1, _function._name->c_str() );
+        SetThreadName( -1, _function._name.c_str() );
     }
 
     // verbose is enable by default
     if( _function._verbose )
     {
-        logEvent( "Started", __FILE__, __LINE__ );
+        CTILOG_INFO(dout, "Started " << _function._name);
     }
 
     try
@@ -240,38 +241,18 @@ void WorkerThread::executeWrapper()
         // verbose is enable by default
         if( _function._verbose )
         {
-            logEvent( "Caught interrupted exception", __FILE__, __LINE__ );
+            CTILOG_WARN(dout, _function._name <<"Thread "<< _function._name <<" interrupted");
         }
     }
     catch( ... )
     {
-        logEvent( "**** EXCEPTION **** Caught unknown exception", __FILE__, __LINE__ );
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Thread "<< _function._name <<" aborting due to unhandled exception");
     }
 
     if( _function._verbose )
     {
-        logEvent( "Terminating", __FILE__, __LINE__ );
+        CTILOG_INFO(dout, "Terminating thread " << _function._name);
     }
-}
-
-/**
- * Wrapper function to log events
- * @param note
- * @param file
- * @param line
- */
-inline void WorkerThread::logEvent( const std::string &note, const std::string &file, int line )
-{
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-    dout << CtiTime() << " " << note << " thread TID:" << GetCurrentThreadId();
-
-    if( _function._name )
-    {
-        dout << " \"" << *_function._name << "\"";
-    }
-
-    dout << " " << file << " (" << line << ")" << std::endl;
 }
 
 } // namespace Cti

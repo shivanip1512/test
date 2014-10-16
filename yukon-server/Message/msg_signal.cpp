@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_signal
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.15.4.1 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <iostream>
@@ -138,8 +125,7 @@ CtiSignalMsg& CtiSignalMsg::setSignalMillis(unsigned millis)
 
     if( millis > 999 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - setSignalMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_WARN(dout, "millis = " << millis << " > 999 for ID " << getId());
     }
 
     return *this;
@@ -156,24 +142,22 @@ CtiSignalMsg& CtiSignalMsg::setPointValue(double pval)
     return *this;
 }
 
-void CtiSignalMsg::dump() const
+std::string CtiSignalMsg::toString() const
 {
-    Inherited::dump();
+    Cti::FormattedList itemList;
 
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    itemList <<"CtiSignalMsg";
+    itemList.add("Id")                   << getId();
+    itemList.add("Log Type")             << getLogType();
+    itemList.add("Condition")            << getCondition();
+    itemList.add("Signal Group")         << getSignalCategory();
+    itemList.add("Text")                 << getText();
+    itemList.add("Additional Info Text") << getAdditionalInfo();
+    itemList.add("Milliseconds")         << getSignalMillis();
+    itemList.add("Log ID (if inserted)") << _logid;
+    itemList.add("Tags")                 << explainTags(getTags()) <<" ("<< CtiNumStr(getTags()).xhex().zpad(8) <<")";
 
-    dout << " Id                            " << getId() << endl;
-    dout << " Log Type                      " << getLogType() << endl;
-    dout << " Condition                     " << getCondition() << endl;
-    dout << " Signal Group                  " << getSignalCategory() << endl;
-    dout << " Text                          " << getText() << endl;
-    dout << " Additional Info Text          " << getAdditionalInfo() << endl;
-    dout << " Milliseconds                  " << getSignalMillis() << endl;
-    dout << " Log ID (if inserted)          " << _logid << endl;
-    CHAR oldfill = dout.fill();
-    dout.fill('0');
-    dout << " Tags                          0x" << hex << setw(8) << getTags() << dec << "  " << explainTags(getTags()) << endl;
-    dout.fill(oldfill);
+    return (Inherited::toString() += itemList.toString());
 }
 
 

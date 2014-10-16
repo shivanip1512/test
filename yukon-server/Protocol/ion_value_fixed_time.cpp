@@ -45,10 +45,8 @@ CtiIONTime::CtiIONTime( const unsigned char *buf, unsigned long len ) :
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "len != 8 ("<< len <<")");
+
         setValid(false);
     }
 }

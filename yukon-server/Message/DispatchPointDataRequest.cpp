@@ -241,12 +241,14 @@ PointValueMap DispatchPointDataRequest::getRejectedPointValues()
 
 void DispatchPointDataRequest::reportStatusToLog()
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() <<" Point Data Request Status: " << endl;
-    dout << CtiTime() <<" -------------------------- " << endl;
+    Cti::StreamBuffer outLog;
+
+    outLog << endl;
+    outLog << " Point Data Request Status: " << endl;
+    outLog << " -------------------------- " << endl;
 
     //Missing Values
-    dout << CtiTime() <<" Points missing: " << endl;
+    outLog << " Points missing: " << endl;
     for each (long pointId in _points)
     {
         PointValueMap::iterator itr = _values.find(pointId);
@@ -256,27 +258,29 @@ void DispatchPointDataRequest::reportStatusToLog()
         }
         else
         {
-            dout <<  pointId << " ";
+            outLog << pointId << " ";
         }
     }
-    dout << endl;
+    outLog << endl;
 
     //Rejected Values
-    dout << CtiTime() <<" Points Received but rejected: " << endl;
+    outLog << " Points Received but rejected: " << endl;
     for each (PointValueMap::value_type pv in _rejectedValues)
     {
-        dout << CtiTime() << " Point Id: " << pv.first
-                          << " Quality: "  << pv.second.quality
-                          << " Timestamp: " << pv.second.timestamp << endl;
+        outLog << " Point Id: " << pv.first
+               << " Quality: "  << pv.second.quality
+               << " Timestamp: " << pv.second.timestamp << endl;
     }
-    dout << endl;
+    outLog << endl;
+
     //Accepted values
-    dout << CtiTime() <<" Points Received and accepted: " << endl;
+    outLog << " Points Received and accepted: " << endl;
     for each (PointValueMap::value_type pv in _values)
     {
-        dout << CtiTime() << " Point Id: " << pv.first
-                          << " Quality: "  << pv.second.quality
-                          << " Timestamp: " << pv.second.timestamp << endl;
+        outLog << " Point Id: " << pv.first
+               << " Quality: "  << pv.second.quality
+               << " Timestamp: " << pv.second.timestamp << endl;
     }
-    dout << endl;
+
+    CTILOG_INFO(dout, outLog);
 }

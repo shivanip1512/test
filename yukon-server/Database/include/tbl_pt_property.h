@@ -1,21 +1,21 @@
 #pragma once
 
 #include "row_reader.h"
-
-#include <limits.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
-
-#include <boost/shared_ptr.hpp>
-
-#include <map>
 #include "dlldefs.h"
 #include "dllbase.h"
 #include "dbmemobject.h"
 #include "dbaccess.h"
 #include "yukon.h"
+#include "loggable.h"
 
-class IM_EX_CTIYUKONDB CtiTablePointProperty : public CtiMemDBObject, private boost::noncopyable
+#include <limits.h>
+#include <rw/thr/recursiv.h>
+#include <rw/thr/monitor.h>
+#include <boost/shared_ptr.hpp>
+#include <map>
+
+
+class IM_EX_CTIYUKONDB CtiTablePointProperty : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -45,7 +45,7 @@ public:
 
     static std::string getSQLCoreStatement();
 
-    void          dump() const;
+    virtual std::string toString() const override;
     static std::string getTableName();
 
     enum

@@ -2,16 +2,14 @@
 
 #include "mgr_rfn_request.h"
 #include "amq_connection.h"
-
 #include "dev_rfn.h"
-
 #include "rfn_statistics.h"
-
 #include "std_helper.h"
 
 #include <boost/assign/list_of.hpp>
-
 #include <sstream>
+
+using Cti::Logging::Vector::Hex::operator<<;
 
 namespace Cti {
 namespace Pil {
@@ -25,35 +23,7 @@ enum
     E2EDT_STATS_REPORTING_INTERVAL = 86400,
 };
 
-using Cti::Logging::Vector::Hex::operator<<;
-
-
-template<class T>
-struct formatAsHex
-{
-    const T &value;
-
-    formatAsHex(const T &t) : value(t)  {}
-};
-
-
-template<class T>
-std::ostream &operator<<(std::ostream &logger, const formatAsHex<T> &wrapper)
-{
-    const std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex | std::ios::showbase | std::ios::right );
-    const char oldfill = logger.fill('0');
-
-    logger << wrapper.value;
-
-    logger.flags(oldflags);
-    logger.fill(oldfill);
-
-    return logger;
-}
-
-
 Rfn::E2eStatistics stats;
-
 
 RfnRequestManager::RfnRequestManager()
 {
@@ -119,20 +89,14 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
         if( itr == _activeRequests.end() )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Indication message received for inactive device " << indication.rfnIdentifier << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+            CTILOG_WARN(dout, "Indication message received for inactive device "<< indication.rfnIdentifier);
             continue;
         }
 
         ActiveRfnRequest &activeRequest = itr->second;
 
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Indication message received for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-            dout << "rfnId: " << activeRequest.request.rfnIdentifier << ": " << indication.payload << std::endl;
-        }
+        CTILOG_INFO(dout, "Indication message received for device "<< activeRequest.request.rfnIdentifier <<
+                std::endl << "rfnId: " << activeRequest.request.rfnIdentifier << ": " << indication.payload);
 
         boost::optional<Protocols::E2eDataTransferProtocol::EndpointResponse> optionalResponse;
 
@@ -142,17 +106,13 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
         }
         catch( Protocols::E2eDataTransferProtocol::PayloadTooLarge )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Indication message payload too large (" << indication.payload.size() << ") for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+            CTILOG_ERROR(dout, "Indication message payload too large ("<< indication.payload.size() <<") for device "<< activeRequest.request.rfnIdentifier);
             continue;
         }
 
         if( ! optionalResponse )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Indication message received with no payload for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+            CTILOG_ERROR(dout, "Indication message received with no payload for device " << activeRequest.request.rfnIdentifier);
             continue;
         }
 
@@ -172,25 +132,16 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
         if( er.token != activeRequest.request.rfnRequestId )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Indication received for inactive request token " << er.token << " for device "<< activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+            CTILOG_ERROR(dout, "Indication received for inactive request token "<< er.token <<" for device "<< activeRequest.request.rfnIdentifier);
             continue;
         }
 
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Erasing timeout " << activeRequest.timeout << " for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-        }
+        CTILOG_INFO(dout, "Erasing timeout "<< activeRequest.timeout <<" for device "<< activeRequest.request.rfnIdentifier);
 
         _upcomingExpirations[activeRequest.timeout].erase(indication.rfnIdentifier);
 
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Response received for token " << er.token << " for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-            dout << "rfnId: " << activeRequest.request.rfnIdentifier << ": " << er.data << std::endl;
-        }
+        CTILOG_INFO(dout, "Response received for token "<< er.token <<" for device "<< activeRequest.request.rfnIdentifier <<
+                std::endl <<"rfnId: "<< activeRequest.request.rfnIdentifier << ": " << er.data);
 
         activeRequest.response.insert(
                 activeRequest.response.end(),
@@ -214,17 +165,10 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
 
             stats.incrementBlockContinuation(activeRequest.request.deviceId, previousRetransmitCount, activeRequest.currentPacket.timeSent, previousBlockTimeSent);
 
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Block continuation sent for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_INFO(dout, "Block continuation sent for device "<< activeRequest.request.rfnIdentifier <<
+                    std::endl <<"rfnId: "<< activeRequest.request.rfnIdentifier <<": "<< activeRequest.currentPacket.payloadSent);
 
-                dout << "rfnId: " << activeRequest.request.rfnIdentifier << ": " << activeRequest.currentPacket.payloadSent << std::endl;
-            }
-
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Setting timeout " << activeRequest.timeout << " for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_INFO(dout, "Setting timeout "<< activeRequest.timeout <<" for device "<< activeRequest.request.rfnIdentifier);
 
             _upcomingExpirations[activeRequest.timeout].insert(indication.rfnIdentifier);
         }
@@ -251,19 +195,14 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleIndications()
                                     ce.error_code));
             }
 
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Result [" << result->status << ", " << result->commandResult.description << "] for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< activeRequest.request.rfnIdentifier);
 
             _tickResults.push_back(result);
 
             completedDevices.insert(indication.rfnIdentifier);
 
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Erasing active request for device " << indication.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_INFO(dout, "Erasing active request for device " << indication.rfnIdentifier);
+
             _activeRequests.erase(indication.rfnIdentifier);
         }
     }
@@ -290,35 +229,24 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
 
         if( itr == _activeRequests.end() )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Confirm message received for inactive device " << confirm.rfnIdentifier << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+            CTILOG_WARN(dout, "Confirm message received for inactive device "<< confirm.rfnIdentifier);
             continue;
         }
 
         ActiveRfnRequest &activeRequest = itr->second;
 
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Confirm message received for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-        }
+        CTILOG_INFO(dout, "Confirm message received for device "<< activeRequest.request.rfnIdentifier);
 
         if( ! confirm.error )
         {
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Erasing timeout " << activeRequest.timeout << " for device " << confirm.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_INFO(dout, "Erasing timeout "<< activeRequest.timeout << " for device " << confirm.rfnIdentifier);
 
             _upcomingExpirations[activeRequest.timeout].erase(confirm.rfnIdentifier);
 
             activeRequest.timeout = CtiTime::now().seconds() + activeRequest.currentPacket.retransmissionDelay;
             activeRequest.status = ActiveRfnRequest::PendingReply;
 
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Setting timeout " << activeRequest.timeout << " for device " << confirm.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_INFO(dout, "Setting timeout "<< activeRequest.timeout <<" for device "<< confirm.rfnIdentifier);
 
             _upcomingExpirations[activeRequest.timeout].insert(confirm.rfnIdentifier);
 
@@ -331,10 +259,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleConfirms()
                         activeRequest.request.command->error(CtiTime::now(), *confirm.error),
                         *confirm.error));
 
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Result [" << result->status << ", " << result->commandResult.description << "] for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-        }
+        CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< activeRequest.request.rfnIdentifier);
 
         _tickResults.push_back(result);
 
@@ -367,25 +292,17 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
 
             if( request_itr == _activeRequests.end() )
             {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Timeout occurred for inactive device " << rfnId << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+                CTILOG_WARN(dout, "Timeout occurred for inactive device " << rfnId);
                 continue;
             }
 
             ActiveRfnRequest &activeRequest = request_itr->second;
 
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Timeout " << expired_itr->first << " occurred for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_INFO(dout, "Timeout "<< expired_itr->first <<" occurred for device "<< activeRequest.request.rfnIdentifier);
 
             if( activeRequest.status == ActiveRfnRequest::PendingReply )
             {
-                {
-                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime() << " Timeout " << expired_itr->first << " reply was pending for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                }
+                CTILOG_INFO(dout, "Timeout "<< expired_itr->first <<" reply was pending for device "<< activeRequest.request.rfnIdentifier);
 
                 stats.incrementFailures(activeRequest.request.deviceId);
 
@@ -405,10 +322,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
 
                     retransmits.insert(rfnId);
 
-                    {
-                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << CtiTime() << " Retransmit sent (" << (activeRequest.currentPacket.maxRetransmits - activeRequest.currentPacket.retransmits) << " remaining) for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                    }
+                    CTILOG_INFO(dout, "Retransmit sent ("<< (activeRequest.currentPacket.maxRetransmits - activeRequest.currentPacket.retransmits) <<" remaining) for device "<< activeRequest.request.rfnIdentifier);
 
                     continue;
                 }
@@ -419,10 +333,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
             switch( activeRequest.status )
             {
                 default:
-                    {
-                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << CtiTime() << " Timeout occurred for device \"" << activeRequest.request.rfnIdentifier << "\" deviceid " << activeRequest.request.deviceId << " in unknown state " << activeRequest.status << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                    }
+                    CTILOG_WARN(dout, "Timeout occurred for device \""<< activeRequest.request.rfnIdentifier <<"\" deviceid "<< activeRequest.request.deviceId <<" in unknown state "<< activeRequest.status);
                     break;
                 case ActiveRfnRequest::PendingConfirm:
                     error = ClientErrors::NetworkManagerTimeout;
@@ -438,10 +349,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
                             activeRequest.request.command->error(CtiTime::now(), error),
                             error));
 
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Result [" << result->status << ", " << result->commandResult.description << "] for device " << activeRequest.request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_INFO(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< activeRequest.request.rfnIdentifier);
 
             _tickResults.push_back(result);
 
@@ -509,10 +417,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
 
         rq.pop();
 
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Got new request (" << rq.size() << " remaining) for device " << rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-        }
+        CTILOG_INFO(dout, "Got new request ("<< rq.size() <<" remaining) for device "<< rfnIdentifier);
 
         try
         {
@@ -546,24 +451,24 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
             newRequest.timeout = CtiTime::now().seconds() + gConfigParms.getValueAsInt("E2EDT_NM_TIMEOUT", E2EDT_NM_TIMEOUT);
             newRequest.status  = ActiveRfnRequest::PendingConfirm;
 
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Added request for device " << rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-                //dout << "request.command         :" << newRequest.request.command          << std::endl;
-                dout << "request.commandString   :" << newRequest.request.commandString    << std::endl;
-                dout << "request.connectionHandle:" << newRequest.request.connectionHandle << std::endl;
-                dout << "request.deviceId        :" << newRequest.request.deviceId         << std::endl;
-                dout << "request.groupMessageId  :" << newRequest.request.groupMessageId   << std::endl;
-                dout << "request.priority        :" << newRequest.request.priority         << std::endl;
-                dout << "request.rfnIdentifier   :" << newRequest.request.rfnIdentifier    << std::endl;
-                dout << "request.rfnRequestId    :" << formatAsHex<unsigned long>(newRequest.request.rfnRequestId) << std::endl;
-                dout << "request.userMessageId   :" << newRequest.request.userMessageId    << std::endl;
-                dout << "current message         :" << newRequest.currentPacket.payloadSent << std::endl;
-                dout << "retransmission delay    :" << newRequest.currentPacket.retransmissionDelay << std::endl;
-                dout << "max retransmits         :" << newRequest.currentPacket.maxRetransmits << std::endl;
-                dout << "status                  :" << newRequest.status                   << std::endl;
-                dout << "timeout                 :" << CtiTime(newRequest.timeout)         << std::endl;
-            }
+            FormattedList logItems;
+            logItems.add("request.commandString")    << newRequest.request.commandString;
+            //logItems.add("request.command")          << newRequest.request.command;
+            logItems.add("request.connectionHandle") << newRequest.request.connectionHandle;
+            logItems.add("request.deviceId")         << newRequest.request.deviceId;
+            logItems.add("request.groupMessageId")   << newRequest.request.groupMessageId;
+            logItems.add("request.priority")         << newRequest.request.priority;
+            logItems.add("request.rfnIdentifier")    << newRequest.request.rfnIdentifier;
+            logItems.add("request.rfnRequestId")     << CtiNumStr(newRequest.request.rfnRequestId).xhex().zpad(8);
+            logItems.add("request.userMessageId")    << newRequest.request.userMessageId;
+            logItems.add("current message")          << newRequest.currentPacket.payloadSent;
+            logItems.add("retransmission delay")     << newRequest.currentPacket.retransmissionDelay;
+            logItems.add("max retransmits")          << newRequest.currentPacket.maxRetransmits;
+            logItems.add("status")                   << newRequest.status;
+            logItems.add("timeout")                  << CtiTime(newRequest.timeout);
+
+            CTILOG_INFO(dout, "Added request for device "<< rfnIdentifier <<
+                    logItems);
 
             _upcomingExpirations[newRequest.timeout].insert(request.rfnIdentifier);
 
@@ -579,10 +484,7 @@ void RfnRequestManager::checkForNewRequest(const RfnIdentifier &rfnIdentifier)
                             ce.error_description,
                             static_cast<YukonError_t>(ce.error_code)));
 
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Result [" << result->status << ", " << result->commandResult.description << "] for device " << request.rfnIdentifier << " " << __FUNCTION__ << " @ "<< __FILE__ << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_ERROR(dout, "Result ["<< result->status <<", "<< result->commandResult.description <<"] for device "<< request.rfnIdentifier);
 
             _tickResults.push_back(result);
         }
@@ -694,10 +596,11 @@ void RfnRequestManager::handleStatistics()
 
         report << "RFN statistics report:" << std::endl;
         report << "Attempted communication with # nodes: " << stats.nodeStatistics.size() << std::endl;
-        report << "Node, # requests, avg time/message, # of block tx, avg # blocks/block tx, avg time/block tx, avg time-to-ack, avg attempts/success, success/1 tx, success/2 tx, success/3 tx, failures" << std::endl;
+        report << "Node, # requests, avg time/message, # of block tx, avg # blocks/block tx, avg time/block tx, avg time-to-ack, avg attempts/success, success/1 tx, success/2 tx, success/3 tx, failures";
 
         for each( const Rfn::E2eStatistics::StatisticsPerNode::value_type &spn in stats.nodeStatistics )
         {
+            report << std::endl;
             report << spn.first;
 
             const Rfn::E2eNodeStatistics &nodeStats = spn.second;
@@ -754,19 +657,13 @@ void RfnRequestManager::handleStatistics()
             }
 
             report << "," << nodeStats.totalFailures;
-
-            report << std::endl;
         }
 
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " " << report.str() << std::endl;
-        }
+        CTILOG_INFO(dout, report.str());
 
         stats.nodeStatistics.clear();
     }
 }
 
-
 }
-}
+} //namespace Cti::Pil

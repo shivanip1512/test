@@ -33,10 +33,13 @@ using std::list;
 CtiRouteVersacom::CtiRouteVersacom()
 {}
 
-void CtiRouteVersacom::DumpData()
+std::string CtiRouteVersacom::toString() const
 {
-    Inherited::DumpData();
-    Versacom.DumpData();
+    Cti::FormattedList itemList;
+    itemList <<"CtiRouteVersacom";
+    itemList << Versacom;
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 void CtiRouteVersacom::DecodeDatabaseReader(Cti::RowReader &rdr)
@@ -47,8 +50,7 @@ void CtiRouteVersacom::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 
     // Versacom specific data is picked up in the VersacomDecode
@@ -62,8 +64,7 @@ void CtiRouteVersacom::DecodeVersacomDatabaseReader(Cti::RowReader &rdr)
     {
         if( getDebugLevel() & DEBUGLEVEL_DATABASE )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "Decoding DB reader");
         }
 
         Versacom.DecodeDatabaseReader(rdr);
@@ -169,13 +170,9 @@ YukonError_t CtiRouteVersacom::ExecuteRequest(CtiRequestMsg        *pReq,
                     }
                 default:
                     {
-                        {
-                            resultString = "Unsupported command on AWord/Versacom route: " + getName();
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << resultString << endl;
-                            }
-                        }
+                        resultString = "Unsupported command on AWord/Versacom route: " + getName();
+
+                        CTILOG_ERROR(dout, resultString);
                         break;
                     }
                 }
@@ -183,20 +180,17 @@ YukonError_t CtiRouteVersacom::ExecuteRequest(CtiRequestMsg        *pReq,
             else
             {
                 resultString = "Versacom routes do not support non-AWord commands (yet) Rte: " + getName();
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << resultString << endl;
-                }
+
+                CTILOG_ERROR(dout, resultString);
             }
         }
     }
     else
     {
         resultString = " ERROR: Route " + getName() + " has no associated transmitter device";
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << resultString << endl;
-        }
+
+        CTILOG_ERROR(dout, resultString);
+
         status = ClientErrors::NoTransmitterForRoute;
     }
 
@@ -305,10 +299,7 @@ YukonError_t CtiRouteVersacom::assembleVersacomRequest(CtiRequestMsg            
                 /* Build MasterComm header */
                 if( status = MasterHeader (NewOutMessage->Buffer.OutMessage + PREIDLEN, NewOutMessage->Remote, MASTERSEND, Length) )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - error (" << status << ") in Versacom route \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "error ("<< status <<") in Versacom route \""<< getName() <<"\"");
 
                     delete NewOutMessage;
                 }

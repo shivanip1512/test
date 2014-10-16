@@ -105,7 +105,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         long getClientLinkStatusID(std::string &aClientName);
         virtual void setCurrentClientLinkStates();
 
-        std::ostream& logNow();
+        std::string logNow();
 
     protected:
 

@@ -109,8 +109,7 @@ void VerificationExecutor::startVerification()
     {
         if (_CC_DEBUG & CC_DEBUG_STANDARD)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Verification Not Enabled. SubBus not found with Id: " << subID << endl;
+            CTILOG_DEBUG(dout, "Verification Not Enabled. SubBus not found with Id: " << subID);
         }
         return;
     }
@@ -119,11 +118,9 @@ void VerificationExecutor::startVerification()
     {
         if (_CC_DEBUG & CC_DEBUG_STANDARD)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime()
-                 <<  " - Verification Not Enabled on SubBus: "
+            CTILOG_DEBUG(dout, "Verification Not Enabled on SubBus: "
                  << currentSubstationBus->getPaoName()
-                 << " due to DisableFlag. " << endl;
+                 << " due to DisableFlag.");
         }
         return;
     }
@@ -132,11 +129,9 @@ void VerificationExecutor::startVerification()
     {
         if (_CC_DEBUG & CC_DEBUG_STANDARD)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime()
-                 <<  " - Verification Not Enabled on SubBus: "
+            CTILOG_DEBUG(dout, "Verification Not Enabled on SubBus: "
                  << currentSubstationBus->getPaoName()
-                 << " due to Control Strategy not being set." << endl;
+                 << " due to Control Strategy not being set.");
         }
         return;
     }
@@ -146,9 +141,9 @@ void VerificationExecutor::startVerification()
     {
         if (_CC_DEBUG & CC_DEBUG_STANDARD)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() <<  " - Verification Not Enabled on SubBus: "<< currentSubstationBus->getPaoName()
-            << " due to missing parent Sub Station." << endl;
+            CTILOG_DEBUG(dout, "Verification Not Enabled on SubBus: "
+                << currentSubstationBus->getPaoName()
+                << " due to missing parent Sub Station.");
         }
         return;
 
@@ -158,11 +153,11 @@ void VerificationExecutor::startVerification()
     {
         if (_CC_DEBUG & CC_DEBUG_STANDARD)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime()
-                 <<  " - Verification Not Enabled on SubBus: "
-                 << currentSubstationBus->getPaoName()
-                 << " due to Substation: " << currentStation->getPaoName() << " DisableFlag" << endl;
+            CTILOG_DEBUG(dout, "Verification Not Enabled on SubBus: "
+                << currentSubstationBus->getPaoName()
+                << " due to Substation: "
+                << currentStation->getPaoName()
+                << " DisableFlag");
         }
         return;
     }
@@ -172,9 +167,9 @@ void VerificationExecutor::startVerification()
     {
         if (_CC_DEBUG & CC_DEBUG_STANDARD)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() <<  " - Verification Not Enabled on SubBus: "<< currentSubstationBus->getPaoName()
-            << " due to missing parent Area." << endl;
+            CTILOG_DEBUG(dout, "Verification Not Enabled on SubBus: "
+                << currentSubstationBus->getPaoName()
+                << " due to missing parent Area.");
         }
         return;
     }
@@ -184,14 +179,11 @@ void VerificationExecutor::startVerification()
     {
         if (_CC_DEBUG & CC_DEBUG_STANDARD)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime()
-                 <<  " - Verification Not Enabled on SubBus: "
+            CTILOG_DEBUG(dout, "Verification Not Enabled on SubBus: "
                  << currentSubstationBus->getPaoName()
                  << " due to Area: "
                  << currentArea->getPaoName()
-                 << " DisableFlag"
-                 << endl;
+                 << " DisableFlag");
         }
         return;
     }
@@ -236,8 +228,7 @@ void VerificationExecutor::startVerification()
     //before verification controls start.
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Verification Start Message received from client for sub: "<<currentSubstationBus->getPaoName()<<" ("<<currentSubstationBus->getPaoId()<<")"<< endl;
+        CTILOG_DEBUG(dout, "Verification Start Message received from client for sub: "<<currentSubstationBus->getPaoName()<<" ("<<currentSubstationBus->getPaoId()<<")");
     }
 
     CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
@@ -268,8 +259,7 @@ void VerificationExecutor::startVerification()
 
                 if( _CC_DEBUG & CC_DEBUG_STANDARD )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() <<  " - Verification will be delayed until Current Cap Bank Control is completed."<< endl;
+                    CTILOG_DEBUG(dout, "Verification will be delayed until Current Cap Bank Control is completed.");
                 }
 
                 break;
@@ -381,8 +371,7 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
 
             if( _CC_DEBUG & CC_DEBUG_STANDARD )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Verification Stop Message received from client.  Current Cap Bank Verification will complete first."<< endl;
+                CTILOG_DEBUG(dout, "Verification Stop Message received from client.  Current Cap Bank Verification will complete first.");
             }
 
         }
@@ -390,10 +379,7 @@ void VerificationExecutor::stopVerification(bool forceStopImmediately)
         {
             if (forceStopImmediately && currentSubstationBus->getPerformingVerificationFlag())
             {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Emergency Verification Stop Message received from client. Current Cap Bank Verification will not complete."<< endl;
-                }
+                CTILOG_INFO(dout, "Emergency Verification Stop Message received from client. Current Cap Bank Verification will not complete.");
 
                 CtiCCExecutorFactory::createExecutor(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()))->execute();
             }

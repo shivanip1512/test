@@ -80,11 +80,8 @@ YukonError_t Mct22xDevice::ModelDecode(const INMESS &InMessage, const CtiTime Ti
 
             if( status )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
+                CTILOG_DEBUG(dout, "IM->Sequence = "<< InMessage.Sequence <<" for "<< getName());
             }
-            break;
         }
     }
 
@@ -101,8 +98,7 @@ YukonError_t Mct22xDevice::decodeGetValueDemand(const INMESS &InMessage, const C
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Demand Decode for \""<< getName() <<"\"");
     }
 
     setScanFlag(ScanRateIntegrity, false);    //    resetScanFlag(ScanPending);
@@ -116,14 +112,7 @@ YukonError_t Mct22xDevice::decodeGetValueDemand(const INMESS &InMessage, const C
     CtiPointDataMsg *pData     = NULL;
     CtiPointSPtr    pPoint;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     curead = (DSt->Message[3] << 16) |

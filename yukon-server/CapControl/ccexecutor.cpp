@@ -175,18 +175,12 @@ void CtiCCCommandExecutor::execute()
         break;
 
     case CapControlCommand::CHANGE_OPERATIONALSTATE:
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Error: Command, " << _command->getCommandId() << ", not not handled by this executor!" << endl;
-        }
+        CTILOG_ERROR(dout, "Command " << _command->getCommandId() << " not handled by this executor!");
         success = false;
         break;
 
     default:
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - unknown command type, " << _command->getCommandId() << ", in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CTILOG_WARN(dout, "unknown command type, " << _command->getCommandId());
         success = false;
         break;
     }
@@ -300,8 +294,7 @@ void CtiCCCommandExecutor::EnableSubstationBus(long subBusId)
     {
         if (_CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Unable to enable Substation Bus with ID: " << subBusId << ". It was not found." << endl;
+            CTILOG_DEBUG(dout, "Unable to enable Substation Bus with ID: " << subBusId << ". It was not found.");
         }
         return;
     }
@@ -347,8 +340,7 @@ void CtiCCCommandExecutor::DisableSubstationBus(long subBusId)
     {
         if (_CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Unable to disable Substation Bus with ID: " << subBusId << ". It was not found." << endl;
+            CTILOG_DEBUG(dout, "Unable to disable Substation Bus with ID: " << subBusId << ". It was not found.");
         }
         return;
     }
@@ -426,9 +418,8 @@ void CtiCCCommandExecutor::EnableFeeder()
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                     dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
-                                      <<".  Cannot perform ENABLE on Feeder: " << currentFeeder->getPaoName() << " PAOID: " << currentFeeder->getPaoId() << "."<<endl;
+                    CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
+                                      <<".  Cannot perform ENABLE on Feeder: " << currentFeeder->getPaoName() << " PAOID: " << currentFeeder->getPaoId() << ".");
                 }
                 found = true;
                 break;
@@ -483,9 +474,8 @@ void CtiCCCommandExecutor::DisableFeeder()
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                     dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
-                                      <<".  Cannot perform DISABLE on Feeder: " << currentFeeder->getPaoName() << " PAOID: " << currentFeeder->getPaoId() << "."<<endl;
+                    CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
+                                      <<".  Cannot perform DISABLE on Feeder: " << currentFeeder->getPaoName() << " PAOID: " << currentFeeder->getPaoId() << ".");
                 }
                 found = true;
                 break;
@@ -548,18 +538,16 @@ void CtiCCCommandExecutor::EnableCapBank()
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                                          << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                            CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                                          << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
 
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                         }
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
-                                         <<".  Cannot perform ENABLE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << "."<<endl;
+                        CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
+                                         <<".  Cannot perform ENABLE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << ".");
                     }
 
                     return;
@@ -620,18 +608,16 @@ void CtiCCCommandExecutor::DisableCapBank()
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                                          << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                            CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                                          << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
 
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent,_command->getUser()));
                         }
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
-                                         <<".  Cannot perform DISABLE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << "."<<endl;
+                        CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
+                                         <<".  Cannot perform DISABLE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << ".");
 
                     }
                     return;
@@ -652,35 +638,30 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates(long bankId)
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Bank not found with id: " << bankId);
         return;
     }
 
     long controllerId = capBank->getControlDeviceId();
     if (controllerId == 0)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Controller id of 0.");
         return;
     }
 
     if ( !capBank->isControlDeviceTwoWay() )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, CBC must be two way. " << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, CBC must be two way. ");
         return;
     }
     if ( capBank->getDisableFlag() )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName <<" command rejected, CapBank: "<< capBank->getPaoName()<<" is Disabled." << endl;
+        CTILOG_WARN(dout, commandName <<" command rejected, CapBank: "<< capBank->getPaoName()<<" is Disabled.");
         return;
     }
     if ( capBank->isPendingStatus() )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName <<" command rejected, CapBank: "<< capBank->getPaoName()<<" is in a Pending State." << endl;
+        CTILOG_WARN(dout, commandName <<" command rejected, CapBank: "<< capBank->getPaoName()<<" is in a Pending State.");
         return;
     }
 
@@ -688,11 +669,8 @@ void CtiCCCommandExecutor::syncCbcAndCapBankStates(long bankId)
 
     if( controlStatus < 0 )
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << commandName << " command rejected, CapBank: " << capBank->getPaoName()<<" received an invalid "
-                 << "control state value (" << controlStatus << "). Not adjusting the cap bank state." << endl;
-        }
+        CTILOG_WARN(dout, commandName << " command rejected, CapBank: " << capBank->getPaoName()<<" received an invalid "
+                    "control state value (" << controlStatus << "). Not adjusting the cap bank state.");
         return;
     }
 
@@ -745,16 +723,14 @@ void CtiCCCommandExecutor::enableOvUv(long bankId,
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Bank not found with id: " << bankId);
         return;
     }
 
     long controllerId = capBank->getControlDeviceId();
     if (controllerId == 0)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Controller id of 0.");
         return;
     }
 
@@ -845,16 +821,14 @@ void CtiCCCommandExecutor::disableOvUv(long bankId,
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Bank not found with id: " << bankId);
         return;
     }
 
     long controllerId = capBank->getControlDeviceId();
     if (controllerId == 0)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Controller id of 0.");
         return;
     }
 
@@ -940,23 +914,20 @@ void CtiCCCommandExecutor::enableTempControl(long bankId,std::vector<CtiSignalMs
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Bank not found with id: " << bankId);
         return;
     }
 
     long controllerId = capBank->getControlDeviceId();
     if (controllerId == 0)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Controller id of 0.");
         return;
     }
 
     if (!stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, CBC must be a 702x. " << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, CBC must be a 702x. ");
         return;
     }
 
@@ -1040,23 +1011,20 @@ void CtiCCCommandExecutor::disableTempControl(long bankId,std::vector<CtiSignalM
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Bank not found with id: " << bankId);
         return;
     }
 
     long controllerId = capBank->getControlDeviceId();
     if (controllerId == 0)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Controller id of 0.");
         return;
     }
 
     if (!stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, CBC must be a 702x. " << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, CBC must be a 702x. ");
         return;
     }
 
@@ -1127,23 +1095,20 @@ void CtiCCCommandExecutor::enableVarControl(long bankId,std::vector<CtiSignalMsg
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Bank not found with id: " << bankId);
         return;
     }
 
     long controllerId = capBank->getControlDeviceId();
     if (controllerId == 0)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Controller id of 0.");
         return;
     }
 
     if (!stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, CBC must be a 702x. " << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, CBC must be a 702x. ");
         return;
     }
 
@@ -1213,23 +1178,20 @@ void CtiCCCommandExecutor::disableVarControl(long bankId,std::vector<CtiSignalMs
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Bank not found with id: " << bankId);
         return;
     }
 
     long controllerId = capBank->getControlDeviceId();
     if (controllerId == 0)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Controller id of 0.");
         return;
     }
 
     if (!stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, CBC must be a 702x. " << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, CBC must be a 702x. ");
         return;
     }
 
@@ -1300,23 +1262,20 @@ void CtiCCCommandExecutor::enableTimeControl(long bankId,std::vector<CtiSignalMs
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Bank not found with id: " << bankId);
         return;
     }
 
     long controllerId = capBank->getControlDeviceId();
     if (controllerId == 0)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Controller id of 0.");
         return;
     }
 
     if (!stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, CBC must be a 702x. " << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, CBC must be a 702x. ");
         return;
     }
 
@@ -1401,23 +1360,20 @@ void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalM
     CtiCCCapBank* capBank = store->findCapBankByPAObjectID(bankId);
     if (capBank == NULL)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Bank not found with id: " << bankId << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Bank not found with id: " << bankId);
         return;
     }
 
     long controllerId = capBank->getControlDeviceId();
     if (controllerId == 0)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, Controller id of 0." << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, Controller id of 0.");
         return;
     }
 
     if (!stringContainsIgnoreCase( capBank->getControlDeviceType(),"CBC 702"))
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << commandName << " command rejected, CBC must be a 702x. " << endl;
+        CTILOG_WARN(dout, commandName << " command rejected, CBC must be a 702x. ");
         return;
     }
 
@@ -1563,10 +1519,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
 
         if (sArea->getDisableFlag())
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Special Area is not enabled, will not set OVUV." << endl;
-            }
+            CTILOG_INFO(dout, "Special Area is not enabled, will not set OVUV.");
 
             CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::RESP_UNSOLICITED,CtiCCServerResponse::RESULT_COMMAND_REFUSED, "Special Area is not enabled.");
             msg->setUser(_command->getUser());
@@ -1672,10 +1625,8 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
             default:
             {
                 //This shouldn't happen since the main executor only calls this if it is an above case
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Send All Command Type: " << _command->getCommandId() << " is not supported."  << endl;
-                }
+                CTILOG_WARN(dout, "Send All Command Type: " << _command->getCommandId() << " is not supported." );
+
                 return;
             }
         }
@@ -1939,10 +1890,7 @@ bool CtiCCCommandExecutor::checkForCommandRefusal(CtiCCFeeder* feeder)
         int status = currentCapBank->getControlStatus();
         if (status == CtiCCCapBank::OpenPending || status == CtiCCCapBank::ClosePending)
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Feeder already has bank: "<<currentCapBank->getPaoName() <<" in a pending state." << endl;
-            }
+            CTILOG_WARN(dout, "Feeder already has bank: "<<currentCapBank->getPaoName() <<" in a pending state.");
 
             CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::RESP_UNSOLICITED, CtiCCServerResponse::RESULT_COMMAND_REFUSED, string("Command Refused: " + currentCapBank->getPaoName() + " is already in a Pending State."));
             msg->setUser(_command->getUser());
@@ -2004,10 +1952,7 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
                         if(!confirmImmediately &&
                            checkForCommandRefusal(currentFeeder))
                         {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Open Capbank Command Refused" << endl;
-                            }
+                            CTILOG_WARN(dout, "Open Capbank Command Refused");
                             break;
                         }
                         updatedSubs.push_back(currentSubstationBus);
@@ -2116,9 +2061,8 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                                CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
                             }
 
                             if( currentCapBank->getOperationAnalogPointId() > 0 )
@@ -2172,9 +2116,8 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Unknown Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
-                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() << endl;
+                                CTILOG_WARN(dout, "Unknown Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
+                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() );
                             }
 
                             if( !confirmImmediately && !currentSubstationBus->isBusPerformingVerification())
@@ -2199,15 +2142,13 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
                         {
                             if (currentSubstationBus->getVerificationFlag())
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
-                                             <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << "."<<endl;
+                                CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
+                                             <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << ".");
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - No Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
-                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() << endl;
+                                CTILOG_WARN(dout, "No Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
+                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() );
                             }
                         }
                         break;
@@ -2226,10 +2167,7 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Manual Control Open received for BankID 0...Cannot control device."<<endl;
-        }
+        CTILOG_WARN(dout, "Manual Control Open received for BankID 0...Cannot control device.");
     }
 
 
@@ -2258,10 +2196,7 @@ void CtiCCCommandExecutor::OpenCapBank(long bankId, bool confirmImmediately)
     else
     {
         delete multi;
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CTILOG_WARN(dout, "Could not create Porter Request Message");
     }
 }
 
@@ -2318,10 +2253,7 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
                         if(!confirmImmediately &&
                            checkForCommandRefusal(currentFeeder))
                         {
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Close Capbank Command Refused" << endl;
-                            }
+                            CTILOG_WARN(dout, "Close Capbank Command Refused");
                             break;
                         }
                         updatedSubs.push_back(currentSubstationBus);
@@ -2428,9 +2360,8 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
                                 }
                                 else
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Unknown Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
-                                                  << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() << endl;
+                                    CTILOG_WARN(dout, "Unknown Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
+                                                  << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() );
 
                                 }
 
@@ -2488,9 +2419,8 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                                CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
                             }
 
                             if( currentCapBank->getOperationAnalogPointId() > 0 )
@@ -2518,15 +2448,13 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
                         {
                             if (currentSubstationBus->getVerificationFlag())
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
-                                             <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << "."<<endl;
+                                CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
+                                             <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << ".");
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - No Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
-                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() << endl;
+                                CTILOG_WARN(dout, "No Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
+                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() );
                             }
                         }
                         break;
@@ -2545,10 +2473,7 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Manual Control Close received for BankID 0...Cannot control device."<<endl;
-        }
+        CTILOG_WARN(dout, "Manual Control Close received for BankID 0...Cannot control device.");
     }
 
     if( controlID > 0 )
@@ -2575,8 +2500,7 @@ void CtiCCCommandExecutor::CloseCapBank(long bankId, bool confirmImmediately)
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        CTILOG_WARN(dout, "Could not create Porter Request Message");
     }
 }
 
@@ -2833,10 +2757,7 @@ void CtiCCCommandExecutor::AutoEnableOvUv()
         case Cti::CapControl::Area:
         {
             CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(cmdId);
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " Auto Enable OvUv By Area Control Point for "<< currentArea->getPaoName() << endl;
-            }
+            CTILOG_INFO(dout, "Auto Enable OvUv By Area Control Point for "<< currentArea->getPaoName());
             currentArea->setOvUvDisabledFlag(false);
             for each(long subId in currentArea->getSubstationIds()  )
             {
@@ -2855,10 +2776,7 @@ void CtiCCCommandExecutor::AutoEnableOvUv()
         case Cti::CapControl::SpecialArea:
         {
             CtiCCSpecialPtr currentSpArea = store->findSpecialAreaByPAObjectID(cmdId);
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " Auto Enable OvUv By Special Area Control Point for "<< currentSpArea->getPaoName() << endl;
-            }
+            CTILOG_INFO(dout, "Auto Enable OvUv By Special Area Control Point for "<< currentSpArea->getPaoName());
             currentSpArea->setOvUvDisabledFlag(false);
             for each(long subId in currentSpArea->getSubstationIds()  )
             {
@@ -2879,10 +2797,7 @@ void CtiCCCommandExecutor::AutoEnableOvUv()
         {
             CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(cmdId);
             currentStation->setOvUvDisabledFlag(false);
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " Auto Enable OvUv By Substation Control Point for "<< currentStation->getPaoName() << endl;
-            }
+            CTILOG_INFO(dout, "Auto Enable OvUv By Substation Control Point for "<< currentStation->getPaoName());
             for each( CtiCCSubstationBusPtr currentSubBus in store->getSubBusesByStationId(currentStation->getPaoId()) )
             {
                 setAutoControlOvUvFlags(currentSubBus, false);
@@ -2894,10 +2809,7 @@ void CtiCCCommandExecutor::AutoEnableOvUv()
 
             CtiCCSubstationBusPtr currentSubBus = store->findSubBusByPAObjectID(cmdId);
             CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(currentSubBus->getParentId());
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " Auto Enable OvUv By Substation Bus Control Point for "<< currentSubBus->getPaoName() << endl;
-            }
+            CTILOG_INFO(dout, "Auto Enable OvUv By Substation Bus Control Point for "<< currentSubBus->getPaoName());
             setAutoControlOvUvFlags(currentSubBus, false);
             break;
         }
@@ -2927,10 +2839,7 @@ void CtiCCCommandExecutor::AutoDisableOvUv()
         case Cti::CapControl::Area:
         {
             CtiCCAreaPtr currentArea = store->findAreaByPAObjectID(cmdId);
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " Auto Disable OvUv By Area Control Point for "<< currentArea->getPaoName() << endl;
-            }
+            CTILOG_INFO(dout, "Auto Disable OvUv By Area Control Point for "<< currentArea->getPaoName());
             currentArea->setOvUvDisabledFlag(true);
             for each(long subId in currentArea->getSubstationIds() )
             {
@@ -2949,10 +2858,7 @@ void CtiCCCommandExecutor::AutoDisableOvUv()
         case Cti::CapControl::SpecialArea:
         {
             CtiCCSpecialPtr currentSpArea = store->findSpecialAreaByPAObjectID(cmdId);
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " Auto Disable OvUv By Special Area Control Point for "<< currentSpArea->getPaoName() << endl;
-            }
+            CTILOG_INFO(dout, "Auto Disable OvUv By Special Area Control Point for "<< currentSpArea->getPaoName());
             currentSpArea->setOvUvDisabledFlag(true);
             for each(long subId in currentSpArea->getSubstationIds()  )
             {
@@ -2973,10 +2879,7 @@ void CtiCCCommandExecutor::AutoDisableOvUv()
         {
             CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(cmdId);
             currentStation->setOvUvDisabledFlag(true);
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " Auto Disable OvUv By Substation Control Point for "<< currentStation->getPaoName() << endl;
-            }
+            CTILOG_INFO(dout, "Auto Disable OvUv By Substation Control Point for "<< currentStation->getPaoName());
             for each( CtiCCSubstationBusPtr currentSubBus in store->getSubBusesByStationId(currentStation->getPaoId()) )
             {
                 setAutoControlOvUvFlags(currentSubBus, true);
@@ -2988,10 +2891,7 @@ void CtiCCCommandExecutor::AutoDisableOvUv()
 
             CtiCCSubstationBusPtr currentSubBus = store->findSubBusByPAObjectID(cmdId);
             CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(currentSubBus->getParentId());
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " Auto Disable OvUv By Substation Bus Control Point for "<< currentSubBus->getPaoName() << endl;
-            }
+            CTILOG_INFO(dout, "Auto Disable OvUv By Substation Bus Control Point for "<< currentSubBus->getPaoName());
             setAutoControlOvUvFlags(currentSubBus, true);
 
             break;
@@ -3274,9 +3174,8 @@ void CtiCCCommandExecutor::Flip7010Device()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                                CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
                             }
 
                             if( currentCapBank->getOperationAnalogPointId() > 0 )
@@ -3333,9 +3232,8 @@ void CtiCCCommandExecutor::Flip7010Device()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Unknown Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
-                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() << endl;
+                                CTILOG_WARN(dout, "Unknown Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
+                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() );
                             }
 
                             if( !confirmImmediately && !currentSubstationBus->isBusPerformingVerification())
@@ -3353,23 +3251,20 @@ void CtiCCCommandExecutor::Flip7010Device()
                         {
                             if (currentSubstationBus->getVerificationFlag())
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
-                                             <<".  Cannot perform Flip on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << "."<<endl;
+                                CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
+                                             <<".  Cannot perform Flip on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << ".");
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - No Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
-                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() << endl;
+                                CTILOG_WARN(dout, "No Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
+                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() );
                             }
                         }
                         break;
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - CBC Not 7010 Device Type.  Flip command not supported " << endl;
+                        CTILOG_WARN(dout, "CBC Not 7010 Device Type.  Flip command not supported ");
                     }
 
                 }
@@ -3402,8 +3297,7 @@ void CtiCCCommandExecutor::Flip7010Device()
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+        CTILOG_WARN(dout, "Could not create Porter Request Message");
     }
 }
 
@@ -3474,10 +3368,7 @@ void CtiCCCommandExecutor::Scan2WayDevice(long bankId)
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - CapBank Not attached to Feeder/Sub.  Cannot Scan Control Device " << endl;
-                }
+                CTILOG_WARN(dout, "CapBank Not attached to Feeder/Sub.  Cannot Scan Control Device ");
             }
         }
     }
@@ -3649,8 +3540,7 @@ void CtiCCCommandExecutor::ConfirmSubstationBus()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                CTILOG_WARN(dout, "Could not create Porter Request Message");
                             }
 
                             doConfirmImmediately(currentSubstationBus, pointChanges, ccEvents, controlID);
@@ -3843,8 +3733,7 @@ void CtiCCCommandExecutor::ConfirmFeeder()
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
+                    CTILOG_WARN(dout, "Could not create Porter Request Message");
                 }
 
                 doConfirmImmediately(currentSubstationBus, pointChanges, ccEvents, controlID);
@@ -3857,16 +3746,8 @@ void CtiCCCommandExecutor::ConfirmFeeder()
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() <<  " - Manual Confirm Feeder: "<<currentFeeder->getPaoName() <<" inhibited due to: ";
-        if (currentFeeder->getDisableFlag())
-        {
-            dout << "DisableFlag."<< endl;
-        }
-        else
-        {
-            dout << "No Control Method."<< endl;
-        }
+        CTILOG_WARN(dout, "Manual Confirm Feeder: "<<currentFeeder->getPaoName() <<" inhibited due to: "
+                    << (currentFeeder->getDisableFlag() ? "DisableFlag." : "No Control Method."));
     }
 
 
@@ -3961,10 +3842,7 @@ void CtiCCCommandExecutor::ConfirmArea()
             //Make sure this special area is enabled, or kick back an error to the clients.
             if(currentSpArea->getDisableFlag())
             {
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Special Area is not enabled, commands refused." << endl;
-                }
+                CTILOG_WARN(dout, "Special Area is not enabled, commands refused.");
 
                 CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::RESP_UNSOLICITED, CtiCCServerResponse::RESULT_COMMAND_REFUSED, "Special Area is not enabled.");
                 msg->setUser(_command->getUser());
@@ -4223,9 +4101,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                                CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
                             }
 
 
@@ -4310,9 +4187,8 @@ void CtiCCCommandExecutor::ConfirmOpen()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Unknown Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
-                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() << endl;
+                                CTILOG_WARN(dout, "Unknown Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
+                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() );
                             }
 
                             if( !confirmImmediately )
@@ -4330,15 +4206,13 @@ void CtiCCCommandExecutor::ConfirmOpen()
                         {
                             if (currentSubstationBus->getVerificationFlag())
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
-                                             <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << "."<<endl;
+                                CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
+                                             <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << ".");
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - No Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
-                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() << endl;
+                                CTILOG_WARN(dout, "No Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
+                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() );
                             }
                         }
                         break;
@@ -4357,10 +4231,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Manual Control Open received for BankID 0...Cannot control device."<<endl;
-        }
+        CTILOG_WARN(dout, "Manual Control Open received for BankID 0...Cannot control device.");
     }
 
     if( controlID > 0 )
@@ -4381,10 +4252,7 @@ void CtiCCCommandExecutor::ConfirmOpen()
     else
     {
         delete multi;
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CTILOG_WARN(dout, "Could not create Porter Request Message");
     }
 }
 
@@ -4517,9 +4385,8 @@ void CtiCCCommandExecutor::ConfirmClose()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                                CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
                             }
 
                             if( currentCapBank->getOperationAnalogPointId() > 0 )
@@ -4601,11 +4468,8 @@ void CtiCCCommandExecutor::ConfirmClose()
                             }
                             else
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Unknown Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
-                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() << endl;
-                                }
+                                CTILOG_WARN(dout, "Unknown Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
+                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() );
                                 /*if (currentSubstationBus->getStrategy()->getUnitType() == ControlStrategy::None)
                                 {
                                     confirmImmediately = true;
@@ -4627,15 +4491,13 @@ void CtiCCCommandExecutor::ConfirmClose()
                         {
                             if (currentSubstationBus->getVerificationFlag())
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
-                                             <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << "."<<endl;
+                                CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on SubstationsBus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
+                                             <<".  Cannot perform CONFIRM CLOSE on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << ".");
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - No Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
-                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() << endl;
+                                CTILOG_WARN(dout, "No Control Method: " << currentSubstationBus->getStrategy()->getControlMethod()
+                                              << " PAOID: " << currentSubstationBus->getPaoId() << " Name: " << currentSubstationBus->getPaoName() );
                             }
                         }
                         break;
@@ -4654,10 +4516,7 @@ void CtiCCCommandExecutor::ConfirmClose()
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Manual Confirm Close received for BankID 0...Cannot control device."<<endl;
-        }
+        CTILOG_ERROR(dout, "Manual Confirm Close received for BankID 0...Cannot control device.");
     }
 
     if( controlID > 0 )
@@ -4678,10 +4537,7 @@ void CtiCCCommandExecutor::ConfirmClose()
     else
     {
         delete multi;
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+        CTILOG_WARN(dout, "Could not create Porter Request Message");
     }
 }
 
@@ -4750,9 +4606,8 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                                      << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                        CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                                      << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
                     }
                 }
                 else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
@@ -4796,9 +4651,8 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                                      << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                        CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                                      << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
                     }
                 }
                 currentCapBank->setRetryOpenFailedFlag(false);
@@ -4890,9 +4744,8 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                                CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
                             }
                         }
                         else if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
@@ -4936,9 +4789,8 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                                CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                                              << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" );
                             }
                         }
                         currentCapBank->setRetryOpenFailedFlag(false);
@@ -5027,9 +4879,8 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
             }
             else
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
-                                 <<".  Cannot perform RETURN CAP TO ORIGINAL FEEDER on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << "."<<endl;
+                CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
+                                 <<".  Cannot perform RETURN CAP TO ORIGINAL FEEDER on Cap Bank: " << currentCapBank->getPaoName() << " PAOID: " << currentCapBank->getPaoId() << ".");
             }
         }
 
@@ -5039,28 +4890,22 @@ void CtiCCCommandExecutor::ReturnCapToOriginalFeeder()
     //moveCapBank(true, oldFeederId, movedCapBankId, newFeederId, capSwitchingOrder);
     if( tempFeederId > 0 && movedCapBankId > 0 && originalFeederId > 0 )
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Move Cap Bank to original feeder PAO Id: " << movedCapBankId << endl;
-        }
+        CTILOG_INFO(dout, "Move Cap Bank to original feeder PAO Id: " << movedCapBankId);
         moveCapBank(1, tempFeederId, movedCapBankId, originalFeederId, capSwitchingOrder, closeOrder, tripOrder);
     }
     else
     {
         if( tempFeederId==0 )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Feeder not found PAO Id: " << tempFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            CTILOG_WARN(dout, "Feeder not found PAO Id: " << tempFeederId);
         }
         if( originalFeederId==0 )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Feeder not found PAO Id: " << originalFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            CTILOG_WARN(dout, "Feeder not found PAO Id: " << originalFeederId);
         }
         if( movedCapBankId==0 )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Cap Bank not found PAO Id: " << movedCapBankId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            CTILOG_WARN(dout, "Cap Bank not found PAO Id: " << movedCapBankId);
         }
     }
 }
@@ -5098,36 +4943,29 @@ void CtiCCCommandExecutor::ReturnFeederToOriginalSubBus()
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
-                             <<".  Cannot perform RETURN FEEDER on Fdr: " << currentFeeder->getPaoName() << " PAOID: " << currentFeeder->getPaoId() << "."<<endl;
+            CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on Substation Bus: "<< currentSubstationBus->getPaoName() <<" PAOID: "<< currentSubstationBus->getPaoId()
+                             <<".  Cannot perform RETURN FEEDER on Fdr: " << currentFeeder->getPaoName() << " PAOID: " << currentFeeder->getPaoId() << ".");
         }
     }
 
     if( tempSubBusId > 0 && movedFeederId > 0 && originalSubBusId > 0 )
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Move Feeder to original SubBus PAO Id: " << originalSubBusId << endl;
-        }
+        CTILOG_INFO(dout, "Move Feeder to original SubBus PAO Id: " << originalSubBusId);
         moveFeeder(true, tempSubBusId, movedFeederId, originalSubBusId, fdrSwitchingOrder);
     }
     else
     {
         if( tempSubBusId==0 )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - SubBus not found PAO Id: " << tempSubBusId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            CTILOG_WARN(dout, "SubBus not found PAO Id: " << tempSubBusId);
         }
         if( originalSubBusId==0 )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - SubBus not found PAO Id: " << originalSubBusId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            CTILOG_WARN(dout, "SubBus not found PAO Id: " << originalSubBusId);
         }
         if( movedFeederId==0 )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Feeder not found PAO Id: " << movedFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            CTILOG_WARN(dout, "Feeder not found PAO Id: " << movedFeederId);
         }
     }
 }
@@ -5327,10 +5165,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
 
     if( found )
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Reset Daily Operations for PAO Id: " << paoId << endl;
-        }
+        CTILOG_INFO(dout, "Reset Daily Operations for PAO Id: " << paoId);
         if( pointChanges.size() > 0 )
         {
             CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
@@ -5344,8 +5179,7 @@ void CtiCCCommandExecutor::ResetDailyOperations()
     {
         delete multiDispatchMsg;
 
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Cannot find PAO Id: " << paoId << " in ResetDailyOperations() in: " << __FILE__ << " at: " << __LINE__ << endl;
+        CTILOG_WARN(dout, "Cannot find PAO Id: " << paoId << " in ResetDailyOperations()");
     }
 }
 
@@ -5508,9 +5342,8 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
            if (oldFeederParentSub->getVerificationFlag())
            {
                {
-                   CtiLockGuard<CtiLogger> logger_guard(dout);
-                   dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< oldFeederParentSub->getPaoName() <<" PAOID: "<< oldFeederParentSub->getPaoId()
-                                <<".  Cannot perform MOVE CAPBANK on Feeder: "<<oldFeederPtr->getPaoName()<<" PAOID: "<<oldFeederPtr->getPaoId()<<"."<<endl;
+                   CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on Substation Bus: "<< oldFeederParentSub->getPaoName() <<" PAOID: "<< oldFeederParentSub->getPaoId()
+                                <<".  Cannot perform MOVE CAPBANK on Feeder: "<<oldFeederPtr->getPaoName()<<" PAOID: "<<oldFeederPtr->getPaoId()<<".");
                }
                verificationFlag = true;
                found = true;
@@ -5526,8 +5359,7 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
         //Error Case.
         if (!verificationFlag)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Feeder not found PAO Id: " << oldFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            CTILOG_WARN(dout, "Feeder not found PAO Id: " << oldFeederId);
         }
         return false;
     }
@@ -5541,9 +5373,8 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
            if (newFeederParentSub->getVerificationFlag())
            {
                {
-                   CtiLockGuard<CtiLogger> logger_guard(dout);
-                   dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< newFeederParentSub->getPaoName() <<" PAOID: "<< newFeederParentSub->getPaoId()
-                                <<".  Cannot perform MOVE CAPBANK on Feeder: "<<newFeederPtr->getPaoName()<<" PAOID: "<<newFeederPtr->getPaoId()<<"."<<endl;
+                   CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on Substation Bus: "<< newFeederParentSub->getPaoName() <<" PAOID: "<< newFeederParentSub->getPaoId()
+                                <<".  Cannot perform MOVE CAPBANK on Feeder: "<<newFeederPtr->getPaoName()<<" PAOID: "<<newFeederPtr->getPaoId()<<".");
                }
                verificationFlag = true;
                found = true;
@@ -5559,8 +5390,7 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
         //Error Case.
         if (!verificationFlag)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Feeder not found PAO Id: " << newFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+            CTILOG_WARN(dout, "Feeder not found PAO Id: " << newFeederId);
         }
 
         return false;
@@ -5656,8 +5486,7 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
         {
             string typeString = (permanentFlag?"Permanent":"Temporary");
 
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Manual "
+            CTILOG_INFO(dout, "Manual "
                  << typeString
                  << " Cap Bank with PAO Id: "
                  << movedCapBankPtr->getPaoId() << ", name: "
@@ -5667,7 +5496,7 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
                  << oldFeederPtr->getPaoName() << ", to feeder PAO Id: "
                  << newFeederPtr->getPaoId() << ", name: "
                  << newFeederPtr->getPaoName() << ", with order: "
-                 << movedCapBankPtr->getControlOrder() << endl;
+                 << movedCapBankPtr->getControlOrder());
         }
 
         CtiCCSubstationBus_vec modifiedSubsList;
@@ -5695,8 +5524,7 @@ bool CtiCCExecutor::moveCapBank(int permanentFlag, long oldFeederId, long movedC
         {
             if( movedCapBankPtr==NULL )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Cap Bank not found PAO Id: " << movedCapBankId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                CTILOG_WARN(dout, "Cap Bank not found PAO Id: " << movedCapBankId);
             }
         }
     }
@@ -5753,9 +5581,8 @@ void CtiCCExecutor::moveFeeder(bool permanentFlag, long oldSubBusId, long movedF
         if (oldSubBusPtr->getVerificationFlag())
         {
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< oldSubBusPtr->getPaoName() <<" PAOID: "<< oldSubBusPtr->getPaoId()
-                             <<".  Cannot perform MOVE FEEDER: "<<movedFeederPtr->getPaoName()<<" PAOID: "<<movedFeederId<<"."<<endl;
+                CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on Substation Bus: "<< oldSubBusPtr->getPaoName() <<" PAOID: "<< oldSubBusPtr->getPaoId()
+                             <<".  Cannot perform MOVE FEEDER: "<<movedFeederPtr->getPaoName()<<" PAOID: "<<movedFeederId<<".");
             }
             verificationFlag = true;
             found = true;
@@ -5771,9 +5598,8 @@ void CtiCCExecutor::moveFeeder(bool permanentFlag, long oldSubBusId, long movedF
         if (newSubBusPtr->getVerificationFlag())
          {
              {
-                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                 dout << CtiTime() << " - Cap Bank Verification is ENABLED on Substation Bus: "<< newSubBusPtr->getPaoName() <<" PAOID: "<< newSubBusPtr->getPaoId()
-                              <<".  Cannot perform MOVE FEEDER: "<<movedFeederPtr->getPaoName()<<" PAOID: "<<movedFeederId<<"."<<endl;
+                 CTILOG_WARN(dout, "Cap Bank Verification is ENABLED on Substation Bus: "<< newSubBusPtr->getPaoName() <<" PAOID: "<< newSubBusPtr->getPaoId()
+                              <<".  Cannot perform MOVE FEEDER: "<<movedFeederPtr->getPaoName()<<" PAOID: "<<movedFeederId<<".");
              }
              verificationFlag = true;
              found = true;
@@ -5850,8 +5676,7 @@ void CtiCCExecutor::moveFeeder(bool permanentFlag, long oldSubBusId, long movedF
         {
             string typeString = (permanentFlag?"Permanent":"Temporary");
 
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Manual "
+            CTILOG_INFO(dout, "Manual "
                  << typeString
                  << " Feeder with PAO Id: "
                  << movedFeederPtr->getPaoId() << ", name: "
@@ -5861,7 +5686,7 @@ void CtiCCExecutor::moveFeeder(bool permanentFlag, long oldSubBusId, long movedF
                  << oldSubBusPtr->getPaoName() << ", to SubBus PAO Id: "
                  << newSubBusPtr->getPaoId() << ", name: "
                  << newSubBusPtr->getPaoName() << ", with order: "
-                 << movedFeederPtr->getDisplayOrder() << endl;
+                 << movedFeederPtr->getDisplayOrder());
         }
 
         CtiCCSubstationBus_vec modifiedSubsList;
@@ -5877,18 +5702,15 @@ void CtiCCExecutor::moveFeeder(bool permanentFlag, long oldSubBusId, long movedF
         {
             if( oldSubBusPtr==NULL )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - SubBus not found PAO Id: " << oldSubBusId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                CTILOG_WARN(dout, "SubBus not found PAO Id: " << oldSubBusId);
             }
             if( newSubBusPtr==NULL )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - SubBus not found PAO Id: " << newSubBusId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                CTILOG_WARN(dout, "SubBus not found PAO Id: " << newSubBusId);
             }
             if( movedFeederPtr==NULL )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Feeder not found PAO Id: " << movedFeederId << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                CTILOG_WARN(dout, "Feeder not found PAO Id: " << movedFeederId);
             }
         }
     }
@@ -5938,22 +5760,15 @@ void CtiCCPointDataMsgExecutor::execute()
 
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        char tempchar[80];
-        string outString = "Manual point value received from client, ID:";
-        _ltoa(pointID,tempchar,10);
-        outString += tempchar;
-        outString += " Val:";
-        int precision = 3;
-        _snprintf(tempchar,80,"%.*f",precision,value);
-        outString += tempchar;
-        outString += " Tags:";
-        _ultoa(tags,tempchar,10);
-        outString += tempchar;
-        outString += " Timestamp: ";
-        outString += CtiTime(timestamp).asString();
+        Cti::FormattedList list;
 
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << outString.c_str() << endl;
+        list << "Manual point value received from client";
+        list.add("ID")          << pointID;
+        list.add("Val")         << value;
+        list.add("Tags")        << tags;
+        list.add("Timestamp")   << timestamp;
+
+        CTILOG_DEBUG(dout, list);
     }
 
     bool found = false;
@@ -5991,11 +5806,8 @@ void CtiCCPointDataMsgExecutor::execute()
                         {
                             if( value < 0)
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " CapBank:" << currentCapBank->getPaoName() << " received an invalid "
-                                         << "control state value (" << (long)value << "). Not adjusting the cap bank." << endl;
-                                }
+                                CTILOG_WARN(dout, "CapBank:" << currentCapBank->getPaoName() << " received an invalid "
+                                         << "control state value (" << (long)value << "). Not adjusting the cap bank." );
                             }
                             else
                             {
@@ -6160,64 +5972,55 @@ void CtiCCShutdownExecutor::execute()
     {
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Shutting down cap controller thread..." << endl;
+            CTILOG_DEBUG(dout, "Shutting down cap controller thread...");
         }
 
         CtiCapController::getInstance()->stop();
 
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Cap controller thread shutdown." << endl;
+            CTILOG_DEBUG(dout, "Cap controller thread shutdown.");
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     try
     {
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Shutting down client listener thread..." << endl;
+            CTILOG_DEBUG(dout, "Shutting down client listener thread...");
         }
 
         CtiCCClientListener::getInstance().stop();
 
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Client listener thread shutdown." << endl;
+            CTILOG_DEBUG(dout, "Client listener thread shutdown.");
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     try
     {
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Shutting down substation bus store..." << endl;
+            CTILOG_DEBUG(dout, "Shutting down substation bus store...");
         }
 
         CtiCCSubstationBusStore::deleteInstance();
 
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Substation bus store shutdown." << endl;
+            CTILOG_DEBUG(dout, "Substation bus store shutdown.");
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -6281,25 +6084,18 @@ void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const long command )
             }
             default:
             {
-                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                 dout << CtiTime() << " - Voltage Regulator Command not implemented: " << command << endl;
+                CTILOG_INFO(dout, "Voltage Regulator Command not implemented: " << command);
+                break;
             }
-            break;
         }
     }
     catch ( const Cti::CapControl::NoVoltageRegulator & noRegulator )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-        dout << CtiTime() << " - " << commandName << " command failed.\n"
-             << CtiTime() << " - ** " << noRegulator.what() << std::endl;
+        CTILOG_EXCEPTION_ERROR(dout, noRegulator, commandName << " command failed");
     }
     catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-        dout << CtiTime() << " - " << commandName << " command failed.\n"
-             << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+        CTILOG_EXCEPTION_ERROR(dout, missingAttribute, commandName << " command failed");
     }
 }
 

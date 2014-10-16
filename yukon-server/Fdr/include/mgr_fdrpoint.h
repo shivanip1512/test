@@ -47,7 +47,7 @@ class IM_EX_FDRBASE CtiFDRManager
         CtiFDRPointSPtr removeFDRPointID(long myPointId);
         bool addFDRPointId(long myPointId, CtiFDRPointSPtr & point);
 
-        void printIds(CtiLogger& dout);
+        std::string printIds() const;
 
         //Encapsulated functions:
         size_t entries();

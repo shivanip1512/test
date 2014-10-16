@@ -53,20 +53,15 @@ void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes,
     {
         case KV2_MfgInfo:
             {
-                {
-                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << CtiTime() << " Creating KV2 table 0" << endl;
-                }
+                CTILOG_INFO(dout, "Creating KV2 table 0");
+
                 _table000 = new CtiAnsiKV2ManufacturerTable000( data );
                 _table000->printResult();
                 break;
             }
         case KV2_DisplayConfiguration:
             {
-                {
-                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << CtiTime() << " Creating KV2 table 70" << endl;
-                }
+                CTILOG_INFO(dout, "Creating KV2 table 70");
 
                 _table070 = new CtiAnsiKV2ManufacturerTable070( data );
                 _table070->printResult();
@@ -74,10 +69,7 @@ void CtiProtocolANSI_kv2::convertToManufacturerTable( BYTE *data, BYTE numBytes,
             }
         case KV2_PresentRegisterData:
             {
-                {
-                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << CtiTime() << " Creating KV2 table 110" << endl;
-                }
+                CTILOG_INFO(dout, "Creating KV2 table 110");
 
                 _table110 = new CtiAnsiKV2ManufacturerTable110( data );
                 _table110->printResult();

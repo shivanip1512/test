@@ -244,19 +244,13 @@ CtiTablePointDispatch& CtiTablePointDispatch::setTimeStampMillis(INT millis)
 
     if( millis > 999 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - setTimeStampMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "millis = "<< millis <<" > 999");
 
         millis %= 1000;
     }
     else if( millis < 0 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - setTimeStampMillis(), millis = " << millis << " < 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "millis = "<< millis <<" < 0");
 
         millis = 0;
     }
@@ -335,24 +329,19 @@ CtiTablePointDispatch& CtiTablePointDispatch::setNextArchiveTime(const CtiTime& 
     return *this;
 }
 
-void CtiTablePointDispatch::dump()
+std::string CtiTablePointDispatch::toString() const
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        CHAR  oldFill = dout.fill();
-        dout.fill('0');
+    Cti::FormattedList itemList;
 
-        dout << endl;
-        dout << " PointID                                  : " << _pointID << endl;
-        dout << " Time Stamp                               : " << _timeStamp << ", " << _timeStampMillis << "ms" << endl;
-        dout << " Value                                    : " << _value << endl;
-        dout << " Quality                                  : " << _quality << endl;
-        dout << " Next Archive Time                        : " << _nextArchiveTime << endl;
-        dout << " Tags                                     : 0x" << hex << setw(8) << _tags << dec << endl;
+    itemList <<"CtiTablePointDispatch";
+    itemList.add("PointID")           << _pointID;
+    itemList.add("Time Stamp")        << _timeStamp <<") "<< _timeStampMillis <<"ms";
+    itemList.add("Value")             << _value;
+    itemList.add("Quality")           << _quality;
+    itemList.add("Next Archive Time") << _nextArchiveTime;
+    itemList.add("Tags")              << CtiNumStr(_tags).xhex().zpad(8);
 
-        dout.fill(oldFill);
-    }
-
+    return itemList.toString();
 }
 
 // getLastAlarmLogID always returns 0

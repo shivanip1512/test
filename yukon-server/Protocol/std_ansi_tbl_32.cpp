@@ -18,6 +18,7 @@
 
 #include "logger.h"
 #include "std_ansi_tbl_32.h"
+#include "boost/lexical_cast.hpp"
 
 using std::string;
 using std::endl;
@@ -95,53 +96,20 @@ UINT8 CtiAnsiTable32::getDisplaySources(int sourceIndex, int widthIndex)
 //=========================================================================================================================================
 void CtiAnsiTable32::printResult( const string& deviceName )
 {
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "==================== "<<deviceName<<"  Std Table 32 ========================" << endl;
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " ** Display Source Table ** "<<endl;
-    }
+    Cti::FormattedList itemList;
+
     for (int i = 0; i < _nbrDispSources; i++)
     {
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "        Display Source["<<i<<"] : ";
-        }
+        Cti::StreamBufferSink& values = itemList.add("Display Source["+ boost::lexical_cast<string>(i) +"]");
         for (int j = 0; j < _widthDispSources; j++)
         {
-            BYTE displaySrc = _displaySources[i].displaySource[j];
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << " "<<(int)displaySrc;
-            }
+            values << _displaySources[i].displaySource[j] <<" ";
         }
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << endl;
-        }
-
-
     }
 
-
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 32") <<
+            endl <<"** Display Source Table **"<<
+            itemList
+            );
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -1,41 +1,55 @@
-/*---------------------------------------------------------------------------------*
-*
-* File:   ansi_kv2_mtable_110.cpp
-*
-* Class:
-* Date:   2/20/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_kv2_mtable_110.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2008/10/21 16:30:30 $
-*    History:
-      $Log: ansi_kv2_mtable_onehundredten.cpp,v $
-      Revision 1.3  2008/10/21 16:30:30  mfisher
-      YUK-6615 ANSI table class names and filenames are difficult to read
-      Renamed classes and filenames
-
-      Revision 1.2  2005/02/10 23:23:56  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.1  2005/01/25 18:33:51  jrichter
-      added present value tables for kv2 and sentinel for voltage, current, freq, pf, etc..meter info
-
-      Revision 1.2  2004/09/30 21:37:16  jrichter
-      Ansi protocol checkpoint.  Good point to check in as a base point.
-
-      Revision 1.1  2003/04/25 14:54:54  dsutton
-      Ansi protocol tables specific to the implementation of the KV2
-
-*----------------------------------------------------------------------------------*/
 #include "precompiled.h"
 
+#include "boost/lexical_cast.hpp"
 #include "logger.h"
 #include "ansi_kv2_mtable_110.h"
 
 using std::endl;
+
+namespace {
+
+/**
+ * convert array to string
+ */
+template <typename T>
+std::string arrToStr(const T* const arr, unsigned size)
+{
+    if( ! size )
+    {
+        return "";
+    }
+
+    std::string str = boost::lexical_cast<std::string>(arr[0]);
+    for (unsigned index = 1; index < size; index++)
+    {
+        str += "  " + boost::lexical_cast<std::string>(arr[index]);
+    }
+
+    return str;
+}
+
+/**
+ * convert array to string and divide each item
+ */
+template <typename T, typename DividerType>
+std::string arrToStr(const T* const arr, unsigned size, DividerType div)
+{
+    if( ! size )
+    {
+        return "";
+    }
+
+    std::string str = boost::lexical_cast<std::string>(arr[0]/div);
+    for (unsigned index = 1; index < size; index++)
+    {
+        str += "  " + boost::lexical_cast<std::string>(arr[index]/div);
+    }
+
+    return str;
+}
+
+} // namespace anonymous
+
 
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -57,231 +71,37 @@ CtiAnsiKV2ManufacturerTable110::~CtiAnsiKV2ManufacturerTable110()
 //=========================================================================================================================================
 void CtiAnsiKV2ManufacturerTable110::printResult(  )
 {
-    UINT32 *value32;
-    UINT16 *value16;
-    UINT8  *value8;
-    int i;
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  kV2 MFG Table 110  ========================" << endl;
-    }
+    Cti::FormattedList itemList;
 
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "     PRESENT REGISTER DATA TABLE " << endl;
-        dout << "        Prev Intvl Demand:  ";
-    }
-    value32 =  getPreviousIntvlDemands();
-    for (i = 0; i < 5; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<value32[i];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "        Momentary Interval Data -  "<<endl;
-        dout << "                   Demand:  ";
-    }
-    value32 =  getDemands();
-    for (i = 0; i < 5; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<value32[i];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "       KW Demand Fund+Harm:  ";
-    }
-    value32 =  getKWDmdFundPlus();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<value32[i];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "       KW Demand Fund Only:  ";
-    }
-    value32 =  getKWDmdFundOnly();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<value32[i];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "     KVAR Demand Fund+Harm:  ";
-    }
-    value32 =  getKVARDmdFundPlus();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<value32[i];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "     KVAR Demand Fund Only:  ";
-    }
-    value32 =  getKVARDmdFundOnly();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<value32[i];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "     Distortion KVA Demand:  ";
-    }
-    value32 =  getDistortionKVADmd();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<value32[i];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "       Apparent KVA Demand:  ";
-    }
-    value32 =  getApparentKVADmd();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<value32[i];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "     Voltage l-n Fund+Harm:  ";
-    }
-    value16 =  getVlnFundPlus();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<(value16[i]/(float)10);       //raw volt quantities need to be scaled by factor of 1/10
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "     Voltage l-n Fund Only:  ";
-    }
-    value16 =  getVlnFundOnly();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<(value16[i]/(float)10);         //raw volt quantities need to be scaled by factor of 1/10
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "     Voltage l-l Fund+Harm:  ";
-    }
-    value16 =  getVllFundPlus();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<(value16[i]/(float)10);        //raw volt quantities need to be scaled by factor of 1/10
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "     Voltage l-l Fund Only:  ";
-    }
-    value16 =  getVllFundOnly();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<(value16[i]/(float)10);        //raw volt quantities need to be scaled by factor of 1/10
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "         Current Fund+Harm:  ";
-    }
-    value16 =  getCurrFundPlus();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<(value16[i])/(float)10;        //raw current quantities need to be scaled by factor of 1/10
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "         Current Fund Only:  ";
-    }
-    value16 =  getCurrFundOnly();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<(value16[i]/(float)10);       //raw current quantities need to be scaled by factor of 1/10
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "   Imputed Neutral Current:    "<<(getImputedNeutralCurr()/(float)10)<<endl;   //raw current quantities need to be scaled by factor of 1/10
-        dout << "              Power Factor:    "<<(getPowerFactor()/(float)100)<<endl;    //raw pf quantities need to be scaled by factor of 1/100
-        dout << "                 Frequency:    "<<(getFrequency()/(float)100)<<endl;  //raw freq. quantities need to be scaled by factor of 1/100
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "         Total Demand Distortion:  ";
-    }
-    value8 =  getTDD();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<(value8[i]/(float)100);         //raw distortion quantities need to be scaled by factor of 1/100
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "    Current Total Harm Distortion:  ";
-    }
-    value8 =  getITHD();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<(value8[i]/(float)100);      //raw distortion quantities need to be scaled by factor of 1/100
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "    Voltage Total Harm Distortion:  ";
-    }
-    value8 =  getVTHD();
-    for (i = 0; i < 3; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<(value8[i]/(float)100);      //raw distortion quantities need to be scaled by factor of 1/100
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-        dout << "          Distortion Power Factor:  ";
-    }
-    value8 =  getDistortionPF();
-    for (i = 0; i < 4; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "  "<<(value8[i] /(float) 100);      //raw distortion quantities need to be scaled by factor of 1/100
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
-    }
+    itemList.add("Prev Intvl Demand")             << arrToStr(getPreviousIntvlDemands(), 5);
+
+    itemList <<"Momentary Interval Data";
+    itemList.add("Demand")                        << arrToStr(getDemands(),          5);
+    itemList.add("KW Demand Fund+Harm")           << arrToStr(getKWDmdFundPlus(),    3);
+    itemList.add("KW Demand Fund Only")           << arrToStr(getKWDmdFundOnly(),    3);
+    itemList.add("KVAR Demand Fund+Harm")         << arrToStr(getKVARDmdFundPlus(),  3);
+    itemList.add("KVAR Demand Fund Only")         << arrToStr(getKVARDmdFundOnly(),  3);
+    itemList.add("Distortion KVA Demand")         << arrToStr(getDistortionKVADmd(), 3);
+    itemList.add("Apparent KVA Demand")           << arrToStr(getApparentKVADmd(),   3);
+    itemList.add("Voltage l-n Fund+Harm")         << arrToStr(getVlnFundPlus(),      3, (float)10);  //raw volt quantities need to be scaled by factor of 1/10
+    itemList.add("Voltage l-n Fund Only")         << arrToStr(getVlnFundOnly(),      3, (float)10);  //raw volt quantities need to be scaled by factor of 1/10
+    itemList.add("Voltage l-l Fund+Harm")         << arrToStr(getVllFundPlus(),      3, (float)10);  //raw volt quantities need to be scaled by factor of 1/10
+    itemList.add("Voltage l-l Fund Only")         << arrToStr(getVllFundOnly(),      3, (float)10);  //raw volt quantities need to be scaled by factor of 1/10
+    itemList.add("Current Fund+Harm")             << arrToStr(getCurrFundPlus(),     3, (float)10);  //raw current quantities need to be scaled by factor of 1/10
+    itemList.add("Current Fund Only")             << arrToStr(getCurrFundOnly(),     3, (float)10);  //raw current quantities need to be scaled by factor of 1/10
+    itemList.add("Imputed Neutral Current")       << (getImputedNeutralCurr()         / (float)10);  //raw current quantities need to be scaled by factor of 1/10
+    itemList.add("Power Factor")                  << (getPowerFactor()                / (float)100); //raw pf quantities need to be scaled by factor of 1/100
+    itemList.add("Frequency")                     << (getFrequency()                  / (float)100); //raw freq. quantities need to be scaled by factor of 1/100
+    itemList.add("Total Demand Distortion")       << arrToStr(getTDD(),              3, (float)100); //raw distortion quantities need to be scaled by factor of 1/100
+    itemList.add("Current Total Harm Distortion") << arrToStr(getITHD(),             3, (float)100); //raw distortion quantities need to be scaled by factor of 1/100
+    itemList.add("Voltage Total Harm Distortion") << arrToStr(getVTHD(),             3, (float)100); //raw distortion quantities need to be scaled by factor of 1/100
+    itemList.add("Distortion Power Factor")       << arrToStr(getDistortionPF(),     4, (float)100); //raw distortion quantities need to be scaled by factor of 1/100
+
+    CTILOG_INFO(dout,
+            endl << formatTableName("kV2 MFG Table 110") <<
+            endl <<"PRESENT REGISTER DATA TABLE"<<
+            itemList
+            );
 }
 
 UINT32* CtiAnsiKV2ManufacturerTable110::getPreviousIntvlDemands()

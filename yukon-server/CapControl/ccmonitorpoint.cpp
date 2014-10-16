@@ -203,10 +203,7 @@ void CtiCCMonitorPoint::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Inserted Monitor Point into dynamicCCMonitorBankHistory: " << endl;
-            }
+            CTILOG_INFO(dout, "Inserted Monitor Point into dynamicCCMonitorBankHistory: ");
 
 
             static const string insertSql = "insert into dynamicccmonitorbankhistory values( "

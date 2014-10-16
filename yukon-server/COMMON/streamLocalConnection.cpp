@@ -12,23 +12,9 @@ namespace Cti {
 
 namespace {
 
-void logError(const char *label, int line, const std::string &desc)
-{
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << CtiTime() << " **** ERROR **** " << label << " (" << line << "): " << desc << endl;
-}
-
-void logErrorAndThrowException(const char *label, int line, const std::string &desc)
-{
-    logError(label, line, desc);
-    throw StreamConnectionException(desc);
-}
-
 std::string getErrorMessage(int error)
 {
-    std::ostringstream desc;
-    desc << "Error " << error << " -> " << getSystemErrorMessage(error);
-    return desc.str();
+    return StreamBuffer() <<"Error "<< error <<" -> "<< getSystemErrorMessage(error);
 }
 
 } // namespace anonymous
@@ -41,7 +27,7 @@ StreamLocalConnection<Outbound, Inbound>::StreamLocalConnection() :
     _dataAvailableEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
     if( _dataAvailableEvent == (HANDLE)NULL )
     {
-        logError(__FILE__, __LINE__, getErrorMessage(GetLastError()));
+        CTILOG_FATAL(dout, getErrorMessage(GetLastError()));
         exit(-1);
     }
 }
@@ -57,14 +43,16 @@ size_t StreamLocalConnection<Outbound, Inbound>::write(const void *buf, int len,
 {
     if( ! isValid() )
     {
-        logErrorAndThrowException(__FILE__, __LINE__, "Write attempted on invalid connection");
+        const char* desc = "Write attempted on invalid connection";
+        CTILOG_ERROR(dout, desc);
+        throw StreamConnectionException(desc);
     }
 
     if( len != sizeof(Outbound) )
     {
-        std::ostringstream desc;
-        desc << "Write with len != sizeof(Outbound) (" << len << " != " << sizeof(Outbound) << ")";
-        logErrorAndThrowException(__FILE__, __LINE__, desc.str());
+        const std::string& desc = StreamBuffer() << "Write with len != sizeof(Outbound) ("<< len <<" != "<< sizeof(Outbound) <<")";
+        CTILOG_ERROR(dout, desc);
+        throw StreamConnectionException(desc);
     }
 
     try
@@ -75,7 +63,9 @@ size_t StreamLocalConnection<Outbound, Inbound>::write(const void *buf, int len,
 
         if( ! SetEvent(_dataAvailableEvent) )
         {
-            logErrorAndThrowException(__FILE__, __LINE__, getErrorMessage(GetLastError()));
+            const std::string desc = getErrorMessage(GetLastError());
+            CTILOG_ERROR(dout, desc);
+            throw StreamConnectionException(desc);
         }
 
         return len;
@@ -86,7 +76,9 @@ size_t StreamLocalConnection<Outbound, Inbound>::write(const void *buf, int len,
     }
     catch(...)
     {
-        logErrorAndThrowException(__FILE__, __LINE__, "Unhandled exception caught");
+        const char* desc = "Unhandled exception caught";
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, desc);
+        throw StreamConnectionException(desc);
     }
 }
 
@@ -95,7 +87,9 @@ size_t StreamLocalConnection<Outbound, Inbound>::read(void *buf, int len, const 
 {
     if( ! isValid() )
     {
-        logErrorAndThrowException(__FILE__, __LINE__, "Read attempted on invalid connection");
+        const char* desc = "Read attempted on invalid connection";
+        CTILOG_ERROR(dout, desc);
+        throw StreamConnectionException(desc);
     }
 
     return _directConnection->readFromOutQueue(buf, len, timeout, hAbort, DirectConnectionType::MessageRead);
@@ -106,7 +100,9 @@ size_t StreamLocalConnection<Outbound, Inbound>::peek(void *buf, int len)
 {
     if( ! isValid() )
     {
-        logErrorAndThrowException(__FILE__, __LINE__, "Peek attempted on invalid connection");
+        const char* desc = "Peek attempted on invalid connection";
+        CTILOG_ERROR(dout, desc);
+        throw StreamConnectionException(desc);
     }
 
     return _directConnection->readFromOutQueue(buf, len, Chrono::milliseconds(0), NULL, DirectConnectionType::MessagePeek);
@@ -117,9 +113,9 @@ size_t StreamLocalConnection<Outbound, Inbound>::readFromOutQueue(void *buf, int
 {
     if( len != sizeof(Outbound) )
     {
-        std::ostringstream desc;
-        desc << "Read with len != sizeof(Outbound) (" << len << " != " << sizeof(Outbound) << ")";
-        logErrorAndThrowException(__FILE__, __LINE__, desc.str());
+        const std::string& desc = StreamBuffer() <<"Read with len != sizeof(Outbound) ("<< len <<" != "<< sizeof(Outbound) <<")";
+        CTILOG_ERROR(dout, desc)
+        throw StreamConnectionException(desc);
     }
 
     std::vector<HANDLE> hEvents;
@@ -168,7 +164,9 @@ size_t StreamLocalConnection<Outbound, Inbound>::readFromOutQueue(void *buf, int
                             // reset event if outQueue is empty
                             if( _outQueue.empty() && ! ResetEvent(_dataAvailableEvent) )
                             {
-                                logErrorAndThrowException(__FILE__, __LINE__, getErrorMessage(GetLastError()));
+                                const std::string desc = getErrorMessage(GetLastError());
+                                CTILOG_ERROR(dout, desc);
+                                throw StreamConnectionException(desc);
                             }
                         }
 
@@ -183,7 +181,9 @@ size_t StreamLocalConnection<Outbound, Inbound>::readFromOutQueue(void *buf, int
                 }
                 catch(...)
                 {
-                    logErrorAndThrowException(__FILE__, __LINE__, "Unhandled exception caught");
+                    const char* desc = "Unhandled exception caught";
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, desc);
+                    throw StreamConnectionException(desc);
                 }
             }
         case WAIT_TIMEOUT:
@@ -192,11 +192,15 @@ size_t StreamLocalConnection<Outbound, Inbound>::readFromOutQueue(void *buf, int
             }
         case WAIT_FAILED:
             {
-                logErrorAndThrowException(__FILE__, __LINE__, getErrorMessage(GetLastError()));
+                const std::string desc = getErrorMessage(GetLastError());
+                CTILOG_ERROR(dout, desc);
+                throw StreamConnectionException(desc);
             }
         default:
             {
-                logErrorAndThrowException(__FILE__, __LINE__, "WaitForMultipleObjects returned an unexpected value");
+                const char* desc = "WaitForMultipleObjects returned an unexpected value";
+                CTILOG_ERROR(dout, desc);
+                throw StreamConnectionException(desc);
             }
         }
 
@@ -242,7 +246,9 @@ void StreamLocalConnection<OUTMESS, INMESS>::purgeRequest(int request)
     // reset event if outQueue is empty
     if( _outQueue.empty() && ! ResetEvent(_dataAvailableEvent) )
     {
-        logErrorAndThrowException(__FILE__, __LINE__, getErrorMessage(GetLastError()));
+        const std::string desc = getErrorMessage(GetLastError());
+        CTILOG_ERROR(dout, desc);
+        throw StreamConnectionException(desc);
     }
 }
 

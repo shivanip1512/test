@@ -84,42 +84,35 @@ CtiAnsiTable63& CtiAnsiTable63::operator=(const CtiAnsiTable63& aRef)
 //=========================================================================================================================================
 void CtiAnsiTable63::printResult( const string& deviceName )
 {
-    int index= 0;
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 63  ========================" << endl;
-        dout << endl << "   --- Load Profile Status Table ---" << endl;
-    }
-    for (int x = 0; x < 4; x++)
+    Cti::FormattedList itemList;
+
+    for (int x = 0, index=0; x < 4; x++)
     {
         if (_lpCtrlDataSetUsed[x])
         {
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "        LP STATUS SET "<<x + 1<<" : "<<endl;
-                dout << "            FLAGS: block order "<<(bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.block_order<<endl;
-                dout << "            overflow    "<<(bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.overflow_flag<<endl;
-                dout << "             list type "<<(bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.list_type<<endl;
-                dout << "             block inhibit overflow "<<(bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.block_inhibit_overflow_flag<<endl;
-                dout << "             interval order "<<(bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.interval_order<<endl;
-                dout << "             active mode "<<(bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.active_mode_flag<<endl;
-                dout << "             test mode "<<(bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.test_mode<<endl;
-                dout << "            Number Valid Blocks:  "<<_lp_status_tbl.lp_status_set[index].nbr_valid_blocks<<endl;
-                dout << "            Last Block Element: "<<_lp_status_tbl.lp_status_set[index].last_block_element<<endl;
-                dout << "            Last Block Seq Num: "<<_lp_status_tbl.lp_status_set[index].last_block_seq_nbr<<endl;
-                dout << "            Number Unread Blocks: "<<_lp_status_tbl.lp_status_set[index].nbr_unread_blocks<<endl;
-                dout << "            Number Valid Intvls: "<<_lp_status_tbl.lp_status_set[index].nbr_valid_int<<endl;
-            }
+            itemList <<"LP STATUS SET "<< x+1;
+            itemList.add("FLAGS: block order")     << (bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.block_order;
+            itemList.add("overflow")               << (bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.overflow_flag;
+            itemList.add("list type")              << (bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.list_type;
+            itemList.add("block inhibit overflow") << (bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.block_inhibit_overflow_flag;
+            itemList.add("interval order")         << (bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.interval_order;
+            itemList.add("active mode")            << (bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.active_mode_flag;
+            itemList.add("test mode")              << (bool)_lp_status_tbl.lp_status_set[index].lp_set_status_flags.test_mode;
+            itemList.add("Number Valid Blocks")    <<       _lp_status_tbl.lp_status_set[index].nbr_valid_blocks;
+            itemList.add("Last Block Element")     <<       _lp_status_tbl.lp_status_set[index].last_block_element;
+            itemList.add("Last Block Seq Num")     <<       _lp_status_tbl.lp_status_set[index].last_block_seq_nbr;
+            itemList.add("Number Unread Blocks")   <<       _lp_status_tbl.lp_status_set[index].nbr_unread_blocks;
+            itemList.add("Number Valid Intvls")    <<       _lp_status_tbl.lp_status_set[index].nbr_valid_int;
+
             index++;
         }
     }
+
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 63") <<
+            endl <<"** Load Profile Status Table **"<<
+            itemList
+            )
 }
 
 UINT16 CtiAnsiTable63::getNbrValidBlocks(int setNbr)

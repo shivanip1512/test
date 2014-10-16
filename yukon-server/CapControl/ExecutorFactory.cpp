@@ -91,8 +91,7 @@ std::auto_ptr<CtiCCExecutor> CtiCCExecutorFactory::createExecutor(const CtiMessa
 
         default:
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - CtiCCExecutorFactory::createExecutor - Warning unknown classId: " << classId << endl;
+            CTILOG_WARN(dout, "unknown classId: " << classId);
             ret_val.reset(new NoOpExecutor());
         }
     }

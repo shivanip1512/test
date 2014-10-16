@@ -50,8 +50,7 @@ void CtiTableDeviceLoadProfile::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["deviceid"] >> _deviceID;
@@ -70,13 +69,10 @@ void CtiTableDeviceLoadProfile::DecodeDatabaseReader(Cti::RowReader &rdr)
             {
                 if( _loadProfileDemandRate == 0 )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " **** Load Profile collection disabled for deviceID = " << _deviceID << " ****" << endl;
-                        dout << " **** LOADPROFILE DEMAND RATE == 0 while attempting Load Profile collection ****" << endl;
-                        dout << " **** FIX DATABASE ENTRY **** " << endl;
-                    }
+                    CTILOG_WARN(dout, "Load Profile collection disabled for deviceID = "<< _deviceID <<
+                            endl <<"**** LOADPROFILE DEMAND RATE == 0 while attempting Load Profile collection ****"<<
+                            endl <<"**** FIX DATABASE ENTRY ****"
+                            );
 
                     _channelsValid.reset(i);
                 }

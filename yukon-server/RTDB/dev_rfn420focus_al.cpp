@@ -107,8 +107,7 @@ YukonError_t Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
         if( config_display_digits > 6 ||
             config_display_digits < 4 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << config_display_digits << ") for config key \"" << Config::RfnStrings::DisplayDigits << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_ERROR(dout, "Device \"" << getName() << "\" - Invalid value (" << config_display_digits << ") for config key \"" << Config::RfnStrings::DisplayDigits << "\"");
 
             return ClientErrors::InvalidConfigData;
         }
@@ -130,8 +129,7 @@ YukonError_t Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
             }
             else if( seen_slot_disabled )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << configDisplayItem << ") seen after SLOT_DISABLED for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                CTILOG_ERROR(dout, "Device \"" << getName() << "\" - Invalid value (" << configDisplayItem << ") seen after SLOT_DISABLED for config key \"" << configKey << "\"");
 
                 return ClientErrors::InvalidConfigData;
             }
@@ -149,8 +147,7 @@ YukonError_t Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
 
                 if( ! metricItem )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - Invalid value (" << configDisplayItem << ") for config key \"" << configKey << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                    CTILOG_ERROR(dout, "Device \"" << getName() << "\" - Invalid value (" << configDisplayItem << ") for config key \"" << configKey << "\"");
 
                     return ClientErrors::InvalidConfigData;
                 }
@@ -181,8 +178,7 @@ YukonError_t Rfn420FocusAlDevice::executePutConfigDisplay(CtiRequestMsg *pReq, C
     }
     catch( const MissingConfigDataException &e )
     {
-        logInfo( e.what(),
-                 __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
         return ClientErrors::NoConfigData;
     }

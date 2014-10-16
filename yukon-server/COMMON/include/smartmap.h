@@ -21,6 +21,7 @@ public:
     typedef std::map< long, ptr_type >                   coll_type;     // This is the collection type!
     typedef typename coll_type::value_type               val_type;
     typedef typename coll_type::iterator                 spiterator;
+    typedef typename coll_type::const_iterator           const_spiterator;
     typedef typename std::pair<spiterator, bool>         insert_pair;
 
     typedef typename Cti::readers_writer_lock_t          lock_t;
@@ -263,6 +264,11 @@ public:
     }
 
     coll_type &getMap()
+    {
+        return _map;
+    }
+
+    const coll_type &getMap() const
     {
         return _map;
     }

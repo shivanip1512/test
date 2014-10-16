@@ -310,21 +310,20 @@ CtiTableDynamicTag& CtiTableDynamicTag::setTaggedForStr(const string& str)
     return *this;
 }
 
-void CtiTableDynamicTag::dump()
+std::string CtiTableDynamicTag::toString() const
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+    Cti::FormattedList itemList;
 
-        dout << "getInstanceId()      "  << getInstanceId() << endl;
-        dout << "getPointId()         "  << getPointId() << endl;
-        dout << "getTagId()           "  << getTagId() << endl;
+    itemList <<"CtiTableDynamicTag";
+    itemList.add("getInstanceId()")     << getInstanceId();
+    itemList.add("getPointId()")        << getPointId();
+    itemList.add("getTagId()")          << getTagId();
+    itemList.add("getUserName()")       << getUserName();
+    itemList.add("getActionStr()")      << getActionStr();
+    itemList.add("getDescriptionStr()") << getDescriptionStr();
+    itemList.add("getTagTime()")        << getTagTime();
+    itemList.add("getReferenceStr()")   << getReferenceStr();
+    itemList.add("getTaggedForStr()")   << getTaggedForStr();
 
-        dout << "getUserName()        "  << getUserName() << endl;
-        dout << "getActionStr()       "  << getActionStr() << endl;
-        dout << "getDescriptionStr()  "  << getDescriptionStr() << endl;
-
-        dout << "getTagTime()         "  << getTagTime() << endl;
-        dout << "getReferenceStr()    "  << getReferenceStr() << endl;
-        dout << "getTaggedForStr()    "  << getTaggedForStr() << endl;
-    }
+    return itemList.toString();
 }

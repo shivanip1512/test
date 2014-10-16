@@ -64,7 +64,7 @@
 
 using namespace std;
 
-extern IM_EX_CTIBASE void DumpOutMessage(void *Mess);
+extern IM_EX_CTIBASE std::string outMessageToString(const OUTMESS* Om);
 
 CtiClientConnection   VanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
 CtiPILExecutorFactory ExecFactory;
@@ -167,8 +167,7 @@ int PilServer::execute()
     }
     catch(const RWxmsg& x)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception: " << __FILE__ << " (" << __LINE__ << ") " << x.why() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, x);
     }
 
     return 0;
@@ -182,10 +181,7 @@ void PilServer::mainThread()
     CtiMessage   *MsgPtr;
     int groupBypass = 0;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PILMainThread  : Started as TID " << rwThreadId() << endl;
-    }
+    CTILOG_INFO(dout, "PIL mainThread - Started");
 
     VanGoghConnection.setName("Pil to Dispatch");
     VanGoghConnection.start();
@@ -236,13 +232,8 @@ void PilServer::mainThread()
 
                     if(MsgPtr->isA() == MSG_PCREQUEST && MsgPtr->getMessageTime().seconds() < (TimeNow.seconds() - 900))
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << TimeNow << " PIL processing an inbound request message which is over 15 minutes old.  Message will be discarded." << endl;
-                            dout << " >>---------- Message Content ----------<< " << endl;
-                            MsgPtr->dump();
-                            dout << " <<---------- Message Content ---------->> " << endl;
-                        }
+                        CTILOG_INFO(dout, "PIL processing an inbound request message which is over 15 minutes old - Message will be discarded" <<
+                                *MsgPtr);
 
                         if( CtiConnection *requestingClient = static_cast<CtiConnection *>(MsgPtr->getConnectionHandle()) )
                         {
@@ -275,10 +266,7 @@ void PilServer::mainThread()
                         CtiMultiMsg_vec::const_iterator msg_itr = subMessages.begin(),
                                                         msg_end = subMessages.end();
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << TimeNow << " PIL breaking out a CtiMultiMsg with " << subMessages.size() << " submessages" << endl;
-                        }
+                        CTILOG_INFO(dout, "PIL breaking out a CtiMultiMsg with " << subMessages.size() << " submessages");
 
                         for( ; msg_itr != msg_end; ++msg_itr )
                         {
@@ -301,10 +289,7 @@ void PilServer::mainThread()
                         }
                         catch(...)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                         }
 
                         delete pExec;  //  NOTE - this deletes the MsgPtr!
@@ -323,10 +308,7 @@ void PilServer::mainThread()
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             try
@@ -358,10 +340,7 @@ void PilServer::mainThread()
 
                 if( ConnThread_.join(10000) == RW_THR_TIMEOUT) // Wait for the Conn thread to die.
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " PIL Server shutting down the ConnThread_: FAILED " << endl;
-                    }
+                    CTILOG_ERROR(dout, "PIL Server shutting down the ConnThread_: FAILED (will terminate)");
                     ConnThread_.terminate();
                 }
 
@@ -371,15 +350,11 @@ void PilServer::mainThread()
                 {
                     if(ResultThread_.requestCancellation(150) == RW_THR_TIMEOUT)   // Mark it for destruction...
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " PIL Server shutting down the ResultThread_: TIMEOUT " << endl;
-                        }
+                        CTILOG_WARN(dout, "PIL Server shutting down the ResultThread_: TIMEOUT");
+
                         if(ResultThread_.join(500) == RW_THR_TIMEOUT)                     // Wait for the closure
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " PIL Server shutting down the ResultThread_: FAILED " << endl;
-
+                            CTILOG_ERROR(dout, "PIL Server shutting down the ResultThread_: FAILED (will terminate)");
                             ResultThread_.terminate();
                         }
                     }
@@ -391,15 +366,11 @@ void PilServer::mainThread()
                 {
                     if(_nexusWriteThread.requestCancellation(150) == RW_THR_TIMEOUT)   // Mark it for destruction...
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " PIL Server shutting down the _nexusWriteThread: TIMEOUT " << endl;
-                        }
+                        CTILOG_WARN(dout, "PIL Server shutting down the _nexusWriteThread: TIMEOUT");
+
                         if(_nexusWriteThread.join(500) == RW_THR_TIMEOUT)                     // Wait for the closure
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " PIL Server shutting down the _nexusWriteThread: FAILED " << endl;
-
+                            CTILOG_ERROR(dout, "PIL Server shutting down the _nexusWriteThread: FAILED (will terminate)");
                             _nexusWriteThread.terminate();
                         }
                     }
@@ -411,34 +382,22 @@ void PilServer::mainThread()
                 {
                     if(_nexusThread.requestCancellation(150) == RW_THR_TIMEOUT)   // Mark it for destruction...
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " PIL Server shutting down the _nexusThread: TIMEOUT " << endl;
-                        }
+                        CTILOG_WARN(dout, "PIL Server shutting down the _nexusThread: TIMEOUT");
+
                         if(_nexusThread.join(500) == RW_THR_TIMEOUT)                     // Wait for the closure
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " PIL Server shutting down the _nexusThread: FAILED " << endl;
-
+                            CTILOG_ERROR(dout, "PIL Server shutting down the _nexusThread: FAILED (will terminate)");
                             _nexusThread.terminate();
                         }
                     }
                 }
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " PIL Server shut down complete " << endl;
-                }
+                CTILOG_INFO(dout, "PIL Server shutdown complete");
             }
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ****  EXCEPTION: PIL mainThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  - Will attmept to recover" << endl;
-            }
-
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "PIL mainThread - FAILED (will attempt to recover)");
             Sleep(5000);
         }
     }
@@ -447,14 +406,13 @@ void PilServer::mainThread()
 
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
     VanGoghConnection.close();
+
+    CTILOG_INFO(dout, "PIL mainThread - Terminating");
 }
 
 void PilServer::connectionThread()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ConnThread     : Started as TID " << rwThreadId() << endl;
-    }
+    CTILOG_INFO(dout, "PIL connThread - Started");
 
     // main loop
     try
@@ -470,53 +428,38 @@ void PilServer::connectionThread()
 
             if( _listenerConnection.acceptClient() )
             {
-                // Create new pil connection manager
-                CtiServer::ptr_type sptrConMan( CTIDBG_new CtiPILConnectionManager( _listenerConnection, &MainQueue_ ));
+                // create new pil connection manager
+                CtiServer::ptr_type sptrConMan(new CtiPILConnectionManager(_listenerConnection, &MainQueue_));
+                sptrConMan->setClientName("DEFAULT"); //FIXME: give me a better name
 
-                sptrConMan->setClientName("DEFAULT");
+                // add the new client connection
+                clientConnect(sptrConMan);
 
-                // the new client connection
-                clientConnect( sptrConMan );
+                // need to inform the MainThread of the "New Guy" so that he may control its destiny from now on.
+                auto_ptr<CtiCommandMsg> cmdMsg(new CtiCommandMsg(CtiCommandMsg::NewClient, 15));
+                cmdMsg->setConnectionHandle(sptrConMan.get());
+                MainQueue_.putQueue(cmdMsg.release());
 
-                // Need to inform MainThread of the "New Guy" so that he may control its destiny from now on.
-                auto_ptr<CtiCommandMsg >CmdMsg( CTIDBG_new CtiCommandMsg( CtiCommandMsg::NewClient, 15 ));
-
-                if( CmdMsg.get() != NULL )
-                {
-                    CmdMsg->setConnectionHandle( (void*) sptrConMan.get() );
-                    MainQueue_.putQueue( CmdMsg.release() );
-                    sptrConMan->start();
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " ERROR Starting CTIDBG_new connection! " << rwThreadId() << endl;
-                }
+                // start the connection
+                sptrConMan->start();
             }
 
             validateConnections();
         }
     }
-    catch( RWxmsg& msg )
+    catch( RWxmsg& ex )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl <<  " ConnThread: Failed... " << msg.why() << endl;
-        }
+        CTILOG_EXCEPTION_ERROR(dout, ex, "PIL connThread - FAILED");
         throw;
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ConnThread: " << rwThreadId() << " is properly shutdown... " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "PIL connThread - FAILED");
     }
 
     _broken = true;
+
+    CTILOG_INFO(dout, "PIL connThread - Terminating");
 }
 
 /**
@@ -528,12 +471,8 @@ void PilServer::validateConnections()
 
     while( CtiServer::ptr_type CM = mConnectionTable.remove(NonViableConnection, NULL) )
     {
-        {
-            CtiTime Now;
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << Now << " ** INFO ** Vagrant connection detected. Removing it." << endl;
-            dout << Now << "   Connection: " << CM->getClientName() << " id " << CM->getClientAppId() << " on " << CM->getPeer() << " will be removed" << endl;
-        }
+        CTILOG_INFO(dout, "Vagrant connection detected - Removing it"<<
+                std::endl <<"Connection: "<< CM->getClientName() <<" id "<< CM->getClientAppId() <<" on "<< CM->getPeer() <<" will be removed");
 
         clientShutdown(CM);
     }
@@ -563,10 +502,7 @@ struct collectRfnResultDeviceIds
 
 void PilServer::resultThread()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ResThread      : Started as TID " << rwThreadId() << endl;
-    }
+    CTILOG_INFO(dout, "PIL resultThread - Started");
 
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
@@ -614,9 +550,7 @@ void PilServer::resultThread()
             }
             catch(const RWCancellation& cMsg)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ResThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
-
+                CTILOG_WARN(dout, "PIL resultThread - Thread cancellation");
                 bServerClosing = true;
             }
 
@@ -636,21 +570,15 @@ void PilServer::resultThread()
         }
         catch(...)
         {
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "PIL resultThread - FAILED (will attempt to recover)");
             Sleep(5000);
-
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ****  EXCEPTION: PIL resultThread **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  - Will attempt to recover" << endl;
         }
 
     } /* End of for */
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ResThread : " << rwThreadId() << " terminating " << endl;
-    }
-
     _broken = true;
+
+    CTILOG_INFO(dout, "PIL resultThread - Terminating");
 }
 
 
@@ -675,9 +603,7 @@ struct InMessageResultProcessor : Devices::DeviceHandler
 
     YukonError_t execute(Devices::RfnDevice &dev)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " InMessageResultProcessor called on RFN device:" << endl;
-        dout << dev.getName() << " / " << dev.getID() << endl;
+        CTILOG_INFO(dout, "InMessageResultProcessor called on RFN device: "<< dev.getName() <<" / "<< dev.getID());
 
         return ClientErrors::NoMethod;
     }
@@ -703,12 +629,14 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
 
     if( ! DeviceRecord )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "InMessage received from unknown device.  Device ID: " << InMessage.DeviceID << endl;
-            dout << " Port listed as                                   : " << InMessage.Port     << endl;
-            dout << " Remote listed as                                 : " << InMessage.Remote   << endl;
-        }
+        FormattedList logItems;
+
+        logItems.add("Device ID")        << InMessage.DeviceID;
+        logItems.add("Port listed as")   << InMessage.Port;
+        logItems.add("Remote listed as") << InMessage.Remote;
+
+        CTILOG_WARN(dout, "InMessage received from unknown device" <<
+                logItems);
 
         std::auto_ptr<CtiReturnMsg> idnf_msg(
             new CtiReturnMsg(
@@ -729,9 +657,7 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
     {
         if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Pilserver resultThread received an InMessage for " << DeviceRecord->getName();
-            dout << " at priority " << InMessage.Priority << endl;
+            CTILOG_DEBUG(dout, "Pilserver resultThread received an InMessage for "<< DeviceRecord->getName() <<" at priority "<< InMessage.Priority);
         }
 
         InMessageResultProcessor imrp(InMessage, vgList, retList);
@@ -743,11 +669,7 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Process Result FAILED "<< DeviceRecord->getName());
         }
 
         for each( OUTMESS *OutMessage in imrp.outList )
@@ -762,9 +684,7 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
     {
         if((DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD) && vgList.size())
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Info **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "   Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message.  Data may be duplicated." << endl;
+            CTILOG_DEBUG(dout, "Device " << (DeviceRecord ? DeviceRecord->getName() : "UNKNOWN") << " has generated a dispatch return message. Data may be duplicated");
         }
 
         string cmdstr(InMessage.Return.CommandStr);
@@ -805,9 +725,7 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 
     YukonError_t execute(CtiDeviceBase &dev)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " RfnDeviceResultProcessor called on non-RFN device:" << endl;
-        dout << dev.getName() << " / " << dev.getID() << endl;
+        CTILOG_ERROR(dout, "RfnDeviceResultProcessor called on non-RFN device: "<< dev.getName() <<" / "<< dev.getID());
 
         return ClientErrors::NoMethod;
     }
@@ -851,11 +769,7 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Point not found for device " << dev.getName() << " / " << dev.getID()
-                            << ": " << desolvePointType(pd.type) + " " + CtiNumStr(pd.offset) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Point not found for device "<< dev.getName() <<" / "<< dev.getID() <<": "<< desolvePointType(pd.type) <<" "<< pd.offset);
 
                 pointDataDescription << "[Unknown]";
             }
@@ -895,14 +809,15 @@ void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
 
     if( ! DeviceRecord )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "RFN result received from unknown device." << endl;
-            dout << "    Device ID: "     << result.request.deviceId << endl;
-            dout << "    Manufacturer : " << result.request.rfnIdentifier.manufacturer << endl;
-            dout << "    Model  : "       << result.request.rfnIdentifier.model << endl;
-            dout << "    Serial : "       << result.request.rfnIdentifier.serialNumber << endl;
-        }
+        FormattedList logItems;
+
+        logItems.add("Device ID")     << result.request.deviceId;
+        logItems.add("Manufacturer")  << result.request.rfnIdentifier.manufacturer;
+        logItems.add("Model")         << result.request.rfnIdentifier.model;
+        logItems.add("Serial")        << result.request.rfnIdentifier.serialNumber;
+
+        CTILOG_ERROR(dout, "RFN result received from unknown device" <<
+                logItems);
 
         std::auto_ptr<CtiReturnMsg> idnf_msg(
                 new CtiReturnMsg(
@@ -920,9 +835,7 @@ void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
     {
         if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Pilserver resultThread received an RfnDeviceResult for " << DeviceRecord->getName();
-            dout << " at priority " << result.request.priority << endl;
+            CTILOG_DEBUG(dout, "Pilserver resultThread received an RfnDeviceResult for "<< DeviceRecord->getName() <<" at priority "<< result.request.priority);
         }
 
         try
@@ -933,11 +846,7 @@ void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << " Process Result FAILED " << DeviceRecord->getName() << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Process Result FAILED "<< DeviceRecord->getName());
         }
     }
 
@@ -964,7 +873,7 @@ void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase
             {
                 if(DebugLevel & DEBUGLEVEL_PIL_RESULTTHREAD)
                 {
-                    pRet->dump();
+                    CTILOG_DEBUG(dout, *pRet);
                 }
 
                 if( pRet->isA() == MSG_PCRETURN )
@@ -981,9 +890,7 @@ void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase
             {
                 if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Notice: Request message did not indicate return path. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << CtiTime() << " Response to client will be discarded." << endl;
+                    CTILOG_DEBUG(dout, "Notice: Request message did not indicate return path. Response to client will be discarded.");
                 }
                 delete pRet;
             }
@@ -998,21 +905,15 @@ void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
 void PilServer::nexusThread()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " NexusThread    : Started as TID " << rwThreadId() << endl;
-    }
+    CTILOG_INFO(dout, "PIL nexusThread - Started");
 
-    SetThreadName(-1, "PILNexus ");
+    SetThreadName(-1, "PILNexus");
 
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
@@ -1029,11 +930,7 @@ void PilServer::nexusThread()
         }
         catch( const StreamConnectionException &ex )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** ERROR **** NexusThread : " << rwThreadId() << " just failed to read a full InMessage : " << ex.what() << endl;
-            }
-
+            CTILOG_EXCEPTION_ERROR(dout, ex, "PIL nexusThread - just failed to read a full InMessage");
             Sleep(500); // prevent run-away loop
         }
 
@@ -1043,29 +940,22 @@ void PilServer::nexusThread()
         }
         catch(const RWCancellation& cMsg)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " NexusThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
+            CTILOG_WARN(dout, "PIL nexusThread - Thread cancellation");
             bServerClosing = TRUE;
             // throw;
         }
 
     } /* End of for */
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " NexusThread : " << rwThreadId() << " terminating " << endl;
-    }
-
     _broken = true;
+
+    CTILOG_INFO(dout, "PIL nexusThread - Terminating");
 }
 
 void PilServer::nexusWriteThread()
 {
     /* Time variable for decode */
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " NexusWriteThread    : Started as TID " << rwThreadId() << endl;
-    }
+    CTILOG_INFO(dout, "PIL nexusWriteThread - Started");
 
     SetThreadName(-1, "PILNxsWrt");
 
@@ -1082,11 +972,8 @@ void PilServer::nexusWriteThread()
             }
             catch( const StreamConnectionException &ex )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** ERROR **** NexusWriteThread : " << rwThreadId() << " just failed to write OutMessage : " << ex.what() << endl;
-                }
-                DumpOutMessage(OutMessage.get());
+                CTILOG_EXCEPTION_ERROR(dout, ex, "PIL nexusWriteThread - just failed to write OutMessage: "<<
+                        outMessageToString(OutMessage.get()));
 
                 Sleep(500); // prevent run-away loop
             }
@@ -1098,18 +985,13 @@ void PilServer::nexusWriteThread()
         }
         catch(const RWCancellation& cMsg)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " NexusWriteThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
+            CTILOG_WARN(dout, "PIL nexusWriteThread - Thread cancellation");
             bServerClosing = TRUE;
             // throw;
         }
     } /* End of for */
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " NexusWriteThread : " << rwThreadId() << " terminating " << endl;
-    }
-
+    CTILOG_INFO(dout, "PIL nexusWriteThread - Terminating");
 }
 
 struct RequestExecuter : Devices::DeviceHandler
@@ -1257,10 +1139,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     try
@@ -1303,13 +1182,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
                 }
                 catch(...)
                 {
-                    {
-                        CtiTime NowTime;
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << NowTime << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << NowTime << " ExecuteRequest FAILED for \"" << Dev.getName() << "\"" << endl;
-                        dout << NowTime << "   Command: " << pExecReq->CommandString() << endl;
-                    }
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "ExecuteRequest FAILED for \""<< Dev.getName() <<"\" - Command: " << pExecReq->CommandString());
                 }
 
                 outList.splice(outList.end(), executer.outList);
@@ -1334,24 +1207,25 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 
                 if(status && status != ClientErrors::DeviceInhibited)
                 {
-                    CtiTime NowTime;
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << NowTime << " **** Execute Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << NowTime << "   Device:  " << Dev.getName() << endl;
-                    dout << NowTime << "   Command: " << pExecReq->CommandString() << endl;
-                    dout << NowTime << "   Status = " << status << ": " << GetErrorString(status) << endl;
+                    FormattedList logItems;
+                    logItems.add("Device")  << Dev.getName();
+                    logItems.add("Command") << pExecReq->CommandString();
+                    logItems.add("Status")  << status <<" -> "<< GetErrorString(status);
+
+                    CTILOG_ERROR(dout, "Execute has failed"<<
+                            logItems);
                 }
 
                 status = ClientErrors::None;
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Device unknown, unselected, or DB corrupt " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << CtiTime() << " Command " << pExecReq->CommandString() << endl;
-                    dout << CtiTime() << " Device: " << pExecReq->DeviceId() << endl;
-                }
+                FormattedList logItems;
+                logItems.add("Command")   << pExecReq->CommandString();
+                logItems.add("Device ID") << pExecReq->DeviceId();
+
+                CTILOG_ERROR(dout, "Device unknown, unselected, or DB corrupt"<<
+                        logItems);
 
                 if( CtiServer::ptr_type ptr = findConnectionManager((long)pExecReq->getConnectionHandle()) )
                 {
@@ -1378,18 +1252,12 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Submitting " << retList.size() << " CtiReturnMsg objects to client" << endl;
-        }
+        CTILOG_DEBUG(dout, "Submitting "<< retList.size() <<" CtiReturnMsg objects to client");
     }
 
     for each( CtiReturnMsg *pcRet in retList )
@@ -1404,7 +1272,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
             CtiPILConnectionManager *CM = (CtiPILConnectionManager *)ptr.get();
             if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
             {
-                pcRet->dump();
+                CTILOG_DEBUG(dout, *pcRet);
             }
 
             CM->WriteConnQue(pcRet);
@@ -1413,10 +1281,8 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
         {
             if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Notice: Request Message did not indicate return path." << endl;
-                dout << CtiTime() << " Response will be discarded." << endl;
-                dout << CtiTime() << " Command String: " << pcRet->CommandString() << endl;
+                CTILOG_DEBUG(dout, "Notice: Request Message did not indicate return path - Response will be discarded."<<
+                        endl <<"Command: "<< pcRet->CommandString());
             }
 
             delete pcRet;
@@ -1426,10 +1292,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 
     if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Submitting " << outList.size() << " CtiOutMessage objects to porter" << endl;
-        }
+        CTILOG_DEBUG(dout, "Submitting " << outList.size() << " CtiOutMessage objects to porter");
     }
 
     for each( OUTMESS *OutMessage in outList )
@@ -1440,10 +1303,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 
     if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Submitting " << vgList.size() << " CtiMessage objects to dispatch" << endl;
-        }
+        CTILOG_DEBUG(dout, "Submitting " << vgList.size() << " CtiMessage objects to dispatch");
     }
 
     for each( CtiMessage *pVg in vgList )
@@ -1480,8 +1340,7 @@ YukonError_t PilServer::executeMulti(const CtiMultiMsg *pMulti)
                     }
                 default:
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "**** ERROR **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "Received unexpected message type in Multi ("<< pMyMsg->isA() <<")");
                         break;
                     }
                 }
@@ -1495,10 +1354,7 @@ YukonError_t PilServer::executeMulti(const CtiMultiMsg *pMulti)
 void PilServer::clientShutdown(CtiServer::ptr_type CM)
 {
 //#ifdef DEBUG_SHUTDOWN
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Now shutting down (ClientAppShutdown) in PIL Server" << endl;
-    }
+    CTILOG_INFO(dout, "Now shutting down");
 //#endif
 
     Inherited::clientShutdown(CM);
@@ -1516,10 +1372,7 @@ void PilServer::vgConnThread()
 {
     CtiMessage *pMsg;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PIL vgConnThrd : Started as TID " << rwThreadId() << endl;
-    }
+    CTILOG_INFO(dout, "PIL vgConnThread - Started");
 
     SetThreadName(-1, "VGConnThd");
 
@@ -1541,11 +1394,7 @@ void PilServer::vgConnThread()
                     case (CtiCommandMsg::Shutdown):
                         {
                             // bServerClosing = TRUE;
-                            {
-                                Cmd->dump();
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Shutdown requests by command messages are ignored." << endl;
-                            }
+                            CTILOG_WARN(dout, "Shutdown requests by command messages are ignored");
                             break;
                         }
                     case (CtiCommandMsg::AreYouThere):
@@ -1555,8 +1404,7 @@ void PilServer::vgConnThread()
                         }
                     default:
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Unhandled command message " << Cmd->getOperation() << " sent to Main.." << endl;
+                            CTILOG_WARN(dout, "Unhandled command message "<< Cmd->getOperation() <<" sent to Main..");
                         }
                     }
                     break;
@@ -1584,11 +1432,7 @@ void PilServer::vgConnThread()
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
     VanGoghConnection.close();
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PIL vgConnThrd : " << rwThreadId() << " terminating " << endl;
-    }
-
+    CTILOG_INFO(dout, "PIL vgConnThread - Terminating");
 }
 
 struct message_time_less : public binary_function< CtiMessage *, CtiMessage *, bool>
@@ -1608,10 +1452,7 @@ void PilServer::schedulerThread()
 
     unsigned last_iteration;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PIL schedulerThread : Started as TID " << rwThreadId() << endl;
-    }
+    CTILOG_INFO(dout, "PIL schedulerThread - Started");
 
     SetThreadName(-1, "schdlrThd");
 
@@ -1634,10 +1475,7 @@ void PilServer::schedulerThread()
         }
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PIL schedulerThread : " << rwThreadId() << " terminating " << endl;
-    }
+    CTILOG_INFO(dout, "PIL schedulerThread - Terminating");
 }
 
 vector<long> PilServer::getDeviceGroupMembers( string groupname ) const
@@ -1690,13 +1528,13 @@ vector<long> PilServer::getDeviceGroupMembers( string groupname ) const
 
         rdr.execute();
 
-        if( DebugLevel & 0x00020000 || !rdr.isValid() )
+        if( ! rdr.isValid() )
         {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << loggedSQLstring << endl;
-            }
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
+        else if( DebugLevel & 0x00020000 )
+        {
+            CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
         }
 
         while( rdr() )
@@ -1737,13 +1575,12 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Execute Error **** " << endl;
-                dout << CtiTime() << " Device Name: " << deviceName << endl;
-                dout << CtiTime() << " Command: " << pReq->CommandString() << endl;
-                dout << CtiTime() << " No device found in the database with this device name." << endl;
-            }
+            FormattedList logItems;
+            logItems.add("Device Name") << deviceName;
+            logItems.add("Command")     << pReq->CommandString();
+
+            CTILOG_ERROR(dout, "No device found in the database with this device name:"<<
+                    logItems);
 
             retList.push_back(
                 new CtiReturnMsg(
@@ -1778,8 +1615,7 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Invalid route \"" << routeName << "\"");
         }
     }
 
@@ -1848,10 +1684,7 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
                     groupRequests.push_back(pNew);
                 }
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << group_name << " found " << deviceGroupMemberIds.size() << " target devices." << endl;
-                }
+                CTILOG_INFO(dout, group_name <<" found "<< deviceGroupMemberIds.size() <<" target devices.");
 
                 if( deviceGroupMemberIds.empty() )
                 {
@@ -1888,23 +1721,20 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
              *  We will take that to mean that the desired outcome is to assign this group's
              *  addressing to the serial number specified...
              */
-
             string lmgroup = parse.getsValue("template");
             string service = parse.getsValue("templateinservice");
-            char newparse[256];
 
             CtiDeviceSPtr GrpDev = DeviceManager->RemoteGetEqualbyName( lmgroup );
             if(GrpDev)
             {
-                _snprintf(newparse, 255, "putconfig serial %d %s %s", parse.getiValue("serial"), GrpDev->getPutConfigAssignment(modifier).c_str(), service.c_str());
+                const std::string commandStr = StreamBuffer() <<
+                        "putconfig serial "<< parse.getiValue("serial") <<" "<< GrpDev->getPutConfigAssignment(modifier) <<" "<< service;
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Template putconfig **** " << endl << "   " << newparse << endl;
-                }
+                CTILOG_INFO(dout, "Template putconfig:"<<
+                        endl <<"command: "<< commandStr)
 
-                pReq->setCommandString(newparse);      // Make the request match our new choices
-                parse = CtiCommandParser(newparse);    // Should create a new actionItem list
+                pReq->setCommandString(commandStr);      // Make the request match our new choices
+                parse = CtiCommandParser(commandStr);    // Should create a new actionItem list
             }
         }
         else if(INT_MIN != parse.getiValue("fromutility"))
@@ -1913,22 +1743,19 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
              *  This indicates the user wants to put the devices defined by group addressing defined in the "fromxxx"
              *  keys into the selected versacom group.
              */
-            char newparse[256];
-
             CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)DeviceManager->getDeviceByID(pReq->DeviceId()).get();
 
             if(GrpDev != NULL)
             {
-                _snprintf(newparse, 255, "%s %s", pReq->CommandString().c_str(), GrpDev->getPutConfigAssignment(modifier).c_str());
+                const std::string commandStr = StreamBuffer() <<
+                        pReq->CommandString() <<" "<< GrpDev->getPutConfigAssignment(modifier);
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Group reassign to group **** " << GrpDev->getName() << endl << "   " << newparse << endl;
-                }
+                CTILOG_INFO(dout, "Group reassign to group - "<< GrpDev->getName() <<":"<<
+                        endl <<"command: "<< commandStr);
 
-                pReq->setCommandString(newparse);       // Make the request match our new choices
+                pReq->setCommandString(commandStr);       // Make the request match our new choices
                 pReq->setRouteId(GrpDev->getRouteID()); // Just on this route.
-                parse = CtiCommandParser(newparse);     // Should create a new actionItem list
+                parse = CtiCommandParser(commandStr);     // Should create a new actionItem list
             }
         }
     }
@@ -1991,16 +1818,17 @@ void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager
         CtiDeviceSPtr DeviceRecord = DeviceManager->getDeviceByID(((CtiRequestMsg*)MsgPtr)->DeviceId());
         if(DeviceRecord)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Pilserver mainThread received a CtiRequestMsg for " << DeviceRecord->getName();
-            dout << " at priority " << MsgPtr->getMessagePriority() << endl;
-
             CtiRequestMsg *pCmd = (CtiRequestMsg*)MsgPtr;
 
-            if(!pCmd->CommandString().empty())
+            StreamBuffer logmsg;
+            logmsg <<"Pilserver mainThread received a CtiRequestMsg for "<< DeviceRecord->getName() <<" at priority "<< MsgPtr->getMessagePriority();
+
+            if( ! pCmd->CommandString().empty() )
             {
-                dout << CtiTime() << "   Command string: \"" << pCmd->CommandString() << "\"" << endl;
+                logmsg << endl <<"Command: \""<< pCmd->CommandString() <<"\"";
             }
+
+            CTILOG_INFO(dout, logmsg);
         }
     }
     else if(MsgPtr->isA() == MSG_MULTI)
@@ -2041,17 +1869,13 @@ INT PilServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, list
 
             try
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Looking for " << pRepeaterToRole->getName() << " in all routes" << endl;
-                }
+                CTILOG_INFO(dout, "Looking for "<< pRepeaterToRole->getName() <<" in all routes");
 
                 RouteManager->buildRoleVector( pRepeaterToRole->getID(), Req, retList, roleVector );
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             if(roleVector.size() > 0)
@@ -2088,10 +1912,7 @@ INT PilServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, list
                     newReqString += " noqueue";
                 }
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "  " << newReqString << endl;
-                }
+                CTILOG_INFO(dout, "Setting request command: "<<  newReqString);
 
                 Req.setCommandString( newReqString );
             }
@@ -2136,10 +1957,7 @@ void PilServer::indicateControlOnSubGroups(CtiDeviceBase &Dev, CtiCommandParser 
         {
             if(Dev.getType() == TYPE_MACRO)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** ACH indicateControlOnSubGroups for MACRO **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_INFO(dout, "ACH indicateControlOnSubGroups for MACRO");
             }
             else
             {
@@ -2166,20 +1984,14 @@ void PilServer::indicateControlOnSubGroups(CtiDeviceBase &Dev, CtiCommandParser 
                         vgList.push_back(pMsg);
                     }
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Protocol hierarchy match on group: " << sptr->getName() << endl;
-                    }
+                    CTILOG_INFO(dout, "Protocol hierarchy match on group: " << sptr->getName());
                 }
             }
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -2284,14 +2096,9 @@ bool inmess_user_message_id_equal(const INMESS &in, int user_message_id)
 }
 
 
-
-
 void PilServer::periodicActionThread()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PIL periodicActionThread : Started as TID " << rwThreadId() << std::endl;
-    }
+    CTILOG_INFO(dout, "PIL periodicActionThread - Started");
 
     SetThreadName(-1, "prdActThd");
 
@@ -2308,8 +2115,7 @@ void PilServer::periodicActionThread()
 
         if( elapsed > 1000 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " PIL periodicActionThread took " << elapsed << " milliseconds " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_WARN(dout, "PIL periodicActionThread took " << elapsed << " milliseconds");
         }
         else
         {
@@ -2357,10 +2163,7 @@ void PilServer::periodicActionThread()
         //  <Add other periodic events here>
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PIL periodicActionThread : " << rwThreadId() << " terminating " << std::endl;
-    }
+    CTILOG_INFO(dout, "PIL periodicActionThread - Terminating");
 }
 
 }

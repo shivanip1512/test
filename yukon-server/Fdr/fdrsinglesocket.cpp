@@ -259,39 +259,34 @@ bool CtiFDRSingleSocket::loadList(string &aDirection,  CtiFDRPointList &aList)
                         successful = true;
                         if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " No (" << aDirection << ") points defined for use by interface " << getInterfaceName() << endl;
+                            CTILOG_DEBUG(dout, "No ("<< aDirection <<") points defined for use by interface "<< getInterfaceName());
                         }
                     }
                 }
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error loading (" << aDirection << ") points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                CTILOG_ERROR(dout, "Could not load ("<< aDirection <<") points for "<< getInterfaceName() <<" : Empty data set returned");
                 successful = false;
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Unable to load points from database for "<< getInterfaceName());
             successful = false;
         }
     }   // end try block
 
-    catch (RWExternalErr e )
+    catch (const RWExternalErr& e )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") loadTranslationList():  " << e.why() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to load point list for "<< getInterfaceName());
         RWTHROW(e);
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") loadTranslationList():  (...)" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load point list for "<< getInterfaceName());
     }
 
     return successful;
@@ -315,9 +310,8 @@ bool CtiFDRSingleSocket::translateSinglePoint(CtiFDRPointSPtr & translationPoint
     {
         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Point ID " << translationPoint->getPointID();
-            dout << " translate: " << translationPoint->getDestinationList()[0].getTranslation() << endl;
+            CTILOG_DEBUG(dout, "Point ID " << translationPoint->getPointID() <<
+                    " translate: " << translationPoint->getDestinationList()[0].getTranslation());
         }
 
         if (translateAndUpdatePoint (translationPoint, x))
@@ -466,8 +460,7 @@ int CtiFDRSingleSocket::processMessageFromForeignSystem(CHAR *aBuffer)
                 {
                     if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Time sync message received from " << getInterfaceName() << endl;
+                        CTILOG_DEBUG(dout, "Time sync message received from "<< getInterfaceName());
                     }
 
                     retVal = processTimeSyncMessage (aBuffer);
@@ -476,9 +469,8 @@ int CtiFDRSingleSocket::processMessageFromForeignSystem(CHAR *aBuffer)
                 {
                     if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Time sync message received from " << getInterfaceName() << endl;
-                        dout << CtiTime() << " PC time will not updated due to current configuration " << endl;
+                        CTILOG_DEBUG(dout, "Time sync message received from " << getInterfaceName() <<
+                                endl <<" PC time will not updated due to current configuration");
                     }
                 }
                 break;
@@ -487,16 +479,14 @@ int CtiFDRSingleSocket::processMessageFromForeignSystem(CHAR *aBuffer)
             {
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Heartbeat message received from " << getInterfaceName() << " at " << iLayer->getInBoundConnection()->getAddr().toString() << endl;
+                    CTILOG_DEBUG(dout, "Heartbeat message received from "<< getInterfaceName() <<" at "<< iLayer->getInBoundConnection()->getAddr());
                 }
                 break;
             }
         default:
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unknown message type " << ntohs (*function) <<  " received from " << getInterfaceName() << endl;
+                CTILOG_DEBUG(dout, "Unknown message type "<< ntohs(*function) <<" received from "<< getInterfaceName());
             }
     }
 
@@ -581,9 +571,9 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
     {
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Initializing CtiFDRSingleSocket::threadFunctionConnection for " << getInterfaceName() << endl;
+            CTILOG_DEBUG(dout, "Initializing thread for "<< getInterfaceName());
         }
+
         for ( ; ; )
         {
             pSelf.serviceCancellation( );
@@ -611,8 +601,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                 {
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << __FILE__ << " (" << __LINE__ << ") Failed to retrieve address info (Error: " << pAddrInfo.getError() << ")" << endl;
+                        CTILOG_DEBUG(dout, "Failed to retrieve address info (Error: "<< pAddrInfo.getError() <<")");
                     }
                     continue;
                 }
@@ -642,18 +631,11 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                 }
                 catch( Cti::SocketException& e )
                 {
-                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Failed to setup listener socket for " << getInterfaceName() << " : " << e.what() << endl;
-                    }
+                    CTILOG_EXCEPTION_ERROR(dout, e, "Failed to setup listener socket for "<< getInterfaceName());
                     continue;
                 }
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout <<  CtiTime() << " Listening for connection on port " << getPortNumber() << endl;
-                }
+                CTILOG_INFO(dout, "Listening for connection on port "<< getPortNumber());
 
                 // if the interface needs a registration
                 if (isRegistrationNeeded())
@@ -664,11 +646,10 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                 // delete the old connection if its there
                 if (iLayer != NULL)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << iLayer->getName() << "'s link has failed" << endl;
-                    }
                     desc = iLayer->getName() + "'s link has failed";
+
+                    CTILOG_ERROR(dout, desc);
+
                     logEvent (desc,action,true);
                     delete iLayer;
                     iLayer = NULL;
@@ -683,8 +664,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
                 {
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Accept call failed in " << getInterfaceName() <<endl;
+                        CTILOG_DEBUG(dout, "Accept call failed in "<< getInterfaceName());
                     }
                 }
                 else
@@ -707,11 +687,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
 
                     const string returnAddrStr = returnAddr.toString();
 
-    //                    if(getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Connection established to " << decodeClientName(NULL) << " at " << returnAddrStr << endl;
-                    }
+                    CTILOG_INFO(dout, "Connection established to "<< decodeClientName(NULL) <<" at "<< returnAddrStr);
 
                     desc = decodeClientName(NULL) + string ("'s client link has been established at ") + returnAddrStr;
                     logEvent (desc,action, true);
@@ -727,10 +703,9 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
             delete iLayer;
             iLayer = NULL;
         }
-        setCurrentClientLinkStates();
 
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION of CtiFDRSingleSocket::threadFunctionConnection for interface " << getInterfaceName() << endl;
+        setCurrentClientLinkStates();
+        CTILOG_INFO(dout, "Thread CANCELLATION for interface "<< getInterfaceName());
         return;
     }
 
@@ -745,8 +720,7 @@ void CtiFDRSingleSocket::threadFunctionConnection( void )
         }
         setCurrentClientLinkStates();
 
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Fatal Error:  CtiFDRSingleSocket::threadFunctionConnection in " << getInterfaceName() << " is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Thread for interface "<< getInterfaceName() <<" is dead!");
     }
 }
 
@@ -760,11 +734,7 @@ void CtiFDRSingleSocket::threadFunctionSendDebugData( void )
     int quality = NormalQuality, index, entries;
     FLOAT value = 1.0;
 
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Starting Debug Thread for " << getInterfaceName() << endl;
-    }
+    CTILOG_INFO(dout, "Starting Debug Thread for "<< getInterfaceName());
 
     // don't try to do anything until the layer is available
     while (iLayer == NULL)
@@ -823,8 +793,7 @@ void CtiFDRSingleSocket::threadFunctionSendDebugData( void )
 
     catch ( RWCancellation &cancellationMsg )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION" << endl;
+        CTILOG_INFO(dout, "CANCELLATION of Debug Thread");
         return;
     }
     // try and catch the thread death
@@ -832,8 +801,8 @@ void CtiFDRSingleSocket::threadFunctionSendDebugData( void )
     {
         iLayer->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         iLayer->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Fatal Error:  threadFunctionDebugData in " << getInterfaceName() << " is dead! " << endl;
+
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionDebugData in "<< getInterfaceName() << " is dead!");
     }
 }
 

@@ -76,8 +76,7 @@ void StatisticsManager::newAttempt(long port_id, long device_id, long target_id,
     }
     else if( gConfigParms.getValueAsULong("STATISTICS_DEBUGLEVEL", 0, 16) & STATISTICS_REPORT_ON_MSGFLAGS )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Statistics not requested for: Port " << port_id << " Device " << device_id << " / Target " << target_id << endl;
+        CTILOG_DEBUG(dout, "Statistics not requested for: Port "<< port_id <<" Device "<< device_id <<" / Target "<< target_id);
     }
 }
 
@@ -91,8 +90,7 @@ void StatisticsManager::newCompletion(long port_id, long device_id, long target_
     }
     else if( gConfigParms.getValueAsULong("STATISTICS_DEBUGLEVEL", 0, 16) & STATISTICS_REPORT_ON_MSGFLAGS )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Statistics not requested for: Port " << port_id << " Device " << device_id << " / Target " << target_id << endl;
+        CTILOG_DEBUG(dout, "Statistics not requested for: Port "<< port_id <<" Device "<< device_id <<" / Target "<< target_id);
     }
 }
 
@@ -160,8 +158,7 @@ void StatisticsManager::processEvents(ThreadStatusKeeper &threadKeeper)
 
             if( !(++processed % 1000) && (getDebugLevel() & DEBUGLEVEL_STATISTICS) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " processCollectedStats() : processed " << processed << " / " << total << " statistics events." << endl;
+                CTILOG_DEBUG(dout, "processed "<< processed <<" / "<< total <<" statistics events");
             }
         }
 
@@ -169,8 +166,7 @@ void StatisticsManager::processEvents(ThreadStatusKeeper &threadKeeper)
 
         if( processed > 1000 && (getDebugLevel() & DEBUGLEVEL_STATISTICS) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " processCollectedStats() : complete, processed " << processed << " / " << total << " statistics events." << endl;
+            CTILOG_DEBUG(dout, "complete - processed "<< processed <<" / "<< total <<" statistics events");
         }
     }
 }
@@ -305,9 +301,7 @@ void StatisticsManager::writeRecordRange(const unsigned thread_num, const unsign
 
         if ( ! conn.isValid() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+            CTILOG_ERROR(dout, "Invalid Connection to Database");
             return;
         }
 
@@ -331,22 +325,16 @@ void StatisticsManager::writeRecordRange(const unsigned thread_num, const unsign
                 {
                     threadKeeper && threadKeeper->monitorCheck(CtiThreadMonitor::StandardMonitorTime);
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " StatisticsManager::writeRecordRange() : thread " << thread_num << " ";
-                        dout << "inspected " << records_inspected << " / " << chunk_size << " statistics records; ";
-                        dout << dirty_records << " records have written a total of " << rows_written << " rows." << endl;
-                    }
+                    CTILOG_INFO(dout, "thread_num "<< thread_num <<" inspected "<< chunk_size <<" statistics records; "<<
+                            dirty_records <<" records wrote a total of "<< rows_written <<" rows.");
                 }
             }
         }
 
         if( dirty_records )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " StatisticsManager::writeRecordRange() : thread " << thread_num << " finished, ";
-            dout << "inspected " << chunk_size << " statistics records; ";
-            dout << dirty_records << " records wrote a total of " << rows_written << " rows." << endl;
+            CTILOG_INFO(dout, "thread_num "<< thread_num <<" finished - inspected "<< chunk_size <<" statistics records; "<<
+                    dirty_records <<" records wrote a total of "<< rows_written <<" rows.");
         }
     }
 }
@@ -391,12 +379,7 @@ bool StatisticsManager::pruneDaily(Database::DatabaseConnection &conn)
 
     if( getDebugLevel() & DEBUGLEVEL_STATISTICS )
     {
-        std::string sql = deleter.asString();
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " StatisticsManager::pruneDaily() : " << sql << endl;
-        }
+        CTILOG_DEBUG(dout, "Executing deletion SQL query: "<< deleter.asString());
     }
 
     return deleter.execute();
@@ -437,13 +420,13 @@ void StatisticsManager::loadPaoStatistics(const std::set<long> &pao_ids)
 
         rdr.execute();
 
-        if( DebugLevel & 0x00020000 || !rdr.isValid() )
+        if( ! rdr.isValid() )
         {
-            std::string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " StatisticsManager::loadPaoStatistics() : error executing query \"" << loggedSQLstring << "\"\n";
-            }
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
+        else if( DebugLevel & 0x00020000 )
+        {
+            CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
         }
 
         while( rdr() )
@@ -453,10 +436,7 @@ void StatisticsManager::loadPaoStatistics(const std::set<long> &pao_ids)
             _pao_statistics.insert(std::make_pair(p->getPaoId(), p));
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " StatisticsManager::loadPaoStatistics() : processed " << pos << " / " << total << " statistics records" << endl;
-        }
+        CTILOG_INFO(dout, "Processed "<< pos <<" / "<< total <<" statistics records");
     }
 }
 

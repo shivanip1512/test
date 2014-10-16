@@ -26,7 +26,11 @@ CtiPointConnection& CtiPointConnection::operator=(const CtiPointConnection &aRef
 int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgMsg)
 {
    CtiReturnMsg* ConnMgrMsg = NULL;
+   Cti::StreamBuffer logData;
+   bool hasLogData = false;
+
    CollectionType::iterator itr = ConnectionManagerCollection.begin();
+
    while ( itr != ConnectionManagerCollection.end() )
    {
       CtiServer::ptr_type CtiM = *itr;
@@ -44,10 +48,10 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
                ConnMgrMsg->PointData().push_back(pData);
 
                CtiM->WriteConnQue(ConnMgrMsg, 5000); // Default priority of 7 is used here!
-               {
-                  CtiLockGuard<CtiLogger> doubt_guard(dout);
-                  dout << CtiTime() << " Posting point " << ChgMsg.getId() << " to local connection " << CtiM->getClientName() << endl;
-               }
+
+               logData <<"\nPosting point "<< ChgMsg.getId() <<" to local connection "<< CtiM->getClientName();
+
+               hasLogData = true;
             }
             else
             {
@@ -63,13 +67,15 @@ int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgM
       }
       catch(const RWxmsg& x)
       {
-          {
-              CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-          }
-         break;
+          CTILOG_EXCEPTION_ERROR(dout, x);
+          break;
       }
       ++itr;
+   }
+
+   if( hasLogData )
+   {
+       CTILOG_INFO(dout, logData);
    }
 
    return 0;

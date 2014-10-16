@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_unitmeasure
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_analog.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2007/09/28 15:43:05 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "tbl_unitmeasure.h"
@@ -34,13 +21,14 @@ void CtiTableUnitMeasure::DecodeDatabaseReader(Cti::RowReader &rdr)
    //rdr  >> _formula;
 }
 
-void CtiTableUnitMeasure::dump() const
+std::string CtiTableUnitMeasure::toString() const
 {
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   //dout << " UOMName                               : " << _uomName << endl;
-   dout << " Calc Type                             : " << _calcType << endl;
-   //dout << " Long Name                             : " << _longName << endl;
-   //dout << " Formula                               : " << _formula << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTableUnitMeasure";
+    itemList.add("Calc Type") << _calcType;
+
+    return itemList.toString();
 }
 
 /*string CtiTableUnitMeasure::getUOMName() const

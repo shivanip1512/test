@@ -85,45 +85,27 @@ CtiAnsiTable92& CtiAnsiTable92::operator=(const CtiAnsiTable92& aRef)
 //=========================================================================================================================================
 void CtiAnsiTable92::printResult( const string& deviceName )
 {
-    int index, i, j;
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
+    itemList.add("PSEM Identity") << _globalParmsTbl.psem_identity;
+
+    if( _bitRate == 1 )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 92  ========================" << endl;
-        dout << "  ** Global Parameters Table **" << endl;
-        dout << "     PSEM Identity : " <<_globalParmsTbl.psem_identity<< endl;
+        itemList.add("Bit Rate") << _globalParmsTbl.bit_rate;
     }
 
-    if (_bitRate == 1)
+    for(int index = 0; index < _nbrSetupStrings; index++)
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "     Bit Rate : " <<_globalParmsTbl.bit_rate<< endl;
-    }
-
-    for (int x = 0; x < _nbrSetupStrings; x++ )
-    {
+        Cti::StreamBufferSink& setup_string = itemList.add("Modem Setup String "+ boost::lexical_cast<string>(index+1))
+        for (int offset = 0; offset < _setupStringLength; offset++)
         {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "     Modem Setup String "<<x+1<<" :";
-        }
-        for (int xx = 0; xx < _setupStringLength; xx++)
-        {
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << " "<<_globalParmsTbl.modem_setup_strings[x].setup_string[xx];
-            }
-        }
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << endl;
+            setup_string << _globalParmsTbl.modem_setup_strings[index].setup_string[offset] <<"  ";
         }
     }
 
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 92") <<
+            endl <<"** Global Parameters Table **"<<
+            itemList;
+            );
 }

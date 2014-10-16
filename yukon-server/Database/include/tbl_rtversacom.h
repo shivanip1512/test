@@ -8,7 +8,7 @@
 #include "row_reader.h"
 
 
-class IM_EX_CTIYUKONDB CtiTableVersacomRoute : public CtiMemDBObject, private boost::noncopyable
+class IM_EX_CTIYUKONDB CtiTableVersacomRoute : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -35,7 +35,7 @@ public:
    CtiTableVersacomRoute();
    virtual ~CtiTableVersacomRoute();
 
-   void DumpData();
+   virtual std::string toString() const override;
 
    INT  getUtilityID() const;
    CtiTableVersacomRoute& setUtilityID( const INT aUtilityID );

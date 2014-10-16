@@ -65,7 +65,7 @@ CtiClientConnection::~CtiClientConnection()
     }
     catch(...)
     {
-        logException( __FILE__, __LINE__, "", "error cleaning the connection." );
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() << " - error cleaning the connection");
     }
 }
 
@@ -73,7 +73,7 @@ CtiClientConnection::~CtiClientConnection()
  * connection exception listener function.
  * @param ex connection exception received
  */
-void CtiClientConnection::onException( const cms::CMSException& ex )
+void CtiClientConnection::onException( const cms::CMSException& e )
 {
     if( _valid )
     {
@@ -83,7 +83,7 @@ void CtiClientConnection::onException( const cms::CMSException& ex )
         _outQueue.interruptBlockingRead();
     }
 
-    logException( __FILE__, __LINE__, typeid(ex).name(), ex.getMessage() );
+    CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - caught exception");
 }
 
 
@@ -121,13 +121,16 @@ bool CtiClientConnection::establishConnection()
                     _connection.reset( new ManagedConnection( Broker::flowControlURI ));
                 }
 
-                logStatus( __FUNCTION__, "connecting to \"" + _serverQueueName + "\"."
-                                         "\nbroker URI: \"" + _connection->getBrokerUri() + "\"" );
+                CTILOG_INFO(dout, who() << " - connecting to \"" << _serverQueueName << "\"\n"
+                        << "broker URI: \"" << _connection->getBrokerUri() << "\"" );
 
                 // start connection to the broker, throws ConnectionException
                 _connection->start();
 
-                logDebug( __FUNCTION__, "connected to the broker" );
+                if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
+                {
+                    CTILOG_DEBUG(dout, who() << " - connected to the broker");
+                }
 
                 _sessionIn.reset( _connection->createSession() );
                 _sessionOut.reset( _connection->createSession() );
@@ -149,7 +152,10 @@ bool CtiClientConnection::establishConnection()
 
                     handshakeProducer.send( outMessage.get() );
 
-                    logDebug( __FUNCTION__, "waiting for server reply." );
+                    if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
+                    {
+                        CTILOG_DEBUG(dout, who() << " - waiting for server reply.");
+                    }
 
                     // We should block here until the delay expires or until the connection is closed
                     auto_ptr<cms::Message> inMessage( _consumer->receive( receiveMillis ));
@@ -158,15 +164,13 @@ bool CtiClientConnection::establishConnection()
                     {
                         if( inMessage->getCMSType() != MessageType::serverResp )
                         {
-                            logStatus( __FUNCTION__, "unexpected message: \"" + inMessage->getCMSType() + "\"" );
-
+                            CTILOG_ERROR(dout, who() << " - unexpected message: \"" << inMessage->getCMSType() << "\"");
                             break; // something went wrong? - retry connecting from scratch
                         }
 
                         if( ! inMessage->getCMSReplyTo() )
                         {
-                            logStatus( __FUNCTION__, "received NULL ReplyTo destination." );
-
+                            CTILOG_ERROR(dout, who() << " - received NULL ReplyTo destination.");
                             break; // something went wrong? - retry connecting from scratch
                         }
 
@@ -176,13 +180,13 @@ bool CtiClientConnection::establishConnection()
 
                         _valid = true;
 
-                        logStatus( __FUNCTION__, "successfully connected.\n"
-                                                 "inbound destination  : " + _consumer->getDestPhysicalName() + "\n"
-                                                 "outbound destination : " + _producer->getDestPhysicalName());
+                        CTILOG_INFO(dout, who() << " - successfully connected.\n"
+                                << "inbound: "    << _consumer->getDestPhysicalName()
+                                << ", outbound: " << _producer->getDestPhysicalName());
                     }
                     else
                     {
-                        logStatus( __FUNCTION__, "timeout while trying to connect to \"" + _serverQueueName + "\". reconnecting." );
+                        CTILOG_WARN(dout, who() << " - timeout while trying to connect to \"" << _serverQueueName << "\". reconnecting..");
 
                         // check for thread interruption before re-sending a handshake message
                         checkInterruption();
@@ -193,7 +197,7 @@ bool CtiClientConnection::establishConnection()
             {
                 if( !_dontReconnect )
                 {
-                    logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
+                    CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - caught CMS exception while trying to establish connection");
 
                     Sleep(1000); // Don't pound the system....
                 }
@@ -202,7 +206,7 @@ bool CtiClientConnection::establishConnection()
             {
                 if( !_dontReconnect )
                 {
-                    logStatus( __FUNCTION__, "unable to connect to the broker at \"" + _connection->getBrokerUri() + "\". reconnecting." );
+                    CTILOG_EXCEPTION_WARN(dout, e, who() <<" - unable to connect to the broker at \"" << _connection->getBrokerUri() << "\", reconnecting..");
                 }
             }
 
@@ -212,7 +216,7 @@ bool CtiClientConnection::establishConnection()
 
         if( _dontReconnect )
         {
-            logStatus( __FUNCTION__, "has closed." );
+            CTILOG_INFO(dout, who() << " - has closed.");
             return false;
         }
 
@@ -241,7 +245,7 @@ bool CtiClientConnection::establishConnection()
     {
         _valid = false;
 
-        logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
+        CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - caught CMS exception while trying to establish connection");
 
         return false;
     }
@@ -249,7 +253,7 @@ bool CtiClientConnection::establishConnection()
     {
         _valid = false;
 
-        logException( __FILE__, __LINE__ );
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - caught unexpected exception while trying to establish connection");
 
         throw;
     }
@@ -287,7 +291,10 @@ void CtiClientConnection::writeRegistration()
     {
         if( _regMsg.get() ) // I know who I am....
         {
-            logDebug( __FUNCTION__, "re-registering connection." );
+            if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
+            {
+                CTILOG_DEBUG(dout, who() << " - re-registering connection.");
+            }
 
             sendMessage( *_regMsg );
 
@@ -301,7 +308,7 @@ void CtiClientConnection::writeRegistration()
     {
         _valid = false; //sending data failed
 
-        logException( __FILE__, __LINE__, typeid(e).name(), e.getMessage() );
+        CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - send registration message has failed");
     }
 }
 
@@ -355,8 +362,8 @@ void CtiClientConnection::messagePeek( const CtiMessage& msg )
             }
         }
     }
-    catch( bad_cast )
+    catch( const bad_cast& e )
     {
-        logException( __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - multi-message cast has failed");
     }
 }

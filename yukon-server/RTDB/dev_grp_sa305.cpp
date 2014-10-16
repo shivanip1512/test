@@ -64,9 +64,9 @@ void CtiDeviceGroupSA305::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
+
     _loadGroup.DecodeDatabaseReader(rdr);
 }
 
@@ -225,10 +225,7 @@ YukonError_t CtiDeviceGroupSA305::ExecuteRequest(CtiRequestMsg *pReq, CtiCommand
             OutMessage = NULL;
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << resultString << endl;
-        }
+        CTILOG_ERROR(dout, resultString);
     }
 
     return nRet;

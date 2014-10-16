@@ -128,130 +128,48 @@ CtiAnsiTable00& CtiAnsiTable00::operator=(const CtiAnsiTable00& aRef)
 //=========================================================================================================================================
 void CtiAnsiTable00::printResult(const string& deviceName)
 {
-    int integer;
-    string aString;
-    bool flag;
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    integer = (int) getRawDataOrder();
-    aString = getResolvedDataOrder();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 0 =========================" << endl;
-        dout << "   Data Order: " << aString << " (" << integer <<")" << endl;
-    }
-
-    integer = getRawCharFormat();
-    aString = getResolvedCharFormat();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Character Format: " << aString << " (" << integer <<")" << endl;
-    }
-
-    flag = getRawMfgSerialNumberFlag();
-    aString = getResolvedMfgSerialNumberFlag();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Mfg Serial Number Flag: " << aString << " (" << flag <<")" << endl;
-    }
-
-    integer = getRawTimeFormat();
-    aString = getResolvedTimeFormat();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Time Format: " << aString << " (" << integer <<")" << endl;
-    }
-
-    integer = getRawDataAccess();
-    aString = getResolvedDataAccess() ;
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Data Access: " << aString << " (" << integer <<")" << endl;
-    }
-
-    integer = getRawIdFormat();
-    aString = getResolvedIdFormat();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Id Format: " << aString << " (" << integer <<")" << endl;
-    }
-
-    integer = getRawIntFormat();
-    aString = getResolvedIntFormat();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Int Format: " << aString << " (" << integer <<")" << endl;
-    }
-    integer = getRawNIFormat1() ;
-    aString = getResolvedNIFormat1();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Non integer format 1: " << aString << " (" << integer <<")" << endl;
-    }
-
-
-    integer = getRawNIFormat2() ;
-    aString = getResolvedNIFormat2();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Non integer format 2: " << aString << " (" << integer <<")" << endl;
-    }
+    itemList.add("Data Order")                     << getResolvedDataOrder()           <<" ("<< (int)getRawDataOrder()      <<")";
+    itemList.add("Character Format")               << getResolvedCharFormat()          <<" ("<< getRawCharFormat()          <<")";
+    itemList.add("Mfg Serial Number Flag")         << getResolvedMfgSerialNumberFlag() <<" ("<< getRawMfgSerialNumberFlag() <<")";
+    itemList.add("Time Format")                    << getResolvedTimeFormat()          <<" ("<< getRawTimeFormat()          <<")";
+    itemList.add("Data Access")                    << getResolvedDataAccess()          <<" ("<< getRawDataAccess()          <<")";
+    itemList.add("Id Format")                      << getResolvedIdFormat()            <<" ("<< getRawIdFormat()            <<")";
+    itemList.add("Int Format")                     << getResolvedIntFormat()           <<" ("<< getRawIntFormat()           <<")";
+    itemList.add("Non integer format 1")           << getResolvedNIFormat1()           <<" ("<< getRawNIFormat1()           <<")";
+    itemList.add("Non integer format 2")           << getResolvedNIFormat2()           <<" ("<< getRawNIFormat2()           <<")";
+    itemList.add("Device Class")                   <<"("<< _device_class[0] <<" "<< _device_class[1] <<" "<< _device_class[2] <<" "<< _device_class[3] <<")";
+    itemList.add("Nameplate Type")                 << getResolvedNameplateType()       <<" ("<< getRawNameplateType()  <<")";
+    itemList.add("Default Set Used")               << getResolvedDefaultSetUsed()      <<" ("<< getRawDefaultSetUsed() <<")";
+    itemList.add("Max Procedure Parameter Length") <<"("<< _max_proc_parm_len <<")";
+    itemList.add("Max Response Data Length")       <<"("<< _max_resp_data_len <<")";
+    itemList.add("Std Version No.")                <<"("<< _std_version_no    <<")";
+    itemList.add("Std Revision No.")               <<"("<< _std_revision_no   <<")";
+    itemList.add("Dim Std Tables Used")            <<"("<< _dim_std_tbls_used <<")";
+    itemList.add("Dim Mfg Tables Used")            <<"("<< _dim_mfg_tbls_used <<")";
+    itemList.add("Number Pending")                 <<"("<< _nbr_pending       <<")";
 
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Device Class:  (" <<(int) _device_class[0] <<" "<<(int)_device_class[1]<<" "<< (int)_device_class[2]<<" "<<(int)_device_class[3]<<")" << endl;
-    }
+        Cti::StreamBufferSink& values = itemList.add("STD TBLS USED");
 
-    integer = getRawNameplateType() ;
-    aString = getResolvedNameplateType();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Nameplate Type: " << aString << " (" << integer <<")" << endl;
-    }
-
-    integer = getRawDefaultSetUsed() ;
-    aString = getResolvedDefaultSetUsed();
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Default Set Used: " << aString << " (" << integer <<")" << endl;
-    }
-
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   Max Procedure Parameter Length:  (" <<(int)_max_proc_parm_len <<")" << endl;
-        dout << "   Max Response Data Length:  (" <<(int)_max_resp_data_len <<")" << endl;
-        dout << "   Std Version No.:  (" <<(int)_std_version_no <<")" << endl;
-        dout << "   Std Revision No.:  (" <<(int)_std_revision_no <<")" << endl;
-        dout << "   Dim Std Tables Used:  (" <<(int)_dim_std_tbls_used <<")" << endl;
-        dout << "   Dim Mfg Tables Used:  (" <<(int)_dim_mfg_tbls_used <<")" << endl;
-        dout << "   Number Pending:  (" <<(int)_nbr_pending <<")" << endl;
-    }
-    {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "   STD TBLS USED: ";
-    }
-    for (long xx = 0; xx < _dim_std_tbls_used; xx++ )
-    {
-        for (int x3 = 0; x3 < 8; x3++ )
+        for(long xx = 0; xx < _dim_std_tbls_used; xx++ )
         {
-            int offset = (xx==0?1:8);
-            if ((_std_tbls_used[xx] >> x3) & 0x01 == 0x01)
+            for(int x3 = 0; x3 < 8; x3++ )
             {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "  "<<  (int)((offset * xx) + x3);
+                int offset = (xx==0?1:8);
+                if ((_std_tbls_used[xx] >> x3) & 0x01 == 0x01)
+                {
+                    values << (int)((offset * xx) + x3) <<" ";
+                }
             }
         }
     }
-    {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << endl;
-    }
+
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 0") <<
+            itemList
+            );
 }
 
 //=========================================================================================================================================

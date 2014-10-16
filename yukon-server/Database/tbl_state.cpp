@@ -1,21 +1,5 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_state
-*
-* Date:   12/29/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_state.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "dbaccess.h"
 #include "tbl_state.h"
 #include "logger.h"
@@ -125,16 +109,16 @@ bool CtiTableState::operator()(const CtiTableState& aRef) const
     return operator<(aRef);
 }
 
-void CtiTableState::dump() const
+std::string CtiTableState::toString() const
 {
+    Cti::FormattedList itemList;
 
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "  State Group ID " << getStateGroupID() << endl;
-        dout << "  Raw State      " << getRawState() << endl;
-        dout << "  Text           " << getText() << endl;
-    }
-    return;
+    itemList <<"CtiTableState";
+    itemList.add("State Group ID") << getStateGroupID();
+    itemList.add("Raw State")      << getRawState();
+    itemList.add("Text")           << getText();
+
+    return itemList.toString();
 }
 
 CtiTableState::CtiTableState(LONG id, LONG raw) :             //I think this needed to add the pointID here ??

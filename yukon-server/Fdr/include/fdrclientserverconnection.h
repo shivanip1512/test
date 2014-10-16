@@ -49,7 +49,7 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection : public Cti::Fdr::ServerConnec
     protected:
         void failConnection();
         ULONG getDebugLevel();
-        std::ostream& logNow();
+        std::string logNow();
         void sendLinkState(bool linkUp);
 
     private:

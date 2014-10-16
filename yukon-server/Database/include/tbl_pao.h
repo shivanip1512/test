@@ -1,10 +1,11 @@
 #pragma once
 
 #include "row_reader.h"
-
 #include "dbmemobject.h"
+#include "loggable.h"
 
-class IM_EX_CTIYUKONDB CtiTblPAO : public CtiMemDBObject
+
+class IM_EX_CTIYUKONDB CtiTblPAO : public CtiMemDBObject, public Cti::Loggable
 {
 
 protected:
@@ -80,7 +81,7 @@ public:
     bool Delete();
     void DecodeDatabaseReader(Cti::RowReader &rdr);
 
-    void DumpData();
+    virtual std::string toString() const override;
 };
 
 inline bool CtiTblPAO::isInhibited() const { return _disableFlag; }

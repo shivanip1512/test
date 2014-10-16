@@ -55,8 +55,7 @@ void CtiMCServer::dispatchThreadFunc()
 
             if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - MCServer Replied to Are You There message." << endl;
+                CTILOG_DEBUG(dout, "MCServer Replied to Are You There message.");
             }
         }
     }
@@ -80,10 +79,7 @@ void CtiMCServer::run()
 {
     try
     {
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << " Connecting to dispatch" << endl;
-        }
+        CTILOG_INFO(dout, "Connecting to dispatch");
 
         _dispatchConnection.setName("MACServer to Dispatch");
         _dispatchConnection.start();
@@ -147,12 +143,9 @@ void CtiMCServer::run()
 
                 if( gMacsDebugLevel & MC_DEBUG_EVENTS )
                 {
-                    CtiLockGuard< CtiLogger > g(dout);
-                    dout << CtiTime() << " Checking event queue" << endl;
+                    CTILOG_DEBUG(dout, "Checking event queue"<< 
+                    		_scheduler.dumpEventQueue());
                 }
-
-                if( gMacsDebugLevel & MC_DEBUG_EVENTS )
-                    _scheduler.dumpEventQueue();
 
                 // Check to see if the next event is ready to go.
                 _scheduler.getEvents( CtiTime::now(), work_around );
@@ -176,36 +169,25 @@ void CtiMCServer::run()
         }
         else
         {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " An error occured during initialization" << endl;
+            CTILOG_ERROR(dout, "Initialization has failed");
         }
     }
     catch(...)
     {
-         CtiLockGuard<CtiLogger> guard(dout);
-         dout << CtiTime() << " *PANIC* MC MAIN THREAD CAUGHT AN EXCEPTION OF UNKNOWN TYPE!" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " Shutting down MACServer connection to dispatch" << endl;
-    }
+    CTILOG_INFO(dout, "Shutting down MACServer connection to dispatch");
 
     _dispatchConnection.close();
     _dispatchThread.join();
 
     /* We're done lets close down the server */
-    {
-      CtiLockGuard<CtiLogger> guard(dout);
-      dout << CtiTime() << " Metering and Control shutting down" << endl;
-    }
+    CTILOG_INFO(dout, "Metering and Control shutting down");
 
     deinit();
 
-    {
-        CtiLockGuard<CtiLogger> guard(dout);
-        dout << CtiTime() << " Metering and Control exiting" << endl;
-    }
+    CTILOG_INFO(dout, "Metering and Control exiting");
 }
 
 
@@ -237,8 +219,7 @@ void CtiMCServer::logEvent(const string& user, const string& text)
 
     if( gMacsDebugLevel & MC_DEBUG_EVENTS )
     {
-        CtiLockGuard< CtiLogger > g(dout);
-        dout << CtiTime() << cmd_string << endl;
+        CTILOG_DEBUG(dout, cmd_string);
     }
 
     // Acquire an interpreter and send out the command
@@ -273,9 +254,7 @@ void CtiMCServer::executeCommand(const string& command, long target)
 
     if( gMacsDebugLevel & MC_DEBUG_INTERP )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-             << " Sending command to tcl for eval:  " << to_send << endl;
+        CTILOG_DEBUG(dout, "Sending command to tcl for eval: "<< to_send);
     }
 
     // Acquire an interpreter and send out the command
@@ -297,10 +276,7 @@ bool CtiMCServer::init()
     try
     {
         /* Start Initialization */
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " Metering and Control starting up..." << endl;
-        }
+        CTILOG_INFO(dout, "Metering and Control starting up...");
 
         // load up the database and start the db update thread
         // do not proceed until we have loaded the db successfully
@@ -308,10 +284,7 @@ bool CtiMCServer::init()
 
         while( !(status = loadDB()) )
         {
-            {
-                CtiLockGuard<CtiLogger> guard(dout);
-                dout << CtiTime() << " An error occured retrieving accessing the database, it may not be initialized.  Retry in 15 seconds." << endl;
-            }
+            CTILOG_ERROR(dout, "Could not retrieve and access the database, it may not be initialized.  Retry in 15 seconds.");
 
             if( sleep(15000) )
                 break;
@@ -319,20 +292,24 @@ bool CtiMCServer::init()
 
         if( !loadCParms() )
         {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " At least one cparm not found in master.cfg" << endl;
+            CTILOG_ERROR(dout, "At least one cparm not found in master.cfg");
         }
 
         if( status )
         {
-            CtiLockGuard<CtiMutex> map_guard(_schedule_manager.getMux() );
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Loaded " << _schedule_manager.getMap().size() << " schedules from the database." << endl;
+            unsigned scheduleNbr = 0;
+
+            {
+                CtiLockGuard<CtiMutex> map_guard(_schedule_manager.getMux() );
+                scheduleNbr = _schedule_manager.getMap().size();
+            }
+
+            CTILOG_INFO(dout, "Loaded "<< scheduleNbr <<" schedules from the database.");
         }
         else
         {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << CtiTime() << " An error occured retrieving schedules from the database." << endl;
+            CTILOG_ERROR(dout, "Could not retrieve schedules from the database");
+
             status = false;
         }
 
@@ -357,6 +334,7 @@ bool CtiMCServer::init()
     }
     catch(...)
     {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         status = false;
     }
 
@@ -367,8 +345,7 @@ bool CtiMCServer::deinit()
 {
     if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " Stopping MACS file interface" << endl;
+        CTILOG_DEBUG(dout, "Stopping MACS file interface");
     }
 
     /* stop the file interface */
@@ -376,8 +353,7 @@ bool CtiMCServer::deinit()
 
     if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " Stopping MACS client listener" << endl;
+        CTILOG_DEBUG(dout, "Stopping MACS client listener");
     }
 
     /* stop accepting connections */
@@ -386,8 +362,7 @@ bool CtiMCServer::deinit()
 
     if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " Stopping MACS tcl interpreter pool" << endl;
+        CTILOG_DEBUG(dout, "Stopping MACS tcl interpreter pool");
     }
 
     CtiInterpreter* interp = _interp_pool.acquireInterpreter();
@@ -398,8 +373,7 @@ bool CtiMCServer::deinit()
 
     if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " Stopping MACS database update thread" << endl;
+        CTILOG_DEBUG(dout, "Stopping MACS database update thread");
     }
 
     _db_update_thread.interrupt( CtiThread::SHUTDOWN );
@@ -419,14 +393,10 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
 {
     if( gMacsDebugLevel & MC_DEBUG_INTERP )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-
-        dumpRunningScripts();
-
-        dout << CtiTime() << " Dumping interpreter pool before executing a new script" << endl;
-        _interp_pool.dumpPool();
-
-
+        CTILOG_DEBUG(dout,
+                dumpRunningScripts() <<
+                endl <<"Dumping interpreter pool before executing a new script"<<
+                _interp_pool);
     }
 
     CtiMCScript script;
@@ -455,10 +425,7 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
         interp->evaluate("set ScheduleName \"" + sched.getScheduleName() + "\"");
         interp->evaluate("set ScriptName \"" + script.getScriptName() + "\"");
 
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " [" << interp->getID() << "] " << script.getScriptName() << endl;
-        }
+        CTILOG_INFO(dout, "["<< interp->getID() <<"] "<< script.getScriptName());
 
         interp->setScheduleId(sched.getScheduleID());
 
@@ -470,18 +437,15 @@ void CtiMCServer::executeScript(const CtiMCSchedule& sched)
     }
     else
     {
-        CtiLockGuard<CtiLogger> guard(dout);
-        dout << CtiTime() << " Failed to load script:  "
-             << script.getScriptName() << endl;
+        CTILOG_ERROR(dout, "Failed to load script: "<< script.getScriptName());
     }
 
     if( gMacsDebugLevel & MC_DEBUG_INTERP )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dumpRunningScripts();
-
-        dout << CtiTime() << " Dumping interpreter pool after executing a new script" << endl;
-        _interp_pool.dumpPool();
+        CTILOG_DEBUG(dout,
+                dumpRunningScripts() <<
+                endl <<"Dumping interpreter pool after executing a new script"<<
+                _interp_pool);
     }
 }
 
@@ -502,8 +466,7 @@ void CtiMCServer::preScriptFunction(CtiInterpreter *interp)
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_ERROR(dout, "Invalid Connection to Database.");
         }
     }
 }
@@ -543,11 +506,10 @@ void CtiMCServer::stopScript(long sched_id)
 {
     if( gMacsDebugLevel & MC_DEBUG_INTERP )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dumpRunningScripts();
-
-        dout << CtiTime() << " Dumping interpreter before stopping script" << endl;
-        _interp_pool.dumpPool();
+        CTILOG_DEBUG(dout,
+                dumpRunningScripts() <<
+                endl <<"Dumping interpreter pool before stopping script"<<
+                _interp_pool);
     }
 
     // find the schedule and reset its manual start + stop times
@@ -581,11 +543,10 @@ void CtiMCServer::stopScript(long sched_id)
 
     if( gMacsDebugLevel & MC_DEBUG_INTERP )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dumpRunningScripts();
-
-        dout << CtiTime() << " Dumping interpreter after stopping script" << endl;
-        _interp_pool.dumpPool();
+        CTILOG_DEBUG(dout,
+                dumpRunningScripts() <<
+                endl <<"Dumping interpreter pool after stopping script"<<
+                _interp_pool);
     }
 
 }
@@ -657,9 +618,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
 
     if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
     {
-        CtiLockGuard<CtiLogger> guard(dout);
-        dout << CtiTime() << " Processing Message:  " <<  endl;
-        msg.dump();
+        CTILOG_DEBUG(dout, "Processing Message: "<< msg);
     }
 
     switch( msg.isA() )
@@ -668,8 +627,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
         {
             if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
             {
-                CtiLockGuard<CtiLogger> guard(dout);
-                dout << CtiTime() << " Received AddSchedule message" << endl;
+                CTILOG_DEBUG(dout, "Received AddSchedule message");
             }
 
             const CtiMCAddSchedule& add_msg = static_cast<const CtiMCAddSchedule&>(msg);
@@ -723,8 +681,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
 
             if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
             {
-                CtiLockGuard<CtiLogger> guard(dout);
-                dout << CtiTime() << " Received UpdateSchedule message" << endl;
+                CTILOG_DEBUG(dout, "Received UpdateSchedule message");
             }
 
             const CtiMCUpdateSchedule& update_msg = static_cast<const CtiMCUpdateSchedule&>(msg);
@@ -785,8 +742,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
         {
             if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
             {
-                CtiLockGuard<CtiLogger> guard(dout);
-                dout << CtiTime() << " Received Retrieve Schedule message" << endl;
+                CTILOG_DEBUG(dout, "Received Retrieve Schedule message");
             }
 
             const CtiMCRetrieveSchedule& retrieve_msg = static_cast<const CtiMCRetrieveSchedule&>(msg);
@@ -829,8 +785,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
 
             if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
             {
-                CtiLockGuard<CtiLogger> guard(dout);
-                dout << CtiTime() << " Received Delete Schedule message" << endl;
+                CTILOG_DEBUG(dout, "Received Delete Schedule message");
             }
 
             const CtiMCDeleteSchedule& delete_msg = static_cast<const CtiMCDeleteSchedule&>(msg);
@@ -877,8 +832,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
         {
             if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
             {
-                CtiLockGuard<CtiLogger> guard(dout);
-                dout << CtiTime() << " Received Retrieve Script message" << endl;
+                CTILOG_DEBUG(dout, "Received Retrieve Script message");
             }
 
             const CtiMCRetrieveScript& retrieve_msg = static_cast<const CtiMCRetrieveScript&>(msg);
@@ -900,8 +854,7 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
         {
             if( gMacsDebugLevel & MC_DEBUG_MESSAGES )
             {
-                CtiLockGuard<CtiLogger> guard(dout);
-                dout << CtiTime() << " Received Override Request message" << endl;
+                CTILOG_DEBUG(dout, "Received Override Request message");
             }
 
             const CtiMCOverrideRequest& request_msg = static_cast<const CtiMCOverrideRequest&>(msg);
@@ -1028,10 +981,8 @@ bool CtiMCServer::processMessage(const CtiMessage& msg)
 
                     default:
                         {
-                            {
-                                CtiLockGuard< CtiLogger > g(dout);
-                                dout << CtiTime() << " Unknown action in a CtiMCOverrideRequest received" << endl;
-                            }
+                            CTILOG_ERROR(dout, "Unknown action in a CtiMCOverrideRequest received ("<< request_msg.getAction() <<")");
+
                             sched = NULL;
                         }
                     }
@@ -1066,11 +1017,13 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
 {
     if( gMacsDebugLevel & MC_DEBUG_EVENTS )
     {
-        CtiLockGuard<CtiLogger> g(dout);
-        dout << CtiTime() << " Processing Event: " << endl;
-        dout << CtiTime() <<" schedule id:  " << event.sched_id << endl;
-        dout << CtiTime() << " event type:   " << event.event_type << endl;
-        dout << CtiTime() << " timestamp:    " << event.timestamp << endl << endl;
+        Cti::FormattedList loglist;
+        loglist.add("schedule id") << event.sched_id;
+        loglist.add("event type")  << event.event_type;
+        loglist.add("timestamp")   << event.timestamp;
+
+        CTILOG_DEBUG(dout, "Processing Event:"<<
+                loglist);
     }
 
     CtiLockGuard<CtiMutex> guard(_schedule_manager.getMux() );
@@ -1078,9 +1031,8 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
 
     if( sched == NULL )
     {
-        CtiLockGuard<CtiLogger> logGuard(dout);
-        dout << CtiTime() << " Attempting to process an event with schedule id:  " << event.sched_id << endl;
-        dout << CtiTime() << " No schedule was found with that id." << endl;
+        CTILOG_WARN(dout, "Attempting to process an event with schedule id: "<< event.sched_id <<". No schedule was found with that id.");
+
         return false;
     }
 
@@ -1113,10 +1065,7 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
             else
                 stopScript(sched->getScheduleID()); // stop script
 
-        {
-            CtiLockGuard< CtiLogger > logGuard(dout);
-            dout << CtiTime() << " Stopping Schedule: " << sched->getScheduleName() << endl;
-        }
+        CTILOG_INFO(dout, "Stopping Schedule: "<< sched->getScheduleName());
 
         break;
     case StartPending:
@@ -1124,10 +1073,7 @@ bool CtiMCServer::processEvent(const ScheduledEvent& event)
     default:
         {
             // Unknown event type.... did another one get added or?
-            CtiLockGuard< CtiLogger > logGuard(dout);
-            dout << "WARNING:  " << __FILE__ << " (" << __LINE__
-                 << ") Unknown event type."
-                 << endl;
+            CTILOG_ERROR(dout, "Unknown event type ("<< event.event_type <<")");
         }
     }
 
@@ -1165,19 +1111,13 @@ bool CtiMCServer::loadCParms()
       char *eptr;
       gMacsDebugLevel = strtoul(str.c_str(), &eptr, 16);
 
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " " << MC_DEBUG_LEVEL << ": 0x" << hex <<  gMacsDebugLevel << dec << endl;
-      }
+      CTILOG_INFO(dout, MC_DEBUG_LEVEL <<": 0x"<< hex <<  gMacsDebugLevel);
    }
    else
    {
        gMacsDebugLevel = DEFAULT_MC_DEBUG_LEVEL;
 
-       {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " " << MC_DEBUG_LEVEL << " not found in master.cfg" << endl;
-       }
+       CTILOG_INFO(dout, MC_DEBUG_LEVEL <<" not found in master.cfg");
 
        result = false;
    }
@@ -1189,10 +1129,8 @@ bool CtiMCServer::loadCParms()
 
    if( !gConfigParms.isOpt(FTP_INTERFACE_DIR) )
    {
-       {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " " << FTP_INTERFACE_DIR << " not found in master.cfg" << endl;
-       }
+       CTILOG_INFO(dout, FTP_INTERFACE_DIR <<" not found in master.cfg");
+
        result = false;
    }
 
@@ -1205,10 +1143,7 @@ bool CtiMCServer::loadCParms()
    {
        _file_interface.setExtension(DEFAULT_MC_FTP_INTERFACE_EXT);
 
-       {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " " << FTP_INTERFACE_EXT << " not found in master.cfg" << endl;
-       }
+       CTILOG_INFO(dout, FTP_INTERFACE_EXT <<" not found in master.cfg");
 
        result = false;
    }
@@ -1232,10 +1167,7 @@ bool CtiMCServer::loadCParms()
    {
        _file_interface.setDeleteOnStart(false);
 
-       {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " " << FTP_DELETE_ON_START << " not found in master.cfg" << endl;
-       }
+       CTILOG_INFO(dout, FTP_DELETE_ON_START <<" not found in master.cfg");
 
        result = false;
    }
@@ -1297,19 +1229,20 @@ unsigned long CtiMCServer::getRemainingMillis(const CtiTime& timeout)
     return (timeout.seconds() - now.seconds()) * 1000;
 }
 
-void CtiMCServer::dumpRunningScripts()
+std::string CtiMCServer::dumpRunningScripts() const
 {
-    CtiLockGuard< CtiLogger > guard(dout);
+    Cti::StreamBuffer desc;
+    desc << endl <<"Running scripts:";
 
-    dout << CtiTime() << " Running scripts:" << endl;
-
-    map< long, CtiInterpreter* >::iterator iter;
+    map< long, CtiInterpreter* >::const_iterator iter;
     for( iter = _running_scripts.begin();
          iter != _running_scripts.end();
          iter++ )
     {
-        dout << CtiTime() << " Schedule id: " << iter->first << " Interpreter: " << iter->second << endl;
+        desc << endl <<"Schedule id: "<< iter->first <<" / Interpreter: "<< iter->second;
     }
+
+    return desc;
 }
 
 /*----------------------------------------------------------------------------
@@ -1334,8 +1267,7 @@ void CtiMCServer::sendDBChange(const int& paoid, const string& user)
 
     if( gMacsDebugLevel & MC_DEBUG_EVENTS )
     {
-        CtiLockGuard< CtiLogger > g(dout);
-        dout << CtiTime() << cmd_string << endl;
+        CTILOG_DEBUG(dout, cmd_string);
     }
 
     // Acquire an interpreter and send out the command

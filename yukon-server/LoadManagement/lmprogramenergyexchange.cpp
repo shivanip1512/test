@@ -255,10 +255,7 @@ BOOL CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, Ct
 {
     BOOL returnBool = TRUE;
 
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - stopProgramControl isn't implemented yet, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "stopProgramControl isn't implemented yet,");
 
     return returnBool;
 }
@@ -293,10 +290,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(CtiTime currentTime, CtiMul
                     currentOffer->setRunStatus(CtiLMEnergyExchangeOffer::OpenRunStatus);
                     currentOffer->dumpDynamicData();
 
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Energy Exchange notification sent to all customers in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate() << endl;
-                    }
+                    CTILOG_INFO(dout, "Energy Exchange notification sent to all customers in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate());
                 }
             }
             else if( ciStringEqual(currentOffer->getRunStatus(),CtiLMEnergyExchangeOffer::OpenRunStatus ) )
@@ -310,8 +304,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(CtiTime currentTime, CtiMul
 
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Energy Exchange offer expired, curtailment pending in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate() << endl;
+                        CTILOG_DEBUG(dout, "Energy Exchange offer expired, curtailment pending in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate());
                     }
                 }
             }
@@ -326,8 +319,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(CtiTime currentTime, CtiMul
 
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Energy Exchange offer closed, curtailment pending in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate() << endl;
+                        CTILOG_DEBUG(dout, "Energy Exchange offer closed, curtailment pending in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate());
                     }
                 }
             }
@@ -342,8 +334,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(CtiTime currentTime, CtiMul
 
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Energy Exchange curtailment period started in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate() << endl;
+                        CTILOG_DEBUG(dout, "Energy Exchange curtailment period started in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate());
                     }
                 }
             }
@@ -358,8 +349,7 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(CtiTime currentTime, CtiMul
 
                     if( _LM_DEBUG & LM_DEBUG_STANDARD )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Energy Exchange curtailment period completed in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate() << endl;
+                        CTILOG_DEBUG(dout, "Energy Exchange curtailment period completed in program: " << getPAOName() << " offer date: " << currentOffer->getOfferDate());
                     }
                 }
             }
@@ -370,14 +360,12 @@ BOOL CtiLMProgramEnergyExchange::handleManualControl(CtiTime currentTime, CtiMul
             }
             else
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Invalid manual run status: " << currentOffer->getRunStatus() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_INFO(dout, "Invalid manual run status: " << currentOffer->getRunStatus());
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Current offer revision = NULL in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_INFO(dout, "Current offer revision = NULL");
         }
     }
 

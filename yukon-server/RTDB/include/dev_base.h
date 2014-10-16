@@ -1,7 +1,6 @@
 #pragma once
 
 #include "dsm2.h"
-
 #include "cmdparse.h"
 #include "dev_exclusion.h"
 #include "config_device.h"
@@ -14,6 +13,7 @@
 #include "tbl_static_paoinfo.h"
 #include "pt_base.h"
 #include "utility.h"
+#include "loggable.h"
 
 #include <boost/shared_ptr.hpp>
 #include <set>
@@ -161,7 +161,7 @@ public:
     virtual void deleteNonUpdatedScanRates();
 
 
-    virtual void DumpData();
+    virtual std::string toString() const override;
 
     INT         ReportError(INT mess);
 

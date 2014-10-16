@@ -27,7 +27,7 @@ public:
 
    CtiRouteVersacom();
 
-   virtual void DumpData();
+   virtual std::string toString() const override;
 
    YukonError_t assembleVersacomRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 

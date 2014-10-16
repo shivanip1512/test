@@ -53,7 +53,7 @@ public:
 
     virtual CtiMessage* replicateMessage() const;
 
-    virtual void dump() const;
+    virtual std::string toString() const override;
 
 
 private:

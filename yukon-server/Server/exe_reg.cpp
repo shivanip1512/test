@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   exe_reg
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/exe_reg.cpp-arc  $
-* REVISION     :  $Revision: 1.5.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:38 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <iostream>
@@ -43,8 +30,7 @@ YukonError_t CtiRegistrationExecutor::ServerExecute(CtiServer *Svr)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_WARN(dout, "sptr is null");
     }
 
     return nRet;

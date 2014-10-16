@@ -2,6 +2,7 @@
 
 #include "dlldefs.h"
 #include "types.h"
+#include "ctitime.h"
 #include "std_ansi_tbl_base.h"
 
 #define BCD                unsigned char

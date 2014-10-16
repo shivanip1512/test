@@ -53,11 +53,11 @@ CtiMCFileInterface& CtiMCFileInterface::setConsumedDirectory(const string& dir)
 */
 void CtiMCFileInterface::start()
 {
-    if( mkdir(_consumed_dir.c_str()) < 0 ) {
-        if( errno != EEXIST ) {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " File Interface: An error occured creating directory:  " << _consumed_dir << endl;
-            dout << CtiTime() << " File Interface: Processed/consumed files will be deleted " << endl;
+    if( mkdir(_consumed_dir.c_str()) < 0 )
+    {
+        if( errno != EEXIST )
+        {
+            CTILOG_ERROR(dout, "Could not create directory: "<< _consumed_dir <<" - Processed/consumed files will be deleted.");
         }
     }
 
@@ -78,10 +78,7 @@ void CtiMCFileInterface::handleFile(const string& filename )
 
     if( (fptr = fopen( filename.c_str(), "r" ) ) == NULL )
     {
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " File Interface: An error occured opening file:  " << filename << endl;
-        }
+        CTILOG_ERROR(dout, "Could not open file: "<< filename);
 
         return;
     }
@@ -114,10 +111,7 @@ void CtiMCFileInterface::handleFile(const string& filename )
         // Could be a bogus line
         if( sep_ptr == NULL )
         {
-            {
-                CtiLockGuard< CtiLogger > guard(dout);
-                dout << CtiTime() << " File Interface: An error occured at line: " << line << " in file: " << filename << endl;
-            }
+            CTILOG_ERROR(dout, "An error occurred at line: "<< line <<" in file: "<< filename);
             continue;
         }
 
@@ -157,10 +151,9 @@ void CtiMCFileInterface::handleFile(const string& filename )
     consume_file << setw(2) << now_time.minute();
     consume_file << setw(2) << now_time.second();
 
-    if( CopyFile(filename.c_str(), consume_file.str().c_str(), FALSE) == 0 ) {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " File Interface:  failed copying processed file " << filename << endl;
-        dout << CtiTime() << " to " << consume_file.str() << endl;
+    if( CopyFile(filename.c_str(), consume_file.str().c_str(), FALSE) == 0 )
+    {
+        CTILOG_ERROR(dout, "Failed copying processed file "<< filename <<" to "<< consume_file);
     }
 
     return;
@@ -192,12 +185,7 @@ void CtiMCFileInterface::execute(const string& function, const string& name )
 
         if( id == -1 )
         {
-            CtiLockGuard< CtiLogger > logGuard(dout);
-            dout
-            << CtiTime()
-            << " File Interface: unable to locate a schedule id for schedule named:"
-            << name
-            << endl;
+            CTILOG_ERROR(dout, "Unable to locate a schedule id for schedule named: "<< name);
 
             return;
         }
@@ -240,13 +228,7 @@ void CtiMCFileInterface::execute(const string& function, const string& name )
     }
     else
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime()
-             << " File Interface - Unknown function: "
-             << function
-             << "  for schedule name: "
-             << name
-             << endl;
+        CTILOG_ERROR(dout, "Unknown function: "<< function <<" for schedule name: "<< name);
     }
 
     // Write out the command/message if there is one
@@ -261,14 +243,12 @@ void CtiMCFileInterface::execute(const string& function, const string& name )
 
             if( gMacsDebugLevel & MC_DEBUG_FILEINT )
             {
-                CtiLockGuard< CtiLogger > guard(dout);
-                dout << CtiTime()
-                     << " File Interface: Placed a command on the main queue: "
-                     << endl
-                     << CtiTime()
-                     << " Function: " << lower_function
-                     << " Schedule: " << name
-                     << endl;
+                Cti::FormattedList loglist;
+                loglist.add("Function") << lower_function;
+                loglist.add("Schedule") << name;
+                
+                CTILOG_DEBUG(dout, "Placed a command on the main queue: "<<
+                     	loglist);
             }
         }
         else

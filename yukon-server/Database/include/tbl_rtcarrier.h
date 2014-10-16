@@ -1,17 +1,10 @@
 #pragma once
 
-#include "row_reader.h"
-#include <limits.h>
-
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
-
 #if !defined (NOMINMAX)
 #define NOMINMAX
 #endif
 
-#include <windows.h>
-
+#include "row_reader.h"
 #include "dbaccess.h"
 #include "dllbase.h"
 #include "dlldefs.h"
@@ -22,8 +15,13 @@
 #include "yukon.h"
 #include "dbmemobject.h"
 
+#include <windows.h>
+#include <limits.h>
+#include <rw/thr/recursiv.h>
+#include <rw/thr/monitor.h>
 
-class IM_EX_CTIYUKONDB CtiTableCarrierRoute : public CtiMemDBObject, private boost::noncopyable
+
+class IM_EX_CTIYUKONDB CtiTableCarrierRoute : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -49,7 +47,7 @@ public:
 
    static std::string getTableName();
 
-   void DumpData();
+   virtual std::string toString() const override;
 
    INT getBus() const;
    CtiTableCarrierRoute& setBus( const INT aBus );

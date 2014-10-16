@@ -1,8 +1,8 @@
 #include "precompiled.h"
 
 #include "ThreadStatusKeeper.h"
-
 #include "thread_monitor.h"
+#include "logger.h"
 
 using std::endl;
 
@@ -55,8 +55,7 @@ bool ThreadStatusKeeper::monitorCheck(CtiThreadRegData::Behaviors behavior, int 
         if( now > _announceTime )
         {
             _announceTime = nextScheduledTimeAlignedOnRate( now, CtiThreadMonitor::StandardMonitorTime );
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " "<< _threadName <<" TID: " << rwThreadId() << endl;
+            CTILOG_INFO(dout, _threadName << " TID: " << rwThreadId() );
         }
 
         ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), _threadName, behavior, tickleInterval, fnPtr, _threadName) );
@@ -67,9 +66,7 @@ bool ThreadStatusKeeper::monitorCheck(CtiThreadRegData::Behaviors behavior, int 
 
 void ThreadStatusKeeper::awolComplain( const std::string & who )
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-    dout << CtiTime() << who << " periodic thread is AWOL" << endl;
+    CTILOG_WARN(dout, who << " periodic thread is AWOL");
 }
 
 }

@@ -4,14 +4,17 @@
 #include "dbmemobject.h"
 #include "database_connection.h"
 #include "row_reader.h"
+#include "boost/optional.hpp"
+#include "loggable.h"
 
 #include <string>
 #include <map>
 
+
 /**
  *  Abstract base class CtiTableDynamicPaoInfoBase
  */
-class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfoBase : private boost::noncopyable
+class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfoBase : private boost::noncopyable, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -56,8 +59,6 @@ public:
     void getValue(unsigned long &destination) const;
     void getValue(double        &destination) const;
     void getValue(std::string   &destination) const;
-
-    virtual void dump() const = 0;
 };
 
 /**
@@ -427,7 +428,7 @@ public:
     PaoInfoKeys getKey() const;
     static std::string getKeyString(const PaoInfoKeys key);
 
-    virtual void dump() const;
+    virtual std::string toString() const override;
 };
 
 /**
@@ -476,5 +477,5 @@ public:
     PaoInfoKeysIndexed getKey() const;
     static std::string getKeyString(const PaoInfoKeysIndexed key);
 
-    virtual void dump() const;
+    virtual std::string toString() const override;
 };

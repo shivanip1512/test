@@ -66,9 +66,7 @@ int CtiDeviceCBC::getCBCRetries( void )
 
             if( isDebugLudicrous() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "CBC_RETRIES cparm not found - defaulting CBC retry count to 2 (3 attempts)" << endl;
+                CTILOG_DEBUG(dout, "CBC_RETRIES cparm not found - defaulting CBC retry count to 2 (3 attempts)");
             }
         }
     }
@@ -142,11 +140,7 @@ YukonError_t CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg     *pReq,
 
             if( address > 9999 )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "Error: group addressing number > 9999, truncating" << endl;
-                }
+                CTILOG_ERROR(dout, "group addressing number > 9999, truncating");
 
                 address %= 10000;
             }
@@ -199,8 +193,7 @@ YukonError_t CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg     *pReq,
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Unexpected action items is != 1 ("<< parse.getActionItems().size() <<")");
         }
 
         CtiReturnMsg* pRet = CTIDBG_new CtiReturnMsg(getID(),
@@ -255,10 +248,7 @@ YukonError_t CtiDeviceCBC::executeFisherPierceCBC(CtiRequestMsg     *pReq,
             OutMessage = NULL;
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << resultString << endl;
-        }
+        CTILOG_ERROR(dout, resultString);
     }
 
     return nRet;
@@ -326,8 +316,7 @@ YukonError_t CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg     *pReq,
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Unexpected action items is != 1 ("<< parse.getActionItems().size() <<")");
         }
 
         /*
@@ -387,10 +376,7 @@ YukonError_t CtiDeviceCBC::executeVersacomCBC(CtiRequestMsg     *pReq,
             OutMessage = NULL;
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << resultString << endl;
-        }
+        CTILOG_ERROR(dout, resultString);
     }
 
     return nRet;
@@ -433,8 +419,7 @@ void CtiDeviceCBC::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 
     _cbc.DecodeDatabaseReader(rdr);
@@ -559,10 +544,7 @@ YukonError_t CtiDeviceCBC::executeExpresscomCBC(CtiRequestMsg     *pReq,
             OutMessage = NULL;
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << resultString << endl;
-        }
+        CTILOG_ERROR(dout, resultString);
     }
 
     return nRet;

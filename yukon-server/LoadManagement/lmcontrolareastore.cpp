@@ -211,12 +211,11 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
 
         if ( ! conn.isValid() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_ERROR(dout, "Invalid Connection to Database.");
 
             return;
         }
-        
+
         for( LONG i=0;i<_controlAreas->size();i++ )
         {
             CtiLMControlArea* currentLMControlArea = (CtiLMControlArea*)(*_controlAreas)[i];
@@ -265,8 +264,7 @@ void CtiLMControlAreaStore::dumpAllDynamicData()
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - ***No control areas to write to dynamic tables***" << endl;
+        CTILOG_INFO(dout, "***No control areas to write to dynamic tables***");
     }
 }
 
@@ -288,10 +286,7 @@ void CtiLMControlAreaStore::reset()
 
         RWTimer overallTimer;
         overallTimer.start();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Starting Database Reload..." << endl;
-        }
+        CTILOG_INFO(dout, "Starting Database Reload...");
 
         {
             Cti::Database::DatabaseConnection connection;
@@ -326,11 +321,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 while( rdr() )
@@ -366,11 +357,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 while( rdr() )
@@ -415,8 +402,7 @@ void CtiLMControlAreaStore::reset()
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << CtiTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupPoint table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupPoint table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
+                        CTILOG_WARN(dout, "Rows exist in the LMGroupPoint table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupPoint table has missing constraints?");
                     }
                 }
             }// end loading group point specific info
@@ -447,8 +433,7 @@ void CtiLMControlAreaStore::reset()
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << CtiTime() << " **Checkpoint** " <<  " Rows exist in the LMGroupRipple table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupRipple table has missing constraints?" << __FILE__ << "(" << __LINE__ << ")" << endl;
+                        CTILOG_WARN(dout, "Rows exist in the LMGroupRipple table exist but do not correspond with any lm groups already loaded.  Either groups didn't get loaded correctly or the LMGroupRipple table has missing constraints?");
                     }
                 }
             } // end loading ripple group specific info */
@@ -474,11 +459,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 while( rdr() )
@@ -525,11 +506,6 @@ void CtiLMControlAreaStore::reset()
                                 temp_point_group_map.insert(make_pair(point_id,lm_group));
                                 break;
                             default:
-                                /*{
-                                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                                    dout << CtiTime() << " **Checkpoint** " <<  " Unknown point offset: " << point_offset
-                                         << "  Expected daily, monthly, seasonal, or annual control history point offset" << __FILE__ << "(" << __LINE__ << ")" << endl;
-                                }*/
                                 break;
                             }
                             break;
@@ -545,10 +521,7 @@ void CtiLMControlAreaStore::reset()
                             }
                             break;
                         default:
-                            {
-                                CtiLockGuard<CtiLogger> dout_guard(dout);
-                                dout << CtiTime() << " **Checkpoint** " <<  " Unknown point type:  " << resolvePointType(point_type.c_str()) << __FILE__ << "(" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_WARN(dout, "Unknown point type:  " << resolvePointType(point_type.c_str()));
                         }
                     }
                 }
@@ -642,11 +615,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 std::map<long, vector<long> >::iterator iter;
@@ -686,11 +655,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 std::map<long, vector<CtiLMGroupPtr> >::iterator cur_iter;
@@ -782,10 +747,10 @@ void CtiLMControlAreaStore::reset()
 
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "DB Load Timer for All Groups is: " << allGroupTimer.elapsedTime() << endl;
-                dout << "Loaded a total of " << temp_all_group_map.size() << " groups, " << group_macro_map.size() << " of them are in macro groups" << endl;
-                dout << all_program_group_map.size() << "==" << all_assigned_group_map.size() << " groups are assigned to programs" << endl;
+                CTILOG_DEBUG(dout, "DB Load Timer for All Groups is: " << allGroupTimer.elapsedTime()
+                             << endl << "Loaded a total of " << temp_all_group_map.size() << " groups, " << group_macro_map.size() << " of them are in macro groups"
+                             << endl << all_program_group_map.size() << "==" << all_assigned_group_map.size() << " groups are assigned to programs");
+
                 allGroupTimer.reset();
             }
 
@@ -826,11 +791,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 int total_groups_assigned = 0; //keep track of how many groups we attach to programs for sanity
@@ -884,8 +845,8 @@ void CtiLMControlAreaStore::reset()
             }//loading direct programs end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "DB Load Timer for Direct Programs is: " << dirProgsTimer.elapsedTime() << endl;
+                CTILOG_DEBUG(dout, "DB Load Timer for Direct Programs is: " << dirProgsTimer.elapsedTime());
+
                 dirProgsTimer.reset();
             }
 
@@ -905,11 +866,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 while( rdr() )
@@ -930,11 +887,8 @@ void CtiLMControlAreaStore::reset()
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << CtiTime() << " **Checkpoint** " <<  "Unable to find either master program with id: " <<
-                        master_program_id << " or subordinate program with id: " << subordinate_program_id <<
-                        " -- This suggests that database constraints on table PAOExclusion aren't correct or that we failed to load one or both of the programs."  <<
-                        __FILE__ << "(" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "Unable to find either master program with id: " << master_program_id << " or subordinate program with id: " << subordinate_program_id <<
+                                     " -- This suggests that database constraints on table PAOExclusion aren't correct or that we failed to load one or both of the programs.");
                     }
 
                 }
@@ -942,8 +896,7 @@ void CtiLMControlAreaStore::reset()
 
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "DB Load Timer for associating master/subordinate programs is: " << dirProgsTimer.elapsedTime() << endl;
+                CTILOG_DEBUG(dout, "DB Load Timer for associating master/subordinate programs is: " << dirProgsTimer.elapsedTime());
                 dirProgsTimer.reset();
             }
 
@@ -978,11 +931,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 while( rdr() )
@@ -1018,7 +967,7 @@ void CtiLMControlAreaStore::reset()
                     {
                         newDirectGear = CTIDBG_new EcobeeCycleGear(rdr);
                     }
-                    else if (rdr["settings"].isNull()) 
+                    else if (rdr["settings"].isNull())
                     {
                         newDirectGear = CTIDBG_new CtiLMProgramDirectGear(rdr);
                     }
@@ -1043,17 +992,14 @@ void CtiLMControlAreaStore::reset()
                         rdr["gearname"] >> gearName;
                         rdr["gearid"] >> gearId;
 
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << " **** EXCEPTION Checkpoint **** Gear setup is invalid for gear " << gearName << " " << gearId << endl;
-                        }
+                        CTILOG_ERROR(dout, "Gear setup is invalid for gear " << gearName << " " << gearId);
                     }
                 }
             }//loading direct gears end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "DB Load Timer for Direct Gears is: " << gearsTimer.elapsedTime() << endl;
+                CTILOG_DEBUG(dout, "DB Load Timer for Direct Gears is: " << gearsTimer.elapsedTime());
+
                 gearsTimer.reset();
             }
 
@@ -1073,11 +1019,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 while( rdr() )
@@ -1094,16 +1036,15 @@ void CtiLMControlAreaStore::reset()
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> dout_guard(dout);
-                        dout << CtiTime() << " **Checkpoint** No program found. " << __FILE__ << "(" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "No program found with ID " << program_id);
                     }
                 }
             } //loading notification groups end
 
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "DB Load Timer for Direct Program Notification Groups is: " << notificationGroupTimer.elapsedTime() << endl;
+                CTILOG_DEBUG(dout, "DB Load Timer for Direct Program Notification Groups is: " << notificationGroupTimer.elapsedTime());
+
                 notificationGroupTimer.reset();
             }
 
@@ -1140,11 +1081,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 while( rdr() )
@@ -1205,11 +1142,7 @@ void CtiLMControlAreaStore::reset()
 
                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                     {
-                        string loggedSQLstring = rdr.asString();
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - " << loggedSQLstring << endl;
-                        }
+                        CTILOG_DEBUG(dout, rdr.asString());
                     }
 
                     while( rdr() )
@@ -1228,8 +1161,8 @@ void CtiLMControlAreaStore::reset()
             }//loading curtailment programs end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "DB Load Timer for Curtailment Programs is: " << curtailProgsTimer.elapsedTime() << endl;
+                CTILOG_DEBUG(dout, "DB Load Timer for Curtailment Programs is: " << curtailProgsTimer.elapsedTime());
+
                 curtailProgsTimer.reset();
             }
 
@@ -1265,11 +1198,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 while( rdr() )
@@ -1329,11 +1258,7 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            string loggedSQLstring = rdr.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
+                            CTILOG_DEBUG(dout, rdr.asString());
                         }
 
                         std::vector<CtiLMEnergyExchangeOffer*>& offers = currentLMProgramEnergyExchange->getLMEnergyExchangeOffers();
@@ -1361,11 +1286,7 @@ void CtiLMControlAreaStore::reset()
 
                             if( _LM_DEBUG & LM_DEBUG_DATABASE )
                             {
-                                string loggedSQLstring = rdr.asString();
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - " << loggedSQLstring << endl;
-                                }
+                                CTILOG_DEBUG(dout, rdr.asString());
                             }
 
                             vector<CtiLMEnergyExchangeOfferRevision*>& offerRevisions = currentLMEnergyExchangeOffer->getLMEnergyExchangeOfferRevisions();
@@ -1393,11 +1314,7 @@ void CtiLMControlAreaStore::reset()
 
                                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                 {
-                                    string loggedSQLstring = rdr.asString();
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                                    }
+                                    CTILOG_DEBUG(dout, rdr.asString());
                                 }
 
                                 vector<CtiLMEnergyExchangeHourlyOffer*>& hourlyOffers = currentLMEnergyExchangeOfferRevision->getLMEnergyExchangeHourlyOffers();
@@ -1426,11 +1343,7 @@ void CtiLMControlAreaStore::reset()
 
                         if( _LM_DEBUG & LM_DEBUG_DATABASE )
                         {
-                            string loggedSQLstring = rdr.asString();
-                            {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - " << loggedSQLstring << endl;
-                            }
+                            CTILOG_DEBUG(dout, rdr.asString());
                         }
 
                         std::vector<CtiLMEnergyExchangeCustomer*>& lmEnergyExchangeCustomers = currentLMProgramEnergyExchange->getLMEnergyExchangeCustomers();
@@ -1467,11 +1380,7 @@ void CtiLMControlAreaStore::reset()
 
                                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                 {
-                                    string loggedSQLstring = rdr.asString();
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                                    }
+                                    CTILOG_DEBUG(dout, rdr.asString());
                                 }
 
                                 vector<CtiLMEnergyExchangeCustomerReply*>& lmEnergyExchangeCustomerReplies = currentLMEnergyExchangeCustomer->getLMEnergyExchangeCustomerReplies();
@@ -1506,11 +1415,7 @@ void CtiLMControlAreaStore::reset()
 
                                     if( _LM_DEBUG & LM_DEBUG_DATABASE )
                                     {
-                                        string loggedSQLstring = rdr.asString();
-                                        {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - " << loggedSQLstring << endl;
-                                        }
+                                        CTILOG_DEBUG(dout, rdr.asString());
                                     }
 
                                     vector<CtiLMEnergyExchangeHourlyCustomer*>& hourlyCustomers = currentCustomerReply->getLMEnergyExchangeHourlyCustomers();
@@ -1526,8 +1431,8 @@ void CtiLMControlAreaStore::reset()
             }//loading energy exchange programs end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "DB Load Timer for Energy Exchange Programs is: " << eeProgsTimer.elapsedTime() << endl;
+                CTILOG_DEBUG(dout, "DB Load Timer for Energy Exchange Programs is: " << eeProgsTimer.elapsedTime());
+
                 eeProgsTimer.reset();
             }
 
@@ -1548,11 +1453,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 while( rdr() )
@@ -1568,16 +1469,16 @@ void CtiLMControlAreaStore::reset()
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << "Control Window with Id: " << newWindow->getPAOId() << " cannot find a program to associate with, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_WARN(dout, "Control Window with Id: " << newWindow->getPAOId() << " cannot find a program to associate with");
+
                         delete newWindow;
                     }
                 }
             }//loading program control windows end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "DB Load Timer for Program Control Windows is: " << progWinTimer.elapsedTime() << endl;
+                CTILOG_DEBUG(dout, "DB Load Timer for Program Control Windows is: " << progWinTimer.elapsedTime());
+
                 progWinTimer.reset();
             }
 
@@ -1610,11 +1511,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 CtiLMControlArea* currentLMControlArea = NULL;
@@ -1673,9 +1570,8 @@ void CtiLMControlAreaStore::reset()
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << "Cannot find LM Program with Id: " << tempProgramId << " to insert into Control Area: " << currentLMControlArea->getPAOName() << ", in: " << __FILE__ << " at:" << __LINE__ << endl;
-                                dout << "The LM Program may be in more than one Control Area which is not allowed, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                CTILOG_WARN(dout, "Cannot find LM Program with Id: " << tempProgramId << " to insert into Control Area: " << currentLMControlArea->getPAOName() << ","
+                                            << endl << "The LM Program may be in more than one Control Area, which is not allowed");
                             }
                         }
                     }
@@ -1709,9 +1605,9 @@ void CtiLMControlAreaStore::reset()
             }//loading control areas end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "DB Load Timer for Control Areas is: " << caTimer.elapsedTime() << endl;
-                dout << "directprghashmap size: " << directProgramHashMap.entries() << endl;
+                CTILOG_DEBUG(dout, "DB Load Timer for Control Areas is: " << caTimer.elapsedTime()
+                             << endl << "directprghashmap size: " << directProgramHashMap.entries());
+
                 caTimer.reset();
             }
 
@@ -1740,11 +1636,7 @@ void CtiLMControlAreaStore::reset()
 
                 if( _LM_DEBUG & LM_DEBUG_DATABASE )
                 {
-                    string loggedSQLstring = rdr.asString();
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << loggedSQLstring << endl;
-                    }
+                    CTILOG_DEBUG(dout, rdr.asString());
                 }
 
                 while( rdr() )
@@ -1782,8 +1674,8 @@ void CtiLMControlAreaStore::reset()
             }//loading control area triggers end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "DB Load Timer for Triggers is: " << trigTimer.elapsedTime() << endl;
+                CTILOG_DEBUG(dout, "DB Load Timer for Triggers is: " << trigTimer.elapsedTime());
+
                 trigTimer.reset();
             }
 
@@ -1819,15 +1711,12 @@ void CtiLMControlAreaStore::reset()
 
             _isvalid = TRUE;
 
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Control areas reset" << endl;
-            }
+            CTILOG_INFO(dout, "Control areas reset");
 
             if( _LM_DEBUG & LM_DEBUG_TIMING )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << "DB Load Timer for entire LM DB: " << overallTimer.elapsedTime() << endl;
+                CTILOG_DEBUG(dout, "DB Load Timer for entire LM DB: " << overallTimer.elapsedTime());
+
                 overallTimer.reset();
             }
 
@@ -1835,8 +1724,7 @@ void CtiLMControlAreaStore::reset()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     try
@@ -1856,8 +1744,7 @@ void CtiLMControlAreaStore::reset()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1900,20 +1787,17 @@ void CtiLMControlAreaStore::doResetThr()
             }
             else
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << " is ZERO!!!" << endl;
+                CTILOG_INFO(dout, var << " is ZERO!!!");
             }
 
             if( _LM_DEBUG & LM_DEBUG_STANDARD )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - " << var << ":  " << str << endl;
+                CTILOG_DEBUG(dout, var << ":  " << str);
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+            CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
         }
 
         CtiTime lastPeriodicDatabaseRefresh;
@@ -1929,8 +1813,7 @@ void CtiLMControlAreaStore::doResetThr()
             {
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Resetting midnight defaults" << endl;
+                    CTILOG_DEBUG(dout, "Resetting midnight defaults");
                 }
                 checkMidnightDefaultsForReset();
             }
@@ -1940,8 +1823,7 @@ void CtiLMControlAreaStore::doResetThr()
                 //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Periodic restore of control area list from the database" << endl;
+                    CTILOG_DEBUG(dout, "Periodic restore of control area list from the database");
                 }
 
                 setValid(false);
@@ -1960,8 +1842,7 @@ void CtiLMControlAreaStore::doResetThr()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1993,8 +1874,7 @@ void CtiLMControlAreaStore::deleteInstance()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Shutting down control area store..." << endl;
+        CTILOG_DEBUG(dout, "Shutting down control area store...");
     }
 
     if( _instance != NULL )
@@ -2005,8 +1885,7 @@ void CtiLMControlAreaStore::deleteInstance()
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Control area store shutdown." << endl;
+        CTILOG_DEBUG(dout, "Control area store shutdown.");
     }
 }
 
@@ -2308,10 +2187,7 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                     additional += currentControlArea->getDefOperationalState();
                     additional += ".";
                     CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
-                    {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - " << text << ", " << additional << endl;
-                    }
+                    CTILOG_INFO(dout, text << ", " << additional);
                 }
                 currentControlArea->setDisableFlag(!currentControlArea->getDisableFlag());
                 UpdateControlAreaDisableFlagInDB(currentControlArea);
@@ -2345,10 +2221,7 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                 additional += tempchar;
                 additional += ".";
                 CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << text << ", " << additional << endl;
-                }
+                CTILOG_INFO(dout, text << ", " << additional);
             }
             if( currentControlArea->getCurrentDailyStopTime() != currentControlArea->getDefDailyStopTime() )
             {
@@ -2374,10 +2247,7 @@ bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
                 additional += tempchar;
                 additional += ".";
                 CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - " << text << ", " << additional << endl;
-                }
+                CTILOG_INFO(dout, text << ", " << additional);
             }
             currentControlArea->resetCurrentDailyStartTime();
             currentControlArea->resetCurrentDailyStopTime();
@@ -2413,14 +2283,6 @@ void CtiLMControlAreaStore::saveAnyProjectionData()
                 if( ciStringEqual(currentLMControlAreaTrigger->getProjectionType(),CtiLMControlAreaTrigger::LSFProjectionType ) &&
                      !ciStringEqual(currentLMControlAreaTrigger->getTriggerType(),CtiLMControlAreaTrigger::StatusTriggerType ) )   // LSF Projection not available on Status triggers
                 {
-                    /*{
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << " - Saved Projection Point Entries Queue entries for Point Id: " << currentLMControlAreaTrigger->getPointId() << endl;
-                        for(int k=0;k<currentLMControlAreaTrigger->getProjectionPointEntriesQueue().entries();k++)
-                        {
-                            dout << " Entry number: " << k << " value: " << currentLMControlAreaTrigger->getProjectionPointEntriesQueue()[k].getValue() << " timestamp: " << currentLMControlAreaTrigger->getProjectionPointEntriesQueue()[k].getTimestamp() << endl;
-                        }
-                    }*/
                     _projectionQueues.push_back(CtiLMSavedProjectionQueue(currentLMControlAreaTrigger->getPointId(), currentLMControlAreaTrigger->getProjectionPointEntriesQueue()));
                 }
             }
@@ -2442,14 +2304,6 @@ void CtiLMControlAreaStore::attachProjectionData(CtiLMControlAreaTrigger* trigge
         {
             std::vector<CtiLMProjectionPointEntry> queueToCopyFrom = currentSavedQueue.getProjectionEntryList();
             std::vector<CtiLMProjectionPointEntry>& queueToFillUp = trigger->getProjectionPointEntriesQueue();
-            /*{
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << " - Restored Projection Point Entries Queue entries for PointId: " << trigger->getPointId() << endl;
-                for(int k=0;k<queueToCopyFrom.entries();k++)
-                {
-                    dout << " Entry number: " << k << " value: " << queueToCopyFrom[k].getValue() << " timestamp: " << queueToCopyFrom[k].getTimestamp() << endl;
-                }
-            }*/
             std::vector<CtiLMProjectionPointEntry>::iterator itr = queueToCopyFrom.begin();
             for( ; itr != queueToCopyFrom.end(); ++itr )
             {

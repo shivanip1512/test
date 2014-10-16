@@ -145,23 +145,24 @@ CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setReductionValue( const double 
 }
 
 
-void CtiLMControlHistoryMsg::dump() const
+std::string CtiLMControlHistoryMsg::toString() const
 {
-    Inherited::dump();
+    Cti::FormattedList itemList;
 
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    itemList <<"CtiLMControlHistoryMsg";
+    itemList.add("PAO Id")            << getPAOId();
+    itemList.add("Point Id")          << getPointId();
+    itemList.add("Raw Control State") << getRawState();
+    itemList.add("Start Date Time")   << getStartDateTime();
+    itemList.add("Control Duration")  << getControlDuration();
+    itemList.add("Reduction Ratio")   << getReductionRatio();
+    itemList.add("Control Type")      << getControlType();
+    itemList.add("Active Restore")    << getActiveRestore();
+    itemList.add("Reduction Value")   << getReductionValue();
+    itemList.add("Control Priority")  << getControlPriority();
+    itemList.add("Association Key")   << getAssociationKey();
 
-    dout << " PAO Id                        " << getPAOId() << endl;
-    dout << " Point Id                      " << getPointId() << endl;
-    dout << " Raw Control State             " << getRawState() << endl;
-    dout << " Start Date Time               " << getStartDateTime() << endl;
-    dout << " Control Duration              " << getControlDuration() << endl;
-    dout << " Reduction Ratio               " << getReductionRatio() << endl;
-    dout << " Control Type                  " << getControlType() << endl;
-    dout << " Active Restore                " << getActiveRestore() << endl;
-    dout << " Reduction Value               " << getReductionValue() << endl;
-    dout << " Control Priority              " << getControlPriority() << endl;
-    dout << " Association Key               " << getAssociationKey() << endl;
+    return (Inherited::toString() += itemList.toString());
 }
 
 

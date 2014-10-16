@@ -134,8 +134,8 @@ da_lp_deviceconfig.obj:	precompiled.h da_lp_deviceconfig.h yukon.h \
 		critical_section.h guard.h utility.h ctitime.h queues.h \
 		cticalls.h os2_2w32.h constants.h numstr.h mutex.h dsm2err.h \
 		words.h optional.h macro_offset.h hashkey.h hash_functions.h \
-		config_data_mct.h logger.h thread.h CtiPCPtrQueue.h \
-		boostutil.h
+		config_data_mct.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h
 id_dcdll.obj:	precompiled.h id_dcdll.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h types.h constants.h numstr.h
 mgr_config.obj:	precompiled.h mgr_config.h dllbase.h dsm2.h \
@@ -147,7 +147,8 @@ mgr_config.obj:	precompiled.h mgr_config.h dllbase.h dsm2.h \
 		hash_functions.h devicetypes.h dbaccess.h \
 		database_connection.h database_reader.h row_reader.h \
 		DeviceConfigDescription.h pointtypes.h PointAttribute.h \
-		debug_timer.h logger.h thread.h CtiPCPtrQueue.h std_helper.h
+		debug_timer.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h std_helper.h
 test_device_config.obj:	boostutil.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h os2_2w32.h types.h constants.h numstr.h \
 		config_device.h yukon.h ctidbgmem.h dllbase.h dsm2.h \

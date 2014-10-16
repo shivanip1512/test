@@ -99,11 +99,8 @@ YukonError_t Mct2xxDevice::ModelDecode(const INMESS &InMessage, const CtiTime Ti
 
             if( status )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
+                CTILOG_DEBUG(dout, "IM->Sequence = "<< InMessage.Sequence <<" for "<< getName());
             }
-            break;
         }
     }
 
@@ -124,8 +121,7 @@ YukonError_t Mct2xxDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiT
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Accumulator Decode for \""<< getName() <<"\"");
     }
 
     INT    j;
@@ -137,14 +133,7 @@ YukonError_t Mct2xxDevice::decodeGetValueKWH(const INMESS &InMessage, const CtiT
     CtiPointDataMsg *pData     = NULL;
     CtiPointSPtr    pPoint;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     for(j = 0; j < 3; j++)
@@ -192,8 +181,7 @@ YukonError_t Mct2xxDevice::decodeGetValueDemand(const INMESS &InMessage, const C
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Demand Decode for \""<< getName() <<"\"");
     }
 
     setScanFlag(ScanRateIntegrity, false);
@@ -210,14 +198,7 @@ YukonError_t Mct2xxDevice::decodeGetValueDemand(const INMESS &InMessage, const C
     CtiPointDataMsg *pData     = NULL;
     CtiPointSPtr    pPoint;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     pulses = MAKEUSHORT(DSt->Message[1], DSt->Message[0]);
@@ -286,14 +267,7 @@ YukonError_t Mct2xxDevice::decodeGetStatusInternal( const INMESS &InMessage, con
     ULONG pulseCount = 0;
     string resultString;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString  = getName() + " / Internal Status:\n";
@@ -419,16 +393,7 @@ YukonError_t Mct2xxDevice::decodeGetConfigModel(const INMESS &InMessage, const C
         options+= string("  Capacitor control\n");
     }
 
-    if( (ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-        }
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( sspec + options );
 
@@ -449,15 +414,7 @@ YukonError_t Mct2xxDevice::decodeGetConfigOptions(const INMESS &InMessage, const
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-        }
-
-        return ClientErrors::MemoryAccess;
-    }
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     options = "Device \"" + getName() + "\" configuration:\n";
 

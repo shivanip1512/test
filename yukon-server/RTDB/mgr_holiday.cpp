@@ -108,19 +108,9 @@ void CtiHolidayManager::refresh()
 
         }
     }
-    catch(RWExternalErr e )
-    {
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-    }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> guard(dout);
-            dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;

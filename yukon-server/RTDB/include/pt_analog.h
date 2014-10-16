@@ -51,8 +51,7 @@ public:
     {
         if( getDebugLevel() & DEBUGLEVEL_DATABASE )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_DEBUG(dout, "Decoding DB reader");
         }
 
         Inherited::DecodeDatabaseReader(rdr);

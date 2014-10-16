@@ -9,7 +9,7 @@ class PortLogger : public SimulatorLogger
 {
 public:
 
-    PortLogger(CtiLogger &logger, int portNumber);
+    PortLogger(Logging::LoggerPtr &logger, int portNumber);
 
 protected:
 

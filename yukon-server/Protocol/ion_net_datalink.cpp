@@ -93,10 +93,7 @@ void CtiIONDatalinkLayer::setToOutput( CtiIONSerializable &payload )
         _dataLength = 0;
         _ioState    = Failed;
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint -- couldn't allocate _data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "couldn't allocate _data");
     }
 }
 
@@ -276,10 +273,7 @@ YukonError_t CtiIONDatalinkLayer::generate( CtiXfer &xfer )
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONDatalinkLayer::generate **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown state "<< _ioState);
 
             xfer.setOutBuffer(NULL);
             xfer.setOutCount(0);
@@ -428,8 +422,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
             {
                 if( isDebugLudicrous() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint -- comm error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, "comm error, status = "<< status);
                 }
             }
         }
@@ -440,29 +433,6 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
     }
     else
     {
-
-        #if 0
-        //  this is a dangerous block of code, as of 2003-apr-04.  it was left only because it was useful when threads were
-        //    dying before trace was printed.  the repetitive dout is sufficiently slow to destroy out/in communication timings.
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-            if( (xfer.getInCountActual()) > 0 )
-            {
-                dout << "Datalink layer input (" << (xfer.getInCountActual()) << " bytes)" << endl;
-                for( int i = 0; i < (xfer.getInCountActual()); i++ )
-                {
-                    dout << CtiNumStr((xfer.getInBuffer())[i]).hex().zpad(2) << " ";
-                }
-                dout << endl;
-            }
-            else
-            {
-                dout << "No datalink layer input" << endl;
-            }
-        }
-        #endif
-
         switch( _ioState )
         {
             case InputHeader:
@@ -504,8 +474,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                     {
                         if( _inFrame.header.len > 0xf7 )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - _inFrame.header.len(" << _inFrame.header.len << ") > 0xf7 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            CTILOG_ERROR(dout, "_inFrame.header.len("<< _inFrame.header.len <<") > 0xf7");
                         }
 
                         _ioState = InputPacket;
@@ -696,8 +665,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                             {
                                 if( isDebugLudicrous() )
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint - loop averted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    CTILOG_DEBUG(dout, "loop averted");
                                 }
 
                                 _packetErrorCount++;
@@ -722,10 +690,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                             }
                             else*/
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint - bad state assignment averted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
+                                CTILOG_ERROR(dout, "bad state assignment averted");
 
                                 //  try reading again
                                 _inTotal = 0;
@@ -748,10 +713,7 @@ YukonError_t CtiIONDatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
 
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint -- unknown state " << _ioState << " in CtiIONDatalinkLayer::decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "unknown state "<< _ioState);
 
                 _ioState = Failed;
                 retVal   = ClientErrors::BadRange;

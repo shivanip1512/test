@@ -20,10 +20,7 @@ _connection( listenerConn, & CtiCapController::getInClientMsgQueueHandle() )
 ---------------------------------------------------------------------------*/
 CtiCCClientConnection::~CtiCCClientConnection()
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Client Connection closing." << endl;
-    }
+    CTILOG_INFO(dout, "Client Connection closing.");
 
     try
     {
@@ -31,14 +28,10 @@ CtiCCClientConnection::~CtiCCClientConnection()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Client Connection closed." << endl;
-    }
+    CTILOG_INFO(dout, "Client Connection closed.");
 }
 
 /*---------------------------------------------------------------------------
@@ -91,10 +84,8 @@ void CtiCCClientConnection::start()
     }
     catch (...)
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+
         _valid = FALSE;
     }
 }

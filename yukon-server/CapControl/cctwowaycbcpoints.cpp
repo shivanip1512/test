@@ -188,10 +188,7 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Inserted TwoWay CBC data into DynamicCCTwoWayCBC: " << getPAOId() << endl;
-        }
+        CTILOG_INFO(dout, "Inserted TwoWay CBC data into DynamicCCTwoWayCBC: " << getPAOId());
         static const string insertSql = "insert into dynamiccctwowaycbc values ( "
                                         "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                                         "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
@@ -261,9 +258,7 @@ int CtiCCTwoWayPoints::getPointIdByAttribute(const PointAttribute & attribute) c
     }
     catch ( const MissingPointAttribute & missingAttribute )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-
-        dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+        CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
         return 0;
     }
 }
@@ -320,8 +315,7 @@ bool CtiCCTwoWayPoints::setTwoWayPointId(CtiPointType_t pointtype, int offset, l
     }
     catch ( const MissingPointAttribute & missingAttribute )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - ** " << missingAttribute.what() << std::endl;
+        CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
         return false;
     }
     return true;

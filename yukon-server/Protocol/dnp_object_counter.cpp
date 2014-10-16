@@ -61,9 +61,11 @@ void Counter::setOnlineFlag(bool online)
 
 int Counter::getSerializedLen(void) const
 {
-    int retVal;
+    int retVal = 0;
 
-    switch(getVariation())
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case C_Binary32Bit:
         case C_Delta32Bit:
@@ -92,14 +94,7 @@ int Counter::getSerializedLen(void) const
         }
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            retVal = 0;
-
-            break;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -157,15 +152,10 @@ int Counter::restoreVariation(const unsigned char *buf, int len, int variation)
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
 
             _valid = false;
             pos = len;
-
-            break;
         }
     }
 
@@ -213,10 +203,7 @@ int Counter::serializeVariation(unsigned char *buf, int variation) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
     return pos;
@@ -234,9 +221,7 @@ CtiPointDataMsg *Counter::getPoint( const TimeCTO *cto ) const
 
     if( gDNPVerbose )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Counter object, value " << _counter << endl;
+        CTILOG_INFO(dout, "Counter object, value "<< _counter);
     }
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
@@ -347,10 +332,7 @@ int CounterEvent::serializeVariation(unsigned char *buf, int variation) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
     return pos;
@@ -359,9 +341,11 @@ int CounterEvent::serializeVariation(unsigned char *buf, int variation) const
 
 int CounterEvent::getSerializedLen(void) const
 {
-    int retVal;
+    int retVal = 0;
 
-    switch(getVariation())
+    const int variation = getVariation();
+
+    switch( variation )
     {
         case CE_Binary32BitNoTime:
         case CE_Delta32BitNoTime:
@@ -390,14 +374,7 @@ int CounterEvent::getSerializedLen(void) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - in CounterEvent::getSerializedLen(), function unimplemented **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            retVal = 0;
-
-            break;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -432,9 +409,7 @@ CtiPointDataMsg *CounterEvent::getPoint( const TimeCTO *cto ) const
 
     if( gDNPVerbose )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Counter Event object, value " << val << endl;
+        CTILOG_INFO(dout, "Counter Event object, value "<< val);
     }
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
@@ -508,24 +483,9 @@ int CounterFrozen::serialize(unsigned char *buf) const
 
 int CounterFrozen::getSerializedLen(void) const
 {
-    int retVal;
+    CTILOG_ERROR(dout, "function unimplemented");
 
-    switch(getVariation())
-    {
-        default:
-        {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - in CounterFrozen::getSerializedLen(), function unimplemented **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            retVal = 0;
-
-            break;
-        }
-    }
-
-    return retVal;
+    return 0;
 }
 
 
@@ -564,9 +524,7 @@ CtiPointDataMsg *CounterFrozen::getPoint( const TimeCTO *cto ) const
 
     if( gDNPVerbose && tmpMsg )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Frozen counter object, value " << tmpMsg->getValue() << endl;
+        CTILOG_INFO(dout, "Frozen counter object, value "<< tmpMsg->getValue());
     }
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the

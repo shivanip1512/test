@@ -7,6 +7,7 @@
 #include "fdrpointlist.h"
 #include "fdrscadaserver.h"
 #include "fdrscadahelper.h"
+#include "loggable.h"
 
 // global defines
 #define ACS_PORTNUMBER      1668
@@ -67,7 +68,11 @@ Naming conventions for points are as follows:
 
 #pragma pack(push, acs_packing, 1)
 
-struct IM_EX_FDRBASE CtiAcsId
+// forward declarations
+struct CtiAcsId;
+std::ostream& operator<< (std::ostream&, const CtiAcsId&);
+
+struct CtiAcsId : public Cti::Loggable
 {
     USHORT RemoteNumber;
     USHORT PointNumber;
@@ -99,6 +104,12 @@ struct IM_EX_FDRBASE CtiAcsId
         }
     }
 
+    std::string toString() const
+    {
+        std::ostringstream oss;
+        oss << *this;
+        return oss.str();
+    }
 };
 
 inline std::ostream& operator<< (std::ostream& os, const CtiAcsId& id)
@@ -108,6 +119,12 @@ inline std::ostream& operator<< (std::ostream& os, const CtiAcsId& id)
         << ", S=" << id.ServerName << "]";
 }
 
+/*
+inline std::ostream& operator<< (std::ostream& os, const CtiAcsId& id)
+{
+    return os << id;
+}
+*/
 
 // Structure for messages to and from ACS
 typedef struct {

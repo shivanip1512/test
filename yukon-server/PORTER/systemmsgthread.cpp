@@ -34,10 +34,8 @@ SystemMsgThread::SystemMsgThread(CtiFIFOQueue< CtiMessage > &inputQueue,
 void SystemMsgThread::run( void )
 {
     UINT sanity = 0;
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " SystemMessageHandlerThread TID: " << CurrentTID () << endl;
-    }
+
+    CTILOG_INFO(dout, "SystemMsgThread started");
 
     SetThreadName(-1, "SysMsgThd");
 
@@ -51,8 +49,7 @@ void SystemMsgThread::run( void )
                 {
                     if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Beginning processing of system message." << endl;
+                        CTILOG_DEBUG(dout, "Beginning processing of system message");
                     }
 
                     executeSystemMessage(msg);
@@ -64,37 +61,23 @@ void SystemMsgThread::run( void )
 
                 if(!(++sanity % 300))
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " SystemMessageHandlerThread run() Thread Active " << endl;
-                    }
+                    CTILOG_INFO(dout, "SystemMessageHandlerThread Thread Active");
                 }
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " SystemMessageHandlerThread received shutdown - exiting" << endl;
-        }
+        CTILOG_INFO(dout, "SystemMsgThread received shutdown - exiting");
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Exception in SystemMsgThread, thread exiting" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Exception in SystemMsgThread, thread exiting");
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " SystemMessageHandlerThread TID: " << CurrentTID() << " shutting down" << endl;
-    }
-
+    CTILOG_INFO(dout, "SystemMsgThread terminating");
 }
 
 void SystemMsgThread::push(CtiRequestMsg *entry)
@@ -105,8 +88,7 @@ void SystemMsgThread::push(CtiRequestMsg *entry)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - SystemMsgThread::push cannot enqueue null pointer **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "cannot enqueue null pointer");
     }
 }
 
@@ -142,7 +124,7 @@ void SystemMsgThread::executePortEntryRequest(CtiRequestMsg *msg, CtiCommandPars
 
                 if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
                 {
-                    response->dump();
+                    CTILOG_DEBUG(dout, *response);
                 }
 
                 Conn->WriteConnQue(response);
@@ -150,8 +132,7 @@ void SystemMsgThread::executePortEntryRequest(CtiRequestMsg *msg, CtiCommandPars
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Received port entry request for unknown port " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Received port entry request for unknown port id "<< portID);
         }
     }
 }
@@ -184,7 +165,7 @@ void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &
 
             if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
             {
-                response->dump();
+                CTILOG_DEBUG(dout, *response);
             }
 
             Conn->WriteConnQue(response);
@@ -192,8 +173,7 @@ void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Request count recieved with no request ID " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Request count received with no request ID");
     }
 }
 
@@ -208,9 +188,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
 
     if( requestID == 0 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Request cancel recieved with no request ID " << __FILE__ << " (" << __LINE__ << ")" << endl;
-
+        CTILOG_ERROR(dout, "Request cancel received with no request ID");
         return;
     }
 
@@ -250,7 +228,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
 
         if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
         {
-            response->dump();
+            CTILOG_DEBUG(dout, *response);
         }
 
         Conn->WriteConnQue(response);

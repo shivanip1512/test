@@ -274,9 +274,9 @@ void Mct310Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
 
                 if( isDebugLudicrous() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
+                    CTILOG_DEBUG(dout, "command string check for device \""<< getName() <<"\":"<<
+                            endl << tmpOutMess->Request.CommandStr
+                            );
                 }
 
                 outList.push_back(tmpOutMess);
@@ -286,8 +286,7 @@ void Mct310Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
             {
                 if( isDebugLudicrous() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, "LP scan too early for device \""<< getName() <<"\", aborted");
                 }
             }
         }
@@ -308,9 +307,7 @@ bool Mct310Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 
     if( getMCTDebugLevel(DebugLevel_LoadProfile) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "parse.getiValue(\"scan_loadprofile_block\",   0) = " << parse.getiValue("scan_loadprofile_block", 0) << endl;
+        CTILOG_DEBUG(dout, "parse.getiValue(\"scan_loadprofile_block\", 0) = " << parse.getiValue("scan_loadprofile_block", 0));
     }
 
     if( lpBlockAddress = parse.getiValue("scan_loadprofile_block", 0) )
@@ -327,11 +324,7 @@ bool Mct310Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Improperly formed LP request discarded for \"" << getName() << "\"." << endl;
-        }
+        CTILOG_ERROR(dout, "Improperly formed LP request discarded for \""<< getName() <<"\"");
 
         retVal = false;
     }
@@ -511,8 +504,7 @@ DOUBLE Mct310Device::translateStatusValue (INT PointOffset, INT PointType, INT D
 
         default:
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "invalid point offset ("<< PointOffset <<")");
         }
         return((DOUBLE) STATE_INVALID);
     }
@@ -610,11 +602,8 @@ YukonError_t Mct310Device::ModelDecode(const INMESS &InMessage, const CtiTime Ti
 
             if( status )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
+                CTILOG_DEBUG(dout, "IM->Sequence = "<< InMessage.Sequence <<" for "<< getName());
             }
-            break;
         }
     }
 
@@ -634,14 +623,7 @@ YukonError_t Mct310Device::decodePutConfigPeakMode(const INMESS &InMessage, cons
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
     /* this means we are getting NON-demand accumulator points */
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     if( InMessage.Sequence == EmetconProtocol::PutConfig_MinMax )
@@ -679,8 +661,7 @@ YukonError_t Mct310Device::decodeGetValueKWH(const INMESS &InMessage, const CtiT
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Accumulator Decode for \""<< getName() <<"\"");
     }
 
     ULONG RecentValue = 0;
@@ -692,14 +673,7 @@ YukonError_t Mct310Device::decodeGetValueKWH(const INMESS &InMessage, const CtiT
     }
 
     /* this means we are getting NON-demand accumulator points */
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     pPoint = getDevicePointOffsetTypeEqual( 1, PulseAccumulatorPointType );
@@ -775,23 +749,14 @@ YukonError_t Mct310Device::decodeGetValueDemand(const INMESS &InMessage, const C
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Demand Decode for \""<< getName() <<"\"");
     }
-
 
     setScanFlag(ScanRateIntegrity, false);
     setScanFlag(ScanRateGeneral, false);
 
     /* this means we are getting NON-demand accumulator points */
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     pulses = MAKEUSHORT(DSt->Message[1], DSt->Message[0]);
@@ -858,21 +823,13 @@ YukonError_t Mct310Device::decodeGetValuePeak(const INMESS &InMessage, const Cti
 
     if( getMCTDebugLevel(DebugLevel_Info) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Min/Max On/Off-Peak Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Min/Max On/Off-Peak Decode for \""<< getName() <<"\"");
     }
 
     setScanFlag(ScanRateGeneral, false);
 
     /* this means we are getting NON-demand accumulator points */
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     for( int i = 0; i < 2; i++ )
@@ -948,26 +905,17 @@ YukonError_t Mct310Device::decodeScanLoadProfile(const INMESS &InMessage, const 
 
     if( getMCTDebugLevel(DebugLevel_Scanrates | DebugLevel_LoadProfile) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Load Profile Scan Decode for \"" << getName() << "\"");
     }
 
-    if((return_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    return_msg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     return_msg->setUserMessageId(InMessage.Return.UserID);
 
     if( (retrieved_block_num = parse.getiValue("scan_loadprofile_block",   0)) )
     {
         if( isDebugLudicrous() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - retrieved_block_num " << retrieved_block_num << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "retrieved_block_num "<< retrieved_block_num);
         }
 
         retrieved_block_num--;
@@ -1008,28 +956,28 @@ YukonError_t Mct310Device::decodeScanLoadProfile(const INMESS &InMessage, const 
 
             if( current_block_num == retrieved_block_num )
             {
+                result_string = "Attempt to decode current load profile block for \"" + getName() + "\" - aborting decode ";
+
                 if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - attempt to decode current load profile block for \"" << getName() << "\" - aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << InMessage.Return.CommandStr << endl;
+                    CTILOG_DEBUG(dout, result_string <<
+                            endl << "commandstr = "<< InMessage.Return.CommandStr
+                            );
                 }
-
-                result_string = "Attempt to decode current load profile block for \"" + getName() + "\" - aborting decode ";
             }
             else if( retrieved_block_start < getLastLPTime() )
             {
+                result_string  = "Block < lastLPTime for device \"" + getName() + "\" - aborting decode";
+
                 if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << InMessage.Return.CommandStr << endl;
-                    dout << "retrieved_block_num = " << retrieved_block_num << endl;
-                    dout << "retrieved_block_start = " << retrieved_block_start << endl;
-                    dout << "lastLPTime = " << getLastLPTime()  << endl;
+                    CTILOG_DEBUG(dout, result_string <<
+                            endl << "commandstr            = "<< InMessage.Return.CommandStr <<
+                            endl << "retrieved_block_num   = "<< retrieved_block_num <<
+                            endl << "retrieved_block_start = "<< retrieved_block_start <<
+                            endl << "lastLPTime            = "<< getLastLPTime()
+                            );
                 }
-
-                result_string  = "Block < lastLPTime for device \"" + getName() + "\" - aborting decode";
             }
             else
             {
@@ -1073,11 +1021,11 @@ YukonError_t Mct310Device::decodeScanLoadProfile(const INMESS &InMessage, const 
 
                     if( isDebugLudicrous() )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "value = " << value << endl;
-                        dout << "interval_offset = " << interval_offset << endl;
-                        dout << "timestamp = " << CtiTime(timestamp) << endl;
+                        CTILOG_DEBUG(dout, "load profile debug for \""<< getName() <<"\""<<
+                                endl <<"value           = "<< value <<
+                                endl <<"interval_offset = "<< interval_offset <<
+                                endl <<"timestamp       = "<< CtiTime(timestamp)
+                                );
                     }
 
                     point_data->setTime(timestamp);
@@ -1095,14 +1043,11 @@ YukonError_t Mct310Device::decodeScanLoadProfile(const INMESS &InMessage, const 
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage.Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
         result_string  = "scan_loadprofile tokens not found in command string \"";
         result_string += InMessage.Return.CommandStr;
         result_string += "\" - cannot proceed with decode, aborting";
+
+        CTILOG_ERROR(dout, result_string);
     }
 
     return_msg->setResultString(result_string);
@@ -1129,10 +1074,7 @@ void Mct310Device::decodeAccumulators(ULONG result[], INT accum_cnt, const BYTE 
 
         if(result[i] > MCT310_MaxPulseCount)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - result[i] > MCT_MaxPulseCount **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "result[i] > MCT_MaxPulseCount ("<< result[i] <<" > "<< MCT310_MaxPulseCount <<")");
         }
     }
 }
@@ -1152,14 +1094,7 @@ YukonError_t Mct310Device::decodeGetStatusInternal( const INMESS &InMessage, con
 
     int powerfailStatus;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString  = getName() + " / Internal Status:\n";
@@ -1223,14 +1158,7 @@ YukonError_t Mct310Device::decodeGetStatusLoadProfile( const INMESS &InMessage, 
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     string resultString;
@@ -1343,14 +1271,7 @@ YukonError_t Mct310Device::decodeGetConfigModel(const INMESS &InMessage, const C
         }
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( sspec + options );
 
@@ -1372,13 +1293,7 @@ YukonError_t Mct310Device::decodeGetConfigOptions(const INMESS &InMessage, const
 
     CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
 
     //  310s don't use this bit
     if( getType() != TYPEMCT310 && getType() != TYPEMCT310ID && getType() != TYPEMCT310IL && getType() != TYPEMCT310IDL )

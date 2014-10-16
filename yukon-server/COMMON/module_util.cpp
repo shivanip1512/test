@@ -15,19 +15,14 @@ namespace Cti {
  */
 void identifyProject(const compileinfo_t &info)
 {
+    if(isDebugLudicrous() && info.date)      // DEBUGLEVEL added 012903 CGP
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        if(isDebugLudicrous() && info.date)      // DEBUGLEVEL added 012903 CGP
-        {
-            dout << CtiTime() << " " << info.project << " [Version " << info.version << "]" /* << endl */ << " [Version Details: " << info.details << ", " << info.date << "]" << endl;
-        }
-        else
-        {
-            dout << CtiTime() << " " << info.project << " [Version " << info.version << "]" /* << endl */ << " [Version Details: " << info.details << "]" << endl;
-        }
+        CTILOG_INFO(dout, info.project <<" [Version "<< info.version <<"]"<<" [Version Details: "<< info.details <<", "<< info.date <<"]");
     }
-
-    return;
+    else
+    {
+        CTILOG_INFO(dout, info.project <<" [Version "<< info.version <<"]"<<" [Version Details: "<< info.details <<"]");
+    }
 }
 
 /**

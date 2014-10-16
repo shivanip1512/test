@@ -409,11 +409,7 @@ YukonError_t Mct420Device::executePutConfigDisplay(CtiRequestMsg *pReq,CtiComman
 
             if ( ! config_value )
             {
-                if( getMCTDebugLevel(DebugLevel_Configs) )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - invalid value (" << deviceConfig->getValueFromKey(config_key) << ") for config key \"" << config_key << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Device \"" << getName() << "\" - invalid value (" << deviceConfig->getValueFromKey(config_key) << ") for config key \"" << config_key << "\"");
 
                 return ClientErrors::NoConfigData;
             }
@@ -482,13 +478,10 @@ YukonError_t Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq, 
 
         if( ! cycleTime )
         {
-            if( getMCTDebugLevel(DebugLevel_Configs) )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
-                     << deviceConfig->getValueFromKey(MCTStrings::LcdCycleTime) << ") for config key \""
-                     << MCTStrings::LcdCycleTime << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - invalid value ("
+                    << deviceConfig->getValueFromKey(MCTStrings::LcdCycleTime) <<") for config key \""
+                    << MCTStrings::LcdCycleTime <<"\""
+                    );
 
             return ClientErrors::NoConfigData;
         }
@@ -502,10 +495,10 @@ YukonError_t Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq, 
             {
                 if( getMCTDebugLevel(DebugLevel_Configs) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
-                         << deviceConfig->getValueFromKey(MCTStrings::DisplayDigits) << ") for config key \""
-                         << MCTStrings::DisplayDigits << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, "Device \""<< getName() <<"\" - invalid value ("
+                            << deviceConfig->getValueFromKey(MCTStrings::DisplayDigits) <<") for config key \""
+                            << MCTStrings::DisplayDigits <<"\""
+                            );
                 }
 
                 return ClientErrors::NoConfigData;
@@ -528,13 +521,10 @@ YukonError_t Mct420Device::executePutConfigMeterParameters(CtiRequestMsg *pReq, 
 
         if( ! disconnectDisplayDisabled )
         {
-            if( getMCTDebugLevel(DebugLevel_Configs) )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device \"" << getName() << "\" - invalid value ("
-                     << deviceConfig->getValueFromKey(MCTStrings::DisconnectDisplayDisabled) << ") for config key \""
-                     << MCTStrings::DisconnectDisplayDisabled << "\" " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - invalid value ("
+                 << deviceConfig->getValueFromKey(MCTStrings::DisconnectDisplayDisabled) <<") for config key \""
+                 << MCTStrings::DisconnectDisplayDisabled << "\""
+                 );
 
             return ClientErrors::NoConfigData;
         }
@@ -681,9 +671,7 @@ YukonError_t Mct420Device::ModelDecode( const INMESS &InMessage, const CtiTime T
 
     if( status )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
+        CTILOG_DEBUG(dout, "IM->Sequence = "<< InMessage.Sequence <<" for "<< getName());
     }
 
     return status;

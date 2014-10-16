@@ -182,8 +182,7 @@ void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());;
     }
 
     /*
@@ -228,29 +227,22 @@ void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 bool CtiTableExpresscomLoadGroup::Insert()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
 
     return false;
 }
 
 bool CtiTableExpresscomLoadGroup::Update()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
+
     return false;
 }
 
 bool CtiTableExpresscomLoadGroup::Delete()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
+
     return false;
 }
 

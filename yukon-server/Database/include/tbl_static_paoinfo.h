@@ -1,8 +1,5 @@
 #pragma once
 
-#include <string>
-#include <map>
-
 #include "ctibase.h"
 #include "dlldefs.h"
 #include "dbmemobject.h"
@@ -10,8 +7,13 @@
 #include "yukon.h"
 #include "database_connection.h"
 #include "rwutil.h"
+#include "loggable.h"
 
-class IM_EX_CTIYUKONDB CtiTableStaticPaoInfo : public CtiMemDBObject
+#include <string>
+#include <map>
+
+
+class IM_EX_CTIYUKONDB CtiTableStaticPaoInfo : public CtiMemDBObject, public Cti::Loggable
 {
 public:
 
@@ -91,5 +93,5 @@ public:
     void             getValue(double        &destination) const;
     void             getValue(std::string   &destination) const;
 
-    virtual void dump();
+    virtual std::string toString() const override;
 };

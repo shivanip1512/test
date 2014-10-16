@@ -58,11 +58,8 @@ DOUBLE CtiPointNumeric::computeValueForUOM(DOUBLE Value) const
     {
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Don't know about CalcType " << calcType << ".  Defaulting to CalcTypeNormal" << endl;
-            }
+            CTILOG_WARN(dout, "Don't know about CalcType "<< calcType <<". Defaulting to CalcTypeNormal");
+
             //  fall through
         }
         case CalcTypeNormal:

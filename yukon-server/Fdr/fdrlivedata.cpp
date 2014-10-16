@@ -72,11 +72,9 @@ CtiFDRLiveData::~CtiFDRLiveData()
  */
 void CtiFDRLiveData::startup()
 {
-
   if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
   {
-    CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Starting LiveData API; connecting to " << _serverIpAddress << endl;
+      CTILOG_DEBUG(dout, logNow() <<"Starting LiveData API; connecting to " << _serverIpAddress);
   }
 
   _liveDataConnection->setWriteHandler(_writeCallback);
@@ -91,8 +89,7 @@ void CtiFDRLiveData::shutdown()
 {
   if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
   {
-    CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Shutting down LiveData API"  << endl;
+      CTILOG_DEBUG(dout, logNow() <<"Shutting down LiveData API");
   }
 
   _okayToWrite = false;
@@ -108,8 +105,7 @@ bool CtiFDRLiveData::connect()
 
   if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
   {
-    CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Checking LiveData server connection." << endl;
+      CTILOG_DEBUG(dout, logNow() <<"Checking LiveData server connection.");
   }
 
   testConnection();
@@ -152,15 +148,12 @@ void CtiFDRLiveData::processNewPoint(CtiFDRPointSPtr ctiPoint)
 
     if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Added point " << address << " of type " << dataTypeStr << endl;
+        CTILOG_DEBUG(dout, logNow() <<"Added point "<< address <<" of type "<< dataTypeStr);
     }
-
   }
   catch (std::exception& e)
   {
-    CtiLockGuard<CtiLogger> doubt_guard( dout );
-    logNow() << "Unkown point type " << dataTypeStr << " for address " << address << endl;
+      CTILOG_EXCEPTION_ERROR(dout, e, logNow() <<"Unkown point type "<< dataTypeStr <<" for address "<< address);
   }
 }
 
@@ -174,8 +167,7 @@ void CtiFDRLiveData::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint,
 
     if( isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Removed point " << address << endl;
+        CTILOG_DEBUG(dout, logNow() <<"Removed point "<< address);
     }
   }
 }
@@ -238,13 +230,11 @@ bool CtiFDRLiveData::LiveDataWriteCallback::write(unsigned long address, unsigne
 
     if (foundRangePair.first == foundRangePair.second && fdrInterface->isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      fdrInterface->logNow() << "Got data for unknown address " << address << endl;
+        CTILOG_DEBUG(dout, fdrInterface->logNow() <<"Got data for unknown address "<< address);
     }
     else if ( fdrInterface->isDebugLevel( MAJOR_DETAIL_FDR_DEBUGLEVEL ) )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      fdrInterface->logNow() << "Got write for address " << address << endl;
+        CTILOG_DEBUG(dout, fdrInterface->logNow() <<"Got write for address "<< address);
     }
 
     for (PointMap::const_iterator infoIter = foundRangePair.first;
@@ -269,10 +259,10 @@ bool CtiFDRLiveData::LiveDataWriteCallback::write(unsigned long address, unsigne
       {
         if( fdrInterface->isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
         {
-          unsigned int expectedLength = info.liveDataType->getSize();
-          CtiLockGuard<CtiLogger> doubt_guard( dout );
-          fdrInterface->logNow() << "Got bad length for address " << address
-            << ", expected " << expectedLength << " got " << length << endl;
+            const unsigned int expectedLength = info.liveDataType->getSize();
+
+            CTILOG_DEBUG(dout, fdrInterface->logNow() <<"Got bad length for address "<< address <<
+                    ", expected "<< expectedLength <<" got "<< length);
         }
       }
 
@@ -282,8 +272,7 @@ bool CtiFDRLiveData::LiveDataWriteCallback::write(unsigned long address, unsigne
   {
     if( fdrInterface->isDebugLevel( DETAIL_FDR_DEBUGLEVEL ) )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      fdrInterface->logNow() << "Throwing out write for address " << address << endl;
+        CTILOG_DEBUG(dout, fdrInterface->logNow() <<"Throwing out write for address "<< address);
     }
   }
 
@@ -302,16 +291,15 @@ void CtiFDRLiveData::readThisConfig()
   _serverIpAddress = gConfigParms.getValueAsString( KEY_SERVER_IP_ADDRESS, "127.0.0.1" );
   _serverPort = atoi( gConfigParms.getValueAsString( KEY_SERVER_PORT, "2000" ).c_str() );
 
-
-  if( isDebugLevel( STARTUP_FDR_DEBUGLEVEL ) )
+  if( isDebugLevel( STARTUP_FDR_DEBUGLEVEL ))
   {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << "----------------FDRLiveData Configs----------------------------" << endl;
-    dout << "  " << KEY_SERVER_IP_ADDRESS << ": " << _serverIpAddress << endl;
-    dout << "  " << KEY_SERVER_PORT << ": " << _serverPort << endl;
-    dout << endl;
-  }
+      Cti::FormattedList loglist;
+      loglist.add(KEY_SERVER_IP_ADDRESS) << _serverIpAddress;
+      loglist.add(KEY_SERVER_PORT)       << _serverPort;
 
+      CTILOG_DEBUG(dout, "FDRLiveData Configs:"<<
+              loglist);
+   }
 }
 
 

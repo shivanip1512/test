@@ -70,16 +70,14 @@ void Ipc410ALDevice::buildScannerTableRequest (BYTE *aMsg, UINT flags)
         if (  getLastLPTime().seconds() > CtiTime().seconds() + (3600 * 12)  || // 12 hours ahead
               getLastLPTime().seconds() < CtiTime().seconds() - (86400 * 90)  ) // 3 months old
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ** INVALID LAST LP TIME ** Adjusting" << getName() <<"'s lastLPTime from: "<<getLastLPTime()<< endl;
-            }
+            CTILOG_WARN(dout, "** INVALID LAST LP TIME ** Adjusting" << getName() <<"'s lastLPTime from: "<<getLastLPTime());
+
             setLastLPTime( CtiTime(CtiTime().seconds() - (86400 * 30)) );
         }
+
         if( getANSIProtocol().getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_LUDICROUS) )//DEBUGLEVEL_LUDICROUS )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getName() <<" lastLPTime "<<getLastLPTime()<< endl;
+            CTILOG_DEBUG(dout, getName() <<" lastLPTime "<<getLastLPTime());
         }
     }
 

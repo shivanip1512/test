@@ -140,10 +140,8 @@ int CtiFDR_STEC::decodeFile ()
     {
         if (filelength(fileHandle) > 290 || filelength(fileHandle) < 70)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " STEC file failed number of bytes reasonability check -- " << filelength(fileHandle) << endl;
-            }
+            CTILOG_ERROR(dout, "STEC file failed number of bytes reasonability check -- " << filelength(fileHandle));
+
             desc = getInterfaceName() + string ("'s data file ") + getLocalFileName() + string(" failed size reasonability check");
             logEvent (desc, action);
 
@@ -155,8 +153,7 @@ int CtiFDR_STEC::decodeFile ()
             // first of all, read file input
             if ((controlFile = fopen(getLocalFileName().c_str(), "r")) == NULL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " STEC file failed to open after download " << endl;
+                CTILOG_ERROR(dout, "STEC file failed to open after download");
                 retVal = 1;
             }
             else
@@ -251,8 +248,7 @@ int CtiFDR_STEC::decodeFile ()
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " STEC file failed to open after download " << endl;
+        CTILOG_ERROR(dout, "STEC file failed to open after download");
         retVal = 1;
     }
 
@@ -352,8 +348,7 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
 
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " --- Stec Interface: System Load " << aSystemLoad << endl;
+                    CTILOG_DEBUG(dout, "System Load "<< aSystemLoad);
                 }
 
             }
@@ -369,8 +364,7 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
 
                 if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " --- Stec Interface: System load is zero, marking as invalid" << endl;
+                    CTILOG_DEBUG(dout, "System load is zero, marking as invalid");
                 }
             }
         }
@@ -381,16 +375,14 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Translation for analog point " << string (KEY_SYSTEM_TOTAL_LABEL);
-                dout << " from " << getInterfaceName() << " was not found" << endl;
+                CTILOG_DEBUG(dout, "Translation for analog point "<< string (KEY_SYSTEM_TOTAL_LABEL) <<" from "<< getInterfaceName() <<
+                        " was not found");
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Analog point " << string (KEY_SYSTEM_TOTAL_LABEL);
-            dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
+            CTILOG_ERROR(dout, "Analog point "<< string (KEY_SYSTEM_TOTAL_LABEL) <<" from "<< getInterfaceName() <<
+                    " was mapped incorrectly to non-analog point "<< point.getPointID());
         }
     }
 
@@ -423,8 +415,7 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
 
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " --- Stec Interface: Stec Load " << aStecLoad << endl;
+                    CTILOG_DEBUG(dout, "Stec Load "<< aStecLoad);
                 }
 
             }
@@ -440,8 +431,7 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
 
                 if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " --- Stec Interface: Stec load is zero, marking as invalid" << endl;
+                    CTILOG_DEBUG(dout, "Stec load is zero, marking as invalid");
                 }
             }
         }
@@ -452,16 +442,14 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Translation for analog point " << string (KEY_STEC_TOTAL_LABEL);
-                dout << " from " << getInterfaceName() << " was not found" << endl;
+                CTILOG_DEBUG(dout, "Translation for analog point " << string (KEY_STEC_TOTAL_LABEL) <<" from "<< getInterfaceName() <<
+                        " was not found");
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Analog point " << string (KEY_STEC_TOTAL_LABEL);
-            dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
+            CTILOG_ERROR(dout, "Analog point "<< string(KEY_STEC_TOTAL_LABEL) <<" from " << getInterfaceName() <<
+                    " was mapped incorrectly to non-analog point "<< point.getPointID());
         }
     }
 
@@ -582,14 +570,17 @@ int CtiFDR_STEC::readConfig( void )
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " STEC server file name " << getServerFileName() << endl;
-        dout << CtiTime() << " STEC FTP directory " << getFTPDirectory() << endl;
-        dout << CtiTime() << " STEC download interval " << getDownloadInterval() << endl;
-        dout << CtiTime() << " STEC number of tries " << getTries() << endl;
-        dout << CtiTime() << " STEC login " << getLogin() << endl;
-        dout << CtiTime() << " STEC IP " << getIPAddress() << endl;
-        dout << CtiTime() << " STEC db reload rate " << getReloadRate() << endl;
+        Cti::FormattedList loglist;
+
+        loglist.add("STEC server file name")    << getServerFileName();
+        loglist.add("STEC FTP directory")       << getFTPDirectory();
+        loglist.add("STEC download interval")   << getDownloadInterval();
+        loglist.add("STEC number of tries")     << getTries();
+        loglist.add("STEC login")               << getLogin();
+        loglist.add("STEC IP")                  << getIPAddress();
+        loglist.add("STEC db reload rate")      << getReloadRate();
+
+        CTILOG_DEBUG(dout, loglist);
     }
 
 

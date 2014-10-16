@@ -65,5 +65,5 @@ public:
     int OptionsField() const;
     CtiRequestMsg& setOptionsField(int options_field);
 
-    virtual void dump() const;
+    virtual std::string toString() const override;
 };

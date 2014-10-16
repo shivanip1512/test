@@ -22,8 +22,7 @@ void CtiTableDynamicLcrCommunications::DecodeDatabaseReader( Cti::RowReader & rd
 {
     if ( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from DynamicLcrCommunications");
     }
 
     if ( ! rdr["LcrCommsExist"].isNull() )
@@ -39,12 +38,8 @@ bool CtiTableDynamicLcrCommunications::prepareTableForUpdates()
 {
     if ( _deviceID == -1 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-        dout
-            << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__
-            << ")\n **** Dynamic LCR communications collection disabled. DeviceID not set. ****" << std::endl;
-
+        CTILOG_ERROR(dout, "Dynamic LCR communications collection disabled. DeviceID not set.");
+        
         return false;
     }
 

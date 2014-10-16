@@ -93,10 +93,7 @@ YukonError_t CtiDeviceTapPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, Cti
         }
     case ControlRequest:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Unexpected ControlRequest command");
         }
     case GetStatusRequest:
     case LoopbackRequest:
@@ -257,8 +254,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, 
 
     if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Current state " << getCurrentState() << ".  Previous State " << getPreviousState() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Current state "<< getCurrentState() <<". Previous State "<< getPreviousState());
     }
 
     switch( getCurrentState() )
@@ -487,11 +483,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseHandshake(CtiXfer &xfer, 
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << getName() << " Failed at state " << getCurrentState() << endl;
-            }
+            CTILOG_ERROR(dout, getName() <<" failed at state "<< getCurrentState());
 
             setCurrentState(StateHandshakeAbort);
             if(xfer.doTrace(commReturnValue))
@@ -518,8 +510,7 @@ YukonError_t CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer
 
     if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Current state " << getCurrentState() << ".  Previous State " << getPreviousState() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Current state "<< getCurrentState() <<". Previous State "<< getPreviousState());
     }
 
     switch( getCurrentState() )
@@ -699,11 +690,7 @@ YukonError_t CtiDeviceTapPagingTerminal::generateCommandHandshake(CtiXfer  &xfer
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  " << getName() << "  Failed at state " << getCurrentState() << endl;
-            }
+            CTILOG_ERROR(dout, getName() <<" failed at state "<< getCurrentState());
 
             setCurrentState(StateHandshakeAbort);
 
@@ -856,9 +843,7 @@ INT CtiDeviceTapPagingTerminal::printChar( string &Str, CHAR Char )
             Str.append( string("<0x") + CtiNumStr(Char).hex().zpad(2) + string(">") );
             if(isDebugLudicrous())
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Unhandled character 0x" << hex << (int)Char << dec << endl;
+                CTILOG_DEBUG(dout, "Unhandled character 0x" << hex << (int)Char);
             }
         }
         break;
@@ -875,8 +860,7 @@ YukonError_t CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, CtiMess
 
     if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Current state " << getCurrentState() << ".  Previous State " << getPreviousState() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Current state "<< getCurrentState() <<". Previous State "<< getPreviousState());
     }
 
     switch( getCurrentState() )
@@ -1061,11 +1045,7 @@ YukonError_t CtiDeviceTapPagingTerminal::generateCommand(CtiXfer  &xfer, CtiMess
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") "<< endl;
-                dout << "  " << getName() << "  Failed at state " << getCurrentState() << endl;
-            }
+            CTILOG_ERROR(dout, getName() <<" failed at state "<< getCurrentState());
 
             setCurrentState(StateScanAbort);
 
@@ -1084,8 +1064,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonErr
     {
         if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Current state " << getCurrentState() << ".  Previous State " << getPreviousState() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "Current state "<< getCurrentState() <<". Previous State "<< getPreviousState());
         }
 
         switch( getCurrentState() )
@@ -1167,12 +1146,14 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonErr
                         }
 
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << CtiTime() << " " <<  getName() << ": " << _outMessage->Request.CommandStr << endl;
+                            Cti::StreamBuffer slogMessage;
+                            slogMessage << getName() <<": "<< _outMessage->Request.CommandStr;
                             if(_outMessage->TargetID != 0 && _outMessage->TargetID != _outMessage->DeviceID)
                             {
-                                slog << CtiTime() << "    Group Id: " << _outMessage->TargetID << endl;
+                                slogMessage << endl <<"Group Id: "<< _outMessage->TargetID;
                             }
+
+                            CTILOG_INFO(slog, slogMessage);
                         }
 
                         //Message sent and accepted. Add to verification list!
@@ -1204,11 +1185,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonErr
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  Failed at state " << getCurrentState() << endl;
-                }
+                CTILOG_ERROR(dout, getName() <<" failed at state "<< getCurrentState());
 
                 setLogOnNeeded(true);
                 setCurrentState(StateAbort);
@@ -1222,8 +1199,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonErr
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Yukon Status **** " << status << " " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, getName() <<" status "<< status);
     }
 
     return status;
@@ -1237,8 +1213,7 @@ YukonError_t CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xf
 
     if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Current state " << getCurrentState() << ".  Previous State " << getPreviousState() << ". Log On Needed " << getLogOnNeeded() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Current state "<< getCurrentState() <<". Previous State "<< getPreviousState());
     }
 
     if(gConfigParms.isTrue("TAPTERM_FORCE_EOT"))
@@ -1335,11 +1310,7 @@ YukonError_t CtiDeviceTapPagingTerminal::generateCommandDisconnect (CtiXfer  &xf
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " " << getName() << "  Failed at state " << getCurrentState() << endl;
-                }
+                CTILOG_ERROR(dout, getName() <<" failed at state "<< getCurrentState());
 
                 setLogOnNeeded(true);
                 setCurrentState(StateAbort);
@@ -1367,8 +1338,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer
     {
         if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Current state " << getCurrentState() << ".  Previous State " << getPreviousState() << ". " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "Current state "<< getCurrentState() <<". Previous State "<< getPreviousState());
         }
 
         setPreviousState( getCurrentState() );    // Leave a breadcrumb for those who follow to get us back here if needed
@@ -1432,11 +1402,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << " " << getName() << "  Failed at state " << getCurrentState() << endl;
-                }
+                CTILOG_ERROR(dout, getName() <<" failed at state "<< getCurrentState());
 
                 setLogOnNeeded(true);
                 setCurrentState(StateAbort);
@@ -1450,8 +1416,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponseDisconnect (CtiXfer &xfer
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " " << getName() << " **** Status **** " << status << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, getName() <<" status "<< status);
     }
 
     return status;
@@ -1464,9 +1429,7 @@ CtiDeviceIED& CtiDeviceTapPagingTerminal::setInitialState (const LONG oldid)
     {
         if(isDebugLudicrous())
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "  Port has indicated a connected device swap. " << endl;
-            dout << "  " << getName() << " has replaced DEVID " << oldid << " as the currently connected device" << endl;
+            CTILOG_DEBUG(dout, "Port has indicated a connected device swap. "<< getName() <<" has replaced DEVID "<< oldid <<" as the currently connected device");
         }
         setCurrentState(StateHandshakeComplete);    // TAP is already connected on this port
         setLogOnNeeded(false);                      // We will skip the logon, and proceed to <STX>
@@ -1482,8 +1445,7 @@ CtiDeviceIED& CtiDeviceTapPagingTerminal::setInitialState (const LONG oldid)
 
     if(gConfigParms.isTrue("DEBUG_TAPTERM_STATE_MACHINE"))
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " setInitialState() => oldID = " << oldid << ". Current state " << getCurrentState() << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "setInitialState() => oldID = "<< oldid <<". Current state "<< getCurrentState());
     }
 
     return *this;
@@ -1584,8 +1546,7 @@ bool CtiDeviceTapPagingTerminal::devicePacingExceeded()
             if(!_pacingReport)
             {
                 _pacingReport = true;
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << " Configuration PAGES_PER_MINUTE limits paging to " << pagesPerMinute << " pages per minute.  Next page allowed at " << _pacingTimeStamp << endl;
+                CTILOG_WARN(dout, "Configuration PAGES_PER_MINUTE limits paging to " << pagesPerMinute << " pages per minute.  Next page allowed at " << _pacingTimeStamp);
             }
 
             toofast = true;

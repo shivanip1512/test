@@ -15,17 +15,13 @@ CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_vec& ccSpecialAreas) : In
     _ccSpecialAreas = new CtiCCSpArea_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CtiCCSpecialAreasMsg has "<< ccSpecialAreas.size()<<" entries." << endl;
+        CTILOG_DEBUG(dout, "CtiCCSpecialAreasMsg has "<< ccSpecialAreas.size()<<" entries.");
     }
     if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
     {
         for (int h=0;h < ccSpecialAreas.size(); h++)
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Area: "<<((CtiCCSpecial*)ccSpecialAreas[h])->getPaoName()<< endl;
-            }
+            CTILOG_DEBUG(dout, "Area: "<<((CtiCCSpecial*)ccSpecialAreas[h])->getPaoName());
         }
     }
 
@@ -40,8 +36,7 @@ CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_set& ccSpecialAreas) : In
     _ccSpecialAreas = new CtiCCSpArea_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CtiCCSpecialAreasMsg has "<< ccSpecialAreas.size()<<" entries." << endl;
+        CTILOG_DEBUG(dout, "CtiCCSpecialAreasMsg has "<< ccSpecialAreas.size()<<" entries.");
     }
     CtiCCSpArea_set::iterator it;
     for(it = ccSpecialAreas.begin(); it != ccSpecialAreas.end(); it++)

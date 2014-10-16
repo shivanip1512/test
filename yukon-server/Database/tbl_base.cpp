@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_base
-*
-* Date:   10/8/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2008/07/08 22:56:59 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "tbl_base.h"
@@ -70,11 +55,15 @@ bool  CtiTableDeviceBase::useRadioDelays() const
 
 string CtiTableDeviceBase::getTableName() { return string("Device"); }
 
-void CtiTableDeviceBase::DumpData()
+std::string CtiTableDeviceBase::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << "Alarm Inhibit                               : " << _alarmInhibit << endl;
-    dout << "Control Inhibit                             : " << _controlInhibit << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTableDeviceBase";
+    itemList.add("Alarm Inhibit")   << _alarmInhibit;
+    itemList.add("Control Inhibit") << _controlInhibit;
+
+    return itemList.toString();
 }
 
 void CtiTableDeviceBase::DecodeDatabaseReader(Cti::RowReader &rdr)
@@ -86,8 +75,7 @@ void CtiTableDeviceBase::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr[alarminhibit  ] >> sTemp;

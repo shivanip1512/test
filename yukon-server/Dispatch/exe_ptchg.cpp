@@ -30,49 +30,41 @@ YukonError_t CtiPointChangeExecutor::ServerExecute(CtiServer *Svr)
 {
    YukonError_t nRet = ClientErrors::None;
 
-   CtiVanGogh *VG = (CtiVanGogh *)Svr;
+    CtiVanGogh *VG = (CtiVanGogh *)Svr;
 
-   try
-   {
-      switch(getMessage()->isA())
-      {
-      case MSG_MULTI:
-      case MSG_SIGNAL:
-      case MSG_POINTDATA:
-      case MSG_PCRETURN:
-      case MSG_TAG:
-      case MSG_LMCONTROLHISTORY:
-      case MSG_POINTREGISTRATION:
-      case MSG_DBCHANGE:
-         {
-            try
+    try
+    {
+        const int msgType = getMessage()->isA();
+        switch( msgType )
+        {
+        case MSG_MULTI:
+        case MSG_SIGNAL:
+        case MSG_POINTDATA:
+        case MSG_PCRETURN:
+        case MSG_TAG:
+        case MSG_LMCONTROLHISTORY:
+        case MSG_POINTREGISTRATION:
+        case MSG_DBCHANGE:
             {
-               nRet = VG->processMessage(getMessage());
-            }
-            catch(...)
-            {
+                try
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                   nRet = VG->processMessage(getMessage());
                 }
+                catch(...)
+                {
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                }
+                break;
             }
-            break;
-         }
-      default:
-         {
+        default:
             {
-               cout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Unexpected Message Type ("<< msgType <<")");
             }
-            break;
-         }
-      }
+        }
    }
    catch(...)
    {
-       {
-           CtiLockGuard<CtiLogger> doubt_guard(dout);
-           dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-       }
+       CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
    }
 
    return nRet;

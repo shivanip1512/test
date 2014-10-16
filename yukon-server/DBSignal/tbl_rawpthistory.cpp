@@ -34,20 +34,14 @@ int CtiTableRawPointHistory::validateMillis(int millis)
 {
     if( millis < 0 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - setMillis(), millis = " << millis << " < 0 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "millis = "<< millis <<" < 0 - returning 0");
 
         return 0;
     }
 
     if( millis > 999 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - setMillis(), millis = " << millis << " > 999 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "millis = "<< millis <<" > 999 - returning % 1000");
 
         return millis % 1000;
     }

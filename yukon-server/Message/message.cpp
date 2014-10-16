@@ -32,20 +32,23 @@ CtiMessage* CtiMessage::replicateMessage() const
    return (CTIDBG_new CtiMessage(*this));
 }
 
-void CtiMessage::dump() const
+std::string CtiMessage::toString() const
 {
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
+    Cti::FormattedList itemList;
 
-   dout << " ------- Message -------       " << typeString() << endl;
-   dout << "Time                           " << MessageTime << endl;
-   dout << "Priority                       " << MessagePriority << endl;
-   dout << "SOE                            " << _soe << endl;
-   dout << "User                           " << _usr << endl;
-   //dout << "Password                       " << _pwd << endl;
-   dout << "Token                          " << _token << endl;
-   dout << "Source                         " << _src << endl;
+    itemList << formatMessageName(typeString());
+    itemList <<"CtiMessage";
+    itemList.add("Time")     << MessageTime;
+    itemList.add("Priority") << MessagePriority;
+    itemList.add("SOE")      << _soe;
+    itemList.add("User")     << _usr;
+    //itemList.add("Password") << _pwd;
+    itemList.add("Token")    << _token;
+    itemList.add("Source")   << _src;
 
+    return itemList.toString();
 }
+
 INT  CtiMessage::getSOE() const
 {
    return _soe;
@@ -180,7 +183,10 @@ bool CtiMessage::isValid()
 
 string CtiMessage::typeString() const
 {
-    string rstr = string(CtiNumStr(isA()));
+    string rstr;
+
+    rstr.swap(boost::lexical_cast<string>(isA()));
+
     /*
     #define MSG_BASE                          1500
     #define MSG_NULL                          (MSG_BASE)
@@ -289,4 +295,13 @@ string CtiMessage::typeString() const
     }
 
     return rstr;
+}
+
+std::string CtiMessage::formatMessageName(const std::string &name)
+{
+    std::string formattedName = "------- Message ------- ";
+    
+    formattedName += name;
+    
+    return formattedName;
 }

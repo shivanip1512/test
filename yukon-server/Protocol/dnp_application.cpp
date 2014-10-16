@@ -42,10 +42,8 @@ ApplicationLayer::~ApplicationLayer()
 
 ApplicationLayer &ApplicationLayer::operator=(const ApplicationLayer &aRef)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    //TODO: Remove this log or make this class non-copyable
+    CTILOG_TRACE(dout, "inside "<<__FUNCTION__);
 
     return *this;
 }
@@ -108,42 +106,52 @@ void ApplicationLayer::processInput( void )
 {
     if( gDNPVerbose )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        Cti::FormattedList itemList;
 
-        dout << "_response.ctrl.func_code = " << (unsigned)_response.func_code << endl;
-        dout << endl;
-        dout << "_response.ctrl.first       = " << (unsigned)_response.ctrl.first       << endl;
-        dout << "_response.ctrl.final       = " << (unsigned)_response.ctrl.final       << endl;
-        dout << "_response.ctrl.app_confirm = " << (unsigned)_response.ctrl.app_confirm << endl;
-        dout << "_response.ctrl.unsolicited = " << (unsigned)_response.ctrl.unsolicited << endl;
-        dout << "_response.ctrl.seq         = " << (unsigned)_response.ctrl.seq         << endl;
-        dout << endl;
-        dout << "_response.ind.all_stations = " << _response.ind.all_stations << endl;
-        dout << "_response.ind.already_exec = " << _response.ind.already_exec << endl;
-        dout << "_response.ind.bad_config   = " << _response.ind.bad_config   << endl;
-        dout << "_response.ind.bad_function = " << _response.ind.bad_function << endl;
-        dout << "_response.ind.buf_overflow = " << _response.ind.buf_overflow << endl;
-        dout << "_response.ind.class_1      = " << _response.ind.class_1      << endl;
-        dout << "_response.ind.class_2      = " << _response.ind.class_2      << endl;
-        dout << "_response.ind.class_3      = " << _response.ind.class_3      << endl;
-        dout << "_response.ind.dev_trouble  = " << _response.ind.dev_trouble  << endl;
-        dout << "_response.ind.need_time    = " << _response.ind.need_time    << endl;
-        dout << "_response.ind.obj_unknown  = " << _response.ind.obj_unknown  << endl;
-        dout << "_response.ind.out_of_range = " << _response.ind.out_of_range << endl;
-        dout << "_response.ind.reserved     = " << _response.ind.reserved     << endl;
-        dout << "_response.ind.restart      = " << _response.ind.restart      << endl;
-        dout << endl;
-        dout << "data: " << endl;
+        itemList.add("_response.ctrl.func_code")   << _response.func_code;
+
+        itemList << "---";
+        itemList.add("_response.ctrl.first")       << _response.ctrl.first;
+        itemList.add("_response.ctrl.final")       << _response.ctrl.final;
+        itemList.add("_response.ctrl.app_confirm") << _response.ctrl.app_confirm;
+        itemList.add("_response.ctrl.unsolicited") << _response.ctrl.unsolicited;
+        itemList.add("_response.ctrl.seq")         << _response.ctrl.seq;
+
+        itemList << "---";
+        itemList.add("_response.ind.all_stations") << _response.ind.all_stations;
+        itemList.add("_response.ind.already_exec") << _response.ind.already_exec;
+        itemList.add("_response.ind.bad_config  ") << _response.ind.bad_config;
+        itemList.add("_response.ind.bad_function") << _response.ind.bad_function;
+        itemList.add("_response.ind.buf_overflow") << _response.ind.buf_overflow;
+        itemList.add("_response.ind.class_1")      << _response.ind.class_1;
+        itemList.add("_response.ind.class_2")      << _response.ind.class_2;
+        itemList.add("_response.ind.class_3")      << _response.ind.class_3;
+        itemList.add("_response.ind.dev_trouble ") << _response.ind.dev_trouble;
+        itemList.add("_response.ind.need_time")    << _response.ind.need_time;
+        itemList.add("_response.ind.obj_unknown ") << _response.ind.obj_unknown;
+        itemList.add("_response.ind.out_of_range") << _response.ind.out_of_range;
+        itemList.add("_response.ind.reserved")     << _response.ind.reserved;
+        itemList.add("_response.ind.restart")      << _response.ind.restart;
+
+        std::ostringstream data;
+        data << endl;
+        data << endl <<"data: ";
+        data << endl << std::hex << std::setfill('0');
 
         for( int i = 0; i < _response.buf_len; i++ )
         {
-            dout << string(CtiNumStr(_response.buf[i]).hex().zpad(2)) << " ";
+            data << std::setw(2) << _response.buf <<" ";
 
             if( !(i % 20) && i )
-                dout << endl;
+            {
+                data << endl;
+            }
         }
 
-        dout << endl << endl;
+        CTILOG_INFO(dout,
+                itemList <<
+                data
+                );
     }
 
     //  ACH:  if class_1 || class_2 || class_3, we need to do something...  pass it up to the protocol layer, eh?
@@ -413,8 +421,7 @@ YukonError_t ApplicationLayer::generate( CtiXfer &xfer )
 
             default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unhandled state " << _appState << " in Cti::Protocol::DNP::Application::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "unhandled state "<< _appState);
             }
             case Failed:
             {
@@ -462,8 +469,7 @@ YukonError_t ApplicationLayer::decode( CtiXfer &xfer, YukonError_t status )
 
         if( isDebugLudicrous() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "_transport.decode returned "<< retVal);
         }
     }
     else if( _transport.isTransactionComplete() )
@@ -562,8 +568,7 @@ YukonError_t ApplicationLayer::decode( CtiXfer &xfer, YukonError_t status )
 
             default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unknown state(" << _appState << ") in Application::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "unknown state ("<< _appState <<")");
 
                 _appState = Failed;
             }

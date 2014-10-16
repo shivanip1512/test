@@ -1,24 +1,9 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_port_base
-*
-* Date:   8/28/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_port_base.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:06 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
+#include <boost/algorithm/string.hpp>
 #include "tbl_port_base.h"
 #include "logger.h"
 
-using std::transform;
 using std::string;
 using std::endl;
 
@@ -75,55 +60,42 @@ void CtiTablePortBase::setSharedSocketNumber(INT sockNum)
 
 void CtiTablePortBase::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-   INT iTemp;
-   string rwsTemp;
+   int iSharedSocketNumber;
+   string zAlarmInhibit, zProtocol, zSharedporttype;
+
+   rdr["alarminhibit"]       >> zAlarmInhibit;
+   rdr["commonprotocol"]     >> zProtocol;
+   rdr["sharedporttype"]     >> zSharedporttype;
+   rdr["sharedsocketnumber"] >> iSharedSocketNumber;
 
    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
    {
-      CtiLockGuard<CtiLogger> logger_guard(dout);
-      dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       Cti::FormattedList itemList;
+
+       itemList.add("Alarm Inhibit")        << zAlarmInhibit;
+       itemList.add("Protocol wrap")        << zProtocol;
+       itemList.add("Shared Port Type")     << zSharedporttype;
+       itemList.add("Shared Socket Number") << iSharedSocketNumber;
+
+       CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName() <<
+               itemList
+               );
    }
 
-   rdr["alarminhibit"] >> rwsTemp;
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
-   {
-       CtiLockGuard<CtiLogger> logger_guard(dout);
-       dout << " Alarm Inhibit        ? " << rwsTemp << endl;
-   }
-   transform( rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), ::tolower);
-   _alarmInhibit = (rwsTemp[0] == 'y' ? true : false);
-
-   rdr["commonprotocol"] >> rwsTemp;
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
-   {
-       CtiLockGuard<CtiLogger> logger_guard(dout);
-       dout << " Protocol wrap        = " << rwsTemp  << endl;
-   }
-   _protocol = resolveProtocol(rwsTemp);
-
-   rdr["sharedporttype"] >> rwsTemp;
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
-   {
-       CtiLockGuard<CtiLogger> logger_guard(dout);
-       dout << " Shared Port Type     = " << rwsTemp << endl;
-   }
-   transform( rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), ::tolower);
-   _sharedPortType = rwsTemp;
-
-   rdr["sharedsocketnumber"] >> iTemp;
-   if(getDebugLevel() & DEBUGLEVEL_DATABASE)
-   {
-       CtiLockGuard<CtiLogger> logger_guard(dout);
-       dout << "  Shared Socket Number = " << rwsTemp << endl;
-   }
-   _sharedSocketNumber = iTemp;
-
+   _alarmInhibit       = (! zAlarmInhibit.empty() && ::tolower(zAlarmInhibit[0]) == 'y');
+   _protocol           = resolveProtocol(zProtocol);
+   _sharedPortType.swap(boost::algorithm::to_lower_copy(zSharedporttype));
+   _sharedSocketNumber = iSharedSocketNumber;
 }
 
-void CtiTablePortBase::DumpData()
+std::string CtiTablePortBase::toString() const
 {
-   CtiLockGuard<CtiLogger> logger_guard(dout);
-   dout << " Alarm Inhibit                              : " << _alarmInhibit << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTablePortBase";
+    itemList.add("Alarm Inhibit") << _alarmInhibit;
+
+    return itemList.toString();
 }
 
 string CtiTablePortBase::getTableName()

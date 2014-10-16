@@ -1,22 +1,5 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_state_grp
-*
-* Date:   12/29/2000
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_state_grp.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
 #include "dbaccess.h"
 #include "mutex.h"
 #include "guard.h"
@@ -147,23 +130,24 @@ void CtiTableStateGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
     return;
 }
 
-void CtiTableStateGroup::dump() const
+std::string CtiTableStateGroup::toString() const
 {
+    Cti::FormattedList itemList;
 
+    itemList <<"CtiTableStateGroup";
+    itemList.add("State Group ID") << getStateGroupID();
+    itemList.add("Name")           << getName();
 
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "State Group ID " << getStateGroupID() << endl;
-        dout << "Name" << " Value " << getName() << endl;
-    }
-
+    unsigned index = 0;
     CtiStateSet_t::const_iterator sit;
-
     for(sit = _stateSet.begin(); sit != _stateSet.end(); sit++)
     {
+        itemList<<"state index "<< index++;
         const CtiTableState &theState = *sit;
-        theState.dump();
+        itemList<<theState;
     }
+
+    return itemList.toString();
 }
 
 string CtiTableStateGroup::getRawState(LONG rawValue)

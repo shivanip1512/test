@@ -40,8 +40,7 @@ bool SEPCycleGear::attemptControl(CtiLMGroupPtr currentLMGroup, long controlSeco
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Group does not implement SEP control interface: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_INFO(dout, "Group does not implement SEP control interface: " << currentLMGroup->getPAOName());
         return false;
     }
 }
@@ -61,15 +60,13 @@ bool SEPCycleGear::stopControl(CtiLMGroupPtr currentLMGroup)
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid current gear method stop type: " << getMethodStopType() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_INFO(dout, "Invalid current gear method stop type: " << getMethodStopType());
             return false;
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Group does not implement basic control interface: " << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_INFO(dout, "Group does not implement basic control interface: " << currentLMGroup->getPAOName());
         return false;
     }
 

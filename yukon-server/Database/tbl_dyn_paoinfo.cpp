@@ -15,6 +15,8 @@
 #include <boost/optional.hpp>
 #include <boost/lexical_cast.hpp>
 
+using std::endl;
+
 namespace {
 
 typedef CtiTableDynamicPaoInfo Dpi;
@@ -378,8 +380,7 @@ bool CtiTableDynamicPaoInfoBase::Insert(Cti::Database::DatabaseConnection &conn,
             keyString = "boost::none";
         }
 
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - invalid attempt to insert into DynamicPaoInfo - paoid = " << _pao_id << ", owner = \"" << owner << "\", and keyString = \"" << keyString << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        CTILOG_ERROR(dout, "invalid attempt to insert into DynamicPaoInfo - paoid = "<< _pao_id <<", owner = \""<< owner <<"\", and keyString = \""<< keyString <<"\"");
 
         return false;
     }
@@ -416,8 +417,7 @@ bool CtiTableDynamicPaoInfoBase::Update(Cti::Database::DatabaseConnection &conn,
             keyString = "boost::none";
         }
 
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - invalid attempt to insert into DynamicPaoInfo - paoid = " << getPaoID() << ", owner = \"" << owner << "\", and keyString = \"" << keyString << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+        CTILOG_ERROR(dout, "invalid attempt to update into DynamicPaoInfo - paoid = "<< _pao_id <<", owner = \""<< owner <<"\", and keyString = \""<< keyString <<"\"");
 
         return false;
     }
@@ -576,14 +576,17 @@ std::string CtiTableDynamicPaoInfo::getKeyString(const PaoInfoKeys key)
     return std::string();
 }
 
-void CtiTableDynamicPaoInfo::dump() const
+std::string CtiTableDynamicPaoInfo::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    Cti::FormattedList itemList;
 
-    dout << "getPaoID()     " << getPaoID() << std::endl;
-    dout << "getKeyString() " << getKeyString() << std::endl;
-    dout << "getKey()       " << getKey() << std::endl;
-    dout << "getValue()     " << getValue() << std::endl;
+    itemList <<"CtiTableDynamicPaoInfo";
+    itemList.add("getPaoID()")     << getPaoID();
+    itemList.add("getKeyString()") << getKeyString();
+    itemList.add("getKey()")       << getKey();
+    itemList.add("getValue()")     << getValue();
+
+    return itemList.toString();
 }
 
 /*-----------------------------------------------------------------------------
@@ -686,22 +689,18 @@ std::string CtiTableDynamicPaoInfoIndexed::getKeyString(const PaoInfoKeysIndexed
     return std::string();
 }
 
-void CtiTableDynamicPaoInfoIndexed::dump() const
+std::string CtiTableDynamicPaoInfoIndexed::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
+    const boost::optional<unsigned> index = getIndex();
 
-    dout << "getPaoID()     " << getPaoID() << std::endl;
-    dout << "getKeyString() " << getKeyString() << std::endl;
-    dout << "getKey()       " << getKey() << std::endl;
-    dout << "getValue()     " << getValue() << std::endl;
-    dout << "getIndex()     ";
+    Cti::FormattedList itemList;
 
-    if( getIndex() )
-    {
-        dout << *getIndex() << std::endl;
-    }
-    else
-    {
-        dout << "none" << std::endl;
-    }
+    itemList <<"CtiTableDynamicPaoInfoIndexed";
+    itemList.add("getPaoID()")     << getPaoID();
+    itemList.add("getKeyString()") << getKeyString();
+    itemList.add("getKey()")       << getKey();
+    itemList.add("getValue()")     << getValue();
+    itemList.add("getIndex()")     << (index ? boost::lexical_cast<std::string>(*index) : std::string("none"));
+
+    return itemList.toString();
 }

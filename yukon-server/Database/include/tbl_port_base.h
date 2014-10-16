@@ -5,8 +5,10 @@
 #include "resolvers.h"
 #include "yukon.h"
 #include "row_reader.h"
+#include "loggable.h"
 
-class IM_EX_CTIYUKONDB CtiTablePortBase : public CtiMemDBObject, private boost::noncopyable
+
+class IM_EX_CTIYUKONDB CtiTablePortBase : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -51,5 +53,5 @@ private:
 
     static std::string getTableName();
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
-    virtual void DumpData();
+    virtual std::string toString() const override;
 };

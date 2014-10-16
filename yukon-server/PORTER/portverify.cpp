@@ -49,10 +49,7 @@ CtiPorterVerification::~CtiPorterVerification()
 {
     if( !_work_queue.empty() )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - " << _work_queue.size() << " items left in CtiPorterVerification work queue, purging **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_WARN(dout, _work_queue.size() <<" items left in CtiPorterVerification work queue - purging");
     }
 
     while( !_work_queue.empty() )
@@ -66,22 +63,14 @@ CtiPorterVerification::~CtiPorterVerification()
 
 void CtiPorterVerification::run( void )
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PortVerificationThread TID: " << CurrentTID () << endl;
-    }
+    CTILOG_INFO(dout, "PortVerificationThread started");
 
     SetThreadName(-1, "PrtVerify");
 
     verificationThread();
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PortVerificationThread TID: " << CurrentTID() << " shutting down" << endl;
-    }
-
+    CTILOG_INFO(dout, "PortVerificationThread shutting down");
 }
-
 
 
 const string &CtiPorterVerification::getTableName()
@@ -129,18 +118,19 @@ void CtiPorterVerification::verificationThread( void )
             if( (last_report + report_interval) <= second_clock::universal_time() )
             {
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " PortVerificationThread TID: " << CurrentTID () << " is running "
-                         << "(INQ: " << _input.size() << ", WQ: " << _work_queue.size();
+                    Cti::StreamBuffer output;
+                    output <<"PortVerificationThread is running (INQ: "<< _input.size() <<", WQ: "<< _work_queue.size() <<", WQ top: ";
 
                     if( !_work_queue.empty() && _work_queue.top() )
                     {
-                        dout << ", WQ top: " << to_simple_string(_work_queue.top()->getExpiration()) << ")" << endl;
+                        output << to_simple_string(_work_queue.top()->getExpiration()) <<")";
                     }
                     else
                     {
-                        dout << ", WQ top: [empty])" << endl;
+                        output <<"[empty])";
                     }
+
+                    CTILOG_INFO(dout, output);
                 }
 
                 last_report = second_clock::universal_time();
@@ -187,8 +177,7 @@ void CtiPorterVerification::verificationThread( void )
                             {
                                 if( isDebugLudicrous() )
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint - no associations found for for transmitter id \"" << work->getTransmitterID() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    CTILOG_DEBUG(dout, "no associations found for transmitter id \""<< work->getTransmitterID() <<"\"");
                                 }
                             }
 
@@ -234,8 +223,7 @@ void CtiPorterVerification::verificationThread( void )
                                 {
                                     if( isDebugLudicrous() )
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint - record not found for code \"" << vReport->getCode() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        CTILOG_DEBUG(dout, "record not found for code \""<< vReport->getCode() <<"\"");
                                     }
 
                                     writeUnknown(*vReport);
@@ -248,8 +236,7 @@ void CtiPorterVerification::verificationThread( void )
                             {
                                 if( isDebugLudicrous() )
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint - entry received for unknown receiver \"" << vReport->getReceiverID() << "\"  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    CTILOG_DEBUG(dout, "entry received for unknown receiver \""<< vReport->getReceiverID() <<"\"");
                                 }
 
                                 writeUnknown(*vReport);
@@ -263,12 +250,9 @@ void CtiPorterVerification::verificationThread( void )
 
                         default:
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - unknown type \"" << base->getType() << "\" in verificationThread;  deleting message **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_ERROR(dout, "unknown type \""<< base->getType() <<"\" - deleting message");
 
-                            //  base base base
+                            //  base base base -> awesome comment
                             delete base;
                         }
                     }
@@ -280,21 +264,18 @@ void CtiPorterVerification::verificationThread( void )
 
         if( _work_queue.empty() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Verification thread received shutdown - no pending codes" << endl;
+            CTILOG_INFO(dout, "Verification thread received shutdown - no pending codes");
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Verification thread received shutdown - writing " << _work_queue.size() << " pending codes to DB" << endl;
+            CTILOG_INFO(dout, "Verification thread received shutdown - writing "<< _work_queue.size() <<" pending codes to DB");
         }
 
         processWorkQueue(true);
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Exception in CtiPorterVerification, thread exiting" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Exception in CtiPorterVerification, thread exiting");
     }
 }
 
@@ -307,9 +288,7 @@ void CtiPorterVerification::processWorkQueue(bool purge)
 
         if ( ! conn.isValid() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+            CTILOG_ERROR(dout, "Invalid Connection to Database");
             return;
         }
 
@@ -324,8 +303,7 @@ void CtiPorterVerification::processWorkQueue(bool purge)
 
             if( isDebugLudicrous() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - writing code sequence \"" << work->getSequence() << "\" **** Expires at " << to_simple_string(work->getExpiration()) << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_DEBUG(dout, "writing code sequence \""<< work->getSequence() <<"\" (Expires at "<< to_simple_string(work->getExpiration()) <<")");
             }
 
             writeWorkRecord(*work, conn);
@@ -334,7 +312,10 @@ void CtiPorterVerification::processWorkQueue(bool purge)
             {
                 CtiOutMessage *om = work->getRetryOM();
 
-                PortManager.writeQueue(om);
+                if(PortManager.writeQueue(om))
+                {
+                    CTILOG_ERROR(dout, "Could not write to port queue for DeviceID "<< om->DeviceID <<" / Port "<< om->Port);
+                }
 
                 //  possible addition to enhance retry logic  ----
                 //_retry_queue.push_back(work);  //  this is where we keep track of the receivers on which we've already heard this code
@@ -368,10 +349,7 @@ void CtiPorterVerification::processWorkQueue(bool purge)
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - work/expectation mismatch **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "work/expectation mismatch");
                 }
             }
             
@@ -397,10 +375,7 @@ void CtiPorterVerification::push(CtiVerificationBase *entry)
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - CtiPorterVerification::push has exceeded maximum queue size (" << maxsize << "), purging **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "exceeded maximum queue size ("<< maxsize <<"), purging");
 
                 _input.clearAndDestroy();
                 delete entry;
@@ -408,19 +383,14 @@ void CtiPorterVerification::push(CtiVerificationBase *entry)
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - CtiPorterVerification::push cannot enqueue null pointer **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "cannot enqueue null pointer");
         }
     }
     else
     {
         if( !warning_printed )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - CtiPorterVerification::push will not enqueue message when thread is not running, deleting entry **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
+            CTILOG_WARN(dout, "will not enqueue message when thread is not running, deleting entry");
             warning_printed = true;
         }
 
@@ -443,8 +413,7 @@ void CtiPorterVerification::push(queue< CtiVerificationBase * > &entries)
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - CtiPorterVerification::push cannot enqueue null pointer **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "cannot enqueue null pointer");
             }
 
             entries.pop();
@@ -454,11 +423,7 @@ void CtiPorterVerification::push(queue< CtiVerificationBase * > &entries)
     {
         if( !warning_printed )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - CtiPorterVerification::push will not enqueue message when thread is not running, deleting " << entries.size() << " entries **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
+            CTILOG_WARN(dout, "will not enqueue message when thread is not running, deleting "<< entries.size() <<" entries");
             warning_printed = true;
         }
 
@@ -478,7 +443,7 @@ void CtiPorterVerification::loadAssociations(void)
 
     if(DebugLevel & 0x00020000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Verification thread loading transmitter associations" << endl;
+        CTILOG_DEBUG(dout, "Verification thread loading transmitter associations");
     }
 
     {
@@ -522,7 +487,7 @@ void CtiPorterVerification::loadAssociations(void)
 
     if(DebugLevel & 0x00020000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Verification thread done loading transmitter associations" << endl;
+        CTILOG_DEBUG(dout, "Verification thread done loading transmitter associations");
     }
 
     set(RELOAD, false);
@@ -579,8 +544,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, Cti
 
     if( ! inserter.execute()  )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - error while inserting in CtiPorterVerification::writeWorkRecord **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "DB insert has failed for SQL query: "<< inserter.asString());
     }
 
     for( r_itr = receipts.begin(); r_itr != receipts.end(); r_itr++ )
@@ -598,8 +562,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, Cti
 
         if( ! inserter.execute() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - error while inserting in CtiPorterVerification::writeWorkRecord **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "DB insert has failed for SQL query: "<< inserter.asString());
         }
     }
 
@@ -618,8 +581,7 @@ void CtiPorterVerification::writeWorkRecord(const CtiVerificationWork &work, Cti
 
         if( ! inserter.execute() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - error while inserting in CtiPorterVerification::writeWorkRecord **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "DB insert has failed for SQL query: "<< inserter.asString());
         }
     }
 }
@@ -652,17 +614,13 @@ void CtiPorterVerification::writeUnknown(const CtiVerificationReport &vReport)
         << string("Y")
         << cs;
 
-    if( isDebugLudicrous() )
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << inserter.asString() << endl;
-    }
-
     if( ! inserter.execute() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - error while inserting in CtiPorterVerification::writeUnknown **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "DB insert has failed for SQL query: "<< inserter.asString());
+    }
+    else if( isDebugLudicrous() )
+    {
+        CTILOG_DEBUG(dout, "DB insert for SQL query: "<< inserter.asString());
     }
 }
 
@@ -683,20 +641,16 @@ void CtiPorterVerification::pruneEntries(const ptime::time_duration_type &age)
 
     if(isDebugLudicrous())
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Beginning DynamicVerification prune. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << CtiTime() << deleter.asString() << endl;
+        CTILOG_DEBUG(dout, "Beginning DynamicVerification prune. SQL query: "<< deleter.asString());
     }
 
     if( deleter.execute() )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " DynamicVerification pruning successful (" << CtiTime(earliest) << ") " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "DynamicVerification pruning successful ("<< CtiTime(earliest) <<")");
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - error while pruning entries in CtiPorterVerification::pruneEntries **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "failed to prune entries. SQL query: "<< deleter.asString());
     }
 }
 
@@ -723,8 +677,7 @@ long long CtiPorterVerification::logIDGen(bool force)
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - invalid reader in CtiPorterVerification::logIDGen **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
         }
 
         if(tempid >= id)

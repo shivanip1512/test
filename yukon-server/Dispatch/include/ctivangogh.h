@@ -266,7 +266,7 @@ public:
     void sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig);
     LONG alarmToNotificationGroup(INT signaltrx);
 
-    void displayConnections(void);
+    std::string displayConnections();
 
     CtiDeviceLiteSet_t::iterator deviceLiteFind(const LONG paoId);
     void reportOnThreads();

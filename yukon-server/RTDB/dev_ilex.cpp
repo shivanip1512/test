@@ -178,13 +178,7 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
 
     try
     {
-        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-            return ClientErrors::MemoryAccess;
-        }
+        ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
         ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
         unsigned char firstByte = InMessage.Buffer.InMessage[0];
@@ -222,11 +216,8 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << CtiTime() << " Throwing away unexpected freeze response" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Throwing away unexpected freeze response");
+
                     setScanFlag(ScanFreezeFailed);   // FIX FIX FIX 090799 CGP ?????
                     /* message for screwed up freeze */
                 }
@@ -245,10 +236,8 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
                 else
                 {
                     /* Something screwed up message goes here */
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Unexpected scan flag is not set");
+
                     break;
                 }
 
@@ -258,20 +247,21 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
             {
                 if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    std::ostringstream logMessage;
 
-                    char oldfill = dout.fill('0');
+                    logMessage << endl <<"First byte:";
+                    logMessage << endl << setfill('0') << hex << setw(2) << (int)firstByte;
+                    logMessage << endl <<"Ilex Data:";
 
-                    dout << CtiTime() << " First byte:" << endl;
-                    dout << hex << setw(2) << (int)firstByte << dec << " ";
-                    dout << CtiTime() << " Ilex Data:" << endl;
                     for(i=0; i < 64; i++)
                     {
-                        if(i && !(i % 10)) dout << endl;
-                        dout << hex << setw(2) << (int)InMessage.Buffer.InMessage[i] << dec << " ";
+                        if(i && !(i % 10)) logMessage << endl;
+                        logMessage << setw(2) << (int)InMessage.Buffer.InMessage[i] << " ";
                     }
-                    dout << endl << CtiTime() << " Ilex Data Complete" << endl;
-                    dout.fill(oldfill);
+
+                    logMessage << endl <<"Ilex Data Complete";
+
+                    CTILOG_DEBUG(dout, logMessage);
                 }
 
                 if((firstByte & 0x07) == ILEXSCANPARTIAL)
@@ -355,18 +345,17 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
 
                         if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            char oldfill = dout.fill('0');
+                            std::ostringstream logMessage;
 
-                            dout << CtiTime() << " Indication Group Number " << (int)InMessage.Buffer.InMessage[Offset] << ": Start status offset = " << StartStatus << endl;
+                            logMessage <<"Indication Group Number "<< (int)InMessage.Buffer.InMessage[Offset] <<": Start status offset = "<< StartStatus;
+                            logMessage << endl << hex << setfill('0');
 
                             for(j = 0; j < 7; j++)
                             {
-                                dout << "0x" << hex << setw(2) << (int)InMessage.Buffer.InMessage[Offset + j] << " " << dec;
+                                logMessage <<"0x"<< setw(2) << (int)InMessage.Buffer.InMessage[Offset + j] <<" ";
                             }
-                            dout << endl;
 
-                            dout.fill(oldfill);
+                            CTILOG_DEBUG(dout, logMessage);
                         }
 
                         for(j = 1; j <= 16; j++)
@@ -461,14 +450,7 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
                         /* make sure this guy is marked as a bad freeze */
                         setLastFreezeNumber( 0 );
 
-#if 1
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << " " << getName() << " A.C.H. Bad freeze number!" << endl;
-                        }
-#else
-                        // See DSM/2 for behaviour here....
-#endif
+                        CTILOG_ERROR(dout, "A.C.H. Bad freeze number!");
                     }
                     else
                     {
@@ -485,11 +467,8 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
                         EndAccum = StartAccum + NumAccum;
                         Offset += 2;
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  Decoding accumulators from " << (int)(StartAccum + 1) << " to " << EndAccum << endl;
-                        }
+                        CTILOG_INFO(dout, "Decoding accumulators from "<< (int)(StartAccum + 1) <<" to "<< EndAccum);
+
                         for(AIPointOffset = StartAccum + 1; AIPointOffset <= EndAccum; AIPointOffset++)
                         {
                             // get the current pulse count
@@ -503,54 +482,48 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
 
                                 if(!(getPrevFreezeNumber()) || !(getLastFreezeNumber()))
                                 {
-                                    // Inform dispatch that the point pump has just been primed.
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                        dout << CtiTime() << " " << getName() << " doesn't appear to have had two demand accumulator scans. Waiting for a second scan." << endl;
-                                    }
+                                    CTILOG_WARN(dout, getName() <<" doesn't appear to have had two demand accumulator scans. Waiting for a second scan");
                                 }
                                 else
                                 {
                                     try
                                     {
-                                    /* Calculate the number of pulses */
-                                    if(pAccumPoint->getPointHistory().getPresentPulseCount() < pAccumPoint->getPointHistory().getPreviousPulseCount())
-                                        UValue = 0xffff - pAccumPoint->getPointHistory().getPreviousPulseCount() + pAccumPoint->getPointHistory().getPresentPulseCount();  /* Rollover */
-                                    else
-                                        UValue = pAccumPoint->getPointHistory().getPresentPulseCount() - pAccumPoint->getPointHistory().getPreviousPulseCount();
+                                        /* Calculate the number of pulses */
+                                        if(pAccumPoint->getPointHistory().getPresentPulseCount() < pAccumPoint->getPointHistory().getPreviousPulseCount())
+                                            UValue = 0xffff - pAccumPoint->getPointHistory().getPreviousPulseCount() + pAccumPoint->getPointHistory().getPresentPulseCount();  /* Rollover */
+                                        else
+                                            UValue = pAccumPoint->getPointHistory().getPresentPulseCount() - pAccumPoint->getPointHistory().getPreviousPulseCount();
 
-                                    /* Calculate in units/hour */
-                                    PValue = (FLOAT) UValue * pAccumPoint->getMultiplier();
-                                    /* to convert to units */
-                                    PValue /= PartHour;
+                                        /* Calculate in units/hour */
+                                        PValue = (FLOAT) UValue * pAccumPoint->getMultiplier();
+                                        /* to convert to units */
+                                        PValue /= PartHour;
 
-                                    /* Apply offset */
-                                    PValue += pAccumPoint->getDataOffset();
+                                        /* Apply offset */
+                                        PValue += pAccumPoint->getDataOffset();
 
                                         if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                                         {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Demand Accum offset " << AIPointOffset << " = " << PValue << endl;
-                                            dout << " UValue = " << UValue << endl;
-                                            dout << " PartHour = " << PartHour << endl;
-                                            dout << " PrevPulse = " << pAccumPoint->getPointHistory().getPreviousPulseCount() << endl;
-                                            dout << " CurrPulse = " << pAccumPoint->getPointHistory().getPresentPulseCount() << endl;
+                                            CTILOG_DEBUG(dout, "Demand Accum offset "<< AIPointOffset <<" = "<< PValue <<
+                                                    endl <<"UValue    = "<< UValue <<
+                                                    endl <<"PartHour  = "<< PartHour <<
+                                                    endl <<"PrevPulse = "<< pAccumPoint->getPointHistory().getPreviousPulseCount() <<
+                                                    endl <<"CurrPulse = "<< pAccumPoint->getPointHistory().getPresentPulseCount()
+                                                    );
                                         }
 
-                                    _snprintf(tStr, 127, "%s point %s = %f", getName().c_str(), pAccumPoint->getName().c_str(), PValue);
+                                        _snprintf(tStr, 127, "%s point %s = %f", getName().c_str(), pAccumPoint->getName().c_str(), PValue);
 
-                                    pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
-                                    if(pData != NULL)
-                                    {
-                                        ReturnMsg->PointData().push_back(pData);
-                                        pData = NULL;  // We just put it on the list...
+                                        pData = CTIDBG_new CtiPointDataMsg(pAccumPoint->getPointID(), PValue, NormalQuality, DemandAccumulatorPointType, tStr);
+                                        if(pData != NULL)
+                                        {
+                                            ReturnMsg->PointData().push_back(pData);
+                                            pData = NULL;  // We just put it on the list...
+                                        }
                                     }
-                                }
                                     catch(...)
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                                     }
                                 }
                             }
@@ -558,9 +531,7 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
                             {
                                 if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << " No point for DACC offset " << AIPointOffset << endl;
+                                    CTILOG_DEBUG(dout, "No point for DACC offset "<< AIPointOffset);
                                 }
                             }
 
@@ -584,8 +555,7 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
 
                                 if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Pulse Accum offset " << AIPointOffset << " = " << PValue << endl;
+                                    CTILOG_DEBUG(dout, "Pulse Accum offset "<< AIPointOffset <<" = "<< PValue);
                                 }
 
                                 _snprintf(tStr, 127, "%s point %s = %f", getName().c_str(), pAccumPoint->getName().c_str(), PValue);
@@ -602,9 +572,7 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
                             {
                                 if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << " No point for PACC offset " << AIPointOffset << endl;
+                                    CTILOG_DEBUG(dout, "No point for PACC offset "<< AIPointOffset);
                                 }
                             }
 
@@ -625,9 +593,7 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
                 {
                     if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << " About to decode " << NumAnalogs << " analogs" << endl;
+                        CTILOG_DEBUG(dout, "About to decode "<< NumAnalogs <<" analogs");
                     }
                     for(i = 0; i < NumAnalogs; i++)
                     {
@@ -649,8 +615,7 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
 
                         if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " AI offset " << AIPointOffset << " = " << Value << endl;
+                            CTILOG_DEBUG(dout, "AI offset " << AIPointOffset << " = " << Value);
                         }
 
                         if(NumericPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(AIPointOffset, AnalogPointType)))
@@ -692,8 +657,7 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
                     {
                         if(getDebugLevel() & DEBUGLEVEL_ILEX_PROTOCOL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            CTILOG_DEBUG(dout, "IntegrityScan return error "<< i);
                         }
                         ReportError ((USHORT)i); /* Send Error to logger */
                     }
@@ -712,10 +676,7 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
                 else
                 {
                     /* put a something fishy message here */
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** ACH. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Unexpected firstByte = "<< firstByte);
                 }
                 break;
             }               /* end of default and reset conditions */
@@ -736,10 +697,7 @@ YukonError_t CtiDeviceILEX::ResultDecode(const INMESS &InMessage, const CtiTime 
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return status;
@@ -749,15 +707,10 @@ YukonError_t CtiDeviceILEX::ErrorDecode(const INMESS &InMessage, const CtiTime T
 {
     YukonError_t status = ClientErrors::None;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_INFO(dout, "ErrorDecode for device "<< getName());
+
     resetForScan(desolveScanRateType(InMessage.Return.CommandStr));
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+
     /* see what handshake was */
     if( useScanFlags() )            // Do we care about any of the scannable flags?
     {
@@ -829,12 +782,8 @@ YukonError_t CtiDeviceILEX::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser
     case PutConfigRequest:
     default:
         {
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
+            CTILOG_ERROR(dout, "No method found");
+
             status = ClientErrors::NoMethodForExecuteRequest;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
@@ -900,9 +849,7 @@ YukonError_t CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser
                 {
                     if(INT_MIN == ctlpt || !(parse.getFlags() & (CMD_FLAG_CTL_CLOSE | CMD_FLAG_CTL_OPEN)))
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Poorly formed control message.  Specify select pointid and open or close" << endl;
+                        CTILOG_ERROR(dout, "Poorly formed control message.  Specify select pointid and open or close");
                     }
                     else    // We have all our info available.
                     {
@@ -991,28 +938,18 @@ YukonError_t CtiDeviceILEX::executeControl(CtiRequestMsg *pReq, CtiCommandParser
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Control Point " << ctlPoint->getName() << " is disabled" << endl;
-                    }
+                    CTILOG_WARN(dout, "Control Point "<< ctlPoint->getName() <<" is disabled");
                 }
             }
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << " Control point " << ctlpt << " does not exist" << endl;
-            }
+            CTILOG_ERROR(dout, getName() << " Control point " << ctlpt << " does not exist");
         }
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getName() << " is disabled" << endl;
-        }
+        CTILOG_WARN(dout, getName() <<" is disabled");
     }
 
     return status;

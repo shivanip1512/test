@@ -7,6 +7,7 @@
 #include "fdrserverconnection.h"
 #include "fdrdebuglevel.h"
 #include "socket_helper.h"
+#include "win_helper.h"
 
 using std::string;
 using std::endl;
@@ -108,11 +109,9 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
             // we're ready to receive data
             setConnectionStatus (CtiFDRSocketConnection::Ok);
 
-
             if (getParent()->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() <<" Initializing FDRServerConnection::threadFunctionGetDataFrom for " << getParent()->getName() << endl;
+                CTILOG_DEBUG(dout, "Initializing Thread for "<< getParent()->getName());
             }
 
             for ( ; ; )
@@ -134,10 +133,8 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                     {
                         // closes and marks as failed
                         closeAndFailConnection();
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Read failed - client " << getParent()->getName() << endl;
-                        }
+
+                        CTILOG_ERROR(dout, "Read failed for client "<< getParent()->getName());
                     }
                     else
                     {
@@ -154,10 +151,8 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                             {
                                 // closes and marks as failed
                                 closeAndFailConnection();
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Read failed - client " << getParent()->getName() << endl;
-                                }
+
+                                CTILOG_ERROR(dout, "Read failed for client "<< getParent()->getName());
                             }
                             else
                             {
@@ -184,10 +179,8 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                                     if (getParent()->initializeClientConnection())
                                     {
                                         closeAndFailConnection();
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Return client connection to " << getAddr().toString() << " failed" << endl;
-                                        }
+
+                                        CTILOG_ERROR(dout, "Return client connection to "<< getAddr() <<" failed");
                                     }
                                     else
                                     {
@@ -204,10 +197,8 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
                         {
                             // closes and marks as failed
                             closeAndFailConnection();
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Read failed - client " << getParent()->getName() << endl;
-                            }
+
+                            CTILOG_ERROR(dout, "Read failed for client "<< getParent()->getName());
                         }
                     }
 
@@ -232,26 +223,21 @@ void CtiFDRServerConnection::threadFunctionGetDataFrom( void )
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Unable to open semaphore in server thread for " << getParent()->getName() << " loading interface failed" << endl;
+            CTILOG_ERROR(dout, "Unable to open semaphore in server thread for "<< getParent()->getName() <<" loading interface failed");
         }
-
     }
 
     catch ( RWCancellation &cancellationMsg )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION of FDRServerConnection::threadFunctionGetDataFrom for " << getParent()->getName() << endl;
+        CTILOG_INFO(dout, "Thread CANCELLATION for " << getParent()->getName());
         return;
     }
     // try and catch the thread death
     catch ( ... )
     {
         setConnectionStatus (CtiFDRSocketConnection::Failed);
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Fatal Error:  FDRServerConnection::threadFunctionGetDataFrom for " << getParent()->getName() << " is dead! " << endl;
-        }
+
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Thread for "<< getParent()->getName() <<" is dead!");
     }
 }
 
@@ -303,8 +289,8 @@ INT CtiFDRServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aByt
                     }
                     else
                     {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Socket Error on read, WSAGetLastError() == " << WSAGetLastError() << endl;
+                        const DWORD error = WSAGetLastError();
+                        CTILOG_ERROR(dout, "recv() failed with error code: "<< error <<" / "<< Cti::getSystemErrorMessage(error));
 
                         // problem with the receive
                         retVal = SOCKET_ERROR;
@@ -322,8 +308,7 @@ INT CtiFDRServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aByt
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Socket read in FDR server connection failed, re-initializing connection" <<endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Socket read in FDR server connection failed, re-initializing connection");
     }
 
     return retVal;

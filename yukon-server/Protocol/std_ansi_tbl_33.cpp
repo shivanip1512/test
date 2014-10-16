@@ -19,6 +19,7 @@
 #include "logger.h"
 #include "std_ansi_tbl_33.h"
 
+
 using std::string;
 using std::endl;
 
@@ -85,59 +86,39 @@ CtiAnsiTable33& CtiAnsiTable33::operator=(const CtiAnsiTable33& aRef)
 //=========================================================================================================================================
 void CtiAnsiTable33::printResult( const string& deviceName )
 {
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
+    Cti::FormattedTable table;
+    table.setCell(0, 0) << "Display Source[ ]";
+    table.setCell(0, 1) << "OnTime";
+    table.setCell(0, 2) << "OffTime";
+    table.setCell(0, 3) << "HoldTime";
+    table.setCell(0, 4) << "DefaultList";
+    table.setCell(0, 5) << "NbrListItems";
+
+    for( int index = 0; index < _nbrPriDispLists; index++ )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<"  Std Table 33 ========================" << endl;
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " ** Primary Display List Table ** "<<endl;
-        dout << "        Display Source[ ] OnTime OffTime HoldTime DefaultList NbrListItems" <<endl;
-    }
-    for (int i = 0; i < _nbrPriDispLists; i++)
-    {
-        {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "          " << i << "    " 
-                                     <<(int) _priDispListTable.priDispList[i].dispScroll1.onTime << "    "     
-                                     <<(int) _priDispListTable.priDispList[i].dispScroll1.offTime << "    "    
-                                     <<(int) _priDispListTable.priDispList[i].dispScroll2.holdTime << "    "   
-                                     <<(int) _priDispListTable.priDispList[i].dispScroll2.defaultList << "    "
-                                     <<      _priDispListTable.priDispList[i].nbrListItems << "    " << endl;           
-        }
-        
+        const unsigned row = index + 1;
+        table.setCell(row, 0) << index;
+        table.setCell(row, 1) << _priDispListTable.priDispList[index].dispScroll1.onTime;
+        table.setCell(row, 2) << _priDispListTable.priDispList[index].dispScroll1.offTime;
+        table.setCell(row, 3) << _priDispListTable.priDispList[index].dispScroll2.holdTime;
+        table.setCell(row, 4) << _priDispListTable.priDispList[index].dispScroll2.defaultList;
+        table.setCell(row, 5) << _priDispListTable.priDispList[index].nbrListItems;
     }
 
+    Cti::FormattedTable itemsTable;
+    itemsTable.setCell(0, 0) << "Primary Display Source[ ]";
+
+    for( int index = 0; index < _nbrPriDispListItems; index++ )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "        Primary Display Source [ ] " <<endl;
-    }
-    for (int i = 0; i < _nbrPriDispListItems; i++)
-    {
-        
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "          " <<  _priDispListTable.priDispSources[i] << endl;
+        const unsigned row = index + 1;
+        itemsTable.setCell(row, 0) << _priDispListTable.priDispSources[index];
     }
 
-
-
-
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 33") <<
+            endl <<"** Primary Display List Table **"<<
+            table <<
+            endl <<"** Primary Display Items **"<<
+            itemsTable
+            );
 }
-
-
-
-
-
-
-
-
-
-
-

@@ -409,10 +409,7 @@ YukonError_t CtiProtocolSeriesV::generate( CtiXfer &xfer )
             {
                 opcode = Opcode_Invalid;
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - invalid command \"" << _command << "\" in CtiProtocolSeriesV::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "invalid command \""<< _command <<"\"");
             }
         }
     }
@@ -440,10 +437,7 @@ YukonError_t CtiProtocolSeriesV::generate( CtiXfer &xfer )
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - opcode not assigned in CtiProtocolSeriesV::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "opcode not assigned");
 
         xfer.setOutBuffer(NULL);
         xfer.setOutCount(0);
@@ -579,10 +573,7 @@ YukonError_t CtiProtocolSeriesV::decode( CtiXfer &xfer, YukonError_t status )
         {
             if( packet.station_id != _address )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - incoming address (" << (int)packet.station_id << ") doesn't match (" << (int)_address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "incoming address ("<< (int)packet.station_id <<") doesn't match ("<< (int)_address <<")");
 
                 retval = ClientErrors::Address;
             }
@@ -597,11 +588,7 @@ YukonError_t CtiProtocolSeriesV::decode( CtiXfer &xfer, YukonError_t status )
                 if( _rtu_info.status.bits.request_questionable )
                 {
                     //  i don't think any other status prohibits decode... ?
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - RTU status: request questionable **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "RTU status: request questionable");
 
                     retval = ClientErrors::Abnormal;
                 }
@@ -750,10 +737,7 @@ YukonError_t CtiProtocolSeriesV::decode( CtiXfer &xfer, YukonError_t status )
                         }
                         default:
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - invalid command \"" << _command << "\" in CtiProtocolSeriesV::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_ERROR(dout, "invalid command \""<< _command <<"\"");
                         }
                     }
 
@@ -851,10 +835,7 @@ int CtiProtocolSeriesV::expectedResponseSize( unsigned char opcode, int points_r
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - invalid opcode \"" << opcode << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "invalid opcode \""<< opcode <<"\"");
 
             response_size = 0;
 

@@ -149,10 +149,8 @@ int CtiFDR_ACS::readConfig()
         setTimeSyncVariation (atoi(tempStr.c_str()));
         if (getTimeSyncVariation() < 5)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ACS max time sync variation of " << getTimeSyncVariation() << " second(s) is invalid, defaulting to 5 seconds" << endl;
-            }
+            CTILOG_ERROR(dout, "ACS max time sync variation of "<< getTimeSyncVariation() <<" second(s) is invalid, defaulting to 5 seconds");
+
             // default to 5 seconds
             setTimeSyncVariation(5);
         }
@@ -194,26 +192,35 @@ int CtiFDR_ACS::readConfig()
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ACS port number " << getPortNumber() << endl;
-        dout << CtiTime() << " ACS timestamp window " << getTimestampReasonabilityWindow() << endl;
-        dout << CtiTime() << " ACS db reload rate " << getReloadRate() << endl;
-        dout << CtiTime() << " ACS queue flush rate " << getQueueFlushRate() << " second(s) " << endl;
-        dout << CtiTime() << " ACS send rate " << getOutboundSendRate() << endl;
-        dout << CtiTime() << " ACS send interval " << getOutboundSendInterval() << " second(s) " << endl;
-        dout << CtiTime() << " ACS max time sync variation " << getTimeSyncVariation() << " second(s) " << endl;
-        dout << CtiTime() << " ACS point time variation " << getPointTimeVariation() << " second(s) " << endl;
+        Cti::FormattedList loglist;
+        loglist.add("ACS port number")              << getPortNumber();
+        loglist.add("ACS timestamp window")         << getTimestampReasonabilityWindow();
+        loglist.add("ACS DB reload rate")           << getReloadRate();
+        loglist.add("ACS queue flush rate")         << getQueueFlushRate();
+        loglist.add("ACS send rate")                << getOutboundSendRate();
+        loglist.add("ACS send interval")            << getOutboundSendInterval();
+        loglist.add("ACS max time sync variation")  << getTimeSyncVariation();
+        loglist.add("ACS point time variation")     << getPointTimeVariation();
 
-        if (shouldUpdatePCTime())
-            dout << CtiTime() << " ACS time sync will reset PC clock" << endl;
+        if( shouldUpdatePCTime() )
+        {
+            loglist <<"ACS time sync will reset PC clock";
+        }
         else
-            dout << CtiTime() << " ACS time sync will not reset PC clock" << endl;
+        {
+            loglist <<"ACS time sync will not reset PC clock";
+        }
 
-
-        if (isInterfaceInDebugMode())
-            dout << CtiTime() << " ACS running in debug mode " << endl;
+        if( isInterfaceInDebugMode() )
+        {
+            loglist <<"ACS running in debug mode";
+        }
         else
-            dout << CtiTime() << " ACS running in normal mode "<< endl;
+        {
+            loglist <<"ACS running in normal mode";
+        }
+
+        CTILOG_DEBUG(dout, loglist);
     }
     return successful;
 }
@@ -330,8 +337,9 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int
     {
         getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  " << e.why() << endl;
+
+        CTILOG_EXCEPTION_ERROR(dout, e);
+
         RWTHROW(e);
     }
 
@@ -340,8 +348,8 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int
     {
         getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  (...) " << endl;
+
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return successful;
 }
@@ -382,12 +390,11 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
 
                     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Analog/Calculated point " << aPoint.getPointID();
-                        dout << " queued as Remote: " << ntohs(ptr->Value.RemoteNumber);
-                        dout << " Category: " << ptr->Value.CategoryCode;
-                        dout << " Point: " << ntohs(ptr->Value.PointNumber);
-                        dout << " value " << aPoint.getValue() << " to " << getInterfaceName() << endl;;
+                        CTILOG_DEBUG(dout, "Analog/Calculated point "<< aPoint.getPointID() <<
+                                " queued as Remote: "<< ntohs(ptr->Value.RemoteNumber) <<
+                                " Category: "<< ptr->Value.CategoryCode <<
+                                " Point: "<< ntohs(ptr->Value.PointNumber) <<
+                                " value "<< aPoint.getValue() << " to "<< getInterfaceName());
                     }
 
                     break;
@@ -418,8 +425,7 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
 
                             if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Control Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for interface " << getInterfaceName() << endl;
+                                CTILOG_DEBUG(dout, "Control Point "<< aPoint.getPointID() <<" State "<< aPoint.getValue() <<" is invalid for interface "<< getInterfaceName());
                             }
                         }
                         else
@@ -428,21 +434,24 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
 
                             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Control point " << aPoint.getPointID();
-                                dout << " queued as Remote: " << ntohs (ptr->Status.RemoteNumber);
-                                dout << " Category: " << ptr->Status.CategoryCode;
-                                dout << " Point: " << ntohs(ptr->Status.PointNumber);
+                                Cti::StreamBuffer logmsg;
+                                logmsg <<"Control point "<< aPoint.getPointID()
+                                       <<" queued as Remote: "<< ntohs (ptr->Status.RemoteNumber)
+                                       <<" Category: "<< ptr->Status.CategoryCode
+                                       <<" Point: "<< ntohs(ptr->Status.PointNumber);
 
-                                if (aPoint.getValue() == STATE_OPENED)
+                                if(aPoint.getValue() == STATE_OPENED)
                                 {
-                                    dout << " state of Open " << ptr->Control.Value << " " << aPoint.getValue();
+                                    logmsg <<" state of Open "<< ptr->Control.Value <<" "<< aPoint.getValue();
                                 }
                                 else
                                 {
-                                    dout << " state of Close " << ptr->Control.Value << " " << aPoint.getValue();
+                                    logmsg <<" state of Close "<< ptr->Control.Value <<" "<< aPoint.getValue();
                                 }
-                                dout << " to " << getInterfaceName() << endl;;
+
+                                logmsg <<" to "<< getInterfaceName();
+
+                                CTILOG_DEBUG(dout, logmsg);
                             }
                         }
                     }
@@ -464,8 +473,7 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
 
                             if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for interface " << getInterfaceName() << endl;
+                                CTILOG_DEBUG(dout, "Point "<< aPoint.getPointID() <<" State "<< aPoint.getValue() <<" is invalid for interface "<< getInterfaceName());
                             }
                         }
                         else
@@ -474,21 +482,25 @@ CHAR *CtiFDR_ACS::buildForeignSystemMsg (CtiFDRPoint &aPoint )
 
                             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Status point " << aPoint.getPointID();
-                                dout << " queued as Remote: " << ntohs (ptr->Status.RemoteNumber);
-                                dout << " Category: " << ptr->Status.CategoryCode;
-                                dout << " Point: " << ntohs(ptr->Status.PointNumber);
+                                Cti::StreamBuffer logmsg;
+
+                                logmsg <<" Status point "<< aPoint.getPointID()
+                                       <<" queued as Remote: "<< ntohs (ptr->Status.RemoteNumber)
+                                       <<" Category: "<< ptr->Status.CategoryCode
+                                       <<" Point: "<< ntohs(ptr->Status.PointNumber);
 
                                 if (aPoint.getValue() == STATE_OPENED)
                                 {
-                                    dout << " state of Open ";
+                                    logmsg <<" state of Open ";
                                 }
                                 else
                                 {
-                                    dout << " state of Close ";
+                                    logmsg <<" state of Close ";
                                 }
-                                dout << " to " << getInterfaceName() << endl;;
+
+                                logmsg <<" to "<< getInterfaceName();
+
+                                CTILOG_DEBUG(dout, logmsg);
                             }
                         }
                     }
@@ -578,8 +590,7 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getInterfaceName() << " analog value received with an invalid timestamp " <<  string (data->TimeStamp) << endl;
+                CTILOG_DEBUG(dout, getInterfaceName() <<" analog value received with an invalid timestamp "<< data->TimeStamp);
             }
 
             desc = getInterfaceName() + string (" analog point received with an invalid timestamp ") + string (data->TimeStamp);
@@ -605,11 +616,10 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
 
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Analog point Remote: " << ntohs(data->Value.RemoteNumber);
-                dout << " Category: " << data->Value.CategoryCode;
-                dout << " Point: " << ntohs(data->Value.PointNumber);
-                dout << " value " << value << " from " << getInterfaceName() << " assigned to point " << point.getPointID() << endl;;
+                CTILOG_DEBUG(dout, "Analog point Remote: "<< ntohs(data->Value.RemoteNumber) <<
+                        " Category: "<< data->Value.CategoryCode <<
+                        " Point: "<< ntohs(data->Value.PointNumber) <<
+                        " value "<< value <<" from "<< getInterfaceName() <<" assigned to point "<< point.getPointID());
             }
         }
     }
@@ -619,14 +629,11 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Translation for analog point ";
-                    dout << " Remote: " << ntohs(data->Value.RemoteNumber);
-                    dout << " Category: " << data->Value.CategoryCode;
-                    dout << " Point: " << ntohs(data->Value.PointNumber);
-                    dout << " from " << getInterfaceName() << " was not found" << endl;
-                }
+                CTILOG_DEBUG(dout, "Translation for analog point "<<
+                        " Remote: "<< ntohs(data->Value.RemoteNumber) <<
+                        " Category: "<< data->Value.CategoryCode <<
+                        " Point: "<< ntohs(data->Value.PointNumber) <<
+                        " from "<< getInterfaceName() <<" was not found");
 
                 desc = getInterfaceName() + string (" analog point is not listed in the translation table");
                 _snprintf(action,60,"Remote:%d Category:%c Point:%d",
@@ -638,14 +645,11 @@ int CtiFDR_ACS::processValueMessage(CHAR *aData)
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Analog point ";
-                dout << " Remote: " << ntohs(data->Value.RemoteNumber);
-                dout << " Category: " << data->Value.CategoryCode;
-                dout << " Point: " << ntohs(data->Value.PointNumber);
-                dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
-            }
+            CTILOG_ERROR(dout, "Analog point "<<
+                        " Remote: "<< ntohs(data->Value.RemoteNumber) <<
+                        " Category: "<< data->Value.CategoryCode <<
+                        " Point: "<< ntohs(data->Value.PointNumber) <<
+                        " from "<< getInterfaceName() <<" was mapped incorrectly to non-analog point "<< point.getPointID());
 
             CHAR pointID[20];
             desc = getInterfaceName() + string (" analog point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
@@ -694,15 +698,11 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
 
         if (value == STATE_INVALID)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Status point " ;
-                dout << " Remote: " << ntohs(data->Status.RemoteNumber);
-                dout << " Category: " << data->Status.CategoryCode;
-                dout << " Point: " << ntohs(data->Status.PointNumber);
-                dout << " from " << getInterfaceName() << " has an invalid status code " <<ntohs(data->Status.Value) << endl;
-            }
-
+            CTILOG_ERROR(dout, "Status point "<<
+                    " Remote: "<< ntohs(data->Status.RemoteNumber) <<
+                    " Category: "<< data->Status.CategoryCode <<
+                    " Point: "<< ntohs(data->Status.PointNumber) <<
+                    " from "<< getInterfaceName() <<" has an invalid status code "<< ntohs(data->Status.Value));
 
             CHAR state[20];
             desc = getInterfaceName() + string (" status point received with an invalid state ") + string (itoa (ntohs(data->Status.Value),state,10));
@@ -721,8 +721,7 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
             {
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getInterfaceName() << " status value received with an invalid timestamp " <<  data->TimeStamp << endl;
+                    CTILOG_DEBUG(dout, getInterfaceName() <<" status value received with an invalid timestamp "<< data->TimeStamp);
                 }
 
                 desc = getInterfaceName() + string (" status point received with an invalid timestamp ") + string (data->TimeStamp);
@@ -748,20 +747,23 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
 
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Status point Remote: " << ntohs(data->Status.RemoteNumber);
-                    dout << " Category: " << data->Status.CategoryCode;
-                    dout << " Point: " << ntohs(data->Status.PointNumber);
+                    Cti::StreamBuffer logmsg;
+                    logmsg <<"Status point Remote: "<< ntohs(data->Status.RemoteNumber)
+                           <<" Category: "<< data->Status.CategoryCode
+                           <<" Point: "<< ntohs(data->Status.PointNumber);
+
                     if (value == STATE_OPENED)
                     {
-                        dout << " New state: Open " ;
+                        logmsg <<" New state: Open ";
                     }
                     else
                     {
-                        dout << " New state: Closed " ;
+                        logmsg <<" New state: Closed ";
                     }
 
-                    dout <<" from " << getInterfaceName() << " assigned to point " << point.getPointID() << endl;;
+                    logmsg <<" from "<< getInterfaceName() <<" assigned to point "<< point.getPointID();
+
+                    CTILOG_DEBUG(dout, logmsg);
                 }
             }
         }
@@ -772,14 +774,12 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Translation for status point " ;
-                    dout << " Remote: " << ntohs(data->Status.RemoteNumber);
-                    dout << " Category: " << data->Status.CategoryCode;
-                    dout << " Point: " << ntohs(data->Status.PointNumber);
-                    dout << " from " << getInterfaceName() << " was not found" << endl;
-                }
+                CTILOG_DEBUG(dout, "Translation for status point "<<
+                        " Remote: "<< ntohs(data->Status.RemoteNumber) <<
+                        " Category: "<< data->Status.CategoryCode <<
+                        " Point: "<< ntohs(data->Status.PointNumber) <<
+                        " from "<< getInterfaceName() <<" was not found");
+
                 desc = getInterfaceName() + string (" status point is not listed in the translation table");
                 _snprintf(action,60,"Remote:%d Category:%c Point:%d",
                           ntohs(data->Status.RemoteNumber),
@@ -790,14 +790,11 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Status point " ;
-                dout << " Remote: " << ntohs(data->Status.RemoteNumber);
-                dout << " Category: " << data->Status.CategoryCode;
-                dout << " Point: " << ntohs(data->Status.PointNumber);
-                dout << " from " << getInterfaceName() << " was mapped incorrectly to non-status point " << point.getPointID() << endl;
-            }
+            CTILOG_ERROR(dout, "Status point "<<
+                    " Remote: "<< ntohs(data->Status.RemoteNumber) <<
+                    " Category: "<< data->Status.CategoryCode <<
+                    " Point: "<< ntohs(data->Status.PointNumber) <<
+                    " from "<< getInterfaceName() <<" was mapped incorrectly to non-status point "<< point.getPointID());
 
             CHAR pointID[20];
             desc = getInterfaceName() + string (" status point is incorrectly mapped to point ") + string(ltoa(point.getPointID(),pointID,10));
@@ -843,14 +840,11 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
         // make sure the value is valid
         if (controlState == STATE_INVALID)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Control point " ;
-                dout << " Remote: " << ntohs(data->Status.RemoteNumber);
-                dout << " Category: " << data->Status.CategoryCode;
-                dout << " Point: " << ntohs(data->Status.PointNumber);
-                dout << " from " << getInterfaceName() << " has an invalid control state " <<ntohs(data->Control.Value) << endl;
-            }
+            CTILOG_ERROR(dout, "Control point "<<
+                    " Remote: "<< ntohs(data->Status.RemoteNumber) <<
+                    " Category: "<< data->Status.CategoryCode <<
+                    " Point: "<< ntohs(data->Status.PointNumber) <<
+                    " from " << getInterfaceName() <<" has an invalid control state "<< ntohs(data->Control.Value));
 
             CHAR state[20];
             desc = getInterfaceName() + string (" control point received with an invalid state ") + string (itoa (ntohs(data->Control.Value),state,10));
@@ -876,20 +870,24 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
 
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Control point Remote: " << ntohs(data->Control.RemoteNumber);
-                dout << " Category: " << data->Control.CategoryCode;
-                dout << " Point: " << ntohs(data->Control.PointNumber);
+                Cti::StreamBuffer logmsg;
+
+                logmsg <<"Control point Remote: " << ntohs(data->Control.RemoteNumber);
+                logmsg <<" Category: " << data->Control.CategoryCode;
+                logmsg <<" Point: " << ntohs(data->Control.PointNumber);
+
                 if (controlState == STATE_OPENED)
                 {
-                    dout << " Control: Open " ;
+                    logmsg <<" Control: Open ";
                 }
                 else
                 {
-                    dout << " Control: Closed " ;
+                    logmsg <<" Control: Closed ";
                 }
 
-                dout <<" from " << getInterfaceName() << " and processed for point " << point.getPointID() << endl;;
+                logmsg <<" from "<< getInterfaceName() <<" and processed for point "<< point.getPointID();
+
+                CTILOG_DEBUG(dout, logmsg);
             }
         }
     }
@@ -899,14 +897,12 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Translation for control point " ;
-                    dout << " Remote: " << ntohs(data->Control.RemoteNumber);
-                    dout << " Category: " << data->Control.CategoryCode;
-                    dout << " Point: " << ntohs(data->Control.PointNumber);
-                    dout << " from " << getInterfaceName() << " was not found" << endl;
-                }
+                // FIXME: DEBUG or ERROR?
+                CTILOG_DEBUG(dout, "Translation for control point "<<
+                        " Remote: " << ntohs(data->Control.RemoteNumber) <<
+                        " Category: " << data->Control.CategoryCode <<
+                        " Point: " << ntohs(data->Control.PointNumber) <<
+                        " from " << getInterfaceName() <<" was not found");
 
                 desc = getInterfaceName() + string (" control point is not listed in the translation table");
                 _snprintf(action,60,"Remote:%d Category:%c Point:%d",
@@ -919,15 +915,12 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
         }
         else if (!point.isControllable())
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Control point " ;
-                dout << " Remote: " << ntohs(data->Control.RemoteNumber);
-                dout << " Category: " << data->Control.CategoryCode;
-                dout << " Point: " << ntohs(data->Control.PointNumber);
-                dout << " received from " << getInterfaceName();
-                dout << " was not configured receive for control for point " << point.getPointID() << endl;
-            }
+            CTILOG_ERROR(dout, "Control point "<<
+                    " Remote: " << ntohs(data->Control.RemoteNumber) <<
+                    " Category: " << data->Control.CategoryCode <<
+                    " Point: " << ntohs(data->Control.PointNumber) <<
+                    " received from " << getInterfaceName() <<
+                    " was not configured receive for control for point " << point.getPointID());
 
             desc = getInterfaceName() + string (" control point is not configured to receive controls");
             _snprintf(action,60,"Remote:%d Category:%c Point:%d for pointID %d",
@@ -939,15 +932,12 @@ int CtiFDR_ACS::processControlMessage(CHAR *aData)
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Control point " ;
-                dout << " Remote: " << ntohs(data->Control.RemoteNumber);
-                dout << " Category: " << data->Control.CategoryCode;
-                dout << " Point: " << ntohs(data->Control.PointNumber);
-                dout << " received from " << getInterfaceName();
-                dout << " was mapped to non-control point " <<  point.getPointID() << endl;;
-            }
+            CTILOG_ERROR(dout, "Control point "<<
+                    " Remote: "<< ntohs(data->Control.RemoteNumber) <<
+                    " Category: "<< data->Control.CategoryCode <<
+                    " Point: "<< ntohs(data->Control.PointNumber) <<
+                    " received from "<< getInterfaceName() <<
+                    " was mapped to non-control point "<< point.getPointID());
 
             CHAR pointID[20];
             desc = getInterfaceName() + string (" control point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
@@ -978,9 +968,9 @@ int CtiFDR_ACS::processTimeSyncMessage(CHAR *aData)
     {
         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getInterfaceName() << " time sync request was invalid " <<  string (data->TimeStamp) << endl;
+            CTILOG_DEBUG(dout, getInterfaceName() <<" time sync request was invalid "<< data->TimeStamp);
         }
+
         desc = getInterfaceName() + string (" time sync request was invalid ") + string (data->TimeStamp);
         logEvent (desc,action,true);
         retVal = ClientErrors::Abnormal;
@@ -1038,18 +1028,12 @@ int CtiFDR_ACS::processTimeSyncMessage(CHAR *aData)
                         action = "PC time reset to" + timestamp.asString();
                         logEvent (desc,action,true);
 
-//                        if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getInterfaceName() << "'s request to change PC time to " << timestamp.asString() << " was processed" << endl;
-                        }
+                        CTILOG_INFO(dout, getInterfaceName() <<"'s request to change PC time to "<< timestamp <<" was processed");
                     }
                     else
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Unable to process time change from " << getInterfaceName();
-                        }
+                        CTILOG_ERROR(dout, "Unable to process time change from "<< getInterfaceName());
+
                         desc = getInterfaceName() + "'s request to change PC time to ";
                         desc += timestamp.asString() + " failed";
                         action = string ("System time update API failed");
@@ -1059,10 +1043,8 @@ int CtiFDR_ACS::processTimeSyncMessage(CHAR *aData)
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Unable to process time change from " << getInterfaceName();
-                    }
+                    CTILOG_ERROR(dout, "Unable to process time change from "<< getInterfaceName());
+
                     desc = getInterfaceName() + "'s request to change PC time to ";
                     desc += timestamp.asString() + " failed";
                     action = string ("System time update API failed");
@@ -1072,11 +1054,7 @@ int CtiFDR_ACS::processTimeSyncMessage(CHAR *aData)
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Time change requested from " << getInterfaceName();
-                    dout << " of " << timestamp.asString() << " is outside standard +-30 minutes " << endl;
-                }
+                CTILOG_WARN(dout, "Time change requested from "<< getInterfaceName() <<" of "<< timestamp <<" is outside standard +-30 minutes");
 
                 //log we're way out of whack now
                 desc = getInterfaceName() + "'s request to change PC time to ";

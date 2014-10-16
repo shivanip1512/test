@@ -84,16 +84,17 @@ void CtiProtocolANSI_sentinel::convertToManufacturerTable( BYTE *data, BYTE numB
 
           if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
           {
-                   CtiLockGuard<CtiLogger> doubt_guard(dout);
-                   dout << endl<<"=======================  Clock Related Data =========================" << endl;
-                   dout << "      Days Since Demand Reset      " << _daysSinceDemandReset << endl;
-                   dout << "      Days Since Last Test         " <<_daysSinceLastTest << endl;
-                   dout << "      Time Of Last Outage          " << tempTime1 << endl;
-                   dout << "      Time Of Last Interrogation   " << tempTime2 << endl;
-                   dout << "      Days On Battery              " << _daysOnBattery << endl;
-                   dout << "      Current Battery Reading      " << _currentBatteryReading << endl;
-                   dout << "      Good Battery Reading         " << _goodBatteryReading << endl;
-                   dout << "      DST Configured               " << _dstConfigured << endl << endl;
+              CTILOG_DEBUG(dout,
+                      endl <<"=======================  Clock Related Data ========================="<<
+                      endl <<"      Days Since Demand Reset      "<< _daysSinceDemandReset <<
+                      endl <<"      Days Since Last Test         "<<_daysSinceLastTest <<
+                      endl <<"      Time Of Last Outage          "<< tempTime1 <<
+                      endl <<"      Time Of Last Interrogation   "<< tempTime2 <<
+                      endl <<"      Days On Battery              "<< _daysOnBattery <<
+                      endl <<"      Current Battery Reading      "<< _currentBatteryReading <<
+                      endl <<"      Good Battery Reading         "<< _goodBatteryReading <<
+                      endl <<"      DST Configured               "<< _dstConfigured
+                      );
           }
 
           break;

@@ -884,12 +884,14 @@ CtiRequestMsg* CtiLMGroupBase::createLatchingRequestMsg(bool do_shed, int priori
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime()
-        << " - Sending latch request, LM Group: "
-        << getPAOName() << ", control string: "
-        << control_str << ", priority: "
-        << priority << endl;
+        Cti::FormattedList list;
+
+        list << "Sending latch request";
+        list.add("LM Group")        << getPAOName();
+        list.add("control string")  << control_str;
+        list.add("priority")        << priority;
+
+        CTILOG_DEBUG(dout, list);
     }
     return req_msg;
 }
@@ -917,8 +919,7 @@ CtiCommandMsg* CtiLMGroupBase::createLatchingCommandMsg(LONG rawState, int prior
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Sending base latch command, LM Group: " << getPAOName() << ", raw state: " << rawState << ", priority: " << priority << endl;
+        CTILOG_DEBUG(dout, "Sending base latch command, LM Group: " << getPAOName() << ", raw state: " << rawState << ", priority: " << priority);
     }
     return returnCommandMsg;
 }
@@ -930,10 +931,7 @@ CtiCommandMsg* CtiLMGroupBase::createLatchingCommandMsg(LONG rawState, int prior
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority) const
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not True Cycle a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "Can not True Cycle a non-Expresscom Load Management Group,");
     return NULL;
 }
 
@@ -944,10 +942,7 @@ CtiRequestMsg* CtiLMGroupBase::createTrueCycleRequestMsg(LONG percent, LONG peri
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupBase::createTargetCycleRequestMsg(LONG percent, LONG period, LONG defaultCount, bool no_ramp, int priority, DOUBLE kwh, CtiTime originalTime, const string& additionalInfo) const
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not Target Cycle a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "Can not Target Cycle a non-Expresscom Load Management Group,");
     return NULL;
 }
 
@@ -958,10 +953,7 @@ CtiRequestMsg* CtiLMGroupBase::createTargetCycleRequestMsg(LONG percent, LONG pe
 --------------------------------------------------------------------------*/
 CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(const CtiLMProgramThermostatGear & gear, int priority, std::string & logMessage) const
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not create a Set Point command to a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "Can not create a Set Point command to a non-Expresscom Load Management Group,");
     return NULL;
 }
 
@@ -969,10 +961,7 @@ CtiRequestMsg* CtiLMGroupBase::createSetPointRequestMsg(const CtiLMProgramThermo
 // Only in expresscom.
 CtiRequestMsg* CtiLMGroupBase::createSetPointSimpleMsg(const CtiLMProgramThermostatGear & gear, LONG totalTime, LONG minutesFromBegin, int priority, std::string & logMessage) const
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Can not create a Set Point command to a non-Expresscom Load Management Group, in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    CTILOG_INFO(dout, "Can not create a Set Point command to a non-Expresscom Load Management Group,");
     return NULL;
 }
 
@@ -982,11 +971,8 @@ CtiRequestMsg* CtiLMGroupBase::createStopCycleMsg(LONG period, CtiTime &currentT
 {
     const int priority = 11;
     string controlString = "control terminate";
-    
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " Sending terminate to LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority << endl;
-    }
+
+    CTILOG_INFO(dout, "Sending terminate to LM Group: " << getPAOName() << ", string: " << controlString << ", priority: " << priority);
 
     setLastControlString(controlString);
     setLastControlSent(currentTime);
@@ -1104,8 +1090,7 @@ string CtiLMGroupBase::buildPeriodString(LONG periodTime) const
 BOOL CtiLMGroupBase::doesMasterCycleNeedToBeUpdated(CtiTime currentTime, CtiTime controlEndTime, ULONG offTime)
 {
     /*{
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - PAOId: " << getPAOId() << " Group Type: " << getPAOType() << " does not need to be Master Cycle refreshed." << endl;
+        CTILOG_INFO(dout, "PAOId: " << getPAOId() << " Group Type: " << getPAOType() << " does not need to be Master Cycle refreshed.");
     }*/
     return FALSE;
 }
@@ -1312,10 +1297,7 @@ void CtiLMGroupBase::dumpDynamicData(Cti::Database::DatabaseConnection& conn, Ct
     {
         static const std::string sql_insert = "insert into dynamiclmgroup values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Inserted group into DynamicLMGroup: " << getPAOName() << endl;
-        }
+        CTILOG_INFO(dout, "Inserted group into DynamicLMGroup: " << getPAOName());
 
         Cti::Database::DatabaseWriter   inserter(conn, sql_insert);
 
@@ -1388,8 +1370,7 @@ CtiLMGroupBase& CtiLMGroupBase::setIsRampingIn(bool in)
             // We can't be ramping out and ramping in at the same time!
             if( _LM_DEBUG & LM_DEBUG_STANDARD && getIsRampingOut() )
             {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Load Group: " << getPAOName() << " was ramping out and is now ramping in." <<  endl;
+                CTILOG_DEBUG(dout, "Load Group: " << getPAOName() << " was ramping out and is now ramping in.");
             }
             setIsRampingOut(false);
 
@@ -1416,8 +1397,7 @@ CtiLMGroupBase& CtiLMGroupBase::setIsRampingOut(bool out)
             // We can't be ramping out and ramping in at the same time!
             if( _LM_DEBUG & LM_DEBUG_STANDARD && getIsRampingIn() )
             {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Load Group: " << getPAOName() << " was ramping in and is now ramping out." <<  endl;
+                CTILOG_DEBUG(dout, "Load Group: " << getPAOName() << " was ramping in and is now ramping out.");
             }
             setIsRampingIn(false);
 
@@ -1465,7 +1445,7 @@ void CtiLMGroupBase::updateDailyOps()
 
   Checks whether a group stop at this point would require a command message,
   since the group may have already been told to stop at this time.
- 
+
   Currently only maintained by Digi SEP Group
 -----------------------------------------------------------------------------*/
 bool CtiLMGroupBase::doesStopRequireCommandAt(const CtiTime &currentTime) const

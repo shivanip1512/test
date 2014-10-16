@@ -37,6 +37,8 @@
 #include "dnp_object_binaryinput.h"
 #include "dnp_object_counter.h"
 #include "dnp_objects.h"
+#include "std_helper.h"
+#include "win_helper.h"
 
 using namespace std;
 using namespace Cti::Protocol;
@@ -140,9 +142,7 @@ int CtiFDRDnpSlave::readConfig()
                 _serverNameLookup[serverAddress] = serverName;
                 if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    logNow() << "Added server mapping: " << serverAddress
-                        << " -> " << serverName << endl;
+                    CTILOG_DEBUG(dout, logNow() << "Added server mapping: "<< serverAddress <<" -> "<< serverName);
                 }
             }
         }
@@ -151,19 +151,15 @@ int CtiFDRDnpSlave::readConfig()
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "----------------FDR-DNPSLAVE Configs------------------------------" << endl;
-        dout << "  " << KEY_LISTEN_PORT_NUMBER << ": "
-            << getPortNumber() << endl;
+        Cti::FormattedList loglist;
 
-        dout << "  " << KEY_DB_RELOAD_RATE << ": "
-            << getReloadRate() << endl;
+        loglist.add(KEY_LISTEN_PORT_NUMBER) << getPortNumber();
+        loglist.add(KEY_DB_RELOAD_RATE)     << getReloadRate();
+        loglist.add(KEY_LINK_TIMEOUT)       << getLinkTimeout();
+        loglist.add(KEY_DEBUG_MODE)         << (bool)isInterfaceInDebugMode();
 
-        dout << "  " << KEY_LINK_TIMEOUT << ": "
-            << getLinkTimeout() << "       second(s)" << endl;
-
-        dout << "  " << KEY_DEBUG_MODE << ": "
-            << (isInterfaceInDebugMode() ? "TRUE" : "FALSE") << endl;
+        CTILOG_INFO(dout, "FDRDnpSlave Configs"
+                << loglist);
 
     }
     return successful;
@@ -175,10 +171,9 @@ CtiFDRClientServerConnectionSPtr CtiFDRDnpSlave::createNewConnection(SOCKET newS
 
     if( getpeername(newSocket, &peerAddr._addr.sa, &peerAddr._addrlen) == SOCKET_ERROR )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "CtiFDRDnpSlave::createNewConnection - getpeername() has failed" << endl;
-        }
+        const DWORD error = WSAGetLastError();
+        CTILOG_ERROR(dout, "getpeername() failed with error code: "<< error <<" / "<< Cti::getSystemErrorMessage(error));
+
         return CtiFDRClientServerConnectionSPtr();
     }
 
@@ -333,8 +328,7 @@ int CtiFDRDnpSlave::processMessageFromForeignSystem (Cti::Fdr::ServerConnection&
         {
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                logNow() << " "<< getInterfaceName() <<" received an unsupported DNP message, response not generated. "<< endl;
+                CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" received an unsupported DNP message, response not generated.");
             }
             break;
         }
@@ -355,10 +349,10 @@ int CtiFDRDnpSlave::processDataLinkConfirmationRequest(Cti::Fdr::ServerConnectio
 
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            logNow() << " "<< getInterfaceName() <<" received DNP " << linkMessage <<" request message."<< endl;
-            dumpDNPMessage(CtiFdrDNPInMessageString, data, bufferSize);
+            CTILOG_DEBUG(dout, logNow() <<" "<< getInterfaceName() <<" received DNP " << linkMessage <<" request message."<<
+                    dumpDNPMessage(CtiFdrDNPInMessageString, data, bufferSize));
         }
+
         buffer = new UCHAR[bufferSize];
 
         std::memcpy(buffer, data, bufferSize);
@@ -388,9 +382,8 @@ int CtiFDRDnpSlave::processDataLinkConfirmationRequest(Cti::Fdr::ServerConnectio
         linkMessage = ( linkStatusReq ? "data link acknowledgement" : "ack" );
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            logNow() << " "<< getInterfaceName() <<" sending DNP " << linkMessage << " message."<< endl;
-            dumpDNPMessage(CtiFdrDNPOutMessageString, (CHAR *)buffer, bufferSize);
+            CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" sending DNP "<< linkMessage <<" message."<<
+                    dumpDNPMessage(CtiFdrDNPOutMessageString, (CHAR *)buffer, bufferSize));
         }
     }
     else
@@ -398,8 +391,7 @@ int CtiFDRDnpSlave::processDataLinkConfirmationRequest(Cti::Fdr::ServerConnectio
         //error processing data link confirmation Request
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            logNow() << " "<< getInterfaceName() <<" received an DNP data link confirmation request message, response not generated. "<< endl;
+            CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" received an DNP data link confirmation request message, response not generated.");
         }
         retVal = -1;
     }
@@ -417,9 +409,8 @@ int CtiFDRDnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connect
     CtiXfer xfer = CtiXfer(NULL, 0, (BYTE*)data, getMessageSize(data));
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        logNow() << " "<< getInterfaceName() <<" received DNP scan request message."<< endl;
-        dumpDNPMessage(CtiFdrDNPInMessageString, data, size);
+        CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" received DNP scan request message"<<
+                dumpDNPMessage(CtiFdrDNPInMessageString, data, size));
     }
 
     BYTEUSHORT dest, src;
@@ -488,9 +479,8 @@ int CtiFDRDnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connect
                  std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
                  if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                  {
-                     CtiLockGuard<CtiLogger> dout_guard(dout);
-                     logNow() << " "<< getInterfaceName() <<" sending DNP scan response message."<< endl;
-                     dumpDNPMessage(CtiFdrDNPOutMessageString, buffer, bufferSize);
+                     CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" sending DNP scan response message."<<
+                             dumpDNPMessage(CtiFdrDNPOutMessageString, buffer, bufferSize));
                  }
                  connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
              }
@@ -501,8 +491,7 @@ int CtiFDRDnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connect
          {
              if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
              {
-                 CtiLockGuard<CtiLogger> dout_guard(dout);
-                 logNow() << " "<< getInterfaceName() <<" was not able to generate scan response. "<< endl;
+                 CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" was not able to generate scan response.");
              }
          }
      }
@@ -530,9 +519,8 @@ CtiDnpId CtiFDRDnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
 
     if (masterId.empty() || slaveId.empty() || pointType.empty() || dnpOffset.empty())
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Unable to add destination " << pointDestination
-            << " because one of the fields was blank" << endl;
+        CTILOG_ERROR(dout, logNow() <<"Unable to add destination "<< pointDestination <<" because one of the fields was blank");
+
         dnpId.valid = false;
         return dnpId;
     }
@@ -670,15 +658,14 @@ bool CtiFDRDnpSlave::isScanIntegrityRequest(const char* data, unsigned int size)
     return retVal;
 }
 
-void CtiFDRDnpSlave::dumpDNPMessage(const string dnpDirection, const char* data, unsigned int size)
+std::string CtiFDRDnpSlave::dumpDNPMessage(const string dnpDirection, const char* data, unsigned int size)
 {
-    CtiLockGuard<CtiLogger> dout_guard(dout);
-    logNow() << " "<< getInterfaceName() <<" "<< dnpDirection <<" message:"<< endl;
-    for (int x=0; x < size; x++ )
-    {
-        dout <<" " + CtiNumStr(data[x]).hex().zpad(2).toString();
-    }
-    dout << endl;
+    Cti::StreamBuffer sb;
+
+    sb << endl << dnpDirection <<" message:"
+       << endl << Cti::arrayToRange(reinterpret_cast<const unsigned char*>(data), size);
+
+    return sb;
 }
 
 

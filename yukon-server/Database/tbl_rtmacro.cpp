@@ -49,10 +49,14 @@ CtiTableMacroRoute& CtiTableMacroRoute::operator=(const CtiTableMacroRoute& aRef
     return *this;
 }
 
-void CtiTableMacroRoute::DumpData()
+std::string CtiTableMacroRoute::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << " Macro Standard RouteID / Order             " << getSingleRouteID()  << " / " << getRouteOrder() << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTableMacroRoute";
+    itemList.add("Macro Standard RouteID / Order") << getSingleRouteID() <<" / "<< getRouteOrder();
+
+    return itemList.toString();
 }
 
 LONG  CtiTableMacroRoute::getRouteID() const
@@ -125,8 +129,7 @@ void CtiTableMacroRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["routeid"]       >> RouteID;

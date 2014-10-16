@@ -88,8 +88,7 @@ public:
 
         if(getDebugLevel() & DEBUGLEVEL_DATABASE)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Decoding " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_DEBUG(dout, "Decoding DB reader");
         }
 
         _idlc.DecodeDatabaseReader(rdr);
@@ -119,10 +118,7 @@ public:
 
         if(_trxInfo != NULL)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** UNEXPECTED Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << std::endl;
-            }
+            CTILOG_ERROR(dout, "UNEXPECTED _trxInfo is not NULL");
 
             delete _trxInfo;
         }
@@ -160,13 +156,11 @@ public:
 
         if(getAddress() > 0)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Enabling P: " << getPortID() << " D: " << getID() << " / " << getName() << ". DLC ID: " << getAddress() << std::endl;
+            CTILOG_INFO(dout, "Enabling P: "<< getPortID() <<" D: "<< getID() <<" / "<< getName() <<". DLC ID: "<< getAddress());
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Enabling P: " << getPortID() << " D: " << getID() << " / " << getName() << std::endl;
+            CTILOG_INFO(dout, "Enabling P: "<< getPortID() <<" D: "<< getID() <<" / "<< getName());
         }
 
         return _trxInfo;

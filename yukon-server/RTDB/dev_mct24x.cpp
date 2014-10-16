@@ -220,9 +220,9 @@ void Mct24xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
 
                 if( isDebugLudicrous() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
+                    CTILOG_DEBUG(dout, "command string check for device \""<< getName() <<"\":"<<
+                            endl << tmpOutMess->Request.CommandStr
+                            );
                 }
 
                 outList.push_back(tmpOutMess);
@@ -232,8 +232,7 @@ void Mct24xDevice::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
             {
                 if( isDebugLudicrous() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, "LP scan too early for device \""<< getName() <<"\", aborted");
                 }
             }
         }
@@ -254,9 +253,7 @@ bool Mct24xDevice::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
 
     if( getMCTDebugLevel(DebugLevel_LoadProfile) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "parse.getiValue(\"scan_loadprofile_block\",   0) = " << parse.getiValue("scan_loadprofile_block", 0) << endl;
+        CTILOG_DEBUG(dout, "parse.getiValue(\"scan_loadprofile_block\", 0) = " << parse.getiValue("scan_loadprofile_block", 0));
     }
 
     if( lpBlockAddress = parse.getiValue("scan_loadprofile_block", 0) )
@@ -274,11 +271,7 @@ bool Mct24xDevice::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Improperly formed LP request discarded for \"" << getName() << "\"." << endl;
-        }
+        CTILOG_ERROR(dout, "Improperly formed LP request discarded for \""<< getName() <<"\"");
 
         retVal = false;
     }
@@ -336,11 +329,8 @@ YukonError_t Mct24xDevice::ModelDecode(const INMESS &InMessage, const CtiTime Ti
 
             if( status )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
+                CTILOG_DEBUG(dout, "IM->Sequence = "<< InMessage.Sequence <<" for "<< getName());
             }
-            break;
         }
     }
 
@@ -371,26 +361,17 @@ YukonError_t Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
 
     if( getMCTDebugLevel(DebugLevel_Scanrates | DebugLevel_LoadProfile) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Load Profile Scan Decode for \"" << getName() << "\"");
     }
 
-    if((return_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    return_msg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     return_msg->setUserMessageId(InMessage.Return.UserID);
 
     if( (retrieved_block_num = parse.getiValue("scan_loadprofile_block",   0)) )
     {
         if( isDebugLudicrous() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - retrieved_block_num " << retrieved_block_num << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "retrieved_block_num "<< retrieved_block_num);
         }
 
         retrieved_block_num--;
@@ -431,28 +412,28 @@ YukonError_t Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
 
             if( current_block_num == retrieved_block_num )
             {
+                result_string = "Attempt to decode current load profile block for \"" + getName() + "\" - aborting decode ";
+
                 if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - attempt to decode current load profile block for \"" << getName() << "\" - aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << InMessage.Return.CommandStr << endl;
+                    CTILOG_DEBUG(dout, result_string <<
+                            endl <<"commandstr = "<< InMessage.Return.CommandStr
+                            );
                 }
-
-                result_string = "Attempt to decode current load profile block for \"" + getName() + "\" - aborting decode ";
             }
             else if( retrieved_block_start < getLastLPTime() )
             {
+                result_string  = "Block < lastLPTime for device \"" + getName() + "\" - aborting decode";
+
                 if( getMCTDebugLevel(DebugLevel_LoadProfile) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << InMessage.Return.CommandStr << endl;
-                    dout << "retrieved_block_num = " << retrieved_block_num << endl;
-                    dout << "retrieved_block_start = " << retrieved_block_start << endl;
-                    dout << "lastLPTime = " << getLastLPTime()  << endl;
+                    CTILOG_DEBUG(dout, result_string <<
+                            endl <<"commandstr            = "<< InMessage.Return.CommandStr <<
+                            endl <<"retrieved_block_num   = "<< retrieved_block_num <<
+                            endl <<"retrieved_block_start = "<< retrieved_block_start <<
+                            endl <<"lastLPTime            = "<< getLastLPTime()
+                            );
                 }
-
-                result_string  = "Block < lastLPTime for device \"" + getName() + "\" - aborting decode";
             }
             else
             {
@@ -496,11 +477,11 @@ YukonError_t Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
 
                     if( isDebugLudicrous() )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "value = " << value << endl;
-                        dout << "interval_offset = " << interval_offset << endl;
-                        dout << "timestamp = " << CtiTime(timestamp) << endl;
+                        CTILOG_DEBUG(dout, "load profile debug for \""<< getName() <<"\""<<
+                                endl <<"value           = "<< value <<
+                                endl <<"interval_offset = "<< interval_offset <<
+                                endl <<"timestamp       = "<< CtiTime(timestamp)
+                                );
                     }
 
                     point_data->setTime(timestamp);
@@ -518,14 +499,11 @@ YukonError_t Mct24xDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage.Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
         result_string  = "scan_loadprofile tokens not found in command string \"";
         result_string += InMessage.Return.CommandStr;
         result_string += "\" - cannot proceed with decode, aborting";
+
+        CTILOG_ERROR(dout, result_string);
     }
 
     return_msg->setResultString(result_string);
@@ -544,8 +522,7 @@ YukonError_t Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTi
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** General/Status Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "General/Status Scan Decode for \""<< getName() <<"\"");
     }
 
     resetScanFlag(ScanRateGeneral);
@@ -557,14 +534,7 @@ YukonError_t Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTi
     double Value;
     string rwtemp, disc;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     if( getType() == TYPEMCT250 )
@@ -699,14 +669,7 @@ YukonError_t Mct24xDevice::decodeGetStatusLoadProfile( const INMESS &InMessage, 
 
     const DSTRUCT *DSt = &InMessage.Buffer.DSt;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     resultString  = getName() + " / Load Survey Control Parameters:\n";
@@ -788,16 +751,7 @@ YukonError_t Mct24xDevice::decodeGetConfigModel(const INMESS &InMessage, const C
         options+= string("  Capacitor control\n");
     }
 
-    if( (ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL )
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-        }
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( sspec + options );
 

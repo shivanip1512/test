@@ -1,8 +1,6 @@
 #pragma once
 
-#include <boost/shared_ptr.hpp>
 #include "boostutil.h"
-
 #include "dsm2.h"
 #include "dbmemobject.h"
 #include "cmdparse.h"
@@ -15,6 +13,9 @@
 #include "string_utility.h"
 #include "tbl_static_paoinfo.h"
 #include "encryption.h"
+#include "loggable.h"
+
+#include <boost/shared_ptr.hpp>
 #include <list>
 #include <set>
 #include <string>
@@ -22,7 +23,7 @@
 class CtiRequestMsg;    // Use forward declaration #include "msg_pcrequest.h"
 class CtiReturnMsg;
 
-class IM_EX_DEVDB CtiRouteBase : private boost::noncopyable, public CtiMemDBObject
+class IM_EX_DEVDB CtiRouteBase : private boost::noncopyable, public CtiMemDBObject, public Cti::Loggable
 {
 private:
     // WORKAROUND:
@@ -49,11 +50,14 @@ public:
     /*
      *  Some nice little virtual functinos to make me like life...
      */
-    virtual void DumpData()
+    virtual std::string toString() const override
     {
-        _tblPAO.DumpData();
-        _tblComm.DumpData();
+        Cti::FormattedList itemList;
 
+        itemList << _tblPAO;
+        itemList << _tblComm;
+
+        return itemList.toString();
     }
 
     virtual LONG getTrxDeviceID() const                { return -1L;}

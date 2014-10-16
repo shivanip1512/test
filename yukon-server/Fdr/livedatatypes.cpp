@@ -179,10 +179,8 @@ void LiveDataTypes::IccpBase::setupQualityData()
 
     if (qualIter == qualityLookup.end())
     {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " FDR_LIVEDATA_ICCP_QUALITY_CLASSES has unknown quality: " << temp_str << endl;
-
-      temp = UnknownQuality;
+        CTILOG_WARN(dout, "FDR_LIVEDATA_ICCP_QUALITY_CLASSES has unknown quality: "<< temp_str);
+        temp = UnknownQuality;
     }
     else
     {

@@ -135,10 +135,7 @@ int CtiFDR_Tristate::decodeFile ()
     {
         if (filelength(fileHandle) > 290 || filelength(fileHandle) < 60)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Tristate file failed number of bytes reasonability check -- " << filelength(fileHandle) << endl;
-            }
+            CTILOG_ERROR(dout, "Tristate file failed number of bytes reasonability check -- " << filelength(fileHandle));
 
             desc = getInterfaceName() + string ("'s data file ") + getLocalFileName() + string(" failed size reasonability check");
             logEvent (desc, action);
@@ -151,8 +148,8 @@ int CtiFDR_Tristate::decodeFile ()
             // first of all, read file input
             if ((controlFile = fopen(getLocalFileName().c_str(), "r")) == NULL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Tristate file failed to open after download " << endl;
+                CTILOG_ERROR(dout, "Tristate file failed to open after download");
+
                 retVal = 1;
             }
             else
@@ -233,8 +230,8 @@ int CtiFDR_Tristate::decodeFile ()
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Tristate file failed to open after download " << endl;
+        CTILOG_ERROR(dout, "Tristate file failed to open after download");
+
         retVal = 1;
     }
 
@@ -330,8 +327,7 @@ int CtiFDR_Tristate::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT a30M
 
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " --- Tristate Interface:  Current Load " << aSystemLoad << endl;
+                CTILOG_DEBUG(dout, "Current Load "<< aSystemLoad);
             }
         }
     }
@@ -341,16 +337,14 @@ int CtiFDR_Tristate::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT a30M
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Translation for analog point " << string (KEY_SYSTEM_TOTAL_LABEL);
-                dout << " from " << getInterfaceName() << " was not found" << endl;
+                CTILOG_DEBUG(dout, "Translation for analog point "<< string(KEY_SYSTEM_TOTAL_LABEL) <<" from "<< getInterfaceName() <<
+                        " was not found");
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Analog point " << string (KEY_SYSTEM_TOTAL_LABEL);
-            dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
+            CTILOG_ERROR(dout, "Analog point "<< string(KEY_SYSTEM_TOTAL_LABEL) <<" from "<< getInterfaceName() <<
+                    " was mapped incorrectly to non-analog point " << point.getPointID());
         }
     }
 
@@ -381,8 +375,7 @@ int CtiFDR_Tristate::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT a30M
 
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " --- Tristate Interface:  30 Minute Average " << a30MinuteAvg << endl;
+                CTILOG_DEBUG(dout, "30 Minute Average: "<< a30MinuteAvg);
             }
 
         }
@@ -393,16 +386,14 @@ int CtiFDR_Tristate::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT a30M
         {
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Translation for analog point " << string (KEY_30_MINUTE_AVG_LABEL);
-                dout << " from " << getInterfaceName() << " was not found" << endl;
+                CTILOG_DEBUG(dout, "Translation for analog point "<< string(KEY_30_MINUTE_AVG_LABEL) <<" from "<< getInterfaceName() <<
+                        " was not found");
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Analog point " << string (KEY_30_MINUTE_AVG_LABEL);
-            dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
+            CTILOG_ERROR(dout, "Analog point "<< string(KEY_30_MINUTE_AVG_LABEL) << " from " << getInterfaceName() <<
+                    " was mapped incorrectly to non-analog point " << point.getPointID());
         }
     }
 
@@ -525,14 +516,17 @@ int CtiFDR_Tristate::readConfig( void )
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Tristate server file name " << getServerFileName() << endl;
-        dout << CtiTime() << " Tristate FTP directory " << getFTPDirectory() << endl;
-        dout << CtiTime() << " Tristate download interval " << getDownloadInterval() << endl;
-        dout << CtiTime() << " Tristate number of tries " << getTries() << endl;
-        dout << CtiTime() << " Tristate login " << getLogin() << endl;
-        dout << CtiTime() << " Tristate IP " << getIPAddress() << endl;
-        dout << CtiTime() << " Tristate db reload rate " << getReloadRate() << endl;
+        Cti::FormattedList loglist;
+
+        loglist.add("Tristate server file name")  << getServerFileName();
+        loglist.add("Tristate FTP directory")     << getFTPDirectory();
+        loglist.add("Tristate download interval") << getDownloadInterval();
+        loglist.add("Tristate number of tries")   << getTries();
+        loglist.add("Tristate login")             << getLogin();
+        loglist.add("Tristate IP")                << getIPAddress();
+        loglist.add("Tristate db reload rate")    << getReloadRate();
+
+        CTILOG_DEBUG(dout, loglist);
     }
 
 

@@ -241,10 +241,8 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommandHandshake (CtiXfer  &Transfer,
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateHandshakeAbort);
@@ -280,10 +278,8 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommand (CtiXfer  &Transfer, CtiMessa
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid command "<< getCurrentCommand() <<" scanning "<< getName());
+
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
@@ -439,10 +435,8 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommandScan (CtiXfer  &Transfer, CtiM
 
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
@@ -608,10 +602,8 @@ YukonError_t CtiDeviceLandisGyrS4::generateCommandLoadProfile (CtiXfer  &Transfe
 
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
@@ -637,10 +629,8 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseHandshake (CtiXfer  &Transfer, 
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                 setCurrentState (StateHandshakeAbort);
                 break;
             }
@@ -679,10 +669,8 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponse (CtiXfer  &Transfer, YukonErro
 
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid command "<< getCurrentCommand() <<" scanning "<< getName());
+
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
@@ -713,8 +701,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                 {
                     if (Transfer.doTrace(ClientErrors::Unknown))
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " NAK: (no 0x55) attempting to scan " << getName() << endl;
+                        CTILOG_ERROR(dout, "NAK: (no 0x55) attempting to scan "<< getName());
                     }
 
                     setAttemptsRemaining(getAttemptsRemaining()-1);
@@ -743,8 +730,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
                 {
                     if (Transfer.doTrace(ClientErrors::Unknown))
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " NAK: (no 0xAA) attempting to scan " << getName() << endl;
+                        CTILOG_ERROR(dout, "NAK: (no 0xAA) attempting to scan " << getName());
                     }
 
                     setAttemptsRemaining(getAttemptsRemaining()-1);
@@ -884,11 +870,11 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseScan (CtiXfer  &Transfer, Yukon
             }
         default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
+                setCurrentState (StateScanAbort);
+                retCode = ClientErrors::Abnormal;
             }
-            setCurrentState (StateScanAbort);
-            retCode = ClientErrors::Abnormal;
     }
 
     return retCode;
@@ -914,8 +900,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                 {
                     if (Transfer.doTrace(ClientErrors::Unknown))
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " NAK: (no 0x55) attempting to scan " << getName() << endl;
+                        CTILOG_ERROR(dout, "NAK: (no 0x55) attempting to scan");
                     }
 
                     setAttemptsRemaining(getAttemptsRemaining()-1);
@@ -945,8 +930,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                 {
                     if (Transfer.doTrace(ClientErrors::Unknown))
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " NAK: (no 0xAA) attempting to scan " << getName() << endl;
+                        CTILOG_ERROR(dout, "NAK: (no 0xAA) attempting to scan " << getName());
                     }
 
                     setAttemptsRemaining(getAttemptsRemaining()-1);
@@ -1106,10 +1090,8 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
 
                                     if (localLPConfig->numberOfChannels == 0 || localLPConfig->intervalLength == 0)
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Meter " << getName() << " has no load profile channels configured" << endl;
-                                        }
+                                        CTILOG_ERROR(dout, "Meter "<< getName() <<" has no load profile channels configured");
+
                                         setCommandPacket (getCommandPacket()+5);
                                         setPreviousState (StateScanDecode4);
                                         setCurrentState (StateScanValueSet6);
@@ -1148,10 +1130,8 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "Load profile for "<< getName() <<" will not be collected with this scan");
+
                                     setCommandPacket (getCommandPacket()+5);
                                     setPreviousState (StateScanDecode4);
                                     setCurrentState (StateScanValueSet6);
@@ -1202,15 +1182,35 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
 
                                 if( DebugLevel & 0x0001 )
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout <<"----- S3 Calibration Constants----" << endl;
-                                    dout <<"          Current  Voltage" << endl;
-                                    dout <<"Phase A:    " << localLPConfig->phaseA.currentConstant << "       " << localLPConfig->phaseA.voltageConstant << endl;
-                                    dout <<"Phase B:    " << localLPConfig->phaseB.currentConstant << "       " << localLPConfig->phaseB.voltageConstant << endl;
-                                    dout <<"Phase C:    " << localLPConfig->phaseC.currentConstant << "       " << localLPConfig->phaseC.voltageConstant << endl;
-                                    dout << "Class Code:   "<<localLPConfig->classCode << endl;
-                                    dout << "Voltage Code: "<<localLPConfig->voltageCode << endl;
+                                    Cti::FormattedList itemlist;
+                                    itemlist <<"----- S3 Calibration Constants -----";
+
+                                    {
+                                        Cti::FormattedTable table;
+                                        table.setCell(0,1) <<"Current";
+                                        table.setCell(0,2) <<"Voltage";
+
+                                        table.setCell(1,0) <<"Phase A";
+                                        table.setCell(1,1) << localLPConfig->phaseA.currentConstant;
+                                        table.setCell(1,2) << localLPConfig->phaseA.voltageConstant;
+
+                                        table.setCell(2,0) <<"Phase B";
+                                        table.setCell(2,1) << localLPConfig->phaseB.currentConstant;
+                                        table.setCell(2,2) << localLPConfig->phaseB.voltageConstant;
+
+                                        table.setCell(3,0) <<"Phase C";
+                                        table.setCell(3,1) << localLPConfig->phaseC.currentConstant;
+                                        table.setCell(3,2) << localLPConfig->phaseC.voltageConstant;
+
+                                        itemlist << table;
+                                    }
+
+                                    itemlist.add("Class Code")   << localLPConfig->classCode;
+                                    itemlist.add("Voltage Code") << localLPConfig->voltageCode;
+
+                                    CTILOG_DEBUG(dout, itemlist);
                                 }
+
                                 setPreviousState (StateScanDecode4);
                                 setCurrentState (StateScanValueSet6);
                                 break;
@@ -1237,8 +1237,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
                             }
                         default:
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " (" << __LINE__ << ") Unknown command sent to " << getName() << endl;
+                                CTILOG_ERROR(dout, "Unknown command sent to "<< getName());
                             }
                     }
                 }
@@ -1281,8 +1280,7 @@ YukonError_t CtiDeviceLandisGyrS4::decodeResponseLoadProfile (CtiXfer  &Transfer
             }
         default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
             }
             setCurrentState (StateScanAbort);
             retCode = ClientErrors::Abnormal;
@@ -1300,10 +1298,7 @@ YukonError_t CtiDeviceLandisGyrS4::GeneralScan(CtiRequestMsg     *pReq,
 {
     YukonError_t status = ClientErrors::None;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " General Scan of device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "General Scan of device "<< getName() <<" in progress");
 
     ULONG BytesWritten;
 
@@ -1838,21 +1833,14 @@ YukonError_t CtiDeviceLandisGyrS4::ResultDecode(const INMESS   &InMessage,
     {
         case CmdScanData:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Scan decode for device " << getName() << " in progress " << endl;
-                }
+                CTILOG_INFO(dout, "Scan decode for device "<< getName() <<" in progress ");
 
                 decodeResultScan (InMessage, TimeNow, vgList, retList, outList);
                 break;
             }
         case CmdLoadProfileData:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " LP decode for device " << getName() << " in progress " << endl;
-                }
-
+                CTILOG_INFO(dout, "LP decode for device "<< getName() <<" in progress ");
 
                 // just in case we're getting an empty message
                 if (tmpCurrentState == StateScanReturnLoadProfile)
@@ -1861,20 +1849,14 @@ YukonError_t CtiDeviceLandisGyrS4::ResultDecode(const INMESS   &InMessage,
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " LP decode failed device " << getName() << " invalid state " << endl;
-                    }
+                    CTILOG_ERROR(dout, "LP decode failed device "<< getName() <<" invalid state");
                 }
 
                 break;
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "(" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid decode for "<< getName());
             }
     }
 
@@ -1885,10 +1867,7 @@ YukonError_t CtiDeviceLandisGyrS4::ErrorDecode (const INMESS   &InMessage,
                                                 const CtiTime   TimeNow,
                                                 CtiMessageList &retList)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "ErrorDecode for device "<< getName() <<" in progress");
 
     YukonError_t retCode = ClientErrors::None;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
@@ -2457,11 +2436,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (const INMESS   &InMessage,
                             {
                                 if (expectedLastInterval < getCurrentLPInterval())
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " (" << __LINE__ << ") *** ERROR *** Repeated data possible for " << getName() << endl;
-                                    }
-
+                                    CTILOG_ERROR(dout, "Repeated data possible for " << getName());
                                 }
                                 else
                                 {
@@ -2501,10 +2476,7 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (const INMESS   &InMessage,
                     }
                     else
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Parity calculation failed interval "<<  getCurrentLPInterval() << " channel " << getCurrentLPChannel() << " for " << getName() << endl;
-                        }
+                        CTILOG_ERROR(dout, "Parity calculation failed interval "<< getCurrentLPInterval() <<" channel "<< getCurrentLPChannel() <<" for "<< getName());
                     }
 
                     /********************
@@ -2603,135 +2575,210 @@ INT CtiDeviceLandisGyrS4::decodeResultLoadProfile (const INMESS   &InMessage,
 
 // Routine to display or print the message
 INT CtiDeviceLandisGyrS4::ResultDisplay (const INMESS &InMessage)
-
 {
     const LGS4ScanData_t  *ptr = (const LGS4ScanData_t*) InMessage.Buffer.DUPSt.DUPRep.Message;
 
+    Cti::FormattedList itemList;
+
+    /// meter info ///
+    itemList.add("Meter ID")                        << ptr->Real.deviceID;
+    itemList.add("Unit SN")                         << ptr->Real.serialNumber;
+    itemList.add("Time")                            << ptr->Real.dateTime.hours <<":"<< ptr->Real.dateTime.minutes;
+    itemList.add("Date")                            << ptr->Real.dateTime.month <<"/"<< ptr->Real.dateTime.day <<"/"<< ptr->Real.dateTime.year+2000;
+    itemList.add("Outages")                         << ptr->Real.powerOutages;
+    itemList.add("Demand prev interval")            << ptr->Real.prevIntervalDemand;
+    itemList.add("Selectable Metric prev interval") << ptr->Real.prevIntervalSelectedMetric;
+    itemList.add("Third Metric prev interval")      << ptr->Real.prevIntervalThirdMetric;
+
+    /// phase info ///
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Result display for device " << getName() << " in progress " << endl;
+        Cti::FormattedTable table;
 
-        dout << "Meter ID          :   " << ptr->Real.deviceID << endl;
-        dout << "Unit  SN          :   " << ptr->Real.serialNumber << endl;
-        dout << "Time              :   " << (USHORT)ptr->Real.dateTime.hours << ":" << (USHORT)ptr->Real.dateTime.minutes << endl;
-        dout << "Date              :   " << (USHORT)ptr->Real.dateTime.month << "/" << (USHORT)ptr->Real.dateTime.day <<
-        "/" << (USHORT)ptr->Real.dateTime.year+2000 << endl << endl;
+        table.setCell(0,0) <<"Phase";
+        table.setCell(0,1) <<"Voltage";
+        table.setCell(0,2) <<"Current";
 
-        dout << "Outages           :    " << ptr->Real.powerOutages << endl;
-        dout << "Demand            :    " << ptr->Real.prevIntervalDemand  << endl;
-        dout << "SelectableMetric  :    " << ptr->Real.prevIntervalSelectedMetric  << endl;
-        dout << "ThirdMetric       :    " << ptr->Real.prevIntervalThirdMetric  << endl << endl;
+        table.setCell(1,0) <<"A";
+        table.setCell(1,1) << ptr->Real.phaseAVoltage;
+        table.setCell(1,2) << ptr->Real.phaseACurrent;
 
-        dout << "Phase             Voltage            Current"  << endl;
-        dout << "  A                " << ptr->Real.phaseAVoltage << "            " << ptr->Real.phaseACurrent  << endl;
-        dout << "  B                " << ptr->Real.phaseBVoltage << "            " << ptr->Real.phaseBCurrent  << endl;
-        dout << "  C                " << ptr->Real.phaseCVoltage << "            " << ptr->Real.phaseCCurrent  << endl;
-        dout << "Neutral                               " << ptr->Real.neutralCurrent  << endl << endl;
+        table.setCell(2,0) <<"B";
+        table.setCell(2,1) << ptr->Real.phaseBVoltage;
+        table.setCell(2,2) << ptr->Real.phaseBCurrent;
 
+        table.setCell(3,0) <<"C";
+        table.setCell(3,1) << ptr->Real.phaseCVoltage;
+        table.setCell(3,2) << ptr->Real.phaseCCurrent;
 
-        dout <<"Rate  Time    Date         MaxkW      CDem      PF       kWh"  << endl;
-        dout <<"-----------------------------------------------------------------"  << endl;
-        dout <<"  A  " << (USHORT)ptr->Real.dateTimeRateAMaxkW.hours << ":" << (USHORT)ptr->Real.dateTimeRateAMaxkW.minutes <<
-        "   " << (USHORT)ptr->Real.dateTimeRateAMaxkW.month << "/" << (USHORT)ptr->Real.dateTimeRateAMaxkW.day << "/" <<
-        (USHORT)ptr->Real.dateTimeRateAMaxkW.year+2000 << "     " << ptr->Real.rateAMaxkW << "     " <<
-        ptr->Real.rateACoincidentDemand << "    " << ptr->Real.rateAPowerFactorAtMax << "     " <<
-        ptr->Real.rateAkWh  << endl;
+        table.setCell(4,0) <<"Neutral";
+        table.setCell(4,2) << ptr->Real.neutralCurrent;
 
-        dout <<"  B  " << (USHORT)ptr->Real.dateTimeRateBMaxkW.hours << ":" << (USHORT)ptr->Real.dateTimeRateBMaxkW.minutes <<
-        "   " << (USHORT)ptr->Real.dateTimeRateBMaxkW.month << "/" << (USHORT)ptr->Real.dateTimeRateBMaxkW.day << "/" <<
-        (USHORT)ptr->Real.dateTimeRateBMaxkW.year+2000 << "     " << ptr->Real.rateBMaxkW << "     " <<
-        ptr->Real.rateBCoincidentDemand << "    " << ptr->Real.rateBPowerFactorAtMax << "     " <<
-        ptr->Real.rateBkWh  << endl;
-
-        dout <<"  C  " << (USHORT)ptr->Real.dateTimeRateCMaxkW.hours << ":" << (USHORT)ptr->Real.dateTimeRateCMaxkW.minutes <<
-        "   " << (USHORT)ptr->Real.dateTimeRateCMaxkW.month << "/" << (USHORT)ptr->Real.dateTimeRateCMaxkW.day << "/" <<
-        (USHORT)ptr->Real.dateTimeRateCMaxkW.year+2000 << "     " << ptr->Real.rateCMaxkW << "     " <<
-        ptr->Real.rateCCoincidentDemand << "    " << ptr->Real.rateCPowerFactorAtMax << "     " <<
-        ptr->Real.rateCkWh  << endl;
-
-        dout <<"  D  " << (USHORT)ptr->Real.dateTimeRateDMaxkW.hours << ":" << (USHORT)ptr->Real.dateTimeRateDMaxkW.minutes <<
-        "   " << (USHORT)ptr->Real.dateTimeRateDMaxkW.month << "/" << (USHORT)ptr->Real.dateTimeRateDMaxkW.day << "/" <<
-        (USHORT)ptr->Real.dateTimeRateDMaxkW.year+2000 << "     " << ptr->Real.rateDMaxkW << "     " <<
-        ptr->Real.rateDCoincidentDemand << "    " << ptr->Real.rateDPowerFactorAtMax << "     " <<
-        ptr->Real.rateDkWh  << endl;
-
-        dout <<"  E  " << (USHORT)ptr->Real.dateTimeRateEMaxkW.hours << ":" << (USHORT)ptr->Real.dateTimeRateEMaxkW.minutes <<
-        "   " << (USHORT)ptr->Real.dateTimeRateEMaxkW.month << "/" << (USHORT)ptr->Real.dateTimeRateEMaxkW.day << "/" <<
-        (USHORT)ptr->Real.dateTimeRateEMaxkW.year+2000 << "     " << ptr->Real.rateEMaxkW << "     " <<
-        ptr->Real.rateECoincidentDemand << "    " << ptr->Real.rateEPowerFactorAtMax << "     " <<
-        ptr->Real.rateEkWh  << endl;
-        dout <<"-----------------------------------------------------------------"  << endl;
-        dout <<"                                                         " << ptr->Real.totalkWh  << endl << endl;
-
-        switch (ptr->Real.selectableMetric)
-        {
-            case LGS4_METRIC_KWH:
-                dout << "Selectable Metric:  kwh" << endl;
-                break;
-            case LGS4_METRIC_KVARH:
-                dout << "Selectable Metric:  kvarh" << endl;
-                break;
-            case LGS4_METRIC_RMSKVAH:
-                dout << "Selectable Metric:  kvah" << endl;
-                break;
-            default:
-                dout << "Selectable Metric:  " << ptr->Real.selectableMetric << endl;
-        }
-        dout <<"Rate   Time   Date        MaxkM      kMh"  << endl;
-        dout <<"-----------------------------------------------------------------"  << endl;
-        dout <<"  A  " << (USHORT)ptr->Real.dateTimeRateAMaxkM.hours << ":" << (USHORT)ptr->Real.dateTimeRateAMaxkM.minutes <<
-        "   " << (USHORT)ptr->Real.dateTimeRateAMaxkM.month << "/" << (USHORT)ptr->Real.dateTimeRateAMaxkM.day << "/" <<
-                (USHORT)ptr->Real.dateTimeRateAMaxkM.year+2000 << "     " << ptr->Real.rateAMaxkM << "     " <<
-                ptr->Real.rateAkMh  << endl;
-
-        dout <<"  B  " << (USHORT)ptr->Real.dateTimeRateBMaxkM.hours << ":" << (USHORT)ptr->Real.dateTimeRateBMaxkM.minutes <<
-        "   " << (USHORT)ptr->Real.dateTimeRateBMaxkM.month << "/" << (USHORT)ptr->Real.dateTimeRateBMaxkM.day << "/" <<
-                (USHORT)ptr->Real.dateTimeRateBMaxkM.year+2000 << "     " << ptr->Real.rateBMaxkM << "     " <<
-                ptr->Real.rateBkMh  << endl;
-
-        dout <<"  C  " << (USHORT)ptr->Real.dateTimeRateCMaxkM.hours << ":" << (USHORT)ptr->Real.dateTimeRateCMaxkM.minutes <<
-                "   " << (USHORT)ptr->Real.dateTimeRateCMaxkM.month << "/" << (USHORT)ptr->Real.dateTimeRateCMaxkM.day << "/" <<
-                (USHORT)ptr->Real.dateTimeRateCMaxkM.year+2000 << "     " << ptr->Real.rateCMaxkM << "     " <<
-                ptr->Real.rateCkMh  << endl;
-
-        dout <<"  D  " << (USHORT)ptr->Real.dateTimeRateDMaxkM.hours << ":" << (USHORT)ptr->Real.dateTimeRateDMaxkM.minutes <<
-                "   " << (USHORT)ptr->Real.dateTimeRateDMaxkM.month << "/" << (USHORT)ptr->Real.dateTimeRateDMaxkM.day << "/" <<
-                (USHORT)ptr->Real.dateTimeRateDMaxkM.year+2000 << "     " << ptr->Real.rateDMaxkM << "     " <<
-                ptr->Real.rateDkMh  << endl;
-
-        dout <<"  E  " << (USHORT)ptr->Real.dateTimeRateEMaxkM.hours << ":" << (USHORT)ptr->Real.dateTimeRateEMaxkM.minutes <<
-                "   " << (USHORT)ptr->Real.dateTimeRateEMaxkM.month << "/" << (USHORT)ptr->Real.dateTimeRateEMaxkM.day << "/" <<
-                (USHORT)ptr->Real.dateTimeRateEMaxkM.year+2000 << "     " << ptr->Real.rateEMaxkM << "     " <<
-                ptr->Real.rateEkMh  << endl;
-
-
-        dout <<"-----------------------------------------------------------------"  << endl;
-        dout <<"                                    " << ptr->Real.totalkMh  << endl << endl;
-
-        switch (ptr->Real.thirdMetric)
-        {
-            case LGS4_METRIC_KWH:
-                dout << "Third Metric:  kwh" << endl;
-                break;
-            case LGS4_METRIC_KVARH:
-                dout << "Third Metric:  kvarh" << endl;
-                break;
-            case LGS4_METRIC_RMSKVAH:
-                dout << "Third Metric:  kvah" << endl;
-                break;
-            default:
-                dout << "Third Metric:  " << ptr->Real.thirdMetric << endl;
-        }
-
-        dout <<"     Time     Date        MaxkM3     CDem       PF       kM3h"  << endl;
-        dout <<"-----------------------------------------------------------------"  << endl;
-        dout <<" M3  " << (USHORT)ptr->Real.dateTimeMaxkM3.hours << ":" << (USHORT)ptr->Real.dateTimeMaxkM3.minutes <<
-        "   " << (USHORT)ptr->Real.dateTimeMaxkM3.month << "/" << (USHORT)ptr->Real.dateTimeMaxkM3.day << "/" <<
-            (USHORT)ptr->Real.dateTimeMaxkM3.year+2000 << "     " << ptr->Real.maxkM3 << "     " <<
-            ptr->Real.coincidentkM3atMaxDemand << "    " << ptr->Real.powerFactorAtMaxkM3 << "     " <<
-            ptr->Real.totalkMh3  << endl;
+        itemList << table;
     }
 
+    /// rate kW info ///
+    {
+        Cti::FormattedTable table;
+
+        table.setCell(0,0) <<"Rate";
+        table.setCell(0,1) <<"Time";
+        table.setCell(0,2) <<"Date";
+        table.setCell(0,3) <<"MaxkW";
+        table.setCell(0,4) <<"CDem";
+        table.setCell(0,5) <<"PF";
+        table.setCell(0,6) <<"kWh";
+
+        table.setCell(1,0) <<"A";
+        table.setCell(1,1) << ptr->Real.dateTimeRateAMaxkW.hours <<":"<< ptr->Real.dateTimeRateAMaxkW.minutes;
+        table.setCell(1,2) << ptr->Real.dateTimeRateAMaxkW.month <<"/"<< ptr->Real.dateTimeRateAMaxkW.day <<"/"<< ptr->Real.dateTimeRateAMaxkW.year+2000;
+        table.setCell(1,3) << ptr->Real.rateAMaxkW;
+        table.setCell(1,4) << ptr->Real.rateACoincidentDemand;
+        table.setCell(1,5) << ptr->Real.rateAPowerFactorAtMax;
+        table.setCell(1,6) << ptr->Real.rateAkWh;
+
+        table.setCell(2,0) <<"B";
+        table.setCell(2,1) << ptr->Real.dateTimeRateBMaxkW.hours <<":"<< ptr->Real.dateTimeRateBMaxkW.minutes;
+        table.setCell(2,2) << ptr->Real.dateTimeRateBMaxkW.month <<"/"<< ptr->Real.dateTimeRateBMaxkW.day <<"/"<< ptr->Real.dateTimeRateBMaxkW.year+2000;
+        table.setCell(2,3) << ptr->Real.rateBMaxkW;
+        table.setCell(2,4) << ptr->Real.rateBCoincidentDemand;
+        table.setCell(2,5) << ptr->Real.rateBPowerFactorAtMax;
+        table.setCell(2,6) << ptr->Real.rateBkWh;
+
+        table.setCell(3,0) <<"C";
+        table.setCell(3,1) << ptr->Real.dateTimeRateCMaxkW.hours <<":"<< ptr->Real.dateTimeRateCMaxkW.minutes;
+        table.setCell(3,2) << ptr->Real.dateTimeRateCMaxkW.month <<"/"<< ptr->Real.dateTimeRateCMaxkW.day <<"/"<< ptr->Real.dateTimeRateCMaxkW.year+2000;
+        table.setCell(3,3) << ptr->Real.rateCMaxkW;
+        table.setCell(3,4) << ptr->Real.rateCCoincidentDemand;
+        table.setCell(3,5) << ptr->Real.rateCPowerFactorAtMax;
+        table.setCell(3,6) << ptr->Real.rateCkWh;
+
+        table.setCell(4,0) <<"D";
+        table.setCell(4,1) << ptr->Real.dateTimeRateDMaxkW.hours <<":"<< ptr->Real.dateTimeRateDMaxkW.minutes;
+        table.setCell(4,2) << ptr->Real.dateTimeRateDMaxkW.month <<"/"<< ptr->Real.dateTimeRateDMaxkW.day <<"/"<< ptr->Real.dateTimeRateDMaxkW.year+2000;
+        table.setCell(4,3) << ptr->Real.rateDMaxkW;
+        table.setCell(4,4) << ptr->Real.rateDCoincidentDemand;
+        table.setCell(4,5) << ptr->Real.rateDPowerFactorAtMax;
+        table.setCell(4,6) << ptr->Real.rateDkWh;
+
+        table.setCell(5,0) <<"E";
+        table.setCell(5,1) << ptr->Real.dateTimeRateEMaxkW.hours <<":"<< ptr->Real.dateTimeRateEMaxkW.minutes;
+        table.setCell(5,2) << ptr->Real.dateTimeRateEMaxkW.month <<"/"<< ptr->Real.dateTimeRateEMaxkW.day <<"/"<< ptr->Real.dateTimeRateEMaxkW.year+2000;
+        table.setCell(5,3) << ptr->Real.rateEMaxkW;
+        table.setCell(5,4) << ptr->Real.rateECoincidentDemand;
+        table.setCell(5,5) << ptr->Real.rateEPowerFactorAtMax;
+        table.setCell(5,6) << ptr->Real.rateEkWh;
+
+        itemList << table;
+    }
+
+    /// selectable metric ///
+    {
+        Cti::StreamBuffer sb;
+        switch (ptr->Real.selectableMetric)
+        {
+        case LGS4_METRIC_KWH:
+            sb <<"kwh";
+            break;
+        case LGS4_METRIC_KVARH:
+            sb <<"kvarh";
+            break;
+        case LGS4_METRIC_RMSKVAH:
+            sb <<"kvah";
+            break;
+        default:
+            sb << ptr->Real.selectableMetric;
+        }
+
+        itemList.add("Selectable Metric") << sb;
+    }
+
+    {
+        Cti::FormattedTable table;
+
+        table.setCell(0,0) <<"Rate";
+        table.setCell(0,1) <<"Time";
+        table.setCell(0,2) <<"Date";
+        table.setCell(0,3) <<"MaxkM";
+        table.setCell(0,4) <<"kMh";
+
+        table.setCell(1,0) <<"A";
+        table.setCell(1,1) << ptr->Real.dateTimeRateAMaxkM.hours <<":"<< ptr->Real.dateTimeRateAMaxkM.minutes;
+        table.setCell(1,2) << ptr->Real.dateTimeRateAMaxkM.month <<"/"<< ptr->Real.dateTimeRateAMaxkM.day <<"/"<< ptr->Real.dateTimeRateAMaxkM.year+2000;
+        table.setCell(1,3) << ptr->Real.rateAMaxkM;
+        table.setCell(1,4) << ptr->Real.rateAkMh;
+
+        table.setCell(2,0) <<"B";
+        table.setCell(2,1) << ptr->Real.dateTimeRateBMaxkM.hours <<":"<< ptr->Real.dateTimeRateBMaxkM.minutes;
+        table.setCell(2,2) << ptr->Real.dateTimeRateBMaxkM.month <<"/"<< ptr->Real.dateTimeRateBMaxkM.day <<"/"<< ptr->Real.dateTimeRateBMaxkM.year+2000;
+        table.setCell(2,3) << ptr->Real.rateBMaxkM;
+        table.setCell(2,4) << ptr->Real.rateBkMh;
+
+        table.setCell(3,0) <<"C";
+        table.setCell(3,1) << ptr->Real.dateTimeRateCMaxkM.hours <<":"<< ptr->Real.dateTimeRateCMaxkM.minutes;
+        table.setCell(3,2) << ptr->Real.dateTimeRateCMaxkM.month <<"/"<< ptr->Real.dateTimeRateCMaxkM.day <<"/"<< ptr->Real.dateTimeRateCMaxkM.year+2000;
+        table.setCell(3,3) << ptr->Real.rateCMaxkM;
+        table.setCell(3,4) << ptr->Real.rateCkMh;
+
+        table.setCell(4,0) <<"D";
+        table.setCell(4,1) << ptr->Real.dateTimeRateDMaxkM.hours <<":"<< ptr->Real.dateTimeRateDMaxkM.minutes;
+        table.setCell(4,2) << ptr->Real.dateTimeRateDMaxkM.month <<"/"<< ptr->Real.dateTimeRateDMaxkM.day <<"/"<< ptr->Real.dateTimeRateDMaxkM.year+2000;
+        table.setCell(4,3) << ptr->Real.rateDMaxkM;
+        table.setCell(4,4) << ptr->Real.rateDkMh;
+
+        table.setCell(5,0) <<"E";
+        table.setCell(5,1) << ptr->Real.dateTimeRateEMaxkM.hours <<":"<< ptr->Real.dateTimeRateEMaxkM.minutes;
+        table.setCell(5,2) << ptr->Real.dateTimeRateEMaxkM.month <<"/"<< ptr->Real.dateTimeRateEMaxkM.day <<"/"<< ptr->Real.dateTimeRateEMaxkM.year+2000;
+        table.setCell(5,3) << ptr->Real.rateEMaxkM;
+        table.setCell(5,4) << ptr->Real.rateEkMh;
+
+        itemList << table;
+    }
+
+    /// third metric ///
+    {
+        Cti::StreamBuffer sb;
+        switch (ptr->Real.thirdMetric)
+        {
+        case LGS4_METRIC_KWH:
+            sb <<"kwh";
+            break;
+        case LGS4_METRIC_KVARH:
+            sb <<"kvarh";
+            break;
+        case LGS4_METRIC_RMSKVAH:
+            sb <<"kvah";
+            break;
+        default:
+            sb << ptr->Real.thirdMetric;
+        }
+
+        itemList.add("Third Metric") << sb;
+    }
+
+    {
+        Cti::FormattedTable table;
+
+        table.setCell(0,1) <<"Time";
+        table.setCell(0,2) <<"Date";
+        table.setCell(0,3) <<"MaxkM3";
+        table.setCell(0,4) <<"CDem";
+        table.setCell(0,5) <<"PF";
+        table.setCell(0,6) <<"kM3h";
+
+        table.setCell(1,0) <<"M3";
+        table.setCell(1,1) << ptr->Real.dateTimeMaxkM3.hours <<":"<< ptr->Real.dateTimeMaxkM3.minutes;
+        table.setCell(1,2) << ptr->Real.dateTimeMaxkM3.month <<"/"<< (USHORT)ptr->Real.dateTimeMaxkM3.day <<"/"<< ptr->Real.dateTimeMaxkM3.year+2000;
+        table.setCell(1,3) << ptr->Real.maxkM3;
+        table.setCell(1,4) << ptr->Real.coincidentkM3atMaxDemand;
+        table.setCell(1,5) << ptr->Real.powerFactorAtMaxkM3;
+        table.setCell(1,6) << ptr->Real.totalkMh3;
+
+        itemList << table;
+    }
+
+    CTILOG_INFO(dout, "Result display for device "<< getName() <<
+            itemList
+            );
 
     return ClientErrors::None;
 
@@ -3705,10 +3752,8 @@ BOOL CtiDeviceLandisGyrS4::insertPointIntoReturnMsg (CtiMessage   *aDataPoint,
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "ERROR: " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unexpected return message is Null");
+
         delete aDataPoint;
         aDataPoint = NULL;
         retCode = FALSE;

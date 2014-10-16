@@ -42,9 +42,7 @@ YukonError_t CtiCommandExecutor::ServerExecute(CtiServer *Svr)
     }
     catch(...)
     {
-        {
-            cout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return nRet;

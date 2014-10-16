@@ -72,10 +72,7 @@ static void applyExecutionGrantExpiresIsEvaluateNext(const long key, CtiDeviceSP
         {
             devB->getExclusion().setExecutionGrantExpires( devA->getExclusion().getEvaluateNextAt() );                      // prevent any devB  which may be seleced below from taking our entire slot.
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                slog << CtiTime() << " " << devA->getName() << " requires " << devB->getName() << " to complete by " << devB->getExclusion().getExecutionGrantExpires() << " if grant occurs" << endl;
-            }
+            CTILOG_INFO(slog, devA->getName() <<" requires "<< devB->getName() <<" to complete by "<< devB->getExclusion().getExecutionGrantExpires() <<" if grant occurs");
         }
     }
 }
@@ -95,10 +92,7 @@ static void applyEvaluateNextByExecutingUntil(const long key, CtiDeviceSPtr devB
             devB->getExclusion().setEvaluateNextAt(devA->getExclusion().getExecutingUntil());    // mark out all proximity conflicts to when devA will be done.
             devB->setExecutionProhibited(devA->getID(), devA->getExclusion().getExecutingUntil());
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(slog);
-                slog << CtiTime() << " " << devB->getName() << "'s execution blocked by " << devA->getName() << " until " << devB->getExclusion().getEvaluateNextAt() << endl;
-            }
+            CTILOG_INFO(slog, devB->getName() <<"'s execution blocked by "<< devA->getName() <<" until "<< devB->getExclusion().getEvaluateNextAt());
         }
     }
 }
@@ -234,10 +228,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port
 
     if(_smartMap.empty())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " There are no entries in the remote device list" << endl;
-        }
+        CTILOG_WARN(dout, "There are no entries in the remote device list");
     }
 
     ptr_type p;
@@ -270,10 +261,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteTypeEqual (LONG 
 
     if(_smartMap.empty())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " There are no entries in the remote device list" << endl;
-        }
+        CTILOG_WARN(dout, "There are no entries in the remote device list");
     }
 
     ptr_type p;
@@ -306,10 +294,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortMasterSlaveTypeEqual (
 
     if(_smartMap.empty())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " There are no entries in the remote device list" << endl;
-        }
+        CTILOG_WARN(dout, "There are no entries in the remote device list");
     }
 
     ptr_type p;
@@ -349,8 +334,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::getDeviceByID (LONG Dev)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return p;
 }
@@ -379,10 +363,7 @@ void CtiDeviceManager::getDevicesByPortID(long portid, vector<ptr_type> &devices
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - CtiDeviceManager::getDevicesByPortID() - deviceid " << *id_itr << " not in map, port id = " << portid << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "deviceid "<< *id_itr <<" not in map, port id = "<< portid);
 
                 port_deviceids.erase(*id_itr);
             }
@@ -416,10 +397,7 @@ void CtiDeviceManager::getDevicesByType(int type, vector<ptr_type> &devices)
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " - CtiDeviceManager::getDevicesByType() - deviceid " << *id_itr << " not in map, type = " << type << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "deviceid "<< *id_itr <<" not in map, type = "<< type);
 
                 type_deviceids.erase(*id_itr);
             }
@@ -469,8 +447,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqualbyName (const string 
 
     if(_smartMap.empty())
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " There are no entries in the device manager list" << endl;
+        CTILOG_WARN(dout, "There are no entries in the device manager list");
     }
 
     spiterator itr = find_if(begin(), end(), device_name_equal(RemoteName));
@@ -501,10 +478,7 @@ void CtiDeviceManager::refreshDeviceByID(LONG paoID, string category, string dev
 {
     if( ! paoID )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** - PaoId = 0 in CtiDeviceManager::refreshDeviceByID(), calling refreshAllDevices() " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_WARN(dout, "PaoId = 0, calling refreshAllDevices()");
 
         return refreshAllDevices();
     }
@@ -517,17 +491,13 @@ void CtiDeviceManager::refreshDeviceByID(LONG paoID, string category, string dev
         {
             coll_type::writer_lock_guard_t guard(getLock());
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << pDev->getName() << " has changed type to " << devicetype << " from " << desolveDeviceType(pDev->getType()) << endl;
-            }
+            CTILOG_INFO(dout, pDev->getName() <<" has changed type to "<< devicetype <<" from "<< desolveDeviceType(pDev->getType()));
 
             if( CtiDeviceSPtr orphanedDevice = _smartMap.remove(paoID) )
             {
                 if( DebugLevel & 0x00020000)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Old device object has been orphaned " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, "Old device object has been orphaned");
                 }
 
                 removeAssociations(*orphanedDevice);
@@ -600,13 +570,13 @@ bool CtiDeviceManager::loadDeviceType(Cti::Database::id_set &paoids, const strin
 
     retVal = refreshDevices(rdr);
 
-    if( DebugLevel & 0x00020000 || !rdr.isValid() )
+    if( ! rdr.isValid() )
     {
-        string loggedSQLstring = rdr.asString(); //selector.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << loggedSQLstring << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed: "<< rdr.asString());
+    }
+    else if( DebugLevel & 0x00020000 )
+    {
+        CTILOG_DEBUG(dout, "DB read: "<< rdr.asString());
     }
 
     return retVal;
@@ -619,195 +589,172 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
 
     bool rowFound = false;
 
-    try
+    if( paoids.empty() )
     {
-        if( paoids.empty() )
+        //  Reset everyone's Updated flag if not a directed load - this allows us to purge nonexistent entries later
+        apply(applyDeviceResetUpdated, NULL);
+    }
+    else
+    {
+        coll_type::writer_lock_guard_t guard(getLock());
+
+        Cti::Database::id_set_itr paoid_itr = paoids.begin();
+
+        while( paoid_itr != paoids.end() )
         {
-            //  Reset everyone's Updated flag if not a directed load - this allows us to purge nonexistent entries later
-            apply(applyDeviceResetUpdated, NULL);
+            CtiDeviceSPtr dev = getDeviceByID(*paoid_itr++);
+
+            if( dev )  dev->resetUpdatedFlag();
         }
-        else
+    }
+
+    resetErrorCode();
+
+    CtiDeviceBase *deviceTemplate = 0;
+
+    if( deviceType )
+    {
+        deviceTemplate = createDeviceType(deviceType);
+    }
+
+    int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_DEVICE_SELECT", 256);
+
+    {
+        Cti::Database::id_set_itr paoid_itr = paoids.begin();
+
+        //  I don't really like the do-while construct, but this loop must happen at least once even if no paoids were passed in
+        do
         {
-            coll_type::writer_lock_guard_t guard(getLock());
+            int subset_size = min(distance(paoid_itr, paoids.end()), max_ids_per_select);
 
-            Cti::Database::id_set_itr paoid_itr = paoids.begin();
+            //  note the iterator difference/addition - requires a random-access iterator...
+            //    trait tags could be useful here except that VC6 doesn't support template member functions
+            Cti::Database::id_set_itr subset_end = paoid_itr;
+            advance(subset_end, subset_size);
+            Cti::Database::id_set paoid_subset(paoid_itr, subset_end);
 
-            while( paoid_itr != paoids.end() )
+            if( deviceTemplate )
             {
-                CtiDeviceSPtr dev = getDeviceByID(*paoid_itr++);
-
-                if( dev )  dev->resetUpdatedFlag();
-            }
-        }
-
-        resetErrorCode();
-
-        CtiDeviceBase *deviceTemplate = 0;
-
-        if( deviceType )
-        {
-            deviceTemplate = createDeviceType(deviceType);
-        }
-
-        int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_DEVICE_SELECT", 256);
-
-        {
-            Cti::Database::id_set_itr paoid_itr = paoids.begin();
-
-            //  I don't really like the do-while construct, but this loop must happen at least once even if no paoids were passed in
-            do
-            {
-                int subset_size = min(distance(paoid_itr, paoids.end()), max_ids_per_select);
-
-                //  note the iterator difference/addition - requires a random-access iterator...
-                //    trait tags could be useful here except that VC6 doesn't support template member functions
-                Cti::Database::id_set_itr subset_end = paoid_itr;
-                advance(subset_end, subset_size);
-                Cti::Database::id_set paoid_subset(paoid_itr, subset_end);
-
-                if( deviceTemplate )
-                {
-                    //  type-specific directed load
-                    rowFound |= loadDeviceType(paoid_subset, "directed load", *deviceTemplate);
-                }
-                else
-                {
-                    rowFound |= loadDeviceType(paoid_subset, "DLC devices", Devices::CarrierDevice(), "LCR-3102", false);
-                    rowFound |= loadDeviceType(paoid_subset, "LCR-3102 devices", Devices::Lcr3102Device(), "LCR-3102", true);
-
-                    if( !MctDevice::isMct410(deviceType) )
-                    {
-                        rowFound |= loadDeviceType(paoid_subset, "Grid Advisor devices",   CtiDeviceGridAdvisor());
-
-                        rowFound |= loadDeviceType(paoid_subset, "Sixnet IEDs",            CtiDeviceIED(),         "SIXNET");
-                        rowFound |= loadDeviceType(paoid_subset, "Meters and IEDs",        CtiDeviceMeter());
-
-                        //  prevent the LMI from being loaded twice
-                        rowFound |= loadDeviceType(paoid_subset, "DNP/ION devices",        Devices::DnpDevice(),          "RTU-LMI", false);
-                        rowFound |= loadDeviceType(paoid_subset, "LMI RTUs",               CtiDeviceLMI());
-                        rowFound |= loadDeviceType(paoid_subset, "RTM devices",            CtiDeviceIED(),         "RTM");
-
-                        rowFound |= loadDeviceType(paoid_subset, "TAP devices",            Devices::DevicePaging());
-                        rowFound |= loadDeviceType(paoid_subset, "TNPP devices",           CtiDeviceTnppPagingTerminal());
-                        rowFound |= loadDeviceType(paoid_subset, "RDS devices",            Devices::RDSTransmitter(),     "RDS TERMINAL");
-
-                        //  exclude the CCU 721
-                        rowFound |= loadDeviceType(paoid_subset, "IDLC target devices",    CtiDeviceIDLC(),        "CCU-721", false);
-                        rowFound |= loadDeviceType(paoid_subset, "CCU-721 devices",        Devices::Ccu721Device());
-
-                        rowFound |= loadDeviceType(paoid_subset, "MCT broadcast devices",  Devices::MctBroadcastDevice());
-
-                        rowFound |= loadDeviceType(paoid_subset, "Repeater 800 devices",   Devices::DlcBaseDevice(),     "REPEATER 800");
-                        rowFound |= loadDeviceType(paoid_subset, "Repeater 801 devices",   Devices::DlcBaseDevice(),     "REPEATER 801");
-                        rowFound |= loadDeviceType(paoid_subset, "Repeater 850 devices",   Devices::DlcBaseDevice(),     "REPEATER 850");
-                        rowFound |= loadDeviceType(paoid_subset, "Repeater 900 devices",   Devices::DlcBaseDevice(),     "REPEATER");
-                        rowFound |= loadDeviceType(paoid_subset, "Repeater 902 devices",   Devices::DlcBaseDevice(),     "REPEATER 902");
-                        rowFound |= loadDeviceType(paoid_subset, "Repeater 921 devices",   Devices::DlcBaseDevice(),     "REPEATER 921");
-
-                        rowFound |= loadDeviceType(paoid_subset, "RFN devices",            Devices::RfnDevice());
-
-                        rowFound |= loadDeviceType(paoid_subset, "CBC devices",            CtiDeviceCBC());
-                        rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
-
-                        rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
-                        rowFound |= loadDeviceType(paoid_subset, "Versacom groups",        CtiDeviceGroupVersacom());
-                        rowFound |= loadDeviceType(paoid_subset, "Expresscom groups",      CtiDeviceGroupExpresscom());
-                        rowFound |= loadDeviceType(paoid_subset, "RFN Expresscom groups",  CtiDeviceGroupRfnExpresscom());
-                        rowFound |= loadDeviceType(paoid_subset, "Ripple groups",          CtiDeviceGroupRipple());
-
-                        rowFound |= loadDeviceType(paoid_subset, "MCT load groups",        CtiDeviceGroupMCT());
-
-                        rowFound |= loadDeviceType(paoid_subset, "105 groups",             CtiDeviceGroupSA105());
-                        rowFound |= loadDeviceType(paoid_subset, "205 groups",             CtiDeviceGroupSA205());
-                        rowFound |= loadDeviceType(paoid_subset, "305 groups",             CtiDeviceGroupSA305());
-                        rowFound |= loadDeviceType(paoid_subset, "SA Digital groups",      CtiDeviceGroupSADigital());
-                        rowFound |= loadDeviceType(paoid_subset, "Golay groups",           CtiDeviceGroupGolay());
-
-                        rowFound |= loadDeviceType(paoid_subset, "Macro devices",          CtiDeviceMacro());
-
-                        //  should not be done in Scanner
-                        rowFound |= refreshPointGroups(paoid_subset);
-
-                        rowFound |= loadDeviceType(paoid_subset, "System devices",         CtiDeviceBase(),        "SYSTEM");
-                    }
-                }
-
-                // Now load the device properties onto the devices
-                refreshDeviceProperties(paoid_subset, deviceType);
-
-                advance(paoid_itr, subset_size);
-
-            } while( paoid_itr != paoids.end() );
-        }
-
-        if( deviceTemplate )
-        {
-            delete deviceTemplate;
-        }
-
-        {
-            Timing::DebugTimer timer("removing invalidated devices ");
-
-            std::vector<CtiDeviceSPtr> evictedDevices;
-
-            //  If this was a "reload all"...
-            if( paoids.empty() )
-            {
-                //  ...make sure we loaded something before we evict any records
-                if( rowFound )
-                {
-                    evictedDevices = _smartMap.findAll(boost::bind(&CtiDeviceManager::shouldDiscardDevice, this, _1));
-                }
+                //  type-specific directed load
+                rowFound |= loadDeviceType(paoid_subset, "directed load", *deviceTemplate);
             }
             else
             {
-                for each( const long paoid in paoids )
+                rowFound |= loadDeviceType(paoid_subset, "DLC devices", Devices::CarrierDevice(), "LCR-3102", false);
+                rowFound |= loadDeviceType(paoid_subset, "LCR-3102 devices", Devices::Lcr3102Device(), "LCR-3102", true);
+
+                if( !MctDevice::isMct410(deviceType) )
                 {
-                    if( CtiDeviceSPtr dev = getDeviceByID(paoid) )
-                    {
-                        if( shouldDiscardDevice(dev) )
-                        {
-                            evictedDevices.push_back(dev);
-                        }
-                    }
+                    rowFound |= loadDeviceType(paoid_subset, "Grid Advisor devices",   CtiDeviceGridAdvisor());
+
+                    rowFound |= loadDeviceType(paoid_subset, "Sixnet IEDs",            CtiDeviceIED(),         "SIXNET");
+                    rowFound |= loadDeviceType(paoid_subset, "Meters and IEDs",        CtiDeviceMeter());
+
+                    //  prevent the LMI from being loaded twice
+                    rowFound |= loadDeviceType(paoid_subset, "DNP/ION devices",        Devices::DnpDevice(),          "RTU-LMI", false);
+                    rowFound |= loadDeviceType(paoid_subset, "LMI RTUs",               CtiDeviceLMI());
+                    rowFound |= loadDeviceType(paoid_subset, "RTM devices",            CtiDeviceIED(),         "RTM");
+
+                    rowFound |= loadDeviceType(paoid_subset, "TAP devices",            Devices::DevicePaging());
+                    rowFound |= loadDeviceType(paoid_subset, "TNPP devices",           CtiDeviceTnppPagingTerminal());
+                    rowFound |= loadDeviceType(paoid_subset, "RDS devices",            Devices::RDSTransmitter(),     "RDS TERMINAL");
+
+                    //  exclude the CCU 721
+                    rowFound |= loadDeviceType(paoid_subset, "IDLC target devices",    CtiDeviceIDLC(),        "CCU-721", false);
+                    rowFound |= loadDeviceType(paoid_subset, "CCU-721 devices",        Devices::Ccu721Device());
+
+                    rowFound |= loadDeviceType(paoid_subset, "MCT broadcast devices",  Devices::MctBroadcastDevice());
+
+                    rowFound |= loadDeviceType(paoid_subset, "Repeater 800 devices",   Devices::DlcBaseDevice(),     "REPEATER 800");
+                    rowFound |= loadDeviceType(paoid_subset, "Repeater 801 devices",   Devices::DlcBaseDevice(),     "REPEATER 801");
+                    rowFound |= loadDeviceType(paoid_subset, "Repeater 850 devices",   Devices::DlcBaseDevice(),     "REPEATER 850");
+                    rowFound |= loadDeviceType(paoid_subset, "Repeater 900 devices",   Devices::DlcBaseDevice(),     "REPEATER");
+                    rowFound |= loadDeviceType(paoid_subset, "Repeater 902 devices",   Devices::DlcBaseDevice(),     "REPEATER 902");
+                    rowFound |= loadDeviceType(paoid_subset, "Repeater 921 devices",   Devices::DlcBaseDevice(),     "REPEATER 921");
+
+                    rowFound |= loadDeviceType(paoid_subset, "RFN devices",            Devices::RfnDevice());
+
+                    rowFound |= loadDeviceType(paoid_subset, "CBC devices",            CtiDeviceCBC());
+                    rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
+
+                    rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
+                    rowFound |= loadDeviceType(paoid_subset, "Versacom groups",        CtiDeviceGroupVersacom());
+                    rowFound |= loadDeviceType(paoid_subset, "Expresscom groups",      CtiDeviceGroupExpresscom());
+                    rowFound |= loadDeviceType(paoid_subset, "RFN Expresscom groups",  CtiDeviceGroupRfnExpresscom());
+                    rowFound |= loadDeviceType(paoid_subset, "Ripple groups",          CtiDeviceGroupRipple());
+
+                    rowFound |= loadDeviceType(paoid_subset, "MCT load groups",        CtiDeviceGroupMCT());
+
+                    rowFound |= loadDeviceType(paoid_subset, "105 groups",             CtiDeviceGroupSA105());
+                    rowFound |= loadDeviceType(paoid_subset, "205 groups",             CtiDeviceGroupSA205());
+                    rowFound |= loadDeviceType(paoid_subset, "305 groups",             CtiDeviceGroupSA305());
+                    rowFound |= loadDeviceType(paoid_subset, "SA Digital groups",      CtiDeviceGroupSADigital());
+                    rowFound |= loadDeviceType(paoid_subset, "Golay groups",           CtiDeviceGroupGolay());
+
+                    rowFound |= loadDeviceType(paoid_subset, "Macro devices",          CtiDeviceMacro());
+
+                    //  should not be done in Scanner
+                    rowFound |= refreshPointGroups(paoid_subset);
+
+                    rowFound |= loadDeviceType(paoid_subset, "System devices",         CtiDeviceBase(),        "SYSTEM");
                 }
             }
 
-            if( ! evictedDevices.empty() )
-            {
-                //  We need to grab the writer lock since we're modifying the associations.
-                coll_type::writer_lock_guard_t guard(getLock());
+            // Now load the device properties onto the devices
+            refreshDeviceProperties(paoid_subset, deviceType);
 
-                for each( CtiDeviceSPtr evictedDevice in evictedDevices )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Evicting \"" << evictedDevice->getName() << "\" from list" << endl;
-                    }
+            advance(paoid_itr, subset_size);
 
-                    removeAssociations(*evictedDevice);
-
-                    _smartMap.remove(evictedDevice->getID());
-                }
-            }
-        }
+        } while( paoid_itr != paoids.end() );
     }
-    catch(RWExternalErr e )
+
+    if( deviceTemplate )
     {
-        //Make sure the list is cleared
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Attempting to clear device list..." << endl;
-        }
-        deleteList();
+        delete deviceTemplate;
+    }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " getDevices:  " << e.why() << endl;
-        }
-        RWTHROW(e);
+    {
+        Timing::DebugTimer timer("removing invalidated devices ");
 
+        std::vector<CtiDeviceSPtr> evictedDevices;
+
+        //  If this was a "reload all"...
+        if( paoids.empty() )
+        {
+            //  ...make sure we loaded something before we evict any records
+            if( rowFound )
+            {
+                evictedDevices = _smartMap.findAll(boost::bind(&CtiDeviceManager::shouldDiscardDevice, this, _1));
+            }
+        }
+        else
+        {
+            for each( const long paoid in paoids )
+            {
+                if( CtiDeviceSPtr dev = getDeviceByID(paoid) )
+                {
+                    if( shouldDiscardDevice(dev) )
+                    {
+                        evictedDevices.push_back(dev);
+                    }
+                }
+            }
+        }
+
+        if( ! evictedDevices.empty() )
+        {
+            //  We need to grab the writer lock since we're modifying the associations.
+            coll_type::writer_lock_guard_t guard(getLock());
+
+            for each( CtiDeviceSPtr evictedDevice in evictedDevices )
+            {
+                CTILOG_INFO(dout, "Evicting \""<< evictedDevice->getName() <<"\" from list");
+
+                removeAssociations(*evictedDevice);
+
+                _smartMap.remove(evictedDevice->getID());
+            }
+        }
     }
 }
 
@@ -862,26 +809,10 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
 
                         if( anxiousDevice->getExclusion().isTimeExclusionOpen() )
                         {
-                            // The window is open.  All proximity devices should eventually clear out of our way.
-                            if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Device " << anxiousDevice->getName() << " is in its execution window, checking proximity conflicts." << endl;
-                                dout << "   CycleTime " << anxiousDevice->getExclusion().getCycleTimeExclusion().getCycleTime() <<
-                                    ", Offset " << anxiousDevice->getExclusion().getCycleTimeExclusion().getCycleOffset() <<
-                                    ", Duration " << anxiousDevice->getExclusion().getCycleTimeExclusion().getTransmitTime() << endl;
-                            }
-
                             mayExecute = true;      // Provided no proximity exclusion is executing, we can go!
                         }
                         else
                         {
-                            if(0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Device " << anxiousDevice->getName() << " is outside its execution window and will execute at " << open << " - " << close << endl;
-                            }
-
                             deviceexclusion = anxiousDevice->getExclusion().getCycleTimeExclusion();                             // Pass this out to the callee as the device which blocked us first!
                             blocked = true;          // Window is closed!
                             mayExecute = false;     // Cannot execute.
@@ -910,8 +841,11 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                     {
                                         if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                                         {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Device: " << anxiousDevice->getName() << " Port: " << anxiousDevice->getPortID() << " cannot execute because device " << device->getName() << " port: " << device->getPortID() << " is executing.  TID: " << GetCurrentThreadId() << endl;
+                                            CTILOG_DEBUG(dout, "Device: "<< anxiousDevice->getName() <<
+                                                    " Port: "<< anxiousDevice->getPortID() <<
+                                                    " cannot execute because device "<< device->getName() <<
+                                                    " port: "<< device->getPortID() <<" is executing"
+                                                    );
                                         }
                                         deviceexclusion = paox;     // Pass this out to the callee as the device which blocked us first!
                                         anxiousDeviceBlocksThisVector.clear();  // Cannot use the list to block other devices.
@@ -923,15 +857,13 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                                     {
                                         if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                                         {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Device: " << anxiousDevice->getName()
-                                                              << " Port: " << anxiousDevice->getPortID()
-                                                              << " Priority: " << requestPriority
-                                                              << " cannot execute because "
-                                                              << " device " << device->getName()
-                                                              << " port: " << device->getPortID()
-                                                              << " priority: " <<  deviceMaxWaitingPriority
-                                                              << " is executing.  TID: " << GetCurrentThreadId() << endl;
+                                            CTILOG_DEBUG(dout, "Device: "<< anxiousDevice->getName() <<
+                                                    " Port: "<< anxiousDevice->getPortID() <<
+                                                    " Priority: "<< requestPriority <<
+                                                    " cannot execute because device "<< device->getName() <<
+                                                    " port: "<< device->getPortID() <<
+                                                    " priority: "<<  deviceMaxWaitingPriority
+                                                    );
                                         }
                                         deviceexclusion = paox;     // Pass this out to the callee as the device which blocked us first!
                                         anxiousDeviceBlocksThisVector.clear();  // Cannot use the list to block other devices.
@@ -957,10 +889,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                             }
                         default:
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
+                                CTILOG_ERROR(dout, "invalid function id ("<< paox.getFunctionId() <<")");
                                 break;
                             }
                         }
@@ -985,8 +914,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
                         {
                             if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Device " << device->getName() << " prohibited because " << anxiousDevice->getName() << " is executing" << endl;
+                                CTILOG_DEBUG(dout, "Device "<< device->getName() <<" prohibited because "<< anxiousDevice->getName() <<" is executing");
                             }
                             procnt++;
                             device = *xitr;
@@ -995,8 +923,7 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
 
                         if(getDebugLevel() & DEBUGLEVEL_EXCLUSIONS)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << anxiousDevice->getName() << " caused  " << procnt << " devices to be blocked because it is executing" << endl;
+                            CTILOG_DEBUG(dout, anxiousDevice->getName() <<" caused  "<< procnt <<" devices to be blocked because it is executing");
                         }
                         mayExecute = true;
                     }
@@ -1009,19 +936,13 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
 
             if(mayExecute)
             {
-                if( 0 && getDebugLevel() & DEBUGLEVEL_EXCLUSIONS && anxiousDevice->hasExclusions() )
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device " << anxiousDevice->getName() << " is clear to execute" << endl;
-                }
                 anxiousDevice->setExecuting(true, anxiousDevice->selectCompletionTime());                    // Mark ourselves as executing!
             }
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return mayExecute;
@@ -1084,14 +1005,8 @@ void CtiDeviceManager::removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice)
                 {
                     if( getDebugLevel() & DEBUGLEVEL_EXCLUSIONS )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Device " << device->getName() << " no longer prohibited because of " << anxiousDevice->getName() << "." << endl;
-                        }
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << CtiTime() << " Device " << device->getName() << " no longer prohibited because of " << anxiousDevice->getName() << "." << endl;
-                        }
+                        CTILOG_DEBUG(dout, "Device "<< device->getName() <<" no longer prohibited because of "<< anxiousDevice->getName());
+                        CTILOG_DEBUG(slog, "Device "<< device->getName() <<" no longer prohibited because of "<< anxiousDevice->getName());
                     }
                 }
             }
@@ -1101,8 +1016,7 @@ void CtiDeviceManager::removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1176,8 +1090,7 @@ void CtiDeviceManager::refreshExclusions(Cti::Database::id_set &paoids)
 
     if(DebugLevel & 0x00020000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Looking for Device Exclusions" << endl;
+        CTILOG_DEBUG(dout, "Looking for Device Exclusions");
     }
 
     static const string sqlCore = CtiTablePaoExclusion::getSQLCoreStatement();
@@ -1196,13 +1109,13 @@ void CtiDeviceManager::refreshExclusions(Cti::Database::id_set &paoids)
 
     rdr.execute();
 
-    if(DebugLevel & 0x00020000)
+    if( ! rdr.isValid() )
     {
-        string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << loggedSQLstring << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed: "<< rdr.asString());
+    }
+    else if( DebugLevel & 0x00020000 )
+    {
+        CTILOG_DEBUG(dout, "DB read: "<< rdr.asString());
     }
 
     if(rdr.isValid())
@@ -1262,8 +1175,7 @@ void CtiDeviceManager::refreshExclusions(Cti::Database::id_set &paoids)
 
     if(DebugLevel & 0x00020000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Done looking for Device Exclusions" << endl;
+        CTILOG_DEBUG(dout, "Done looking for Device Exclusions");
     }
 }
 
@@ -1277,7 +1189,7 @@ void CtiDeviceManager::refreshIONMeterGroups(Cti::Database::id_set &paoids)
 
     if(DebugLevel & 0x00020000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for ION Meter Groups" << endl;
+        CTILOG_DEBUG(dout, "Looking for ION Meter Groups");
     }
 
     static const string sqlCore = "SELECT DMG.DeviceID, DMG.MeterNumber "
@@ -1298,13 +1210,13 @@ void CtiDeviceManager::refreshIONMeterGroups(Cti::Database::id_set &paoids)
 
     rdr.execute();
 
-    if(DebugLevel & 0x00020000 || !rdr.isValid())
+    if( ! rdr.isValid() )
     {
-        string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << loggedSQLstring << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else if( DebugLevel & 0x00020000 )
+    {
+        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
     }
 
     if(rdr.isValid())
@@ -1324,14 +1236,12 @@ void CtiDeviceManager::refreshIONMeterGroups(Cti::Database::id_set &paoids)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Error reading ION Meter Groups from database" << endl;
+        CTILOG_ERROR(dout, "Could not read ION Meter Groups from database");
     }
 
     if(DebugLevel & 0x00020000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for ION Meter Groups" << endl;
+        CTILOG_DEBUG(dout, "Done looking for ION Meter Groups");
     }
 }
 
@@ -1344,7 +1254,7 @@ void CtiDeviceManager::refreshMacroSubdevices(Cti::Database::id_set &paoids)
 
     if(DebugLevel & 0x00020000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Macro Subdevices" << endl;
+        CTILOG_DEBUG(dout, "Looking for Macro Subdevices");
     }
     {
         const string childCountQuery = "SELECT COUNT ('ChildID') as childcount "
@@ -1397,13 +1307,13 @@ void CtiDeviceManager::refreshMacroSubdevices(Cti::Database::id_set &paoids)
 
     rdr.execute();
 
-    if(DebugLevel & 0x00020000 || !rdr.isValid())
+    if( ! rdr.isValid() )
     {
-        string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << loggedSQLstring << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else if( DebugLevel & 0x00020000 )
+    {
+        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
     }
 
     if(childcount != 0 && rdr.isValid())
@@ -1444,7 +1354,7 @@ void CtiDeviceManager::refreshMacroSubdevices(Cti::Database::id_set &paoids)
 
     if(DebugLevel & 0x00020000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Macro Subdevices" << endl;
+        CTILOG_DEBUG(dout, "Done looking for Macro Subdevices");
     }
 }
 
@@ -1463,7 +1373,7 @@ void CtiDeviceManager::refreshMCTConfigs(Cti::Database::id_set &paoids)
     {
         if(DebugLevel & 0x00020000)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for MCT Configs" << endl;
+            CTILOG_DEBUG(dout, "Looking for MCT Configs");
         }
 
         const string sqlCore = "SELECT MCM.mctid, CFG.configname, CFG.configtype, CFG.configmode, CFG.mctwire1, "
@@ -1485,13 +1395,13 @@ void CtiDeviceManager::refreshMCTConfigs(Cti::Database::id_set &paoids)
 
         rdr.execute();
 
-        if(DebugLevel & 0x00020000 || !rdr.isValid())
+        if( ! rdr.isValid() )
         {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << loggedSQLstring << endl;
-            }
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
+        else if( DebugLevel & 0x00020000 )
+        {
+            CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
         }
 
         if(rdr.isValid())
@@ -1521,14 +1431,12 @@ void CtiDeviceManager::refreshMCTConfigs(Cti::Database::id_set &paoids)
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Error reading MCT Configs from database" << endl;
+            CTILOG_ERROR(dout, "Could not read MCT Configs from database");
         }
 
         if(DebugLevel & 0x00020000)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for MCT Configs" << endl;
+            CTILOG_DEBUG(dout, "Done looking for MCT Configs");
         }
     }
 }
@@ -1542,7 +1450,7 @@ void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
     {
         if(DebugLevel & 0x00020000)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for MCT Configs" << endl;
+            CTILOG_DEBUG(dout, "Looking for MCT Configs");
         }
 
         static const string sqlCore = "SELECT DMS.deviceid, DMS.disconnectaddress "
@@ -1562,13 +1470,13 @@ void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
 
         rdr.execute();
 
-        if(DebugLevel & 0x00020000 || !rdr.isValid())
+        if( ! rdr.isValid() )
         {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << loggedSQLstring << endl;
-            }
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
+        else if( DebugLevel & 0x00020000 )
+        {
+            CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
         }
 
         if(rdr.isValid())
@@ -1599,11 +1507,7 @@ void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
                     {
                         tmpMCT410->setDisconnectAddress(0);
 
-                        if( isDebugLudicrous() )
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - invalid disconnect address " << tmpdisconnectaddress << " for device \"" << tmpMCT410->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_WARN(dout, "invalid disconnect address "<< tmpdisconnectaddress <<" for device \""<< tmpMCT410->getName() <<"\"");
                     }
                 }
             }
@@ -1624,14 +1528,12 @@ void CtiDeviceManager::refreshMCT400Configs(Cti::Database::id_set &paoids)
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Error reading MCT 400 Configs from database" << endl;
+            CTILOG_ERROR(dout, "Could not read MCT 400 Configs from database");
         }
 
         if(DebugLevel & 0x00020000)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for MCT Configs" << endl;
+            CTILOG_DEBUG(dout, "Done looking for MCT Configs");
         }
     }
 }
@@ -1647,7 +1549,7 @@ void CtiDeviceManager::refreshStaticPaoInfo(Cti::Database::id_set &paoids)
     {
         if(DebugLevel & 0x00020000)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Static PAO Info" << endl;
+            CTILOG_DEBUG(dout, "Looking for Static PAO Info");
         }
 
         Cti::Database::DatabaseConnection connection;
@@ -1669,13 +1571,13 @@ void CtiDeviceManager::refreshStaticPaoInfo(Cti::Database::id_set &paoids)
             return;
         }
 
-        if(DebugLevel & 0x00020000 || !rdr.isValid())
+        if( ! rdr.isValid() )
         {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << loggedSQLstring << endl;
-            }
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
+        else if( DebugLevel & 0x00020000 )
+        {
+            CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
         }
 
         if(rdr.isValid())
@@ -1695,21 +1597,18 @@ void CtiDeviceManager::refreshStaticPaoInfo(Cti::Database::id_set &paoids)
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - no parent found for static PAO info record (pao " << tmp_paobjectid << ", entryid " << tmp_entryid << ")  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "no parent found for static PAO info record (pao "<< tmp_paobjectid <<", entryid "<< tmp_entryid <<")");
                 }
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Error reading Static PAO Info from database. " <<  endl;
+            CTILOG_ERROR(dout, "Could not read Static PAO Info from database");
         }
 
         if(DebugLevel & 0x00020000)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Static PAO Info" << endl;
+            CTILOG_DEBUG(dout, "Done looking for Static PAO Info");
         }
     }
 }
@@ -1768,19 +1667,18 @@ void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void
 
         while(!guard.isAcquired())
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock device mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << static_cast<string>(getLock()) << " Faddr: 0x" << applyFun << endl;
-            }
+            CTILOG_WARN(dout, "Unable to lock device mutex.  Will retry.. Last Acquired By TID: "<<
+                    static_cast<string>(getLock()) <<" Faddr: 0x"<< applyFun
+                    );
+
             guard.tryAcquire(30000);
 
             if(trycount++ > 6)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint: Was unable to lock device mutex.  Applying anyway. **** " << __FILE__ << " (" << __LINE__ << " Last Acquired By TID: " << static_cast<string>(getLock()) << " Faddr: 0x" << applyFun << endl;
-                    dout << "  CtiDeviceManager::apply " << endl;
-                }
+                CTILOG_ERROR(dout, "Was unable to lock device mutex. Applying anyway.. Last Acquired By TID: "<<
+                        static_cast<string>(getLock()) <<" Faddr: 0x"<< applyFun
+                        );
+
                 break;
             }
         }
@@ -1789,8 +1687,7 @@ void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1803,10 +1700,8 @@ int CtiDeviceManager::select(bool (*selectFun)(const long, ptr_type, void*), voi
 
     while(!guard.isAcquired())
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint: Unable to lock device manager mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to lock device manager mutex");
+
         guard.tryAcquire(30000);
     }
 
@@ -1834,17 +1729,13 @@ CtiDeviceManager::ptr_type CtiDeviceManager::find(bool (*findFun)(const long, co
         {
             if(trycount++ > 6)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint: Unable to lock device mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  CtiDeviceManager::find " << endl;
-                }
+                CTILOG_ERROR(dout, "Unable to lock device mutex");
+
                 break;
             }
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock device mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << static_cast<string>(getLock()) << " Faddr: 0x" << findFun << endl;
-            }
+
+            CTILOG_WARN(dout, "Unable to lock device mutex. Will retry.. Last Acquired By TID: " << static_cast<string>(getLock()) << " Faddr: 0x" << findFun);
+
             guard.tryAcquire(30000);
         }
 
@@ -1852,8 +1743,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::find(bool (*findFun)(const long, co
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return p;
@@ -1928,13 +1818,6 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
                     CtiTime alloc_out = close < now + alloc_increment ? close : now + alloc_increment;
                     devA->getExclusion().setEvaluateNextAt( alloc_out );
                     _exclusionMap.apply(applyExecutionGrantExpiresIsEvaluateNext, (void*)(devA.get()));
-
-                    #if 0
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(slog);
-                        slog << CtiTime() << " " << devA->getName() << " has no queued work.  Proximity excluded devices released until " << devA->getExclusion().getEvaluateNextAt() << endl;
-                    }
-                    #endif
                 }
             }
             else
@@ -1995,9 +1878,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::chooseExclusionDevice( LONG portid 
 
     if(devS)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(slog);
-        slog << CtiTime() << " " << devS->getName() << " Execution Granted          " << devS->getExclusion().getExecutionGrant() << endl;
-        slog << CtiTime() << " " << devS->getName() << " Execution Grant Expires at " << devS->getExclusion().getExecutionGrantExpires() << endl;
+        CTILOG_INFO(slog, devS->getName() <<" Execution Granted: "<< devS->getExclusion().getExecutionGrant() <<" (grant expires at: "<< devS->getExclusion().getExecutionGrantExpires() <<")");
     }
 
     return devS;

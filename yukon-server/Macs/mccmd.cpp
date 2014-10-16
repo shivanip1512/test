@@ -42,6 +42,7 @@
 #include "decodetextcmdfile.h"
 #include "utility.h"
 #include "smartmap.h"
+#include "win_helper.h"
 
 #include <rw/thr/thrutil.h>
 #include <rw/thr/thrfunc.h>
@@ -168,23 +169,21 @@ void _MessageThrFunc()
                 }
                 else
                 {
-                    CtiLockGuard< CtiLogger > logGuard(dout);
-
-                    dout << CtiTime() <<
-                        " [" << rwThreadId() << "]"
-                        " Received message for interpreter"
-                        " [" << GetThreadIDFromMsgID(msgid) << "]" << endl;
+                    Cti::StreamBuffer logmsg;
+                    logmsg <<"Received message for interpreter ["<< GetThreadIDFromMsgID(msgid) <<"], type "<< inboundMessage->isA();
 
                     switch( inboundMessage->isA() )
                     {
                         case MSG_PCRETURN:
-                            DumpReturnMessage(static_cast<CtiReturnMsg &>(*inboundMessage));
+                            logmsg << DumpReturnMessage(static_cast<CtiReturnMsg &>(*inboundMessage));
                             break;
 
                         case MSG_REQUESTCANCEL:
-                            inboundMessage->dump();
+                            logmsg << *inboundMessage;
                             break;
                     }
+
+                    CTILOG_INFO(dout, logmsg);
                 }
             }
 
@@ -218,8 +217,7 @@ void _MessageThrFunc()
     }
     catch( ... )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << " **** EXCEPTION **** in porter in thread, this is bad."  << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -230,20 +228,17 @@ string BuildCommandString(const int argc, const char * const argv[])
     return boost::algorithm::join(args, " ");
 }
 
-void DumpReturnMessage(CtiReturnMsg& msg)
+std::string DumpReturnMessage(const CtiReturnMsg& msg)
 {
-    string out;
+    Cti::StreamBuffer out;
 
-    out += "deviceid: ";
-    out += CtiNumStr(msg.DeviceId());
-    out += " routeid: ";
-    out += CtiNumStr(msg.RouteID());
-    out += " status: ";
-    out += CtiNumStr(msg.Status());
-    out += " more: ";
-    out += CtiNumStr(msg.ExpectMore());
-    out += "\r\nresult: ";
-    out += msg.ResultString();
+    out << endl
+            <<"deviceid: " << msg.DeviceId()
+            <<" routeid: " << msg.RouteID()
+            <<" status: "  << msg.Status()
+            <<" more: "    << msg.ExpectMore();
+
+    out << endl <<"result: "<< msg.ResultString();
 
     CtiMultiMsg_vec rw_set = msg.PointData();
     CtiMultiMsg_vec::iterator iter = rw_set.begin();
@@ -253,43 +248,28 @@ void DumpReturnMessage(CtiReturnMsg& msg)
     {
         if((*iter)->isA() == MSG_POINTDATA)
         {
-            p_data = (CtiPointDataMsg*)*iter;
-            out += "\r\n  ";
-            out += p_data->getString();
+            p_data = static_cast<CtiPointDataMsg*>(*iter);
+            out << endl << p_data->getString();
         }
         iter++;
     }
 
-    WriteOutput((char*) out.c_str());
+    return out;
 }
 
-void DumpRequestMessage(CtiRequestMsg& msg)
+std::string DumpRequestMessage(const CtiRequestMsg& msg)
 {
-    string out;
+    Cti::StreamBuffer out;
 
-    out += "deviceid: ";
-    out += CtiNumStr(msg.DeviceId());
-    out += " routeid: ";
-    out += CtiNumStr(msg.RouteId());
-    out += " msgid: ";
-    out += CtiNumStr(msg.UserMessageId());
-    out += " priority: ";
-    out += CtiNumStr(msg.getMessagePriority());
-    out += "\r\n";
+    out << endl
+            <<"deviceid: "  << msg.DeviceId()
+            <<" routeid: "  << msg.RouteId()
+            <<" msgid: "    << msg.UserMessageId()
+            <<" priority: " << msg.getMessagePriority();
 
-    out += msg.CommandString();
+    out << endl << msg.CommandString();
 
-    WriteOutput(out.c_str());
-}
-
-void WriteOutput(const char* output)
-{
-    int thrId = rwThreadId();
-
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " [" << thrId << "] " << output << endl;
-    }
+    return out;
 }
 
 /* Connects to the PIL and VanGogh*/
@@ -304,10 +284,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
     //Set up the defaults
     string fm_config_range;
 
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " MCCMD loading cparms:" << endl;
-    }
+    CTILOG_INFO(dout, "MCCMD loading cparms:");
 
     gPagingConfigRouteID = gConfigParms.getValueAsInt("PAGING_CONFIG_ROUTE_ID", -1);
     gFMConfigRouteID = gConfigParms.getValueAsInt("FM_CONFIG_ROUTE_ID", -1);
@@ -315,14 +292,12 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
 
     if(gPagingConfigRouteID != -1)
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << " Using route id: " << gPagingConfigRouteID << " as the paging route" << endl;
+        CTILOG_INFO(dout, "Using route id: "<< gPagingConfigRouteID <<" as the paging route");
     }
 
     if(gFMConfigRouteID != -1)
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << " Using route id: " << gFMConfigRouteID << " as the FM config route" << endl;
+        CTILOG_INFO(dout, "Using route id: "<< gFMConfigRouteID <<" as the FM config route");
     }
 
     // init these in case none are found
@@ -364,8 +339,8 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
 
                 if( lowi != 0 && highi != 0 )
                 {
-                    CtiLockGuard< CtiLogger > guard(dout);
-                    dout << " Using " << lowi << "-" << highi << " as a fm serial number range" << endl;
+                    CTILOG_INFO(dout, "Using "<< lowi <<"-"<< highi <<" as a fm serial number range");
+
                     gFMConfigSerialLow[index] = lowi;
                     gFMConfigSerialHigh[index] = highi;
                     index++;
@@ -377,10 +352,7 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
         gFMConfigSerialHigh[index] = -1;
     }
 
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " MCCMD done loading cparms" << endl;
-    }
+    CTILOG_INFO(dout, "MCCMD done loading cparms");
 
     PILConnection = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::pil );
     PILConnection->setName("MCCMD to Pil");
@@ -416,24 +388,15 @@ int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
     if( MessageThr.isValid() )
         MessageThr.requestCancellation();
 
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " - " << "Shutting down connection to PIL" << endl;
-    }
+    CTILOG_INFO(dout, "Shutting down connection to PIL");
 
     PILConnection->close();
 
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " - " << "Shutting down connection to VanGogh" << endl;
-    }
+    CTILOG_INFO(dout, "Shutting down connection to VanGogh");
 
     VanGoghConnection->close();
 
-    {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " - " << "Shutting down connection to the Notification Server" << endl;
-    }
+    CTILOG_INFO(dout, "Shutting down connection to the Notification Server");
 
     NotificationConnection->close();
 
@@ -531,14 +494,12 @@ int Mccmd_Init(Tcl_Interp* interp)
 
     if( gMccmdDebugLevel > 0 )
     {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << CtiTime() << " " << MCCMD_DEBUG_LEVEL << ": 0x" << std::hex <<  gMccmdDebugLevel << std::dec << endl;
+        CTILOG_DEBUG(dout, MCCMD_DEBUG_LEVEL <<": 0x"<< std::hex << gMccmdDebugLevel);
     }
 
     if( gMccmdDebugLevel & MCCMD_DEBUG_INIT )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << "Using MCCMD init script: " << init_script << endl;
+        CTILOG_DEBUG(dout, "Using MCCMD init script: "<< init_script);
     }
 
     Tcl_EvalFile(interp, const_cast<char *>(init_script.c_str()));
@@ -568,10 +529,6 @@ int Exit(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     {
         value = atoi(argv[1]);
     }
-
-    // Shut down the global logger
-    dout.interrupt(CtiThread::SHUTDOWN);
-    dout.join();
 
     Tcl_Exit(value);
     /*NOTREACHED*/
@@ -653,7 +610,7 @@ int Pil(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     if( argc <= 1 )
     {
-        WriteOutput("Usage: pil command cmd_params");
+        CTILOG_ERROR(dout, "Usage: pil command cmd_params");
         return TCL_ERROR;
     }
 
@@ -668,7 +625,7 @@ int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     if( argc != 2 )
     {
-        WriteOutput("Usage: mcu8100 filename");
+        CTILOG_ERROR(dout, "Usage: mcu8100 filename");
         return TCL_ERROR;
     }
 
@@ -677,7 +634,7 @@ int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
     if( DecodeCFDATAFile( file, &results) == false )
     {
-        WriteOutput("Error decoding file");
+        CTILOG_ERROR(dout, "Could not decode file");
         return TCL_ERROR;
     }
 
@@ -700,7 +657,7 @@ int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]
 
     if( argc != 2 )
     {
-        WriteOutput("Usage: mcu9000eoi filename");
+        CTILOG_ERROR(dout, "Usage: mcu9000eoi filename");
         return TCL_ERROR;
     }
 
@@ -709,7 +666,7 @@ int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]
 
     if( DecodeEOIFile(file, &results) == false )
     {
-        WriteOutput("Error decoding file");
+        CTILOG_ERROR(dout, "Could not decode file");
         return TCL_ERROR;
     }
 
@@ -728,7 +685,7 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
 
     if( argc != 2 )
     {
-        WriteOutput("Usage: mcu8100wepco filename");
+        CTILOG_ERROR(dout, "Usage: mcu8100wepco filename");
         return TCL_ERROR;
     }
 
@@ -737,7 +694,7 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
 
     if( DecodeWepcoFile( file, &results) == false )
     {
-        WriteOutput("Error decoding file");
+        CTILOG_ERROR(dout, "Could not decode file");
         return TCL_ERROR;
     }
 
@@ -764,7 +721,7 @@ int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
 
     if( argc != 2 )
     {
-        WriteOutput("Usage: mcu8100service filename");
+        CTILOG_ERROR(dout, "Usage: mcu8100service filename");
         return TCL_ERROR;
     }
 
@@ -773,7 +730,7 @@ int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
 
     if( DecodeWepcoFileService( file, &results) == false )
     {
-        WriteOutput("Error decoding file");
+        CTILOG_ERROR(dout, "Could not decode file");
         return TCL_ERROR;
     }
 
@@ -806,7 +763,7 @@ int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
 
     if( argc != 2 )
     {
-        WriteOutput("Usage: mcu8100program filename");
+        CTILOG_ERROR(dout, "Usage: mcu8100program filename");
         return TCL_ERROR;
     }
 
@@ -815,7 +772,7 @@ int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
 
     if( DecodeWepcoFileConfig( file, &results) == false )
     {
-        WriteOutput("Error decoding file");
+        CTILOG_ERROR(dout, "Could not decode file");
         return TCL_ERROR;
     }
 
@@ -846,11 +803,7 @@ int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     if( argc != 2 )
     {
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " - Usage:  pmsi filename" << endl;
-        }
-
+        CTILOG_ERROR(dout, "Usage:  pmsi filename");
         return TCL_ERROR;
     }
 
@@ -859,10 +812,7 @@ int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
     if( DecodePMSIFile( file, &results) == false )
     {
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " - Error decoding file" << endl;
-        }
+        CTILOG_ERROR(dout, "Could not decode file");
         return TCL_ERROR;
     }
 
@@ -887,19 +837,17 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
     if( argc < 2 )
     {
-        {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << " - Usage:  importcommandfile filename [/cmdsperexecution:#]" << endl;
-            dout << "           optional parameters: " << endl;
-            dout << "                 /cmdsperexecution:# - number of commands sent each execution (default to all)" << endl;
-            dout << "                 /protocol:x - specify the protocol all commands should use (default versacom)" << endl;
-            dout << "                      where x is versacom, expresscom, none (meaning don't specify)           " << endl;
-            dout << "                 /dsm2 - import dsm2 vconfig.dat type commands (not valid with other options)" << endl;
-            dout << "                 /appendextension:zzz - files with this extension will be appended to file" << endl;
-            dout << "                      where zzz is an extension such as txt, dat, cfg, ect.." << endl;
-            dout << "               NOTE: Commands are exported to file export\\sent-mm-dd-yyyy.txt" << endl;
-        }
-
+        CTILOG_INFO(dout,
+                endl <<"Usage:  importcommandfile filename [/cmdsperexecution:#]"<<
+                endl <<"        optional parameters: "<<
+                endl <<"              /cmdsperexecution:# - number of commands sent each execution (default to all)"<<
+                endl <<"              /protocol:x - specify the protocol all commands should use (default versacom)"<<
+                endl <<"                   where x is versacom, expresscom, none (meaning don't specify)"<<
+                endl <<"              /dsm2 - import dsm2 vconfig.dat type commands (not valid with other options)"<<
+                endl <<"              /appendextension:zzz - files with this extension will be appended to file"<<
+                endl <<"                   where zzz is an extension such as txt, dat, cfg, ect.."<<
+                endl <<"                   NOTE: Commands are exported to file export\\sent-mm-dd-yyyy.txt");
+        
         retVal = TCL_ERROR;
     }
     else
@@ -916,8 +864,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
         if( gMccmdDebugLevel > 0 )
         {
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << CtiTime() << " - Will export commands from " << file << " to " << string (newFileName) <<endl;;
+            CTILOG_DEBUG(dout, "Will export commands from "<< file <<" to "<< newFileName);
         }
 
 
@@ -939,8 +886,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
                     if( gMccmdDebugLevel > 0 )
                     {
-                        CtiLockGuard< CtiLogger > guard(dout);
-                        dout << CtiTime() << " - Will export " << commandLimit << " commands from " << file << " per interval " <<endl;;
+                        CTILOG_DEBUG(dout, "Will export "<< commandLimit <<" commands from "<< file <<" per interval");
                     }
 
                 }
@@ -956,8 +902,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     }
                     if( gMccmdDebugLevel > 0 )
                     {
-                        CtiLockGuard< CtiLogger > guard(dout);
-                        dout << CtiTime() << " - Interval: " << interval << " minutes " <<endl;;
+                        CTILOG_DEBUG(dout, "Interval: "<< interval <<" minutes");
                     }
                 }
 
@@ -971,8 +916,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     }
                     if( gMccmdDebugLevel > 0 )
                     {
-                        CtiLockGuard< CtiLogger > guard(dout);
-                        dout << CtiTime() << " - Will export " << commandsPerTime << " commands from " << file << " every execution " <<endl;;
+                        CTILOG_DEBUG(dout, "Will export "<< commandsPerTime <<" commands from "<< file <<" every execution");
                     }
 
                 }
@@ -1005,8 +949,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                     dsm2ImportFlag = true;
                     if( gMccmdDebugLevel > 0 )
                     {
-                        CtiLockGuard< CtiLogger > guard(dout);
-                        dout << CtiTime() << " - Will import file as DSM2 vconfig.dat format " <<endl;;
+                        CTILOG_DEBUG(dout, "Will import file as DSM2 vconfig.dat format");
                     }
                 }
                 if(str.find(string ("/protocol"))!=string::npos)
@@ -1017,8 +960,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
                         if( gMccmdDebugLevel > 0 )
                         {
-                            CtiLockGuard< CtiLogger > guard(dout);
-                            dout << CtiTime() << " - Will export commands using versacom only " <<endl;
+                            CTILOG_DEBUG(dout, "Will export commands using versacom only");
                         }
                     }
                     else if(str.find(string ("expresscom"))!=string::npos)
@@ -1027,8 +969,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
                         if( gMccmdDebugLevel > 0 )
                         {
-                            CtiLockGuard< CtiLogger > guard(dout);
-                            dout << CtiTime() << " - Will export commands using expresscom only " <<endl;
+                            CTILOG_DEBUG(dout, "Will export commands using expresscom only");
                         }
                     }
                     else if(str.find(string ("none"))!=string::npos)
@@ -1037,8 +978,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
                         if( gMccmdDebugLevel > 0 )
                         {
-                            CtiLockGuard< CtiLogger > guard(dout);
-                            dout << CtiTime() << " - Will export commands without specifying protocol " <<endl;
+                            CTILOG_DEBUG(dout, "Will export commands without specifying protocol");
                         }
                     }
                     else
@@ -1047,8 +987,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
 
                         if( gMccmdDebugLevel > 0 )
                         {
-                            CtiLockGuard< CtiLogger > guard(dout);
-                            dout << CtiTime() << " - Will export commands without specifing protocol " <<endl;
+                            CTILOG_DEBUG(dout, "Will export commands without specifing protocol");
                         }
                     }
                 }
@@ -1060,10 +999,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
             decodeResult = decodeDSM2VconfigFile (file, &results);
             if(decodeResult)
             {
-                {
-                    CtiLockGuard< CtiLogger > guard(dout);
-                    dout << CtiTime() << " Error importing file " << file << endl;
-                }
+                CTILOG_ERROR(dout, "Unable to import file "<< file);
             }
 
         }
@@ -1118,10 +1054,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
             }
             else if(decodeResult == TEXT_CMD_FILE_UNABLE_TO_OPEN_FILE)
             {
-                {
-                    CtiLockGuard< CtiLogger > guard(dout);
-                    dout << CtiTime() << " Export file " << file << " does not exist or is locked " << endl;
-                }
+                CTILOG_ERROR(dout, "Export file "<< file <<" does not exist or is locked");
             }
         }
         // send what we do have
@@ -1170,10 +1103,9 @@ bool FileAppendAndDelete(const string &toFileName, const string &fromFileName)
                                              OPEN_ALWAYS,
                                              FILE_ATTRIBUTE_NORMAL,
                                              NULL);
-                {
-                    CtiLockGuard< CtiLogger > guard(dout);
-                    dout << CtiTime() << " - file " << string (toFileName) << " is locked "<< endl;
-                }
+
+                CTILOG_ERROR(dout, "file "<< toFileName <<" is locked");
+
                 cnt++;
                 Sleep (1000);
             }
@@ -1294,9 +1226,7 @@ int LogEvent(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[] )
 
     if( argc != 4 && argc != 6 )
     {
-        WriteOutput( "Usage:  LogEvent [ class # ] user message info");
-        WriteOutput( "class # is greater than 1");
-        WriteOutput( "user, message, info are strings");
+        CTILOG_ERROR(dout, "Usage:  LogEvent [ class # ] user message info - class # is greater than 1, user, message, info are strings");
         return TCL_OK;
     }
 
@@ -1332,7 +1262,7 @@ int Dout(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     if( argc != 2 )
         return TCL_ERROR;
 
-    WriteOutput( argv[1]);
+    CTILOG_INFO(dout, argv[1]);
 
     return TCL_OK;
 }
@@ -1353,7 +1283,7 @@ int SendNotification(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 {
     if( argc != 4 )
     {
-        WriteOutput( "Usage:  SendNotification groupname subject text");
+        CTILOG_ERROR(dout, "Usage:  SendNotification groupname subject text");
         return TCL_OK;
     }
 
@@ -1363,8 +1293,7 @@ int SendNotification(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 
     if( id == -1 )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " Could not locate notification group named: " << name << endl;
+        CTILOG_ERROR(dout, "Could not locate notification group named: "<< name);
         return TCL_ERROR;
     }
 
@@ -1373,13 +1302,13 @@ int SendNotification(ClientData clientData, Tcl_Interp* interp, int argc, char* 
     msg->setSubject(argv[2]);
     msg->setBody(argv[3]);
 
-    {
-        CtiLockGuard< CtiLogger > g(dout);
-        dout << CtiTime() << " Sending email notification to the notification server " << endl;
-        dout << CtiTime() << " notification group id: " << msg->getNotifGroupId() << endl;
-        dout << CtiTime() << " subject: " << msg->getSubject() << endl;
-        dout << CtiTime() << " text: " << msg->getBody() << endl;
-    }
+    Cti::FormattedList loglist;
+    loglist.add("notification group id") << msg->getNotifGroupId();
+    loglist.add("subject")               << msg->getSubject();
+    loglist.add("text")                  << msg->getBody();
+
+    CTILOG_INFO(dout, "Sending email notification to the notification server"<<
+            loglist);
 
     NotificationConnection->WriteConnQue(msg);
 
@@ -1391,12 +1320,8 @@ int Select(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     if( argc == 1 )
     {
-        string selection = Tcl_GetVar(interp, SelectedVariable, 0 );
-
-        string out("current selection: ");
-        out += selection;
-
-        WriteOutput( (char*) selection.c_str() );
+        const string selection = Tcl_GetVar(interp, SelectedVariable, 0 );
+        CTILOG_INFO(dout, "current selection: "<< selection);
     }
     else
     {
@@ -1412,8 +1337,7 @@ int Wait(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
     if( argc < 2 )
     {
-        string usage("Usage:  Wait <seconds>");
-        WriteOutput(usage.c_str());
+        CTILOG_ERROR(dout, "Usage:  Wait <seconds>");
     }
 
     long delay = atol(argv[1]);
@@ -1424,7 +1348,7 @@ int Wait(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
         //Check for cancellation
         if( Tcl_DoOneEvent( TCL_ALL_EVENTS | TCL_DONT_WAIT) == 1 )
         {
-            WriteOutput("interrupted");
+            CTILOG_WARN(dout, "interrupted");
             Tcl_SetResult( interp, "interrupted", TCL_VOLATILE );
             return TCL_ERROR;
         }
@@ -1439,14 +1363,13 @@ int getDeviceName(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
 {
   if(argc < 2)
     {
-      WriteOutput("Usage: getDeviceName <deviceid>");
+      CTILOG_ERROR(dout, "Usage: getDeviceName <deviceid>");
       Tcl_SetResult(interp, "0", TCL_VOLATILE);
       return TCL_OK;
     }
 
-  long id = atoi(argv[1]);
-  string name;
-  GetDeviceName(id,name);
+  const long id = atoi(argv[1]);
+  const string name = GetDeviceName(id);
   Tcl_Obj* tcl_name = Tcl_NewStringObj((const char*)name.c_str(), -1);
   Tcl_SetObjResult(interp, tcl_name);
   return TCL_OK;
@@ -1456,7 +1379,7 @@ int getDeviceID(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
 {
   if(argc < 2)
     {
-      WriteOutput("Usage: getDeviceID <devicename>");
+      CTILOG_ERROR(dout, "Usage: getDeviceID <devicename>");
       return TCL_OK;
     }
 
@@ -1470,7 +1393,7 @@ int formatError(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
 {
   if(argc < 2)
     {
-      WriteOutput("Usage: formatError <errorcode>");
+      CTILOG_ERROR(dout, "Usage: formatError <errorcode>");
       return TCL_OK;
     }
 
@@ -1576,9 +1499,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
             }
             else
             {
-                std::string errorMsg( "**** ERROR **** Invalid Connection to Database.  __FILE__ (__LINE__)" );
-                WriteOutput( errorMsg.c_str() );
-
+                CTILOG_ERROR(dout, "Invalid Connection to Database.");
                 return TCL_ERROR;
             }
         }
@@ -1599,9 +1520,13 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
         req->setGroupMessageId(msgid);
 
         if( gMccmdDebugLevel & MCCMD_DEBUG_PILREQUEST )
-            DumpRequestMessage(*req);
+        {
+            CTILOG_DEBUG(dout, "request: "<< DumpRequestMessage(*req));
+        }
         else
-            WriteOutput( (char*) req->CommandString().c_str() );
+        {
+            CTILOG_INFO(dout, "request: "<< req->CommandString());
+        }
 
         multi_req->getData().push_back(req);
     }
@@ -1639,55 +1564,52 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
 
     do
     {
-        if( CtiMessage *msg = requestQueue->getQueue(100) )
         {
-            if( msg->isA() == MSG_PCRETURN )
-            {
-                CtiReturnMsg *ret_msg = static_cast<CtiReturnMsg *>(msg);
-                DumpReturnMessage(*ret_msg);
-                bool allowExitOnError = isBreakStatus(ret_msg->Status());
-                HandleReturnMessage(ret_msg, good_map, bad_map, device_map, bad_names, resultQueue);
-                lastReturnMessageReceived = lastReturnMessageReceived.now();
+            std::auto_ptr<CtiMessage> msg(requestQueue->getQueue(100));
 
-                // have we received everything expected?
-                if( device_map.size() == 0 && allowExitOnError )
-                    break;
-            }
-            else if( msg->isA() == MSG_QUEUEDATA )
+            if( msg.get() )
             {
-                CtiQueueDataMsg *queueMessage = static_cast<CtiQueueDataMsg *>(msg);
-                if( queueMessage->getRequestId() == msgid )
+                if( msg->isA() == MSG_PCRETURN )
                 {
-                    porterCount = queueMessage->getRequestIdCount();
-                    string output("Queue Data Received, there are ");
-                    output += CtiNumStr(porterCount);
-                    output += " objects for this script in porter.";
-                    WriteOutput(output.c_str());
+                    std::auto_ptr<CtiReturnMsg> ret_msg(static_cast<CtiReturnMsg*>(msg.release()));
+                    CTILOG_INFO(dout, DumpReturnMessage(*ret_msg));
+                    const bool allowExitOnError = isBreakStatus(ret_msg->Status());
+                    HandleReturnMessage(ret_msg.release(), good_map, bad_map, device_map, bad_names, resultQueue);
+                    lastReturnMessageReceived = lastReturnMessageReceived.now();
 
-                    if( porterCount == 0 )
+                    // have we received everything expected?
+                    if( device_map.size() == 0 && allowExitOnError )
+                        break; // from the loop
+                }
+                else if( msg->isA() == MSG_QUEUEDATA )
+                {
+                    const CtiQueueDataMsg& queueMessage = static_cast<const CtiQueueDataMsg&>(*msg);
+                    if( queueMessage.getRequestId() == msgid )
                     {
-                        output = "Porter has reported a count of 0 messages for this script. ";
-                        output += "MACS reports " + CtiNumStr(device_map.size());
-                        output += " devices left to respond. If the script does not finish very soon this";
-                        output += " should be considered a problem.";
-                        WriteOutput(output.c_str());
-                        queueDataZeroCount++;
+                        porterCount = queueMessage.getRequestIdCount();
 
-                        if( queueDataZeroCount > 1 )
+                        CTILOG_INFO(dout, "Queue Data Received, there are "<< porterCount <<" objects for this script in porter.");
+
+                        if( porterCount == 0 )
                         {
-                            // At some point we could break; here if we are confident about this.
-                            output = "Queue data reports a need to exit, current command is exiting!";
-                            WriteOutput(output.c_str());
-                            break;
+                            CTILOG_WARN(dout, "Porter has reported a count of 0 messages for this script. "<<
+                                    endl <<"MACS reports "<< device_map.size() <<" devices left to respond. If the script does not finish very soon this should be considered a problem.");
+
+                            queueDataZeroCount++;
+
+                            if( queueDataZeroCount > 1 )
+                            {
+                                // At some point we could break; here if we are confident about this.
+                                CTILOG_INFO(dout, "Queue data reports a need to exit, current command is exiting!");
+                                break; // from the loop
+                            }
                         }
                     }
                 }
-            }
-            else
-            {
-                delete msg;
-                string err("Received unknown message __LINE__, __FILE__");
-                WriteOutput(err.c_str());
+                else
+                {
+                    CTILOG_ERROR(dout, "received unexpected message ("<< msg->isA() <<")");
+                }
             }
         }
 
@@ -1708,15 +1630,10 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
         if( (now > lastReturnMessageReceived + timeout) &&
             (now > start + timeout) && (gIgnoreQueueCount || porterCount <= 0) )
         {
-            string info = "The following command timed out: \r\n";
-            info += cmd_line;
-            info += "\r\n command was originally submitted at: ";
-            info += CtiTime(start).asString();
-            info += "\r\n nothing was received from porter in the last ";
-            info += CtiNumStr( (unsigned long) ( now.seconds() - lastReturnMessageReceived.seconds() ) );
-            info += " seconds.";
-
-            WriteOutput(info.c_str());
+            CTILOG_INFO(dout, "The following command timed out:"<<
+                    endl << cmd_line <<
+                    endl <<"command was originally submitted at: "<< start <<
+                    endl <<"nothing was received from porter in the last "<< (now.seconds() - lastReturnMessageReceived.seconds()) <<" seconds");
 
             break;
         }
@@ -1730,9 +1647,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
 
     if( interrupted )
     {
-        string info = "Command exiting due to interrupt!";
-
-        WriteOutput(info.c_str());
+        CTILOG_INFO(dout, "Command exiting due to interrupt!");
     }
 
     // We now always send the cancel message.
@@ -1750,9 +1665,6 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
     Tcl_SetVar2Ex(interp, BadListVariable, NULL, bad_list, 0 );
     Tcl_SetVar2Ex(interp, BadStatusVariable, NULL, status_list, 0);
 
-    string next_line;
-    string dev_name;
-
     int count;
 
     count = 0;
@@ -1761,23 +1673,21 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
     {
         if( !(++count % 10000) )
         {
-            string current = "Writing good list, " + CtiNumStr(count) + " / " + CtiNumStr(good_map.size()) + " written";
-            WriteOutput(current.c_str());
+            CTILOG_INFO(dout, "Writing good list, "<< count <<" / "<< good_map.size() <<" written");
         }
 
-        GetDeviceName(good_result.first,dev_name);
-        next_line = dev_name;
+        std::string next_line = GetDeviceName(good_result.first);
         if( !gUseOldStyleMissed )
         {
-            next_line += ", " + CtiNumStr(good_result.first);
+            next_line += ", ";
+            next_line += CtiNumStr(good_result.first);
         }
         Tcl_ListObjAppendElement(interp, good_list, Tcl_NewStringObj(next_line.c_str(), -1));
     }
 
     if( count % 10000 )
     {
-        string current = "Writing good list, " + CtiNumStr(count) + " / " + CtiNumStr(good_map.size()) + " written";
-        WriteOutput(current.c_str());
+        CTILOG_INFO(dout, "Writing good list, "<< count <<" / "<< good_map.size() <<" written");
     }
 
     count = 0;
@@ -1786,23 +1696,17 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
     {
         if( !(++count % 10000) )
         {
-            string current = "Writing bad list, " + CtiNumStr(count) + " / " + CtiNumStr(bad_map.size()) + " written";
-            WriteOutput(current.c_str());
+            CTILOG_INFO(dout, "Writing bad list, "<< count <<" / "<< bad_map.size() <<" written");
         }
 
-        if( bad_result.second.status == ClientErrors::IdNotFound )
-        {
-            dev_name = bad_result.second.deviceName;
-        }
-        else
-        {
-            GetDeviceName(bad_result.first,dev_name);
-        }
+        std::string next_line = (bad_result.second.status == ClientErrors::IdNotFound)
+                ? bad_result.second.deviceName
+                : GetDeviceName(bad_result.first);
 
-        next_line = dev_name;
         if( !gUseOldStyleMissed )
         {
-            next_line += ", " + CtiNumStr(bad_result.first);
+            next_line += ", ";
+            next_line += CtiNumStr(bad_result.first);
         }
 
         Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(next_line.c_str(), -1));
@@ -1812,8 +1716,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
 
     if( count % 10000 )
     {
-        string current = "Writing bad list, " + CtiNumStr(count) + " / " + CtiNumStr(bad_map.size()) + " written";
-        WriteOutput(current.c_str());
+        CTILOG_INFO(dout, "Writing bad list, "<< count <<" / "<< bad_map.size() <<" written");
     }
 
     for each( const string &str in bad_names )
@@ -1828,17 +1731,16 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
     {
         if( !(++count % 10000) )
         {
-            string current = "Writing orphans, " + CtiNumStr(count) + " / " + CtiNumStr(device_map.size()) + " written";
-            WriteOutput(current.c_str());
+            CTILOG_INFO(dout, "Writing orphans, "<< count <<" / "<< device_map.size() <<" written");
         }
 
         resultQueue.push_back(CtiTableMeterReadLog(0, orphan_result.first, 0, ClientErrors::MacsTimeout, orphan_result.second.time));
 
-        GetDeviceName(orphan_result.first,dev_name);
-        next_line = dev_name;
+        std::string next_line = GetDeviceName(orphan_result.first);
         if( !gUseOldStyleMissed )
         {
-            next_line += ", " + CtiNumStr(orphan_result.first);
+            next_line += ", ";
+            next_line += CtiNumStr(orphan_result.first);
         }
 
         Tcl_ListObjAppendElement(interp, bad_list, Tcl_NewStringObj(next_line.c_str(), -1));
@@ -1848,30 +1750,29 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
 
     if( count % 10000 )
     {
-        string current = "Writing orphans, " + CtiNumStr(count) + " / " + CtiNumStr(device_map.size()) + " written";
-        WriteOutput(current.c_str());
+        CTILOG_INFO(dout, "Writing orphans, "<< count <<" / "<< device_map.size() <<" written");
     }
 
     //Remove the requestQueue from the inboundMessageQueues
     inboundMessageQueues.remove(msgid);
 
     //Lets write this to the screen before the database locks us up.
-    while( CtiMessage *msg = requestQueue->getQueue(10) )
+    while( CtiMessage* msg = requestQueue->getQueue(10) )
     {
         switch( msg->isA() )
         {
             case MSG_PCRETURN:
-                DumpReturnMessage(static_cast<CtiReturnMsg &>(*msg));
+                CTILOG_INFO(dout, DumpReturnMessage(static_cast<CtiReturnMsg &>(*msg)));
                 break;
             case MSG_QUEUEDATA:
             case MSG_REQUESTCANCEL:
-                msg->dump();
+                CTILOG_INFO(dout, *msg);
                 break;
         }
         delete msg;
     }
 
-    WriteOutput("Database Write Starting");
+    CTILOG_INFO(dout, "Database Write Starting");
 
     WriteResultsToDatabase(resultQueue, requestLogId);
 
@@ -1881,7 +1782,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
         deviceReadLog.Update();
     }
 
-    WriteOutput("Database Write Complete");
+    CTILOG_INFO(dout, "Database Write Complete");
 
     return (interrupted ?
                 TCL_ERROR : TCL_OK);
@@ -1928,9 +1829,7 @@ void HandleReturnMessage(CtiReturnMsg* msg,
     }
     else if( good_map.find(dev_id) != good_map.end() )
     {
-        string warn("received a message for a device already in the good list, id: ");
-        warn += CtiNumStr(dev_id);
-        WriteOutput(warn.c_str());
+        CTILOG_WARN(dout, "Received a message for a device already in the good list, id: "<< dev_id);
     }
     else
     {
@@ -1962,9 +1861,7 @@ void HandleReturnMessage(CtiReturnMsg* msg,
                 pos = bad_map.find(dev_id);
                 if(pos != bad_map.end())
                 {
-                    string warn("moved device from bad list to good list, id: ");
-                    warn += CtiNumStr(dev_id);
-                    WriteOutput(warn.c_str());
+                    CTILOG_WARN(dout, "Moved device from bad list to good list, id: "<< dev_id);
                     bad_map.erase(pos);
                 }
 
@@ -1976,9 +1873,7 @@ void HandleReturnMessage(CtiReturnMsg* msg,
 
                 if( !good_map.insert(PILReturnMap::value_type(dev_id,data)).second )
                 {
-                    string warn("device already in good list, id: ");
-                    warn += CtiNumStr(dev_id);
-                    WriteOutput(warn.c_str());
+                    CTILOG_WARN(dout, "Device already in good list, id: "<< dev_id)
                 }
             }
             else
@@ -1991,9 +1886,7 @@ void HandleReturnMessage(CtiReturnMsg* msg,
 
                 if( !bad_map.insert(PILReturnMap::value_type(dev_id,data)).second)
                 {
-                    string warn("device already in bad list, id: ");
-                    warn += CtiNumStr(dev_id);
-                    WriteOutput(warn.c_str());
+                    CTILOG_WARN(dout, "Device already in bad list, id: "<< dev_id)
                 }
             }
         }
@@ -2027,91 +1920,63 @@ unsigned int GetThreadIDFromMsgID(unsigned int msg_id)
 ----------------------------------------------------------------------------*/
 long GetNotificationGroupID( const string& name)
 {
-    try
-    {
-        {
-            string sql = "SELECT NotificationGroupID FROM NotificationGroup WHERE GroupName='" + name + "'";
-            DatabaseConnection conn;
-            DatabaseReader rdr(conn, sql);
-            rdr.execute();
+    const string sql = "SELECT NotificationGroupID FROM NotificationGroup WHERE GroupName='" + name + "'";
 
-            //Assume there is only one?
-            if( rdr() )
-            {
-                long id;
-                rdr >> id;
-                return id;
-            }
-            else
-                return -1;
-        }
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
-    }
-    catch( RWExternalErr err )
+    //Assume there is only one?
+    if( ! rdr() )
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << " Error retrieving notification group id." << err.why() << endl;
+        CTILOG_ERROR(dout, "DB read failed to retrieve notification group id, SQL query: "<< sql);
         return -1;
     }
+
+    long id;
+    rdr >> id;
+
+    return id;
 }
 
-static void GetDeviceName(long deviceID, string& name)
+string GetDeviceName(long deviceID)
 {
-    try
-    {
-        char devStr[12];
-        ::sprintf(devStr, "%ld", deviceID);
+    const string sql = "SELECT PAOName FROM YukonPAObject WHERE YukonPAObject.PAObjectID=" + CtiNumStr(deviceID);
 
-        {
-            string sql = "SELECT PAOName FROM YukonPAObject WHERE YukonPAObject.PAObjectID=";
-            sql += devStr;
-            DatabaseConnection conn;
-            DatabaseReader rdr(conn, sql);
-            rdr.execute();
+    DatabaseConnection conn;
+    DatabaseReader rdr(conn, sql);
+    rdr.execute();
 
-            if( rdr() )
-            {
-                rdr >> name;
-            }
-            else
-            {
-                WriteOutput("Unable to retrive device name __LINE__ __FILE__");
-            }
-        }
-    }
-    catch( RWExternalErr err )
+    if( ! rdr() )
     {
-        WriteOutput("Error retrieve device name __LINE__ __FILE__");
+        CTILOG_ERROR(dout, "DB read failed to retrieve device name, SQL query: "<< sql);
+        return "";
     }
+
+    string name;
+    rdr >> name;
+
+    return name;
 }
 
 static long GetDeviceID(const string& name)
 {
-  long id = 0;
-  try
-    {
-      {
-    string sql = "SELECT PAOBJECTID FROM YukonPAObject WHERE YukonPAObject.PAOName='";
-    sql += name;
-    sql += "'";
+    const string sql = "SELECT PAOBJECTID FROM YukonPAObject WHERE YukonPAObject.PAOName='" + name + "'";
+
     DatabaseConnection conn;
     DatabaseReader rdr(conn, sql);
     rdr.execute();
-    if(rdr())
-      {
-        rdr >> id;
-      }
-    else
-      {
-        WriteOutput("Unable to retrieve device id __LINE__ __FILE__");
-      }
-      }
-    }
-  catch(RWExternalErr err)
+
+    if( ! rdr() )
     {
-      WriteOutput("Unsable to retrieve device id __LINE__ __FILE__");
+        CTILOG_ERROR(dout, "DB read failed to retrieve device id, SQL query: "<< sql);
+        return 0;
     }
-  return id;
+
+    long id;
+    rdr >> id;
+
+    return id;
 }
 
 std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, CtiString cmd_line)
@@ -2141,7 +2006,7 @@ std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, CtiString cmd_l
         if( priority < 1 || priority > 15 )
         {
             priority = 7;
-            WriteOutput("MessagePriority is invalid, defaulting to 7");
+            CTILOG_ERROR(dout, "MessagePriority is invalid, defaulting to "<< priority);
         }
     }
 
@@ -2268,9 +2133,8 @@ int SendDBChange(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
 
     if( argc < 3 )
     {
-        WriteOutput( "Usage:  SendDBChange paoid user");
-        WriteOutput( "paoid is the paobject id to notify about.");
-        WriteOutput( "user is a string");
+        CTILOG_ERROR(dout, "Usage:  SendDBChange paoid user - paoid is the paobject id to notify about. user is a string.");
+
         return TCL_OK;
     }
 
@@ -2313,19 +2177,16 @@ int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* 
                        dwFlags,
                        NULL, NULL, &si, &pi))
     {
-        LPVOID lpMsgBuf;
-        FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-                      FORMAT_MESSAGE_IGNORE_INSERTS,NULL,GetLastError(),MAKELANGID(LANG_NEUTRAL,
-                                                                                   SUBLANG_DEFAULT),(LPTSTR)&lpMsgBuf,0,NULL);
-        printf("Error creating job object: %s\n",(char*)lpMsgBuf);
-        LocalFree(lpMsgBuf);
+        const DWORD error = GetLastError();
+        CTILOG_ERROR(dout, "Failed to create job object: "<< error <<" / "<< Cti::getSystemErrorMessage(error));
+
         return TCL_ERROR;
     }
     CloseHandle(pi.hThread);
     if (WAIT_OBJECT_0== WaitForSingleObject(pi.hProcess, INFINITE)) {
        GetExitCodeProcess(pi.hProcess, (DWORD *)&exitcode);
     } else {
-       printf("error with wait\n");
+       CTILOG_ERROR(dout, "Wait Failed");
     }
     CloseHandle(pi.hProcess);
     return TCL_OK;
@@ -2348,8 +2209,7 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT r
 
         if ( ! conn.isValid() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ERROR **** Invalid Connection to Database.  " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_ERROR(dout, "Invalid Connection to Database.");
 
             return ClientErrors::Abnormal;
         }
@@ -2366,8 +2226,7 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT r
             {
                 if( !(++count % 1000) )
                 {
-                    string current = "Writing results to DB, " + CtiNumStr(count) + " / " + CtiNumStr(total) + " written";
-                    WriteOutput(current.c_str());
+                    CTILOG_INFO(dout, "Writing results to DB, "<< count <<" / "<< total <<" written");
                 }
 
                 result_itr->setLogID(i);
@@ -2377,16 +2236,12 @@ int WriteResultsToDatabase(std::deque<CtiTableMeterReadLog>& resultQueue, UINT r
 
             if( count % 1000 )
             {
-                string current = "Writing results to DB, " + CtiNumStr(count) + " / " + CtiNumStr(total) + " written";
-                WriteOutput(current.c_str());
+                CTILOG_INFO(dout, "Writing results to DB, "<< count <<" / "<< total <<" written");
             }
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 

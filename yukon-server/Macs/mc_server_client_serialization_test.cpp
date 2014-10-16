@@ -33,6 +33,8 @@
 
 #include "test_mc_serialization.h"
 
+#include "logManager.h"
+
 #include <crtdbg.h>
 #include "connection_server.h"
 
@@ -45,7 +47,6 @@ void __cdecl Purecall(void)
 
 
 bool bGCtrlC;
-DLLIMPORT extern CtiLogger dout;
 
 CtiListenerConnection listenerConn( "com.eaton.eas.yukon.conntest" );
 
@@ -91,7 +92,7 @@ struct ServerClientTestSequence
     {
         _tc.Create();
 
-        cout << "Populating " << typeid(*_tc._imsg).name() << endl;
+        CTILOG_INFO(dout, "Populating "<< typeid(*_tc._imsg).name());
 
         _tc.Populate();
 
@@ -113,12 +114,12 @@ void main(void)
     bGCtrlC = false;
 
     // fire up the logger thread
-    dout.start              ();
-    dout.setOutputPath      ( gLogDirectory );
-    dout.setRetentionLength ( gLogRetention );
-    dout.setOutputFile      ( "mc_server_client_serialization_test" );
-    dout.setToStdOut        ( true );
-    dout.setWriteInterval   ( 1000 );
+    doutManager.setOutputPath    ( gLogDirectory );
+    doutManager.setRetentionDays ( gLogRetention );
+    doutManager.setOutputFile    ( "mc_server_client_serialization_test" );
+    doutManager.setToStdOut      ( true );
+
+    doutManager.start();
 
     for(;!bGCtrlC;)
     {
@@ -133,7 +134,7 @@ void main(void)
             auto_ptr<CtiServerConnection> serverConn( new CtiServerConnection( listenerConn ));
             serverConn->start();
 
-            cout << CtiTime() << " New server connection established, Running test." << endl;
+            CTILOG_INFO(dout, "New server connection established, Running test.");
 
             {
                 RandomGenerator::reset( 0 + RandomSeedBase );
@@ -189,7 +190,8 @@ void main(void)
                 seq.Run();
             }
 
-            cout << CtiTime() << " Test completed. Press Enter to restart..." << endl << endl;
+            CTILOG_INFO(dout, "Test completed. Press Enter to restart...");
+
             cin.ignore();
             if( cin.eof() )
             {

@@ -47,11 +47,11 @@ BOOL CtrlHandler(DWORD fdwCtrlType)
     case CTRL_SHUTDOWN_EVENT:
     case CTRL_CLOSE_EVENT:
 
-    if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " **Checkpoint** " << "MACS received one of these events, Ctrl-C, Shutdown, or Close.  About to signal the server to shut down! " << __FILE__ << "(" << __LINE__ << ")" << endl;
-    }
+        if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
+        {
+            CTILOG_DEBUG(dout, "MACS received one of these events, Ctrl-C, Shutdown, or Close. About to signal the server to shut down!");
+        }
+
         UserQuit = true;
         SetEvent(hShutdown);
         Sleep(30000);
@@ -104,8 +104,7 @@ void CtiMCService::OnStop()
 {
     if( gMacsDebugLevel & MC_DEBUG_SHUTDOWN )
     {
-    CtiLockGuard<CtiLogger> dout_guard(dout);
-    dout << CtiTime() << " **Checkpoint** " << "MACS service received an OnStop event.  About to signal the server to shut down! " << __FILE__ << "(" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "MACS service received an OnStop event.  About to signal the server to shutdown!");
     }
 
     SetEvent(hShutdown);
@@ -122,15 +121,6 @@ void CtiMCService::Run()
 
     CtiMCScript::setScriptPath(gConfigParms.getValueAsPath("CTL_SCRIPTS_DIR", "server\\macsscripts"));
 
-    // Initialize the global logger
-    dout.setOwnerInfo(CompileInfo);
-    dout.setOutputFile("macs");
-    dout.setOutputPath(gLogDirectory);
-    dout.setRetentionLength(gLogRetention);
-    dout.setWriteInterval(1000);
-    dout.setToStdOut(true);
-    dout.start();
-
     // Make sure the database is available before we try to load anything from it.
     {
         bool writeLogMessage = true;
@@ -139,8 +129,7 @@ void CtiMCService::Run()
         {
             if ( writeLogMessage )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " - Database connection attempt failed." << std::endl;
+                CTILOG_ERROR(dout, "Database connection attempt failed.");
 
                 writeLogMessage = false;
             }
@@ -148,11 +137,6 @@ void CtiMCService::Run()
         }
         if ( UserQuit )
         {
-            SetStatus( SERVICE_STOP_PENDING, 50, 2500 );
-
-            dout.interrupt(CtiThread::SHUTDOWN);
-            dout.join();
-
             SetStatus( SERVICE_STOPPED );
 
             return;
@@ -179,9 +163,6 @@ void CtiMCService::Run()
 
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
     ThreadMonitor.join();
-
-    dout.interrupt(CtiThread::SHUTDOWN);
-    dout.join();
 
     SetStatus( SERVICE_STOPPED );
 }

@@ -157,18 +157,21 @@ int CtiFDR_Rdex::readConfig()
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Rdex port number " << getPortNumber() << endl;
-        dout << CtiTime() << " Rdex timestamp window " << getTimestampReasonabilityWindow() << endl;
-        dout << CtiTime() << " Rdex db reload rate " << getReloadRate() << endl;
-        dout << CtiTime() << " Rdex queue flush rate " << getQueueFlushRate() << " second(s) " << endl;
-        dout << CtiTime() << " Rdex send rate " << getOutboundSendRate() << endl;
-        dout << CtiTime() << " Rdex send interval " << getOutboundSendInterval() << " second(s) " << endl;
+        Cti::FormattedList loglist;
+
+        loglist.add("Rdex port number")      << getPortNumber();
+        loglist.add("Rdex timestamp window") << getTimestampReasonabilityWindow();
+        loglist.add("Rdex db reload rate")   << getReloadRate();
+        loglist.add("Rdex queue flush rate") << getQueueFlushRate() << " second(s)";
+        loglist.add("Rdex send rate")        << getOutboundSendRate();
+        loglist.add("Rdex send interval")    << getOutboundSendInterval() << " second(s)";
 
         if (isInterfaceInDebugMode())
-            dout << CtiTime() << " Rdex running in debug mode " << endl;
+            loglist <<"Rdex running in debug mode";
         else
-            dout << CtiTime() << " Rdex running in normal mode "<< endl;
+            loglist <<"Rdex running in normal mode";
+
+        CTILOG_DEBUG(dout, loglist);
     }
     return true;
 }
@@ -198,12 +201,12 @@ bool CtiFDR_Rdex::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, in
 
     } // end try
 
-    catch (RWExternalErr e )
+    catch (const RWExternalErr& e )
     {
         getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  " << e.why() << endl;
+
+        CTILOG_EXCEPTION_ERROR(dout, e);
         RWTHROW(e);
     }
 
@@ -212,8 +215,8 @@ bool CtiFDR_Rdex::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, in
     {
         getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
         getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") translateAndLoadPoint():  (...) "<< endl;
+
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return successful;
 }
@@ -257,10 +260,9 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 
                         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Analog/Calculated point " << aPoint.getPointID();
-                            dout << " queued as " << aPoint.getTranslateName(getLayer()->getName());
-                            dout << " value " << aPoint.getValue() << " to " << getLayer()->getName() << endl;;
+                            CTILOG_DEBUG(dout, "Analog/Calculated point "<< aPoint.getPointID() <<
+                                    " queued as "<< aPoint.getTranslateName(getLayer()->getName()) <<
+                                    " value "<< aPoint.getValue() <<" to "<< getLayer()->getName());
                         }
 
                         break;
@@ -282,8 +284,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 
                                 if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for Rdex interface to " << getLayer()->getName() << endl;
+                                    CTILOG_DEBUG(dout, "Point "<< aPoint.getPointID() <<" State "<< aPoint.getValue() <<" is invalid for Rdex interface to "<< getLayer()->getName());
                                 }
                             }
                             else
@@ -292,18 +293,20 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 
                                  if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                  {
-                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                     dout << CtiTime() << " Control point " << aPoint.getPointID();
-                                     dout << " queued as " << aPoint.getTranslateName(getLayer()->getName());
+                                     Cti::StreamBuffer logmsg;
+
+                                     logmsg <<" Control point "<< aPoint.getPointID() <<" queued as "<< aPoint.getTranslateName(getLayer()->getName());
                                      if (aPoint.getValue() == STATE_OPENED)
                                      {
-                                         dout << " state of Open ";
+                                         logmsg << " state of Open ";
                                      }
                                      else
                                      {
-                                         dout << " state of Close ";
+                                         logmsg << " state of Close ";
                                      }
-                                     dout << "to " << getLayer()->getName() << endl;;
+                                     logmsg <<"to "<< getLayer()->getName();
+
+                                     CTILOG_DEBUG(dout, logmsg);
                                  }
                             }
                         }
@@ -322,8 +325,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 
                                 if (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL)
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Point " << aPoint.getPointID() << " State " << aPoint.getValue() << " is invalid for Rdex interface to " << getLayer()->getName() << endl;
+                                    CTILOG_DEBUG(dout, "Point "<< aPoint.getPointID() <<" State "<< aPoint.getValue() <<" is invalid for Rdex interface to "<< getLayer()->getName());
                                 }
                             }
                             else
@@ -332,18 +334,20 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
 
                                  if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                                  {
-                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                     dout << CtiTime() << " Status point " << aPoint.getPointID();
-                                     dout << " queued as " << aPoint.getTranslateName(getLayer()->getName());
+                                     Cti::StreamBuffer logmsg;
+
+                                     logmsg <<" Status point "<< aPoint.getPointID() <<" queued as "<< aPoint.getTranslateName(getLayer()->getName());
                                      if (aPoint.getValue() == STATE_OPENED)
                                      {
-                                         dout << " state of Open ";
+                                         logmsg << " state of Open ";
                                      }
                                      else
                                      {
-                                         dout << " state of Close ";
+                                         logmsg << " state of Close ";
                                      }
-                                     dout << "to " << getLayer()->getName() << endl;
+                                     logmsg << "to " << getLayer()->getName();
+
+                                     CTILOG_DEBUG(dout, logmsg);
                                  }
                             }
                         }
@@ -360,8 +364,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemMsg ( CtiFDRPoint &aPoint )
         {
             if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Destination not found to send update to. Point is misconfigured or registered incorrectly. ID: " << aPoint.getPointID() << endl;
+                CTILOG_DEBUG(dout, "Destination not found to send update to. Point is misconfigured or registered incorrectly. ID: " << aPoint.getPointID());
             }
             delete []buffer;
             buffer = NULL;
@@ -394,8 +397,7 @@ CHAR *CtiFDR_Rdex::buildForeignSystemHeartbeatMsg ()
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Not building heartbeat message, not registered " << endl;
+        CTILOG_WARN(dout, "Not building heartbeat message, not registered");
     }
     return buffer;
 }
@@ -453,8 +455,7 @@ int CtiFDR_Rdex::processMessageFromForeignSystem(CHAR *aBuffer)
             {
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Time sync message received from " << getLayer()->getName() << endl;
+                    CTILOG_DEBUG(dout, "Time sync message received from "<< getLayer()->getName());
                 }
                 break;
             }
@@ -462,16 +463,14 @@ int CtiFDR_Rdex::processMessageFromForeignSystem(CHAR *aBuffer)
             {
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Heartbeat message received from " << getLayer()->getName() << " at " << getLayer()->getInBoundConnection()->getAddr().toString() << endl;
+                    CTILOG_DEBUG(dout, "Heartbeat message received from "<< getLayer()->getName() <<" at "<< getLayer()->getInBoundConnection()->getAddr());
                 }
                 break;
             }
         default:
             if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unknown message type " << ntohl (rdex->function) <<  " received from " << getInterfaceName() << endl;
+                CTILOG_DEBUG(dout, "Unknown message type "<< ntohl (rdex->function) <<" received from "<< getInterfaceName());
             }
     }
 
@@ -505,10 +504,7 @@ int CtiFDR_Rdex::processRegistrationMessage(CHAR *aData)
         Sleep (500);  // this a dangerous way to do this
         if (getLayer()->write (buffer))
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Registration acknowledgement to " << getLayer()->getName() << " failed " << endl;
-            }
+            CTILOG_ERROR(dout, "Registration acknowledgment to "<< getLayer()->getName() <<" failed");
 
             action = getLayer()->getName() + ": Acknowledgment";
             desc = getLayer()->getName() + " registration acknowledgment message has failed";
@@ -518,10 +514,7 @@ int CtiFDR_Rdex::processRegistrationMessage(CHAR *aData)
         else
         {
             setRegistered (true);
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getLayer()->getName() << " has registered with Yukon" << endl;
-            }
+            CTILOG_INFO(dout, getLayer()->getName() <<" has registered with Yukon");
 
             action = getLayer()->getName() + ": Registration";
             desc = getLayer()->getName() + " has registered with Yukon";
@@ -595,10 +588,10 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
 
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Analog point " << translationName;
-                    dout << " value " << value << " from " << getLayer()->getName() << " assigned to point " << point.getPointID() << endl;;
+                    CTILOG_DEBUG(dout, "Analog point "<< translationName <<" value "<< value <<" from "<< getLayer()->getName() <<
+                            " assigned to point " << point.getPointID());
                 }
+
                 retVal = ClientErrors::None;
             }
         }
@@ -608,11 +601,9 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
             {
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Translation for analog point " << translationName;
-                        dout << " from " << getLayer()->getName() << " was not found" << endl;
-                    }
+                    CTILOG_DEBUG(dout, "Translation for analog point "<< translationName <<" from "<< getLayer()->getName() <<
+                            " was not found");
+
                     desc = getInterfaceName() + string (" analog point is not listed in the translation table");
                     _snprintf(action,60,"%s", translationName.c_str());
                     logEvent (desc,string (action));
@@ -622,11 +613,9 @@ int CtiFDR_Rdex::processValueMessage(CHAR *aData)
             {
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Analog point " << translationName;
-                        dout << " from " << getLayer()->getName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
-                    }
+                    CTILOG_DEBUG(dout, "Analog point "<< translationName <<" from "<< getLayer()->getName() <<
+                            " was mapped incorrectly to non-analog point "<< point.getPointID());
+
                     CHAR pointID[20];
                     desc = getInterfaceName() + string (" analog point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
                     _snprintf(action,60,"%s", translationName.c_str());
@@ -680,11 +669,8 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Status point " << translationName;
-                        dout << " from " << getLayer()->getName()<< " has an invalid state " <<ntohl(data->status.value) << endl;
-                    }
+                    CTILOG_ERROR(dout, "Status point "<< translationName <<" from "<< getLayer()->getName()<<" has an invalid state " <<ntohl(data->status.value));
+
                     CHAR state[20];
                     desc = getInterfaceName() + string (" status point received with an invalid state ") + string (itoa (ntohl(data->status.value),state,10));
                     _snprintf(action,60,"%s for pointID %d",
@@ -708,18 +694,22 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
 
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Status point " << translationName;
+                    Cti::StreamBuffer logmsg;
+
+                    logmsg <<" Status point "<< translationName;
                     if (value == STATE_OPENED)
                     {
-                        dout << " new state: Open " ;
+                        logmsg <<" new state: Open ";
                     }
                     else
                     {
-                        dout << " new state: Closed " ;
+                        logmsg <<" new state: Closed ";
                     }
-                    dout <<" from " << getLayer()->getName() << " assigned to point " << point.getPointID() << endl;;
+                    logmsg <<" from " << getLayer()->getName() << " assigned to point " << point.getPointID();
+
+                    CTILOG_DEBUG(dout, logmsg);
                 }
+
                 retVal = ClientErrors::None;
             }
         }
@@ -729,11 +719,9 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
             {
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Translation for status point " <<  translationName;
-                        dout << " from " << getLayer()->getName() << " was not found" << endl;
-                    }
+                    CTILOG_DEBUG(dout, "Translation for status point "<< translationName <<" from "<< getLayer()->getName() <<
+                            " was not found");
+
                     desc = getInterfaceName() + string (" status point is not listed in the translation table");
                     _snprintf(action,60,"%s", translationName.c_str());
                     logEvent (desc,string (action));
@@ -743,11 +731,9 @@ int CtiFDR_Rdex::processStatusMessage(CHAR *aData)
             {
                 if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Status point " << translationName;
-                        dout << " from " << getLayer()->getName() << " was mapped incorrectly to non-status point " << point.getPointID() << endl;
-                    }
+                    CTILOG_DEBUG(dout, "Status point "<< translationName <<" from "<< getLayer()->getName() <<
+                            " was mapped incorrectly to non-status point "<< point.getPointID());
+
                     CHAR pointID[20];
                     desc = getInterfaceName() + string (" status point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
                     _snprintf(action,60,"%s", translationName.c_str());
@@ -790,11 +776,9 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
 
             if (controlState == Rdex_Invalid)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Control point " << translationName;
-                    dout << " from " << getLayer()->getName()<< " has an invalid control state " <<ntohl(data->control.value) << endl;
-                }
+                CTILOG_ERROR(dout, "Control point "<< translationName <<
+                        " from "<< getLayer()->getName() <<" has an invalid control state "<< ntohl(data->control.value));
+
                 CHAR state[20];
                 desc = getInterfaceName() + string (" control point received with an invalid state ") + string (itoa (ntohl(data->control.value),state,10));
                 _snprintf(action,60,"%s for pointID %d",
@@ -817,18 +801,20 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
 
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Control point " << translationName;
+                    Cti::StreamBuffer logmsg;
+
+                    logmsg <<" Control point "<< translationName;
                     if (controlState == STATE_OPENED)
                     {
-                        dout << " control: Open " ;
+                        logmsg <<" control: Open " ;
                     }
                     else
                     {
-                        dout << " control: Closed " ;
+                        logmsg <<" control: Closed ";
                     }
+                    logmsg <<" from " << getLayer()->getName() << " and processed for point " << point.getPointID();
 
-                    dout <<" from " << getLayer()->getName() << " and processed for point " << point.getPointID() << endl;;
+                    CTILOG_DEBUG(dout, logmsg);
                  }
                 retVal = ClientErrors::None;
             }
@@ -839,11 +825,9 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
             {
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Translation for control point " <<  translationName;
-                        dout << " from " << getLayer()->getName() << " was not found" << endl;
-                    }
+                    CTILOG_DEBUG(dout, "Translation for control point " <<  translationName <<
+                            " from " << getLayer()->getName() << " was not found");
+
                     desc = getInterfaceName() + string (" control point is not listed in the translation table");
                     _snprintf(action,60,"%s", translationName.c_str());
                     logEvent (desc,string (action));
@@ -854,12 +838,10 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
             {
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Control point " << translationName;
-                        dout << " received from " << getLayer()->getName();
-                        dout << " was not configured receive for control for point " << point.getPointID() << endl;
-                    }
+                    CTILOG_DEBUG(dout, "Control point "<< translationName <<
+                            " received from " << getLayer()->getName() <<
+                            " was not configured receive for control for point " << point.getPointID());
+
                     desc = getInterfaceName() + string (" control point is not configured to receive controls");
                     _snprintf(action,60,"%s for pointID %d",
                               translationName.c_str(),
@@ -871,12 +853,10 @@ int CtiFDR_Rdex::processControlMessage(CHAR *aData)
             {
                 if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Control point " << translationName;
-                        dout << " received from " << getLayer()->getName();
-                        dout << " was mapped to non-control point " <<  point.getPointID() << endl;;
-                    }
+                    CTILOG_DEBUG(dout, "Control point " << translationName <<
+                            " received from " << getLayer()->getName() <<
+                            " was mapped to non-control point " << point.getPointID());
+
                     CHAR pointID[20];
                     desc = getInterfaceName() + string (" control point is incorrectly mapped to point ") + string (ltoa(point.getPointID(),pointID,10));
                     _snprintf(action,60,"%s", translationName.c_str());

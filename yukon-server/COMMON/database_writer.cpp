@@ -40,12 +40,8 @@ bool DatabaseWriter::execute()
     catch(SAException &x)
     {
         retVal = false;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ERROR **** DB EXCEPTION " << (string)x.ErrText() << " Class "
-                 << x.ErrClass() << " Pos " << x.ErrPos() << " nativeCode " << x.ErrNativeCode() << " in query: " << endl;
-            dout << asString() << " " << __FILE__ << " " << __LINE__ << endl;
-        }
+
+        CTILOG_EXCEPTION_ERROR(dout, x, "DB Writer execute failed for SQL query: "<< asString());
     }
     return retVal;
 }
@@ -58,12 +54,7 @@ void DatabaseWriter::executeWithDatabaseException()
     }
     catch(SAException &x)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ERROR **** DB EXCEPTION " << (string)x.ErrText() << " Class "
-                 << x.ErrClass() << " Pos " << x.ErrPos() << " nativeCode " << x.ErrNativeCode() << " in query: " << endl;
-            dout << asString() << " " << __FILE__ << " " << __LINE__ << endl;
-        }
+        CTILOG_EXCEPTION_ERROR(dout, x, "DB Writer execute failed for SQL query: "<< asString());
 
         DatabaseConnection::throwDatabaseException(_command.Connection(), x);
     }

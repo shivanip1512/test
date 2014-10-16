@@ -1,7 +1,6 @@
 #include "precompiled.h"
 
 #include "tbl_pt_limit.h"
-
 #include "resolvers.h"
 #include "logger.h"
 
@@ -55,14 +54,17 @@ void CtiTablePointLimit::getSQL(string &sql, LONG pointID, LONG paoID, const std
     sql = sql_stream.str();
 }
 
-void CtiTablePointLimit::dump() const
+std::string CtiTablePointLimit::toString() const
 {
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   dout << " PointID                                  : " << _pointID << endl;
-   dout << " Limit Number Value                       : " << _limitNumber << endl;
-   dout << " Hi Limit Value                           : " << _highLimit << endl;
-   dout << " Lo Limt Value                            : " << _lowLimit << endl;
-   dout << " Limit Duration                           : " << _limitDuration << endl;
+    Cti::FormattedList itemList;
+
+    itemList.add("PointID")            << _pointID;
+    itemList.add("Limit Number Value") << _limitNumber;
+    itemList.add("Hi Limit Value")     << _highLimit;
+    itemList.add("Lo Limt Value")      << _lowLimit;
+    itemList.add("Limit Duration")     << _limitDuration;
+
+    return itemList.toString();
 }
 
 

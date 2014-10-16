@@ -32,7 +32,7 @@ public:
    CtiNotifEmailMsg();
    //NEED TO ADD A COPY CONSTRUCTOR!
    virtual ~CtiNotifEmailMsg();
-   virtual void dump() const;
+   virtual std::string toString() const override;
 
    CtiMessage* replicateMessage() const;
    int getNotifGroupId() const;
@@ -75,7 +75,7 @@ public:
    CtiCustomerNotifEmailMsg();
    //NEED TO ADD A COPY CONSTRUCTOR!
    virtual ~CtiCustomerNotifEmailMsg();
-   virtual void dump() const;
+   virtual std::string toString() const override;
 
    CtiMessage* replicateMessage() const;
    int getCustomerId() const;

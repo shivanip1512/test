@@ -188,11 +188,8 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
                             clpCount = (int)( (float)clsec / 14.0616 );
                             if(clpCount >= 255) clpCount = 255;
                             // Input:Cold Load Pickup Count, 0-255, 1 count = 14.0616seconds
-                            {
-                                CtiLockGuard<CtiLogger> slog_guard(slog);
-                                slog << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                slog << " Calling coldLoadPickup205(). Serial " << serialstr << " " << clpstr << " set to  " << clpCount << " on the receiver (* 14.0616 = sec) " << endl;
-                            }
+
+                            CTILOG_INFO(slog, "Calling coldLoadPickup205(). Serial "<< serialstr <<" "<< clpstr <<" set to "<< clpCount <<" on the receiver (* 14.0616 = sec)");
 
                             coldLoadPickup205(&_sa._buffer[totalLen], &_sa._bufferLen, _sa._serial, i, clpCount, _sa._transmitterAddress);
                             _messageReady = true;
@@ -226,11 +223,7 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
 
                         if( (tdCount = parse.getiValue(tdstr,-1)) >= 0 )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> slog_guard(slog);
-                                slog << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                slog << " Calling tamperDetect205(). Serial " << serialstr << " " << tdstr << " set to  " << tdCount << " on the receiver " << endl;
-                            }
+                            CTILOG_INFO(slog, "Calling tamperDetect205(). Serial "<< serialstr <<" "<< tdstr <<" set to "<< tdCount <<" on the receiver");
 
                             if(!tamperDetect205(&_sa._buffer[totalLen], &_sa._bufferLen, _sa._serial, i, tdCount, _sa._transmitterAddress))
                             {
@@ -248,15 +241,9 @@ INT CtiProtocolSA3rdParty::parseCommand(CtiCommandParser &parse)
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << CtiTime() << " Unsupported command. Command = " << parse.getCommand() << endl;
-            }
+            CTILOG_ERROR(dout, "Unsupported command. Command = "<< parse.getCommand());
 
             status = ClientErrors::InvalidRequest;
-
-            break;
         }
     }
 
@@ -300,10 +287,8 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
         if(_sa._groupType != SA205 && _sa._groupType != SA105)
         {
             status = ClientErrors::NoMethod;
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** CONTROL RESTORE? **** Cannot restore this type of group." << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+
+            CTILOG_ERROR(dout, "Cannot restore this type of group");
         }
 
         _sa._sTime = parse.getiValue("sa205_last_stime", 0);
@@ -336,8 +321,8 @@ INT CtiProtocolSA3rdParty::assembleControl(CtiCommandParser &parse)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Unsupported command.  Command = " << parse.getCommand() << endl;
+        CTILOG_ERROR(dout, "Unsupported command.  Command = "<< parse.getCommand());
+
         status = ClientErrors::NoMethod;
     }
 
@@ -395,10 +380,7 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
 
                 parse.setValue(mstr, rwsaddr);              // Stored as a string because the Telvent lib wants it that way!!
 
-                {
-                    CtiLockGuard<CtiLogger> slog_guard(slog);
-                    slog << CtiTime() << " Address config command. Serial " << parse.getiValue("serial") << " writing address " << addr << " to slot " << i << " on the receiver" << endl;
-                }
+                CTILOG_INFO(slog, "Address config command. Serial "<< parse.getiValue("serial") <<" writing address "<< addr <<" to slot "<< i <<" on the receiver");
             }
         }
     }
@@ -415,10 +397,9 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
             boost::regex_search(str, what, e1, boost::match_default);
             str = string(what[0]);
             offtime = atoi(str.c_str());
-            {
-                CtiLockGuard<CtiLogger> slog_guard(slog);
-                slog << CtiTime() << " Temporary service command. Serial " << parse.getiValue("serial") << " Offhours = " << offtime << endl;
-            }
+
+            CTILOG_INFO(slog, "Temporary service command. Serial "<< parse.getiValue("serial") <<" Offhours = "<< offtime);
+
             parse.setValue("sa_offtime", offtime);              // Stored as a string because the Telvent lib wants it that way!!
         }
     }
@@ -438,20 +419,15 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
                 boost::regex_search(token, what, e1, boost::match_default);
                 str = string(what[0]);
                 offtime = atoi(str.c_str());
-                {
-                    CtiLockGuard<CtiLogger> slog_guard(slog);
-                    slog << CtiTime() << " Temporary service command. Serial " << parse.getiValue("serial") << " Offhours = " << offtime << endl;
-                }
+
+                CTILOG_INFO(slog, "Temporary service command. Serial "<< parse.getiValue("serial") <<" Offhours = "<< offtime);
+
                 parse.setValue("sa_offtime", offtime);              // Stored as a string because the Telvent lib wants it that way!!
             }
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Unknown service command: \"" << str << "\"" <<endl;
-            }
+            CTILOG_ERROR(dout, "Unknown service command: \""<< str <<"\"");
         }
     }
     else if(parse.isKeyValid("sa_coldload"))
@@ -507,8 +483,7 @@ INT CtiProtocolSA3rdParty::loadControl()
 
             if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " control105_205() complete" << endl;
+                CTILOG_DEBUG(dout, "control105_205() complete");
             }
 
             break;
@@ -519,8 +494,7 @@ INT CtiProtocolSA3rdParty::loadControl()
 
             if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " controlGolay() complete" << endl;
+                CTILOG_DEBUG(dout, "controlGolay() complete");
             }
 
             break;
@@ -534,8 +508,7 @@ INT CtiProtocolSA3rdParty::loadControl()
 
             if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " controlSADigital() complete" << endl;
+                CTILOG_DEBUG(dout, "controlSADigital() complete");
             }
 
             break;
@@ -559,11 +532,8 @@ INT CtiProtocolSA3rdParty::addressAssign(INT &len, USHORT slot)
     {
     case SA205:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                retCode = config205(&_sa._buffer[len], &_sa._bufferLen, _sa._serial, slot, _sa._codeSimple, _sa._transmitterAddress);
-                dout << CtiTime() << " config205() complete" << endl;
-            }
+            retCode = config205(&_sa._buffer[len], &_sa._bufferLen, _sa._serial, slot, _sa._codeSimple, _sa._transmitterAddress);
+            CTILOG_INFO(dout, "config205() complete");
             break;
         }
     case SA105:
@@ -571,10 +541,7 @@ INT CtiProtocolSA3rdParty::addressAssign(INT &len, USHORT slot)
     case SADIG:
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Address assignment is not supported by protocol for grouptype " << _sa._groupType << endl;
-            }
+            CTILOG_ERROR(dout, "Address assignment is not supported by protocol for grouptype "<< _sa._groupType);
             break;
         }
     }
@@ -588,10 +555,7 @@ INT CtiProtocolSA3rdParty::restoreLoadControl()
 {
     INT status = ClientErrors::None;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_WARN(dout, "No action taken");
 
     return status;
 }
@@ -657,10 +621,8 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 else
                 {
                     status = ClientErrors::BadParameter;
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
-                    }
+
+                    CTILOG_ERROR(dout, "Cycle parameters are not available on this switch for selected period" );
                 }
             }
             else if(cycle_period <= 15)
@@ -716,10 +678,8 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 else
                 {
                     status = ClientErrors::BadParameter;
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
-                    }
+
+                    CTILOG_ERROR(dout, "Cycle parameters are not available on this switch for selected period" );
                 }
             }
 #ifdef SA_PROTOCOL_COMPLETE
@@ -748,10 +708,8 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 else
                 {
                     status = ClientErrors::BadParameter;
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
-                    }
+
+                    CTILOG_ERROR(dout, "Cycle parameters are not available on this switch for selected period" );
                 }
             }
 #endif
@@ -824,10 +782,8 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 else
                 {
                     status = ClientErrors::BadParameter;
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
-                    }
+
+                    CTILOG_ERROR(dout, "Cycle parameters are not available on this switch for selected period" );
                 }
             }
 #ifdef SA_PROTOCOL_COMPLETE
@@ -868,10 +824,8 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 else
                 {
                     status = ClientErrors::BadParameter;
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
-                    }
+
+                    CTILOG_ERROR(dout, "Cycle parameters are not available on this switch for selected period" );
                 }
             }
             else if(cycle_period <= 45)
@@ -917,10 +871,8 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 else
                 {
                     status = ClientErrors::BadParameter;
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
-                    }
+
+                    CTILOG_ERROR(dout, "Cycle parameters are not available on this switch for selected period" );
                 }
             }
             else if(cycle_period <= 53)
@@ -972,10 +924,8 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 else
                 {
                     status = ClientErrors::BadParameter;
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
-                    }
+
+                    CTILOG_ERROR(dout, "Cycle parameters are not available on this switch for selected period" );
                 }
             }
 #endif
@@ -1110,10 +1060,8 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
                 else
                 {
                     status = ClientErrors::BadParameter;
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Cycle parameters are not available on this switch for selected period." << endl;
-                    }
+
+                    CTILOG_ERROR(dout, "Cycle parameters are not available on this switch for selected period" );
                 }
             }
 
@@ -1130,22 +1078,8 @@ int CtiProtocolSA3rdParty::solveStrategy(CtiCommandParser &parse)
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Unknown command check syntax. **** " << __FILE__ << " (" << __LINE__ << ") " << parse.getCommandStr() << endl;
-            }
+            CTILOG_ERROR(dout, "Unknown command check syntax");
         }
-    }
-
-
-    if(0)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << " switch timeout: " << _sa._swTimeout << endl;
-        dout << " cycle time    : " << _sa._cycleTime << endl;
-        dout << " period        : " << _sa._cycleTime << endl;
-        dout << " repetitions   : " << _sa._repeats << endl;
     }
 
     return status;
@@ -1281,35 +1215,34 @@ void CtiProtocolSA3rdParty::computeShedTimes(int shed_time)
 
 void CtiProtocolSA3rdParty::processResult(INT retCode)
 {
-    INT i;
+    Cti::StreamBuffer outLog;
 
+    if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        outLog << endl <<"retcode "<< retCode <<" buflen: "<< _sa._bufferLen;
+    }
+
+    if((retCode != PROTSA_SUCCESS) && (retCode !=PROTSA_SUCCESS_MODIFIED_PARAM)  )
+    {
+        retCode = lastSAError(_errorBuf, &_errorLen);
 
         if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
         {
-            dout << "retcode " << retCode << " buflen: " << _sa._bufferLen << endl;
+            outLog << endl <<" errorbuf: "<< _errorBuf <<" len: "<< _errorLen;
+            CTILOG_DEBUG(dout, outLog);
         }
 
-        if((retCode != PROTSA_SUCCESS) && (retCode !=PROTSA_SUCCESS_MODIFIED_PARAM)  )
-        {
-            retCode = lastSAError(_errorBuf, &_errorLen);
-
-            if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
-            {
-                dout << " errorbuf: " << _errorBuf << " len: " << _errorLen << endl;
-            }
-
-            _errorLen = MAX_SAERR_MSG_SIZE;
-        }
-        else if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
-        {
-            for(i = 0; i<_sa._bufferLen; i++)
-                dout << CtiNumStr(_sa._buffer[i]).hex().zpad(2) << " ";
-            dout << endl;
-        }
+        _errorLen = MAX_SAERR_MSG_SIZE;
     }
-
+    else if( getDebugLevel() & DEBUGLEVEL_SA3RDPARTY )
+    {
+        outLog << endl << std::hex << std::setfill('0');
+        for(int i = 0; i<_sa._bufferLen; i++)
+        {
+            outLog << std::setw(2) << _sa._buffer[i] <<" ";
+        }
+        CTILOG_DEBUG(dout, outLog);
+    }
 }
 
 void CtiProtocolSA3rdParty::copyMessage(string &str) const
@@ -2024,21 +1957,14 @@ string CtiProtocolSA3rdParty::asString(const SA_CODE &sa)
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-                break;
+                CTILOG_ERROR(dout, "unknown sa.type ("<< sa.type <<")");
             }
         }
 
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return CtiProtocolSA3rdParty::asString(saData);

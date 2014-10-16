@@ -69,10 +69,8 @@ CtiProtocolExpresscom& CtiProtocolExpresscom::operator=(const CtiProtocolExpress
 {
     if(this != &aRef)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        //TODO: Remove this log or make this class non-copyable
+        CTILOG_TRACE(dout, "inside "<<__FUNCTION__);
     }
     return *this;
 }
@@ -298,11 +296,7 @@ YukonError_t CtiProtocolExpresscom::signalTest(BYTE test)
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-            break;
+            CTILOG_ERROR(dout, "unknown signal test ("<< test <<")");
         }
     }
 
@@ -503,8 +497,7 @@ YukonError_t CtiProtocolExpresscom::targetReductionCycleControl(UINT loadMask, B
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Invalid KWH value " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Invalid KWH value "<< targetKWH);
             }
 
             //Check for kwhvalue!=0 ??
@@ -1037,11 +1030,7 @@ YukonError_t CtiProtocolExpresscom::capControl(BYTE action, BYTE subAction, BYTE
                 }
             default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    break;
+                    CTILOG_ERROR(dout, "invalid sub action ("<< subAction <<")");
                 }
             }
             break;
@@ -1058,11 +1047,7 @@ YukonError_t CtiProtocolExpresscom::capControl(BYTE action, BYTE subAction, BYTE
                 }
             default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                    break;
+                    CTILOG_ERROR(dout, "invalid sub action ("<< subAction <<")");
                 }
             }
             break;
@@ -1154,14 +1139,9 @@ YukonError_t CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
         }
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unsupported command on expresscom route Command = " << command << endl;
-            }
+            CTILOG_ERROR(dout, "Unsupported command on expresscom route Command = "<< command);
 
             status = ClientErrors::InvalidRequest;
-
-            break;
         }
     }
 
@@ -1198,20 +1178,16 @@ void CtiProtocolExpresscom::dump() const
 {
     if( _message.size() > 0 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        Cti::StreamBuffer outLog;
 
-        char of = dout.fill('0');
-
-        dout << " Message : ";
+        outLog <<"\nMessage :"<< hex << setfill('0');
 
         for( int i = 0; i < _message.size(); i++ )
         {
-            dout << hex << setw(2) << (int)_message[i] << dec << " ";
+            outLog <<" "<< setw(2) << (unsigned)_message[i];
         }
 
-        dout << endl;
-
-        dout.fill(of);
+        CTILOG_INFO(dout, outLog);
     }
 }
 
@@ -1238,8 +1214,7 @@ YukonError_t CtiProtocolExpresscom::assembleGetValue(CtiCommandParser &parse)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Unsupported expresscom command.  Command = " << parse.getCommandStr() << endl;
+        CTILOG_ERROR(dout, "Unsupported expresscom command \""<< parse.getCommandStr() <<"\"");
     }
 
     return status;
@@ -1394,8 +1369,7 @@ YukonError_t CtiProtocolExpresscom::assembleControl(CtiCommandParser &parse)
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Unsupported expresscom command.  Command = " << parse.getCommandStr() << endl;
+        CTILOG_ERROR(dout, "Unsupported expresscom command \""<< parse.getCommandStr() <<"\"");
     }
 
     return status;
@@ -1475,10 +1449,8 @@ YukonError_t CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse)
             else
             {
                 status = ClientErrors::BadParameter;
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Incompatible addressing modes.  Assigning load level addressing to a group without load level addressing is not allowed." << endl;
-                }
+
+                CTILOG_ERROR(dout, "Incompatible addressing modes.  Assigning load level addressing to a group without load level addressing is not allowed.");
             }
 
             if(go)
@@ -2448,7 +2420,7 @@ void CtiProtocolExpresscom::incrementMessageCount()
 BYTE CtiProtocolExpresscom::getByte(int pos, int messageNum)// messageNum is a 1 based number
 {
     char byte[5];
-    BYTE retVal;
+    BYTE retVal = 0;
     try
     {
         if(_useASCII)
@@ -2526,8 +2498,7 @@ BYTE CtiProtocolExpresscom::getByte(int pos, int messageNum)// messageNum is a 1
     }
     catch(...)//_lengths.at() can throw
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         retVal = 0;
     }
 
@@ -2619,8 +2590,7 @@ int CtiProtocolExpresscom::messageSize(int messageNum)
     }
     catch(...)//_lengths.at() can throw
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         size = 0;
     }
 
@@ -3022,15 +2992,13 @@ int CtiProtocolExpresscom::tierOf(std::string btp_alert_level)
         }
         else
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << " **** Checkpoint **** Unhandled alert level: " << btp_alert_level << ". Setting to 0." << endl;
+            CTILOG_ERROR(dout, "Unhandled alert level: "<< btp_alert_level <<". Setting to 0.");
             return 0;
         }
     }
-    catch(Cti::BeatThePeak::AlertLevel::InvalidAlertLevel)
+    catch(const Cti::BeatThePeak::AlertLevel::InvalidAlertLevel &ex)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << " **** Checkpoint **** Invalid alert level: " << btp_alert_level << ". Setting to 0." << endl;
+        CTILOG_EXCEPTION_ERROR(dout, ex, "Unhandled alert level: "<< btp_alert_level <<". Setting to 0");
         return 0;
     }
 }

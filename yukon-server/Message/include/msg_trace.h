@@ -36,8 +36,7 @@ public:
 
     CtiMessage* replicateMessage() const;
 
-    virtual void dump() const;
-
+    virtual std::string toString() const override;
 
     CtiTraceMsg& resetAttributes();
     CtiTraceMsg& setEnd(bool nd = true);

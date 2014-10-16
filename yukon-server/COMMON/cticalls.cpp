@@ -1,288 +1,229 @@
 #include "precompiled.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <rw\thr\mutex.h>
-
-#include "os2_2w32.h"
 #include "cticalls.h"
 #include "dllbase.h"
-#include "dsm2.h"
 #include "logger.h"
+#include "win_helper.h"
 
-using namespace std;
+#include <string>
 
-/* CTI Sleep Function */
-APIRET IM_EX_CTIBASE CTISleep (ULONG SleepTime)
+using Cti::getSystemErrorMessage;
+
+
+void CTISleep(ULONG SleepTime)
 {
-   Sleep (SleepTime);      // Win32 does not return anything.
-   return((APIRET)0);    // Return a OS/2 NO_ERROR!
+    Sleep(SleepTime); // Win32 does not return anything.
 }
 
-APIRET IM_EX_CTIBASE CTIScanEnv ( PSZ Name, PSZ *Result )
+
+YukonError_t CTIScanEnv(PSZ Name, PSZ *Result)
 {
-   int status = -1;
-
    *Result = NULL;
-
-
    static char Env[512];    // This IS be non-threadsafe
 
-   if( GetEnvironmentVariable(Name, Env, 500) )
+   if( ! GetEnvironmentVariable(Name, Env, 500) )
    {
-      *Result = Env;
-      status = 0;
+       return ClientErrors::Abnormal;
    }
+   
+   *Result = Env;
 
-   return (status);
+   return ClientErrors::None;
 }
 
 
-void IM_EX_CTIBASE CTIExit (ULONG ExitType, ULONG ExitCode)
+YukonError_t CTICloseMutexSem(PHMTX phmtx)
 {
+   if( ! CloseHandle(*phmtx) )
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " **** Checkpoint CTIExit (deprecated) **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       const DWORD error = GetLastError();
+       if(error != ERROR_FILE_NOT_FOUND)
+       {
+           CTILOG_ERROR(dout, "CloseHandle() failed with error code "<< error <<" / "<< getSystemErrorMessage(error));
+       }
+       return ClientErrors::Abnormal;
    }
 
-   ExitThread(ExitCode);
+   return ClientErrors::None;
 }
 
 
-APIRET IM_EX_CTIBASE CTICloseMutexSem(PHMTX phmtx)
+YukonError_t CTICreateMutexSem(PSZ pszName, PHMTX phmtx, ULONG Flags, BOOL bState)
 {
-   DWORD err;
-   if(!(CloseHandle(*phmtx)))
-   {
-      if((err = GetLastError()) != ERROR_FILE_NOT_FOUND)
-      {
-         RWMutexLock::LockGuard guard(coutMux);
-         printf("Error in CloseMutex = %05d\n",err);
-      }
-      return(APIRET)1;    // This is an error!!!!
-   }
-   else
-   {
-      return(APIRET)0;    // OS2 returns zero on success so do that.
-   }
-}
-
-
-APIRET IM_EX_CTIBASE CTICreateMutexSem(PSZ pszName, PHMTX phmtx, ULONG Flags, BOOL bState)
-{
-   /**********************************************************************
-      * CreateMutex pp. 1272 in the Windows NT Win32 SuperBible
-      */
    if(!(*phmtx = CreateMutex( (LPSECURITY_ATTRIBUTES)NULL, FALSE, pszName))) // NULL = default security
    {
-      {
-         RWMutexLock::LockGuard guard(coutMux);
-         printf("Error in CreateMutex = %u\n",GetLastError());
-      }
-      return(APIRET)1;    // This is an error!!!!
+       const DWORD error = GetLastError();
+       CTILOG_ERROR(dout, "CreateMutex() failed with error code "<< error <<" / "<< getSystemErrorMessage(error));
+
+       return ClientErrors::Abnormal;
    }
-   else
-   {
-      return(APIRET)0;    // OS2 returns zero on success so do that.
-   }
+
+   return ClientErrors::None;
 }
 
-APIRET IM_EX_CTIBASE CTIRequestMutexSem(HMTX hmtx, ULONG duration)
-{
-   DWORD rVal;
 
-   rVal = WaitForSingleObject(hmtx, duration);
+YukonError_t CTIRequestMutexSem(HMTX hmtx, ULONG duration)
+{
+   const DWORD rVal = WaitForSingleObject(hmtx, duration);
 
    switch(rVal)
    {
    case WAIT_OBJECT_0:
        {
-           rVal = 0;
-           break;
+           return ClientErrors::None;
        }
    case WAIT_ABANDONED:
        {
-           {
-              CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << CtiTime() << " **** CTIRequestMutexSem: Wait Abandoned **** " << __FILE__ << " (" << __LINE__ << "). Error = " << GetLastError() << endl;
-           }
-
-           rVal = 0;
-           break;
+           CTILOG_WARN(dout, "Wait Abandoned");
+           return ClientErrors::None;
        }
    case WAIT_TIMEOUT:
        {
-           rVal = 1;
-           break;
+           return ClientErrors::Abnormal;
+       }
+   case WAIT_FAILED:
+       {
+           const DWORD err = GetLastError();
+           CTILOG_ERROR(dout, "Wait failed with error code "<< err <<" / "<< getSystemErrorMessage(err));
+           return ClientErrors::Abnormal;
        }
    default:
        {
-           {
-              CtiLockGuard<CtiLogger> doubt_guard(dout);
-              dout << CtiTime() << " **** CTIRequestMutexSem: WaitResult = " << rVal << " **** " << __FILE__ << " (" << __LINE__ << "). Error = " << GetLastError() << endl;
-           }
-
-           rVal = 1;
-           break;
+           CTILOG_ERROR(dout, "Unexpected Wait Result ("<< rVal <<")");
+           return ClientErrors::Abnormal;
        }
    }
-
-   return (APIRET)rVal;    // We have the mutex now!
 }
 
-APIRET IM_EX_CTIBASE CTIReleaseMutexSem(HMTX hmtx)
+
+YukonError_t CTIReleaseMutexSem(HMTX hmtx)
 {
-   return(!(ReleaseMutex(hmtx)));
+   return ReleaseMutex(hmtx)
+           ? ClientErrors::None  // Win32 returns positive if successful.
+           : ClientErrors::Abnormal;
 }
 
-APIRET IM_EX_CTIBASE CTIDelete(PSZ old)
+
+YukonError_t CTIDelete(PSZ old)
 {
-   return(!(DeleteFile(old)));   // OS2 wants 0 ret if OK NT rets TRUE on OK
+   return DeleteFile(old)
+           ? ClientErrors::None  // Win32 returns positive if successful.
+           : ClientErrors::Abnormal;
 }
 
-/* Function to return the current thread ID - 32 bit only */
-DWORD      IM_EX_CTIBASE CurrentTID()
+// Function to return the current thread ID - 32-bit only
+DWORD CurrentTID()
 {
    return GetCurrentThreadId();
 }
 
-APIRET IM_EX_CTIBASE CTIClose(HANDLE &hFile)
-{
-   DWORD status = ClientErrors::None;
 
-   if( !CloseHandle(hFile) )
+YukonError_t CTIClose(HANDLE &hFile)
+{
+   YukonError_t status = ClientErrors::None;
+
+   // Win32 returns positive if successful.
+   if( ! CloseHandle(hFile) )
    {
       status = ClientErrors::Abnormal;
    }
 
    hFile = (HANDLE)NULL;
 
-   return(status);        // Win32 returns positive if successfull.
+   return status;
 }
 
-YukonError_t CTIRead( HANDLE   &hFile,
+
+YukonError_t CTIRead(HANDLE  &hFile,
+                     PVOID    pBuf,
+                     ULONG    BufLen,
+                     PULONG   pBytesRead)
+{
+    return ReadFile(hFile, pBuf, BufLen, pBytesRead, NULL)
+            ? ClientErrors::None  // Win32 returns positive if successful.
+            : ClientErrors::Abnormal;
+}
+
+
+YukonError_t CTIWrite(HANDLE  &hFile,
                       PVOID    pBuf,
                       ULONG    BufLen,
-                      PULONG   pBytesRead )
+                      PULONG   pBytesWritten)
 {
-   BOOL  bSuccess = FALSE;
+    if( ! WriteFile(hFile, pBuf, BufLen, pBytesWritten, NULL) )
+    {
+        const DWORD error = GetLastError();
+        CTILOG_ERROR(dout, "WriteFile() failed with error code "<< error <<" / "<< getSystemErrorMessage(error));
 
-   bSuccess = ReadFile(hFile, pBuf, BufLen, pBytesRead, NULL);
+        return ClientErrors::Abnormal;
+    }
 
-   return bSuccess ? ClientErrors::None : ClientErrors::Abnormal;  // Win32 returns positive if successfull.
-}
-
-APIRET IM_EX_CTIBASE CTIWrite         (   HANDLE    &hFile,
-                                          PVOID    pBuf,
-                                          ULONG    BufLen,
-                                          PULONG   pBytesWritten
-                                      )
-{
-   BOOL bSuccess = FALSE;
-
-   DWORD status = ClientErrors::None;
-
-//   fprintf(stderr,"*** DEBUG CTIWrite File Handle %8d\n",hFile);
-   bSuccess = WriteFile(hFile, pBuf, BufLen, pBytesWritten, NULL);
-
-   if(!bSuccess)
-   {
-      LPVOID lpMsgBuf;
-
-      status = GetLastError();
-
-      if(DebugLevel & 0x00000002)
-      {
-         FormatMessage(
-                      FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                      NULL,
-                      status,
-                      MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-                      (LPTSTR) &lpMsgBuf,
-                      0,
-                      NULL
-                      );
-
-         {
-            RWMutexLock::LockGuard guard(coutMux);
-            printf("Error in CTIWrite (Win32 Write File): GetLastError() = %5d\n\t%s", status, lpMsgBuf);
-         }
-         // Free the buffer.
-         LocalFree( lpMsgBuf );
-      }
-   }
-   return(status);        // Win32 returns positive if successfull.
+    return ClientErrors::None;
 }
 
 
-
-
-APIRET IM_EX_CTIBASE CTICreateEventSem(PSZ pszName, PHEV phev, ULONG Flags, BOOL32 bState)
+YukonError_t CTICreateEventSem(PSZ pszName, PHEV phev, ULONG Flags, BOOL32 bState)
 {
-   /**********************************************************************
-      * CreateMutex pp. 1272 in the Windows NT Win32 SuperBible
-      */
-   if(!(*phev = CreateEvent(  (LPSECURITY_ATTRIBUTES)NULL,  // NULL = default security
+    if( !(*phev = CreateEvent((LPSECURITY_ATTRIBUTES)NULL,  // NULL = default security
                               TRUE,                         // Manual ReSet Event
                               bState,                       // TRUE == owned by this thread
-                              pszName)))
+                              pszName)) )
+    {
+        const DWORD error = GetLastError();
+        CTILOG_ERROR(dout, "CreateEvent() failed with error code "<< error <<" / "<< getSystemErrorMessage(error));
+
+        return ClientErrors::Abnormal;
+    }
+
+    return ClientErrors::None;
+}
+
+
+YukonError_t CTICloseEventSem(PHEV phev)
+{
+   if( ! CloseHandle(*phev) )
    {
+      const DWORD error = GetLastError();
+      if( error != ERROR_FILE_NOT_FOUND )
       {
-         RWMutexLock::LockGuard guard(coutMux);
-         printf("Error in CreateEvent = %u for %s\n",GetLastError(), pszName);
+          CTILOG_ERROR(dout, "CloseHandle() failed with error code "<< error <<" / "<< getSystemErrorMessage(error));
       }
-      return(APIRET)1;    // This is an error!!!!
-   }
-   else
-   {
-      return(APIRET)0;    // OS2 returns zero on success so do that.
-   }
-}
 
-APIRET IM_EX_CTIBASE CTICloseEventSem(PHEV phev)
-{
-   DWORD err;
-   if(!(CloseHandle(*phev)))
-   {
-      if((err = GetLastError()) != ERROR_FILE_NOT_FOUND)
-      {
-         RWMutexLock::LockGuard guard(coutMux);
-         printf("Error in CloseEvent = %05d\n",err);
-      }
-      return(APIRET)1;    // This is an error!!!!
+      return ClientErrors::Abnormal;
    }
-   else
-   {
-      return(APIRET)0;    // OS2 returns zero on success so do that.
-   }
+
+   return ClientErrors::None;
 }
 
 
-APIRET  CTIResetEventSem(HEV hev, PULONG pulPostCt)
+YukonError_t CTIResetEventSem(HEV hev, PULONG pulPostCt)
 {
-   return(!(ResetEvent(hev)));
-}
-
-APIRET IM_EX_CTIBASE CTIPostEventSem(HEV hev)
-{
-   return(!(SetEvent(hev)));
+   return ResetEvent(hev)
+           ? ClientErrors::None   // Win32 returns positive if successful.
+           : ClientErrors::Abnormal;
 }
 
 
-APIRET IM_EX_CTIBASE CTIOpen (
-                             PSZ         pszFileName,      // OS2 & Win32
-                             PHFILE      pHf,              // OS2 & Win32
-                             PULONG      pAction,          // OS2
-                             ULONG       ulFSize,          // OS2
-                             ULONG       ulAttrib,         //
-                             ULONG       Flags,
-                             ULONG       Mode,
-                             PEAOP2      peaop2
-                             )
+YukonError_t CTIPostEventSem(HEV hev)
 {
-   DWORD    dwAccess = 0;      // GENERIC_READ/WRITE  - Attrib in OS2.
-   DWORD    dwShare  = 0;      // share mode (Mode in OS2) FILE_SHARE_DELETE/READ/WRITE
-   DWORD    dwCreate = 0;      // how to create (Flags for OS2)
+   return SetEvent(hev)
+           ? ClientErrors::None   // Win32 returns positive if successful.
+           : ClientErrors::Abnormal;
+}
+
+
+YukonError_t CTIOpen (PSZ         pszFileName,
+                      PHFILE      pHf,
+                      PULONG      pAction,
+                      ULONG       ulFSize,
+                      ULONG       ulAttrib,
+                      ULONG       Flags,
+                      ULONG       Mode,
+                      PEAOP2      peaop2)
+{
+   DWORD    dwAccess = 0;      // GENERIC_READ/WRITE
+   DWORD    dwShare  = 0;      // share mode  FILE_SHARE_DELETE/READ/WRITE
+   DWORD    dwCreate = 0;      // how to create
    DWORD    dwAttFlags = 0;    // file attributes
 
    // Set the attributes
@@ -344,115 +285,45 @@ APIRET IM_EX_CTIBASE CTIOpen (
 
    if(*pHf == INVALID_HANDLE_VALUE)
    {
-      int err = GetLastError();
+      const DWORD error = GetLastError();
 
-      if(err == ERROR_FILE_NOT_FOUND || err == ERROR_PATH_NOT_FOUND)
+      if( error == ERROR_FILE_NOT_FOUND || error == ERROR_PATH_NOT_FOUND )
       {
          // printf("Error in CTIOpen (Win32 CreateFile):(%s) %5d\n", pszFileName,err);
       }
       else
       {
-         LPVOID lpMsgBuf;
-
-         if(DebugLevel & 0x00000002)
-         {
-            FormatMessage(
-                         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                         NULL,
-                         err,
-                         MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-                         (LPTSTR) &lpMsgBuf,
-                         0,
-                         NULL
-                         );
-
-            // Display the string.
-            DisplayError(err, __LINE__, __FILE__, "CTIOpen");
-            // Free the buffer.
-            LocalFree( lpMsgBuf );
-         }
+          CTILOG_ERROR(dout, "CreateFile() failed with error code "<< error <<" / "<< getSystemErrorMessage(error));
 
          *pHf = NULL; // Most of the code expects this!
       }
-      return(APIRET)err;    // Error of some sort occured! timeout or otherwise
+      return ClientErrors::Abnormal;    // Error of some sort occured! timeout or otherwise
    }
-   else
-   {
-      *pAction = 1;
-      return(APIRET)0;    // We have the file handle now!
-   }
+
+   *pAction = 1;
+   return ClientErrors::None;    // We have the file handle now!
 }
 
-void  IM_EX_CTIBASE   DebugLine(char *fName, char *funcName, int lineNum)
+//TODO: OUMESS and INMESS should inherit Loggable instead - this function can be removed
+IM_EX_CTIBASE std::string outMessageToString(const OUTMESS* Om)
 {
-   char  temp[1024];
-   int   end = strlen(fName)-1;
-   char  *baseStart;
+    Cti::FormattedList itemList;
 
-   strcpy(temp,fName);
-   baseStart = &temp[end];
+    itemList.add("Device ID")   << Om->DeviceID;
+    itemList.add("Target ID")   << Om->TargetID;
+    itemList.add("Port")        << Om->Port;
+    itemList.add("Remote")      << Om->Remote;
+    itemList.add("Sequence")    << Om->Sequence;
+    itemList.add("Priority")    << Om->Priority;
+    itemList.add("TimeOut")     << Om->TimeOut;
+    itemList.add("Retry")       << Om->Retry;
+    itemList.add("OutLength")   << Om->OutLength;
+    itemList.add("InLength")    << Om->InLength;
+    itemList.add("Source")      << Om->Source;
+    itemList.add("Destination") << Om->Destination;
+    itemList.add("Command")     << Om->Command;
+    itemList.add("Function")    << Om->Function;
+    itemList.add("EventCode")   << Om->EventCode;
 
-   while(*baseStart != '\\' && (baseStart != temp))
-   {
-      baseStart--;
-   }
-
-   {
-      RWMutexLock::LockGuard guard(coutMux);
-      fprintf(stderr,"*** DEBUG: [TID: 0x%04X (%4d)] %.13s : %.20s() (Line: %4d)\n",CurrentTID(),CurrentTID(), ++baseStart,funcName, lineNum);
-   }
-
-}
-
-void IM_EX_CTIBASE DisplayError(DWORD Error, DWORD Line, char* FileName, char *Func)
-{
-   void* lpMsgBuf;
-
-   if(DebugLevel & 0x00000002)
-   {
-      FormatMessage(
-                   FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
-                   NULL,
-                   Error,
-                   MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
-                   (LPTSTR) &lpMsgBuf,
-                   0,
-                   NULL
-                   );
-
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " ERROR " << Error << " executing in " << FileName << " (" << Line << ")." << endl;
-         dout << "\tWin32 Error: " << lpMsgBuf << endl;
-      }
-
-      // Free the buffer.
-      LocalFree( lpMsgBuf );
-   }
-}
-
-void IM_EX_CTIBASE DumpOutMessage(void *Mess)
-{
-    OUTMESS  *Om = (OUTMESS*)(Mess);
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "  Device ID:          " << Om->DeviceID << endl;
-        dout << "  Target ID:          " << Om->TargetID << endl;
-        dout << "  Port:               " << Om->Port << endl;
-        dout << "  Remote:             " << Om->Remote << endl;
-        dout << "  Sequence:           " << Om->Sequence << endl;
-        dout << "  Priority:           " << Om->Priority << endl;
-        dout << "  TimeOut:            " << Om->TimeOut << endl;
-        dout << "  Retry:              " << Om->Retry << endl;
-        dout << "  OutLength:          " << Om->OutLength << endl;
-        dout << "  InLength:           " << Om->InLength << endl;
-        dout << "  Source:             " << Om->Source << endl;
-        dout << "  Destination:        " << Om->Destination << endl;
-        dout << "  Command:            " << Om->Command << endl;
-        dout << "  Function:           " << Om->Function << endl;
-        dout << "  EventCode:          " << Om->EventCode << endl;
-    }
-}
-
+    return itemList.toString();
+};

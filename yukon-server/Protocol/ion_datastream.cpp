@@ -134,8 +134,7 @@ CtiIONDataStream &CtiIONDataStream::erase( int index )
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "index is invalid (index="<< index <<", stream value size = "<< _streamValues.size() <<")");
     }
 
     return *this;

@@ -1,22 +1,6 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_rtcomm
-*
-* Date:   8/17/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_rtcomm.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:16:07 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "tbl_rtcomm.h"
-
 #include "database_connection.h"
 #include "database_reader.h"
 
@@ -32,12 +16,16 @@ DefaultRoute(aDef)
 CtiTableCommRoute::~CtiTableCommRoute()
 {}
 
-void CtiTableCommRoute::DumpData()
+std::string CtiTableCommRoute::toString() const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << " Route ID                                   " << _routeID     << endl;
-    dout << " Device ID                                  " << DeviceID     << endl;
-    dout << " Default Route                              " << DefaultRoute << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTableCommRoute";
+    itemList.add("Route ID")      << _routeID;
+    itemList.add("Device ID")     << DeviceID;
+    itemList.add("Default Route") << DefaultRoute;
+
+    return itemList.toString();
 }
 
 LONG  CtiTableCommRoute::getID() const
@@ -97,8 +85,7 @@ void CtiTableCommRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["routeid"] >> _routeID;

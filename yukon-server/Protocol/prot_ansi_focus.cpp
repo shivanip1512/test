@@ -74,9 +74,10 @@ int CtiProtocolANSI_focus::calculateLPDataBlockStartIndex(ULONG lastLPTime)
     setLoadProfileFullBlocks(nbrIntervals / getNbrIntervalsPerBlock() );
     if( getApplicationLayer().getANSIDebugLevel(DEBUGLEVEL_ACTIVITY_INFO) )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** Last Load Profile Time  " <<CtiTime(getlastLoadProfileTime()) << endl;
-        dout <<  CtiTime() << " " << getApplicationLayer().getAnsiDeviceName() << " ** Nbr of Requested Intervals  " << nbrIntervals << endl;
+        CTILOG_DEBUG(dout, getApplicationLayer().getAnsiDeviceName() <<":"<<
+                endl <<" ** Last Load Profile Time  "<< CtiTime(getlastLoadProfileTime()) <<
+                endl <<" ** Nbr of Requested Intervals  "<< nbrIntervals
+                );
     }
     setCurrentAnsiWantsTableValues(Focus_SetLpReadControl,0,1,ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
     getApplicationLayer().initializeTableRequest (Focus_SetLpReadControl, 0, 1, ANSI_TABLE_TYPE_MANUFACTURER, ANSI_OPERATION_WRITE);
@@ -113,12 +114,10 @@ void CtiProtocolANSI_focus::convertToManufacturerTable( BYTE *data, BYTE numByte
 {
     switch( aTableID )
     {
-         case Focus_InstantaneousMeasurements:
+        case Focus_InstantaneousMeasurements:
         {
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " Creating Focus Mfg Table 4" << endl;
-            }
+            CTILOG_INFO(dout, "Creating Focus Mfg Table 4");
+
             _table04 = new CtiAnsiFocusMfgTable04( data, getDataOrder() );
             _table04->printResult();
             break;
@@ -126,20 +125,16 @@ void CtiProtocolANSI_focus::convertToManufacturerTable( BYTE *data, BYTE numByte
             
         case FocusAX_InstantaneousMeasurements:
         {
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " Creating Focus AX Mfg Table 13" << endl;
-            }
+            CTILOG_INFO(dout, "Creating Focus AX Mfg Table 13");
+
             _table13 = new CtiAnsiFocusMfgTable13( data, getFirmwareVersion(), getFirmwareRevision(), getDataOrder()  );
             _table13->printResult();
             break;
         }
         case FocusAX_ConstantsMeasurements:
         {
-            {
-               CtiLockGuard<CtiLogger> doubt_guard(dout);
-               dout << CtiTime() << " Creating Focus AX Mfg Table 24" << endl;
-            }
+            CTILOG_INFO(dout, "Creating Focus AX Mfg Table 24");
+
             _table24 = new CtiAnsiFocusMfgTable24( data, getDataOrder()  );
             _table24->printResult();
             break;

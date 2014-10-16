@@ -101,10 +101,7 @@ YukonError_t CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, Cti
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return status;
@@ -190,37 +187,8 @@ YukonError_t CtiPort::traceOut(CtiXfer& Xfer, list< CtiMessage* > &traceList, Ct
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
-    return status;
-}
-
-INT CtiPort::logBytes(BYTE *Message, ULONG Length) const
-{
-    INT status = ClientErrors::None;
-    ULONG i;
-    ULONG width = 1;
-    ULONG offset = 0;
-
-    list< CtiMessage* > traceList;
-    CtiTraceMsg trace;
-
-    traceBytes( Message, Length, trace, traceList);
-
-    _portLog << endl;
-
-    while( traceList.size() )
-    {
-        CtiTraceMsg *pTrace = (CtiTraceMsg*)traceList.front();traceList.pop_front();
-        _portLog << pTrace->getTrace();
-        delete pTrace;
-    }
-
-    _portLog << endl;
 
     return status;
 }
@@ -235,17 +203,12 @@ INT CtiPort::writeQueueWithPriority(OUTMESS *OutMessage, int priority, HANDLE hQ
     int status = ClientErrors::None;
     ULONG QueEntries;
 
-#ifdef DEBUG
     if(OutMessage->DeviceID == 0 && OutMessage->TargetID == 0)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** WARNING **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  A thread just dumped an untraceable OUTMESS request into a port queue" << endl;
-            dout << "  You will undoubtedly have difficulties soon" << endl;
-        }
+        CTILOG_DEBUG(dout, "A thread just dumped an untraceable OUTMESS request into a port queue."<<
+                endl <<"You will undoubtedly have difficulties soon"
+                );
     }
-#endif
 
     if(OutMessage &&
        OutMessage->HeadFrame[0] == 0x02 && OutMessage->HeadFrame[1] == 0xe0 &&
@@ -255,8 +218,7 @@ INT CtiPort::writeQueueWithPriority(OUTMESS *OutMessage, int priority, HANDLE hQ
         {
             if( isDebugLudicrous() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Cleaning Excess LP Entries for TargetID " << OutMessage->TargetID << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_DEBUG(dout, "Cleaning Excess LP Entries for TargetID "<< OutMessage->TargetID);
             }
 
             // Remove any other Load Profile Queue Entries for this Queue.
@@ -276,10 +238,7 @@ INT CtiPort::writeQueueWithPriority(OUTMESS *OutMessage, int priority, HANDLE hQ
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - port \"" << getName() << "\" has blocked an incoming OM from its port share (_lastWrite = " << _lastWrite << ", blockTime = " << blockTime << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "port \""<< getName() <<"\" has blocked an incoming OM from its port share (_lastWrite = "<< _lastWrite <<", blockTime = "<< blockTime << ")");
 
                 status = ClientErrors::QueueWrite;
             }
@@ -299,10 +258,8 @@ INT CtiPort::writeQueueWithPriority(OUTMESS *OutMessage, int priority, HANDLE hQ
             {
                 ULONG gripemore = _queueGripe * 2;
                 _queueGripe = _queueGripe + ( gripemore < 1000 ? gripemore : 1000);
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << " has just received a new port queue entry.  There are " << QueEntries << " pending." << endl;
-                }
+
+                CTILOG_INFO(dout, getName() <<" has just received a new port queue entry.  There are "<< QueEntries <<" pending.");
             }
             else if(QueEntries < DEFAULT_QUEUE_GRIPE_POINT)
             {
@@ -336,10 +293,7 @@ INT CtiPort::queueInit(HANDLE hQuit)
             CloseQueue( _portQueue );
             _portQueue = NULL;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << "Error Creating Queue for Port:  " << setw(2) << getPortID() << " / " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Could not create Queue for Port:  "<< setw(2) << getPortID() <<" / "<< getName());
         }
     }
 
@@ -383,40 +337,24 @@ INT CtiPort::verifyPortIsRunnable( HANDLE hQuit )
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " No port thread function defined" << endl;
-                    }
+                    CTILOG_ERROR(dout, "No port thread function defined");
+
                     status = ClientErrors::Abnormal;
                 }
             }
         }
     }
-    catch( RWxmsg &e)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** RW EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << e.why() << endl;
-        }
-    }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
 
     return status;
 }
 
 void CtiPort::DecodeDialableDatabaseReader(Cti::RowReader &rdr)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** DecodeDialableDatabaseReader not defined for " << getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "DecodeDialableDatabaseReader not defined for " << getName());
 
     return;
 }
@@ -428,24 +366,21 @@ void CtiPort::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     setValid();
 
-    if(gLogPorts && !_portLog.isRunning())
+    if(gLogPorts && !_portLogManager.isStarted())
     {
-        {
-            string of(getName() + "_");
+        const string outputFile = getName() + "_";
+        const string comlogdir  = gLogDirectory + "\\Comm";
 
-            string comlogdir(gLogDirectory + "\\Comm");
-            // Create a subdirectory called Comm beneath Log.
-            CreateDirectoryEx( gLogDirectory.c_str(), comlogdir.c_str(), NULL);
+        // Create a subdirectory called Comm beneath Log.
+        CreateDirectoryEx( gLogDirectory.c_str(), comlogdir.c_str(), NULL);
 
-            _portLog.setToStdOut(false);  // Not to std out.
-            _portLog.setOwnerInfo(CompileInfo);
-            _portLog.setOutputPath(comlogdir.c_str());
-            _portLog.setRetentionLength(gLogRetention);
-            _portLog.setOutputFile( of.c_str() );
-            _portLog.setWriteInterval(10000);                   // 7/23/01 CGP.
+        _portLogManager.setToStdOut      ( false );  // Not to std out.
+        _portLogManager.setOwnerInfo     ( CompileInfo );
+        _portLogManager.setOutputPath    ( comlogdir );
+        _portLogManager.setRetentionDays ( gLogRetention );
+        _portLogManager.setOutputFile    ( outputFile );
 
-            _portLog.start();
-        }
+        _portLogManager.start();
     }
 }
 
@@ -474,11 +409,7 @@ CtiPort::~CtiPort()
 
 void CtiPort::haltLog()
 {
-    if( gLogPorts )
-    {
-        _portLog.interrupt(CtiThread::SHUTDOWN);
-        _portLog.join();
-    }
+    //TODO: findout if we need to do anything here?
 }
 
 YukonError_t CtiPort::outInMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessage* > &traceList)
@@ -495,7 +426,11 @@ YukonError_t CtiPort::outInMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessa
     return status;
 }
 
+namespace {
 
+Cti::Atomic<unsigned> portCount;
+
+}
 
 CtiPort::CtiPort() :
 _poolAssignedGUID(0),
@@ -520,9 +455,12 @@ _sharingStatus(false),
 _sharingToggle(false),
 _communicating(false),
 _executing(false),
-_entryMsecTime(0)
+_entryMsecTime(0),
+_portLogManager("port" + CtiNumStr(++portCount))
 {
     _postEvent = CreateEvent( NULL, TRUE, FALSE, NULL);
+
+    _portLog = _portLogManager.getLogger();
 }
 
 LONG CtiPort::getConnectedDevice() const
@@ -537,10 +475,7 @@ CtiPort& CtiPort::setConnectedDevice(const LONG d)
 
 CtiPort &CtiPort::setBaudRate(INT baudRate)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Port " << getName() << " is not a serial port.  It cannot \"setBaudRate()\"" << endl;
-    }
+    CTILOG_ERROR(dout, "Method undefined for port "<< getName() <<" of type" << getType());
 
     return *this;
 }
@@ -792,18 +727,19 @@ void CtiPort::fileTraces(list< CtiMessage* > &traceList) const
 {
     if(gLogPorts)
     {
-        CtiLockGuard<CtiLogger> portlog_guard(_portLog);
-        std::list< CtiMessage* >::iterator itr = traceList.begin();
-        while( itr != traceList.end() )
+        Cti::StreamBuffer output;
+
+        for each( const CtiMessage *msg in traceList )
         {
-            CtiTraceMsg* pTrace = (CtiTraceMsg*)*itr;
-            _portLog << pTrace->getTrace();
-            if(pTrace->isEnd())
+            const CtiTraceMsg* trace = static_cast<const CtiTraceMsg*>(msg);
+            output << trace->getTrace();
+            if(trace->isEnd())
             {
-                _portLog << endl;
+                output << endl;
             }
-            ++itr;
         }
+
+        CTILOG_INFO(_portLog, output);
     }
 }
 
@@ -845,10 +781,7 @@ pair< bool, YukonError_t > CtiPort::checkCommStatus(CtiDeviceSPtr Device, INT tr
         /* set up the port */
         if( status = openPort() )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error initializing Virtual Port " << getPortID() << ": \"" << getName() << "\"" << endl;
-            }
+            CTILOG_ERROR(dout, "Could not initialize Virtual Port "<< getPortID() <<": \""<< getName() << "\"");
         }
 
         rpair = make_pair( true, status );
@@ -874,46 +807,36 @@ CTI_PORTTHREAD_FUNC_PTR CtiPort::setPortThreadFunc(CTI_PORTTHREAD_FUNC_PTR aFn)
 
 YukonError_t CtiPort::setPortReadTimeOut(USHORT millitimeout)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
+
     return ClientErrors::None;
 }
 
 YukonError_t CtiPort::waitForPortResponse(PULONG ResponseSize,  PCHAR Response, ULONG Timeout, PCHAR ExpectedResponse)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
+
     return ClientErrors::None;
 }
 
 INT CtiPort::writePort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesWritten)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
+
     return ClientErrors::None;
 }
 
 INT CtiPort::readPort(PVOID pBuf, ULONG BufLen, ULONG timeout, PULONG pBytesRead)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
+
     return ClientErrors::None;
 }
 
 bool CtiPort::isViable()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function unimplemented");
+
     return false;
 }
 
@@ -928,8 +851,7 @@ bool CtiPort::setPortForDevice(CtiDeviceSPtr  Device)
         {
             if(isDebugLudicrous())
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port is about to communicate with a TAP device. " << Device->getName() << endl;
+                CTILOG_DEBUG(dout, "Port is about to communicate with a TAP device. "<< Device->getName());
             }
 
             setLine(getBaudRate(), 7, EVENPARITY, ONESTOPBIT);
@@ -940,8 +862,7 @@ bool CtiPort::setPortForDevice(CtiDeviceSPtr  Device)
         {
             if(isDebugLudicrous())
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port is about to communicate with RTM/RTC \"" << Device->getName() << "\"." << endl;
+                CTILOG_DEBUG(dout, "Port is about to communicate with RTM/RTC \"" << Device->getName() << "\".");
             }
 
             setLine(1200, 8, ODDPARITY, ONESTOPBIT);
@@ -951,16 +872,13 @@ bool CtiPort::setPortForDevice(CtiDeviceSPtr  Device)
         {
             if(isDebugLudicrous())
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port is about to communicate with a NON - TAP device. " << Device->getName() << endl;
+                CTILOG_DEBUG(dout, "Port is about to communicate with a NON - TAP device. " << Device->getName());
             }
 
             if(Device->getBaudRate() && Device->getBaudRate() != getBaudRate())
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Device: " << Device->getName() << " linesettings (" << Device->getBaudRate() << ":" << Device->getBits() << "," << Device->getParity() << "," << Device->getStopBits() << ") are overriding port " << getName() << " settings!" << endl;
-                }
+                CTILOG_WARN(dout, "Device: "<< Device->getName() <<" linesettings ("<< Device->getBaudRate() <<":"<< Device->getBits() <<","<< Device->getParity() <<","<< Device->getStopBits() <<") are overriding port "<< getName() <<" settings!");
+
                 setLine(Device->getBaudRate(), Device->getBits(), Device->getParity(), Device->getStopBits());
             }
             else
@@ -993,18 +911,12 @@ bool CtiPort::hasExclusions() const
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << "  " << getName() << " unable to acquire exclusion mutex: " << endl;
-            }
+            CTILOG_ERROR(dout, getName() <<" - unable to acquire exclusion mutex");
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return bstatus;
@@ -1026,18 +938,12 @@ void CtiPort::addExclusion(CtiTablePaoExclusion &paox)
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << "  " << getName() << " unable to acquire exclusion mutex: addExclusion()" << endl;
-            }
+            CTILOG_ERROR(dout, getName() <<" - unable to acquire exclusion mutex");
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -1055,18 +961,12 @@ void CtiPort::clearExclusions()
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << "  " << getName() << " unable to acquire exclusion mutex: clearExclusions()" << endl;
-            }
+            CTILOG_ERROR(dout, getName() <<" - unable to acquire exclusion mutex");
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -1103,18 +1003,13 @@ bool CtiPort::isPortExcluded(long portid) const
         else
         {
             bstatus = true;
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << "  " << getName() << " unable to acquire exclusion mutex: isPortExcluded()" << endl;
-            }
+
+            CTILOG_ERROR(dout, getName() <<" - unable to acquire exclusion mutex");
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return bstatus;
@@ -1150,18 +1045,12 @@ size_t CtiPort::setExecutionProhibited(unsigned long pid)
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << "  " << getName() << " unable to acquire exclusion mutex: setExecutionProhibited()" << endl;
-            }
+            CTILOG_ERROR(dout, getName() <<" - unable to acquire exclusion mutex");
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return cnt;
@@ -1194,18 +1083,12 @@ bool CtiPort::removeInfiniteExclusion(unsigned long pid)
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << "  " << getName() << " unable to acquire exclusion mutex: removeInfiniteProhibit()" << endl;
-            }
+            CTILOG_ERROR(dout, getName() <<" - unable to acquire exclusion mutex");
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return removed;
@@ -1301,15 +1184,13 @@ int CtiPort::readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Pri
             {
                 if(gConfigParms.getValueAsULong("DEBUG_PORT_SHARE") & DEBUG_INPUT_FROM_SCADA)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << " was unable to read from the port share queue. Error: " << status << endl;
+                    CTILOG_DEBUG(dout, getName() <<" was unable to read from the port share queue. Error: "<< status);
                 }
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getName() << " bypassed the portShareQueue due to a targeted portqueue read." << endl;
+            CTILOG_INFO(dout, "bypassed the portShareQueue due to a targeted portqueue read.");
         }
     }
 
@@ -1320,10 +1201,8 @@ int CtiPort::readQueue( PULONG DataSize, PPVOID Data, BOOL32 WaitFlag, PBYTE Pri
 
         if(pElementCount && *pElementCount > 5000 && CtiTime() > lastQueueReportTime)  // Ok, we may have an issue here....
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Port " << getName() << " has " << *pElementCount << " pending OUTMESS requests " << endl;
-            }
+            CTILOG_INFO(dout, "Port "<< getName() <<" has "<< *pElementCount <<" pending OUTMESS requests");
+
             lastQueueReportTime = CtiTime() + 300;
         }
     }
@@ -1380,10 +1259,8 @@ YukonError_t CtiPort::requeueToParent(OUTMESS *&OutMessage)
             if( readQueue( &ReadLength, (PPVOID) &NewOutMessage, DCWW_WAIT, &ReadPriority, &QueEntries ) == ClientErrors::None )
             {
                 _parentPort->writeQueue( NewOutMessage );
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Port " << getName() << " Moving OutMessage back to parent port " << _parentPort->getName() << endl;
-                }
+
+                CTILOG_INFO(dout, "Port "<< getName() <<" Moving OutMessage back to parent port "<< _parentPort->getName());
             }
         }
 
@@ -1423,18 +1300,15 @@ bool CtiPort::waitForPost(HANDLE quitEvent, LONG timeout) const
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ") " << dwWaitResult << endl;
-                }
+                CTILOG_ERROR(dout, "WaitForMultipleObjects returned "<< dwWaitResult);
+
                 break;
             }
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "_postEvent handle is invalid");
     }
 
     return status;
@@ -1634,10 +1508,7 @@ INT CtiPort::writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Pri
             CloseQueue( _portShareQueue );
             _portShareQueue = NULL;
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << "Error Creating Shared Queue for Port:  " << setw(2) << getPortID() << " / " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Could not create Shared Queue for Port:  "<< setw(2) << getPortID() <<" / "<< getName());
         }
     }
 
@@ -1648,8 +1519,7 @@ INT CtiPort::writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Pri
 
         if(gConfigParms.getValueAsULong("PORT_SHARE_QUEUE") & DEBUG_INPUT_FROM_SCADA)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getName() << " has " << QueEntries << " elements on the port share queue " << endl;
+            CTILOG_DEBUG(dout, getName() <<" has "<< QueEntries <<" elements on the port share queue");;
         }
     }
 

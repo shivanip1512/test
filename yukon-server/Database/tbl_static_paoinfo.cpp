@@ -202,15 +202,16 @@ void CtiTableStaticPaoInfo::getValue(double &destination) const
 }
 
 
-void CtiTableStaticPaoInfo::dump()
+std::string CtiTableStaticPaoInfo::toString() const
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+    Cti::FormattedList itemList;
 
-        dout << "getEntryID() " << getEntryID() << endl;
-        dout << "getPaoID()   " << getPaoID() << endl;
-        dout << "getKey()     " << getKey() << endl;
-        dout << "getValue()   " << getValue() << endl;
-    }
+    itemList <<"CtiTableStaticPaoInfo";
+    itemList.add("getEntryID()") << getEntryID();
+    itemList.add("getPaoID()")   << getPaoID();
+    itemList.add("getKey()")     << getKey();
+    itemList.add("getValue()")   << getValue();
+
+    return itemList.toString();
 }
 

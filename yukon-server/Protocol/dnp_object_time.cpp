@@ -72,16 +72,15 @@ int Time::restore(const unsigned char *buf, int len)
 
     _valid = true;
 
-    if( len >= getSerializedLen() )
+    const int serializedLen = getSerializedLen();
+
+    if( len >= serializedLen )
     {
         pos = restoreVariation(buf, len, getVariation());
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "len < serializedLen ("<< len <<" < "<< serializedLen <<")");
 
         _valid = false;
         pos = len;
@@ -242,7 +241,9 @@ int TimeCTO::restore(const unsigned char *buf, int len)
 
     _valid = true;
 
-    switch( getVariation() )
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case TC_TimeAndDateCTO:
         case TC_TimeAndDateCTOUnsynchronized:
@@ -253,10 +254,7 @@ int TimeCTO::restore(const unsigned char *buf, int len)
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
 
             _valid = false;
             pos = len;

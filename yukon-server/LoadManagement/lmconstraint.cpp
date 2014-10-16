@@ -14,6 +14,7 @@
 #include "ctidate.h"
 #include "ctitime.h"
 
+#include <boost/algorithm/string/join.hpp>
 
 extern ULONG _LM_DEBUG;
 
@@ -150,8 +151,7 @@ bool CtiLMProgramConstraintChecker::checkWeekDays(CtiTime proposed_start, CtiTim
 
     if( weekdays[(size_t)7] == 'Y' || weekdays[(size_t)7] == 'y' )
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " **Checkpoint** " <<  " Found 'Y' for the holiday slot in the available weekdays constraint for program: " << _lm_program.getPAOName() << "  F (force), E (exclude), N (no effect) - update the database and/or your database editor" << __FILE__ << "(" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Found 'Y' for the holiday slot in the available weekdays constraint for program: " << _lm_program.getPAOName() << "  F (force), E (exclude), N (no effect) - update the database and/or your database editor");
     }
 
     bool force_holiday = true;
@@ -620,10 +620,7 @@ bool CtiLMProgramConstraintChecker::checkControlWindows(CtiTime proposed_start, 
         return false;
     }
 
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " **Checkpoint** " <<  " Shouldn't get here " << __FILE__ << "(" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "Shouldn't get here ");
     return false;
 }
 
@@ -832,24 +829,14 @@ const vector<ConstraintViolation>& CtiLMProgramConstraintChecker::getViolations(
     return _constraintViolations;
 }
 
-void CtiLMProgramConstraintChecker::clearViolations()
+boost::optional<std::string> CtiLMProgramConstraintChecker::dumpViolations()
 {
-    _constraintViolations.clear();
-}
-
-void CtiLMProgramConstraintChecker::dumpViolations()
-{
-    if( _results.size() == 0 )
+    if( _results.empty() )
     {
-        return;
+        return boost::none;
     }
 
-    CtiLockGuard<CtiLogger> dout_guard(dout);
-    dout << CtiTime() << " Program: " << _lm_program.getPAOName() << " constraint violations: " << endl;
-    for( std::vector<string>::iterator iter = _results.begin(); iter != _results.end(); iter++ )
-    {
-        dout << CtiTime() << "  " << *iter << endl;
-    }
+    return "Program: " + _lm_program.getPAOName() + " constraint violations: " + boost::join(_results, " / ");
 }
 
 CtiLMGroupConstraintChecker::CtiLMGroupConstraintChecker(CtiLMProgramBase& lm_program, CtiLMGroupPtr& lm_group, CtiTime current_time)
@@ -913,8 +900,7 @@ bool CtiLMGroupConstraintChecker::checkCycle(LONG& counts, ULONG period, ULONG p
         }
         else
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " **Checkpoint** " << __FILE__ << "(" << __LINE__ << ")" << " tried to divide by zero! Not modifying counts" << endl;
+            CTILOG_ERROR(dout, "tried to divide by zero! Not modifying counts");
         }
         return true;
     }
@@ -1254,19 +1240,14 @@ bool CtiLMGroupConstraintChecker::checkProgramControlWindow(LONG& control_durati
     return retVal && checkControlAreaControlWindow(_lm_program.getControlArea(), control_duration, adjust_duration);
 }
 
-void CtiLMGroupConstraintChecker::dumpViolations()
+boost::optional<std::string> CtiLMGroupConstraintChecker::dumpViolations()
 {
-    if( _results.size() == 0 )
+    if( _results.empty() )
     {
-        return;
+        return boost::none;
     }
 
-    CtiLockGuard<CtiLogger> dout_guard(dout);
-    dout << CtiTime() << " Load Group: " << _lm_group->getPAOName() << " constraint violations: " << endl;
-    for( std::vector<string>::iterator iter = _results.begin(); iter != _results.end(); iter++ )
-    {
-        dout << CtiTime() << "  " << *iter << endl;
-    }
+    return "Load Group: " + _lm_group->getPAOName() + " constraint violations: " + boost::join(_results, " / ");
 }
 
 bool CtiLMGroupConstraintChecker::checkDurationConstraint(LONG current_duration, LONG max_duration, LONG& control_duration, bool adjust_duration)

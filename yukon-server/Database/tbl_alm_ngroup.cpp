@@ -1,24 +1,6 @@
 #include "precompiled.h"
 
-
-
-/*-----------------------------------------------------------------------------*
- *
- * File:   tbl_alm_ngroup
- *
- * Date:   7/16/2001
- *
- * PVCS KEYWORDS:
- * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_alm_ngroup.cpp-arc  $
- * REVISION     :  $Revision: 1.8 $
- * DATE         :  $Date: 2005/12/20 17:16:05 $
- *
- * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
- *-----------------------------------------------------------------------------*/
-
 #include "row_reader.h"
-
-
 #include "dbaccess.h"
 #include "tbl_alm_ngroup.h"
 #include "logger.h"
@@ -125,12 +107,16 @@ setDirty(false);  // Not dirty anymore
 return;
 }
 
-void CtiTableNotificationGroup::dump() const
+std::string CtiTableNotificationGroup::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << "Group ID: " << getGroupID() << endl;
-    dout << "Group Name: " << getGroupName() << endl;
-    dout << "is Disabled: " << isDisabled() << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTableNotificationGroup";
+    itemList.add("Group ID")    << getGroupID();
+    itemList.add("Group Name")  << getGroupName();
+    itemList.add("is Disabled") << isDisabled();
+
+    return itemList.toString();
 }
 
 CtiTableNotificationGroup& CtiTableNotificationGroup::setDirty( bool dirt )

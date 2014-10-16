@@ -33,8 +33,7 @@ FDRTriStateSub::FDRTriStateSub()
 FDRTriStateSub::~FDRTriStateSub(){
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " FDRTristateSub has deconstructed. \n";
+        CTILOG_DEBUG(dout, "FDRTristateSub has deconstructed");
     }
 }
 
@@ -43,8 +42,7 @@ BOOL FDRTriStateSub::init()
     //get FDRManager, pass in the interface name/type call get
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " FDRTristateSub has started. \n";
+        CTILOG_DEBUG(dout, "FDRTristateSub has started");
     }
 
     Inherited::init();
@@ -168,14 +166,17 @@ int FDRTriStateSub::readConfig( void )
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " FDRTristateSub server file name " << getServerFileName() << endl;
-        dout << CtiTime() << " FDRTristateSub FTP directory " << getFTPDirectory() << endl;
-        dout << CtiTime() << " FDRTristateSub download interval " << getDownloadInterval() << endl;
-        dout << CtiTime() << " FDRTristateSub number of tries " << getTries() << endl;
-        dout << CtiTime() << " FDRTristateSub login " << getLogin() << endl;
-        dout << CtiTime() << " FDRTristateSub IP " << getIPAddress() << endl;
-        dout << CtiTime() << " FDRTristateSub db reload rate " << getReloadRate() << endl;
+        Cti::FormattedList loglist;
+
+        loglist.add("FDRTristateSub server file name")  << getServerFileName();
+        loglist.add("FDRTristateSub FTP directory")     << getFTPDirectory();
+        loglist.add("FDRTristateSub download interval") << getDownloadInterval();
+        loglist.add("FDRTristateSub number of tries")   << getTries();
+        loglist.add("FDRTristateSub login")             << getLogin();
+        loglist.add("FDRTristateSub IP")                << getIPAddress();
+        loglist.add("FDRTristateSub db reload rate")    << getReloadRate();
+
+        CTILOG_DEBUG(dout, loglist);
     }
 
     return successful;
@@ -206,8 +207,7 @@ int FDRTriStateSub::fail()
 {
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " FDRTristateSub failed decoding the File. \n";
+        CTILOG_DEBUG(dout, "FDRTristateSub failed decoding the File");
     }
     return ClientErrors::None;
 }
@@ -232,21 +232,6 @@ int FDRTriStateSub::decodeFile()
         //Check Size of both  Lists, they should be the same, if messages is smaller,
         //there were errors with some input.
 
-        /* eof is getting in as a string. fix before this test will work
-        if( strs.size() != msgs.size() )
-        {
-            if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error, all data did not translate. Expected: " << strs.size()<< " Translated: " << msgs.size() << "\n";
-                std::list<StringMessageContainer>::iterator itr = msgs.begin();
-                for( ; itr != msgs.end() ; itr++ )
-                    dout << itr->getName() << "\n";
-                dout << endl;
-            }
-        }
-        */
-
         //Find Point(s) to send to *see tristate*
         //send messages returned from process data.
         std::list<StringMessageContainer>::iterator itr = msgs.begin();
@@ -266,8 +251,7 @@ int FDRTriStateSub::decodeFile()
 
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " --- FDRTristateSub Interface: " << itr->getName() << " " << ((CtiPointDataMsg*)m)->getValue() << endl;
+                    CTILOG_DEBUG(dout, itr->getName() <<" "<< ((CtiPointDataMsg*)m)->getValue());
                 }
             }
             else
@@ -276,16 +260,13 @@ int FDRTriStateSub::decodeFile()
                 {
                     if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Translation for analog point " << itr->getName();
-                        dout << " from " << getInterfaceName() << " was not found" << endl;
+                        CTILOG_DEBUG(dout, "Translation for analog point "<< itr->getName() <<" from "<< getInterfaceName() <<" was not found");
                     }
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Analog point " << itr->getName();
-                    dout << " from " << getInterfaceName() << " was mapped incorrectly to non-analog point " << point.getPointID() << endl;
+                    CTILOG_ERROR(dout, "Analog point "<< itr->getName() <<" from "<< getInterfaceName() <<
+                            " was mapped incorrectly to non-analog point "<< point.getPointID());
                 }
             }
         }

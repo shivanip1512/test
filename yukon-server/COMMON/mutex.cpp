@@ -1,19 +1,12 @@
-/*-----------------------------------------------------------------------------
-    Filename:  mutex.cpp
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Source file for CtiMutex
-
-    Initial Date:  11/7/00
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2000
------------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "mutex.h"
+#include "logger.h"
+#include "std_helper.h"
+#include "win_helper.h"
 
-using namespace std;
+using Cti::begin;
+using Cti::end;
 
 CtiMutex::CtiMutex() :
 hMutex(INVALID_HANDLE_VALUE)
@@ -23,9 +16,7 @@ hMutex(INVALID_HANDLE_VALUE)
 
 CtiMutex::~CtiMutex()
 {
-#ifdef _WINDOWS
     CloseHandle( hMutex );
-#endif
 }
 
 /*-----------------------------------------------------------------------------
@@ -35,14 +26,22 @@ CtiMutex::~CtiMutex()
 -----------------------------------------------------------------------------*/
 bool CtiMutex::acquire()
 {
-#ifdef _WINDOWS
-    DWORD result = WaitForSingleObject( hMutex, INFINITE );
-    for(int i = 2; i > 0; i--)
-        _threadID[i] = _threadID[i-1];
+    const DWORD result = WaitForSingleObject( hMutex, INFINITE );
 
-    _threadID[0] = GetCurrentThreadId();
-    return( result == WAIT_OBJECT_0 );
-#endif
+    if( result == WAIT_OBJECT_0 )
+    {
+        std::copy_backward(begin(_threadIDs), end(_threadIDs) - 1, end(_threadIDs));
+        _threadIDs[0] = GetCurrentThreadId();
+
+        return true;
+    }
+    if( result == WAIT_FAILED )
+    {
+        const DWORD error = GetLastError();
+        CTILOG_ERROR(dout, "Wait to acquire mutex failed, last error: "<< error <<" / "<< Cti::getSystemErrorMessage(error));
+    }
+
+    return false;
 }
 
 /*-----------------------------------------------------------------------------
@@ -54,23 +53,23 @@ bool CtiMutex::acquire()
 -----------------------------------------------------------------------------*/
 bool CtiMutex::acquire(unsigned long millis)
 {
-#ifdef _WINDOWS
-    DWORD result = WaitForSingleObject( hMutex, millis );
+    const DWORD result = WaitForSingleObject( hMutex, millis );
     //assert(result != WAIT_FAILED);   // Why??? CGP 021502
 
-    if(result == WAIT_OBJECT_0)
+    if( result == WAIT_OBJECT_0 )
     {
-        for(int i = 2; i > 0; i--)
-            _threadID[i] = _threadID[i-1];
+        std::copy_backward(begin(_threadIDs), end(_threadIDs) - 1, end(_threadIDs));
+        _threadIDs[0] = GetCurrentThreadId();
 
-        _threadID[0] = GetCurrentThreadId();
+        return true;
     }
     if( result == WAIT_FAILED )
     {
-        std::cerr << " mutex wait failed, last error: " << GetLastError() << std::endl;
+        const DWORD error = GetLastError();
+        CTILOG_ERROR(dout, "Wait to acquire mutex failed, last error: "<< error <<" / "<< Cti::getSystemErrorMessage(error));
     }
-    return( result == WAIT_OBJECT_0 );
-#endif
+
+    return false;
 }
 
 /*-----------------------------------------------------------------------------
@@ -80,29 +79,30 @@ bool CtiMutex::acquire(unsigned long millis)
 -----------------------------------------------------------------------------*/
 void CtiMutex::release()
 {
-#ifdef _WINDOWS
-    BOOL retres = ReleaseMutex( hMutex );
+    const BOOL retres = ReleaseMutex( hMutex );
 
-    if(!retres)
-        _threadID[0] = 0;
-#endif
+    if( ! retres )
+    {
+        const DWORD error = GetLastError();
+        CTILOG_ERROR(dout, "Release mutex failed, last error: "<< error <<" / "<< Cti::getSystemErrorMessage(error));
+    }
 }
 
-/// #ifdef _DEBUG
+
 DWORD CtiMutex::lastAcquiredByTID() const
 {
-    return _threadID[0];
+    return _threadIDs[0];
 }
-/// #endif
+
 
 void CtiMutex::reset()
 {
-#ifdef _WINDOWS
-    if(hMutex != INVALID_HANDLE_VALUE) CloseHandle( hMutex );
+    if(hMutex != INVALID_HANDLE_VALUE)
+        CloseHandle( hMutex );
+
     hMutex = INVALID_HANDLE_VALUE;
     hMutex = CreateMutex( NULL, FALSE, NULL );
 
-    for(int i = 0; i < 3; i++) _threadID[i] = 0;
-#endif
+    std::fill( begin(_threadIDs), end(_threadIDs), 0);
 }
 

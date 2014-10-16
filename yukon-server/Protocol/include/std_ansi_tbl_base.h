@@ -184,4 +184,5 @@ public:
    virtual ~CtiAnsiTableBase();
    CtiAnsiTableBase& operator=(const CtiAnsiTableBase& aRef);
 
+   static std::string formatTableName(const std::string &name);
 };

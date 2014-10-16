@@ -127,66 +127,53 @@ bool CtiAnsiTable13::getResetExcludeFlag()
 //=========================================================================================================================================
 void CtiAnsiTable13::printResult( const string& deviceName )
 {
-    int integer;
-    string string1,string2;
-    double double1;
-
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "==================== "<<deviceName<<" Std Table 13 ========================" << endl;
-    }
+    Cti::FormattedList itemList;
 
     if (_resetExcludeFlag)
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   RESET_EXCLUSION:  " << _demand_control_record.reset_exclusion << endl;
+        itemList.add("RESET_EXCLUSION")    << _demand_control_record.reset_exclusion;
     }
+
     if (_pfExcludeFlag)
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   P_FAIL_RECOGNTN_TM:  " <<(int)_demand_control_record.excludes.p_fail_recogntn_tm << endl;
-        dout << "   P_FAIL_EXCLUSION:  " <<(int)_demand_control_record.excludes.p_fail_exclusion << endl;
-        dout << "   COLD_LOAD_PICKUP:  " << (int)_demand_control_record.excludes.cold_load_pickup << endl;
+        itemList.add("P_FAIL_RECOGNTN_TM") << _demand_control_record.excludes.p_fail_recogntn_tm;
+        itemList.add("P_FAIL_EXCLUSION")   << _demand_control_record.excludes.p_fail_exclusion;
+        itemList.add("COLD_LOAD_PICKUP")   << _demand_control_record.excludes.cold_load_pickup;
     }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "   INTERVAL_VALUE:  " << endl;
-    }
+
+    Cti::FormattedTable table;
+
     if (_slidingDemandFlag)
     {
+        table.setCell(0, 0) << "INDEX";
+        table.setCell(0, 1) << "SUB_INT";
+        table.setCell(0, 2) << "INT_MULTIPLIER";
+
+        for( int x = 0; x < _numberDemandCtrlEntries; x++ )
         {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "       INDEX       SUB_INT     INT_MULTIPLIER" << endl;
-        }
-        for (int x = 0; x < _numberDemandCtrlEntries; x++)
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "         "<<x<<"       "<<(int)_demand_control_record._int_control_rec[x].cntl_rec.sub_int<<"        "<<(int)_demand_control_record._int_control_rec[x].cntl_rec.int_mulitplier<< endl;
+            const unsigned row = x+1;
+            table.setCell(row, 0) << x;
+            table.setCell(row, 1) << _demand_control_record._int_control_rec[x].cntl_rec.sub_int;
+            table.setCell(row, 2) << _demand_control_record._int_control_rec[x].cntl_rec.int_mulitplier;
         }
     }
     else
     {
+        table.setCell(0, 0) << "INDEX";
+        table.setCell(1, 0) << "INT_LENGTH";
+
+        for( int x = 0; x < _numberDemandCtrlEntries; x++ )
         {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "       INDEX       INT_LENGTH  " << endl;
-        }
-        for (int x = 0; x < _numberDemandCtrlEntries; x++)
-        {
-            CtiLockGuard< CtiLogger > doubt_guard( dout );
-            dout << "         "<<x<<"       "<<(int)_demand_control_record._int_control_rec[x].int_length<< endl;
+            const unsigned row = x+1;
+            table.setCell(row, 0) << x;
+            table.setCell(row, 1) << _demand_control_record._int_control_rec[x].int_length;
         }
     }
 
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 13") <<
+            itemList <<
+            table
+            );
+
 }
-
-
-
-
-

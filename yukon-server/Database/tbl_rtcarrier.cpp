@@ -1,23 +1,7 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_rtcarrier
-*
-* Date:   8/16/2001
-*
-* Author : Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_rtcarrier.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/06/27 17:31:53 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "tbl_rtcarrier.h"
 #include "logger.h"
-
 #include "database_connection.h"
 #include "database_reader.h"
 
@@ -37,14 +21,18 @@ CtiTableCarrierRoute::~CtiTableCarrierRoute()
 {
 }
 
-void CtiTableCarrierRoute::DumpData()
+std::string CtiTableCarrierRoute::toString() const
 {
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << " Bus Number                                 " << Bus        << endl;
-    dout << " CCU Fixed Bits                             " << CCUFixBits << endl;
-    dout << " CCU Variable Bits                          " << CCUVarBits << endl;
-    dout << " User Locked ?                              " << _userLocked << endl;
-    dout << " Reset RPT Settings ?                       " << _resetRPTSettings << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTableCarrierRoute";
+    itemList.add("Bus Number")           << Bus;
+    itemList.add("CCU Fixed Bits")       << CCUFixBits;
+    itemList.add("CCU Variable Bits")    << CCUVarBits;
+    itemList.add("User Locked ?")        << (bool)_userLocked;
+    itemList.add("Reset RPT Settings ?") << (bool)_resetRPTSettings;
+
+    return itemList.toString();
 }
 
 INT  CtiTableCarrierRoute::getBus() const
@@ -148,8 +136,7 @@ void CtiTableCarrierRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr["busnumber"]        >> Bus;

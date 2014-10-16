@@ -38,9 +38,7 @@ bool EcobeeCycleGear::attemptControl( CtiLMGroupPtr currentLMGroup,
         return controllableGroup->sendCycleControl( getMethodRate(), controlSeconds, rampIn, rampOut );
     }
 
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() << " - Group does not implement ecobee control interface: "
-         << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << std::endl;
+    CTILOG_WARN(dout, "Group does not implement ecobee control interface: " << currentLMGroup->getPAOName());
 
     return false;
 }
@@ -60,9 +58,7 @@ bool EcobeeCycleGear::stopControl( CtiLMGroupPtr currentLMGroup )
         return true;
     }
 
-    CtiLockGuard<CtiLogger> logger_guard(dout);
-    dout << CtiTime() << " - Group does not implement basic control interface: "
-         << currentLMGroup->getPAOName() << " in: " << __FILE__ << " at:" << __LINE__ << std::endl;
+    CTILOG_WARN(dout, "Group does not implement basic control interface: " << currentLMGroup->getPAOName());
 
     return false;
 }

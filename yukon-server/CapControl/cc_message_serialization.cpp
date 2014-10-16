@@ -285,22 +285,6 @@ MessagePtr<Thrift::CCSpecialAreas>::type populateThrift( const ::CtiCCSpecialAre
 
     omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CapControlMessage&>(imsg) ));
 
-//    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
-//    {
-//        {
-//            CtiLockGuard<CtiLogger> logger_guard(dout);
-//            dout << CtiTime() << " - CtiCCSpecialAreasMsg has "<< (imgs.getCCSpecialAreas())->size()<<" entries." << endl;
-//        }
-//        for (int h=0;h < imsg.getCCSpecialAreas()->size(); h++)
-//        {
-//            {
-//                CtiLockGuard<CtiLogger> logger_guard(dout);
-//                dout << CtiTime() << " - Area: "<<((CtiCCSpecial*)(imgs.getCCSpecialAreas())->at(h))->getPaoName()<<
-//                    " : "<<((CtiCCSpecial*)(imgs.getCCSpecialAreas())->at(h))->getPaoId()<< endl;
-//            }
-//        }
-//    }
-
     omsg->__set__ccSpecialAreas                 ( transformContainer<vector<Thrift::CCSpecial>>( *imsg.getCCSpecialAreas(), populateThrift ));
 
     return omsg;

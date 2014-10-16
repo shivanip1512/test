@@ -81,14 +81,12 @@ void CtiFDRPiPoll::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, b
   int err = getPiPointIdFromTag(tagName,piId);
   if (err != 0)
   {
-    {
-      std::string piError = getPiErrorDescription(err, "pipt_findpoint");
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Unable to find PI tag '" << tagName <<
-        "' for point " << translationPoint->getPointID() <<
-        ", pipt_findpoint returned " << piError << endl;
-    }
-    return;
+      const std::string piError = getPiErrorDescription(err, "pipt_findpoint");
+
+      CTILOG_ERROR(dout, logNow() <<"Unable to find PI tag '"<< tagName <<"' for point "<< translationPoint->getPointID() <<
+              ", pipt_findpoint returned " << piError);
+
+      return;
   }
 
 
@@ -165,17 +163,15 @@ void CtiFDRPiPoll::handleNewPoint(CtiFDRPointSPtr ctiPoint)
     }
     if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << pollInfo.pointList.size() <<
-        " points will update every " << pollPeriod << " seconds" << endl;
+        CTILOG_DEBUG(dout, logNow() << pollInfo.pointList.size() <<" points will update every "<< pollPeriod <<" seconds");
     }
   }
   else
   {
     if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << "Check Point. No points setup for the peroid " << period << ", expected at least 1." << endl;
+        //FIXME: DEBUG or ERROR?
+        CTILOG_DEBUG(dout, logNow() << "No points setup for the period " << period << ", expected at least 1.");
     }
   }
 }
@@ -217,9 +213,8 @@ void CtiFDRPiPoll::handleNewPoints()
     }
     if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
     {
-      CtiLockGuard<CtiLogger> doubt_guard( dout );
-      logNow() << pollInfo.pointList.size() <<
-        " points will update every " << pollPeriod << " seconds" << endl;
+        CTILOG_DEBUG(dout, logNow() << pollInfo.pointList.size() <<
+                " points will update every "<< pollPeriod <<" seconds");
     }
 
   }
@@ -246,8 +241,7 @@ void CtiFDRPiPoll::doUpdates()
         {
             if( getDebugLevel() & DETAIL_FDR_DEBUGLEVEL )
             {
-              CtiLockGuard<CtiLogger> doubt_guard( dout );
-              logNow() << "Checking " << pointCount << " points for period " << pollPeriod << endl;
+                CTILOG_DEBUG(dout, logNow() <<"Checking "<< pointCount <<" points for period "<< pollPeriod);
             }
 
             pollInfo.pointIdList.resize(pointCount);
@@ -283,9 +277,8 @@ void CtiFDRPiPoll::doUpdates()
             {
                 if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
                 {
-                  CtiLockGuard<CtiLogger> doubt_guard( dout );
-                  logNow() << "Unable to update values from Pi, pisn_getsnapshotsx returned "
-                    << getPiErrorDescription(err, "pisn_getsnapshotsx") << endl;
+                    CTILOG_DEBUG(dout, logNow() <<"Unable to update values from Pi, pisn_getsnapshotsx returned "<<
+                            getPiErrorDescription(err, "pisn_getsnapshotsx"));
                 }
                 setConnected(false);
                 throw PiException(err);
@@ -322,24 +315,14 @@ void CtiFDRPiPoll::readThisConfig()
 
   _defaultPeriod = gConfigParms.getValueAsInt( KEY_DEFAULT_PERIOD, 60);
 
-
   if( getDebugLevel() & STARTUP_FDR_DEBUGLEVEL )
   {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << "---------------FDRPiPoll Configs-------------------------------" << endl;
-    dout << KEY_ALWAYS_SEND << ": " << _alwaysSendValues << endl;
-    dout << KEY_DEFAULT_PERIOD << ": " << _defaultPeriod << endl;
-    dout << endl;
+      Cti::FormattedList loglist;
+      loglist.add(KEY_ALWAYS_SEND)    << _alwaysSendValues;
+      loglist.add(KEY_DEFAULT_PERIOD) << _defaultPeriod;
+
+      CTILOG_DEBUG(dout, "FDRPiPoll Configs:"<<
+              loglist);
   }
 }
-
-
-
-
-
-
-
-
-
-
 

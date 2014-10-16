@@ -38,7 +38,7 @@ public:
 
    CtiRouteMacro();
 
-   virtual void DumpData();
+   virtual std::string toString() const override;
 
    CtiMutex& getRouteListMux();
 

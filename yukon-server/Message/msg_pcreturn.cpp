@@ -145,22 +145,23 @@ CtiReturnMsg& CtiReturnMsg::setExpectMore(bool more)
    return *this;
 }
 
-void CtiReturnMsg::dump() const
+std::string CtiReturnMsg::toString() const
 {
-   Inherited::dump();
+    Cti::FormattedList itemList;
 
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   dout << " Device ID                     " << _device_id << endl;
-   dout << " Command String                " << _command_string << endl;
-   dout << " Result String                 " << _result_string << endl;
-   dout << " Status                        " << _status << endl;
-   dout << " Route ID                      " << _routeid << endl;
-   dout << " Macro Offset                  " << (_macro_offset ? CtiNumStr(*_macro_offset) : string("none")) << endl;
-   dout << " Attempt Number                " << _attempt_num << endl;
-   dout << " Expect More                   " << _expectMore << endl;           // Another message shall be coming listen for more!
-   dout << " Group Message ID              " << _group_message_id << endl;
-   dout << " User Message ID               " << _user_message_id << endl;
+    itemList <<"CtiReturnMsg";
+    itemList.add("Device ID")        << _device_id;
+    itemList.add("Command String")   << _command_string;
+    itemList.add("Result String")    << _result_string;
+    itemList.add("Status")           << _status;
+    itemList.add("Route ID")         << _routeid;
+    itemList.add("Macro Offset")     << _macro_offset.asString();
+    itemList.add("Attempt Number")   << _attempt_num;
+    itemList.add("Expect More")      << _expectMore; // Another message shall be coming listen for more!
+    itemList.add("Group Message ID") << _group_message_id;
+    itemList.add("User Message ID")  << _user_message_id;
 
+    return (Inherited::toString() += itemList.toString());
 }
 
 CtiReturnMsg::CtiReturnMsg() :

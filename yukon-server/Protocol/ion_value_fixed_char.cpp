@@ -48,10 +48,7 @@ CtiIONChar::CtiIONChar( const unsigned char *byteStream, unsigned long streamLen
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "streamLength > 1 ("<< streamLength <<")");
 
         setValid(false);
     }

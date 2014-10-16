@@ -66,8 +66,7 @@ YukonError_t CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg      *pReq,
       if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
       {
          CtiTime p( getLastLPTime().seconds() );
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " ----Stored LPTime For " << getName() << "----" << p << endl;
+         CTILOG_DEBUG(dout, "Stored LPTime For " << getName() << " : " << p);
       }
 
       if( useScanFlags() )
@@ -85,8 +84,7 @@ YukonError_t CtiDeviceMarkV::ExecuteRequest( CtiRequestMsg      *pReq,
 
       if( getDebugLevel() & DEBUGLEVEL_FACTORY )
       {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " ----Execution In Progress For " << getName() << "----" << endl;
+          CTILOG_DEBUG(dout, "Execution In Progress For "<< getName());
       }
       //probably can delete this here
       ptr = NULL;
@@ -181,12 +179,7 @@ YukonError_t CtiDeviceMarkV::ResultDecode( const INMESS   &InMessage,
    }
    catch(...)
    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
-        //what the hell happened?
+       CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
    }
 
    return( retCode );
@@ -206,8 +199,7 @@ YukonError_t CtiDeviceMarkV::ErrorDecode( const INMESS   &InMessage,
 
    if( getDebugLevel() & DEBUGLEVEL_FACTORY )
    {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << CtiTime() << " ----Error Decode For " << getName() << " In Progress----" << endl;
+       CTILOG_DEBUG(dout, "ErrorDecode For "<< getName() <<" In Progress");
    }
 
    CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg( CtiCommandMsg::UpdateFailed );
@@ -261,8 +253,7 @@ YukonError_t CtiDeviceMarkV::decodeResultScan( const INMESS   &InMessage,
 
    if( getDebugLevel() & DEBUGLEVEL_FACTORY )
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " ----Scanner Message Process For " << getName() << "----" << endl;
+       CTILOG_DEBUG(dout, "Scanner Message Process For "<< getName());
    }
 
    if( isScanFlagSet(ScanRateGeneral) )
@@ -677,8 +668,7 @@ YukonError_t CtiDeviceMarkV::decodeResultScan( const INMESS   &InMessage,
 
       if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
       {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " ----Scanner Message Inserted For " << getName() << "----" << endl;
+          CTILOG_DEBUG(dout, "Scanner Message Inserted For "<< getName());
       }
    }
 
@@ -785,8 +775,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
    if( getDebugLevel() & DEBUGLEVEL_FACTORY )
    {
-      CtiLockGuard<CtiLogger> doubt_guard(dout);
-      dout << CtiTime() << " ----Process Dispatch Message In Progress For " << getName() << "----" << endl;
+       CTILOG_DEBUG(dout, "Process Dispatch Message In Progress For "<< getName());
    }
 
    if( _transdataProtocol.getDidProcess() )
@@ -802,17 +791,11 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
       if( mTime > (CtiTime::now() + 86400) ||
           mTime < (CtiTime::now() - 86400) )
       {
-          {
-             CtiLockGuard<CtiLogger> doubt_guard(dout);
-             dout << CtiTime() << " **** Checkpoint - meter time = (" << mTime << ") in CtiDeviceMarkV::processDispatchReturnMessage() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-          }
+          CTILOG_ERROR(dout, "meter time = ("<< mTime <<") for device \""<< getName() <<"\"");
       }
       else if( lp->lpFormat[0] > 60 || lp->lpFormat[0] < 0 )
       {
-          {
-             CtiLockGuard<CtiLogger> doubt_guard(dout);
-             dout << CtiTime() << " **** Checkpoint - lp->lpFormat[0] = (" << lp->lpFormat[0] << ") in CtiDeviceMarkV::processDispatchReturnMessage() for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-          }
+          CTILOG_ERROR(dout, "lp->lpFormat[0] = ("<< lp->lpFormat[0] <<") for device \""<< getName() <<"\"");
       }
       else
       {
@@ -849,8 +832,7 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
                       if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
                       {
-                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                         dout << mTime << " " << pTemp->computeValueForUOM( val ) << endl;
+                          CTILOG_DEBUG(dout, mTime <<" "<< pTemp->computeValueForUOM(val));
                       }
 
                       msgMulti->getData().push_back( pData );
@@ -886,16 +868,14 @@ void CtiDeviceMarkV::processDispatchReturnMessage( CtiReturnMsg *msgPtr )
 
       if( getDebugLevel() & DEBUGLEVEL_FACTORY )
       {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " ----Dispatch Message Inserted For " << getName() << "----" << endl;
+          CTILOG_DEBUG(dout, "Dispatch Message Inserted For "<< getName());
       }
    }
    else
    {
       if( getDebugLevel() & DEBUGLEVEL_FACTORY )
       {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " ----No Data For Dispatch Message For " << getName() << "----" << endl;
+          CTILOG_DEBUG(dout, "No Data For Dispatch Message For "<< getName());
       }
    }
 }
@@ -975,8 +955,7 @@ int CtiDeviceMarkV::checkQuality( int yyMap, int lpValue )
             {
                 if(isDebugLudicrous())
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << " quality is " << string(CtiNumStr(quality).xhex().zpad(2)) << endl;
+                    CTILOG_DEBUG(dout, getName() <<" quality is "<< CtiNumStr(quality).xhex().zpad(2));
                 }
 
                 if(gConfigParms.isTrue("MARKV_PERFECT_QUALITY"))    quality = QuestionableQuality;

@@ -102,10 +102,7 @@ YukonError_t CtiDeviceVectron::GeneralScan(CtiRequestMsg     *pReq,
 {
     YukonError_t status = ClientErrors::None;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " General Scan of device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "General Scan of device "<< getName() <<" in progress");
 
     if (OutMessage != NULL)
     {
@@ -244,10 +241,8 @@ YukonError_t CtiDeviceVectron::generateCommandHandshake (CtiXfer  &Transfer, Cti
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateHandshakeAbort);
@@ -283,10 +278,8 @@ YukonError_t CtiDeviceVectron::generateCommand (CtiXfer  &Transfer, CtiMessageLi
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid command "<< getCurrentCommand() <<" scanning "<< getName());
+
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
@@ -425,10 +418,8 @@ YukonError_t CtiDeviceVectron::generateCommandSelectMeter (CtiXfer  &Transfer, C
 
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
@@ -479,10 +470,8 @@ YukonError_t CtiDeviceVectron::generateCommandScan (CtiXfer  &Transfer, CtiMessa
             }
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
@@ -792,10 +781,8 @@ YukonError_t CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, C
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Aborting scan: Invalid clock reading " << getName()  << " " << CtiTime(LPTime).asString()<< endl;
-                            }
+                            CTILOG_ERROR(dout, "Aborting scan: Invalid clock reading "<< getName() <<" - "<< CtiTime(LPTime));
+
                             Transfer.setOutCount( 0 );
                             Transfer.setInCountExpected( 0 );
                             setCurrentState (StateScanAbort);
@@ -814,10 +801,7 @@ YukonError_t CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, C
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Load profile for " << getName() << " will not be collected this scan" << endl;
-                    }
+                    CTILOG_WARN(dout, "Load profile for "<< getName() <<" will not be collected this scan");
 
                     Transfer.setOutCount( 0 );
                     Transfer.setInCountExpected( 0 );
@@ -932,10 +916,8 @@ YukonError_t CtiDeviceVectron::generateCommandLoadProfile (CtiXfer  &Transfer, C
             }
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             Transfer.setOutCount( 0 );
             Transfer.setInCountExpected( 0 );
             setCurrentState (StateScanAbort);
@@ -961,8 +943,7 @@ YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                     setCurrentState (StateHandshakeSendIdentify);
                     if (Transfer.doTrace(ClientErrors::Unknown))
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " NAK: Vectron " << getName() << " already online"<< endl;
+                        CTILOG_ERROR(dout, "NAK: Vectron "<< getName() <<" already online");
                     }
                     break;
                 }
@@ -972,8 +953,7 @@ YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                     setCurrentState (StateHandshakeSendIdentify);
                     if (Transfer.doTrace(ClientErrors::Unknown))
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " ACK: Vectron " << getName() << " already online"<< endl;
+                        CTILOG_ERROR(dout, "ACK: Vectron " << getName() << " already online");
                     }
                     break;
                 }
@@ -1057,17 +1037,11 @@ YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
                     // CGP Huh?? Transfer.InCountReceived = 0;
                     if (Transfer.doTrace (ClientErrors::BadCrc))
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Data failed CRC " << getName() << endl;
-                        }
+                        CTILOG_ERROR(dout, "Data failed CRC " << getName());
                     }
                     else if ( Transfer.doTrace (ClientErrors::ReadTimeout))
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " No Reply from meter " << getName() << endl;
-                        }
+                        CTILOG_ERROR(dout, "No Reply from meter " << getName());
                     }
                     CTISleep(2000);
                 }
@@ -1092,10 +1066,8 @@ YukonError_t CtiDeviceVectron::decodeResponseHandshake (CtiXfer  &Transfer, Yuko
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                 setCurrentState (StateHandshakeAbort);
                 retCode = ClientErrors::Abnormal;
                 break;
@@ -1134,10 +1106,8 @@ YukonError_t CtiDeviceVectron::decodeResponse (CtiXfer  &Transfer, YukonError_t 
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid command " << getCurrentCommand() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid command "<< getCurrentCommand() <<" scanning "<< getName());
+
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
@@ -1289,19 +1259,15 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                 // make sure this is the master
                                 if ((Transfer.getInBuffer()[3] & 0x01) && !(Transfer.getInBuffer()[3] & 0x02))
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Successfully switched to master " << getName() << endl;
-                                    }
+                                    CTILOG_INFO(dout, "Successfully switched to master "<< getName());
+
                                     setCurrentState (StateScanComplete);
 
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Failed switching to master " << getName() << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "Failed switching to master "<< getName());
+
                                     setCurrentState (StateScanAbort);
                                     retCode = ClientErrors::Abnormal;
                                 }
@@ -1316,29 +1282,23 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                     if ((Transfer.getInBuffer()[3] & 0x04) ||
                                         (Transfer.getInBuffer()[3] & 0x08))
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Failed switching to slave 1 " << getName() << endl;
-                                        }
+                                        CTILOG_ERROR(dout, "Failed switching to slave 1 "<< getName());
+
                                         setCurrentState (StateScanAbort);
                                         retCode = ClientErrors::Abnormal;
                                     }
                                     else
                                     {
                                         // correct slave, move on
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Successfully switched to slave 1 " << getName() << endl;
-                                        }
+                                        CTILOG_INFO(dout, "Successfully switched to slave 1 "<< getName());
+
                                         setCurrentState (StateScanComplete);
                                     }
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Failed switching to slave 1 " << getName() << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "Failed switching to slave 1 "<< getName());
+
                                     setCurrentState (StateScanAbort);
                                     retCode = ClientErrors::Abnormal;
                                 }
@@ -1353,29 +1313,23 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                     if ((!(Transfer.getInBuffer()[3] & 0x04)) ||
                                         (Transfer.getInBuffer()[3] & 0x08))
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Failed switching to slave 2 " << getName() << endl;
-                                        }
+                                        CTILOG_ERROR(dout, "Failed switching to slave 2 "<< getName());
+
                                         setCurrentState (StateScanAbort);
                                         retCode = ClientErrors::Abnormal;
                                     }
                                     else
                                     {
                                         // correct slave, move on
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Successfully switched to slave 2 " << getName() << endl;
-                                        }
+                                        CTILOG_INFO(dout, "Successfully switched to slave 2 "<< getName());
+
                                         setCurrentState (StateScanComplete);
                                     }
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Failed switching to slave 2 " << getName() << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "Failed switching to slave 2 "<< getName());
+
                                     setCurrentState (StateScanAbort);
                                     retCode = ClientErrors::Abnormal;
                                 }
@@ -1390,29 +1344,23 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                     if ((Transfer.getInBuffer()[3] & 0x04) ||
                                         (!(Transfer.getInBuffer()[3] & 0x08)))
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Failed switching to slave 3 " << getName() << endl;
-                                        }
+                                        CTILOG_ERROR(dout, "Failed switching to slave 3 "<< getName());
+
                                         setCurrentState (StateScanAbort);
                                         retCode = ClientErrors::Abnormal;
                                     }
                                     else
                                     {
                                         // correct slave, move on
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Successfully switched to slave 3 " << getName() << endl;
-                                        }
+                                        CTILOG_INFO(dout, "Successfully switched to slave 3 "<< getName());
+
                                         setCurrentState (StateScanComplete);
                                     }
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Failed switching to slave 3 " << getName() << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "Failed switching to slave 3 "<< getName());
+
                                     setCurrentState (StateScanAbort);
                                     retCode = ClientErrors::Abnormal;
                                 }
@@ -1427,29 +1375,23 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
                                     if ((!(Transfer.getInBuffer()[3] & 0x04)) ||
                                         (!(Transfer.getInBuffer()[3] & 0x08)))
                                     {
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Failed switching to slave 4 " << getName() << endl;
-                                        }
+                                        CTILOG_ERROR(dout, "Failed switching to slave 4 "<< getName());
+
                                         setCurrentState (StateScanAbort);
                                         retCode = ClientErrors::Abnormal;
                                     }
                                     else
                                     {
                                         // correct slave, move on
-                                        {
-                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                            dout << CtiTime() << " Successfully switched to slave 4 " << getName() << endl;
-                                        }
+                                        CTILOG_INFO(dout, "Successfully switched to slave 4 "<< getName());
+
                                         setCurrentState (StateScanComplete);
                                     }
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Failed switching to slave 4 " << getName() << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "Failed switching to slave 4 "<< getName());
+
                                     setCurrentState (StateScanAbort);
                                     retCode = ClientErrors::Abnormal;
                                 }
@@ -1466,10 +1408,8 @@ YukonError_t CtiDeviceVectron::decodeResponseSelectMeter(CtiXfer  &Transfer, Yuk
             }
 
         default:
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
             setCurrentState (StateScanAbort);
             retCode = ClientErrors::Abnormal;
 
@@ -1526,10 +1466,8 @@ YukonError_t CtiDeviceVectron::decodeResponseScan (CtiXfer  &Transfer, YukonErro
                     break;
                 }
             default:
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                 setCurrentState (StateScanAbort);
                 retCode = ClientErrors::Abnormal;
         }
@@ -1591,10 +1529,8 @@ YukonError_t CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
                     setTotalByteCount(0);
                     if (decodeResultMMConfig (localMMConfig))
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Meter " << getName() << " has no load profile channels configured" << endl;
-                        }
+                        CTILOG_WARN(dout, "Meter "<< getName() <<" has no load profile channels configured");
+
                         setCurrentState (StateScanComplete);
                     }
                     else
@@ -1635,10 +1571,8 @@ YukonError_t CtiDeviceVectron::decodeResponseLoadProfile (CtiXfer  &Transfer, Yu
                     break;
                 }
             default:
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") Invalid state " << getCurrentState() << " scanning " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state "<< getCurrentState() <<" scanning "<< getName());
+
                 setCurrentState (StateScanAbort);
                 retCode = ClientErrors::Abnormal;
         }
@@ -1950,10 +1884,7 @@ INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS   &InMessage,
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Load Profile register type " << energyRegister << " type not supported" << getName() << endl;
-            }
+            CTILOG_ERROR(dout, "Load Profile register type "<< energyRegister <<" type not supported "<< getName());
         }
     }
 
@@ -1975,168 +1906,238 @@ INT CtiDeviceVectron::decodeResultLoadProfile (const INMESS   &InMessage,
 INT CtiDeviceVectron::ResultDisplay (const INMESS &InMessage)
 
 {
+    struct FormatValue
+    {
+        std::ostringstream _ostream;
+
+        FormatValue()
+        {
+            _ostream << std::setfill('0');
+        }
+
+        std::ostringstream& operator()(float val, int precision)
+        {
+            _ostream.str("");
+            _ostream << std::fixed << std::setprecision(precision) << val;
+            return _ostream;
+        }
+
+        std::ostringstream& operator()(float val)
+        {
+            return (*this)(val, 6);
+        }
+
+        std::ostringstream& date(const VectronMaximumRegister_t& r)
+        {
+            _ostream.str("");
+            _ostream << std::setw(2) << r.Month <<"-"<< std::setw(2) << r.Day;
+            return _ostream;
+        }
+
+        std::ostringstream& time(const VectronMaximumRegister_t& r)
+        {
+            _ostream.str("");
+            _ostream << std::setw(2) << r.Hour <<":"<< std::setw(2) << r.Minute;
+            return _ostream;
+        }
+
+    } format;
+
+
     const VectronScanData_t  *vsd = (const VectronScanData_t*) InMessage.Buffer.DUPSt.DUPRep.Message;
     CHAR workString[10];
-    CHAR buffer[200];
 
-    /**************************
-    * lazy way to do this
-    ***************************
-    */
+    Cti::FormattedList itemList;
+
+    /// meter info ///
+    itemList.add("Meter ID")            << string((const char*)vsd->Real.meterId,  9);
+    itemList.add("Unit Type")           << string((const char*)vsd->Real.unitType, 3);
+    itemList.add("Unit ID")             << string((const char*)vsd->Real.unitId,   8);
+    itemList.add("Program ID")          << vsd->Real.progId;
+    itemList  << "Revision Level";
+    itemList.add("Software")            << format (vsd->Real.sWRev, 2);
+    itemList.add("Firmware")            << format (vsd->Real.fWRev, 2);
+    itemList.add("Register Multiplier") << format (vsd->Real.registerMultiplier, 5);
+
+    /// phase info ///
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Result display for device " << getName() << " in progress " << endl;
-        sprintf(buffer,"Meter ID          :   %.9s",vsd->Real.meterId);
-        dout << endl << buffer << endl;
-        sprintf(buffer,"Unit Type         :   %.3s",vsd->Real.unitType);
-        dout << buffer << endl;
-        sprintf(buffer,"Unit  ID          :   %.8s",vsd->Real.unitId);
-        dout << buffer << endl;
-        sprintf(buffer,"Program ID        :   %d",vsd->Real.progId);
-        dout << buffer << endl;
-        sprintf(buffer,"Revision Level");
-        dout << endl << buffer << endl;
-        sprintf (buffer,"    Software: %4.2f\n    Firmware: %4.2f",vsd->Real.sWRev,vsd->Real.fWRev);
-        dout << buffer << endl;
-        sprintf(buffer,"Register Multiplier:  %9.5f",vsd->Real.registerMultiplier);
-        dout << endl << buffer << endl;
+        Cti::FormattedTable table;
 
-        sprintf(buffer,"            Inst. Voltage         Inst. Current");
-        dout << endl << buffer << endl;
-        sprintf(buffer,"Phase A         %6.3f             %6.3f",vsd->Real.phaseA.voltage,vsd->Real.phaseA.current);
-        dout << buffer << endl;
-        sprintf(buffer,"Phase B         %6.3f             %6.3f",vsd->Real.phaseB.voltage,vsd->Real.phaseB.current);
-        dout << buffer << endl;
-        sprintf(buffer,"Phase C         %6.3f             %6.3f",vsd->Real.phaseC.voltage,vsd->Real.phaseC.current);
-        dout << buffer << endl;
+        table.setCell(0, 1) <<"Inst. Voltage";
+        table.setCell(0, 2) <<"Inst. Current";
 
+        table.setCell(1, 0) <<"Phase A";
+        table.setCell(1, 1) << format (vsd->Real.phaseA.voltage, 3);
+        table.setCell(1, 2) << format (vsd->Real.phaseA.current, 3);
 
-        sprintf(buffer,"Register 1       Max        Date    Time      Mapping:%s",displayRegisterMapping(vsd->Real.register1.mapping, workString));
-        dout << endl << buffer << endl;
-        sprintf(buffer,"Rate E      %9.2f       %02d-%02d   %02d:%02d",
-                vsd->Real.register1.data.demand.rateE.PeakValue,
-                vsd->Real.register1.data.demand.rateE.Month,
-                vsd->Real.register1.data.demand.rateE.Day,
-                vsd->Real.register1.data.demand.rateE.Hour,
-                vsd->Real.register1.data.demand.rateE.Minute);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate A      %9.2f       %02d-%02d   %02d:%02d",
-                vsd->Real.register1.data.demand.rateA.PeakValue,
-                vsd->Real.register1.data.demand.rateA.Month,
-                vsd->Real.register1.data.demand.rateA.Day,
-                vsd->Real.register1.data.demand.rateA.Hour,
-                vsd->Real.register1.data.demand.rateA.Minute);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate B      %9.2f       %02d-%02d   %02d:%02d",
-                vsd->Real.register1.data.demand.rateB.PeakValue,
-                vsd->Real.register1.data.demand.rateB.Month,
-                vsd->Real.register1.data.demand.rateB.Day,
-                vsd->Real.register1.data.demand.rateB.Hour,
-                vsd->Real.register1.data.demand.rateB.Minute);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate C      %9.2f       %02d-%02d   %02d:%02d",
-                vsd->Real.register1.data.demand.rateC.PeakValue,
-                vsd->Real.register1.data.demand.rateC.Month,
-                vsd->Real.register1.data.demand.rateC.Day,
-                vsd->Real.register1.data.demand.rateC.Hour,
-                vsd->Real.register1.data.demand.rateC.Minute);
-        dout << buffer << endl;
-        sprintf(buffer,"Rate D      %9.2f       %02d-%02d   %02d:%02d",
-                vsd->Real.register1.data.demand.rateD.PeakValue,
-                vsd->Real.register1.data.demand.rateD.Month,
-                vsd->Real.register1.data.demand.rateD.Day,
-                vsd->Real.register1.data.demand.rateD.Hour,
-                vsd->Real.register1.data.demand.rateD.Minute);
-        dout << buffer << endl;
+        table.setCell(2, 0) <<"Phase B";
+        table.setCell(2, 1) << format (vsd->Real.phaseB.voltage, 3);
+        table.setCell(2, 2) << format (vsd->Real.phaseB.current, 3);
 
+        table.setCell(3, 0) <<"Phase C";
+        table.setCell(3, 1) << format (vsd->Real.phaseC.voltage, 3);
+        table.setCell(3, 2) << format (vsd->Real.phaseC.current, 3);
 
-        // set to one if demand
-        if (vsd->Real.register2.configFlag)
-        {
-            sprintf(buffer,"Register 2       Max        Date    Time       Mapping:%s",displayRegisterMapping(vsd->Real.register2.mapping, workString));
-            dout << endl << buffer << endl;
-            sprintf(buffer,"Rate E      %9.2f       %02d-%02d   %02d:%02d",
-                    vsd->Real.register2.data.demand.rateE.PeakValue,
-                    vsd->Real.register2.data.demand.rateE.Month,
-                    vsd->Real.register2.data.demand.rateE.Day,
-                    vsd->Real.register2.data.demand.rateE.Hour,
-                    vsd->Real.register2.data.demand.rateE.Minute);
-            dout << buffer << endl;
-            sprintf(buffer,"Rate A      %9.2f       %02d-%02d   %02d:%02d",
-                    vsd->Real.register2.data.demand.rateA.PeakValue,
-                    vsd->Real.register2.data.demand.rateA.Month,
-                    vsd->Real.register2.data.demand.rateA.Day,
-                    vsd->Real.register2.data.demand.rateA.Hour,
-                    vsd->Real.register2.data.demand.rateA.Minute);
-            dout << buffer << endl;
-            sprintf(buffer,"Rate B      %9.2f       %02d-%02d   %02d:%02d",
-                    vsd->Real.register2.data.demand.rateB.PeakValue,
-                    vsd->Real.register2.data.demand.rateB.Month,
-                    vsd->Real.register2.data.demand.rateB.Day,
-                    vsd->Real.register2.data.demand.rateB.Hour,
-                    vsd->Real.register2.data.demand.rateB.Minute);
-            dout << buffer << endl;
-        }
-        else
-        {
-            sprintf(buffer,"Register 2                     Energy       Mapping:%s",displayRegisterMapping(vsd->Real.register2.mapping, workString));
-            dout << endl << buffer << endl;
-            sprintf(buffer,"Rate E               %17.7f",vsd->Real.register2.data.energy.rateE);
-            dout << buffer << endl;
-            sprintf(buffer,"Rate A               %17.7f",vsd->Real.register2.data.energy.rateA);
-            dout << buffer << endl;
-            sprintf(buffer,"Rate B               %17.7f",vsd->Real.register2.data.energy.rateB);
-            dout << buffer << endl;
-            sprintf(buffer,"Rate C               %17.7f",vsd->Real.register2.data.energy.rateC);
-            dout << buffer << endl;
-            sprintf(buffer,"Rate D               %17.7f",vsd->Real.register2.data.energy.rateD);
-            dout << buffer << endl;
-
-        }
-
-        // set to one if demand
-        if (vsd->Real.register3.configFlag)
-        {
-            sprintf(buffer,"Register 3       Max        Date    Time      Mapping:%s",displayRegisterMapping(vsd->Real.register3.mapping, workString));
-            dout << endl << buffer << endl;
-            sprintf(buffer,"Rate E      %9.2f       %02d-%02d   %02d:%02d",
-                    vsd->Real.register3.data.demand.rateE.PeakValue,
-                    vsd->Real.register3.data.demand.rateE.Month,
-                    vsd->Real.register3.data.demand.rateE.Day,
-                    vsd->Real.register3.data.demand.rateE.Hour,
-                    vsd->Real.register3.data.demand.rateE.Minute);
-            dout << buffer << endl;
-        }
-        else
-        {
-            sprintf(buffer,"Register 3                     Energy        Mapping:%s",displayRegisterMapping(vsd->Real.register3.mapping, workString));
-            dout << endl << buffer << endl;
-            sprintf(buffer,"Rate E               %17.7f",vsd->Real.register3.data.energy.rateE);
-            dout << buffer << endl;
-
-        }
-
-        // set to one if demand
-        if (vsd->Real.register4.configFlag)
-        {
-            sprintf(buffer,"Register 4       Max        Date    Time      Mapping:%s",displayRegisterMapping(vsd->Real.register4.mapping, workString));
-            dout << endl << buffer << endl;
-            sprintf(buffer,"Rate E      %9.2f       %02d-%02d   %02d:%02d",
-                    vsd->Real.register4.data.demand.rateE.PeakValue,
-                    vsd->Real.register4.data.demand.rateE.Month,
-                    vsd->Real.register4.data.demand.rateE.Day,
-                    vsd->Real.register4.data.demand.rateE.Hour,
-                    vsd->Real.register4.data.demand.rateE.Minute);
-            dout << buffer << endl;
-        }
-        else
-        {
-            sprintf(buffer,"Register 4                     Energy        Mapping:%s",displayRegisterMapping(vsd->Real.register4.mapping, workString));
-            dout << endl << buffer << endl;
-            sprintf(buffer,"Rate E               %17.7f",vsd->Real.register4.data.energy.rateE);
-            dout << buffer << endl;
-        }
+        itemList << table;
     }
+
+    /// register 1-4 mapping info ///
+    itemList  << "Register Mapping";
+    itemList.add("Register 1")  <<displayRegisterMapping(vsd->Real.register1.mapping, workString);
+    itemList.add("Register 2")  <<displayRegisterMapping(vsd->Real.register2.mapping, workString);
+    itemList.add("Register 3")  <<displayRegisterMapping(vsd->Real.register3.mapping, workString);
+    itemList.add("Register 4")  <<displayRegisterMapping(vsd->Real.register4.mapping, workString);
+
+    /// register 1 ///
+    {
+        Cti::FormattedTable table;
+
+        table.setCell(0, 0) <<"Register 1";
+        table.setCell(0, 1) <<"Max";
+        table.setCell(0, 2) <<"Date";
+        table.setCell(0, 3) <<"Time";
+
+        table.setCell(1, 0) <<"Rate E";
+        table.setCell(1, 1) << format      (vsd->Real.register1.data.demand.rateE.PeakValue, 2);
+        table.setCell(1, 2) << format.date (vsd->Real.register1.data.demand.rateE);
+        table.setCell(1, 3) << format.time (vsd->Real.register1.data.demand.rateE);
+
+        table.setCell(2, 0) <<"Rate A";
+        table.setCell(2, 1) << format      (vsd->Real.register1.data.demand.rateA.PeakValue, 2);
+        table.setCell(2, 2) << format.date (vsd->Real.register1.data.demand.rateA);
+        table.setCell(2, 3) << format.time (vsd->Real.register1.data.demand.rateA);
+
+        table.setCell(3, 0) <<"Rate B";
+        table.setCell(3, 1) << format      (vsd->Real.register1.data.demand.rateB.PeakValue, 2);
+        table.setCell(3, 2) << format.date (vsd->Real.register1.data.demand.rateB);
+        table.setCell(3, 3) << format.time (vsd->Real.register1.data.demand.rateB);
+
+        table.setCell(4, 0) <<"Rate C";
+        table.setCell(4, 1) << format      (vsd->Real.register1.data.demand.rateC.PeakValue, 2);
+        table.setCell(4, 2) << format.date (vsd->Real.register1.data.demand.rateC);
+        table.setCell(4, 3) << format.time (vsd->Real.register1.data.demand.rateC);
+
+        table.setCell(5, 0) <<"Rate D";
+        table.setCell(5, 1) << format      (vsd->Real.register1.data.demand.rateD.PeakValue, 2);
+        table.setCell(5, 2) << format.date (vsd->Real.register1.data.demand.rateD);
+        table.setCell(5, 3) << format.time (vsd->Real.register1.data.demand.rateD);
+
+        itemList << table;
+    }
+
+    /// register 2 ///
+    if (vsd->Real.register2.configFlag)  // set to one if demand
+    {
+        Cti::FormattedTable table;
+
+        table.setCell(0, 0) <<"Register 2";
+        table.setCell(0, 1) <<"Max";
+        table.setCell(0, 2) <<"Date";
+        table.setCell(0, 3) <<"Time";
+
+        table.setCell(1, 0) <<"Rate E";
+        table.setCell(1, 1) << format      (vsd->Real.register2.data.demand.rateE.PeakValue, 2);
+        table.setCell(1, 2) << format.date (vsd->Real.register2.data.demand.rateE);
+        table.setCell(1, 3) << format.time (vsd->Real.register2.data.demand.rateE);
+
+        table.setCell(2, 0) <<"Rate A";
+        table.setCell(2, 1) << format      (vsd->Real.register2.data.demand.rateA.PeakValue, 2);
+        table.setCell(2, 2) << format.date (vsd->Real.register2.data.demand.rateA);
+        table.setCell(2, 3) << format.time (vsd->Real.register2.data.demand.rateA);
+
+        table.setCell(3, 0) <<"Rate B";
+        table.setCell(3, 1) << format      (vsd->Real.register2.data.demand.rateB.PeakValue, 2);
+        table.setCell(3, 2) << format.date (vsd->Real.register2.data.demand.rateB);
+        table.setCell(3, 3) << format.time (vsd->Real.register2.data.demand.rateB);
+
+        itemList << table;
+    }
+    else
+    {
+        Cti::FormattedTable table;
+
+        table.setCell(0, 0) <<"Register 2";
+        table.setCell(0, 1) <<"Energy";
+
+        table.setCell(1, 0) <<"Rate E";
+        table.setCell(1, 1) << format (vsd->Real.register2.data.energy.rateE, 7);
+
+        table.setCell(2, 0) <<"Rate A";
+        table.setCell(2, 1) << format (vsd->Real.register2.data.energy.rateA, 7);
+
+        table.setCell(3, 0) <<"Rate B";
+        table.setCell(3, 1) << format (vsd->Real.register2.data.energy.rateB, 7);
+
+        table.setCell(4, 0) <<"Rate C";
+        table.setCell(4, 1) << format (vsd->Real.register2.data.energy.rateC, 7);
+
+        table.setCell(5, 0) <<"Rate D";
+        table.setCell(5, 1) << format (vsd->Real.register2.data.energy.rateD, 7);
+
+        itemList << table;
+    }
+
+    /// register 3 ///
+    if (vsd->Real.register3.configFlag) // set to one if demand
+    {
+        Cti::FormattedTable table;
+
+        table.setCell(0, 0) <<"Register 3";
+        table.setCell(0, 1) <<"Max";
+        table.setCell(0, 2) <<"Date";
+        table.setCell(0, 3) <<"Time";
+
+        table.setCell(1, 0) <<"Rate E";
+        table.setCell(1, 1) << format      (vsd->Real.register3.data.demand.rateE.PeakValue, 2);
+        table.setCell(1, 2) << format.date (vsd->Real.register3.data.demand.rateE);
+        table.setCell(1, 3) << format.time (vsd->Real.register3.data.demand.rateE);
+
+        itemList << table;
+    }
+    else
+    {
+        Cti::FormattedTable table;
+
+        table.setCell(0, 0) <<"Register 3";
+        table.setCell(0, 1) <<"Energy";
+
+        table.setCell(1, 0) <<"Rate E";
+        table.setCell(1, 1) << format (vsd->Real.register3.data.energy.rateE, 7);
+    }
+
+    /// register 4 ///
+    if (vsd->Real.register4.configFlag) // set to one if demand
+    {
+        Cti::FormattedTable table;
+
+        table.setCell(0, 0) <<"Register 4";
+        table.setCell(0, 1) <<"Max";
+        table.setCell(0, 2) <<"Date";
+        table.setCell(0, 3) <<"Time";
+
+        table.setCell(1, 0) <<"Rate E";
+        table.setCell(1, 1) << format      (vsd->Real.register4.data.demand.rateE.PeakValue, 2);
+        table.setCell(1, 2) << format.date (vsd->Real.register4.data.demand.rateE);
+        table.setCell(1, 3) << format.time (vsd->Real.register4.data.demand.rateE);
+
+        itemList << table;
+    }
+    else
+    {
+        Cti::FormattedTable table;
+
+        table.setCell(0, 0) <<"Register 4";
+        table.setCell(0, 1) <<"Energy";
+
+        table.setCell(1, 0) <<"Rate E";
+        table.setCell(1, 1) << format (vsd->Real.register4.data.energy.rateE, 7);
+
+        itemList << table;
+    }
+
+    CTILOG_INFO(dout, "Result display for device "<< getName() <<" In progress"<<
+            itemList
+            );
 
     return ClientErrors::None;
 }

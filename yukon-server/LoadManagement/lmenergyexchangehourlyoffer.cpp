@@ -247,10 +247,7 @@ void CtiLMEnergyExchangeHourlyOffer::addLMEnergyExchangeHourlyOfferTable()
 {
     static const std::string sql = "insert into lmenergyexchangehourlyoffer values (?, ?, ?, ?, ?)";
 
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Inserted hourly offer into LMEnergyExchangeHourlyOffer, offer id: " << getOfferId() << " revision number: " << getRevisionNumber() << endl;
-    }
+    CTILOG_INFO(dout, "Inserted hourly offer into LMEnergyExchangeHourlyOffer, offer id: " << getOfferId() << " revision number: " << getRevisionNumber());
 
     Cti::Database::DatabaseConnection   conn;
     Cti::Database::DatabaseWriter       inserter(conn, sql);
@@ -327,11 +324,7 @@ void CtiLMEnergyExchangeHourlyOffer::restoreDynamicData()
 
     if( _LM_DEBUG & LM_DEBUG_DATABASE )
     {
-        string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << endl;
-        }
+        CTILOG_DEBUG(dout, rdr.asString());
     }
 
     if(rdr())
@@ -346,8 +339,7 @@ void CtiLMEnergyExchangeHourlyOffer::restoreDynamicData()
 
     if( !rdr.isValid() )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Invalid DB Connection in: " << __FILE__ << " at: " << __LINE__ << endl;
+        CTILOG_INFO(dout, "Invalid DB Connection");
     }
 }
 

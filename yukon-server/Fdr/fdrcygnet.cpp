@@ -106,8 +106,7 @@ BOOL CtiFDRCygnet::init( void )
 
         if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " Loading Cygnet translation list: loadTranslationList()" << endl;
+            CTILOG_DEBUG(dout, "Loading Cygnet translation list: loadTranslationList()");
         }
         loadTranslationLists();
 
@@ -193,11 +192,7 @@ CtiFDRCygnet & CtiFDRCygnet::setHiReasonabilityFilter(const double myValue)
 */
 BOOL CtiFDRCygnet::run( void )
 {
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime( ) << " ----- Starting FDR Cygnet Version " << FDR_CYGNET_VERSION << endl;
-    }
+    CTILOG_INFO(dout, "Starting FDR Cygnet Version " << FDR_CYGNET_VERSION);
 
     // crank up the base class
     Inherited::run();
@@ -251,8 +246,8 @@ int CtiFDRCygnet::readConfig( void )
     else if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
         iScanRateSeconds = 300;
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " Could not find Cygnet Scan Rate defaulting to " << iScanRateSeconds << " seconds" << endl;
+
+        CTILOG_DEBUG(dout, "Could not find Cygnet Scan Rate, defaulting to " << iScanRateSeconds << " seconds");
     }
 
     tempStr = getCparmValueAsString(KEY_ANALOG_SERVICE_NAME);
@@ -262,8 +257,7 @@ int CtiFDRCygnet::readConfig( void )
     }
     else if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " Cygnet Analog Service is not defined." << endl;
+        CTILOG_DEBUG(dout, "Cygnet Analog Service is not defined.");
     }
 
     tempStr = getCparmValueAsString(KEY_STATUS_SERVICE_NAME);
@@ -273,8 +267,7 @@ int CtiFDRCygnet::readConfig( void )
     }
     else if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " Cygnet Status Service is not defined." << endl;
+        CTILOG_DEBUG(dout, "Cygnet Status Service is not defined.");
     }
 
     tempStr = getCparmValueAsString(KEY_DB_RELOAD_RATE);
@@ -287,10 +280,7 @@ int CtiFDRCygnet::readConfig( void )
         setReloadRate (86400);
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " Database will be reloaded " << getReloadRate() << " seconds" << endl;
-    }
+    CTILOG_INFO(dout, "Database will be reloaded at "<< getReloadRate() <<" seconds");
 
     tempStr = getCparmValueAsString(KEY_HI_REASONABILITY_FILTER);
     if (tempStr.length() > 0)
@@ -304,17 +294,16 @@ int CtiFDRCygnet::readConfig( void )
     else
         setInterfaceDebugMode (false);
 
-
-
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-
         if (getHiReasonabilityFilter() > 0)
-            dout << " Using Cygnet High Reasonability Filter: " << getHiReasonabilityFilter() << endl;
+        {
+            CTILOG_DEBUG(dout, "Using Cygnet High Reasonability Filter: "<< getHiReasonabilityFilter());
+        }
         else
-            dout << " No Cygnet High Reasonability Filter is in use" << endl;
-
+        {
+            CTILOG_DEBUG(dout, "No Cygnet High Reasonability Filter is in use");
+        }
     }
 
     return successful;
@@ -355,11 +344,9 @@ void CtiFDRCygnet::threadFunctionGetDataFromCygnet( void )
 
             } while ( timeNow < nextScanTime );
 
-
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime::now() << " - Getting Data from CYGNET Interface - " << endl;
+                CTILOG_DEBUG(dout, "Getting Data from CYGNET Interface");
             }
 
             // this returns true if already connected
@@ -375,10 +362,9 @@ void CtiFDRCygnet::threadFunctionGetDataFromCygnet( void )
             }
         }
     }
-
     catch ( RWCancellation &cancellationMsg )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        //FIXME, log anything?
         return;
     }
 }
@@ -441,11 +427,7 @@ bool CtiFDRCygnet::connectToAnalogService()
             {
                 // pretend we have a cygnet interface
                 returnValue = 0;
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << " Simulation of Cygnet Interface for debugging" << endl;
-                }
+                CTILOG_INFO(dout, "Simulation of Cygnet Interface for debugging");
             }
             else
             {
@@ -461,11 +443,8 @@ bool CtiFDRCygnet::connectToAnalogService()
 
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << logDesc << " " << logInfo;
-                    dout << "  return code: " << returnValue << endl;
+                    CTILOG_DEBUG(dout, logDesc <<" "<< logInfo <<" return code: "<< returnValue);
                 }
-
             }
             else
             {
@@ -477,8 +456,7 @@ bool CtiFDRCygnet::connectToAnalogService()
                 setAnalogServiceState(CSTATE_NORMAL);
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << logDesc << endl;
+                    CTILOG_DEBUG(dout, logDesc);
                 }
             }
         }
@@ -488,8 +466,7 @@ bool CtiFDRCygnet::connectToAnalogService()
             logInfo = "";
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << logDesc << endl;
+                CTILOG_DEBUG(dout, logDesc);
             }
         }
 
@@ -536,11 +513,7 @@ bool CtiFDRCygnet::connectToStatusService()
             {
                 // pretend we have a cygnet interface
                 returnValue = 0;
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Simulation of Cygnet Status Interface for debugging" << endl;
-                }
+                CTILOG_INFO(dout, "Simulation of Cygnet Status Interface for debugging");
             }
             else
             {
@@ -557,9 +530,7 @@ bool CtiFDRCygnet::connectToStatusService()
 
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << logDesc <<  " " << logInfo;
-                    dout << " return code: " << returnValue << endl;
+                    CTILOG_DEBUG(dout, logDesc <<" "<< logInfo <<" return code: "<< returnValue);
                 }
             }
             else
@@ -573,8 +544,7 @@ bool CtiFDRCygnet::connectToStatusService()
 
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << logDesc << endl;
+                    CTILOG_DEBUG(dout, logDesc);
                 }
             }
         }
@@ -585,8 +555,7 @@ bool CtiFDRCygnet::connectToStatusService()
 
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << logDesc << endl;
+                CTILOG_DEBUG(dout, logDesc);
             }
         }
 
@@ -669,16 +638,14 @@ bool CtiFDRCygnet::retrieveAnalogPoints()
                 {
                     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Requesting Cygnet Analog ID: " << point->getDestinationList()[x].getTranslation();
-                        dout << " Yukon Pt ID: " << point->getPointID() << endl;
+                        CTILOG_DEBUG(dout, "Requesting Cygnet Analog ID: "<< point->getDestinationList()[x].getTranslation() <<
+                                " Yukon Pt ID: "<< point->getPointID());
                     }
                     else if ( (firstPass) && (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL) )
                     {
                         // this limits the debug by only logging info about the first item
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " (Min Debug) Requesting Cygnet Analog ID: " << point->getDestinationList()[x].getTranslation();
-                        dout << " Yukon Pt ID: " << point->getPointID() << endl;
+                        CTILOG_DEBUG(dout, "(Min Debug) Requesting Cygnet Analog ID: "<< point->getDestinationList()[x].getTranslation() <<
+                                " Yukon Pt ID: " << point->getPointID());
                     }
 
                     // Each message has its own unique type
@@ -695,8 +662,7 @@ bool CtiFDRCygnet::retrieveAnalogPoints()
                         // pretend we have a cygnet interface
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "Getting Analog from Cygnet: " << CygnetRequest.names[0] << endl;
+                            CTILOG_DEBUG(dout, "Getting Analog from Cygnet: "<< CygnetRequest.names[0]);
                         }
 
                         returnValue = 0;
@@ -748,10 +714,8 @@ bool CtiFDRCygnet::retrieveAnalogPoints()
 
                                 if (getDebugLevel() & EXPECTED_ERR_FDR_DEBUGLEVEL)
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << "Cygnet ID: " << point->getDestinationList()[x].getTranslation();
-                                    dout << " was above HiReasonabilityFilter: " << myHiReasonabilityFilter;
-                                    dout << " Hi Value was: " << myNewValue << endl;
+                                    CTILOG_WARN(dout, "Cygnet ID: "<< point->getDestinationList()[x].getTranslation() <<
+                                            " was above HiReasonabilityFilter: "<< myHiReasonabilityFilter <<" Hi Value was: "<< myNewValue);
                                 }
 
                             }
@@ -759,19 +723,15 @@ bool CtiFDRCygnet::retrieveAnalogPoints()
                             {
                                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                                 {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << "Updating Cygnet ID: " << point->getDestinationList()[x].getTranslation();
-                                    dout << " to New Value: " << myNewValue;
-                                    dout << " New Time: " << myNewTime << endl;
+                                    CTILOG_DEBUG(dout, "Updating Cygnet ID: "<< point->getDestinationList()[x].getTranslation() <<
+                                            " to New Value: "<< myNewValue <<" New Time: "<< myNewTime);
 
                                 }
                                 else if ( (firstPass) && (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL) )
                                 {
                                     // this limits the debug by only logging info about the first item
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << "Updating Cygnet ID: " << point->getDestinationList()[x].getTranslation();
-                                    dout << " to New Value: " << myNewValue;
-                                    dout << " New Time: " << myNewTime << endl;
+                                    CTILOG_DEBUG(dout, "Updating Cygnet ID: "<< point->getDestinationList()[x].getTranslation() <<
+                                            " to New Value: "<< myNewValue <<" New Time: "<< myNewTime);
                                 }
 
                                 pData = new CtiPointDataMsg(point->getPointID(),
@@ -800,14 +760,12 @@ bool CtiFDRCygnet::retrieveAnalogPoints()
                             // old time stamp
                             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "OLD time for Cygnet ID: " << point->getDestinationList()[x].getTranslation() << " was " << myNewTime << endl;
+                                CTILOG_DEBUG(dout, "OLD time for Cygnet ID: "<< point->getDestinationList()[x].getTranslation() <<" was "<< myNewTime);
                             }
                             else if ( (firstPass) && (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL) )
                             {
                                 // this limits the debug by only logging info about the first item
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "OLD time for Cygnet ID: " << point->getDestinationList()[x].getTranslation() << " was " << myNewTime << endl;
+                                CTILOG_DEBUG(dout, "OLD time for Cygnet ID: "<< point->getDestinationList()[x].getTranslation() <<" was "<< myNewTime);
                             }
 
                         }
@@ -819,16 +777,12 @@ bool CtiFDRCygnet::retrieveAnalogPoints()
 
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << " Cygnet ID: " << point->getDestinationList()[x].getTranslation();
-                            dout << " failed and is NonUpdated " << endl;
+                            CTILOG_DEBUG(dout, "Cygnet ID: "<< point->getDestinationList()[x].getTranslation() <<" failed and is NonUpdated");
                         }
                         else if ( (firstPass) && (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL) )
                         {
                             // this limits the debug by only logging info about the first item
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << " Cygnet ID: " << point->getDestinationList()[x].getTranslation();
-                            dout << " failed and is NonUpdated " << endl;
+                            CTILOG_DEBUG(dout, "Cygnet ID: "<< point->getDestinationList()[x].getTranslation() <<" failed and is NonUpdated");
                         }
                     }
 
@@ -837,9 +791,7 @@ bool CtiFDRCygnet::retrieveAnalogPoints()
                         // failed so set to nonupdated
                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Cygnet ID: " << point->getDestinationList()[x].getTranslation();
-                            dout << " failed and is NonUpdated" << endl;
+                            CTILOG_DEBUG(dout, "Cygnet ID: "<< point->getDestinationList()[x].getTranslation() <<" failed and is NonUpdated");
                         }
 
                         pCmdMsg = new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
@@ -866,10 +818,7 @@ bool CtiFDRCygnet::retrieveAnalogPoints()
                         pMultiData = new CtiMultiMsg;
                         messCount = 0;
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Posting 500 Analog Messages to Dispatch" << endl;
-                        }
+                        CTILOG_INFO(dout, "Posting 500 Analog Messages to Dispatch");
                     }
                 }
             }
@@ -883,10 +832,7 @@ bool CtiFDRCygnet::retrieveAnalogPoints()
         // send last block
         sendMessageToDispatch(pMultiData);
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Posting " << messCount << " Analog Messages to Dispatch" << endl;
-        }
+        CTILOG_INFO(dout, "Posting "<< messCount <<" Analog Messages to Dispatch");
     }
     else
     {
@@ -954,16 +900,12 @@ bool CtiFDRCygnet::retrieveStatusPoints()
             {
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Requesting Cygnet Status ID: " << point->getDestinationList()[x].getTranslation();
-                    dout << " for Yukon Pt ID: " << point->getPointID() << endl;
+                    CTILOG_DEBUG(dout, "Requesting Cygnet Status ID: "<< point->getDestinationList()[x].getTranslation() <<" for Yukon Pt ID: "<< point->getPointID());
                 }
                 else if ( (firstPass) && (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL) )
                 {
                     // this limits the debug by only logging info about the first item
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Requesting Cygnet Status ID: " << point->getDestinationList()[x].getTranslation();
-                    dout << " for Yukon Pt ID: " << point->getPointID() << endl;
+                    CTILOG_INFO(dout, "Requesting Cygnet Status ID: "<< point->getDestinationList()[x].getTranslation() <<" for Yukon Pt ID: "<< point->getPointID());
                 }
 
                 // Each message has its own unique type
@@ -980,9 +922,9 @@ bool CtiFDRCygnet::retrieveStatusPoints()
                     // pretend we have a cygnet interface
                     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Getting Status from Cygnet: " << CygnetRequest.names[0] << endl;
+                        CTILOG_DEBUG(dout, "Getting Status from Cygnet: "<< CygnetRequest.names[0]);
                     }
+
                     returnValue = 0;
                     char temp[32];
                     //returnValue = 1;  // test Nonupdated block
@@ -1045,35 +987,19 @@ bool CtiFDRCygnet::retrieveStatusPoints()
                         // unexpected value
                         sendNoneUpdate = true;
 
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Cygnet ID: " << point->getDestinationList()[x].getTranslation();
-                        dout << " Invalid Status Value: " << charValue << endl;
+                        CTILOG_ERROR(dout, "Cygnet ID: "<< point->getDestinationList()[x].getTranslation() <<" Invalid Status Value: "<< charValue);
                     }
 
                     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Updating Cygnet ID: " << point->getDestinationList()[x].getTranslation();
-                        dout << " to New Raw Value: " << myNewValue;
-                        dout << " New Time: " << myNewTime <<  endl;
-
-                        // some specific Cygnet Info
-                        //memcpy(&myBuffer, &CygnetResponse.recs[0].val, 16);
-                        //myBuffer[16] = '\0';
-                        //dout << "Expanded Cygnet Real Value: " << charValue;
-                        //
-                        //memcpy(&myBuffer, &CygnetResponse.recs[0].desc, 24);
-                        //myBuffer[24] = '\0';
-                        //dout << " Descr: " << myBuffer <<  endl;
+                        CTILOG_DEBUG(dout, "Updating Cygnet ID: "<< point->getDestinationList()[x].getTranslation() <<
+                                " to New Raw Value: "<< myNewValue <<" New Time: "<< myNewTime);
 
                     }
                     else if ( (firstPass) && (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL) )
                     {
-                        // this limits the debug by only logging info about the first item
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "Updating Cygnet ID: " << point->getDestinationList()[x].getTranslation();
-                        dout << " to New Raw Value: " << myNewValue;
-                        dout << " New Time: " << myNewTime << endl;
+                        CTILOG_DEBUG(dout, "Updating Cygnet ID: "<< point->getDestinationList()[x].getTranslation() <<
+                                " to New Raw Value: "<< myNewValue <<" New Time: " << myNewTime);
                     }
 
                     if (sendNoneUpdate == false)
@@ -1107,16 +1033,12 @@ bool CtiFDRCygnet::retrieveStatusPoints()
 
                     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << " Cygnet ID: " << point->getDestinationList()[x].getTranslation();
-                        dout << " failed and is NonUpdated " << endl;
+                        CTILOG_DEBUG(dout, "Cygnet ID: "<< point->getDestinationList()[x].getTranslation() <<" failed and is NonUpdated");
                     }
                     else if ( (firstPass) && (getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL) )
                     {
                         // this limits the debug by only logging info about the first item
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << " Cygnet ID: " << point->getDestinationList()[x].getTranslation();
-                        dout << " failed and is NonUpdated " << endl;
+                        CTILOG_DEBUG(dout, "Cygnet ID: "<< point->getDestinationList()[x].getTranslation() <<" failed and is NonUpdated");
                     }
                 }
 
@@ -1149,11 +1071,7 @@ bool CtiFDRCygnet::retrieveStatusPoints()
                     pMultiData = new CtiMultiMsg;
                     messCount = 0;
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Posting 500 Status Messages to Dispatch" << endl;
-                    }
-
+                    CTILOG_INFO(dout, "Posting 500 Status Messages to Dispatch");
                 }
             }
 
@@ -1167,10 +1085,7 @@ bool CtiFDRCygnet::retrieveStatusPoints()
         // send last block
         sendMessageToDispatch(pMultiData);
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Posting " << messCount << " Status Messages to Dispatch" << endl;
-        }
+        CTILOG_INFO(dout, "Posting "<< messCount <<" Status Messages to Dispatch");
     }
     else
     {
@@ -1186,22 +1101,13 @@ bool CtiFDRCygnet::loadTranslationLists()
 {
     bool retCode = true;
 
-/*
-    if(getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "-- Cygnet Analog Points Loaded currently: " << iAnalogPointList.getMap().entries() << endl;
-        dout << "-- Cygnet Status Points Loaded currently: " << iStatusPointList.getMap().entries() << endl;
-    }
-*/
     retCode = loadLists(getReceiveFromList());
 
     if (!retCode)
     {
         if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Translation list reload for FDRCygnet failed, keeping original points " << endl;
+            CTILOG_DEBUG(dout, "Translation list reload for FDRCygnet failed, keeping original points");
         }
     }
 
@@ -1253,24 +1159,21 @@ bool CtiFDRCygnet::loadLists(CtiFDRPointList &aList)
                     successful = true;
                     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                        CTILOG_DEBUG(dout, "No points defined for use by interface "<< getInterfaceName());
                     }
                 }
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " Unable to load points from database." << endl;
+            CTILOG_ERROR(dout, "Unable to load points from database for "<< getInterfaceName());
             successful = false;
         }
     }   // end try block
 
-    catch (RWExternalErr e )
+    catch (const RWExternalErr& e )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "loadTranslationList():  " << e.why() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to load list for "<< getInterfaceName());
         RWTHROW(e);
     }
 
@@ -1291,11 +1194,9 @@ bool CtiFDRCygnet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool
 
         if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Parsing Yukon Point ID" << translationPoint->getPointID();
-            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+            CTILOG_DEBUG(dout, "Parsing Yukon Point ID"<< translationPoint->getPointID() <<
+                    " translate: "<< translationPoint->getDestinationList()[x].getTranslation());
         }
-
 
         tempString2 = translationPoint->getDestinationList()[x].getTranslationValue("PointID");
 
@@ -1318,9 +1219,11 @@ bool CtiFDRCygnet::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool
 
     if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "-- Cygnet Analog Points Loaded: " << analogCount << endl;
-        dout << "-- Cygnet Status Points Loaded: " << statusCount << endl;
+        Cti::FormattedList loglist;
+        loglist.add("Cygnet Analog Points Loaded") << analogCount;
+        loglist.add("Cygnet Status Points Loaded") << statusCount;
+
+        CTILOG_DEBUG(dout, loglist);
     }
 
     return successful;

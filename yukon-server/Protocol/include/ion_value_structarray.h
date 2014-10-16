@@ -107,10 +107,7 @@ private:
         else if( Struct::isStructType(&element, Struct::StructType_LogRecord) )     setStructArrayType(StructArrayType_LogArray);
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << FO(__FILE__) << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unexpected StructType");
 
             retVal = false;
         }

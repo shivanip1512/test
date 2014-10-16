@@ -30,7 +30,7 @@ public:
 
    CtiRouteXCU();
 
-   virtual void DumpData();
+   virtual std::string toString() const override;
 
    void resetDevicePointer();
    CtiRouteXCU&  setDevicePointer(CtiDeviceSPtr p);

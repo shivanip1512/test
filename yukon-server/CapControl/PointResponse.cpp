@@ -97,8 +97,7 @@ void PointResponse::updateDelta(long nInAvg, double value)
     {
         if (_CC_DEBUG & (CC_DEBUG_MULTIVOLT | CC_DEBUG_IVVC))
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Point Delta: Device ID: " << _deviceId <<" Point ID: " << _pointId << " preOpValue: " << _preOpValue << " currentValue: " << value << endl;
+            CTILOG_DEBUG(dout, "Point Delta: Device ID: " << _deviceId <<" Point ID: " << _pointId << " preOpValue: " << _preOpValue << " currentValue: " << value);
         }
 
         double new_nInAvg = nInAvg != 0 ? nInAvg:1;
@@ -107,8 +106,7 @@ void PointResponse::updateDelta(long nInAvg, double value)
 
         if (_CC_DEBUG & (CC_DEBUG_MULTIVOLT | CC_DEBUG_IVVC))
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " Point Delta: Device ID: " << _deviceId <<" Point ID: " << _pointId << " fabs: " << fabsy << " delta: " << delta << endl;
+            CTILOG_DEBUG(dout, "Point Delta: Device ID: " << _deviceId <<" Point ID: " << _pointId << " fabs: " << fabsy << " delta: " << delta);
         }
 
         _delta = delta;

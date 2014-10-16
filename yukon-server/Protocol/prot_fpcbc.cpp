@@ -54,10 +54,7 @@ INT CtiProtocolFisherPierceCBC::parseRequest(CtiCommandParser  &parse, const FPS
         }
     default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Unsupported command on fisher pierce route Command = " << parse.getCommand() << endl;
-            }
+            CTILOG_ERROR(dout, "Unsupported command on Fisher Pierce route Command = "<< parse.getCommand());
 
             status = ClientErrors::InvalidRequest;
 
@@ -80,10 +77,8 @@ void CtiProtocolFisherPierceCBC::advanceAndPrime(const FPSTRUCT &fTemp)
 
 INT CtiProtocolFisherPierceCBC::assemblePutConfig(CtiCommandParser  &parse, const FPSTRUCT &aFPSt)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_ERROR(dout, "function not implemented");
+
     return ClientErrors::NoMethod;
 }
 
@@ -126,8 +121,7 @@ INT CtiProtocolFisherPierceCBC::assemblePutStatus(CtiCommandParser  &parse, cons
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "unexpected iNum ("<< iNum <<")");
         }
 
         firstOneDone = TRUE;
@@ -163,8 +157,7 @@ INT CtiProtocolFisherPierceCBC::assembleControl(CtiCommandParser  &parse, const 
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Incomplete code... for " << parse.getCommand() << " " << __FILE__ << " " << __LINE__<< endl;
+        CTILOG_ERROR(dout, "Incomplete code... for "<< parse.getCommand());
     }
 
     return status;

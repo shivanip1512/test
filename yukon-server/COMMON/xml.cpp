@@ -42,6 +42,20 @@ std::string XmlStringTranscode( const XMLCh * const xcode )
     return transcodedString;
 }
 
+namespace Logging {
+
+std::string getExceptionCause(const xercesc::XMLException& ex)
+{
+    return XmlStringTranscode(ex.getMessage());
+}
+
+std::string getExceptionCause(const xercesc::SAXException& ex)
+{
+    return XmlStringTranscode(ex.getMessage());
+}
+
+} // namespace Logging
+
 IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
 {
     try
@@ -50,10 +64,7 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
     }
     catch ( const xercesc::XMLException & ex )
     {
-        std::string message( XmlStringTranscode( ex.getMessage() ) );
-
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " ** Error during XML initialization: " << message << std::endl;
+        CTILOG_EXCEPTION_ERROR(dout, ex, "** Error during XML initialization");
 
         return;
     }
@@ -156,27 +167,17 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
         }
         catch ( const xercesc::XMLException & ex )
         {
-            std::string message( XmlStringTranscode( ex.getMessage() ) );
-
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " ** XML Error: " << message << std::endl;
-
+            CTILOG_EXCEPTION_ERROR(dout, ex, "** XML Error");
             return;
         }
         catch ( const xercesc::SAXParseException & ex )
         {
-            std::string message( XmlStringTranscode( ex.getMessage() ) );
-
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " ** XML Parsing Error: " << message << std::endl;
-
+            CTILOG_EXCEPTION_ERROR(dout, ex, "** XML Parsing Error");
             return;
         }
         catch ( ... )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " ** Error: Unexpected Exception" << std::endl;
-
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "** Error: Unexpected Exception");
             return;
         }
 
@@ -440,10 +441,10 @@ void PaoDefinitionSAX2Handler::characters( const XMLCh * const chars,
 
 void PaoDefinitionSAX2Handler::fatalError( const xercesc::SAXParseException & ex )
 {
-    std::string message( XmlStringTranscode( ex.getMessage() ) );
+    const std::string message(XmlStringTranscode(ex.getMessage()));
+    const unsigned line = ex.getLineNumber();
 
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << "Fatal Error: " << message << " at line: " << ex.getLineNumber() << std::endl;
+    CTILOG_FATAL(dout, "Fatal Error: " << message << " at line: " << line);
 }
 
 
@@ -836,10 +837,10 @@ void DeviceConfigCategorySAX2Handler::popIndexedField()
 
 void DeviceConfigCategorySAX2Handler::fatalError( const xercesc::SAXParseException & ex )
 {
-    std::string message( XmlStringTranscode( ex.getMessage() ) );
+    const std::string message( XmlStringTranscode( ex.getMessage() ) );
+    const unsigned line = ex.getLineNumber();
 
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << "Fatal Error: " << message << " at line: " << ex.getLineNumber() << std::endl;
+    CTILOG_FATAL(dout, "Fatal Error: " << message << " at line: " << line);
 }
 
 

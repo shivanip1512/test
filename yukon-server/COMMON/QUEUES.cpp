@@ -16,20 +16,14 @@ extern void autopsy(const char *calleefile, int calleeline);       // Usage is: 
 
 static void DefibBlockSem(HCTIQUEUE QueueHandle)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ******  RESTART THE BLOCK SEMAPHORE ******" << endl;
-    }
+    CTILOG_INFO(dout, "RESTART THE BLOCK SEMAPHORE");
 
     /* Close the semaphore */
     CTICloseMutexSem (&QueueHandle->BlockSem);
     // ReCreate it?
     if(CTICreateMutexSem (NULL, &(QueueHandle->BlockSem), 0, FALSE))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ******  Unable to restart the block semaphore." << endl;
-        }
+        CTILOG_ERROR(dout, "Unable to restart the block semaphore.");
     }
 
     return;
@@ -45,10 +39,7 @@ IM_EX_CTIBASE INT GetRequestCount(HCTIQUEUE QueueHandle, ULONG RequestID, ULONG 
     int dlcnt = 0;
     while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
-        }
+        CTILOG_WARN(dout, "Possible deadlock for " << QueueHandle);
 
         //autopsy(__FILE__, __LINE__);
 
@@ -171,10 +162,7 @@ IM_EX_CTIBASE INT WriteQueue (HCTIQUEUE QueueHandle,
     int dlcnt = 0;
     while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
-        }
+        CTILOG_WARN(dout, "Possible deadlock for " << QueueHandle);
 
         //autopsy(__FILE__, __LINE__);
 
@@ -354,10 +342,7 @@ IM_EX_CTIBASE INT PeekQueue (HCTIQUEUE QueueHandle,
     int dlcnt = 0;
     while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
-        }
+        CTILOG_WARN(dout, "Possible deadlock for " << QueueHandle);
 
         //autopsy(__FILE__, __LINE__);
 
@@ -471,10 +456,7 @@ IM_EX_CTIBASE INT ReadElementById(HCTIQUEUE QueueHandle, PULONG DataSize, PPVOID
     int dlcnt = 0;
     while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
-        }
+        CTILOG_WARN(dout, "Possible deadlock for " << QueueHandle);
 
         //autopsy(__FILE__, __LINE__);
 
@@ -560,10 +542,7 @@ IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle)
     int dlcnt = 0;
     while(CTIRequestMutexSem (QueueHandle->BlockSem, 30000))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Possible deadlock " << __FILE__ << " (" << __LINE__ << ")  " << CurrentTID() << " for " << QueueHandle << endl;
-        }
+        CTILOG_WARN(dout, "Possible deadlock for " << QueueHandle);
 
         //autopsy(__FILE__, __LINE__);
 
@@ -599,8 +578,7 @@ IM_EX_CTIBASE INT PurgeQueue (HCTIQUEUE QueueHandle)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     CTIResetEventSem (QueueHandle->WaitArray[0], &i);
@@ -622,49 +600,41 @@ IM_EX_CTIBASE INT SearchQueue( HCTIQUEUE QueueHandle, void *ptr, BOOL (*myFunc)(
         {
             try
             {
-            /* We the man so unless there has been a fubar...*/
-            if(QueueHandle->First != NULL)
-            {
-                Entry = QueueHandle->First;
-
-                while(Entry != NULL)
+                /* We the man so unless there has been a fubar...*/
+                if(QueueHandle->First != NULL)
                 {
-                    try
+                    Entry = QueueHandle->First;
+
+                    while(Entry != NULL)
                     {
-                        if( (*myFunc)(ptr, Entry->Data) )
+                        try
                         {
-                            if(useFirstElement || Entry != QueueHandle->First)         // If the Top of Queue is a "find", return zero.
-                                element = Entry->Element;
+                            if( (*myFunc)(ptr, Entry->Data) )
+                            {
+                                if(useFirstElement || Entry != QueueHandle->First)         // If the Top of Queue is a "find", return zero.
+                                    element = Entry->Element;
 
-                            break;         // We found a match!
+                                break;         // We found a match!
+                            }
                         }
-                    }
-                    catch(...)
-                    {
+                        catch(...)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " EXCEPTION " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << " SearchQueue function exception " << endl;
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                            autopsy( __FILE__, __LINE__ );
                         }
 
-                        autopsy( __FILE__, __LINE__ );
+                        Entry = Entry->Next;
                     }
-
-                    Entry = Entry->Next;
-                }
                 }
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
-                CTIReleaseMutexSem (QueueHandle->BlockSem);
-            }
+            CTIReleaseMutexSem (QueueHandle->BlockSem);
         }
+    }
 
     return element;
 }
@@ -714,12 +684,7 @@ IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                     }
                     catch(...)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " EXCEPTION " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << " CleanQueue function exception " << endl;
-                        }
-
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                         autopsy( __FILE__, __LINE__ );
                     }
                 }
@@ -800,10 +765,7 @@ IM_EX_CTIBASE INT ApplyQueue( HCTIQUEUE QueueHandle, void *ptr, void (*myFunc)(v
                     }
                     catch(...)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
                     Entry = Entry->Next;
                 }

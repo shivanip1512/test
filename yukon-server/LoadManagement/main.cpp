@@ -12,6 +12,7 @@
 #include "CServiceConfig.h"
 #include "rtdb.h"
 #include "ctibase.h"
+#include "module_util.h"
 
 #include "connection_base.h"
 // Close all yukon messaging connections when this object is destroyed

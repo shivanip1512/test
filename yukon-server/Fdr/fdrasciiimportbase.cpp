@@ -241,8 +241,7 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
                         successful = true;
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " No points defined for use by interface " << getInterfaceName() << endl;
+                            CTILOG_DEBUG(dout, "No points defined for use by interface "<< getInterfaceName());
                         }
                     }
                 }
@@ -250,15 +249,13 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Error loading (Receive) points for " << getInterfaceName() << " : Empty data set returned " << endl;
+                CTILOG_ERROR(dout, "Could not load (Receive) points for " << getInterfaceName() << " : Empty data set returned");
                 successful = false;
             }
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Unable to load points from database for "<< getInterfaceName());
             successful = false;
         }
 
@@ -266,16 +263,14 @@ bool CtiFDRAsciiImportBase::loadTranslationLists()
 
     catch (RWExternalErr e )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to load translation lists for "<< getInterfaceName());
         RWTHROW(e);
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error loading translation lists for " << getInterfaceName() << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load translation lists for "<< getInterfaceName());
     }
 
     return successful;
@@ -292,9 +287,8 @@ bool CtiFDRAsciiImportBase::translateSinglePoint(CtiFDRPointSPtr & translationPo
     {
         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Parsing Yukon Point ID " << translationPoint->getPointID();
-            dout << " translate: " << translationPoint->getDestinationList()[x].getTranslation() << endl;
+            CTILOG_DEBUG(dout, "Parsing Yukon Point ID "<< translationPoint->getPointID() <<
+                    " translate: "<< translationPoint->getDestinationList()[x].getTranslation());
         }
         /********************
         * for our current FTP interfaces, the points are being retrieved only
@@ -370,10 +364,7 @@ void CtiFDRAsciiImportBase::threadFunctionReadFromFile( void )
                 _snprintf (fileName, 200, "%s\\%s",getDriveAndPath().c_str(),getFileName().c_str());
                 if( (fptr = fopen( fileName, "r")) == NULL )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << getInterfaceName() << "'s file " << string (fileName) << " was either not found or could not be opened" << endl;
-                    }
+                    CTILOG_ERROR(dout, getInterfaceName() <<"'s file "<< fileName <<" was either not found or could not be opened");
                 }
                 else
                 {
@@ -419,16 +410,14 @@ void CtiFDRAsciiImportBase::threadFunctionReadFromFile( void )
         }
     }
 
-    catch ( RWCancellation &cancellationMsg )
+    catch ( RWCancellation & )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "CANCELLATION CtiFDRAsciiImportBase::threadFunctionReadFromFile in interface " <<getInterfaceName()<< endl;
+        CTILOG_INFO(dout, "CANCELLATION of threadFunctionReadFromFile in interface"<< getInterfaceName());
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Fatal Error:  CtiFDRAsciiImportBase::threadFunctionReadFromFile  " << getInterfaceName() << " is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "threadFunctionReadFromFile in interface "<< getInterfaceName() <<" is dead!");
     }
 }

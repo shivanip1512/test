@@ -3,7 +3,7 @@
 #include "dev_dnp.h"
 
 #include "dnp_object_analogoutput.h"
-
+#include "logger.h"
 #include "porter.h"
 
 #include "pt_status.h"
@@ -99,8 +99,7 @@ YukonError_t DnpDevice::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "GeneralScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString("scan general");
@@ -127,8 +126,7 @@ YukonError_t DnpDevice::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser &par
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "IntegrityScan for \""<< getName() <<"\"");
     }
 
     pReq->setCommandString("scan integrity");
@@ -281,10 +279,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - status point \"" << pStatus->getName() << "\" on device \"" << getName() << "\" does not have control in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "status point \""<< pStatus->getName() <<"\" on device \""<< getName() <<"\" does not have control");
 
                     pStatus.reset();
                     offset  = 0;
@@ -308,10 +303,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
             if( !offset )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - no point specified for control for device \"" << getName() << "\" in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_WARN(dout, "no point specified for control for device \""<< getName() <<"\"");
             }
             else
             {
@@ -347,10 +339,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                     pStatus->getControlParameters() &&
                     pStatus->getControlParameters()->isControlInhibited() )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - control inhibited for device \"" << getName() << "\" point \"" << pStatus->getName() << "\" in DNP::ExecuteRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_WARN(dout, "control inhibited for device \""<< getName() <<"\" point \""<< pStatus->getName() <<"\"");
                 }
                 else
                 {
@@ -388,10 +377,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
             Cti::Config::DeviceConfigSPtr deviceConfig = getDeviceConfig();
             if( !deviceConfig )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - DNP configuration missing for DNP device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "DNP configuration missing for DNP device \""<< getName() <<"\"");
 
                 nRet = ClientErrors::MissingConfig;
                 break;
@@ -417,10 +403,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
                 case ScanRateAccum:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - Accumulator scanrates not defined for DNP device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Accumulator scanrates not defined for DNP device \""<< getName() <<"\"");
 
                     break;
                 }
@@ -479,12 +462,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                             pAnalog->getControl() &&
                             pAnalog->getControl()->isControlInhibited() )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - control inhibited for device \"" << getName() <<
-                                        "\" point \"" << pAnalog->getName() << "\" in DNP::ExecuteRequest() **** " <<
-                                        __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_WARN(dout, "control inhibited for device \""<< getName() <<"\" point \""<< pAnalog->getName());
 
                             std::string temp = "Control is inhibited for the specified analog point on device " + getName();
 
@@ -564,10 +542,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
         case PutStatusRequest:
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - command type \"" << parse.getCommand() << "\" not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "command type \"" << parse.getCommand() << "\" not found");
         }
     }
 
@@ -575,11 +550,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
     {
         string resultString;
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime( ) << " Couldn't come up with an operation for device " << getName( ) << endl;
-            dout << CtiTime( ) << "   Command: " << pReq->CommandString( ) << endl;
-        }
+        CTILOG_ERROR(dout, "Couldn't come up with an operation for device "<< getName() <<". Command: " << pReq->CommandString());
 
         resultString = "Invalid command for device \"" + getName() + "\"";
         retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
@@ -668,11 +639,7 @@ YukonError_t DnpDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &o
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::sendCommRequest() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
+        CTILOG_ERROR(dout, "NULL OutMessage");
         retVal = ClientErrors::Memory;
     }
 
@@ -704,20 +671,12 @@ YukonError_t DnpDevice::recvCommRequest( OUTMESS *OutMessage )
         }
         catch (MissingConfigException &e)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Device " << getName() << " is not assigned a DNP configuration. "
-                     << "Unable to process comm request. " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "Device "<< getName() <<" is not assigned a DNP configuration. Unable to process comm request");
         }
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - invalid OutMessage in DNPInterface::recvCommResult() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
+        CTILOG_ERROR(dout, "NULL OutMessage");
         retVal = ClientErrors::Memory;
     }
 
@@ -896,14 +855,12 @@ void DnpDevice::processPoints( Protocol::Interface::pointlist_t &points )
                         float demandValue;
                         previous = pd_itr->second;
 
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - demand accumulator calculation data for device \"" << getName() << "\", pointid " << point->getPointID() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "current.point_value  = " << current.point_value << endl;
-                            dout << "current.point_time   = " << current.point_time << endl;
-                            dout << "previous.point_value = " << previous.point_value << endl;
-                            dout << "previous.point_time  = " << previous.point_time << endl;
-                        }
+                        CTILOG_INFO(dout, "demand accumulator calculation data for device \""<< getName() <<"\", pointid "<< point->getPointID() <<
+                                endl <<"current.point_value  = "<< current.point_value <<
+                                endl <<"current.point_time   = "<< current.point_time <<
+                                endl <<"previous.point_value = "<< previous.point_value <<
+                                endl <<"previous.point_time  = "<< previous.point_time
+                                );
 
                         if( previous.point_time + 60 <= current.point_time )
                         {
@@ -938,31 +895,24 @@ void DnpDevice::processPoints( Protocol::Interface::pointlist_t &points )
 
                             demand_points.push_back(demandMsg);
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - updating demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "current.point_value  = " << current.point_value << endl;
-                                dout << "current.point_time   = " << current.point_time << endl;
-                            }
+                            CTILOG_INFO(dout, "updating demand accumulator calculation data"<<
+                                    endl <<"current.point_value  = "<< current.point_value <<
+                                    endl <<"current.point_time   = "<< current.point_time
+                                    );
 
                             pd_itr->second = current;
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - demand not calculated; interval < 60 sec **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_ERROR(dout, "demand not calculated; interval < 60 sec");
                         }
                     }
                     else
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - inserting demand accumulator calculation data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "current.point_value  = " << current.point_value << endl;
-                            dout << "current.point_time   = " << current.point_time << endl;
-                        }
+                        CTILOG_INFO(dout, "inserting demand accumulator calculation data" <<
+                                endl <<"current.point_value  = "<< current.point_value <<
+                                endl <<"current.point_time   = "<< current.point_time
+                                );
 
                         _lastIntervalAccumulatorData.insert(dnp_accumulator_pointdata_map::value_type(point->getPointOffset(), current));
                     }
@@ -1022,10 +972,7 @@ YukonError_t DnpDevice::ResultDecode(const INMESS &InMessage, const CtiTime Time
         //  safety first
         if( InMessage.InLength > sizeof(InMessage.Buffer.InMessage) )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - InMessage.InLength > sizeof(InMessage.Buffer.InMessage) for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_WARN(dout, "InMessage.InLength > sizeof(InMessage.Buffer.InMessage) for device \""<< getName() <<"\" ("<< InMessage.InLength <<" > "<< sizeof(InMessage.Buffer.InMessage) <<"), length will be limited to "<< sizeof(InMessage.Buffer.InMessage));
 
             length = sizeof(InMessage.Buffer.InMessage);
         }
@@ -1090,10 +1037,7 @@ YukonError_t DnpDevice::ErrorDecode(const INMESS &InMessage, const CtiTime TimeN
     CtiPointDataMsg  *commFailed;
     CtiPointSPtr     commPoint;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "ErrorDecode for device "<< getName() <<" in progress");
 
     if( strstr(InMessage.Return.CommandStr, "scan integrity") )
     {
@@ -1158,8 +1102,7 @@ void DnpDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 
    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
    {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       CTILOG_DEBUG(dout, "Decoding DB reader");
    }
 
    _dnp.setAddresses(_dnp_address.getSlaveAddress(), _dnp_address.getMasterAddress());

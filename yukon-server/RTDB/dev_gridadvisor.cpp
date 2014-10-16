@@ -79,10 +79,7 @@ YukonError_t CtiDeviceGridAdvisor::ExecuteRequest( CtiRequestMsg *pReq, CtiComma
 
                 default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Invalid scan type \""<< parse.getiValue("scantype") <<"\" for device \""<< getName() <<"\"");
 
                     break;
                 }
@@ -108,11 +105,7 @@ YukonError_t CtiDeviceGridAdvisor::ExecuteRequest( CtiRequestMsg *pReq, CtiComma
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Unsupported command. Command = " << parse.getCommand() << endl;
-            }
+            CTILOG_ERROR(dout, "Unsupported command. Command = "<< parse.getCommand());
 
             break;
         }
@@ -145,11 +138,7 @@ YukonError_t CtiDeviceGridAdvisor::ExecuteRequest( CtiRequestMsg *pReq, CtiComma
     {
         nRet = ClientErrors::NoMethod;
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Couldn't come up with an operation for device " << getName() << endl;
-            dout << CtiTime() << "   Command: " << pReq->CommandString() << endl;
-        }
+        CTILOG_ERROR(dout, "Couldn't come up with an operation for device "<< getName() <<". Command: " << pReq->CommandString());
 
         resultString = "NoMethod or invalid command.";
         retList.push_back(CTIDBG_new CtiReturnMsg(getID(),
@@ -180,8 +169,7 @@ YukonError_t CtiDeviceGridAdvisor::GeneralScan( CtiRequestMsg *pReq, CtiCommandP
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "GeneralScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString("scan general");
@@ -206,8 +194,7 @@ YukonError_t CtiDeviceGridAdvisor::IntegrityScan( CtiRequestMsg *pReq, CtiComman
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "IntegrityScan for \""<< getName() <<"\"");
     }
 
     pReq->setCommandString("scan integrity");
@@ -235,8 +222,7 @@ YukonError_t CtiDeviceGridAdvisor::AccumulatorScan( CtiRequestMsg *pReq, CtiComm
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Accumulator (EventLog) Scan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Accumulator (EventLog) Scan for \""<< getName() <<"\"");
     }
 
     pReq->setCommandString("scan accumulator");
@@ -273,8 +259,7 @@ void CtiDeviceGridAdvisor::DecodeDatabaseReader(Cti::RowReader &rdr)
 
    if( getDebugLevel() & DEBUGLEVEL_DATABASE )
    {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       CTILOG_DEBUG(dout, "Decoding DB reader");
    }
 }
 

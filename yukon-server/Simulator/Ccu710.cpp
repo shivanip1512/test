@@ -87,7 +87,7 @@ error_t Ccu710::extractAddress(const bytes &address_buf, unsigned &address)
         // These bits can never be set if the address isn't extended.
         if( address_buf[1] & 0x38 )
         {
-            return "Invalid non-extended address data received.";
+            return "Invalid non-extended address data received";
         }
 
         address = address_buf[0] & 0x03;

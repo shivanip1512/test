@@ -153,10 +153,7 @@ void CtiMCScheduler::getEvents(const CtiTime& now, set< ScheduledEvent >& events
             }
             else
             {
-                CtiLockGuard< CtiLogger > logGuard(dout);
-                dout << CtiTime() << __FILE__ << " (" << __LINE__
-                    << ") WARNING - could not find a schedule matching event schedule id: "
-                    << iter->sched_id << endl;
+                CTILOG_WARN(dout, "could not find a schedule matching event schedule id: "<< iter->sched_id);
             }
         }
    }
@@ -179,10 +176,8 @@ void CtiMCScheduler::removeEvents(long schedule_id)
         {
             if( gMacsDebugLevel & MC_DEBUG_EVENTS )
             {
-                CtiLockGuard< CtiLogger > guard(dout);
-                dout << CtiTime() << " Removing event from the event queue" << endl;
-                dout << CtiTime() << " id:  " << iter->sched_id << " type: "       <<
-                        iter->event_type     << " timestamp: " << iter->timestamp << endl;
+                CTILOG_DEBUG(dout, "Removing event from the event queue"<<
+                        endl <<"id: "<< iter->sched_id <<"  type: "<< iter->event_type <<"  timestamp: "<< iter->timestamp);
             }
 
             iter = _event_deque.erase(iter);
@@ -347,11 +342,7 @@ void CtiMCScheduler::handleEvent(const ScheduledEvent& event)
 
        if( schedule == NULL )
        {
-           CtiLockGuard< CtiLogger > logGuard(dout);
-           dout << CtiTime() << __FILE__ << " (" << __LINE__
-                    << ") WARNING - could not find a schedule matching event schedule id: "
-                    << event.sched_id << endl;
-
+           CTILOG_WARN(dout, "could not find a schedule matching event schedule id: "<< event.sched_id);
            return;
        }
 
@@ -483,10 +474,8 @@ void CtiMCScheduler::removeEvents(long schedule_id, ScheduledEventType type)
         {
             if( gMacsDebugLevel & MC_DEBUG_EVENTS )
             {
-                CtiLockGuard< CtiLogger > guard(dout);
-                dout << CtiTime() << " Removing event from the event queue" << endl;
-                dout << CtiTime() << " id:  " << iter->sched_id << " type: "       <<
-                        iter->event_type     << " timestamp: " << iter->timestamp << endl;
+                CTILOG_DEBUG(dout, "Removing event from the event queue"<<
+                        endl <<"id: "<< iter->sched_id <<"  type: "<< iter->event_type <<"  timestamp: "<< iter->timestamp);
             }
 
             iter = _event_deque.erase(iter);
@@ -555,9 +544,7 @@ CtiTime CtiMCScheduler::calcPolicyStop(const CtiTime& now, CtiMCSchedule& sched)
     }
     else
     {
-        CtiLockGuard< CtiLogger > guard(dout);
-        dout << CtiTime() << __FILE__ << " (" << __LINE__
-                   << ") WARNING - unknown stop policy: " << policy << endl;
+        CTILOG_ERROR(dout, "Unknown stop policy: "<< policy);
     }
 
     return stop_time;
@@ -619,10 +606,7 @@ bool CtiMCScheduler::calcStopEvent(const CtiTime& start, const CtiMCSchedule& sc
         else
         {
             // something really wrong happened.
-            CtiLockGuard< CtiLogger > guard(dout);
-            dout << "ERROR:  " << __FILE__ << " (" << __LINE__
-                 << ") Unknown schedule stop policy"
-                 << endl;
+            CTILOG_ERROR(dout, "Unknown schedule stop policy: "<< policy);
         }
 
         result = next_event.timestamp.isValid();

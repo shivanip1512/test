@@ -62,11 +62,7 @@ void VoltageRegulatorDBLoader::loadCore(const long Id, VoltageRegulatorManager::
 
     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
     {
-        std::string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << std::endl;
-        }
+        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
     }
 
     while ( rdr() )
@@ -90,8 +86,7 @@ void VoltageRegulatorDBLoader::loadCore(const long Id, VoltageRegulatorManager::
             }
             else
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Unsupported Regulator Type: " << regulatorType << std::endl;
+                CTILOG_WARN(dout, "Unsupported Regulator Type: " << regulatorType);
             }
 
             if ( regulator && rdr.isValid() )            // reader is ~still~ valid
@@ -135,11 +130,7 @@ void VoltageRegulatorDBLoader::loadPoints(const long Id, VoltageRegulatorManager
 
     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
     {
-        std::string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << loggedSQLstring << std::endl;
-        }
+        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
     }
 
     while ( rdr() )
@@ -167,9 +158,8 @@ void VoltageRegulatorDBLoader::loadPoints(const long Id, VoltageRegulatorManager
             }
             else
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Undefined Voltage Regulator point offset: " << pointOffset
-                                  << " of type: " << pointType << std::endl;
+                CTILOG_WARN(dout, "Undefined Voltage Regulator point offset: " << pointOffset
+                                  << " of type: " << pointType);
             }
         }
     }

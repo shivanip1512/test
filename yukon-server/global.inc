@@ -84,6 +84,16 @@ THRIFT_LIB      = $(THRIFT)\lib\libthrift.lib
 CAJUN           = $(CPP_LIBRARIES)\cajun\2.0.2
 CAJUN_INCLUDE   = $(CAJUN)\include
 
+LOG4CXX         = $(CPP_LIBRARIES)\apache\log4cxx\0.10.0 
+LOG4CXX_INCLUDE = $(LOG4CXX)\include
+!IFDEF DEBUG
+LOG4CXX_LIB     = $(LOG4CXX)\lib\log4cxxd.lib
+LOG4CXX_DLL     = log4cxxd.dll
+!ELSE
+LOG4CXX_LIB     = $(LOG4CXX)\lib\log4cxx.lib
+LOG4CXX_DLL     = log4cxx.dll
+!ENDIF
+
 MICROSOFT       = $(CPP_LIBRARIES)\microsoft
 MICROSOFT_VC    = $(MICROSOFT)\vc\9.0
 MICROSOFT_SQL   = $(MICROSOFT)\sql-server-client-dll\2000.80.194.0

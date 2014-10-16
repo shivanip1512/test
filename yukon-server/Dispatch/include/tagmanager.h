@@ -59,8 +59,7 @@ protected:
 
 private:
 
-    bool addTag(CtiTagMsg *&pTag);                                  // Assumes _mux is acquired.
-
+    bool addTag(CtiTagMsg *pTag);                             // Assumes _mux is acquired.
     bool addInstance(int instance, CtiTagMsg &tag);           // Assumes _mux is acquired.
     bool updateInstance(int instance, CtiTagMsg &tag);        // Assumes _mux is acquired.
     bool removeInstance(int instance, CtiTagMsg &tag);        // Assumes _mux is acquired.

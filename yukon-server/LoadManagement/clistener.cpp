@@ -85,8 +85,7 @@ void CtiLMClientListener::stop()
     {
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Shutting down client listener thread..." << endl;
+            CTILOG_DEBUG(dout, "Shutting down client listener thread...");
         }
 
         _doquit = true;
@@ -98,8 +97,7 @@ void CtiLMClientListener::stop()
         {
             if(_LM_DEBUG & LM_DEBUG_STANDARD)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " Unknown exception in CtiLMClientListener::stop()" << endl;
+                CTILOG_DEBUG(dout, "Unknown exception in CtiLMClientListener::stop()");
             }
         }
 
@@ -108,8 +106,7 @@ void CtiLMClientListener::stop()
 
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Client listener thread shutdown." << endl;
+            CTILOG_DEBUG(dout, "Client listener thread shutdown.");
         }
     }
     catch(RWxmsg& msg)
@@ -135,9 +132,7 @@ void CtiLMClientListener::sendMessageToClient(std::auto_ptr<CtiMessage> msg)
     }
     catch(...)
     {
-        CtiLockGuard< CtiLogger > g(dout);
-        dout << CtiTime() << __FILE__ << " (" << __LINE__ <<
-             ")  An unknown exception has occurred." << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -151,8 +146,7 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
 
         if( _LM_DEBUG & LM_DEBUG_CLIENT )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Broadcasting message to " << _connections.size() << " clients" << endl;
+            CTILOG_DEBUG(dout, "Broadcasting message to " << _connections.size() << " clients");
         }
 
         for( int i = 1; i < _connections.size(); i++ )
@@ -176,9 +170,7 @@ void CtiLMClientListener::BroadcastMessage(CtiMessage* msg)
     }
     catch(...)
     {
-        CtiLockGuard< CtiLogger > g(dout);
-        dout << CtiTime() << __FILE__ << " (" << __LINE__ <<
-             ")  An unknown exception has occurred." << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     if( msg != NULL )
     {
@@ -221,39 +213,24 @@ void CtiLMClientListener::_listen()
                     _connections.push_back( new_conn );
                 }
 
-                {
-                    CtiLockGuard< CtiLogger > logger_guard(dout);
-                    dout << CtiTime() << " New connection established." << endl;
-                }
+                CTILOG_INFO(dout, "New connection established.");
             }
         }
     }
     catch(RWxmsg& msg)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << endl << "ConnectionHandler Failed: " << msg.why() << endl;
-        }
+        CTILOG_EXCEPTION_ERROR(dout, msg, "ConnectionHandler Failed");
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    {
-        CtiLockGuard< CtiLogger > doubt_guard(dout);
-        dout << CtiTime()  << " Closing all client connections."  << endl;
-    }
+    CTILOG_INFO(dout, "Closing all client connections.");
 
     removeAllConnections();
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Client Listener Thread shutting down " << endl;
-    }
+    CTILOG_INFO(dout, "Client Listener Thread shutting down ");
 }
 
 
@@ -267,10 +244,7 @@ void CtiLMClientListener::_check()
 {
     try
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Client Check Thread started TID: " << CurrentTID () << endl;
-        }
+        CTILOG_INFO(dout, "Client Check Thread started");
 
         do
         {
@@ -287,8 +261,7 @@ void CtiLMClientListener::_check()
                         {
                             if( _LM_DEBUG & LM_DEBUG_STANDARD )
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " - Removing Client Connection: " << endl;
+                                CTILOG_DEBUG(dout, "Removing Client Connection: ");
                             }
 
                             // return an iterator pointing to the new location of the element that followed the last element erased
@@ -303,8 +276,7 @@ void CtiLMClientListener::_check()
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
             rwSleep(500);
 
@@ -312,31 +284,18 @@ void CtiLMClientListener::_check()
 
         //Before we exit try to close all the connections
         removeAllConnections();
-
-        /*{
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime()  << " - CtiLMClientListener::_check - exiting" << endl;
-        }*/
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
 
 void CtiLMClientListener::removeAllConnections()
 {
-    {
-        RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
+    RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
 
-        /*{
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime()  << " - CtiLMClientListener::removeAllConnections() " << _connections.entries() << " connections..." << endl;
-        }*/
-
-        _connections.clear();
-    }
+    _connections.clear();
 }
 

@@ -9,6 +9,7 @@
 #include "fdrdnphelper.h"
 #include "dnp_object_analoginput.h"
 #include "prot_dnp.h"
+#include "loggable.h"
 
 // global defines
 #define DNPSLAVE_PORTNUMBER      2085
@@ -25,8 +26,11 @@
 #define SINGLE_SOCKET_DNP_DIRECT_OP    5
 #define SINGLE_SOCKET_DNP_DATALINK_REQ 100
 
+// forward declarations
+struct CtiDnpId;
+std::ostream& operator<< (std::ostream&, const CtiDnpId&);
 
-struct IM_EX_FDRBASE CtiDnpId
+struct CtiDnpId : public Cti::Loggable
 {
     USHORT MasterId;
     USHORT SlaveId;
@@ -34,7 +38,6 @@ struct IM_EX_FDRBASE CtiDnpId
     USHORT Offset;
     FLOAT  Multiplier;
     BOOL valid;
-
 
     CtiFDRClientServerConnection::Destination MasterServerName;
     bool operator<(const CtiDnpId& other) const
@@ -54,14 +57,20 @@ struct IM_EX_FDRBASE CtiDnpId
         return Offset < other.Offset;
     }
 
+    std::string toString() const
+    {
+        std::ostringstream oss;
+        oss << *this;
+        return oss.str();
+    }
 };
+
 inline std::ostream& operator<< (std::ostream& os, const CtiDnpId& id)
 {
     return os << "[DNP: Master= "<< id.MasterServerName <<", M=" << id.MasterId << ", S="
         << id.SlaveId << ", P=" << id.PointType
         << ", O=" << id.Offset << "]";
 }
-
 
 class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
 {
@@ -106,7 +115,7 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
         int processDataLinkConfirmationRequest(Cti::Fdr::ServerConnection& connection, const char* data);
 
         bool isScanIntegrityRequest(const char* data, unsigned int size);
-        void dumpDNPMessage(const std::string direction, const char* data, unsigned int size);
+        std::string dumpDNPMessage(const std::string direction, const char* data, unsigned int size);
 
         Cti::Protocol::DNPSlaveInterface  _dnpData;
 

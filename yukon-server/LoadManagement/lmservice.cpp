@@ -6,7 +6,7 @@
 #include "id_loadmanagement.h"
 #include "eventlog.h"
 #include "rtdb.h"
-#include "logger.h"
+#include "logManager.h"
 #include "ctidate.h"
 using std::transform;
 using std::string;
@@ -76,21 +76,18 @@ void CtiLMService::RunInConsole(DWORD argc, LPTSTR* argv)
     Run();
 
     OnStop();
-    dout.interrupt(CtiThread::SHUTDOWN);
-    dout.join();
 }
 
 void CtiLMService::Init()
 {
     SetStatus(SERVICE_START_PENDING, 1, 5000 );
 
-    string logFile = "loadmanagement";
-    dout.start();     // fire up the logger thread
-    dout.setOwnerInfo(CompileInfo);
-    dout.setOutputPath(gLogDirectory);
-    dout.setRetentionLength(gLogRetention);
-    dout.setToStdOut(true);
-    dout.setWriteInterval(1);
+    doutManager.setOwnerInfo    (CompileInfo);
+    doutManager.setOutputPath   (gLogDirectory);
+    doutManager.setOutputFile   (gConfigParms.getValueAsString("LOAD_MANAGEMENT_LOG_FILE", "loadmanagement"));
+    doutManager.setRetentionDays(gLogRetention);
+    doutManager.setToStdOut     (true);
+    doutManager.start();     // fire up the logger thread
 
     string str;
     char var[128];
@@ -118,32 +115,12 @@ void CtiLMService::Init()
 
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-    }
-
-    strcpy(var, "LOAD_MANAGEMENT_LOG_FILE");
-    if( !(str = gConfigParms.getValueAsString(var)).empty() )
-    {
-        logFile = str;
-        dout.setOutputFile(logFile);
-        if( _LM_DEBUG & LM_DEBUG_STANDARD )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
-        }
-    }
-    else
-    {
-        dout.setOutputFile(logFile);
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     strcpy(var, "LOAD_MANAGEMENT_POINT_EVENT_LOGGING");
@@ -153,14 +130,12 @@ void CtiLMService::Init()
         _LM_POINT_EVENT_LOGGING = (str=="true"?TRUE:FALSE);
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        CTILOG_INFO(dout, "Unable to obtain '" << var << "' value from cparms.");
     }
 
     SET_CRT_OUTPUT_MODES;
@@ -174,8 +149,7 @@ void CtiLMService::DeInit()
 {
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime().asString() << " - Load Management shutdown" << endl;
+        CTILOG_DEBUG(dout, "Load Management shutdown");
     }
     CService::DeInit();
 }
@@ -186,8 +160,7 @@ void CtiLMService::OnStop()
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime().asString() << " - Load Management shutting down...." << endl;
+        CTILOG_DEBUG(dout, "Load Management shutting down....");
     }
 
     try
@@ -196,8 +169,7 @@ void CtiLMService::OnStop()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     try
@@ -206,8 +178,7 @@ void CtiLMService::OnStop()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     try
@@ -216,16 +187,14 @@ void CtiLMService::OnStop()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     SetStatus(SERVICE_STOP_PENDING, 50, 5000 );
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime().asString() << " - Load Management shut down!" << endl;
+        CTILOG_DEBUG(dout, "Load Management shut down!");
     }
 
     SetStatus(SERVICE_STOP_PENDING, 75, 30000 );
@@ -248,8 +217,7 @@ void CtiLMService::Run()
             {
                 if ( writeLogMessage )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime( ) << " - Database connection attempt failed." << std::endl;
+                    CTILOG_ERROR(dout, "Database connection attempt failed");
 
                     writeLogMessage = false;
                 }
@@ -280,8 +248,7 @@ void CtiLMService::Run()
                 {
                     store->setValid(false);
                     trouble = true;
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Unable to obtain a connection to the database or no control areas exist...will keep trying." << endl;
+                    CTILOG_WARN(dout, "Unable to obtain a connection to the database or no control areas exist...will keep trying.");
                 }
                 else
                 {
@@ -292,22 +259,19 @@ void CtiLMService::Run()
 
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime().asString() << " - Starting load manager thread..." << endl;
+            CTILOG_DEBUG(dout, "Starting load manager thread...");
         }
         CtiLoadManager* manager = CtiLoadManager::getInstance();
         manager->start();
 
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime().asString() << " - Starting client listener thread..." << endl;
+            CTILOG_DEBUG(dout, "Starting client listener thread...");
         }
         CtiLMClientListener::getInstance().start();
 
         /*{
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime().asString() << " - Load management started." << endl;
+            CTILOG_INFO(dout, "Load management started.");
         }*/
 
         while( !_quit && !load_management_do_quit )
@@ -317,8 +281,7 @@ void CtiLMService::Run()
     }
     catch( ... )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 

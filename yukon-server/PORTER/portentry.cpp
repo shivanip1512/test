@@ -49,10 +49,7 @@ bool realignNexus(OUTMESS *&OutMessage);
 /* Threads to field incoming messages from the pipes */
 void PorterConnectionThread (void *Arg)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PorterConnectionThread started as TID:  " << CurrentTID() << endl;
-    }
+    CTILOG_INFO(dout, "PorterConnectionThread started");
 
     SetThreadName(-1, "PrtrConn ");
 
@@ -73,11 +70,7 @@ void PorterConnectionThread (void *Arg)
 
     while( ! PorterQuit && ! PorterListenNexus.create(PORTCONTROLNEXUS) )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** INFO **** PorterConnectionThread unable to create listener. Will attempt again." << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
+        CTILOG_WARN(dout, "Unable to create listener. Will attempt again.");
         Sleep(2500);
     }
 
@@ -103,7 +96,7 @@ void PorterConnectionThread (void *Arg)
         }
         else
         {
-            fprintf(stderr,"Error creating listener nexus\n");
+            CTILOG_ERROR(dout, "Unable to create listener nexus");
 
             break;         // FIX FIX FIX...??? Should this stop porter dead?? CGP
         }
@@ -119,10 +112,7 @@ void ConnectionThread(StreamConnection *MyNexus)
     OUTMESS *OutMessage = NULL;
     list< OUTMESS* > outList;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ConnectionThread started as TID:  " << CurrentTID() << endl;
-    }
+    CTILOG_INFO(dout, "ConnectionThread started");
 
     /* Now sit and wait for something to come in on this instance */
     for(; !PorterQuit ;)
@@ -152,29 +142,27 @@ void ConnectionThread(StreamConnection *MyNexus)
 
                 if(tempDev)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Portentry built an outmessage for " << tempDev->getName();
-                    dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
-                    if(::strlen(OutMessage->Request.CommandStr) > 0) dout << "  Command: " << OutMessage->Request.CommandStr << endl;
+                    Cti::StreamBuffer output;
+                    output <<"Portentry built an outmessage for "<< tempDev->getName() <<" at priority "<< OutMessage->Priority <<" retries = "<< OutMessage->Retry;
+
+                    if( OutMessage->Request.CommandStr[0] )
+                    {
+                        output << endl <<"Command : "<< OutMessage->Request.CommandStr;
+                    }
+
+                    CTILOG_DEBUG(dout, output);
                 }
             }
 
             if(outList.size() > 2)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_WARN(dout, "outList.size() > 2");
             }
-        }
-        else if((OutMessage = CTIDBG_new OUTMESS) == NULL)     // Get a bit of memory for the next else if...
-        {
-            printf ("Error Allocating Memory for Incoming Block\n");
-            CTISleep(5000L);
-            continue;
         }
         else /* read whatever comes in */
         {
+            OutMessage = new OUTMESS;
+
             int bytesRead = 0;
 
             try
@@ -188,9 +176,7 @@ void ConnectionThread(StreamConnection *MyNexus)
             }
             catch( const StreamConnectionException &ex )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "**** WARNING **** : Error on Nexus Read **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  Reason: " << ex.what() << endl;
+                CTILOG_EXCEPTION_WARN(dout, ex, "Nexus read failed");
             }
 
             if( bytesRead != sizeof(OUTMESS) )
@@ -206,10 +192,15 @@ void ConnectionThread(StreamConnection *MyNexus)
 
             if(tempDev)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Portentry connection received an outmessage for " << tempDev->getName();
-                dout << " at priority " << OutMessage->Priority << " retries = " << OutMessage->Retry << endl;
-                if(::strlen(OutMessage->Request.CommandStr) > 0) dout << "  Command: " << OutMessage->Request.CommandStr << endl;
+                Cti::StreamBuffer output;
+                output <<"Portentry connection received an outmessage for "<< tempDev->getName() <<" at priority "<< OutMessage->Priority <<" retries = "<< OutMessage->Retry;
+
+                if( OutMessage->Request.CommandStr[0] )
+                {
+                    output << endl <<"Command : "<< OutMessage->Request.CommandStr;
+                }
+
+                CTILOG_DEBUG(dout, output);
             }
         }
 
@@ -227,10 +218,7 @@ void ConnectionThread(StreamConnection *MyNexus)
         }
         else if( OutMessage->DeviceID == 0 || OutMessage->Port == 0 )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** INVALID OUTMESS ****  Neither deviceid nor portid are defined in the OM request. Returning error to the requestor." << endl;
-            }
+            CTILOG_ERROR(dout, "Invalid OUTMESS - Neither deviceid nor portid are defined in the OM request. Returning error to the requestor.");
 
             SendError (OutMessage, ClientErrors::MissingParameter);      // Message has been consumed!
             continue;            // The for loop
@@ -255,10 +243,7 @@ void ConnectionThread(StreamConnection *MyNexus)
         delete OutMessage;
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ConnectionThread  TID: " << CurrentTID() << " terminating" << endl;
-    }
+    CTILOG_INFO(dout, "ConnectionThread terminating");
 
 }
 
@@ -313,19 +298,13 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
            OutMessage->TailFrame[0] != 0xea ||
            OutMessage->TailFrame[1] != 0x03)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " !!!! OutMessage Misalignment !!!! " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Head bytes " << hex << (int)OutMessage->HeadFrame[0] << " " << hex << (int)OutMessage->HeadFrame[1] << dec << endl;
-                dout << " Tail bytes " << hex << (int)OutMessage->TailFrame[0] << " " << hex << (int)OutMessage->TailFrame[1] << dec << endl;
-            }
+            CTILOG_WARN(dout, "OutMessage Misalignment"<< hex << setfill('0') <<
+                    endl <<"Head bytes "<< setw(2) << (int)OutMessage->HeadFrame[0] <<" "<< setw(2) << (int)OutMessage->HeadFrame[1] <<
+                    endl <<"Tail bytes "<< setw(2) << (int)OutMessage->TailFrame[0] <<" "<< setw(2) << (int)OutMessage->TailFrame[1]);
 
             if( ! realignNexus(OutMessage) )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Unable to realign OutMessage " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "Unable to realign OutMessage");
 
                 delete(OutMessage);
                 OutMessage = NULL;
@@ -336,11 +315,8 @@ INT ValidateOutMessage(OUTMESS *&OutMessage)
 
         if( OutMessage->DeviceID <= 0 && OutMessage->TargetID <= 0 )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Bad OUTMESS received TrxID = " << OutMessage->Request.GrpMsgID << endl;
-                dout << CtiTime() << "   Command " << OutMessage->Request.CommandStr << endl;
-            }
+            CTILOG_ERROR(dout, "Bad OUTMESS received TrxID = "<< OutMessage->Request.GrpMsgID <<
+                    endl <<"Command: "<< OutMessage->Request.CommandStr);
 
             delete(OutMessage);
             OutMessage = NULL;
@@ -366,11 +342,7 @@ INT ValidateRemote(OUTMESS *&OutMessage, CtiDeviceSPtr TransmitterDev)
     if( !TransmitterDev )
     {
         /* This is a unknown remote so shun it */
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "  Device ID " << OutMessage->DeviceID << " not found " << endl;
-        }
+        CTILOG_ERROR(dout, "Device ID "<< OutMessage->DeviceID <<" not found");
 
         SendError (OutMessage, ClientErrors::IdNotFound);
         return ClientErrors::IdNotFound;
@@ -511,8 +483,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
         {
             if( isDebugLudicrous() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Cleaning Excess LP Entries for TargetID " << OutMessage->TargetID << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_DEBUG(dout, "Cleaning Excess LP Entries for TargetID "<< OutMessage->TargetID);
             }
 
             // Remove any other Load Profile Queue Entries for this Queue.
@@ -522,7 +493,8 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
         /* Go ahead and send block to the appropriate queing queue */
         if(WriteQueue(p711Info->QueueHandle, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
-            printf("Error Writing to Queue for Port: %2hd Remote: %3hd\n", OutMessage->Port, OutMessage->Remote);
+            CTILOG_ERROR(dout, "Error Writing to Queue for Port: "<< OutMessage->Port <<" Remote: "<< OutMessage->Remote);
+
             SendError (OutMessage, ClientErrors::QueueWrite);
             return ClientErrors::QueueWrite;
         }
@@ -530,8 +502,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
         {
             if( ! Nexus )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Nexus is Null");
             }
             else
             {
@@ -551,8 +522,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
                 }
                 catch( const StreamConnectionException &ex )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** ERROR **** " << ex.what() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_EXCEPTION_ERROR(dout, ex);
                 }
             }
 
@@ -572,7 +542,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
         /* Go ahead and send block to the appropriate ACTIN queue */
         if(WriteQueue (p711Info->ActinQueueHandle, OutMessage->Request.GrpMsgID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
-            printf("Error Writing to Queue for Port: %2hd  Remote: %3hd\n", OutMessage->Port, OutMessage->Remote);
+            CTILOG_ERROR(dout, "Could not write to queue for Port "<< OutMessage->Port <<", Remote "<< OutMessage->Remote);
             SendError (OutMessage, ClientErrors::QueueWrite);
             return ClientErrors::QueueWrite;
         }
@@ -668,7 +638,8 @@ INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr pDev)
             /* transfer the message to the appropriate port queue */
             if(PortManager.writeQueue (OutMessage))
             {
-                printf("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
+                CTILOG_ERROR(dout, "Could not write to queue for Port "<< OutMessage->Port);
+
                 SendError(OutMessage, ClientErrors::QueueWrite);
             }
         }
@@ -697,16 +668,13 @@ INT RemoteComm(OUTMESS *&OutMessage)
             status = ExecuteGoodRemote(OutMessage, Device);   // Does a WriteQueue eventually if all is OK.
         }
     }
-    else
+    else if(PortManager.writeQueue(OutMessage))
     {
-        if(PortManager.writeQueue(OutMessage))
-        {
-            printf("Error Writing to Queue for Port %2hd\n", OutMessage->Port);
-            SendError (OutMessage, ClientErrors::QueueWrite);
-            status = ClientErrors::QueueWrite;
-        }
-    }
+        CTILOG_ERROR(dout, "Could not write to queue for Port "<< OutMessage->Port);
 
+        SendError (OutMessage, ClientErrors::QueueWrite);
+        status = ClientErrors::QueueWrite;
+    }
 
     return status;
 }
@@ -751,30 +719,20 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
         {
             status = ClientErrors::InvalidRequest;
 
-            {
-                CtiTime NowTime;
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << NowTime << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << NowTime << " ExecuteRequest FAILED for \"" << Dev->getName() << "\"" << endl;
-                dout << NowTime << "   Command: " << pReq.CommandString() << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "ExecuteRequest FAILED for \""<< Dev->getName() <<"\" "
+                    "Command: "<< pReq.CommandString());
         }
 
         if( status )
         {
-            {
-                CtiTime NowTime;
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << NowTime << " **** Execute Error **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << NowTime << "   Device:  " << Dev->getName() << endl;
-                dout << NowTime << "   Command: " << pReq.CommandString() << endl;
-                dout << NowTime << "   Status = " << status << ": " << GetErrorString(status) << endl;
+            Cti::FormattedList logItems;
+            logItems.add("Device")  << Dev->getName();
+            logItems.add("Command") << pReq.CommandString();
+            logItems.add("Status")  << status <<": "<< GetErrorString(status);
 
-                if(outList.size() > 0)
-                {
-                    dout << NowTime << "   Sending " << outList.size() << " requests through porter on error condition" << endl;
-                }
-            }
+            CTILOG_ERROR(dout, "Execute failed "<<
+                    logItems);
+
             delete_container(vgList);
             delete_container(retList);
             retList.clear();
@@ -798,25 +756,27 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutMessage)
                 }
             }
 
-            while( !vgList.empty() )
+            if( ! vgList.empty() )
             {
-                CtiMessage *pVg = vgList.front();vgList.pop_front();
-                VanGoghConnection.WriteConnQue(pVg);
+                CTILOG_INFO(dout, "sending "<< vgList.size() <<" "<< (vgList.size() == 1 ? "message":"messages") <<" to dispatch");
+
+                while( ! vgList.empty() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CtiMessage *pVg = vgList.front();vgList.pop_front();
+                    VanGoghConnection.WriteConnQue(pVg);
                 }
             }
+
         }
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Device unknown, unselected, or DB corrupt " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << CtiTime() << " Command " << pReq.CommandString() << endl;
-            dout << CtiTime() << " Device: " << pReq.DeviceId() << endl;
-        }
+        Cti::FormattedList logItems;
+        logItems.add("Command") << pReq.CommandString();
+        logItems.add("Device")  << pReq.DeviceId();
+
+        CTILOG_ERROR(dout, "Device unknown, unselected, or DB corrupt"<<
+                logItems);
 
         status = ClientErrors::IdNotFound;
     }
@@ -848,10 +808,8 @@ bool realignNexus(OUTMESS *&OutMessage)
                     {
                         OutMessage->HeadFrame[0] = 0x02;
                         OutMessage->HeadFrame[1] = 0xe0;
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Inbound Nexus has been successfully realigned " << endl;
-                        }
+
+                        CTILOG_INFO(dout, "Inbound Nexus has been successfully realigned");
 
                         return true;
                     }
@@ -861,14 +819,10 @@ bool realignNexus(OUTMESS *&OutMessage)
     }
     catch( const StreamConnectionException &ex )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error while reading from inbound Nexus: " << ex.what() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, ex, "Could not read from inbound nexus");
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Unable to realign inbound Nexus " << endl;
-    }
+    CTILOG_ERROR(dout, "Unable to realign inbound Nexus");
 
     return false;
 }

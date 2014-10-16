@@ -198,11 +198,10 @@ bool LiveDataApi::isConnected()
 void LiveDataApi::defaultMessageHandler(const char *pzText,
                                         unsigned long lCode)
 {
-  short upperCode = lCode >> 16;
-  short lowerCode = lCode & 0xffff;
-  CtiLockGuard<CtiLogger> doubt_guard(dout);
-  dout << CtiTime() << " LiveData: " << pzText << " (" << upperCode << "," << lowerCode << ")" << endl;
+    short upperCode = lCode >> 16;
+    short lowerCode = lCode & 0xffff;
 
+    CTILOG_INFO(dout, "LiveData: "<< pzText <<" ("<< upperCode <<","<< lowerCode <<")");
 }
 
 static void completionHelperFunction(RTP_STATUS RtpStatus,

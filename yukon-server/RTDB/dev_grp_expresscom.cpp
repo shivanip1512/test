@@ -94,9 +94,9 @@ void CtiDeviceGroupExpresscom::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader" )
     }
+
     _expresscomGroup.DecodeDatabaseReader(rdr);
 }
 
@@ -186,10 +186,7 @@ YukonError_t CtiDeviceGroupExpresscom::extractGroupAddressing(CtiRequestMsg * &p
                 OutMessage = NULL;
             }
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << resultString << endl;
-            }
+            CTILOG_ERROR(dout, resultString)
 
             return nRet;
         }
@@ -224,8 +221,8 @@ void CtiDeviceGroupExpresscom::reportAndLogControlStart(CtiCommandParser &parse,
         int priority = parse.getiValue("xcpriority",3);
         if (priority < 0 || priority > 3)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Priority is invalid: " << priority << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Priority is invalid: "<< priority);
+
             priority = 3; //set it to the default priority if there is a problem.
         }
         reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, removeCommandDynamicText(parse.getCommandStr()), priority );
@@ -233,12 +230,10 @@ void CtiDeviceGroupExpresscom::reportAndLogControlStart(CtiCommandParser &parse,
 
     string addressing = getAddressingAsString();
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(slog);
-        slog << CtiTime() << " " <<  getName() << ": Preparing command for transmission." << endl;
-        slog << CtiTime() << "    Group ID " << getID() << ", Addressing: " << addressing << endl;
-        slog << CtiTime() << "    Command: " << commandString << endl;
-    }
+    CTILOG_INFO(slog, getName() <<": Preparing command for transmission"<<
+            endl <<"Group ID "<< getID() <<", Addressing: "<< addressing <<
+            endl <<"Command: "<< commandString
+            );
 }
 
 
@@ -325,10 +320,7 @@ YukonError_t CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCo
             OutMessage = NULL;
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << resultString << endl;
-        }
+        CTILOG_ERROR(dout, resultString);
     }
 
     return nRet;
@@ -488,10 +480,7 @@ bool CtiDeviceGroupExpresscom::checkForEmptyParseAddressing( CtiCommandParser &p
 
         retList.push_back( pRet );
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << issue << endl;
-        }
+        CTILOG_WARN(dout, issue)
     }
 
     return status;

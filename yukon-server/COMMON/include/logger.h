@@ -1,133 +1,172 @@
 #pragma once
 
-#ifdef _WINDOWS
+#include "dlldefs.h"
+#include "streamBuffer.h"
+#include "string_util.h"
+#include "exception_helper.h"
+#include "boostutil.h"
+#include "critical_section.h"
+#include "atomic.h"
 
-    #if !defined (NOMINMAX)
-    #define NOMINMAX
-    #endif
-
-    #include <windows.h>
-#endif
-
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <time.h>
-
-#include <limits>
-#include <sstream>
-#include <strstream>
-#include <iostream>
-#include <iomanip>
-#include <fstream>
 #include <string>
 
+#include "boost/scoped_ptr.hpp"
+#include "boost/shared_ptr.hpp"
+#include "boost/preprocessor/variadic/size.hpp"
+#include "boost/ptr_container/ptr_vector.hpp"
 
-#include "dlldefs.h"
-#include "thread.h"
-#include "mutex.h"
-#include "ctitime.h"
-#include "CtiPCPtrQueue.h"
-#include "utility.h"
-#include "module_util.h"
+namespace Cti {
+namespace Logging {
 
-class CtiDate;
-
-class IM_EX_CTIBASE CtiLogger : public CtiThread
+class IM_EX_CTIBASE Logger : private boost::noncopyable
 {
+    // WORKAROUND:
+    // Declare copy ctor and assignment operator private with no implementation
+    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
+    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
+    Logger(const Logger&);
+    Logger& operator=(const Logger&);
+
+    friend class LogManager;
+
+    struct LoggerObj; // forward declaration
+    boost::scoped_ptr<LoggerObj> _logger;
+
+    struct LogEvent;  // forward declaration
+    boost::ptr_vector<LogEvent> _preBufferLogEvents;
+    CtiCriticalSection          _preBufferMux;
+
+    Atomic<bool> _ready;
+
+    Logger (const std::string &loggerName);
+
 public:
 
-    CtiLogger(const std::string& file = "", bool to_stdout = true);
-    virtual ~CtiLogger();
+    ~Logger ();
 
-    CtiLogger& setOutputPath(const std::string& path);
-    CtiLogger& setOutputFile(const std::string& file);
-    CtiLogger& setOwnerInfo(const Cti::compileinfo_t &ownerinfo);
-    CtiLogger& setWriteInterval(long millis);
-    CtiLogger& setToStdOut(bool to_stdout);
-    CtiLogger& setRetentionLength(const unsigned long days_to_keep);
+    enum Level
+    {
+        Fatal,
+        Error,
+        Warn,
+        Info,
+        Debug,
+        Trace,
+    };
 
-    //Immediately write out everything in the queue waiting
-    // to be written
-    CtiLogger& write();
-
-    //Immediately move everything to the queue for writing
-    void flush();
-
-    bool acquire(unsigned long millis);
-    CtiLogger& acquire();
-    CtiLogger& release();
-
-    std::ostream& operator<<(std::ios_base& (*pf)(std::ios_base&));
-    std::ostream& operator<<(std::ostream& (*pf)(std::ostream&));
-    std::ostream& operator<<(std::_Smanip<std::ios_base::fmtflags> &s);
-    std::ostream& operator<<(const char *s);
-    std::ostream& operator<<(char c);
-    std::ostream& operator<<(bool n);
-    std::ostream& operator<<(short n);
-    std::ostream& operator<<(unsigned short n);
-    std::ostream& operator<<(int n);
-    std::ostream& operator<<(unsigned int n);
-    std::ostream& operator<<(long n);
-    std::ostream& operator<<(unsigned long n);
-    std::ostream& operator<<(float n);
-    std::ostream& operator<<(double n);
-    std::ostream& operator<<(long double n);
-    std::ostream& operator<<(void * n);
-    std::ostream& operator<<(const std::string& s);
-    std::ostream& operator<<(const CtiTime &r);
-
-    char fill(char cfill);
-    char fill() const;
-
-/// #ifdef _DEBUG
-    DWORD lastAcquiredByTID() const;
-/// #endif
-
-protected:
-    void run();
-
-    static std::string   scrub(std::string filename);
-    static unsigned secondsUntilMidnight(const CtiTime & tm_now);
-
-    std::string logFilename(const CtiDate & date);
-
-private:
-    char    _fill;
-
-    std::string  _path, _base_filename, _today_filename;
-    CtiTime  _next_logfile_check;
-
-    bool    _first_output;
-
-    CtiTime _running_since;
-
-    std::string  _project, _version;
-
-    volatile long _write_interval;
-    volatile bool _std_out;
-
-    CtiPCPtrQueue<std::strstream> _queue;
-    CtiMutex _log_mux;
-    CtiMutex _flush_mux;
-
-    std::strstream* _current_stream;
-
-    unsigned long _days_to_keep;
-
-    void doOutput();
-    void initStream();
-    bool tryOpenOutputFile(std::ofstream& stream);
-
-    void cleanupOldFiles();
-    void deleteOldFile( const std::string &file_to_delete );
-
-protected:
-    bool shouldDeleteFile( const std::string &file_to_delete, const CtiDate &cut_off );
+    void formatAndForceLog (Level level, StreamBufferSink& logStream, const char* file, const char* func, int line);
+    bool isLevelEnable     (Level level) const;
 };
 
+typedef boost::shared_ptr<Logger> LoggerPtr;
 
-IM_EX_CTIBASE extern CtiLogger   dout;       // Global instance
-IM_EX_CTIBASE extern CtiLogger   slog;       // Global instance. Simulator log
-IM_EX_CTIBASE extern CtiLogger   blog;       // Global instance. Simulator log
+}
+} // namespace Cti::Logging
 
+IM_EX_CTIBASE extern Cti::Logging::LoggerPtr dout; // Global instance
+IM_EX_CTIBASE extern Cti::Logging::LoggerPtr slog; // Global instance. Simulator log
 
+/*
+ * Usage:
+ *
+ * CTILOG_INFO(dout, "hello world")
+ * CTILOG_INFO(dout, "hello world" << int_value)
+ *
+ * ---------------------
+ * Using a predefined log stream:
+ *
+ * Cti::StreamBuffer outLog;
+ * outLog << "test" << hex
+ * for(int i = 0; 1< 10 i++) {
+ *     outLog << " " << i;
+ * }
+ *
+ * CTILOG_INFO(dout, outLog)
+ *
+ * ---------------------
+ * Exception:
+ *
+ * catch( const Exception &ex )
+ * {
+ *     // Exception that inherit from std::exception OR that has no cause
+ *     CTILOG_EXCEPTION_ERROR(dout, ex);
+ *     CTILOG_EXCEPTION_ERROR(dout, ex, "optional message")
+ * }
+ * catch(...)
+ * {
+ *     // Unknown exception (will log the cause if the exception is known)
+ *     CTILOG_UNKNOWN_EXCEPTION_ERROR(dout)
+ *     CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "optional message")
+ * }
+ *
+ */
+
+// Logging Definitions
+
+#define CTILOG_LOG(level, logger, message) { \
+        if( logger->isLevelEnable(level) ) { \
+            Cti::StreamBufferSink logStream_; \
+            logStream_ << message; \
+            logger->formatAndForceLog(level, logStream_, __FILE__, __FUNCSIG__, __LINE__); \
+        }}
+
+#define CTILOG_FATAL(logger, message) CTILOG_LOG(Cti::Logging::Logger::Fatal, logger, message)
+#define CTILOG_ERROR(logger, message) CTILOG_LOG(Cti::Logging::Logger::Error, logger, message)
+#define CTILOG_WARN(logger, message)  CTILOG_LOG(Cti::Logging::Logger::Warn,  logger, message)
+#define CTILOG_INFO(logger, message)  CTILOG_LOG(Cti::Logging::Logger::Info,  logger, message)
+#define CTILOG_DEBUG(logger, message) CTILOG_LOG(Cti::Logging::Logger::Debug, logger, message)
+#define CTILOG_TRACE(logger, message) CTILOG_LOG(Cti::Logging::Logger::Trace, logger, message)
+
+// Exception Logging Definitions
+
+#define CTILOG_EXCEPTION_LOG_3(level, logger, ex) { \
+        if( logger->isLevelEnable(level) ) { \
+            Cti::StreamBufferSink logStream_; \
+            logStream_ <<"\ncaused by exception "<< typeid(ex).name(); \
+            const std::string cause_ = Cti::Logging::getExceptionCause(ex); \
+            if( ! cause_.empty() ) { \
+                logStream_ <<" - "<< cause_; \
+            } \
+            logger->formatAndForceLog(level, logStream_, __FILE__, __FUNCSIG__, __LINE__); \
+        }}
+
+#define CTILOG_EXCEPTION_LOG_4(level, logger, ex, message) { \
+        if( logger->isLevelEnable(level) ) { \
+            Cti::StreamBufferSink logStream_; \
+            logStream_ << message <<"\ncaused by exception "<< typeid(ex).name(); \
+            const std::string cause_ = Cti::Logging::getExceptionCause(ex); \
+            if( ! cause_.empty() ) { \
+                logStream_ <<" - "<< cause_; \
+            } \
+            logger->formatAndForceLog(level, logStream_, __FILE__, __FUNCSIG__, __LINE__); \
+        }}
+
+#define CTILOG_EXCEPTION_LOG(...) \
+        BOOST_PP_CAT(BOOST_PP_OVERLOAD(CTILOG_EXCEPTION_LOG_, __VA_ARGS__)(__VA_ARGS__), BOOST_PP_EMPTY())
+
+#define CTILOG_EXCEPTION_FATAL(...) CTILOG_EXCEPTION_LOG(Cti::Logging::Logger::Fatal, __VA_ARGS__)
+#define CTILOG_EXCEPTION_ERROR(...) CTILOG_EXCEPTION_LOG(Cti::Logging::Logger::Error, __VA_ARGS__)
+#define CTILOG_EXCEPTION_WARN(...)  CTILOG_EXCEPTION_LOG(Cti::Logging::Logger::Warn,  __VA_ARGS__)
+
+// Unknown Exception Logging Definitions
+
+#define CTILOG_UNKNOWN_EXCEPTION_LOG_2(level, logger) { \
+        if( logger->isLevelEnable(level) ) { \
+            Cti::StreamBufferSink logStream_; \
+            logStream_ <<"\ncaused by "<< Cti::Logging::getUnknownExceptionCause(); \
+            logger->formatAndForceLog(level, logStream_, __FILE__, __FUNCSIG__, __LINE__); \
+        }}
+
+#define CTILOG_UNKNOWN_EXCEPTION_LOG_3(level, logger, message) { \
+        if( logger->isLevelEnable(level) ) { \
+            Cti::StreamBufferSink logStream_; \
+            logStream_ << message <<"\ncaused by "<< Cti::Logging::getUnknownExceptionCause(); \
+            logger->formatAndForceLog(level, logStream_, __FILE__, __FUNCSIG__, __LINE__); \
+        }}
+
+#define CTILOG_UNKNOWN_EXCEPTION_LOG(...) \
+        BOOST_PP_CAT(BOOST_PP_OVERLOAD(CTILOG_UNKNOWN_EXCEPTION_LOG_, __VA_ARGS__)(__VA_ARGS__), BOOST_PP_EMPTY())
+
+#define CTILOG_UNKNOWN_EXCEPTION_FATAL(...) CTILOG_UNKNOWN_EXCEPTION_LOG(Cti::Logging::Logger::Fatal, __VA_ARGS__)
+#define CTILOG_UNKNOWN_EXCEPTION_ERROR(...) CTILOG_UNKNOWN_EXCEPTION_LOG(Cti::Logging::Logger::Error, __VA_ARGS__)
+#define CTILOG_UNKNOWN_EXCEPTION_WARN(...)  CTILOG_UNKNOWN_EXCEPTION_LOG(Cti::Logging::Logger::Warn,  __VA_ARGS__)

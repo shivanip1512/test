@@ -43,18 +43,11 @@ void PortDialbackThread(void *pid)
 
     if(!Port)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " PortDialbackThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << " UNABLE TO START!" << endl;
-        }
-
+        CTILOG_ERROR(dout, "PortDialbackThread for port: "<< Port->getPortID() <<" / "<< Port->getName() <<"- Unable to start");
         return;
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " PortDialbackThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
-    }
+    CTILOG_INFO(dout, "PortDialbackThread for port: "<< Port->getPortID() <<" / "<< Port->getName() <<" - Started");
 
     while(!PorterQuit)
     {
@@ -66,24 +59,13 @@ void PortDialbackThread(void *pid)
             {
                 if( portpair.second )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Error initializing Virtual Port " << Port->getPortID() <<" on " << Port->getName() << endl;
-                    }
+                    CTILOG_ERROR(dout, "Cannot initialize Virtual Port "<< Port->getPortID() <<" on "<< Port->getName());
                     continue;
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Initializing Virtual Port " << Port->getPortID() <<" on " << Port->getName() << " for dialback" << endl;
-                    }
+                    CTILOG_INFO(dout, "Initializing Virtual Port "<< Port->getPortID() <<" on "<< Port->getName() <<" for dialback");
                 }
-            }
-
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << Port->getName() << " Waiting for CD" << endl;
             }
 
             int tout = 0;
@@ -94,10 +76,7 @@ void PortDialbackThread(void *pid)
                 {
                     if(!(tout++ % (4*3600)))
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << Port->getName() << " - Waiting for DCD" << endl;
-                        }
+                        CTILOG_INFO(dout, Port->getName() <<" - Waiting for DCD");
                     }
 
                     if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 500L) )
@@ -111,8 +90,7 @@ void PortDialbackThread(void *pid)
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             if(PorterQuit)
@@ -123,10 +101,7 @@ void PortDialbackThread(void *pid)
             if(Port->dcdTest())
             {
                 char mych = '\0';
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << Port->getName() << " line has been answered..." << endl;
-                }
+                CTILOG_INFO(dout, Port->getName() <<" line has been answered...");
 
                 bytesRead = -1;
                 copyBytes = false;
@@ -255,16 +230,12 @@ void PortDialbackThread(void *pid)
 
                                 VanGoghConnection.WriteConnQue(pAltRate);
 
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " Requesting scans at the alternate scan rate for " << pDevice->getName() << endl;
-                                }
+                                CTILOG_INFO(dout, "Requesting scans at the alternate scan rate for "<< pDevice->getName());
                             }
                         }
                         else
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Device " << strdev << " not found in the yukon database." << endl;
+                            CTILOG_ERROR(dout, "Device "<< strdev <<" not found in the yukon database.");
                         }
 
                         if(PorterDebugLevel & PORTER_DEBUG_DIALBACK_PILDIRECT)
@@ -276,30 +247,19 @@ void PortDialbackThread(void *pid)
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Phone has NOT been answered..." << endl;
-                }
+                CTILOG_ERROR(dout, Port->getName() <<" Phone has NOT been answered...")
             }
 
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << Port->getName() << " Hanging up the phone." << endl;
-            }
+            CTILOG_INFO(dout, Port->getName() <<" Hanging up the phone.");
             Port->disconnect(CtiDeviceSPtr(), true);
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Shutdown PortDialbackThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
-    }
-
+    CTILOG_INFO(dout, "Shutdown PortDialbackThread for port: "<< Port->getPortID() <<" / "<< Port->getName());
 
     return;
 }

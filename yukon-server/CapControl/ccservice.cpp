@@ -4,7 +4,7 @@
 #include "ccservice.h"
 #include "dllBase.h"
 #include "ccsubstationbus.h"
-#include "logger.h"
+#include "logManager.h"
 #include "ctitime.h"
 #include "thread_monitor.h"
 #include "ExecutorFactory.h"
@@ -85,8 +85,6 @@ void CtiCCService::RunInConsole(DWORD argc, LPTSTR* argv)
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
     ThreadMonitor.join();
 
-    dout.interrupt(CtiThread::SHUTDOWN);
-    dout.join();
     SetStatus(SERVICE_STOPPED);
 }
 
@@ -94,13 +92,12 @@ void CtiCCService::Init()
 {
     SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
-    dout.setOwnerInfo(CompileInfo);
-    dout.setOutputFile("capcontrol");
-    dout.setOutputPath(gLogDirectory);
-    dout.setRetentionLength(gLogRetention);
-    dout.setToStdOut(true);
-    dout.setWriteInterval(1);
-    dout.start();     // fire up the logger thread
+    doutManager.setOwnerInfo    (CompileInfo);
+    doutManager.setOutputFile   (gConfigParms.getValueAsString("CAP_CONTROL_LOG_FILE", "capcontrol"));
+    doutManager.setOutputPath   (gLogDirectory);
+    doutManager.setRetentionDays(gLogRetention);
+    doutManager.setToStdOut     (true);
+    doutManager.start();     // fire up the logger thread
 
     ThreadMonitor.start();
 
@@ -113,8 +110,7 @@ void CtiCCService::DeInit()
 {
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Cap Control shutdown" << endl;
+        CTILOG_DEBUG(dout, "Cap Control shutdown");
     }
     CService::DeInit();
 }
@@ -125,8 +121,7 @@ void CtiCCService::OnStop()
 
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Cap Control shutting down...." << endl;
+        CTILOG_DEBUG(dout, "Cap Control shutting down....");
     }
 
     //Time to quit - send a shutdown message through the system
@@ -136,8 +131,7 @@ void CtiCCService::OnStop()
 
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Cap Control shut down!" << endl;
+        CTILOG_DEBUG(dout, "Cap Control shut down!");
     }
 
     SetStatus(SERVICE_STOP_PENDING, 75, 5000 );
@@ -158,8 +152,7 @@ void CtiCCService::Run()
         {
             if ( writeLogMessage )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " - Database connection attempt failed." << std::endl;
+                CTILOG_ERROR(dout, "Database connection attempt failed.");
 
                 writeLogMessage = false;
             }
@@ -188,8 +181,7 @@ void CtiCCService::Run()
             if ( !store->isValid() )
             {
                 trouble = true;
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Unable to obtain connection to database...will keep trying." << endl;
+                CTILOG_ERROR(dout, "Unable to obtain connection to database...will keep trying.");
             }
             else
             {
@@ -201,22 +193,19 @@ void CtiCCService::Run()
 
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Starting cap controller thread..." << endl;
+        CTILOG_DEBUG(dout, "Starting cap controller thread...");
     }
     CtiCapController* controller = CtiCapController::getInstance();
     controller->start();
 
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Starting client listener thread..." << endl;
+        CTILOG_DEBUG(dout, "Starting client listener thread...");
     }
     CtiCCClientListener::getInstance().start();
 
     /*{
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Cap Control started." << endl;
+        CTILOG_INFO(dout, "Cap Control started.");
     }*/
 
     while ( !_quit && !capcontrol_do_quit )

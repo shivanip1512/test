@@ -13,6 +13,7 @@ using namespace Cti::Database;
 using std::endl;
 using std::string;
 
+
 DatabaseConnection::DatabaseConnection()
 {
     connection = getNewConnection();
@@ -45,9 +46,7 @@ void DatabaseConnection::beginTransaction()
     }
     catch(SAException &x)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** ERROR **** DB CONNECTION EXCEPTION " << (string)x.ErrText() << " Class "
-             << x.ErrClass() << " Pos " << x.ErrPos() << " nativeCode " << x.ErrNativeCode() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, x, "DB Connection begin transaction failed");
     }
 }
 
@@ -61,9 +60,7 @@ bool DatabaseConnection::rollbackTransaction()
     }
     catch(SAException &x)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** ERROR **** DB CONNECTION EXCEPTION " << (string)x.ErrText() << " Class "
-             << x.ErrClass() << " Pos " << x.ErrPos() << " nativeCode " << x.ErrNativeCode() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, x, "DB Connection roll-back transaction failed");
     }
     return false;
 }
@@ -78,9 +75,7 @@ bool DatabaseConnection::commitTransaction()
     }
     catch(SAException &x)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** ERROR **** DB CONNECTION EXCEPTION " << (string)x.ErrText() << " Class "
-             << x.ErrClass() << " Pos " << x.ErrPos() << " nativeCode " << x.ErrNativeCode() << endl;
+        CTILOG_EXCEPTION_ERROR(dout, x, "DB Connection commit transaction failed");
     }
     return false;
 }

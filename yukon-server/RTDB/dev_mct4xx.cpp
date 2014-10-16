@@ -1294,19 +1294,13 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
 
             if( default_rate < 0 )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - TOU default rate \"" << parse.getsValue("tou_default") << "\" specified is invalid for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "TOU default rate \""<< parse.getsValue("tou_default") <<"\" specified is invalid for device \""<< getName() <<"\"");
             }
             else
             {
                 if( daytable.length() < 8 || daytable.find_first_not_of("1234") != string::npos )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - day table \"" << daytable << "\" specified is invalid for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "day table \"" << daytable << "\" specified is invalid for device \"" << getName() << "\"");
                 }
                 else
                 {
@@ -1361,10 +1355,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint - schedule \"" << schedule_number << "\" has invalid rate change \"" << ratechangestr << "\"for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    }
+                                    CTILOG_ERROR(dout, "schedule \""<< schedule_number <<"\" has invalid rate change \""<< ratechangestr <<"\"for device \""<< getName() <<"\"");
                                 }
 
                                 changenum++;
@@ -1375,10 +1366,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - schedule \"" << schedule_number << "\" specified is out of range for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_ERROR(dout, "schedule \""<< schedule_number <<"\" specified is out of range for device \""<< getName() << "\"");
                         }
 
                         schedulenum++;
@@ -1440,13 +1428,15 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
                             offset++;
                         }
 
-                        if( offset > 5 || rc.schedule < 0 || rc.schedule > 3 )
+                        if( offset > 5 )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
+                            CTILOG_ERROR(dout, "invalid offset")
+                            continue;
+                        }
 
+                        if( rc.schedule < 0 || rc.schedule > 3 )
+                        {
+                            CTILOG_ERROR(dout, "invalid schedule");
                             continue;
                         }
 
@@ -1461,12 +1451,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
                         {
                             if( offset == 0 )
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint - first rate change time for schedule (" << rc.schedule <<
-                                                        ") is not midnight, assuming default rate (" << default_rate <<
-                                                        ") for midnight until (" << rc.time << ") for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                }
+                                CTILOG_WARN(dout, "first rate change time for schedule ("<< rc.schedule <<") is not midnight, assuming default rate ("<< default_rate <<") for midnight until ("<< rc.time <<") for device \""<< getName() <<"\"");
 
                                 //  rates[rc.schedule][0] was already initialized to default_rate, so just move along
                                 offset++;
@@ -1589,10 +1574,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "timezone name empty");
                 }
             }
 
@@ -1853,10 +1835,7 @@ int Mct4xxDevice::executePutConfigMultiple(ConfigPartsList &partsList,
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device " << getName() << " will not be configured since it is not assigned to a configuration. " << endl;
-        }
+        CTILOG_ERROR(dout, "Device "<< getName() <<" will not be configured since it is not assigned to a configuration");
 
         CtiReturnMsg * retMsg = CTIDBG_new CtiReturnMsg(getID( ),
                                 string(OutMessage->Request.CommandStr),
@@ -1937,8 +1916,8 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
         if( nRet == ClientErrors::NoConfigData )
         {
             resultString = "ERROR: Invalid config data. Config name:" + installValue;
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device " << getName() << " had no configuration for config: " << installValue << endl;
+
+            CTILOG_ERROR(dout, "Device "<< getName() <<" had no configuration for config: "<< installValue);
         }
         else if( nRet == ClientErrors::ConfigCurrent )
         {
@@ -1952,8 +1931,8 @@ int Mct4xxDevice::executePutConfigSingle(CtiRequestMsg *pReq,
         else
         {
             resultString = "ERROR: NoMethod or invalid config. Config name:" + installValue;
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Device " << getName() << " had a configuration error using config " << installValue << endl;
+
+            CTILOG_ERROR(dout, "Device "<< getName() <<" had a configuration error using config "<< installValue);
         }
 
         CtiReturnMsg * retMsg = CTIDBG_new CtiReturnMsg(getID( ),
@@ -2273,16 +2252,14 @@ YukonError_t Mct4xxDevice::executePutConfigTimezone(CtiRequestMsg *pReq, CtiComm
 
         if( ! getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Operation PutConfig_TimeZoneOffset not found");
 
             return ClientErrors::NoMethod;
         }
 
         if( ! timezoneOffset )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "no or bad timezoneOffset value stored");
 
             return ClientErrors::NoConfigData;
         }
@@ -2329,14 +2306,14 @@ YukonError_t Mct4xxDevice::executePutConfigSpid(CtiRequestMsg *pReq, CtiCommandP
 
             if(!getOperation(EmetconProtocol::PutConfig_SPID, OutMessage->Buffer.BSt))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Operation PutConfig_SPID not found");
+
                 nRet = ClientErrors::NoConfigData;
             }
             else if( ! spid )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "no or bad spid value stored");
+
                 nRet = ClientErrors::NoConfigData;
             }
             else
@@ -2418,8 +2395,7 @@ YukonError_t Mct4xxDevice::executePutConfigConfigurationByte(CtiRequestMsg *pReq
 
         if( ! configuration )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "no or bad configuration value stored");
 
             return ClientErrors::NoConfigData;
         }
@@ -2467,14 +2443,14 @@ YukonError_t Mct4xxDevice::executePutConfigTimeAdjustTolerance(CtiRequestMsg *pR
 
             if(!getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt))
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeAdjustTolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Operation PutConfig_TimeAdjustTolerance not found");
+
                 nRet = ClientErrors::NoConfigData;
             }
             else if ( ! timeAdjustTolerance )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "no or bad timeAdjustTolerance value stored");
+
                 nRet = ClientErrors::NoConfigData;
             }
             else
@@ -2592,14 +2568,7 @@ YukonError_t Mct4xxDevice::decodeGetConfigTime(const INMESS &InMessage, const Ct
         resultString = getName() + " / Time Last Synced at: " + printTimestamp(timestamp);
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
@@ -2622,14 +2591,7 @@ YukonError_t Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, co
 
     CtiReturnMsg    *ReturnMsg = NULL;  // Message sent to VanGogh, inherits from Multi
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     const int interval_len = getLoadProfileInterval(_llpRequest.channel);
@@ -2939,14 +2901,7 @@ YukonError_t Mct4xxDevice::decodeGetConfigTOU(const INMESS &InMessage, const Cti
         }
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString(resultString);
 
@@ -2983,18 +2938,10 @@ YukonError_t Mct4xxDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Load Profile Scan Decode for \"" << getName() << "\"");
     }
 
-    if((ret_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ret_msg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ret_msg->setUserMessageId(InMessage.Return.UserID);
 
     if( (channel = parse.getiValue("scan_loadprofile_channel", 0)) &&
@@ -3012,13 +2959,9 @@ YukonError_t Mct4xxDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
 
         if( interval_len <= 0 )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - LP error for device \"" << getName() << "\"; ";
-                dout << "interval_len = " << interval_len;
-                dout << " in " __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "commandstr = " << InMessage.Return.CommandStr << endl;
-            }
+            CTILOG_ERROR(dout, "LP error for device \"" << getName() <<"\" - invalid interval_len ("<< interval_len <<")"<<
+                    endl << "commandstr = "<< InMessage.Return.CommandStr
+                    );
 /*
             if( isIedChannel(channel) )
             {
@@ -3031,27 +2974,28 @@ YukonError_t Mct4xxDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
         //  make sure we're getting the same block we're expecting
         else if( ! isProfileTablePointerCurrent(DSt->Message[0], TimeNow, interval_len) )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - LP error for device \"" << getName() << "\"; ";
-                dout << "Table Pointer = " << (unsigned)DSt->Message[0] << ", ";
-                dout << "TimeNow = " << TimeNow;
-                dout << "interval_len = " << interval_len;
-                dout << " in " __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "commandstr = " << InMessage.Return.CommandStr << endl;
-            }
+            Cti::FormattedList itemList;
+            itemList.add("Table Pointer") << (unsigned)DSt->Message[0];
+            itemList.add("TimeNow")       << TimeNow;
+            itemList.add("interval_len")  << interval_len;
+            itemList.add("commandstr")    << InMessage.Return.CommandStr;
+
+            CTILOG_ERROR(dout, "LP error for device \""<< getName() <<"\""<<
+                    itemList
+                    );
 
             status = ClientErrors::InvalidTimestamp;
         }
         else if( timestamp != _lp_info[channel].collection_point )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint -  LP error for device \"" << getName() << "\"; ";
-                dout << "calculated timestamp = " << CtiTime(timestamp) << "; ";
-                dout << "collection_point = " << CtiTime(_lp_info[channel].collection_point) << endl;
-                dout << "commandstr = " << InMessage.Return.CommandStr << endl;
-            }
+            Cti::FormattedList itemList;
+            itemList.add("calculated timestamp") << CtiTime(timestamp);
+            itemList.add("collection_point")     << CtiTime(_lp_info[channel].collection_point);
+            itemList.add("commandstr")           << InMessage.Return.CommandStr;
+
+            CTILOG_ERROR(dout, "LP error for device \""<< getName() <<"\", for channel "<< channel <<
+                    itemList
+                    );
 
             status = ClientErrors::InvalidTimestamp;
         }
@@ -3059,10 +3003,7 @@ YukonError_t Mct4xxDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
         {
             if( !getDevicePointOffsetTypeEqual(PointOffset_LoadProfileOffset + channel + 1, DemandAccumulatorPointType) )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - no load profile point defined for \"" << getName() << "\" in Mct4xxDevice::decodeScanLoadProfile() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "no load profile point defined for \"" + getName() + "\"");
 
                 ret_msg->setResultString("No load profile point defined for '" + getName() + "'");
             }
@@ -3085,10 +3026,7 @@ YukonError_t Mct4xxDevice::decodeScanLoadProfile(const INMESS &InMessage, const 
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - missing scan_loadprofile token in decodeScanLoadProfile for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "missing scan_loadprofile token for \"" << getName() << "\"");
 
         ret_msg->setResultString("Malformed LP command string for '" + getName() + "'");
     }
@@ -3121,8 +3059,7 @@ YukonError_t Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, con
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** TOU/Peak Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "TOU/Peak Demand Decode for \""<< getName() <<"\"");
     }
 
     /*
@@ -3174,14 +3111,7 @@ YukonError_t Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, con
     else if( parse.getiValue("channel") == 3 )       key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenDemand3PeakTimestamp;
     else                                             key_peak_timestamp = CtiTableDynamicPaoInfo::Key_FrozenDemandPeakTimestamp;
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     const unsigned char *freeze_counter = 0;
@@ -3215,10 +3145,7 @@ YukonError_t Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, con
 
         if( interval_len <= 0 )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - interval_len = " << interval_len << " in " << __FUNCTION__ << " for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "invalid interval_len ("<< interval_len <<") for device \""<< getName() <<"\"");
 
             pi_kw.quality = InvalidQuality;
             pi_kw.description = "Invalid demand interval, cannot adjust reading";
@@ -3255,12 +3182,7 @@ YukonError_t Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, con
         }
         else if( pi_kwh.freeze_bit != getExpectedFreezeParity() )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi_kwh.freeze_bit <<
-                                    ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
-                                    ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "incoming freeze parity bit ("<< pi_kwh.freeze_bit <<") does not match expected freeze bit ("<< getExpectedFreezeParity() <<") on device \""<< getName() <<"\" - not sending data");
 
             result_string += "Invalid freeze parity (" + CtiNumStr(pi_kwh.freeze_bit).toString() + ") != (" + CtiNumStr(getExpectedFreezeParity()).toString() + "), last recorded freeze sent at " + getLastFreezeTimestamp(TimeNow).asString() + "\n";
             status = ClientErrors::InvalidFrozenReadingParity;
@@ -3283,10 +3205,7 @@ YukonError_t Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, con
         }
         else if( hasDynamicInfo(key_peak_timestamp) && getDynamicInfo(key_peak_timestamp) > kw_time.seconds() )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << CtiTime(getDynamicInfo(key_peak_timestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "new KW peak time \""<< kw_time <<"\" is before old KW peak time \""<< CtiTime(getDynamicInfo(key_peak_timestamp)) <<", not sending data");
 
             //  defer to the kWh errors
             if( !status )
@@ -3302,10 +3221,7 @@ YukonError_t Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, con
         }
         else if( getLastFreezeTimestamp(TimeNow) < kw_time.seconds() )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is after KW freeze time \"" << getLastFreezeTimestamp(TimeNow) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "KW peak time \""<< kw_time <<"\" is after KW freeze time \""<< getLastFreezeTimestamp(TimeNow) <<", not sending data");
 
             //  defer to the kWh errors
             if( !status )
@@ -3376,10 +3292,7 @@ YukonError_t Mct4xxDevice::decodeGetValuePeakDemand(const INMESS &InMessage, con
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Peak demand decode for \"" << getName() << "\" resulted in a status code of " << CtiNumStr(status) << ", not inserting kWh point data." << endl;
-        }
+        CTILOG_ERROR(dout, "Peak demand decode for \""<< getName() <<"\" resulted in a status code of "<< status <<", not inserting kWh point data.");
     }
 
     if( !result_string.empty() )

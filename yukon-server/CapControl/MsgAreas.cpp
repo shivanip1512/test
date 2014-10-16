@@ -20,17 +20,13 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas, unsigned long bitM
     _ccGeoAreas = new CtiCCArea_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CtiCCGeoAreasMsg has "<< ccGeoAreas.size()<<" entries." << endl;
+        CTILOG_DEBUG(dout, "CtiCCGeoAreasMsg has "<< ccGeoAreas.size()<<" entries.");
     }
     if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
     {
         for (int h=0;h < ccGeoAreas.size(); h++)
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Area: "<<((CtiCCArea*)ccGeoAreas[h])->getPaoName()<< endl;
-            }
+            CTILOG_DEBUG(dout, "Area: "<<((CtiCCArea*)ccGeoAreas[h])->getPaoName());
         }
     }
 
@@ -46,8 +42,7 @@ CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_set& ccGeoAreas, unsigned long bitM
     _ccGeoAreas = new CtiCCArea_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CtiCCGeoAreasMsg has "<< ccGeoAreas.size()<<" entries." << endl;
+        CTILOG_DEBUG(dout, "CtiCCGeoAreasMsg has "<< ccGeoAreas.size()<<" entries.");
     }
     CtiCCArea_set::iterator it;
     for(it = ccGeoAreas.begin(); it != ccGeoAreas.end(); it++)

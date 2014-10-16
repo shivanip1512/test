@@ -23,7 +23,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "msg_dbchg.h"
 #include "numstr.h"
 #include "pointtypes.h"
-#include "logger.h"
+#include "logManager.h"
 #include "cparms.h"
 #include "utility.h"
 #include "database_connection.h"
@@ -44,6 +44,7 @@ bool _shutdownOnThreadTimeout = false;
 bool _runCalcHistorical = false;
 bool _runCalcBaseline = false;
 bool _ignoreTimeValidTag = false;
+std::string _logFile = "calc"; // default to calc
 
 //Boolean if debug messages are printed
 ULONG _CALC_DEBUG = CALC_DEBUG_THREAD_REPORTING;
@@ -104,24 +105,21 @@ void CtiCalcLogicService::Init( )
 
     try
     {
-        //defaults
-        string logFile("calc");
-
-        dout.setOwnerInfo(CompileInfo);
-        dout.setOutputFile(logFile);
-        dout.setOutputPath(gLogDirectory);
-        dout.setRetentionLength(gLogRetention);
-        dout.setToStdOut(true);
-        dout.setWriteInterval(1);
-        dout.start();     // fire up the logger thread
-
+        // load config parameters before starting the logging,
+        // in case
         loadConfigParameters();
 
+        //defaults
+        doutManager.setOwnerInfo     (CompileInfo);
+        doutManager.setOutputFile    (_logFile);
+        doutManager.setOutputPath    (gLogDirectory);
+        doutManager.setRetentionDays (gLogRetention);
+        doutManager.setToStdOut      (true);
+        doutManager.start();     // fire up the logger thread
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        cerr <<"failed to initialize calc service.";
     }
 }
 
@@ -157,19 +155,15 @@ void CtiCalcLogicService::Run( )
         {
             if ( writeLogMessage )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime( ) << " - Database connection attempt failed." << std::endl;
+                CTILOG_ERROR(dout, "Database connection attempt failed.");
 
                 writeLogMessage = false;
             }
             Sleep( 5000 );
         }
 
-        if ( UserQuit )
+        if( UserQuit )
         {
-            dout.interrupt(CtiThread::SHUTDOWN);
-            dout.join();
-
             return;
         }
     }
@@ -180,13 +174,13 @@ void CtiCalcLogicService::Run( )
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Calc);
 
+    if(_running_in_console)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        if(_running_in_console)
-            dout << CtiTime( ) << " - " << CompileInfo.project << " [Version " << CompileInfo.version << "] starting console mode ..." << endl;
-        else
-            dout << CtiTime( ) << " - " << CompileInfo.project << " [Version " << CompileInfo.version << "] starting as service..." << endl;
-
+        CTILOG_INFO(dout, CompileInfo.project << " [Version " << CompileInfo.version << "] starting console mode ...");
+    }
+    else
+    {
+        CTILOG_INFO(dout, CompileInfo.project << " [Version " << CompileInfo.version << "] starting as service...");
     }
 
     try
@@ -195,11 +189,9 @@ void CtiCalcLogicService::Run( )
 
         if( !_ok )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " CalcRun() NOT OK...  errors during initialization" << endl;
-            }
-            throw( RWxmsg( "NOT OK...  errors during initialization" ) );
+            const std::string desc =  "NOT OK...  errors during initialization";
+            CTILOG_ERROR(dout, desc);
+            throw std::runtime_error(desc);
         }
 
         unsigned attempts = 0;
@@ -216,10 +208,7 @@ void CtiCalcLogicService::Run( )
                     terminateThreads();
                 }
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Creating a new connection to dispatch." << endl;
-                }
+                CTILOG_INFO(dout, "Creating a new connection to dispatch.");
 
                 dispatchConnection.reset( new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch ));
                 dispatchConnection->start();
@@ -252,10 +241,7 @@ void CtiCalcLogicService::Run( )
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Dispatch connection failed - " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Dispatch connection failed");
 
                 terminateThreads();
                 Sleep(1000);   // sleep for 1 second
@@ -272,13 +258,11 @@ void CtiCalcLogicService::Run( )
                 {
                     if( attempts++ % 60 == 0)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Connecting to Dispatch ...." << endl;
+                        CTILOG_INFO(dout, "Connecting to Dispatch ....");
                     }
                     else if( attempts % 300 == 0 )
                     {//only say we can't get a Dispatch connection every 5 minutes
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Calc could not establish a connection to Dispatch" << endl;
+                        CTILOG_ERROR(dout, "Calc could not establish a connection to Dispatch");
                     }
 
                     // try it again
@@ -286,19 +270,12 @@ void CtiCalcLogicService::Run( )
                     continue;
                 }
 
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Dispatch connection established.  Loading calc points." << endl;
-                }
-
+                CTILOG_INFO(dout, "Dispatch connection established.  Loading calc points.");
                 attempts = 0;
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Dispatch connection failed - " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Dispatch connection failed");
 
                 terminateThreads();
                 Sleep(1000);   // sleep for 1 second
@@ -313,19 +290,13 @@ void CtiCalcLogicService::Run( )
                 {
                     if(calcThread)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Pausing the calcThreads for reload" << endl;
-                        }
+                        CTILOG_INFO(dout, "Pausing the calcThreads for reload");
                         calcThread->interruptThreads(CtiCalculateThread::DBReload);       // Make certain these threads are paused if they can be.
                     }
                 }
                 catch(...)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     calcThread.reset();
                 }
 
@@ -340,10 +311,8 @@ void CtiCalcLogicService::Run( )
                             calcThread->resumeThreads();
                         }
 
-                        {//only say we can't load any calc points every 5 minutes
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " No Calc Points Loaded.  Reusing old lists if possible." << endl;
-                        }
+                        //only say we can't load any calc points every 5 minutes
+                        CTILOG_WARN(dout, "No Calc Points Loaded.  Reusing old lists if possible.");
 
                         // try it again
                         if(calcThread)
@@ -357,10 +326,7 @@ void CtiCalcLogicService::Run( )
                         }
                         else
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Unable to reuse the old point lists.  Will attempt a DB reload in 15 sec." << endl;
-                            }
+                            CTILOG_ERROR(dout, "Unable to reuse the old point lists.  Will attempt a DB reload in 15 sec.");
 
                             tempCalcThread.reset();
                             Sleep(15000);
@@ -369,10 +335,7 @@ void CtiCalcLogicService::Run( )
                     }
                     catch(...)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
                         tempCalcThread.reset();
                         Sleep(1000);
@@ -384,10 +347,7 @@ void CtiCalcLogicService::Run( )
                 {
                     calcThread.reset( tempCalcThread.release() );
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << calcThread->numberOfLoadedCalcPoints() << " Calc Points Loaded" << endl;
-                    }
+                    CTILOG_INFO(dout, calcThread->numberOfLoadedCalcPoints() <<" Calc Points Loaded");
 
                     try
                     {
@@ -396,10 +356,7 @@ void CtiCalcLogicService::Run( )
                     }
                     catch(...)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
 
 
@@ -413,18 +370,12 @@ void CtiCalcLogicService::Run( )
                 }
                 catch(...)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
                 calcThread.reset();
 
@@ -462,10 +413,8 @@ void CtiCalcLogicService::Run( )
                     {
                         if( _dispatchPingedFailed != CtiTime(YUKONEOT) )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Error in the connection to dispatch.  Will attempt to restart it. " << endl;
-                            }
+                            CTILOG_ERROR(dout, "Connection to dispatch has failed.  Will attempt to restart it.");
+
                             _dispatchPingedFailed = CtiTime(YUKONEOT);
                             break;
                         }
@@ -474,10 +423,8 @@ void CtiCalcLogicService::Run( )
                             pingTime = nextScheduledTimeAlignedOnRate( rwnow, 3660 );
                             if( _dispatchConnectionBad )
                             {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** INFO **** No msg data has been recieved since last ping/verify.  Re-registering points." << endl;
-                                }
+                                CTILOG_WARN(dout, "No msg data has been recieved since last ping/verify.  Re-registering points.");
+
                                 _registerForPoints(); // re-register if we haven't seen data since last ping.
                             }
 
@@ -496,26 +443,22 @@ void CtiCalcLogicService::Run( )
                     {
                         if( _CALC_DEBUG & CALC_DEBUG_THREAD_REPORTING )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Timer Checking for DB Change." << endl;
+                            CTILOG_DEBUG(dout, "Timer Checking for DB Change.");
                         }
 
                         // check for DB Changes on a set interval
                         // this makes us a little kinder on re-registrations
                         if( _restart )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " CalcLogicSvc main thread has received a reset command (DB Change)." << endl;
+                            CTILOG_INFO(dout, "CalcLogicSvc main thread has received a reset command (DB Change).");
 
                             break; // exit the loop and reload
                         }
 
                         if( (_lastDispatchMessageTime.seconds() + 400) < CtiTime::now().seconds() )
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " CalcLogic has not heard from dispatch for at least 7 minutes." << endl;
-                            }
+                            CTILOG_WARN(dout, "CalcLogic has not heard from dispatch for at least 7 minutes.");
+
                             _lastDispatchMessageTime = CtiTime::now();
                             break; // exit the loop and reload
                         }
@@ -530,10 +473,7 @@ void CtiCalcLogicService::Run( )
                 }
                 catch(...)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     Sleep(5000);
                 }
             } // end for userquit
@@ -558,42 +498,26 @@ void CtiCalcLogicService::Run( )
                 }
                 catch(RWTHRIllegalUsage &msg)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << msg.why() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_EXCEPTION_ERROR(dout, msg);
                 }
                 catch(...)
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 if(RW_THR_COMPLETED != calcThreadFunc.join( 30000 ))
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " CalcLogicSvc main did not shutdown gracefully.  Will attempt a forceful shutdown." << endl;
-                    }
-
+                    CTILOG_ERROR(dout, "CalcLogicSvc main did not shutdown gracefully.  Will attempt a forceful shutdown.");
                     calcThreadFunc.terminate();
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " CalcLogicSvc main shutdown correctly." << endl;
-                    }
+                    CTILOG_INFO(dout, "CalcLogicSvc main shutdown correctly.");
                 }
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 Sleep(5000);
             }
         }
@@ -610,24 +534,13 @@ void CtiCalcLogicService::Run( )
 
         CtiPointStore::removeInstance();
     }
-    catch( RWxmsg &msg )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception in Calc and Logic: ";
-        dout << msg.why() << endl;
-    }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
     ThreadMonitor.join();
-
-    // stop dout thread
-    dout.interrupt(CtiThread::SHUTDOWN);
-    dout.join();
 
     SetStatus( SERVICE_STOPPED );
 }
@@ -686,7 +599,7 @@ void CtiCalcLogicService::_outputThread()
                     {
                         if( junkbool )
                         {
-                            toSend->dump();
+                            CTILOG_INFO(dout, *toSend);
                         }
 
                         dispatchConnection->WriteConnQue( toSend.release() );
@@ -701,10 +614,7 @@ void CtiCalcLogicService::_outputThread()
         _restart = true;       // Kick it so it restarts us in a failure mode
         ::std::time(&_nextCheckTime);
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -747,10 +657,7 @@ void CtiCalcLogicService::_inputThread( void )
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             try
@@ -763,10 +670,7 @@ void CtiCalcLogicService::_inputThread( void )
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
         }
     }
@@ -776,8 +680,7 @@ void CtiCalcLogicService::_inputThread( void )
         _restart = true;       // Kick it so it restarts us in a failure mode
         ::std::time(&_nextCheckTime);
 
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -814,32 +717,24 @@ BOOL CtiCalcLogicService::parseMessage( const CtiMessage *message, CtiCalculateT
                             _nextCheckTime = std::time(0) + CHECK_RATE_SECONDS;
                             _dbChangeMessages.push( *((CtiDBChangeMsg*)message) );
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime()  << " - Database change - Point change.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
-                            }
+                            CTILOG_INFO(dout, "Database change - Point change.  Setting reload flag. Reload at " << ctime(&_nextCheckTime));
                         }
                         else if( ((CtiDBChangeMsg*)message)->getTypeOfChange() == ChangeTypeUpdate && pointNeedsReload(((CtiDBChangeMsg*)message)->getId()) )
                         {
                             // Do something!!
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " DBChange recieved for point which has special values. Reloading single point: "<< ((CtiDBChangeMsg*)message)->getId() << endl;
-                            }
+                            CTILOG_INFO(dout, "DBChange received for point which has special values. Reloading single point: "<< ((CtiDBChangeMsg*)message)->getId());
                             reloadPointAttributes(((CtiDBChangeMsg*)message)->getId());
                         }
                         else
                         {
                             if( ((CtiDBChangeMsg*)message)->getId() == 0 )
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime()  << " - Database change does not affect Calculations.  Will not reload." << endl;
-                                dout << CtiTime()  << " *** Checkpoint *** Change was a full reload, which is currently not acted upon." << endl;
+                                CTILOG_WARN(dout, "Database change does not affect Calculations.  Will not reload." <<
+                                        endl << "Change was a full reload, which is currently not acted upon.");
                             }
                             else
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime()  << " - Database change does not affect Calculations.  Will not reload." << endl;
+                                CTILOG_INFO(dout, "Database change does not affect Calculations.  Will not reload.");
                             }
                         }
                     }
@@ -855,10 +750,7 @@ BOOL CtiCalcLogicService::parseMessage( const CtiMessage *message, CtiCalculateT
                             _nextCheckTime = std::time(0) + CHECK_RATE_SECONDS;
                             _dbChangeMessages.push( *((CtiDBChangeMsg*)message) );
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime()  << " - Database change - PointDB.  Setting reload flag. Reload at " << ctime(&_nextCheckTime);
-                            }
+                            CTILOG_INFO(dout, "Database change - PointDB.  Setting reload flag. Reload at " << ctime(&_nextCheckTime));
                         }
                     }
                 }
@@ -871,10 +763,8 @@ BOOL CtiCalcLogicService::parseMessage( const CtiMessage *message, CtiCalculateT
                 switch( op )
                 {
                 case (CtiCommandMsg::Shutdown):
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " CalcLogic received a shutdown message - Ignoring!!" << endl;
-                    }
+                    CTILOG_WARN(dout, "CalcLogic received a shutdown message - Ignoring!!" <<
+                            *message);
                     break;
 
                 case (CtiCommandMsg::AreYouThere):
@@ -886,30 +776,23 @@ BOOL CtiCalcLogicService::parseMessage( const CtiMessage *message, CtiCalculateT
                         {
                             dispatchConnection->WriteConnQue( pCmd->replicateMessage() );
 
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " CalcLogic has been pinged" << endl;
-                            }
+                            CTILOG_INFO(dout, "CalcLogic has been pinged");
+
                             _dispatchConnectionBad = false;
                         }
                         else
                         {
                             // This is a response to our own ping to dispatch.  Mark it out so the machinery does not try to reconnect
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " Dispatch connection ping verified." << endl;
-                            }
+                            CTILOG_INFO(dout, "Dispatch connection ping verified.");
+
                             _dispatchPingedFailed = CtiTime(YUKONEOT);
                             _dispatchConnectionBad = true;
                         }
                         break;
                     }
                 default:
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " CalcLogic received a unknown/don't care Command message- " << op << endl;
-                    }
-                    break;
+                    CTILOG_ERROR(dout, "CalcLogic received a unknown/don't care Command message, operation" << op <<
+                            *message);
 
                 }
                 break;
@@ -930,8 +813,7 @@ BOOL CtiCalcLogicService::parseMessage( const CtiMessage *message, CtiCalculateT
 
                 if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime()  << "  Processing Multi Message with: " << msgMulti->getData().size() << " messages -  " << endl;
+                    CTILOG_DEBUG(dout, "Processing Multi Message with: "<< msgMulti->getData().size() <<" messages");
                 }
 
                 for( int x = 0; x < msgMulti->getData( ).size( ); x++ )
@@ -954,8 +836,7 @@ BOOL CtiCalcLogicService::parseMessage( const CtiMessage *message, CtiCalculateT
 
                     if( _CALC_DEBUG & CALC_DEBUG_INBOUND_MSGS)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime( ) << "  Signal Message received for point id: " << ((CtiSignalMsg*)message)->getId() << endl;
+                        CTILOG_DEBUG(dout, "Signal Message received for point id: "<< ((CtiSignalMsg*)message)->getId());
                     }
                 }
                 break;
@@ -963,15 +844,14 @@ BOOL CtiCalcLogicService::parseMessage( const CtiMessage *message, CtiCalculateT
             default:
                 if(isDebugLudicrous())
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime( ) << " - " << __FILE__ << " (" << __LINE__ << ") Calc_Logic does not know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" << endl;
+                    CTILOG_DEBUG(dout, "Calc_Logic does not know how to handle messages of type \"" << message->stringID( ) << "\";  skipping" <<
+                            *message);
                 }
             }
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 
@@ -1053,8 +933,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
 
                 if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "Loaded Calc #" << CalcCount << " Id: " << pointid << " Type: " << updatetype << endl;
+                    CTILOG_DEBUG(dout, "Loaded Calc #"<< CalcCount <<" Id: "<< pointid <<" Type: "<< updatetype);
                 }
             }
         }
@@ -1092,13 +971,12 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
                                               operationtype, constantvalue, functionname );
             if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Component for calc Id " << pointid <<
-                " CT " << componenttype <<
-                ", CPID " << componentpointid <<
-                ", OP " << operationtype <<
-                ", CONST " << constantvalue <<
-                ", FUNC " << functionname << endl;
+                CTILOG_DEBUG(dout, "Component for calc Id " << pointid <<
+                        " CT " << componenttype <<
+                        ", CPID " << componentpointid <<
+                        ", OP " << operationtype <<
+                        ", CONST " << constantvalue <<
+                        ", FUNC " << functionname);
             }
         }
 
@@ -1136,9 +1014,7 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
             }
             if( _CALC_DEBUG & CALC_DEBUG_CALC_INIT )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "UOM for calc Id " << pointid <<
-                " UOMID " << uomid << endl;
+                CTILOG_DEBUG(dout, "UOM for calc Id "<< pointid <<" UOMID "<< uomid);
             }
         }
 
@@ -1172,26 +1048,18 @@ bool CtiCalcLogicService::readCalcPoints( CtiCalculateThread *thread )
                 limitReader["lowlimit"] >> llim;
                 limitReader["limitduration"] >> limitdur;
 
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Limits for calc Id " << pointid <<
-                " LNUM " << limitNum <<
-                ", HLIM " << hlim <<
-                ", LLIM " << llim <<
-                ", LDUR " << limitdur << endl;
+                CTILOG_DEBUG(dout, "Limits for calc Id " << pointid <<
+                        " LNUM " << limitNum <<
+                        ", HLIM " << hlim <<
+                        ", LLIM " << llim <<
+                        ", LDUR " << limitdur);
             }
         }
 
     }
-    catch( RWxmsg &msg )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception while reading calc points from database: " << msg.why( ) << endl;
-        exit( -1 );
-    }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     if( thread->numberOfLoadedCalcPoints() <= 0 )
@@ -1219,59 +1087,36 @@ void CtiCalcLogicService::terminateThreads()
         }
         catch(RWTHRIllegalUsage &msg)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << msg.why() <<  ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_EXCEPTION_ERROR(dout, msg);
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
         if(RW_THR_COMPLETED != _inputFunc.join( 10000 ))
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " _inputThread did not shutdown gracefully.  Will attempt a forceful shutdown." << endl;
-            }
-
+            CTILOG_ERROR(dout, "_inputThread did not shutdown gracefully.  Will attempt a forceful shutdown.");
             _inputFunc.terminate();
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " _inputThread shutdown correctly." << endl;
-            }
+            CTILOG_INFO(dout, "_inputThread shutdown correctly.");
         }
 
         if(RW_THR_COMPLETED != _outputFunc.join( 10000 ))
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " _outputThread did not shutdown gracefully.  Will attempt a forceful shutdown." << endl;
-            }
-
+            CTILOG_ERROR(dout, "_outputThread did not shutdown gracefully.  Will attempt a forceful shutdown.");
             _outputFunc.terminate();
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " _outputThread shutdown correctly." << endl;
-            }
+            CTILOG_INFO(dout, "_outputThread shutdown correctly.");
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     _threadsStarted = false;
@@ -1288,15 +1133,11 @@ void CtiCalcLogicService::pauseInputThread()
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Input Thread Paused"<< endl;
+        CTILOG_DEBUG(dout, "Input Thread Paused");
     }
 }
 
@@ -1308,17 +1149,11 @@ void CtiCalcLogicService::resumeInputThread()
     }
     catch(RWTHRIllegalUsage &msg)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << msg.why() <<  ".  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_EXCEPTION_ERROR(dout, msg);
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1332,10 +1167,7 @@ void CtiCalcLogicService::updateCalcData()
 
         CtiDBChangeMsg *dbChangeMsg;
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " DB Update Started" << endl;
-        }
+        CTILOG_INFO(dout, "DB Update Started");
 
         pauseInputThread();//Pause threads that would use our data
         calcThread->interruptThreads(CtiCalculateThread::Pause);
@@ -1353,8 +1185,7 @@ void CtiCalcLogicService::updateCalcData()
             {
                 if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " DBUpdate changing point "<< pointID << endl;
+                    CTILOG_DEBUG(dout, "DBUpdate changing point "<< pointID);
                 }
                 calcThread->removePointStoreObject( pointID );
 
@@ -1369,8 +1200,7 @@ void CtiCalcLogicService::updateCalcData()
 
         if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " DBUpdate done changing points"<< endl;
+            CTILOG_DEBUG(dout, "DBUpdate done changing points");
         }
 
         calcThread->clearAndDestroyPointMaps();
@@ -1379,8 +1209,7 @@ void CtiCalcLogicService::updateCalcData()
 
         if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Points refreshed and registration message sent"<< endl;
+            CTILOG_DEBUG(dout, "Points refreshed and registration message sent");
         }
 
         //From here on Im not positive about this ordering, resume threads before or after we register?
@@ -1388,24 +1217,18 @@ void CtiCalcLogicService::updateCalcData()
         calcThread->resumeThreads();
         resumeInputThread();
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " DB Update Complete" << endl;
-        }
+        CTILOG_INFO(dout, "DB Update Complete");
 
         stop = stop.now();
         if(DebugLevel & 0x80000000 || stop.seconds() - start.seconds() > 5)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds to reload calc tables" << endl;
+            CTILOG_DEBUG(dout, (stop.seconds() - start.seconds()) <<" seconds to reload calc tables");
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+
         calcThread->resumeThreads();
         calcThread->interruptThreads( CtiCalculateThread::Shutdown );
         calcThread->joinThreads();//lets try killing them completely, then reloading?
@@ -1431,8 +1254,7 @@ void CtiCalcLogicService::_registerForPoints()
         {
             if( _CALC_DEBUG & CALC_DEBUG_DISPATCH_INIT )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " - Registered for point id: " << ((CtiPointStoreElement *)depIter->value( ))->getPointNum() << endl;
+                CTILOG_DEBUG(dout, "Registered for point id: " << ((CtiPointStoreElement *)depIter->value( ))->getPointNum());
             }
             msgPtReg->insert( ((CtiPointStoreElement *)depIter->value( ))->getPointNum( ) );
         }
@@ -1444,10 +1266,7 @@ void CtiCalcLogicService::_registerForPoints()
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -1505,8 +1324,7 @@ void CtiCalcLogicService::reloadPointAttributes(long pointID)
             {
                 if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Updating UOMID for point id " << pointid << endl;
+                    CTILOG_DEBUG(dout, "Updating UOMID for point id " << pointid);
                 }
                 calcPointPtr->setUOMID(uomid);
             }
@@ -1532,24 +1350,16 @@ void CtiCalcLogicService::reloadPointAttributes(long pointID)
             {
                 if( _CALC_DEBUG & CALC_DEBUG_RELOAD )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Updating limits for point id " << pointid << endl;
+                    CTILOG_DEBUG(dout, "Updating limits for point id "<< pointid);
                 }
                 calcPointPtr->readLimits(limitReader);
             }
         }
 
     }
-    catch( RWxmsg &msg )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Exception while reading calc points from database: " << msg.why( ) << endl;
-        exit( -1 );
-    }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1561,99 +1371,70 @@ void CtiCalcLogicService::loadConfigParameters()
     char var[256];
 
     //defaults
-    string logFile = string("calc");
-    _CALC_DEBUG = CALC_DEBUG_THREAD_REPORTING;
-    //defaults
 
-    strcpy(var, "CALC_LOGIC_LOG_FILE");
-    if( !(str = gConfigParms.getValueAsString(var)).empty() )
-    {
-        dout.setOutputFile(str);
-        if( _CALC_DEBUG )
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << str << endl;
-        }
-    }
-    else
-    {
-        dout.setOutputFile(logFile);
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
-    }
+    _CALC_DEBUG = CALC_DEBUG_THREAD_REPORTING;
 
     strcpy(var, "CALC_LOGIC_DEBUG");
     if(gConfigParms.isOpt(var,"true"))
     {
         _CALC_DEBUG = 0xFFFFFFFF;
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << CtiNumStr(_CALC_DEBUG).xhex().zpad(8).toString() << endl;
-        }
+        CTILOG_INFO(dout, var <<":  "<< CtiNumStr(_CALC_DEBUG).xhex().zpad(8));
     }
     else if(gConfigParms.isOpt(var,"false"))
     {
         _CALC_DEBUG = 0x00000000;
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << CtiNumStr(_CALC_DEBUG).xhex().zpad(8).toString() << endl;
-        }
+        CTILOG_INFO(dout, var <<":  "<< CtiNumStr(_CALC_DEBUG).xhex().zpad(8));
     }
     else if( 0 != (_CALC_DEBUG = gConfigParms.getValueAsULong(var,0,16)) )
     {
+        CTILOG_INFO(dout, var <<":  "<< CtiNumStr(_CALC_DEBUG).xhex().zpad(8));
+    }
+    else
+    {
+        CTILOG_INFO(dout, "Unable to obtain '"<< var <<"' value from cparms");
+    }
+
+    strcpy(var, "CALC_LOGIC_LOG_FILE");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        _logFile = str;
+        if(DebugLevel & CALC_DEBUG_CALC_INIT)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - " << var << ":  " << CtiNumStr(_CALC_DEBUG).xhex().zpad(8).toString() << endl;
+            CTILOG_DEBUG(dout, var << ":  " << str);
         }
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        _logFile = "calc"; // default to calc
+        CTILOG_INFO(dout, "Unable to obtain '"<< var <<"' value from cparms");
     }
 
     strcpy(var, "CALC_SHUTDOWN_ON_THREAD_TIMEOUT");
-    if( ciStringEqual(gConfigParms.getValueAsString(var),"true") )
+    _shutdownOnThreadTimeout =  ciStringEqual(gConfigParms.getValueAsString(var),"true");
+    if(DebugLevel & CALC_DEBUG_CALC_INIT)
     {
-        _shutdownOnThreadTimeout = true;
-    }
-    else
-    {
-        _shutdownOnThreadTimeout = false;
-        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_SHUTDOWN_ON_THREAD_TIMEOUT default : " << _shutdownOnThreadTimeout << endl;
+        CTILOG_DEBUG(dout, "Configuration Parameter CALC_SHUTDOWN_ON_THREAD_TIMEOUT default : "<< _shutdownOnThreadTimeout);
     }
 
     strcpy(var, "CALC_LOGIC_RUN_HISTORICAL");
-    if( ciStringEqual(gConfigParms.getValueAsString(var),"true") )
+    _runCalcHistorical = ciStringEqual(gConfigParms.getValueAsString(var),"true");
+    if(DebugLevel & CALC_DEBUG_CALC_INIT)
     {
-        _runCalcHistorical = true;
-        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_LOGIC_RUN_HISTORICAL default : " << _shutdownOnThreadTimeout << endl;
-    }
-    else
-    {
-        _runCalcHistorical = false;
+        CTILOG_DEBUG(dout, "Configuration Parameter CALC_LOGIC_RUN_HISTORICAL default : "<< _runCalcHistorical);
     }
 
     strcpy(var, "CALC_LOGIC_RUN_BASELINE");
-    if( ciStringEqual(gConfigParms.getValueAsString(var),"true") )
+    _runCalcBaseline = ciStringEqual(gConfigParms.getValueAsString(var),"true");
+    if(DebugLevel & CALC_DEBUG_CALC_INIT)
     {
-        _runCalcBaseline = true;
-        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_LOGIC_RUN_BASELINE default : " << _shutdownOnThreadTimeout << endl;
-    }
-    else
-    {
-        _runCalcBaseline = false;
+        CTILOG_DEBUG(dout, "Configuration Parameter CALC_LOGIC_RUN_BASELINE default : "<< _runCalcBaseline);
     }
 
     strcpy(var, "CALC_IGNORE_TIME_VALID_TAG");
-    if( ciStringEqual(gConfigParms.getValueAsString(var, "false"),"true") )
+    _ignoreTimeValidTag = ciStringEqual(gConfigParms.getValueAsString(var, "false"),"true");
+    if(DebugLevel & CALC_DEBUG_CALC_INIT)
     {
-        _ignoreTimeValidTag = true;
-    }
-    else
-    {
-        if(DebugLevel & CALC_DEBUG_CALC_INIT) cout << "Configuration Parameter CALC_IGNORE_TIME_VALID_TAG default : " << _ignoreTimeValidTag << endl;
-        _ignoreTimeValidTag = false;
+        CTILOG_DEBUG(dout, "Configuration Parameter CALC_IGNORE_TIME_VALID_TAG default : "<< _ignoreTimeValidTag);
     }
 
     SET_CRT_OUTPUT_MODES;
@@ -1663,9 +1444,6 @@ void CtiCalcLogicService::loadConfigParameters()
 
 void CtiCalcLogicService::sendUserQuit( const std::string & who )
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << who << " has asked for shutdown."<< endl;
-    }
+    CTILOG_INFO(dout, who <<" has asked for shutdown.");
     UserQuit = TRUE;
 }

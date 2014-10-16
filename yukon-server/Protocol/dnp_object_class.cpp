@@ -43,32 +43,25 @@ int Class::serialize(unsigned char *buf) const
 
 int Class::getSerializedLen(void) const
 {
-    int retVal;
+    const int variation = getVariation();
 
-    switch(getVariation())
+    switch(variation)
     {
         case Class0:
         case Class1:
         case Class2:
         case Class3:
         {
-            retVal = 0;
             break;
         }
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            retVal = 0;
-            break;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
-    return retVal;
+    return 0;
 }
 
 }

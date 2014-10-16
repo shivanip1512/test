@@ -34,10 +34,13 @@ using std::list;
 CtiRouteExpresscom::CtiRouteExpresscom()
 {}
 
-void CtiRouteExpresscom::DumpData()
+std::string CtiRouteExpresscom::toString() const
 {
-    Inherited::DumpData();
-    Versacom.DumpData();
+    Cti::FormattedList itemList;
+    itemList <<"CtiRouteExpresscom";
+    itemList << Versacom;
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 void CtiRouteExpresscom::DecodeDatabaseReader(Cti::RowReader &rdr)
@@ -48,8 +51,7 @@ void CtiRouteExpresscom::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 }
 
@@ -61,8 +63,7 @@ void CtiRouteExpresscom::DecodeVersacomDatabaseReader(Cti::RowReader &rdr)
     {
         if( getDebugLevel() & DEBUGLEVEL_DATABASE )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "Decoding DB reader");
         }
 
         Versacom.DecodeDatabaseReader(rdr);
@@ -195,13 +196,10 @@ YukonError_t CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *
                     }
                 default:
                     {
-                        {
-                            resultString = "Unsupported command on AWord/Expresscom route: " + getName();
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << resultString << endl;
-                            }
-                        }
+                        resultString = "Unsupported command on AWord/Expresscom route: " + getName();
+
+                        CTILOG_ERROR(dout, resultString);
+
                         break;
                     }
                 }
@@ -209,20 +207,17 @@ YukonError_t CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *
             else
             {
                 resultString = "Expresscom routes do not support non-AWord commands (yet) Rte: " + getName();
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << resultString << endl;
-                }
+
+                CTILOG_ERROR(dout, resultString);
             }
         }
     }
     else
     {
         resultString = " ERROR: Route " + getName() + " has no associated transmitter device";
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << resultString << endl;
-        }
+
+        CTILOG_ERROR(dout, resultString);
+
         status = ClientErrors::NoTransmitterForRoute;
     }
 

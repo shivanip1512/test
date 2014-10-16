@@ -175,9 +175,8 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
 
                                     if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                                     {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " Point ID " << translationPoint->getPointID();
-                                        dout << " defined as " << aClientName << "'s link status point" << endl;
+                                        CTILOG_DEBUG(dout, "Point ID "<< translationPoint->getPointID() <<
+                                                " defined as "<< aClientName <<"'s link status point");
                                     }
                                 }
                             }
@@ -188,23 +187,20 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Unable to load points from database");
         }
     }   // end try block
 
-    catch (RWExternalErr e )
+    catch (const RWExternalErr& e )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") getClientStatusID " << endl;
+        CTILOG_EXCEPTION_ERROR(dout, e);
         RWTHROW(e);
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime () << " " << __FILE__ << " (" << __LINE__ << ") getClientStatusID UNKNOWN (...)" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return retID;
@@ -478,51 +474,31 @@ BOOL CtiFDRInterface::stop( void )
 {
     try
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Attemping to cancel threadFunctionReloadDb" << endl;
-        }
+        CTILOG_INFO(dout, logNow() <<"Attempting to cancel threadFunctionReloadDb");
         iThreadDbChange.requestCancellation();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Attempting to cancel threadFunctionReceiveFromDispatch" << endl;
-        }
+
+        CTILOG_INFO(dout, logNow() <<"Attempting to cancel threadFunctionReceiveFromDispatch");
         iThreadFromDispatch.requestCancellation();
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Attempting to cancel threadFunctionSendToDispatch;" << endl;
-        }
+        CTILOG_INFO(dout, logNow() <<"Attempting to cancel threadFunctionSendToDispatch");
         iThreadToDispatch.requestCancellation();
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Attempting to cancel threadFunctionReloadCparm;" << endl;
-        }
+        CTILOG_INFO(dout, logNow() <<"Attempting to cancel threadFunctionReloadCparm");
         iThreadReloadCparm.requestCancellation();
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "Attempting to shutdown connections" << endl;
-        }
 
         iThreadDbChange.join();
         iThreadFromDispatch.join();
         iThreadToDispatch.join();
         iThreadReloadCparm.join();
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << "All threads have joined up" << endl;
-        }
+        CTILOG_INFO(dout, logNow() <<"All threads have joined up");
 
         // tell dispatch we are shutting down
+        CTILOG_INFO(dout, logNow() <<"Disconnecting from dispatch");
         disconnect();
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Unknown exception on shutdown (CtiFDRInterface::stop)" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, logNow() <<"Failed to stop interface");
     }
 
     return TRUE;
@@ -547,10 +523,7 @@ bool CtiFDRInterface::connectWithDispatch()
         if( iDispatchConn )
         {
             iDispatchConn.reset();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getInterfaceName() << "'s connection to dispatch failed verification.  Attempting to reconnect" << endl;
-            }
+            CTILOG_WARN(dout, getInterfaceName() <<"'s connection to dispatch failed verification.  Attempting to reconnect");
         }
 
         if( ! iDispatchRegisterId  )
@@ -563,10 +536,7 @@ bool CtiFDRInterface::connectWithDispatch()
         // create a new dispatch connection
         //
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Attempting to connect to dispatch for " << getInterfaceName() << endl;
-        }
+        CTILOG_INFO(dout, "Attempting to connect to dispatch for "<< getInterfaceName());
 
         iDispatchConn.reset( new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch, &iDispatchInQueue ));
         iDispatchConn->setName( "FDR to Dispatch: " + getInterfaceName() );
@@ -574,10 +544,7 @@ bool CtiFDRInterface::connectWithDispatch()
 
         if( ! iDispatchConn->isConnectionUsable() )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Attempt to reconnect to dispatch for " << getInterfaceName() << " failed.  Attempting again" << endl;
-            }
+            CTILOG_WARN(dout, "Attempt to reconnect to dispatch for " << getInterfaceName() << " failed.  Attempting again");
             iDispatchConn.reset();
             return false;
         }
@@ -588,10 +555,7 @@ bool CtiFDRInterface::connectWithDispatch()
 
         const std::string regStr("FDR" + iInterfaceName);
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Registering:  " << regStr << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_INFO(dout, "Registering:  "<< regStr);
 
         if( iDispatchConn->WriteConnQue( new CtiRegistrationMsg( regStr, *iDispatchRegisterId, true)) != ClientErrors::None )
         {
@@ -625,10 +589,7 @@ bool CtiFDRInterface::connectWithDispatch()
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Attempt to connect to dispatch for " << getInterfaceName() << " failed by exception " << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Attempt to connect to dispatch for "<< getInterfaceName() <<" failed");
         iDispatchConn.reset();
         return false;
     }
@@ -648,8 +609,7 @@ bool CtiFDRInterface::reloadTranslationLists()
 
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Reloading translation list: reloadTranslationList()" << endl;
+        CTILOG_DEBUG(dout, "Reloading translation list");
     }
 
     // reset status associated with clients on each reload in case the
@@ -660,10 +620,7 @@ bool CtiFDRInterface::reloadTranslationLists()
 
 void CtiFDRInterface::setCurrentClientLinkStates()
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") Default setCurrentClientLinkStates called " << endl;
-    }
+    CTILOG_ERROR(dout, "Default setCurrentClientLinkStates called");
 }
 /************************************************************************
 * Function Name: CtiFDRInterface::getCparmValueAsString(string key)
@@ -726,34 +683,21 @@ int CtiFDRInterface::readConfig( void )
     char        *eptr;
 
     // make name based on interface for debug level: FDR_xxxx_DEBUG_LEVEL
-    string myKeyName("FDR_" + iInterfaceName + KEY_DEBUG_LEVEL);
+    const string myKeyName("FDR_" + iInterfaceName + KEY_DEBUG_LEVEL);
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "** Loading Debug Level: " << myKeyName << endl;
-    }
+    CTILOG_INFO(dout, "Loading Debug Level: "<< myKeyName);
 
     tempStr = getCparmValueAsString(myKeyName);
     if (tempStr.length() > 0)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " Loaded Debug Level Text " << tempStr << endl;
-        }
-        iDebugLevel = strtoul(tempStr.c_str(), &eptr, 16);
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " Loaded Debug Level " << myKeyName << " Value is: " << iDebugLevel << endl;
-        }
+        CTILOG_INFO(dout, "Loaded Debug Level Text " << tempStr);
 
+        iDebugLevel = strtoul(tempStr.c_str(), &eptr, 16);
+        CTILOG_INFO(dout, "Loaded Debug Level "<< myKeyName <<" Value is: "<< iDebugLevel);
     }
 
     iCparmReloadSeconds = gConfigParms.getValueAsInt(KEY_CPARM_RELOAD_RATE_SECONDS,300);
-
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << " CPARM Reload Rate is " << iCparmReloadSeconds << " seconds." << endl;
-    }
+    CTILOG_INFO(dout, "CPARM Reload Rate is " << iCparmReloadSeconds << " seconds.");
 
     return successful;
 }
@@ -783,12 +727,6 @@ bool CtiFDRInterface::sendPointRegistration( void )
         {
             std::auto_ptr<CtiMultiMsg> multiMsg( new CtiMultiMsg() );
 
-            // debug printing
-            //            regStr  = "FDR - \"" + iinterfaceType + "\" module - " + "destination \"" + idestination + "\" - ";
-            //            regStr += CtiTime( ).asString( );
-            //         CtiLockGuard<CtiLogger> doubt_guard(dout);
-            //            dout << regStr << endl;
-
             //multiMsg->insert( new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
             multiMsg->insert( buildRegistrationPointList() );
 
@@ -798,10 +736,7 @@ bool CtiFDRInterface::sendPointRegistration( void )
     }
     catch (...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getInterfaceName() << "'s sendRegistration failed by exception." << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, getInterfaceName() <<"'s sendRegistration failed");
         return false;
     }
 }
@@ -864,8 +799,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
     {
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Initializing CtiFDRInterface::threadFunctionReceiveFromDispatch"  << endl;
+            CTILOG_DEBUG(dout, logNow() <<" Initializing threadFunctionReceiveFromDispatch");
         }
 
         for( ; ; )
@@ -937,20 +871,14 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                     {
                         case (CtiCommandMsg::Shutdown):
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " FDR received a shutdown message from somewhere- Ignoring!!" << endl;
-                            }
+                            CTILOG_WARN(dout, "Received a shutdown message from somewhere- Ignoring!!");
                             break;
                         }
                         case (CtiCommandMsg::AreYouThere):
                         {
                             // echo back the same message - we are here
                             sendMessageToDispatch(cmd->replicateMessage());
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " FDR" << getInterfaceName() << " has been pinged by dispatch" << endl;
-                            }
+                            CTILOG_INFO(dout, "Interface "<< getInterfaceName() <<" has been pinged by dispatch");
                             break;
                         }
                         case (CtiCommandMsg::InitiateScan):
@@ -960,9 +888,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                         }
                         default:
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " FDR received a unknown Command message- " << endl;
-                            break;
+                            CTILOG_ERROR(dout, "Received a unknown Command message ("<< cmd->getOperation() <<")");
                         }
 
                     }
@@ -989,20 +915,13 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                 }
                 case MSG_POINTDATA:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " received a single point data message type- " << endl;
-                    }
+                    CTILOG_INFO(dout, "Received a single point data message type");
                     sendMessageToForeignSys( incomingMsg.get() );
                     break;
                 }
                 default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " FDR received a unknown message type- " << incomingMsg->isA() << endl;
-                    }
-                    break;
+                    CTILOG_INFO(dout, "Received a unknown message type- " << incomingMsg->isA());
                 }
             }
         }
@@ -1010,15 +929,13 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 
     catch ( RWCancellation &cancellationMsg )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "threadFunctionReceiveFromDispatch shutdown" << endl;
+        CTILOG_INFO(dout, logNow() <<"CANCELLATION of threadFunctionReceiveFromDispatch");
     }
 
     // catch whatever is left
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Fatal Error:  receiveFromDispatchThread is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, logNow() <<"threadFunctionReceiveFromDispatch is dead!");
     }
 }
 
@@ -1037,8 +954,7 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
     {
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Initializing CtiFDRInterface::threadFunctionSendToDispatch " << endl;
+            CTILOG_DEBUG(dout, logNow() <<"Initializing threadFunctionSendToDispatch");
         }
 
         CtiTime checkTime = CtiTime() + getQueueFlushRate();
@@ -1062,11 +978,7 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
                     // send if no more entries or there is 500
                     if( ++msgNbr == entries || pMultiData->getData().size() == 500 )
                     {
-//                            if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Sending batch of " << pMultiData->getData().size() << " entries to dispatch from " << getInterfaceName() << endl;
-                        }
+                        CTILOG_INFO(dout, "Sending batch of "<< pMultiData->getData().size() <<" entries to dispatch from "<< getInterfaceName());
 
                         sendMessageToDispatch( pMultiData.release() );
 
@@ -1090,15 +1002,13 @@ void CtiFDRInterface::threadFunctionSendToDispatch( void )
 
     catch ( RWCancellation &cancellationMsg )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "threadFunctionSendToDispatch shutdown" << endl;
+        CTILOG_INFO(dout, logNow() <<"CANCELLATION of threadFunctionSendToDispatch");
     }
 
     // catch whatever is left
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Fatal Error:  threadFunctionSendToDispatch is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, logNow() <<"threadFunctionSendToDispatch is dead!");
     }
 }
 
@@ -1132,8 +1042,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
     {
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << " Initializing CtiFDRInterface::threadFunctionReloadDb " << endl;
+            CTILOG_DEBUG(dout, logNow() <<" Initializing threadFunctionReloadDb");
         }
 
         for ( ; ; )
@@ -1147,19 +1056,14 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
             {
                 if ((getDbReloadReason() == ForceReload))
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Reload of DB Forced. Reloading Translations" << endl;
-                    }
+                    CTILOG_INFO(dout, logNow() <<"Reload of DB Forced. Reloading Translations");
                 }
                 else
                 {
                     // reload point list
                     setDbReloadReason(Periodic);
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Periodic Timer expired -  Reloading Translations" << endl;
-                    }
+
+                    CTILOG_INFO(dout, logNow() << "Periodic Timer expired -  Reloading Translations");
                 }
 
                 // if we successfully reload
@@ -1167,10 +1071,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
                 {
                     // do this whenever we reload the database
                     reRegisterWithDispatch();
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " - Re-registered with dispatch - " << getInterfaceName() << endl;
-                    }
+                    CTILOG_INFO(dout, logNow() <<"Re-registered with dispatch");
 
                     // wait until the state goes back to normal before resetting and continuing
                     setDbReloadReason(NotReloaded);
@@ -1188,12 +1089,7 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
                 }
                 else
                 {
-                    {
-                        // sleep a second and try again
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << "Error reloading points, "
-                            << "will reset periodic timer to 60 seconds" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Failed to reload points - Will reset periodic timer to 60 seconds");
                     setDbReloadReason(NotReloaded);
                     refreshTime = timeNow - (timeNow.seconds() % 60) + 60;
                 }
@@ -1203,15 +1099,13 @@ void CtiFDRInterface::threadFunctionReloadDb( void )
 
     catch ( RWCancellation &cancellationMsg )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "threadFunctionReloadDb shutdown" << endl;
+        CTILOG_INFO(dout, logNow() <<"CANCELLATION of threadFunctionReloadDb");
     }
 
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Fatal Error: threadFunctionReloadDb is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, logNow() <<"threadFunctionReloadDb is dead!");
     }
 }
 
@@ -1230,8 +1124,7 @@ void CtiFDRInterface::threadFunctionReloadCparm( void )
     {
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            logNow() << " Initializing CtiFDRInterface::threadFunctionReloadCparm " << endl;
+            CTILOG_DEBUG(dout, logNow() <<" Initializing threadFunctionReloadCparm");
         }
 
         for ( ; ; )
@@ -1243,10 +1136,7 @@ void CtiFDRInterface::threadFunctionReloadCparm( void )
             if (timeNow > nextReload) {
                 if ( !reloadConfigs() )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        logNow() << " Error while Reloading CPARMS. " << endl;
-                    }
+                    CTILOG_ERROR(dout, logNow() <<" Unable to reload CPARMS.");
                 }
                 nextReload = timeNow + iCparmReloadSeconds;
             }
@@ -1254,14 +1144,12 @@ void CtiFDRInterface::threadFunctionReloadCparm( void )
     }
     catch ( RWCancellation &cancellationMsg )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "threadFunctionReloadDb shutdown" << endl;
+        CTILOG_INFO(dout, logNow() <<"CANCELLATION of threadFunctionReloadDb");
     }
     // try and catch the thread death
     catch ( ... )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        logNow() << "Fatal Error: threadFunctionReloadDb is dead! " << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, logNow() <<"threadFunctionReloadDb is dead!");
     }
 }
 
@@ -1296,10 +1184,10 @@ CtiCommandMsg* CtiFDRInterface::createAnalogOutputMessage(long pointId, string t
 
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Analog Output Point " << translationName << " was sent new value: " << value;
-        dout <<" from " << getInterfaceName() << " and processed for point " << pointId << endl;
+        CTILOG_DEBUG(dout, "Analog Output Point "<< translationName <<" was sent new value: "<< value <<
+                " from "<< getInterfaceName() <<" and processed for point "<< pointId);
     }
+
     return cmdMsg.release();
 }
 
@@ -1310,9 +1198,9 @@ CtiCommandMsg* CtiFDRInterface::createScanDeviceMessage(long paoId, string trans
     cmdMsg->insert( paoId );  // This is the device id to scan
     if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Scan Integrity Request sent to DeviceID: " << paoId << endl;
+        CTILOG_DEBUG(dout, "Scan Integrity Request sent to DeviceID: "<< paoId);
     }
+
     return cmdMsg.release();
 }
 
@@ -1332,10 +1220,7 @@ bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
     }
 
     // log and try again
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " The attempt to write point data from " << getInterfaceName() << " to dispatch has failed. Trying again " << endl;
-    }
+    CTILOG_WARN(dout, "The attempt to write point data from "<< getInterfaceName() <<" to dispatch has failed. Trying again");
 
     connectWithDispatch();
 
@@ -1348,10 +1233,7 @@ bool CtiFDRInterface::sendMessageToDispatch( CtiMessage *aMessage )
         }
     }
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Connection to dispatch for " << getInterfaceName() << " has failed.  Data will be lost " << endl;
-    }
+    CTILOG_ERROR(dout, "Connection to dispatch for "<< getInterfaceName() <<" has failed.  Data will be lost");
 
     return false;
 }
@@ -1376,10 +1258,8 @@ bool CtiFDRInterface::queueMessageToDispatch( CtiMessage *aMessage )
     */
     if (iDispatchQueue.entries() > 10000)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Dispatch queue is over the 10,000 point threshold for " << getInterfaceName() << ". Purging oldest 1000 entries " << endl;
-        }
+        CTILOG_WARN(dout, "Dispatch queue is over the 10,000 point threshold for "<< getInterfaceName() <<". Purging oldest 1000 entries");
+
         CtiMessage      *oldMsg=NULL;
 
         for (int x=0; x < 1000 ;x++)
@@ -1643,18 +1523,23 @@ void CtiFDRInterface::printLists(string title, int pid)
         CtiFDRManager* recvMgr = iReceiveFromList.getPointList();
         CtiFDRManager* sendMgr = iSendToList.getPointList();
 
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << title << " " << pid << endl << "Recv: ";
+        Cti::StreamBuffer logmsg;
+
+        logmsg << title <<" "<< pid
+               << endl  <<"Recv: ";
+
         if (recvMgr != NULL)
         {
-            recvMgr->printIds(dout);
+            logmsg << recvMgr->printIds();
         }
-        dout << "\nSend: ";
+
+        logmsg << endl <<"Send: ";
         if (sendMgr != NULL)
         {
-            sendMgr->printIds(dout);
+            logmsg << sendMgr->printIds();
         }
-        dout << endl;
+
+        CTILOG_DEBUG(dout, logmsg);
     }
 }
 
@@ -1667,8 +1552,9 @@ void CtiFDRInterface::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint
 /**
  * Return the 'dout' logger and prepend the current time and the interface name.
  */
-std::ostream& CtiFDRInterface::logNow() {
-  return dout <<  CtiTime::now()  << string(" FDR-") << getInterfaceName() << string(": ");
+std::string CtiFDRInterface::logNow()
+{
+    return  Cti::StreamBuffer() <<" FDR-"<< getInterfaceName() <<": ";
 }
 
 /**

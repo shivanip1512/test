@@ -35,12 +35,8 @@ bool DatabaseReader::setCommandText(const std::string &command)
     catch(SAException &x)
     {
         _isValid = false;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ERROR **** DB EXCEPTION " << (string)x.ErrText() << " Class "
-                 << x.ErrClass() << " Pos " << x.ErrPos() << " nativeCode " << x.ErrNativeCode() << " in query: " << endl;
-            dout << asString() << " " << __FILE__ << " " << __LINE__ << endl;
-        }
+
+        CTILOG_EXCEPTION_ERROR(dout, x, "DB Reader setCommandText failed for SQL query: "<< asString());
     }
 
     return false;
@@ -50,8 +46,7 @@ bool DatabaseReader::isValid()
 {
     if( !_executeCalled )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** ERROR **** EXECUTE NOT CALLED BEFORE CHECKING VALIDITY!!!! " << endl;
+        CTILOG_ERROR(dout, "EXECUTE NOT CALLED BEFORE CHECKING VALIDITY!!!! ");
     }
     return _isValid;
 }
@@ -71,10 +66,18 @@ bool DatabaseReader::executeWithRetries()
         }        
         catch(SAException &x)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ** Attempt failed for SQL query, due to native code Error: " << x.ErrNativeCode() <<". Retrying." << endl;
+            retries--;
+
+            if( retries )
+            {
+                CTILOG_EXCEPTION_WARN(dout, x, "Attempt failed for SQL query: "<< asString() <<". Retrying..");
+            }
+            else
+            {
+                CTILOG_EXCEPTION_ERROR(dout, x, "Attempt failed for SQL query: "<< asString());
+            }
         }
-        retries--;
+
         Sleep(waitTimer);
     };
 
@@ -106,10 +109,7 @@ bool DatabaseReader::execute()
     }
     catch(SAException &x)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** ERROR **** DB EXCEPTION " << (string)x.ErrText() << " Class "
-             << x.ErrClass() << " Pos " << x.ErrPos() << " nativeCode " << x.ErrNativeCode() << " in query: " << endl;
-        dout << asString() << " " << __FILE__ << " " << __LINE__ << endl;
+        CTILOG_EXCEPTION_ERROR(dout, x, "DB Reader execute command failed for SQL query: "<< asString());
     }
 
     return false;
@@ -134,19 +134,14 @@ bool DatabaseReader::operator()()
         catch(SAException &x)
         {
             _isValid = false;
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** ERROR **** DB EXCEPTION " << (string)x.ErrText() << " Class "
-                 << x.ErrClass() << " Pos " << x.ErrPos() << " nativeCode " << x.ErrNativeCode() << " in query: " << endl;
-            dout << asString() << " " << __FILE__ << " " << __LINE__ << endl;
-            }
+
+            CTILOG_EXCEPTION_ERROR(dout, x, "DB Reader fetch next failed for SQL query: "<< asString());
         }
     }
 
     if( !_executeCalled )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** ERROR **** EXECUTE NOT CALLED BEFORE READING!!!! " << endl;
+        CTILOG_ERROR(dout, "EXECUTE NOT CALLED BEFORE READING!!!! ");
     }
 
     return false;

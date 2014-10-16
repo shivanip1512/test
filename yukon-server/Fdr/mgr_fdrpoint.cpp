@@ -140,26 +140,20 @@ bool CtiFDRManager::loadPointList()
     }
     catch(RWExternalErr e )
     {
+        CTILOG_EXCEPTION_ERROR(dout, e);
+
         //Make sure the list is cleared
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Attempting to clear FDR Point list..." << endl;
-        }
+        CTILOG_INFO(dout, "Attempting to clear FDR Point list...");
         pointMap.removeAll(NULL, 0);
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "loadFDRList:  " << e.why() << endl;
-        }
+
         RWTHROW(e);
 
         functionSuccess = false;
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") loadPointList: unknown exception" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+
         pointMap.removeAll(NULL, 0);
 
         functionSuccess = false;
@@ -226,42 +220,29 @@ bool CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
         fdrTempMap.clear();
         if(getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
         {
-            string loggedSQLstring = ss.str();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << loggedSQLstring << endl;
-            }
+            CTILOG_DEBUG(dout, "DB read for SQL query: "<< ss.str());
         }
     }
-    catch(RWExternalErr e)
+    catch(const RWExternalErr& e)
     {
+        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to load point - will attempt to clear FDR Point list...");
         //Make sure the list is cleared
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Attempting to clear FDR Point list..." << endl;
-        }
         pointMap.removeAll(NULL, 0);
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "loadFDRList:  " << e.why() << endl;
-        }
+
         RWTHROW(e);
     }
     catch (FdrDatabaseException e)
     {
         functionStatus = false;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " DB Error: expected only one translation for point: " << pointId << endl;
-        }
+
+        CTILOG_EXCEPTION_ERROR(dout, e, "DB read failed, expected only one translation for point: "<< pointId);
     }
     catch(...)
     {
         functionStatus = false;
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << ") loadPointList: unknown exception" << endl;
-        }
+
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load point "<< pointId);
+
         pointMap.removeAll(NULL, 0);
     }
 
@@ -288,93 +269,90 @@ bool CtiFDRManager::getPointsFromDB(const std::stringstream &ss, std::map<long,C
 
     rdr.execute();
 
-    if( rdr.isValid() )
+    if( ! rdr.isValid() )
     {
-        if(getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
-        {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << loggedSQLstring << endl;
-            }
-        }
-
-        while( rdr() )
-        {
-            rdr[0] >> pointID;
-            rdr[1] >> translation;
-            rdr[2] >> destination;
-            rdr[3] >> direction;
-            rdr[4] >> tmp;
-            rdr[5] >> pointOffset;
-            rdr[6] >> paoID;
-            if(!rdr[7].isNull())
-            {
-                rdr[7]    >> multiplier;
-            }
-            else
-            {
-                rdr[9]    >> multiplier;
-            }
-            if(!rdr[8].isNull())
-            {
-                rdr[8]  >> dataOffset;
-            }
-            else
-            {
-                rdr[10]    >> dataOffset;
-            }
-
-
-            std::map< long, CtiFDRPointSPtr >::iterator itr = fdrPtrMap.find(pointID);
-
-            if( itr != fdrPtrMap.end() )
-                fdrPtr = (*itr).second;
-            else
-                fdrPtr = CtiFDRPointSPtr(new CtiFDRPoint( pointID ));
-
-            if( fdrPtrMap.size() == 0 ||  itr == fdrPtrMap.end() )
-            {
-                fdrPtr->setPointType ((CtiPointType_t) resolvePointType(tmp));
-                fdrPtr->setPaoID(paoID);
-                fdrPtr->setPointOffset(pointOffset);
-
-                if((fdrPtr->getPointType() == AnalogPointType) ||
-                   (fdrPtr->getPointType() == PulseAccumulatorPointType) ||
-                   (fdrPtr->getPointType() == DemandAccumulatorPointType) ||
-                   (fdrPtr->getPointType() == CalculatedPointType))
-                {
-                    fdrPtr->setMultiplier(multiplier);
-                    fdrPtr->setOffset (dataOffset);
-                }
-
-                // set controllable
-                if(direction == string(FDR_INTERFACE_SEND_FOR_CONTROL) ||
-                   direction == string(FDR_INTERFACE_RECEIVE_FOR_CONTROL) ||
-                   direction == string(FDR_INTERFACE_RECEIVE_FOR_ANALOG_OUTPUT))
-                {
-                    fdrPtr->setControllable (true);
-                }
-
-                CtiFDRDestination tmpDestination (fdrPtr.get(), translation, destination);
-                fdrPtr->getDestinationList().push_back(tmpDestination);
-                fdrPtrMap.insert( std::pair<long,CtiFDRPointSPtr >(pointID, fdrPtr));
-            }
-            else
-            {
-                /**********************
-                * add the current destination to the list
-                ***********************
-                */
-                CtiFDRDestination tmpDestination (fdrPtr.get(), translation, destination);
-                fdrPtr->getDestinationList().push_back(tmpDestination);
-            }
-        }
-
-        return true;
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        return false;
     }
 
-    return false;
+    if(getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
+    {
+        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
+    }
+
+    while( rdr() )
+    {
+        rdr[0] >> pointID;
+        rdr[1] >> translation;
+        rdr[2] >> destination;
+        rdr[3] >> direction;
+        rdr[4] >> tmp;
+        rdr[5] >> pointOffset;
+        rdr[6] >> paoID;
+        if(!rdr[7].isNull())
+        {
+            rdr[7]    >> multiplier;
+        }
+        else
+        {
+            rdr[9]    >> multiplier;
+        }
+        if(!rdr[8].isNull())
+        {
+            rdr[8]  >> dataOffset;
+        }
+        else
+        {
+            rdr[10]    >> dataOffset;
+        }
+
+
+        std::map< long, CtiFDRPointSPtr >::iterator itr = fdrPtrMap.find(pointID);
+
+        if( itr != fdrPtrMap.end() )
+            fdrPtr = (*itr).second;
+        else
+            fdrPtr = CtiFDRPointSPtr(new CtiFDRPoint( pointID ));
+
+        if( fdrPtrMap.size() == 0 ||  itr == fdrPtrMap.end() )
+        {
+            fdrPtr->setPointType ((CtiPointType_t) resolvePointType(tmp));
+            fdrPtr->setPaoID(paoID);
+            fdrPtr->setPointOffset(pointOffset);
+
+            if((fdrPtr->getPointType() == AnalogPointType) ||
+               (fdrPtr->getPointType() == PulseAccumulatorPointType) ||
+               (fdrPtr->getPointType() == DemandAccumulatorPointType) ||
+               (fdrPtr->getPointType() == CalculatedPointType))
+            {
+                fdrPtr->setMultiplier(multiplier);
+                fdrPtr->setOffset (dataOffset);
+            }
+
+            // set controllable
+            if(direction == string(FDR_INTERFACE_SEND_FOR_CONTROL) ||
+               direction == string(FDR_INTERFACE_RECEIVE_FOR_CONTROL) ||
+               direction == string(FDR_INTERFACE_RECEIVE_FOR_ANALOG_OUTPUT))
+            {
+                fdrPtr->setControllable (true);
+            }
+
+            CtiFDRDestination tmpDestination (fdrPtr.get(), translation, destination);
+            fdrPtr->getDestinationList().push_back(tmpDestination);
+            fdrPtrMap.insert( std::pair<long,CtiFDRPointSPtr >(pointID, fdrPtr));
+        }
+        else
+        {
+            /**********************
+            * add the current destination to the list
+            ***********************
+            */
+            CtiFDRDestination tmpDestination (fdrPtr.get(), translation, destination);
+            fdrPtr->getDestinationList().push_back(tmpDestination);
+        }
+    }
+
+    return true;
 }
 
 /************************************************************************
@@ -420,17 +398,23 @@ bool CtiFDRManager::addFDRPointId(long myPointId, CtiFDRPointSPtr & point)
     return loadPoint(myPointId,point);
 }
 
-void CtiFDRManager::printIds(CtiLogger& dout)
+std::string CtiFDRManager::printIds() const
 {
+    Cti::StreamBuffer sb;
     CtiSmartMap<CtiFDRPoint>::coll_type Map = pointMap.getMap();
-    readerLock guard(pointMap.getLock());
-    CtiFDRManager::spiterator itr = Map.begin();
 
-    for (;itr != Map.end(); itr++ )
     {
-        long pid = (*itr).first;
-        dout << pid << " ";
+        readerLock guard(pointMap.getLock());
+        CtiFDRManager::spiterator itr = Map.begin();
+
+        for (;itr != Map.end(); itr++ )
+        {
+            long pid = (*itr).first;
+            sb << pid <<" ";
+        }
     }
+
+    return sb;
 }
 
 size_t CtiFDRManager::entries()

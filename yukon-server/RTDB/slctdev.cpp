@@ -119,8 +119,7 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(Cti::RowReader &rdr)
 
     if(getDebugLevel() & DEBUGLEVEL_FACTORY)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Creating a Device of type " << rwsType << endl;
+        CTILOG_DEBUG(dout, "Creating a Device of type "<< rwsType );
     }
 
     NewDevice = createDeviceType(resolveDeviceType(rwsType));
@@ -129,13 +128,11 @@ DLLEXPORT CtiDeviceBase* DeviceFactory(Cti::RowReader &rdr)
     {
         if( ! isKnownUnsupportedDevice(rwsType) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Device Factory has failed to produce for type " << rwsType << "!" << endl;
+            CTILOG_ERROR(dout, "Device Factory has failed to produce for type "<< rwsType <<"!");
         }
         else if( getDebugLevel() & DEBUGLEVEL_FACTORY )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Device Factory cannot produce for type " << rwsType << "! : the device is known but unsupported" << endl;
+            CTILOG_DEBUG(dout, "Device Factory cannot produce for type "<< rwsType <<"! : the device is known but unsupported");
         }
     }
 
@@ -338,8 +335,7 @@ DLLEXPORT CtiRouteBase* RouteFactory(Cti::RowReader &rdr)
     {
         if(getDebugLevel() & DEBUGLEVEL_FACTORY)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Creating a Route of type " << rwsType << endl;
+            CTILOG_DEBUG(dout, "Creating a Route of type "<< rwsType );
         }
 
         RteType = resolveRouteType(rwsType);
@@ -382,8 +378,7 @@ DLLEXPORT CtiRouteBase* RouteFactory(Cti::RowReader &rdr)
             case RouteTypeInvalid:
             default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Route Factory has failed to produce for type " << rwsType << "!" << endl;
+                CTILOG_ERROR(dout, "Route Factory has failed to produce for type "<< rwsType <<"!");
                 break;
             }
         }

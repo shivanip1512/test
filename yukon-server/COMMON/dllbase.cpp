@@ -211,11 +211,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
 
         if( !gMCT400SeriesSPID )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - YUKON_MCT400SERIESSPID was read as 0, setting to 0xff **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
+            CTILOG_WARN(dout, "YUKON_MCT400SERIESSPID was read as 0, setting to 0xff");
             gMCT400SeriesSPID = 0xff;
         }
     }

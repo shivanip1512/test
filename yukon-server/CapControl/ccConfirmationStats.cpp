@@ -408,23 +408,4 @@ CtiCCConfirmationStats& CtiCCConfirmationStats::incrementUserDefCommFails(long e
 
 
 
-void CtiCCConfirmationStats::printCommStats()
-{
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - DUMPING CommStats. " <<  endl;
-
-        dout << "\t\t -  _paoid: " << _paoid
-            << " _userDefCommCount " << _userDefCommCount
-             << " _userDefCommFail " << _userDefCommFail
-             << "  _dailyCommCount "   << _dailyCommCount
-             << "  _dailyCommFail "  << _dailyCommFail
-             << "  _weeklyCommCount "  << _weeklyCommCount
-             << "  _weeklyCommFail " << _weeklyCommFail
-             << "  _monthlyCommCount " << _monthlyCommCount
-             << "  _monthlyCommFail "<< _monthlyCommFail
-            << endl;
-    }
-
-}
 

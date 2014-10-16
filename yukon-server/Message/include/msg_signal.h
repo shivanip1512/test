@@ -84,7 +84,7 @@ public:
 
    virtual CtiMessage* replicateMessage() const;
 
-   virtual void dump() const;
+   virtual std::string toString() const override;
 
    BOOL isAlarm() const;
    BOOL isEvent() const;

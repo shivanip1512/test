@@ -7,7 +7,7 @@ using namespace std;
 #include "dlldefs.h"
 #include "dllvg.h"
 #include "logger.h"
-#include "utility.h"
+#include "module_util.h"
 #include "cparms.h"
 
 IM_EX_CTIVANGOGH UINT gDispatchDebugLevel = 0x00000000;
@@ -63,8 +63,7 @@ IM_EX_CTIVANGOGH void InitDispatchGlobals(void)
       gDispatchDebugLevel = strtoul(str.c_str(), &eptr, 16);
       if(gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE)
       {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " DISPATCH_DEBUGLEVEL: 0x" << hex <<  gDispatchDebugLevel << dec << endl;
+         CTILOG_DEBUG(dout, "DISPATCH_DEBUGLEVEL: 0x"<< hex << gDispatchDebugLevel);
       }
    }
 }

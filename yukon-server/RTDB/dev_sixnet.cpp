@@ -34,29 +34,29 @@ using std::vector;
 
 int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT interval)
 {
-    int i;
     int status = ClientErrors::None;
     CtiSxlFieldHistory hist;
     CtiSxlRecord newRec;
 
     time_t tstamp = CtiDeviceSixnet::get32(rec);
-
-    FIELDHISTORY::iterator histitr;
-
     newRec.setTime( CtiTime(tstamp ) );
 
+    Cti::FormattedTable logTable;
     if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Record Time is " << newRec.getTime().asString() << endl;
+        logTable.setCell(0, 0) << "Type";
+        logTable.setCell(0, 1) << "Offset";
+        logTable.setCell(0, 2) << "Value";
     }
 
     switch (m_eType)
     {
         case FIN:
         case FOUT:
-            for (i = 0; i < m_nNumRegs; ++i)
+            for (int i=0, row=0; i < m_nNumRegs; ++i)
             {
+                // FIXME (offset, value, type?)
+
                 union
                 { // use this to get data bytes converted to a float
                     uint32 l;
@@ -66,26 +66,34 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 
                 if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
+                    ++row;
+                    logTable.setCell(row, 0) << newRec.getType();
+                    logTable.setCell(row, 1) << newRec.getOffset();
+                    logTable.setCell(row, 2) << newRec.getValue();
                 }
             }
+
             break;
 
         case LIN:
         case LOUT:
-            for (i = 0; i < m_nNumRegs; ++i)
+            for (int i=0, row=0; i < m_nNumRegs; ++i)
             {
+                // FIXME (offset, value, type?)
+
                 if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
+                    ++row;
+                    logTable.setCell(row, 0) << newRec.getType();
+                    logTable.setCell(row, 1) << newRec.getOffset();
+                    logTable.setCell(row, 2) << newRec.getValue();
                 }
             }
+
             break;
 
         case AIN:
-            for (i = 0; i < m_nNumRegs; ++i)
+            for (int i=0, row=0; i < m_nNumRegs; ++i)
             {
                 hist._offset =  i + 1;
                 hist._pulses = CtiDeviceSixnet::get16(rec + m_nOffset + 2*i);
@@ -98,14 +106,13 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 
                 if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
+                    ++row;
+                    logTable.setCell(row, 0) << newRec.getType();
+                    logTable.setCell(row, 1) << newRec.getOffset();
+                    logTable.setCell(row, 2) << newRec.getValue();
                 }
 
                 _recordData.push_back( newRec );
-
-
-
 
                 // Process the analog data as a demand accumulator..
                 FIELDHISTORYPAIR duece = _history.insert(hist);
@@ -137,23 +144,18 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 
                     if (deltaT < interval)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_WARN(dout, "deltaT < interval ("<< deltaT <<" < "<< interval <<")");
                     }
                     else if (deltaT > interval * 2)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Outage detected.  Current pulse reading consumed for next delta compute." << endl;
-                            dout << "  Previous read time " << CtiTime(aHist._time ) << endl;
-                            dout << "  Current read time  " << CtiTime(hist._time ) << endl;
-                            //dout << "  interval = " << interval << endl;
-                            //dout << "  deltaT =   " << deltaT << endl;
-                            //dout << "  ahist time " << aHist._time << endl;
-                            //dout << "  hist time  " << hist._time << endl;
-                        }
+                        Cti::FormattedList itemList;
+
+                        itemList.add("Previous read time") << CtiTime(aHist._time);
+                        itemList.add("Current read time")  << CtiTime(hist._time);
+
+                        CTILOG_WARN(dout, "Outage detected.  Current pulse reading consumed for next delta compute."<<
+                                itemList
+                                );
 
                         aHist = hist;  // Assign it over ok...
                     }
@@ -163,11 +165,10 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 
                         if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << "  DeltaP  " << deltaP << " = " << hist._pulses << " - " << aHist._pulses << endl;
-                            dout << "  DeltaPH " << deltaPH << endl;
-
+                            CTILOG_DEBUG(dout,
+                                    endl <<"DeltaP  "<< deltaP <<" = "<< hist._pulses <<" - "<< aHist._pulses <<
+                                    endl <<"DeltaPH "<< deltaPH
+                                    );
                         }
 
                         newRec.setType( DemandAccumulatorPointType );
@@ -178,10 +179,11 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 
                         if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
+                            ++row;
+                            logTable.setCell(row, 0) << newRec.getType();
+                            logTable.setCell(row, 1) << newRec.getOffset();
+                            logTable.setCell(row, 2) << newRec.getValue();
                         }
-
                         _recordData.push_back( newRec );
                     }
                 }
@@ -189,7 +191,7 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
             break;
 
         case AOUT:
-            for (i = 0; i < m_nNumRegs; ++i)
+            for (int i=0, row=0; i < m_nNumRegs; ++i)
             {
                 newRec.setType( AnalogOutputPointType );
                 newRec.setValue( CtiDeviceSixnet::get16(rec + m_nOffset + 2*i) );
@@ -197,15 +199,17 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 
                 if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
+                    ++row;
+                    logTable.setCell(row, 0) << newRec.getType();
+                    logTable.setCell(row, 1) << newRec.getOffset();
+                    logTable.setCell(row, 2) << newRec.getValue();
                 }
                 _recordData.push_back( newRec );
             }
             break;
 
         case DIN:
-            for (i = 0; i < m_nNumRegs; ++i)
+            for (int i=0, row=0; i < m_nNumRegs; ++i)
             {
                 uint32 ofs = m_nOffset + i;
 
@@ -215,15 +219,17 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 
                 if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
+                    ++row;
+                    logTable.setCell(row, 0) << newRec.getType();
+                    logTable.setCell(row, 1) << newRec.getOffset();
+                    logTable.setCell(row, 2) << newRec.getValue();
                 }
                 _recordData.push_back( newRec );
             }
             break;
 
         case DOUT:
-            for (i = 0; i < m_nNumRegs; ++i)
+            for (int i=0, row=0; i < m_nNumRegs; ++i)
             {
                 uint32 ofs = m_nOffset + i;
 
@@ -233,21 +239,29 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
 
                 if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "    " << newRec.getTime() << "  Type " << newRec.getType() << " Offset " << newRec.getOffset() << "  Value " << newRec.getValue() << endl;
+                    ++row;
+                    logTable.setCell(row, 0) << newRec.getType();
+                    logTable.setCell(row, 1) << newRec.getOffset();
+                    logTable.setCell(row, 2) << newRec.getValue();
                 }
+
                 _recordData.push_back( newRec );
             }
             break;
 
         default:
             // should never happen
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+
+            CTILOG_ERROR(dout, "Invalid m_eType ("<< m_eType <<")");
 
             break;
+    }
+
+    if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
+    {
+        CTILOG_DEBUG(dout, "Record Time is "<< newRec.getTime() <<
+                logTable
+                )
     }
 
     return status;
@@ -453,10 +467,15 @@ int CtiDeviceSixnet::processGetFields()
 
             if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
             {
-                dout << "  Type      " << fld.m_eType << endl;
-                dout << "  Num       " << fld.m_nNumRegs << endl;
-                dout << "  First     " << fld.m_nFirst << endl;
-                dout << "  Offset    " << fld.m_nOffset << endl;
+                Cti::FormattedList itemList;
+
+                itemList.add("Type")   << fld.m_eType;
+                itemList.add("Num")    << fld.m_nNumRegs;
+                itemList.add("First")  << fld.m_nFirst;
+                itemList.add("Offset") << fld.m_nOffset;
+
+                CTILOG_DEBUG(dout, itemList);
+
             }
 
             if (fld.m_eType == CSxlField::AIN)
@@ -477,8 +496,7 @@ int CtiDeviceSixnet::processGetFields()
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Invalid size");
     }
 
     return _fields.size();
@@ -549,8 +567,7 @@ YukonError_t CtiDeviceSixnet::processGetHeaderInfo()
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "Invalid size");
     }
 
     return status;
@@ -602,15 +619,6 @@ int CtiDeviceSixnet::processGetHeadTail()
     {
         cnt = UINT_MAX - _tail + _head;
     }
-
-
-#if 0
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "  Found " << cnt << " records out there" << endl;
-    }
-#endif
 
     return cnt;
 }
@@ -759,8 +767,7 @@ void CtiDeviceSixnet::flushVectors()
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -790,8 +797,7 @@ void CtiDeviceSixnet::destroyBuffers()
     }
     catch (...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
 }
@@ -858,10 +864,8 @@ YukonError_t CtiDeviceSixnet::generateCommandHandshake(CtiXfer  &Transfer, CtiMe
 
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")  ES: " << _executionState << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid execution state ("<< _executionState <<")");
+
                 break;
             }
     }
@@ -920,10 +924,8 @@ YukonError_t CtiDeviceSixnet::decodeResponseHandshake(CtiXfer &Transfer, YukonEr
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")  ES: " << _executionState << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid execution state ("<< _executionState <<")");
+
                 _executionState = SXNT_START;
 
                 break;
@@ -943,10 +945,7 @@ YukonError_t CtiDeviceSixnet::generateCommandDisconnect(CtiXfer  &Transfer, CtiM
     Transfer.setNonBlockingReads(false);   // Make it ignore the port!
     Transfer.setInCountExpected(0);
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Sixnet communication completed to " << getName() << endl;
-    }
+    CTILOG_INFO(dout, "Sixnet communication completed to " << getName());
 
     return status;
 }
@@ -954,11 +953,7 @@ YukonError_t CtiDeviceSixnet::decodeResponseDisconnect(CtiXfer &Transfer, YukonE
 {
     YukonError_t status = ClientErrors::None;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Sixnet disconnecting " << getName() << endl;
-    }
-
+    CTILOG_INFO(dout, "Sixnet disconnecting " << getName());
 
     return status;
 }
@@ -1071,10 +1066,9 @@ YukonError_t CtiDeviceSixnet::generateCommand(CtiXfer  &Transfer, CtiMessageList
                 else
                 {
                     _executionState = SXNT_BAIL;        // Done...
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Sixnet " << getName() << " all collected records have been returned " << endl;
-                    }
+
+                    CTILOG_INFO(dout, "Sixnet "<< getName() <<" all collected records have been returned");
+
                     setCurrentState( CtiDeviceIED::StateScanComplete );
                 }
 
@@ -1098,11 +1092,8 @@ YukonError_t CtiDeviceSixnet::generateCommand(CtiXfer  &Transfer, CtiMessageList
 
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  CS " << _completedState << "  ES  " << _executionState << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid execution state ("<< _executionState <<") - completed state ("<< _completedState <<")");
+
                 setCurrentState( CtiDeviceIED::StateScanAbort );
                 break;
             }
@@ -1165,22 +1156,6 @@ YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t com
             }
         case SXNT_DECODETAILRECORD:
             {
-#if 0
-                {
-                    CHAR junk[5];
-                    dout << "     Tail Trace " << endl;
-                    for (int i=0; i< bytesread;i++)
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            sprintf (junk, "%02x ", getRxBuffer()[i]);
-                            dout << string (junk);
-                        }
-                        dout << endl;
-                    }
-                }
-#endif
-
                 protocolreturn = analyzeReadBytes(bytesread);
 
                 if (CtiProtocolSixnet::GETCOMPLETE == protocolreturn )
@@ -1191,9 +1166,7 @@ YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t com
 
                     if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  tail record was recorded at " << recordtime << endl;
+                        CTILOG_DEBUG(dout, "tail record was recorded at "<< recordtime);
                     }
 
                     try
@@ -1218,10 +1191,7 @@ YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t com
                     }
                     catch (...)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
                 }
                 else
@@ -1244,12 +1214,7 @@ YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t com
                     if ( _lpTime >= headTime )
                     {
                         // there is no new data..
-
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << getName() << " No CTIDBG_new data " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            dout << " " << _lpTime << " >= " << headTime << endl;
-                        }
+                        CTILOG_INFO(dout, getName() <<" has no new data (_lpTime >= headTime) ("<< _lpTime <<" >= "<< headTime <<")");
 
                         _executionState = SXNT_BAIL;
 
@@ -1268,30 +1233,30 @@ YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t com
                         {
                             recordCnt = deltaR;
                         }
+
                         if (skiprecords > deltaR)
                         {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                dout << "   deltaR " << deltaR << endl;
-                                dout << "   skip   " << skiprecords << endl;
-                            }
+                            CTILOG_WARN(dout, "skiprecords > deltaR ("<< skiprecords <<" > "<< deltaR <<")");
+
                             skiprecords = deltaR - 5;     // Just get a few already..
                         }
 
                         if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "   tail   " << _tail << endl;
-                            dout << "   head   " << _head << endl;
-                            dout << "   tail   " << tailtime << endl;
-                            dout << "   lptime " << _lpTime << endl;
-                            dout << "   head   " << headTime << endl;
-                            dout << "   deltaT " << deltaT << endl;
-                            dout << "   deltaR " << deltaR << endl;
-                            dout << "   recCnt " << recordCnt << endl;
-                            dout << "   shift  " << (deltaR - recordCnt) << endl;
-                            dout << "   skip   " << skiprecords << endl;
+                            Cti::FormattedList itemList;
+
+                            itemList.add("tail")   << _tail;
+                            itemList.add("head")   << _head;
+                            itemList.add("tail")   << tailtime;
+                            itemList.add("lptime") << _lpTime;
+                            itemList.add("head")   << headTime;
+                            itemList.add("deltaT") << deltaT;
+                            itemList.add("deltaR") << deltaR;
+                            itemList.add("recCnt") << recordCnt;
+                            itemList.add("shift")  << (deltaR - recordCnt);
+                            itemList.add("skip")   << skiprecords;
+
+                            CTILOG_DEBUG(dout, itemList);
                         }
 
                         // OK, we will skip records, but we MUST assume that any events occur at the very begining
@@ -1310,11 +1275,8 @@ YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t com
                             if (!(isRecLT(_tail, newtail) && isRecLT(newtail, _head + 1)))
                             {
                                 // Whoops the logic sucks.. This better not happen
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                    dout << " _tail = " << _tail << "  newtail = " << newtail << "  _head = " << _head << endl;
-                                }
+                                CTILOG_ERROR(dout, "_tail = "<< _tail <<"  newtail = "<< newtail <<"  _head = "<< _head);
+
                                 newtail = _tail;     // Just be a slop monger.
                             }
                         }
@@ -1327,10 +1289,7 @@ YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t com
                     else
                     {
                         // The fan has been hit!
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "unexpected _lpTime < tailtime ("<< _lpTime <<" < "<< tailtime <<")");
 
                         // We must collect ALL the records now..
                         _executionState = SXNT_GETRECORDS;
@@ -1361,8 +1320,7 @@ YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t com
                     {
                         if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "  Record " << _tail << " is older (" << recordtime << ") than the last LP time collected (" << _lpTime << ")" << endl;
+                            CTILOG_DEBUG(dout, "Record "<< _tail <<" is older ("<< recordtime <<") than the last LP time collected ("<< _lpTime <<")");
                         }
                     }
 
@@ -1401,10 +1359,7 @@ YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t com
                     _executionState = SXNT_COMPLETE;
                     setCurrentState( CtiDeviceIED::StateScanComplete );
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " " << getName() << " has no CTIDBG_new records." << endl;
-                    }
+                    CTILOG_INFO(dout, getName() <<" has no new records");
                 }
                 break;
             }
@@ -1415,11 +1370,8 @@ YukonError_t CtiDeviceSixnet::decodeResponse(CtiXfer &Transfer, YukonError_t com
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "  CS " << _completedState << "  ES  " << _executionState << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid execution state ("<< _executionState <<") - completed state ("<< _completedState <<")");
+
                 setCurrentState( CtiDeviceIED::StateScanAbort );
                 break;
             }
@@ -1459,8 +1411,8 @@ INT CtiDeviceSixnet::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aBytesRecei
 
             if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " returning record  " << Record.getTime() << "  Type " << Record.getType() << " Offset " << Record.getOffset() << "  Value " << Record.getValue() << endl;
+                CTILOG_DEBUG(dout,
+                        endl << Record.getTime() <<"  Type "<< Record.getType() <<"  Offset "<< Record.getOffset() <<"  Value "<< Record.getValue());
             }
 
             _recordData.erase(itr);
@@ -1478,10 +1430,10 @@ INT CtiDeviceSixnet::copyLoadProfileData(BYTE *aInMessBuffer, ULONG &aBytesRecei
 
             if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " NumLeft = " << numLeft << endl;
-                dout << "  TAG = " << tag << endl;
+                CTILOG_DEBUG(dout,
+                        endl << "NumLeft = "<< numLeft <<
+                        endl << "TAG     = "<< tag
+                        );
             }
 
             Record.getLPStruct(bpcurr, tag);
@@ -1513,10 +1465,7 @@ CtiDeviceIED::CtiMeterMachineStates_t CtiDeviceSixnet::determineHandshakeNextSta
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "unexpected protocol state ("<< protocolstate << ")");
 
                 nextstate = CtiDeviceIED::StateAbsorb;
 
@@ -1563,10 +1512,10 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
         // We've timed out and should retry, or abort
         if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << " Execution State " << _executionState << endl;
-            dout << " Completion State " << _executionState << endl;
+            CTILOG_DEBUG(dout,
+                    endl <<"Execution State = "<< _executionState <<
+                    endl <<"Completed State = "<< _completedState
+                    );
         }
 
         if ( getCurrentState() == CtiDeviceIED::StateHandshakeInitialize )
@@ -1592,10 +1541,8 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
         else
         {
             setCurrentState( CtiDeviceIED::StateAbort );
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint *** " << __FILE__ << " (" << __LINE__ << ") " << "SXNT_BAIL set to abort " <<endl;
-            }
+
+            CTILOG_WARN(dout, "SXNT_BAIL set to abort");
 
             _executionState = SXNT_BAIL;
             infloopprevention = 0;
@@ -1606,28 +1553,20 @@ void CtiDeviceSixnet::checkStreamForTimeout(INT protocolreturn, CtiXfer &Transfe
         UINT bytesleft = getSixnetProtocol().getBytesLeftInRead();
 
         // We are not timed out, but are in an intermediate state and need MORE data from the port
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Going after some more bytes... " << bytesleft << endl;
-        }
+        CTILOG_INFO(dout, "Going after some more bytes - "<< bytesleft <<"-byte(s) left");
 
         if (infloopprevention++ > 5)
         {
             setCurrentState( CtiDeviceIED::StateAbort );
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint *** " << __FILE__ << " (" << __LINE__ << ") " << "SXNT_BAIL set to abort " <<endl;
-            }
+
+            CTILOG_WARN(dout, "SXNT_BAIL set to abort");
+
             _executionState = SXNT_BAIL;
             infloopprevention = 0;
         }
         if (bytesleft == 0)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " Protocol object returned " << protocolreturn << endl;
-            }
+            CTILOG_INFO(dout, "Protocol object returned "<< protocolreturn);
 
             _executionState = SXNT_RETURNDATA;
         }
@@ -1662,10 +1601,7 @@ YukonError_t CtiDeviceSixnet::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser 
 
     if (!isScanFlagSet(ScanRateGeneral))
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " General Scan of device " << getName() << " in progress. Collect from " << getLastLPTime() << endl;
-        }
+        CTILOG_INFO(dout, "General Scan of device "<< getName() <<" in progress. Collect from "<< getLastLPTime());
 
         ULONG BytesWritten;
 
@@ -1721,20 +1657,14 @@ YukonError_t CtiDeviceSixnet::ResultDecode(const INMESS &InMessage, const CtiTim
     {
         case CmdScanData:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Scan decode for device " << getName() << " in progress " << endl;
-                }
+                CTILOG_INFO(dout, "Scan decode for device "<< getName() <<" in progress");
 
                 decodeResultScan (InMessage, TimeNow, vgList, retList, outList);
                 break;
             }
         case CmdLoadProfileData:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " LP decode for device " << getName() << " in progress " << endl;
-                }
+                CTILOG_INFO(dout, "LP decode for device "<< getName() <<" in progress");
 
                 // just in case we're getting an empty message
                 if (tmpCurrentState == StateScanReturnLoadProfile)
@@ -1743,20 +1673,14 @@ YukonError_t CtiDeviceSixnet::ResultDecode(const INMESS &InMessage, const CtiTim
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " LP decode failed device " << getName() << " invalid state " << getCurrentState() << endl;
-                    }
+                    CTILOG_ERROR(dout, "LP decode failed device "<< getName() <<" invalid state "<< getCurrentState());
                 }
 
                 break;
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "(" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid decode for "<< getName() <<"(command: "<< tmpCurrentCommand <<")");
             }
     }
 
@@ -1765,10 +1689,7 @@ YukonError_t CtiDeviceSixnet::ResultDecode(const INMESS &InMessage, const CtiTim
 
 YukonError_t CtiDeviceSixnet::ErrorDecode (const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &retList)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "ErrorDecode for device "<< getName() <<" in progress");
 
     YukonError_t retCode = ClientErrors::None;
     CtiReturnMsg   *pPIL = CTIDBG_new CtiReturnMsg(getID(),
@@ -1868,9 +1789,7 @@ YukonError_t CtiDeviceSixnet::decodeResultLoadProfile (const INMESS &InMessage, 
         {
             if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  Time " << logTime << " Offset " << pSxnt->offset << " = " << pSxnt->val << endl;
+                CTILOG_DEBUG(dout, "Time = "<< logTime <<"  Offset "<< pSxnt->offset <<" = "<< pSxnt->val);
             }
 
             if ((pPoint = getDevicePointOffsetTypeEqual(pSxnt->offset, pSxnt->type)))
@@ -1907,7 +1826,9 @@ YukonError_t CtiDeviceSixnet::decodeResultLoadProfile (const INMESS &InMessage, 
                     pData->setTime( pSxnt->time );
 
                     if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
-                        pData->dump();
+                    {
+                        CTILOG_DEBUG(dout, pData);
+                    }
 
                     pPIL->PointData().push_back(pData);
 
@@ -1918,9 +1839,7 @@ YukonError_t CtiDeviceSixnet::decodeResultLoadProfile (const INMESS &InMessage, 
             {
                 if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "   No point of type " << pSxnt->type << " offset " << pSxnt->offset << endl;
+                    CTILOG_DEBUG(dout, "No point of type "<< pSxnt->type <<"  offset "<< pSxnt->offset);
                 }
             }
 
@@ -1928,20 +1847,18 @@ YukonError_t CtiDeviceSixnet::decodeResultLoadProfile (const INMESS &InMessage, 
             {
                 if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, "pSxnt->tag final message");
                 }
+
                 setLastLPTime (logTime);
 
                 resetScanFlag(ScanRateGeneral);
                 resetScanFlag(ScanException);
             }
         }
-        else
-            if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
+        else if (getDebugLevel() & DEBUGLEVEL_SIXNET_DEVICE)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " OLD DATA:  " << logTime << " Type " << pSxnt->type << " Offset " << pSxnt->offset << " = " << pSxnt->val << endl;
+            CTILOG_DEBUG(dout, "OLD DATA: " << logTime <<" Type "<< pSxnt->type <<" Offset "<< pSxnt->offset << " = " << pSxnt->val);
         }
     }
 

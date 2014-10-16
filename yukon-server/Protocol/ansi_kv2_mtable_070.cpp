@@ -92,41 +92,23 @@ USHORT CtiAnsiKV2ManufacturerTable070::getDisplayScalar()
 //=========================================================================================================================================
 void CtiAnsiKV2ManufacturerTable070::printResult(  )
 {
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  kV2 MFG Table 70  ========================" << endl;
-    }
+    itemList.add("Date Format")              << getResolvedDateFormat()      <<" ("<< getRawDateFormat()      <<")";
+    itemList.add("Suppress Leading Zeros")   <<"("<< getRawSuppressLeadingZeros()<<")";
+    itemList.add("Display Scalar")           << getResolvedDisplayScalar()   <<" ("<< getRawDisplayScalar()   <<")";
+    itemList.add("Demand Display Units")     << getResolvedDemandDispUnits() <<" ("<< getRawDemandDispUnits() <<")";
+    itemList.add("Primary Display")          <<"("<< _displayConfigTable._primaryDisplay    <<")";
+    itemList.add("Display Multiplier")       <<"("<< _displayConfigTable._displayMultiplier <<")";
+    itemList.add("Cumulative Demand Digits") << displayDigitPlaces(_displayConfigTable._cumulativeDemandDigits);
+    itemList.add("Demand Digits")            << displayDigitPlaces(_displayConfigTable._demandDigits);
+    itemList.add("Energy Digits")            << displayDigitPlaces(_displayConfigTable._energyDigits);
 
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "     DISPLAY CONFIGURATION TABLE " << endl;
-        dout << "        Date Format:  " <<getResolvedDateFormat()<<" ("<< getRawDateFormat()<<")"<< endl;
-        dout << "        Suppress Leading Zeros: (" <<getRawSuppressLeadingZeros()<<")"<< endl;
-        dout << "        Display Scalar:       " <<getResolvedDisplayScalar()<<" ("<<getRawDisplayScalar()<<")"<< endl;
-        dout << "        Demand Display Units: " <<getResolvedDemandDispUnits()<<" ("<<getRawDemandDispUnits()<<")"<< endl;
-        dout << "        Primary Display:  (" << (int)_displayConfigTable._primaryDisplay<<")"<<endl;
-        dout << "        Display Multiplier:  (" << (long)_displayConfigTable._displayMultiplier<<")"<<endl;
-        dout << "        Cumulative Demand Digits: ";
-    }
-    displayDigitPlaces(_displayConfigTable._cumulativeDemandDigits);
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "        Demand Digits: ";
-    }
-    displayDigitPlaces(_displayConfigTable._demandDigits);
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "        Energy Digits: ";
-    }
-    displayDigitPlaces(_displayConfigTable._energyDigits);
+    CTILOG_INFO(dout,
+            endl << formatTableName("kV2 MFG Table 70") <<
+            endl <<"DISPLAY CONFIGURATION TABLE"<<
+            itemList
+            );
 }
 //=========================================================================================================================================
 //=========================================================================================================================================
@@ -272,31 +254,20 @@ int CtiAnsiKV2ManufacturerTable070::getNbrLeftDigits( Digits_Bfld_t bitfield )
 
    return ((int)bitfield._numberLeftDigits);
 }
-void CtiAnsiKV2ManufacturerTable070::displayDigitPlaces( Digits_Bfld_t bitfield )
+
+std::string CtiAnsiKV2ManufacturerTable070::displayDigitPlaces( Digits_Bfld_t bitfield )
 {
-    int x;
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " (";
-    }
-    for ( x = 0; x < (int)bitfield._numberLeftDigits; x++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "x";
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << ".";
-    }
-    for ( x = 0; x < (int)bitfield._numberRightDigits; x++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "x";
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<" )"<< endl;
-    }
+    std::string str = "(";
+
+    str.append(bitfield._numberLeftDigits, 'x');
+
+    str += ".";
+
+    str.append(bitfield._numberRightDigits, 'x');
+
+    str += ")";
+
+    return str;
 }
 
 

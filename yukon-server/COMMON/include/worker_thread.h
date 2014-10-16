@@ -52,11 +52,11 @@ public:
         }
 
         // optional parameters
-        boost::optional<std::string> _name;
+        std::string                  _name;
         boost::optional<int>         _priority;
         bool                         _verbose;
 
-        Function& name( std::string name )
+        Function& name( const std::string &name )
         {
             _name = name;
             return *this;
@@ -108,7 +108,6 @@ private:
     boost::condition_variable   _resumeCond;
 
     void executeWrapper();
-    void logEvent( const std::string &desc, const std::string &file, int line );
 };
 
 } // namespace Cti

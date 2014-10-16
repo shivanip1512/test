@@ -25,6 +25,8 @@ copy:
         -@if not exist $(YUKONOUTPUT)\ssleay32.dll copy $(OPENSSL)\bin\ssleay32.dll $(YUKONOUTPUT)
 
         -@if not exist $(YUKONOUTPUT)\tcl81.dll copy $(TCL)\bin\tcl81.dll $(YUKONOUTPUT)
+        
+        -@if not exist $(YUKONOUTPUT)\$(LOG4CXX_DLL) copy $(LOG4CXX)\bin\$(LOG4CXX_DLL) $(YUKONOUTPUT)
 
 clean:
         -del \

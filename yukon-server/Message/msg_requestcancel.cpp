@@ -111,18 +111,17 @@ CtiRequestCancelMsg& CtiRequestCancelMsg::setTime(const CtiTime& aTime)
     return *this;
 }
 
-void CtiRequestCancelMsg::dump() const
+std::string CtiRequestCancelMsg::toString() const
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
+    Cti::FormattedList itemList;
 
-        dout << " ------ Cancel Response ------ " << typeString() << endl;
-        dout << " RequestId                     " << getRequestId() << endl;
-        dout << " Cancelled ID Count            " << getRequestIdCount() << endl;
-        dout << " Time                          " << getTime() << endl;
-        dout << " UserMessageID                 " << UserMessageId() << endl;
-    }
+    itemList <<"CtiRequestCancelMsg";
+    itemList.add("RequestId")          << getRequestId();
+    itemList.add("Cancelled ID Count") << getRequestIdCount();
+    itemList.add("Time")               << getTime();
+    itemList.add("UserMessageID")      << UserMessageId();
 
+    return (Inherited::toString() += itemList.toString());
 }
 
 // Return a new'ed copy of this message!

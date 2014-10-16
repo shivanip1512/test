@@ -86,11 +86,7 @@ void ScannableDeviceManager::refreshAllDevices()
 
         if( !rdr.isValid() )
         {
-            string loggedSQLstring = rdr.asString();
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << loggedSQLstring << endl;
-            }
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
         }
 
         int load_count = 0;
@@ -107,17 +103,11 @@ void ScannableDeviceManager::refreshAllDevices()
 
             if( !(++load_count % 1000) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-                dout << "loaded " << load_count << " scannables " << endl;
+                CTILOG_INFO(dout, "loaded "<< load_count <<" scannables ");
             }
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-            dout << "loaded " << load_count << " scannables " << endl;
-        }
+        CTILOG_INFO(dout, "loaded "<< load_count <<" scannables ");
     }
 
     map<int, Cti::Database::id_set >::iterator itr, itr_end = type_paoids.end();
@@ -149,13 +139,13 @@ void ScannableDeviceManager::refreshScanRates(Database::id_set &paoids)
 
     rdr.execute();
 
-    if( DebugLevel & 0x00020000 || !rdr.isValid() )
+    if( ! rdr.isValid() )
     {
-        string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << loggedSQLstring << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else if( DebugLevel & 0x00020000 )
+    {
+        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
     }
 
     if( setErrorCode(rdr.isValid() ? 0 : 1) == 0 )
@@ -203,8 +193,7 @@ void ScannableDeviceManager::refreshScanRates(Database::id_set &paoids)
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " There are scanrates in the scanrate table for a nonscannable device, deviceid: " << device_id << endl;
+            CTILOG_WARN(dout, "There are scanrates in the scanrate table for a nonscannable device, deviceid: "<< device_id);
         }
     }
 
@@ -254,13 +243,13 @@ void ScannableDeviceManager::refreshDeviceWindows(Database::id_set &paoids)
 
     rdr.execute();
 
-    if( DebugLevel & 0x00020000 )
+    if( ! rdr.isValid() )
     {
-        string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << loggedSQLstring << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else if( DebugLevel & 0x00020000 )
+    {
+        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
     }
 
     while( setErrorCode(rdr.isValid() ? 0 : 1) == 0 && rdr() )
@@ -279,8 +268,7 @@ void ScannableDeviceManager::refreshDeviceWindows(Database::id_set &paoids)
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " There are scan windows in the device window table for a nonscannable device. " << devsptr->getName() << endl;
+            CTILOG_WARN(dout, "There are scan windows in the device window table for a nonscannable device: " << devsptr->getName());
         }
     }
 }

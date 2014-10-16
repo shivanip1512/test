@@ -296,47 +296,43 @@ UCHAR CtiDeviceAlpha::decodeAckNak(UCHAR AckNak)
 {
     UCHAR    ret = AckNak;     // TRUE will indicate a NAK response....
 
+    switch (AckNak)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        switch (AckNak)
-        {
-            case 0x00:
-                // ACK - No Error
-                break;
-            case 0x01:
-                dout << CtiTime() << " " << getName() << " NAK: Bad CRC"<< endl;
-                break;
-            case 0x02:
-                dout << CtiTime() << " " << getName() << " NAK: Communications Lockout against this function"<< endl;
-                break;
-            case 0x03:
-                dout << CtiTime() << " " << getName() << " NAK: Illegal command, syntax, or length"<< endl;
-                break;
-            case 0x04:
-                dout << CtiTime() << " " << getName() << " NAK: Framing Error"<< endl;
-                break;
-            case 0x05:
-                dout << CtiTime() << " " << getName() << " NAK: Timeout Error"<< endl;
-                break;
-            case 0x06:
-                dout << CtiTime() << " " << getName() << " NAK: Invalid Password"<< endl;
-                break;
-            case 0x07:
-                dout << CtiTime() << " " << getName() << " NAK: NAK Received from computer"<< endl;
-                break;
-            case 0x0C:
-                dout << CtiTime() << " " << getName() << " NAK: Request in progress, try again later"<< endl;
-                break;
-            case 0x0D:
-                dout << CtiTime() << " " << getName() << " NAK: Too busy to honor request, try again later"<< endl;
-                break;
-            case 0x0F:
-                dout << CtiTime() << " " << getName() << " NAK: Rules Class NAK, Request not supported by current class 70/71 definition"<< endl;
-                break;
-            default:
-                dout << CtiTime() << " " << getName() << " NAK: Unknown NAK. Refer to ABB documentation"<< endl;
-                break;
-        }
+    case 0x00:
+        // ACK - No Error
+        break;
+    case 0x01:
+        CTILOG_ERROR(dout, getName() <<" NAK: Bad CRC");
+        break;
+    case 0x02:
+        CTILOG_ERROR(dout, getName() <<" NAK: Communications Lockout against this function");
+        break;
+    case 0x03:
+        CTILOG_ERROR(dout, getName() <<" NAK: Illegal command, syntax, or length");
+        break;
+    case 0x04:
+        CTILOG_ERROR(dout, getName() <<" NAK: Framing Error");
+        break;
+    case 0x05:
+        CTILOG_ERROR(dout, getName() <<" NAK: Timeout Error");
+        break;
+    case 0x06:
+        CTILOG_ERROR(dout, getName() <<" NAK: Invalid Password");
+        break;
+    case 0x07:
+        CTILOG_ERROR(dout, getName() <<" NAK: NAK Received from computer");
+        break;
+    case 0x0C:
+        CTILOG_ERROR(dout, getName() <<" NAK: Request in progress, try again later");
+        break;
+    case 0x0D:
+        CTILOG_ERROR(dout, getName() <<" NAK: Too busy to honor request, try again later");
+        break;
+    case 0x0F:
+        CTILOG_ERROR(dout, getName() <<" NAK: Rules Class NAK, Request not supported by current class 70/71 definition");
+        break;
+    default:
+        CTILOG_ERROR(dout, getName() <<" NAK: Unknown NAK. Refer to ABB documentation");
     }
     return ret;
 }
@@ -438,12 +434,10 @@ YukonError_t CtiDeviceAlpha::decodeResponse (CtiXfer  &Transfer, YukonError_t co
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateScanAbort);
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Invalid command for " << getName() << " (" << __LINE__ << ") " << getCurrentCommand() << endl;
-                }
+
+                CTILOG_ERROR(dout, "Invalid command for "<< getName() <<" ("<< getCurrentCommand() <<")");
+
                 retCode = ClientErrors::Abnormal;
-                break;
             }
     }
     return retCode;
@@ -510,28 +504,21 @@ YukonError_t CtiDeviceAlpha::ResultDecode(const INMESS   &InMessage,
     {
         case CmdScanData:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Scan decode for device " << getName() << " in progress " << endl;
-                }
+                CTILOG_INFO(dout, "Scan decode for device "<< getName() <<" in progress ");
+
                 decodeResultScan(InMessage, TimeNow, vgList, retList, outList);
                 break;
             }
         case CmdLoadProfileData:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " LP decode for device " << getName() << " in progress " << endl;
-                }
+                CTILOG_INFO(dout, "LP decode for device "<< getName() <<" in progress ");
+
                 decodeResultLoadProfile(InMessage, TimeNow, vgList, retList, outList);
                 break;
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " (" << __LINE__ << ") *** ERROR *** Invalid decode for " << getName() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid decode for "<< getName());
             }
     }
 
@@ -542,10 +529,7 @@ YukonError_t CtiDeviceAlpha::ErrorDecode (const INMESS   &InMessage,
                                           const CtiTime   TimeNow,
                                           CtiMessageList &retList)
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error decode for device " << getName() << " in progress " << endl;
-    }
+    CTILOG_INFO(dout, "ErrorDecode for device "<< getName() <<" in progress ");
 
     YukonError_t retCode = ClientErrors::None;
     CtiCommandMsg *pMsg = CTIDBG_new CtiCommandMsg(CtiCommandMsg::UpdateFailed);
@@ -611,15 +595,15 @@ YukonError_t CtiDeviceAlpha::generateCommand (CtiXfer  &Transfer, CtiMessageList
                 break;
             }
         default:
+        {
             //   set this to zero so nothing happens
             generateCommandTerminate (Transfer, traceList);
             setPreviousState (StateScanAbort);
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Invalid command for " << getName() << " (" << __LINE__ << ") " << getCurrentCommand() << endl;
-            }
+
+            CTILOG_ERROR(dout, "Invalid command for "<< getName() <<" ("<< getCurrentCommand() <<")");
+
             retCode = ClientErrors::Abnormal;
-            break;
+        }
     }
     return retCode;
 }
@@ -759,16 +743,12 @@ YukonError_t CtiDeviceAlpha::generateCommandHandshake (CtiXfer  &Transfer, CtiMe
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Invalid state for " << getName() << " (" << __LINE__ << ") " << getCurrentState() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state for "<< getName() <<" ("<< getCurrentState() <<")");
 
                 Transfer.setOutCount( 0 );
                 Transfer.setInCountExpected( 0 );
                 setCurrentState (StateHandshakeAbort);
                 retCode = ClientErrors::Abnormal;
-                break;
             }
     }
     return retCode;
@@ -821,10 +801,7 @@ YukonError_t CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, YukonE
                 {
                     if (ret_crc)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " CRC error for " << getName() << " while handshaking" << endl;
-                        }
+                        CTILOG_ERROR(dout, "CRC error for "<< getName() <<" while handshaking");
                     }
                     Transfer.doTrace(ClientErrors::Unknown);
                     setAttemptsRemaining (getAttemptsRemaining()-1);
@@ -857,8 +834,7 @@ YukonError_t CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, YukonE
                 {
                     if (ret_crc)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " CRC error for " << getName() << " while handshaking" << endl;
+                        CTILOG_ERROR(dout, "CRC error for "<< getName() <<" while handshaking");
                     }
 
                     setAttemptsRemaining (getAttemptsRemaining()-1);
@@ -888,13 +864,10 @@ YukonError_t CtiDeviceAlpha::decodeResponseHandshake (CtiXfer  &Transfer, YukonE
             }
         default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Invalid state for " << getName() << " (" << __LINE__ << ") " << getCurrentState() << endl;
-                }
+                CTILOG_ERROR(dout, "Invalid state for "<< getName() <<" ("<< getCurrentState() <<")");
+
                 setCurrentState (StateHandshakeAbort);
                 retCode = ClientErrors::Abnormal;
-                break;
             }
 
     }

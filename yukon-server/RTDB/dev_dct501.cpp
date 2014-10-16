@@ -139,13 +139,6 @@ ULONG Dct501Device::calcNextLPScanTime( void )
         }
     }
 
-#if 0
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << getName() << "'s next Load Profile request at " << CtiTime(nextTime) << endl;
-    }
-#endif
-
     return _nextLPScanTime;
 }
 
@@ -223,9 +216,9 @@ void Dct501Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
 
                     if( isDebugLudicrous() )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - command string check for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "\"" << tmpOutMess->Request.CommandStr << "\"" << endl;
+                        CTILOG_DEBUG(dout, "command string check for device \""<< getName() <<"\":"<<
+                                endl << tmpOutMess->Request.CommandStr
+                                );
                     }
 
                     outList.push_back(tmpOutMess);
@@ -235,8 +228,7 @@ void Dct501Device::calcAndInsertLPRequests(OUTMESS *&OutMessage, OutMessageList 
                 {
                     if( isDebugLudicrous() )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - LP scan too early for device \"" << getName() << "\", aborted **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_DEBUG(dout, "LP scan too early for device \"" << getName() << "\", aborted");
                     }
                 }
             }
@@ -256,12 +248,10 @@ bool Dct501Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
     bool retVal = false;
     int lpBlockAddress, lpChannel;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "parse.getiValue(\"scan_loadprofile_block\",   0) = " << parse.getiValue("scan_loadprofile_block", 0) << endl;
-        dout << "parse.getiValue(\"scan_loadprofile_channel\", 0) = " << parse.getiValue("scan_loadprofile_channel", 0) << endl;
-    }
+    CTILOG_INFO(dout,
+            endl <<"parse.getiValue(\"scan_loadprofile_block\",   0) = "<< parse.getiValue("scan_loadprofile_block", 0) <<
+            endl <<"parse.getiValue(\"scan_loadprofile_channel\", 0) = "<< parse.getiValue("scan_loadprofile_channel", 0)
+            );
 
     if( (lpBlockAddress = parse.getiValue("scan_loadprofile_block",   0)) &&
         (lpChannel      = parse.getiValue("scan_loadprofile_channel", 0)) )
@@ -288,11 +278,7 @@ bool Dct501Device::calcLPRequestLocation( const CtiCommandParser &parse, OUTMESS
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            dout << "Improperly formed LP request discarded for \"" << getName() << "\"." << endl;
-        }
+        CTILOG_ERROR(dout, "Improperly formed LP request discarded for \""<< getName() <<"\"");
 
         retVal = false;
     }
@@ -337,11 +323,8 @@ YukonError_t Dct501Device::ModelDecode(const INMESS &InMessage, const CtiTime Ti
 
             if( status )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
+                CTILOG_DEBUG(dout, "IM->Sequence = "<< InMessage.Sequence <<" for "<< getName());
             }
-            break;
         }
     }
 
@@ -367,24 +350,12 @@ YukonError_t Dct501Device::decodeGetValueDemand(const INMESS &InMessage, const C
     CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg      *pData = NULL;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Demand Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_INFO(dout, "Demand Decode for \""<< getName() <<"\"");
 
     resetScanFlag(ScanRateGeneral);
     resetScanFlag(ScanRateIntegrity);
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-        }
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     for(pnt_offset = 1; pnt_offset <= 4; pnt_offset++)
@@ -415,13 +386,11 @@ YukonError_t Dct501Device::decodeGetValueDemand(const INMESS &InMessage, const C
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
                 resultString = "Error indicated on DCT " + getName() + " / " + pPoint->getName();
                 resultString += ";  Error " + CtiNumStr(Error);
+
+                CTILOG_ERROR(dout, resultString);
+
                 pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, UnknownQuality, AnalogPointType, resultString);
             }
 
@@ -457,11 +426,8 @@ YukonError_t Dct501Device::decodeGetValueDemand(const INMESS &InMessage, const C
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "  No demand accumulators are defined in the DB" << endl;
-            }
+            CTILOG_ERROR(dout, "No demand accumulators are defined in the DB");
+
             delete ReturnMsg;
         }
     }
@@ -491,19 +457,9 @@ YukonError_t Dct501Device::decodeScanLoadProfile(const INMESS &InMessage, const 
     CtiReturnMsg        *return_msg = 0;  // Message sent to VanGogh, inherits from Multi
     CtiPointDataMsg     *point_data = 0;
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Load Profile Scan Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
+    CTILOG_INFO(dout, "Load Profile Scan Decode for \""<< getName() <<"\"");
 
-    if((return_msg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    return_msg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     return_msg->setUserMessageId(InMessage.Return.UserID);
 
     if( (retrieved_channel   = parse.getiValue("scan_loadprofile_channel", 0)) &&
@@ -511,8 +467,7 @@ YukonError_t Dct501Device::decodeScanLoadProfile(const INMESS &InMessage, const 
     {
         if( isDebugLudicrous() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - retrieved_channel " << retrieved_channel << ", retrieved_block_num " << retrieved_block_num << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_DEBUG(dout, "retrieved_channel " << retrieved_channel << ", retrieved_block_num " << retrieved_block_num);
         }
 
         retrieved_block_num--;
@@ -554,27 +509,23 @@ YukonError_t Dct501Device::decodeScanLoadProfile(const INMESS &InMessage, const 
 
             if( current_block_num == retrieved_block_num )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - attempt to decode current load profile block for \"" << getName() << "\" - aborting decode **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << InMessage.Return.CommandStr << endl;
-                }
-
                 result_string = "Attempt to decode current load profile block for \"" + getName() + "\" - aborting decode ";
+
+                CTILOG_ERROR(dout, result_string <<
+                        endl <<"commandstr = "<< InMessage.Return.CommandStr
+                        );
             }
             else if( retrieved_block_start < _lastLPTime[retrieved_channel - 1] )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << InMessage.Return.CommandStr << endl;
-                    dout << "retrieved_block_num = " << retrieved_block_num << endl;
-                    dout << "retrieved_channel = " << retrieved_channel << endl;
-                    dout << "retrieved_block_start = " << retrieved_block_start << endl;
-                    dout << "_lastLPTime = " << _lastLPTime[retrieved_channel - 1] << endl;
-                }
-
                 result_string  = "Block < lastLPTime for device \"" + getName() + "\" - aborting decode";
+
+                CTILOG_ERROR(dout, result_string <<
+                        endl <<"commandstr            = "<< InMessage.Return.CommandStr <<
+                        endl <<"retrieved_block_num   = "<< retrieved_block_num <<
+                        endl <<"retrieved_channel     = "<< retrieved_channel <<
+                        endl <<"retrieved_block_start = "<< retrieved_block_start <<
+                        endl <<"_lastLPTime           = "<< _lastLPTime[retrieved_channel - 1]
+                        );
             }
             else
             {
@@ -618,11 +569,11 @@ YukonError_t Dct501Device::decodeScanLoadProfile(const INMESS &InMessage, const 
 
                     if( isDebugLudicrous() )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - load profile debug for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "value = " << value << endl;
-                        dout << "interval_offset = " << interval_offset << endl;
-                        dout << "timestamp = " << CtiTime(timestamp) << endl;
+                        CTILOG_DEBUG(dout, "load profile debug for \""<< getName() <<"\""<<
+                                endl <<"value           = "<< value <<
+                                endl <<"interval_offset = "<< interval_offset <<
+                                endl <<"timestamp       = "<< CtiTime(timestamp)
+                                );
                     }
 
                     point_data->setTime(timestamp);
@@ -641,14 +592,11 @@ YukonError_t Dct501Device::decodeScanLoadProfile(const INMESS &InMessage, const 
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - scan_loadprofile tokens not found in command string \"" << InMessage.Return.CommandStr << "\" - cannot proceed with decode, aborting **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
-
         result_string  = "scan_loadprofile tokens not found in command string \"";
         result_string += InMessage.Return.CommandStr;
         result_string += "\" - cannot proceed with decode, aborting";
+
+        CTILOG_ERROR(dout, result_string);
     }
 
     return_msg->setResultString(result_string);
@@ -724,16 +672,7 @@ YukonError_t Dct501Device::decodeGetConfigModel(const INMESS &InMessage, const C
         options+= string("  Capacitor control\n");
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-        }
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
     ReturnMsg->setResultString( sspec + options );
 

@@ -122,8 +122,7 @@ CtiCCState& CtiCCState::operator=(const CtiCCState& right)
     }
     else
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Error: state == NULL " << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+        CTILOG_ERROR(dout, "state == NULL");
     }
     return *this;
 

@@ -1,18 +1,17 @@
 #pragma once
 
+#include "rwutil.h"
+#include "dlldefs.h"
+#include "mutex.h"
+#include "tbl_state.h"
+#include "loggable.h"
+
 #include <set>
 #include <rw/thr/recursiv.h>
 #include <rw\thr\mutex.h>
 
-#include "rwutil.h"
 
-
-#include "dlldefs.h"
-#include "mutex.h"
-#include "tbl_state.h"
-
-
-class IM_EX_CTIYUKONDB CtiTableStateGroup
+class IM_EX_CTIYUKONDB CtiTableStateGroup : public Cti::Loggable
 {
 public:
 
@@ -54,6 +53,6 @@ public:
    bool operator==( const CtiTableStateGroup &rhs ) const;
    bool operator()(const CtiTableStateGroup& aRef) const;
 
-   void dump() const;
+   virtual std::string toString() const override;
 
 };

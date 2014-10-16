@@ -1,21 +1,5 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pt_accum
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_accum.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/04/17 15:25:00 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-
 #include "tbl_pt_accum.h"
 #include "logger.h"
 
@@ -28,11 +12,15 @@ void CtiTablePointAccumulator::DecodeDatabaseReader(Cti::RowReader &rdr)
    rdr       >> _dataOffset;
 }
 
-void CtiTablePointAccumulator::dump() const
+std::string CtiTablePointAccumulator::toString() const
 {
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   dout << " Multiplier                               : " << _multiplier << endl;
-   dout << " Data Offset                              : " << _dataOffset << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTablePointAccumulator";
+    itemList.add("Multiplier")  << _multiplier;
+    itemList.add("Data Offset") << _dataOffset;
+
+    return itemList.toString();
 }
 
 DOUBLE      CtiTablePointAccumulator::getMultiplier() const

@@ -122,18 +122,12 @@ bool CtiDeviceExclusion::hasExclusions() const
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << "  " << getId() << " unable to acquire exclusion mutex: hasExclusions()" << endl;
-            }
+            CTILOG_ERROR(dout, "DeviceId "<< getId() <<" - Unable to acquire exclusion mutex");
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return bstatus;
@@ -167,14 +161,12 @@ void CtiDeviceExclusion::addExclusion(CtiTablePaoExclusion &paox)
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getId() << " unable to acquire exclusion mutex: addExclusion()" << endl;
+            CTILOG_ERROR(dout, "DeviceId "<< getId() <<" - Unable to acquire exclusion mutex");
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -197,14 +189,12 @@ void CtiDeviceExclusion::clearExclusions()
         }
         else
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getId() << " unable to acquire exclusion mutex: clearExclusions()" << endl;
+            CTILOG_ERROR(dout, "DeviceId "<< getId() <<" - Unable to acquire exclusion mutex");
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return;
@@ -245,14 +235,12 @@ bool CtiDeviceExclusion::isDeviceExcluded(long id) const
         {
             bstatus = true;
 
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getId() << " unable to acquire exclusion mutex: isDeviceExcluded()" << endl;
+            CTILOG_ERROR(dout, "DeviceId "<< getId() <<" - Unable to acquire exclusion mutex");
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return bstatus;
@@ -313,19 +301,14 @@ bool CtiDeviceExclusion::isExecutionProhibited(const CtiTime &now, LONG did)
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getId() << " unable to acquire exclusion mutex: isExecutionProhibited()" << endl;
-                }
+                CTILOG_ERROR(dout, "DeviceId "<< getId() <<" - Unable to acquire exclusion mutex");
+
                 prohibited = true;
             }
         }
         catch(...)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
     return prohibited;
@@ -345,16 +328,12 @@ size_t CtiDeviceExclusion::setExecutionProhibited(unsigned long id, CtiTime& rel
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getId() << " unable to acquire exclusion mutex: setExecutionProhibited()" << endl;
-            }
+            CTILOG_ERROR(dout, "DeviceId "<< getId() <<" - Unable to acquire exclusion mutex");
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCLUSION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return cnt;
@@ -403,19 +382,13 @@ bool CtiDeviceExclusion::removeInfiniteProhibit(unsigned long id)
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getId() << " unable to acquire exclusion mutex: removeInfiniteProhibit()" << endl;
-                }
+                CTILOG_ERROR(dout, "DeviceId "<< getId() <<" - Unable to acquire exclusion mutex");
             }
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return(removed && !pass);
@@ -455,19 +428,13 @@ bool CtiDeviceExclusion::removeProhibit(unsigned long id)
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getId() << " unable to acquire exclusion mutex: removeInfiniteProhibit()" << endl;
-                }
+                CTILOG_ERROR(dout, "DeviceId "<< getId() <<" - Unable to acquire exclusion mutex");
             }
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     return(removed && !pass);
@@ -487,35 +454,28 @@ void CtiDeviceExclusion::dumpProhibits(unsigned long id)
             CtiLockGuard<CtiMutex> guard(_exclusionMux, 5000);
             if(guard.isAcquired())
             {
+                Cti::StreamBuffer output;
+
                 for(itr = _executionProhibited.begin(); itr != _executionProhibited.end(); )
                 {
                     if(!id || (*itr).first == id)
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << "   id " << (*itr).first << " blocks until " << (*itr).second << endl;
-                        }
+                        output << endl <<"id "<< (*itr).first <<" blocks until "<< (*itr).second;
                     }
                 }
+
+                CTILOG_INFO(dout, output);
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getId() << " unable to acquire exclusion mutex: removeInfiniteProhibit()" << endl;
-                }
+                CTILOG_ERROR(dout, "DeviceId "<< getId() <<" - Unable to acquire exclusion mutex");
             }
         }
     }
     catch(...)
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
-    return;
 }
 
 bool CtiDeviceExclusion::hasTimeExclusion() const
@@ -530,24 +490,22 @@ bool CtiDeviceExclusion::hasTimeExclusion() const
     return b;
 }
 
-void CtiDeviceExclusion::Dump(void) const
+std::string CtiDeviceExclusion::toString() const
 {
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiDeviceExclusion";
     if(hasExclusions())
     {
         exclusions::const_iterator itr;
-
         for(itr = _exclusionRecords.begin(); itr != _exclusionRecords.end(); itr++)
         {
             const CtiTablePaoExclusion &paox = *itr;
-
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << paox.getPaoId() << " is excluded against " << paox.getExcludedPaoId() << "." << endl;
-                }
-            }
+            itemList << paox.getPaoId() << " is excluded against " << paox.getExcludedPaoId();
         }
     }
+
+    return itemList.toString();
 }
 
 CtiTime CtiDeviceExclusion::getEvaluateNextAt() const

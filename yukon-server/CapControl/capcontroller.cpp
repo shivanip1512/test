@@ -164,10 +164,7 @@ void CtiCapController::stop()
         {
             _substationBusThread.terminate();
 
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Substation Bus Thread forced to terminate." << endl;
-            }
+            CTILOG_WARN(dout, "Substation Bus Thread forced to terminate.");
         }
         else
         {
@@ -178,10 +175,7 @@ void CtiCapController::stop()
         //Shutdown outClientMsgThread
         if ( _outClientMsgThread.isValid() && _outClientMsgThread.requestCancellation() == RW_THR_ABORTED )
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - OutClientMsg Thread forced to terminate." << endl;
-            }
+            CTILOG_WARN(dout, "OutClientMsg Thread forced to terminate.");
 
             _outClientMsgThread.terminate();
         }
@@ -194,10 +188,7 @@ void CtiCapController::stop()
         //Shutdown messageSenderThread
         if ( _messageSenderThread.isValid() && _messageSenderThread.requestCancellation() == RW_THR_ABORTED )
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - messageSender Thread forced to terminate." << endl;
-            }
+            CTILOG_WARN(dout, "messageSender Thread forced to terminate.");
 
             _messageSenderThread.terminate();
         }
@@ -210,10 +201,7 @@ void CtiCapController::stop()
         //Shutdown incomingMessageProcessorThread
         if ( _incomingMessageProcessorThread.isValid() && _incomingMessageProcessorThread.requestCancellation() == RW_THR_ABORTED )
         {
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - incomingMessageProcessorThread Thread forced to terminate." << endl;
-            }
+            CTILOG_WARN(dout, "incomingMessageProcessorThread Thread forced to terminate.");
 
             _incomingMessageProcessorThread.terminate();
         }
@@ -226,8 +214,7 @@ void CtiCapController::stop()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     try
@@ -243,8 +230,7 @@ void CtiCapController::stop()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
     try
@@ -260,8 +246,7 @@ void CtiCapController::stop()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -283,8 +268,7 @@ void CtiCapController::messageSender()
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
             if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - ~~~~~~~~~ Message Sender Start ~~~~~~~~~~~~ " << endl;
+                CTILOG_DEBUG(dout, "Message Sender start");
             }
 
             try
@@ -299,8 +283,7 @@ void CtiCapController::messageSender()
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             try
@@ -313,8 +296,7 @@ void CtiCapController::messageSender()
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             if (store->getLinkStatusPointId() > 0 &&
@@ -323,10 +305,8 @@ void CtiCapController::messageSender()
             {
                  updateAllPointQualities(NonUpdatedQuality);
                  store->setLinkDropOutTime(currentDateTime);
-                 {
-                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                     dout << CtiTime() << " - store->getLinkDropOutTime() " << store->getLinkDropOutTime().asString()<< endl;
-                 }
+
+                 CTILOG_WARN(dout, "store->getLinkDropOutTime() " << store->getLinkDropOutTime());
             }
 
             readClientMsgQueue();
@@ -381,8 +361,7 @@ void CtiCapController::messageSender()
             }
             if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - ~~~~~~~~~ Message Sender End ~~~~~~~~~~~~ " << endl;
+                CTILOG_DEBUG(dout, "Message Sender End");
             }
         }
 
@@ -397,8 +376,7 @@ void CtiCapController::messageSender()
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
         threadStatus.monitorCheck();
     };
@@ -422,10 +400,7 @@ void CtiCapController::incomingMessageProcessor()
                 {
                     msgCount = ((CtiMultiMsg*)msg)->getCount();
                 }
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Processing "<< msgCount <<" New Message(s). " << endl;
-                }
+                CTILOG_INFO(dout, "Processing "<< msgCount <<" New Message(s).");
             }
 
             parseMessage(msg);
@@ -442,8 +417,7 @@ void CtiCapController::incomingMessageProcessor()
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
         threadKeeper.monitorCheck();
@@ -520,15 +494,9 @@ void CtiCapController::controlLoop()
 
                     if( currentDateTime.seconds() > fifteenMinCheck.seconds() && secondsFrom1901 != lastThreadPulse)
                     {//every  fifteen minutes tell the user if the control thread is still alive
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Controller refreshing CPARMS" << endl;
-                        }
+                        CTILOG_INFO(dout, "Controller refreshing CPARMS");
                         refreshGlobalCParms();
-                        {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Controller thread pulse" << endl;
-                        }
+                        CTILOG_INFO(dout, "Controller thread pulse");
                         lastThreadPulse = secondsFrom1901;
                         fifteenMinCheck = nextScheduledTimeAlignedOnRate( currentDateTime,  900);
                         store->verifySubBusAndFeedersStates();
@@ -543,8 +511,7 @@ void CtiCapController::controlLoop()
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 // this updates the current point registration status and sends appropriate registration messages to dispatch
@@ -593,15 +560,13 @@ void CtiCapController::controlLoop()
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
                 try
                 {
                     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - ********** Control Loop Start ********* " << endl;
+                        CTILOG_DEBUG(dout, "Control Loop Start");
                     }
                     areaChanges.clear();
                     stationChanges.clear();
@@ -673,8 +638,7 @@ void CtiCapController::controlLoop()
                                         }
                                         catch(...)
                                         {
-                                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                                         }
                                     }
                                     else if (currentSubstationBus->getVerificationFlag()) //verification Flag set!!!
@@ -698,8 +662,7 @@ void CtiCapController::controlLoop()
                                     }
                                     catch(...)
                                     {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                                     }
                                 }
                                 try
@@ -725,15 +688,13 @@ void CtiCapController::controlLoop()
                                 }
                                 catch(...)
                                 {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                                 }
                             }
                         }
                         catch(...)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                         }
 
                         try
@@ -747,8 +708,7 @@ void CtiCapController::controlLoop()
                         }
                         catch(...)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                         }
                         threadStatus.monitorCheck();
                         if(pointID!=0)
@@ -767,8 +727,7 @@ void CtiCapController::controlLoop()
                     }
                     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - ********** Control Loop End ********* " << endl;
+                        CTILOG_DEBUG(dout, "Control Loop End");
                     }
                 }
                 catch (RWCancellation& )
@@ -777,8 +736,7 @@ void CtiCapController::controlLoop()
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 try
@@ -798,8 +756,7 @@ void CtiCapController::controlLoop()
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
                 try
                 {
@@ -813,8 +770,7 @@ void CtiCapController::controlLoop()
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 try
@@ -825,9 +781,7 @@ void CtiCapController::controlLoop()
                         multiPilMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
                         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " PIL MESSAGES " << endl;
-                            multiPilMsg->dump();
+                            CTILOG_DEBUG(dout, "PIL MESSAGES " << multiPilMsg);
                         }
                         getPILConnection()->WriteConnQue(multiPilMsg);
                         multiPilMsg = new CtiMultiMsg();
@@ -835,8 +789,7 @@ void CtiCapController::controlLoop()
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
                 try
                 {
@@ -846,9 +799,7 @@ void CtiCapController::controlLoop()
                         multiCapMsg->resetTime();
                         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " CAP CREATED MESSAGES " << endl;
-                            multiCapMsg->dump();
+                            CTILOG_DEBUG(dout, "CAP CREATED MESSAGES " << multiCapMsg);
                         }
                         CtiMultiMsg_vec& temp = multiCapMsg->getData( );
                         for(int i=0;i<temp.size( );i++)
@@ -862,8 +813,7 @@ void CtiCapController::controlLoop()
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
                 try
                 {
@@ -874,8 +824,7 @@ void CtiCapController::controlLoop()
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
             }
@@ -891,8 +840,7 @@ void CtiCapController::controlLoop()
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             try
@@ -904,8 +852,7 @@ void CtiCapController::controlLoop()
             }
             catch (...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Exception while execute strategies " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Exception while executing strategies");
             }
 
             // Send updated Voltage Regulators.
@@ -919,8 +866,7 @@ void CtiCapController::controlLoop()
             }
             catch (...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Exception while updating Voltage Regulators.  " << __FILE__ << " at: " << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Exception while updating Voltage Regulators.");
             }
         }
     }
@@ -933,17 +879,14 @@ void CtiCapController::controlLoop()
         }
         catch (...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
 
         throw;
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        dout << CtiTime() << " - Control Loop thread terminated unexpectedly." << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Control Loop thread terminated unexpectedly.");
     }
 }
 
@@ -979,8 +922,7 @@ void CtiCapController::checkBusForNeededControl(CtiCCAreaPtr currentArea,  CtiCC
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1003,8 +945,7 @@ void CtiCapController::readClientMsgQueue()
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
         }
 
@@ -1023,10 +964,7 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
         if (substationBusChanges.size() > 0)
         {
             int size = substationBusChanges.size();
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - substationBusChanges: "<<size << endl;
-            }
+            CTILOG_INFO(dout, "substationBusChanges: "<<size);
 
             try
             {
@@ -1034,8 +972,7 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
         }
         if( stationChanges.size() > 0 )
@@ -1046,8 +983,7 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
          }
          if( areaChanges.size() > 0 )
@@ -1058,16 +994,14 @@ void CtiCapController::broadcastMessagesToClient(CtiCCSubstationBus_vec& substat
              }
              catch(...)
              {
-                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
              }
          }
 
       }
       catch(...)
       {
-          CtiLockGuard<CtiLogger> logger_guard(dout);
-          dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+          CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
       }
 }
 
@@ -1093,8 +1027,7 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                 }
                 catch(...)
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
             }
             else if (currentSubstationBus->isVerificationAlreadyControlled() ||
@@ -1113,8 +1046,7 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                     }
                     catch(...)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
                 }
                 else if(  currentSubstationBus->getWaitForReCloseDelayFlag() ||
@@ -1133,8 +1065,7 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                     }
                     catch(...)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
                 }
                 else
@@ -1145,8 +1076,7 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                         {
                             if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                             {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPaoName()<< "( "<<currentSubstationBus->getPaoId()<<" ) CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
+                                    CTILOG_DEBUG(dout, "CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPaoName()<< "( "<<currentSubstationBus->getPaoId()<<" ) CB-"<<currentSubstationBus->getCurrentVerificationCapBankId());
                             }
 
                             currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
@@ -1161,15 +1091,13 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                             capMessages.push_back(new ItemCommand(CapControlCommand::ENABLE_SUBSTATION_BUS, currentSubstationBus->getPaoId()));
                             if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                             {
-                               CtiLockGuard<CtiLogger> logger_guard(dout);
-                               dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName()<< "( "<<currentSubstationBus->getPaoId()<<" ) "<<endl;
+                               CTILOG_DEBUG(dout, "DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName()<< "( "<<currentSubstationBus->getPaoId()<<" ) ");
                             }
                         }
                     }
                     catch(...)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
                 }
 
@@ -1183,8 +1111,7 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
             {
                 if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                 {
-                   CtiLockGuard<CtiLogger> logger_guard(dout);
-                   dout << CtiTime() << " - Performing VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName() << endl;
+                   CTILOG_DEBUG(dout, "Performing VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName());
                 }
                 int strategy = (long)currentSubstationBus->getVerificationStrategy();
 
@@ -1200,8 +1127,7 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                     }
                     catch(...)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
                 }
                 else if(currentSubstationBus->areThereMoreCapBanksToVerify(ccEvents))
@@ -1210,16 +1136,14 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
                     {
                         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                         {
-                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                             dout << CtiTime() << " ------ CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPaoName()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId() << endl;
+                             CTILOG_DEBUG(dout, "CAP BANK VERIFICATION LIST:  SUB-" << currentSubstationBus->getPaoName()<<" CB-"<<currentSubstationBus->getCurrentVerificationCapBankId());
                         }
                         currentSubstationBus->startVerificationOnCapBank(currentDateTime, pointChanges, ccEvents, pilMessages);
                         currentSubstationBus->setBusUpdatedFlag(true);
                     }
                     catch(...)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
 
                 }
@@ -1235,28 +1159,24 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
 
                         if (_CC_DEBUG & CC_DEBUG_VERIFICATION)
                         {
-                           CtiLockGuard<CtiLogger> logger_guard(dout);
-                           dout << CtiTime() << " - DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName() << endl;
+                           CTILOG_DEBUG(dout, "DISABLED VERIFICATION ON: subBusID: "<<currentSubstationBus->getPaoName());
                         }
                     }
                     catch(...)
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
                 }
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -1290,8 +1210,7 @@ void CtiCapController::outClientMsgs()
             }
             catch(...)
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
             threadStatus.monitorCheck();
@@ -1303,9 +1222,7 @@ void CtiCapController::outClientMsgs()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        dout << CtiTime() << " - Out Client Messages thread terminated unexpectedly." << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Out Client Messages thread terminated unexpectedly.");
     }
 }
 
@@ -1322,8 +1239,7 @@ void CtiCapController::writeEventLogsToDatabase()
 
     if (_CC_DEBUG & CC_DEBUG_CCEVENTINSERT)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Processed " << entries << " CC Event Log entries in " << timer.elapsed() / 1000 << " seconds."<< endl;
+        CTILOG_DEBUG(dout, "Processed " << entries << " CC Event Log entries in " << timer.elapsed() / 1000 << " seconds.");
     }
 }
 
@@ -1356,8 +1272,7 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
 
             if( _dispatchConnection )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Dispatch Connection Hickup in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_WARN(dout, "Dispatch Connection Hiccup");
             }
 
             _dispatchConnection.reset( new CapControlDispatchConnection( "CC to Dispatch" ));
@@ -1372,8 +1287,7 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         return DispatchConnectionPtr();
     }
@@ -1408,8 +1322,7 @@ boost::shared_ptr<CtiClientConnection> CtiCapController::getPILConnection()
 
             if( _pilConnection )
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Porter Connection Hickup in: " << __FILE__ << " at:" << __LINE__ << endl;
+                CTILOG_WARN(dout, "Porter Connection Hiccup");
             }
 
             _pilConnection.reset( new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::pil ));
@@ -1424,8 +1337,7 @@ boost::shared_ptr<CtiClientConnection> CtiCapController::getPILConnection()
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
         return boost::shared_ptr<CtiClientConnection>();
     }
@@ -1456,8 +1368,7 @@ void CtiCapController::checkPIL()
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             done = true;
         }
     }
@@ -1472,10 +1383,8 @@ void CtiCapController::checkPIL()
 ---------------------------------------------------------------------------*/
 void CtiCapController::updateAllPointQualities(long quality)
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Updating CapControl Point Qualities to " << quality<< endl;
-    }
+    CTILOG_INFO(dout, "Updating CapControl Point Qualities to " << quality);
+
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
 
@@ -1529,10 +1438,7 @@ void CtiCapController::updateAllPointQualities(long quality)
 ---------------------------------------------------------------------------*/
 void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Registering for point changes." << endl;
-    }
+    CTILOG_INFO(dout, "Registering for point changes.");
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     {
@@ -1831,10 +1737,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
 
         }
 
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - End Registering for point changes." << endl;
-        }
+        CTILOG_INFO(dout, "End Registering for point changes.");
 
         try
         {
@@ -1842,8 +1745,7 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 }
@@ -1946,8 +1848,7 @@ CcDbReloadInfo CtiCapController::resolveCapControlTypeByDataBase(CtiDBChangeMsg 
     {
         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
         {
-             CtiLockGuard<CtiLogger> logger_guard(dout);
-             dout << CtiTime() << " capBank DB change message received for Cap: "<<dbChange->getId() << endl;
+             CTILOG_DEBUG(dout, "capBank DB change message received for Cap: "<<dbChange->getId());
         }
         reloadInfo.objecttype = Cti::CapControl::CapBank;
     }
@@ -1989,16 +1890,14 @@ CcDbReloadInfo CtiCapController::resolveCapControlTypeByDataBase(CtiDBChangeMsg 
     {
         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
         {
-             CtiLockGuard<CtiLogger> logger_guard(dout);
-             dout << CtiTime() << " CBC DB change message received: "<<dbChange->getId() << endl;
+             CTILOG_DEBUG(dout, "CBC DB change message received: "<<dbChange->getId());
         }
         long capBankId = CtiCCSubstationBusStore::getInstance()->findCapBankIDbyCbcID(dbChange->getId());
         if (capBankId != NULL)
         {
             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
-                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                 dout << CtiTime() << " CBC attached to CapBank: "<<capBankId << endl;
+                 CTILOG_DEBUG(dout, "CBC attached to CapBank: "<<capBankId);
             }
 
             CtiCCCapBankPtr cap = CtiCCSubstationBusStore::getInstance()->findCapBankByPAObjectID(capBankId);
@@ -2039,8 +1938,7 @@ void CtiCapController::parseMessage(CtiMessage *message)
                     {
                         if( _CC_DEBUG & CC_DEBUG_STANDARD )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Relevant database change.  Setting reload flag." << endl;
+                            CTILOG_DEBUG(dout, "Relevant database change.  Setting reload flag.");
                         }
 
                         if( dbChange->getTypeOfChange() == ChangeTypeDelete &&
@@ -2056,10 +1954,14 @@ void CtiCapController::parseMessage(CtiMessage *message)
 
                         if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                         {
-                             CtiLockGuard<CtiLogger> logger_guard(dout);
-                             dout << CtiTime() << " RELOAD INFO: changeID: "<<reloadInfo.objectId << endl;
-                             dout << CtiTime() << "            changeType: "<<reloadInfo.typeOfAction() << endl;
-                             dout << CtiTime() << "               objType: "<<reloadInfo.objecttype << endl;
+                            Cti::FormattedList list;
+
+                            list << "RELOAD INFO";
+                            list.add("changeID")   << reloadInfo.objectId;
+                            list.add("changeType") << reloadInfo.typeOfAction();
+                            list.add("objType")    << reloadInfo.objecttype;
+
+                            CTILOG_DEBUG(dout, list);
                         }
 
 
@@ -2069,8 +1971,7 @@ void CtiCapController::parseMessage(CtiMessage *message)
                     {
                         if( _CC_DEBUG & CC_DEBUG_IVVC )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " IVVC - Zone Change received. Reloading All Zones." << endl;
+                            CTILOG_DEBUG(dout, "IVVC - Zone Change received. Reloading All Zones.");
                         }
 
                         CcDbReloadInfo reloadInfo(dbChange->getId(), dbChange->getTypeOfChange(), Cti::CapControl::ZoneType);
@@ -2100,8 +2001,7 @@ void CtiCapController::parseMessage(CtiMessage *message)
                 {
                     if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Command Message received from Dispatch" << endl;
+                        CTILOG_DEBUG(dout, "Command Message received from Dispatch");
                     }
 
                     cmdMsg = (CtiCommandMsg *)message;
@@ -2112,29 +2012,25 @@ void CtiCapController::parseMessage(CtiMessage *message)
                             getDispatchConnection()->WriteConnQue(cmdMsg->replicateMessage());
                             if( _CC_DEBUG & CC_DEBUG_STANDARD )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Replied to Are You There message." << endl;
+                                CTILOG_DEBUG(dout, "Replied to Are You There message.");
                             }
                         }
                         catch(...)
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                         }
                     }
                     else if ( cmdMsg->getOperation() == CtiCommandMsg::UpdateFailed )
                     {
                         /*if( _CC_DEBUG & CC_DEBUG_STANDARD )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Scan completed with an error. This causes Quality to go nonUpdated on all affected points!" << endl;
+                            CTILOG_DEBUG(dout, "Scan completed with an error. This causes Quality to go nonUpdated on all affected points!");
                         } */
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Received not supported Command Message from Dispatch with Operation: "
-                             << cmdMsg->getOperation() << ", and Op String: " << cmdMsg->getOpString() << endl;
+                        CTILOG_WARN(dout, "Received not supported Command Message from Dispatch with Operation: "
+                             << cmdMsg->getOperation() << ", and Op String: " << cmdMsg->getOpString());
                     }
                 }
                 break;
@@ -2144,8 +2040,7 @@ void CtiCapController::parseMessage(CtiMessage *message)
                     CtiMultiMsg_vec& temp = msgMulti->getData( );
                     if(temp.size() > 1 &&  _CC_DEBUG & CC_DEBUG_PERFORMANCE )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - ParseMessage MsgMulti has "<< temp.size() <<" entries."<< endl;
+                        CTILOG_DEBUG(dout, "ParseMessage MsgMulti has "<< temp.size() <<" entries.");
                     }
                     for(i=0;i<temp.size( );i++)
                     {
@@ -2165,26 +2060,20 @@ void CtiCapController::parseMessage(CtiMessage *message)
                     {
                         if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Tag Message - PointID: "<< tagMsg->getPointID()<< " TagDesc:"<<tagMsg->getDescriptionStr() <<"."<< endl;
+                            CTILOG_DEBUG(dout, "Tag Message - PointID: "<< tagMsg->getPointID()<< " TagDesc:"<<tagMsg->getDescriptionStr() <<".");
                         }
                     }
                 }
                 break;
             default:
                 {
-                    char tempstr[64] = "";
-                    _itoa(message->isA(),tempstr,10);
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - message->isA() = " << tempstr << endl;
-                    dout << CtiTime() << " - Unknown message type: parseMessage() in controller.cpp" << endl;
+                    CTILOG_ERROR(dout, "Unknown message type " << message->isA());
                 }
         }
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return;
 }
@@ -2505,19 +2394,14 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
 
     if( _CC_DEBUG & CC_DEBUG_POINT_DATA )
     {
-        char tempchar[80];
-        string outString = "Point Data, ID:";
-        _ltoa(pointID,tempchar,10);
-        outString += tempchar;
-        outString += " Val:";
-        int precision = 3;
-        _snprintf(tempchar,80,"%.*f",precision,value);
-        outString += tempchar;
-        outString += " Time: ";
-        outString += CtiTime(timestamp).asString();
+        Cti::FormattedList list;
 
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << outString.c_str() << endl;
+        list << "Point Data";
+        list.add("ID")   << pointID;
+        list.add("Val")  << value;
+        list.add("Time") << timestamp;
+
+        CTILOG_INFO(dout, list);
     }
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -2597,8 +2481,7 @@ void CtiCapController::pointDataMsg (CtiPointDataMsg* message)
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
     return;
 }
@@ -2659,8 +2542,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
         areaIter++;
     }
@@ -2712,8 +2594,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
         saIter++;
     }
@@ -2777,8 +2658,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
         stationIter++;
     }
@@ -2869,9 +2749,9 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         else if( !( ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
                                     ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit)) )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            CTILOG_ERROR(dout, "No Watt Point, cannot calculate power factor");
                         }
+
                         if (currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::IntegratedVoltVar)
                         {
                             currentSubstationBus->figureAndSetTargetVarValue();
@@ -2919,8 +2799,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         }
                         else if( !ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                            CTILOG_ERROR(dout, "No Var Point, cannot calculate power factor");
                         }
                         adjustAlternateBusModeValues(pointID, value, currentSubstationBus);
                     }
@@ -3000,8 +2879,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                 {
                     if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPaoName() << endl;
+                        CTILOG_DEBUG(dout, "Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPaoName());
                     }
                 }
 
@@ -3109,8 +2987,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
         subIter++;
     }
@@ -3206,8 +3083,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                             else if( !( ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
                                         ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ))
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - No Watt Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                CTILOG_ERROR(dout, "No Watt Point, cannot calculate power factor");
                             }
                             currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getStrategy()->getControlMethod(), currentSubstationBus->getStrategy()->getControlUnits(), currentSubstationBus->getPeakTimeFlag());
                         }
@@ -3248,8 +3124,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                             }
                             else if( !ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - No Var Point, cannot calculate power factor, in: " << __FILE__ << " at:" << __LINE__ << endl;
+                                CTILOG_ERROR(dout, "No Var Point, cannot calculate power factor");
                             }
 
                             currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getStrategy()->getControlMethod(), currentSubstationBus->getStrategy()->getControlUnits(), currentSubstationBus->getPeakTimeFlag());
@@ -3290,8 +3165,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                     {
                         if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                         {
-                            CtiLockGuard<CtiLogger> logger_guard(dout);
-                            dout << CtiTime() << " - Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPaoName() << endl;
+                            CTILOG_DEBUG(dout, "Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPaoName());
                         }
 
                         //do nothing
@@ -3336,8 +3210,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
         feedIter++;
     }
@@ -3404,18 +3277,12 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             {
                                 if (value < 0)
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - CapBank: "<<currentCapBank->getPaoName()<<" received an invalid control state value ("
-                                             << (long)value << "). Not adjusting the cap bank state." << endl;
-                                    }
+                                    CTILOG_INFO(dout, "CapBank: "<<currentCapBank->getPaoName()<<" received an invalid control state value ("
+                                         << (long)value << "). Not adjusting the cap bank state.");
                                 }
                                 else
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - CapBank: "<<currentCapBank->getPaoName()<<" State adjusted from "<<currentCapBank->getControlStatus() <<" to "<<value<< endl;
-                                    }
+                                    CTILOG_INFO(dout, "CapBank: "<<currentCapBank->getPaoName()<<" State adjusted from "<<currentCapBank->getControlStatus() <<" to "<<value);
                                     if ((currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
                                         currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending) &&
                                         value < 6 )
@@ -3534,10 +3401,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                     currentCapBank->setControlStatus(value);
                                     currentCapBank->setAfterVarsString("Adjusted to CBC Reported State");
                                     currentSubstationBus->setBusUpdatedFlag(true);
-                                    {
-                                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                                        dout << CtiTime() << " - Adjusting CapBank status to match CBC..."<< endl;
-                                    }
+                                    CTILOG_INFO(dout, "Adjusting CapBank status to match CBC...");
                                     sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
 
                                 }
@@ -3556,8 +3420,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             }
                             if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Set a cbc 2 way status point... pointID ("<<pointID<<") = "<<value<< endl;
+                                CTILOG_DEBUG(dout, "Set a cbc 2 way status point... pointID ("<<pointID<<") = "<<value);
                             }
                             if (twoWayPts.getPointValueByAttribute(PointAttribute::AutoVoltControl))
                             {
@@ -3631,16 +3494,14 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
 
                             if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Set a cbc 2 way Analog point... pointID ("<<pointID<<") = "<<value<< endl;
+                                CTILOG_DEBUG(dout, "Set a cbc 2 way Analog point... pointID ("<<pointID<<") = "<<value);
                             }
                         }
                         else if (twoWayPts.setTwoWayPulseAccumulatorPointValue(pointID, value, timestamp))
                         {
                             if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Set a cbc 2 way Pulse Accumulator point... pointID ("<<pointID<<") = "<<value<< endl;
+                                CTILOG_DEBUG(dout, "Set a cbc 2 way Pulse Accumulator point... pointID ("<<pointID<<") = "<<value);
                             }
                         }
 
@@ -3692,8 +3553,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
         }
         catch(...)
         {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
         capIter++;
     }
@@ -3724,8 +3584,7 @@ void CtiCapController::porterReturnMsg( const CtiReturnMsg &retMsg )
 
     if( _CC_DEBUG & CC_DEBUG_EXTENDED )
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Porter return received." << endl;
+        CTILOG_DEBUG(dout, "Porter return received");
     }
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
@@ -3811,10 +3670,7 @@ void CtiCapController::porterReturnMsg( const CtiReturnMsg &retMsg )
                         break;
                     }
                 }
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Porter Return May Indicate a Comm Failure!!  Bus: " << currentSubstationBus->getPaoName() << ", Feeder: " << currentFeeder->getPaoName()<< ", CapBank: " << currentCapBank->getPaoName() << endl;
-                }
+                CTILOG_WARN(dout, "Porter Return May Indicate a Comm Failure!!  Bus: " << currentSubstationBus->getPaoName() << ", Feeder: " << currentFeeder->getPaoName()<< ", CapBank: " << currentCapBank->getPaoName());
                 if( currentCapBank->getStatusPointId() > 0 )
                 {
                     string additional = ("Sub: ");
@@ -3875,9 +3731,8 @@ void CtiCapController::porterReturnMsg( const CtiReturnMsg &retMsg )
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPaoName()
-                                  << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!" << endl;
+                    CTILOG_WARN(dout, "Cap Bank: " << currentCapBank->getPaoName()
+                                  << " PAOID: " << currentCapBank->getPaoId() << " doesn't have a status point!");
                 }
 
                 if (!currentCapBank->isControlDeviceTwoWay() )
@@ -4087,10 +3942,9 @@ void CtiCapController::handleUnexpectedUnsolicitedMessaging(CtiCCCapBankPtr curr
 
     currentSubstationBus->setBusUpdatedFlag(true);
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - CBC reporting unexpected state change of: "<<twoWayPts.getPointValueByAttribute(PointAttribute::CapacitorBankState) <<" CAPBANK: "<<
+        CTILOG_INFO(dout, "CBC reporting unexpected state change of: "<<twoWayPts.getPointValueByAttribute(PointAttribute::CapacitorBankState) <<" CAPBANK: "<<
         currentCapBank->getPaoName() << " is "<< currentCapBank->getControlStatusText() <<
-        " waiting for VAR change." << endl;
+        " waiting for VAR change.");
     }
 
     string text = string("CBC Unsolicited Event!");
@@ -4127,17 +3981,15 @@ void CtiCapController::signalMsg(long pointID, unsigned tags, const string& text
 {
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        char tempchar[64] = "";
-        string outString = "Signal Message received. Point ID:";
-        _ltoa(pointID,tempchar,10);
-        outString += tempchar;
-        outString += " Tags:";
-        _ultoa(tags,tempchar,10);
-        outString += tempchar;
+        Cti::FormattedList list;
 
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - " << outString << "  Text: "
-                      << text << " Additional Info: " << additional << endl;
+        list << "Signal Message received";
+        list.add("Point ID") << pointID;
+        list.add("Tags")     << tags;
+        list.add("Text")     << text;
+        list.add("Additional Info") << additional;
+
+        CTILOG_DEBUG(dout, list);
     }
 
     return;
@@ -4157,8 +4009,7 @@ void CtiCapController::sendMessageToDispatch( CtiMessage* message )
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -4190,8 +4041,7 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -4237,8 +4087,7 @@ void CtiCapController::confirmCapBankControl( CtiMultiMsg* pilMultiMsg, CtiMulti
     }
     catch(...)
     {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 

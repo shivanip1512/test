@@ -57,10 +57,7 @@ void CtiServer::clientShutdown(CtiServer::ptr_type CM)
 
         // Must have propagated the shutdown message to the OutThread before this gets called.
         // This call will block until the threads have exited
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Client Shutdown " << CM->getClientName() << " / " << CM->getClientAppId() << " / " << CM->getPeer() << endl;
-        }
+        CTILOG_INFO(dout, "Client Shutdown "<< CM->getClientName() <<" / "<< CM->getClientAppId() <<" / "<< CM->getPeer());
 
         mConnectionTable.remove((long)CM.get());  // Get it out of the list, if it is in there.
 
@@ -81,11 +78,7 @@ YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type CM)
 
     CtiServerExclusion server_guard(_server_exclusion);
 
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << NowTime.now() << " Validating " << CM->getClientName() << " / " << CM->getClientAppId() << " / " << CM->getPeer() << endl;
-    }
-
+    CTILOG_INFO(dout, "Validating "<< CM->getClientName() <<" / "<< CM->getClientAppId() <<" / "<< CM->getPeer());
     /*
      *  OK, now we need to check if the registration jives with our other client connections!
      *  if not, we will not allow this guy to have any operations though us.
@@ -105,8 +98,8 @@ YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type CM)
                 if(CM->getClientAppId() != (RWThreadId)0 && (Mgr->getClientAppId() == CM->getClientAppId()))
                 {
                     // This guy is already registered. Might have lost his connection??
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << NowTime.now() << " " << CM->getClientName() << " just re-registered." << endl;
+                    CTILOG_INFO(dout, CM->getClientName() <<" just re-registered.");
+
                     removeMgr = TRUE;
                     break;
                 }
@@ -114,8 +107,8 @@ YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type CM)
                 {
                     if( Mgr->getClientQuestionable() )       // has this guy been priviously pinged and not responded?
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << NowTime.now() << " " << CM->getClientName() << " / " << CM->getClientAppId() << " / " << CM->getPeer() << " just won a client arbitration." << endl;
+                        CTILOG_INFO(dout, CM->getClientName() <<" / "<< CM->getClientAppId() <<" / "<< CM->getPeer() <<" just won a client arbitration.");
+
                         removeMgr = TRUE;    // Make the old one go away...
                         break;
                     }
@@ -133,8 +126,7 @@ YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type CM)
                         questionedEntry = TRUE;
 
                         // Old one wanted to be the only one
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << NowTime.now() << " New client \"" << CM->getClientName() << "\" conflicts with an existing client." << endl;
+                        CTILOG_INFO(dout, "New client \""<< CM->getClientName() <<"\" conflicts with an existing client.");
 
                         validEntry = TRUE;
                     }
@@ -144,8 +136,8 @@ YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type CM)
                 else if(CM->getClientUnique())
                 {
                     // New one wanted to be the only one
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << NowTime.now() << " New client is not unique as requested." << endl;
+                    CTILOG_INFO(dout, "New client is not unique as requested.");
+
                     validEntry = FALSE;
                     break; // the for
                 }
@@ -163,10 +155,7 @@ YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type CM)
     else
     {
         // For some reason, the connection has been refused. Shut it down...
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << NowTime.now() << " Connection rejected, entry will be deleted." << endl;
-        }
+        CTILOG_WARN(dout, "Connection rejected, entry will be deleted.");
 
         CM->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the new guy to blow off..
 
@@ -183,11 +172,7 @@ YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type CM)
     {
         if(mConnectionTable.remove((long)Mgr.get()))
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << NowTime.now() << " " << Mgr->getClientName() << " / " << Mgr->getClientAppId() << " / " << Mgr->getPeer() << " just _lost_ the client arbitration." << endl;
-            }
-
+            CTILOG_INFO(dout, Mgr->getClientName() <<" / "<< Mgr->getClientAppId() <<" / "<< Mgr->getPeer() <<" just _lost_ the client arbitration.");
             // This connection manager is abandoned now...
             // delete Mgr; // delete occurs if no references remain.
         }
@@ -212,10 +197,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
         {
         case (CtiCommandMsg::Shutdown):
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " MainThread: SHUTDOWN received from queue.  Ignored." << endl;
-                }
+                CTILOG_INFO(dout, "MainThread: SHUTDOWN received from queue.  Ignored.");
 
                 /*
                  *  We must wait until the requesting connection closes up the barnyard doors,
@@ -249,8 +231,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                 {
                     if( DebugLevel & 0x00001000)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Client " << pConn->getClientName() << " responded to AreYouThere " << endl;
+                        CTILOG_DEBUG(dout, "Client "<< pConn->getClientName() <<" responded to AreYouThere");
                     }
 
                     if( !(Cmd->getOpString().empty()) )
@@ -258,11 +239,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                         if( CompileInfo.version != Cmd->getOpString() )
                         {
                             // This is a mismatch.  We should yelp about it.
-
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " !!!! WARNING !!!!   Client " << pConn->getClientName() << " has a version mismatch.  Client revision " << Cmd->getOpString() << endl;
-                            }
+                            CTILOG_WARN(dout, "!!!! WARNING !!!!   Client "<< pConn->getClientName() <<" has a version mismatch.  Client revision "<< Cmd->getOpString());
                         }
                     }
 
@@ -289,21 +266,19 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                     name = pConn->getClientName();
                     if( DebugLevel & 0x00001000)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " MainThread: Client " << name << " has requested shutdown via InThread" << endl;
+                        CTILOG_DEBUG(dout, "MainThread: Client "<< name <<" has requested shutdown via InThread");
                     }
                     // This will block on return until the Out and In threads have stopped executing
                     clientShutdown(pConn);
 
                     if( DebugLevel & 0x00001000)
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " MainThread: Connection " << name << "'s threads have terminated" << endl;
+                        CTILOG_DEBUG(dout, "MainThread: Connection "<< name <<"'s threads have terminated");
                     }
                 }
                 catch(...)
                 {
-                    cout << "**** Exception caught **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
 
                 break;
@@ -312,9 +287,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
             {
                 if( DebugLevel & 0x00000001)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " MainThread: " << rwThreadId() << " New connection" << endl;
-                    dout << CtiTime() << " *** WARNING *** Use of this message is deprecated " << endl;
+                    CTILOG_DEBUG(dout, "MainThread: "<< rwThreadId() <<" New connection (*** WARNING *** Use of this message is deprecated)");
                 }
                 clientConnect(pConn);
 
@@ -322,8 +295,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
             }
         default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << "Unhandled command message " << Cmd->getOperation() << " sent to Main.." << endl;
+                CTILOG_WARN(dout, "Unhandled command message "<< Cmd->getOperation() <<" sent to Main..");
             }
         }
       }
@@ -355,10 +327,7 @@ int  CtiServer::clientArbitrationWinner(CtiServer::ptr_type CM)
            (Mgr->getClientRegistered() == RWBoolean(FALSE)))
         {
             // The connection Mgr has been refuted by the prior manager. Shut Mgr down...
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Connection " << Mgr->getClientName() << " to " << Mgr->getPeer() << " has been denied, entry will be deleted." << endl;
-            }
+            CTILOG_INFO(dout, "Connection "<< Mgr->getClientName() <<" to "<< Mgr->getPeer() <<" has been denied, entry will be deleted.");
 
             Mgr->WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::Shutdown, 15));  // Ask the new guy to blow off..
 

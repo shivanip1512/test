@@ -26,51 +26,46 @@ DataBuffer loadResourceFromLibrary( const ResourceIds resourceId, const char * r
                     {
                         DWORD errorCode = GetLastError();
 
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " ** Error sizing resource: " << resourceId << ", "  << resourceType << " in: " << libraryName
-                                << "  (error code: " << errorCode << ")" << std::endl;
+                        CTILOG_ERROR(dout, "Failed to size resource: " << resourceId << ", "  << resourceType << " in: " << libraryName
+                                << "  (error code: " << errorCode << ")");
                     }
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " ** Error locking resource: " << resourceId << ", "  << resourceType << " in: " << libraryName << std::endl;
+                    CTILOG_ERROR(dout, "Failed to lock resource: " << resourceId << ", "  << resourceType << " in: " << libraryName);
                 }
             }
             else
             {
                 DWORD errorCode = GetLastError();
 
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " ** Error loading resource: " << resourceId << ", "  << resourceType << " in: " << libraryName
-                        << "  (error code: " << errorCode << ")" << std::endl;
+                CTILOG_ERROR(dout, "Failed to load resource: " << resourceId << ", "  << resourceType << " in: " << libraryName
+                        << "  (error code: " << errorCode << ")");
             }
         }
         else
         {
             DWORD errorCode = GetLastError();
 
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ** Error finding resource: " << resourceId << ", " << resourceType << " in: " << libraryName
-                    << "  (error code: " << errorCode << ")" << std::endl;
+            CTILOG_ERROR(dout, "Failed to find resource: " << resourceId << ", "  << resourceType << " in: " << libraryName
+                    << "  (error code: " << errorCode << ")");
+
         }
 
         if ( ! FreeLibrary( library ) )
         {
             DWORD errorCode = GetLastError();
 
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " ** Error unloading library: " << libraryName
-                    << "  (error code: " << errorCode << ")" << std::endl;
+            CTILOG_ERROR(dout, "Failed to unload library: " << libraryName
+                    << "  (error code: " << errorCode << ")");
         }
     }
     else
     {
         DWORD errorCode = GetLastError();
 
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " ** Error loading library: " << libraryName
-                << "  (error code: " << errorCode << ")" << std::endl;
+        CTILOG_ERROR(dout, "Failed to load library: " << libraryName
+                << "  (error code: " << errorCode << ")");
     }
 
     return loadedResource;

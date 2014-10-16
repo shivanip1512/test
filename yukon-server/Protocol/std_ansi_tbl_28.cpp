@@ -145,51 +145,23 @@ double CtiAnsiTable28::getPresentValue(int index)
 //=========================================================================================================================================
 void CtiAnsiTable28::printResult( const string& deviceName )
 {
-    int integer;
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
+    Cti::FormattedList itemList;
+
+    Cti::StreamBufferSink& demands = itemList.add("Demand Data");
+    for( int index = 0; index < _nbrPresentDemands; index++ )
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "==================== "<<deviceName<<" Std Table 28 ========================" << endl;
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " ** Present Register Data ** "<<endl;
-        dout << "        Demand Data: ";
-    }
-    for (int i = 0; i < _nbrPresentDemands; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<_presentDemand[i].demandValue;
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl<<"         Value Data: ";
-    }
-    for (int i = 0; i < _nbrPresentValues; i++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<_presentValue[i];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl;
+        demands << _presentDemand[index].demandValue <<"  ";
     }
 
+    Cti::StreamBufferSink& values = itemList.add("Value Data");
+    for( int index = 0; index < _nbrPresentValues; index++ )
+    {
+        values << _presentValue[index] <<"  ";
+    }
+
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 28") <<
+            endl <<"** Present Register Data **"<<
+            itemList
+            );
 }
-
-
-
-
-
-
-
-
-
-
-

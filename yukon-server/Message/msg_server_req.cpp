@@ -1,6 +1,7 @@
 #include "precompiled.h"
-#include "msg_server_req.h"
+
 #include "logger.h"
+#include "msg_server_req.h"
 
 using std::endl;
 using std::string;
@@ -15,12 +16,14 @@ CtiServerRequestMsg::CtiServerRequestMsg(const CtiServerRequestMsg& req)
     operator=(req);
 }
 
-void CtiServerRequestMsg::dump() const
+std::string CtiServerRequestMsg::toString() const
 {
-   Inherited::dump();
+   Cti::FormattedList itemList;
 
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   dout << " Request ID:  " << _id << endl;
+   itemList <<"CtiServerRequestMsg";
+   itemList.add("Request ID") << _id;
+
+   return (Inherited::toString() += itemList.toString());
 }
 
 CtiMessage* CtiServerRequestMsg::replicateMessage() const

@@ -14,6 +14,7 @@
 #include "critical_section.h"
 #include "guard.h"
 #include "string_util.h"
+#include "loggable.h"
 
 // global defines
 #define XA21LMPORTNUMBER        1027
@@ -217,7 +218,7 @@ class CtiTime;
 /*
  * CurrentControl is a utility class to help keep track of pending controls.
  */
-class CurrentControl
+class CurrentControl : public Cti::Loggable
 {
 public:
     ULONG getMPCFunction() const;
@@ -236,7 +237,7 @@ public:
 
     static CurrentControl createCurrentControl(XA21LMMESS* lm_msg);
 
-    void dump();
+    std::string toString() const;
 
 private:
     ULONG _mpc_function;

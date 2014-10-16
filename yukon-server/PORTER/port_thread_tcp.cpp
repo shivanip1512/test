@@ -18,6 +18,7 @@
 #include "boostutil.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "std_helper.h"
 
 using namespace std;
 
@@ -25,6 +26,7 @@ extern CtiDeviceManager DeviceManager;
 
 using Cti::Protocols::GpuffProtocol;
 using Cti::Timing::MillisecondTimer;
+using Cti::Logging::Vector::Hex::operator<<;
 
 namespace Cti    {
 namespace Porter {
@@ -50,10 +52,7 @@ void PortTcpThread(void *pid)
 
         tcp.run();
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Shutdown PortThread TID: " << CurrentTID () << " for port: " << setw(4) << Port->getPortID() << " / " << Port->getName() << endl;
-        }
+        CTILOG_INFO(dout, "Shutdown PortTcpThread for port: "<< Port->getPortID() <<" / "<< Port->getName());
     }
 }
 
@@ -68,8 +67,7 @@ bool TcpPortHandler::setupPort()
 {
     if( !_tcp_port )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - _tcp_port == 0 in TcpPortHandler::setup() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       CTILOG_ERROR(dout, "_tcp_port is Null");
     }
 
     return _tcp_port;
@@ -132,7 +130,7 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
 {
     if(DebugLevel & 0x00020000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for TCP port-related Pao Properties" << endl;
+       CTILOG_DEBUG(dout, "Looking for TCP port-related Pao Properties");
     }
 
     const string sqlCore = Database::Tables::PaoPropertyTable::getSQLCoreStatement() +
@@ -151,13 +149,14 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader rdr(connection, sql);
     rdr.execute();
-    if(DebugLevel & 0x00020000 || !rdr.isValid())
+
+    if( ! rdr.isValid() )
     {
-        string loggedSQLstring = rdr.asString();
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << loggedSQLstring << endl;
-        }
+        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+    }
+    else if( DebugLevel & 0x00020000 )
+    {
+        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
     }
 
     if(rdr.isValid())
@@ -193,32 +192,20 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
             }
             else if( port_itr->first < ip_itr->first )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - orphan port record (" << port_itr->first << "," << port_itr->second << ") found **** " << __FUNCTION__ << " "<< __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_WARN(dout, "orphan port record ("<< port_itr->first <<","<< port_itr->second <<") found");
                 ++port_itr;
             }
             else
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - orphan IP record (" << port_itr->first << "," << port_itr->second << ") found **** " << __FUNCTION__ << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_WARN(dout, "orphan IP record ("<< port_itr->first <<","<< port_itr->second <<") found");
                 ++ip_itr;
             }
         }
     }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Error reading Dynamic PAO Info from database" << endl;
-    }
 
     if(DebugLevel & 0x00020000)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done looking for Dynamic PAO Info" << endl;
+        CTILOG_DEBUG(dout, "Done looking for Dynamic PAO Info");
     }
 }
 
@@ -277,16 +264,8 @@ YukonError_t TcpPortHandler::sendOutbound( device_record &dr )
 
     if( gConfigParms.getValueAsULong("PORTER_TCP_DEBUGLEVEL", 0, 16) & 0x00000001 )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Cti::Porter::TcpPortHandler::sendOutbound() - sending packet to "
-                          << sa.toString() << " "
-                          << __FILE__ << " (" << __LINE__ << ")" << endl;
-
-        dout << hex;
-
-        copy(buf.begin(), buf.end(), padded_output_iterator<int, CtiLogger>(dout, '0', 2));
-
-        dout << dec << endl;
+        CTILOG_DEBUG(dout, "sending packet to "<< sa <<
+                endl << buf);
     }
 
     try

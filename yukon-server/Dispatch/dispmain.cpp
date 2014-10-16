@@ -12,16 +12,16 @@ using namespace std;
 #include "CServiceConfig.h"
 #include "dllbase.h"
 #include "ctibase.h"
-#include "logger.h"
+#include "logManager.h"
 #include "utility.h"
-
 #include "dbghelp.h"
-
 #include "connection_base.h"
-// Close all yukon messaging connections when this object is destroyed
-Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
-extern INT DispatchMainFunction(INT, CHAR**);
+// Shutdown logging when this object is destroyed
+Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
+
+// Close all messaging connections when this object is destroyed
+Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
 int main(int argc, char* argv[] )
 {
@@ -45,13 +45,12 @@ int main(int argc, char* argv[] )
 
    InitDispatchGlobals();
 
-   dout.start();     // fire up the logger thread
-   dout.setOwnerInfo(CompileInfo);
-   dout.setOutputPath(gLogDirectory);
-   dout.setRetentionLength(gLogRetention);
-   dout.setOutputFile("dispatch");
-   dout.setToStdOut(true);
-   dout.setWriteInterval(15000);
+   doutManager.setOwnerInfo     ( CompileInfo );
+   doutManager.setOutputPath    ( gLogDirectory );
+   doutManager.setRetentionDays ( gLogRetention );
+   doutManager.setOutputFile    ( "dispatch" );
+   doutManager.setToStdOut      ( true );
+   doutManager.start();     // fire up the logger thread
 
    Cti::identifyProject(CompileInfo);
 
@@ -93,8 +92,6 @@ int main(int argc, char* argv[] )
       }
       else
       {
-         dout.setWriteInterval(0);
-
          CtiDispatchService service(szName, szDisplay, SERVICE_WIN32_OWN_PROCESS );
          service.RunInConsole(argc, argv );
       }
@@ -108,9 +105,6 @@ int main(int argc, char* argv[] )
       SERVICE_MAP_ENTRY(CtiDispatchService, Dispatch)
       END_SERVICE_MAP
    }
-
-   dout.interrupt(CtiThread::SHUTDOWN);
-   dout.join();
 
    return 0;
 }

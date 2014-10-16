@@ -73,10 +73,7 @@ YukonError_t CtiDeviceSeriesV::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandPa
 
                 default:
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - undefined scan type \"" << parse.getiValue("scantype") << "\" for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Invalid scan type \""<< parse.getiValue("scantype") <<"\" for device \""<< getName() <<"\"");
 
                     break;
                 }
@@ -112,12 +109,7 @@ YukonError_t CtiDeviceSeriesV::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandPa
         case GetConfigRequest:
         default:
         {
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint - command \"" << OutMessage->Request.CommandStr << "\" not defined for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
+            CTILOG_ERROR(dout, "command \"" << OutMessage->Request.CommandStr << "\" not defined for device \"" << getName() << "\"");
 
             break;
         }
@@ -171,8 +163,7 @@ YukonError_t CtiDeviceSeriesV::AccumulatorScan( CtiRequestMsg *pReq, CtiCommandP
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** AccumulatorScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "AccumulatorScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString(newParse.getCommandStr());
@@ -197,8 +188,7 @@ YukonError_t CtiDeviceSeriesV::GeneralScan(CtiRequestMsg *pReq, CtiCommandParser
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "GeneralScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString(newParse.getCommandStr());
@@ -222,8 +212,7 @@ YukonError_t CtiDeviceSeriesV::IntegrityScan(CtiRequestMsg *pReq, CtiCommandPars
 
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** IntegrityScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "IntegrityScan for \"" << getName() << "\"");
     }
 
     pReq->setCommandString(newParse.getCommandStr());

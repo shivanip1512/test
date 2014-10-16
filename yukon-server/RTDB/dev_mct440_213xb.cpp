@@ -544,8 +544,8 @@ YukonError_t Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 
             if( !getOperation(EmetconProtocol::GetConfig_Model, sspec_om->Buffer.BSt) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - Operation GetConfig_Model not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "Operation GetConfig_Model not found for device "<< getName());
+
                 return ClientErrors::NoMethod;
             }
 
@@ -890,11 +890,8 @@ YukonError_t Mct440_213xBDevice::ModelDecode(const INMESS    &InMessage,
             status = Inherited::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
             if( status )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << " IM->Sequence = " << InMessage.Sequence << " " << getName() << endl;
+                CTILOG_DEBUG(dout, "IM->Sequence = "<< InMessage.Sequence <<" for "<< getName());
             }
-            break;
     }
 
     return status;
@@ -1086,12 +1083,7 @@ YukonError_t Mct440_213xBDevice::decodeGetValueTOUkWh(const INMESS    &InMessage
 
                 if( pi.freeze_bit != getExpectedFreezeParity() )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
-                                            ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
-                                            "/" << getExpectedFreezeCounter() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "incoming freeze parity bit ("<< pi.freeze_bit <<") does not match expected freeze bit ("<< getExpectedFreezeParity() <<") on device \""<< getName() <<"\" - not sending data");
 
                     pi.description  = "Freeze parity does not match (";
                     pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
@@ -1182,8 +1174,7 @@ YukonError_t Mct440_213xBDevice::decodeGetStatusEventLog(const INMESS    &InMess
 
     if( offset < 0 || offset > Memory_EventLogMaxOffset )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Invalid InMessage.Return.ProtocolInfo.Emetcon.Function " << __FILE__ << " (" << __LINE__ << ") " << endl;
+        CTILOG_ERROR(dout, "Invalid InMessage.Return.ProtocolInfo.Emetcon.Function ("<< InMessage.Return.ProtocolInfo.Emetcon.Function <<")");
 
         return ClientErrors::TypeNotFound;
     }
@@ -1268,8 +1259,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
 
     if( !deviceConfig )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - deviceConfig is null **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "deviceConfig is null");
+
         nRet = ClientErrors::NoConfigData;
     }
                                                                 /* overwrite the request command                        */
@@ -1378,8 +1369,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
             {
                 if( rateStringValues[schedule][rate].empty() )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "bad rate string stored");
+
                     nRet = ClientErrors::NoConfigData;
                 }
             }
@@ -1392,8 +1383,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                 // A time needs at least 4 digits X:XX and no more then 5 digits XX:XX
                 if( timeStringValues[schedule][switchtime].length() < 4 || timeStringValues[schedule][switchtime].length() > 5 )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "bad time string stored");
+
                     nRet = ClientErrors::NoConfigData;
                 }
             }
@@ -1409,8 +1400,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                     rates[schedule][rate] = rateStringValues[schedule][rate][0] - 'A';
                     if( rates[schedule][rate] < 0 || rates[schedule][rate] > 3 )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - bad rate string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "bad rate string stored");
+
                         nRet = ClientErrors::NoConfigData;
                     }
                 }
@@ -1434,8 +1425,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - bad time string stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "bad time string stored");
                         nRet = ClientErrors::NoConfigData;
                     }
                 }
@@ -1452,8 +1442,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
 
                     if( times[schedule][switchtime] < 0 || times[schedule][switchtime] > 255 )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - time sequencing **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "invalid time sequencing");
+
                         nRet = ClientErrors::NoConfigData;
                     }
                 }
@@ -1471,8 +1461,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOU(CtiRequestMsg     *pReq,
             || saturdaySchedule < 0 || saturdaySchedule > 3
             || holidaySchedule  < 0 || holidaySchedule  > 3 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "no or bad schedule value stored");
+
             nRet = ClientErrors::NoConfigData;
         }
         else
@@ -2194,8 +2184,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - schedule \"" << schedule_number << "\" has invalid rate change \"" << ratechangestr << "\"for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "schedule \""<< schedule_number <<"\" has invalid rate change \""<< ratechangestr <<"\"for device \""<< getName() <<"\"");
                     }
 
                     changenum++;
@@ -2206,8 +2195,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq
             }
             else
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - schedule \"" << schedule_number << "\" specified is out of range for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "schedule \""<< schedule_number <<"\" specified is out of range for device \""<< getName() <<"\"");
             }
 
             schedulenum++;
@@ -2252,8 +2240,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq
 
             if( offset > TOU_SCHEDULE_TIME_NBR || rc.schedule < 0 || rc.schedule > (TOU_SCHEDULE_NBR-1) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "invalid schedule");
 
                 continue;
             }
@@ -2681,8 +2668,7 @@ YukonError_t Mct440_213xBDevice::decodeGetConfigTOU(const INMESS    &InMessage,
         if( InMessage.Return.ProtocolInfo.Emetcon.Function != function_part1 &&
             InMessage.Return.ProtocolInfo.Emetcon.Function != function_part2 )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Invalid InMessage.Return.ProtocolInfo.Emetcon.Function " << __FILE__ << " (" << __LINE__ << ") " << endl;
+            CTILOG_ERROR(dout, "Invalid InMessage.Return.ProtocolInfo.Emetcon.Function ("<< InMessage.Return.ProtocolInfo.Emetcon.Function <<")");
 
             return ClientErrors::TypeNotFound;
         }
@@ -3340,8 +3326,7 @@ YukonError_t Mct440_213xBDevice::decodeGetValueKWH(const INMESS   &InMessage,
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Accumulator Decode for \""<< getName() <<"\"");
     }
 
     if( InMessage.Sequence == EmetconProtocol::Scan_Accum )
@@ -3395,12 +3380,7 @@ YukonError_t Mct440_213xBDevice::decodeGetValueKWH(const INMESS   &InMessage,
 
                     if( pi.freeze_bit != getExpectedFreezeParity() )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
-                                                ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
-                                                "/" << getExpectedFreezeCounter() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "incoming freeze parity bit ("<< pi.freeze_bit <<") does not match expected freeze bit ("<< getExpectedFreezeParity() <<") on device \""<< getName() <<"\" - not sending data");
 
                         pi.description  = "Freeze parity does not match (";
                         pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
@@ -3813,8 +3793,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg 
 
     if( !deviceConfig )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "deviceConfig not found");
+
         return ClientErrors::NoConfigData;
     }
                                                                 /* overwrite the request command                        */
@@ -3828,8 +3808,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg 
         if( phaseloss_percent < 0 || phaseloss_percent > 100 ||
             phaseloss_seconds < 0 || phaseloss_seconds > 0xFFFF )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "no or bad phaseloss value stored");
+
             return ClientErrors::NoConfigData;
         }
 
@@ -3841,8 +3821,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg 
             {
                 if( !getOperation(EmetconProtocol::PutConfig_PhaseLossThreshold, OutMessage->Buffer.BSt) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - Operation PutConfig_PhaseLossThreshold not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "Operation PutConfig_PhaseLossThreshold not found");
+
                     return ClientErrors::NoConfigData;
                 }
 
@@ -3866,8 +3846,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallPhaseLoss(CtiRequestMsg 
     {
         if( !getOperation(EmetconProtocol::GetConfig_PhaseLossThreshold, OutMessage->Buffer.BSt) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Operation PutConfig_PhaseLossThreshold not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Operation PutConfig_PhaseLossThreshold not found");
+
             return ClientErrors::NoConfigData;
         }
 
@@ -3907,8 +3887,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg
 
     if( !deviceConfig )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "deviceConfig not found");
+
         return ClientErrors::NoConfigData;
     }
                                                                 /* overwrite the request command                        */
@@ -3926,8 +3906,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg
             collection  < 0x0 || collection > 0x0FFF ||         /* check that collection address is on 12-bit           */
             spid        < 0x0 || spid       > 0xFF )            /* check that service provider id is on 8-bit           */
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "no or bad address value stored");
+
             return ClientErrors::NoConfigData;
         }
 
@@ -3941,8 +3921,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg
             {
                 if( !getOperation(EmetconProtocol::PutConfig_Addressing, OutMessage->Buffer.BSt) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - Operation PutConfig_Addressing not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "Operation PutConfig_Addressing not found");
+
                     return ClientErrors::NoConfigData;
                 }
 
@@ -3969,8 +3949,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallAddressing(CtiRequestMsg
     {
         if( !getOperation(EmetconProtocol::GetConfig_Addressing, OutMessage->Buffer.BSt) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Operation GetConfig_Addressing not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Operation GetConfig_Addressing not found");
+
             return ClientErrors::NoConfigData;
         }
 
@@ -4010,8 +3990,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *p
 
     if( !deviceConfig )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "deviceConfig not found");
+
         return ClientErrors::NoConfigData;
     }
                                                                 /* overwrite the request command                        */
@@ -4042,8 +4022,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *p
                 {
                     if( !getOperation(EmetconProtocol::PutConfig_Options, OutMessage->Buffer.BSt) )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - Operation EmetconProtocol::PutConfig_Options not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "Operation EmetconProtocol::PutConfig_Options not found");
+
                         return ClientErrors::NoConfigData;
                     }
 
@@ -4074,8 +4054,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *p
                 {
                     if( !getOperation(EmetconProtocol::GetConfig_Options, OutMessage->Buffer.BSt) )
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - Operation GetStatus_Internal not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        CTILOG_ERROR(dout, "Operation GetStatus_Internal not found");
+
                         return ClientErrors::NoConfigData;
                     }
 
@@ -4102,8 +4082,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigInstallDST(CtiRequestMsg     *p
     {
         if( !getOperation(EmetconProtocol::GetConfig_Options, OutMessage->Buffer.BSt) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Operation GetStatus_Internal not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Operation GetStatus_Internal not found");
+
             return ClientErrors::NoConfigData;
         }
 
@@ -4143,8 +4123,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pRe
 
     if( !deviceConfig )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "deviceConfig not found");
+
         return ClientErrors::NoConfigData;
     }
                                                                 /* overwrite the request command                        */
@@ -4156,10 +4136,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pRe
 
         if( timezoneOffset < -24 || timezoneOffset > 24 )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "no or bad timezone value stored");
+
             return ClientErrors::NoConfigData;
         }
 
@@ -4172,8 +4150,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pRe
             {
                 if( !getOperation(EmetconProtocol::PutConfig_TimeZoneOffset, OutMessage->Buffer.BSt) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeZoneOffset not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "Operation PutConfig_TimeZoneOffset not found");
+
                     return ClientErrors::NoConfigData;
                 }
 
@@ -4195,8 +4173,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTimezone(CtiRequestMsg     *pRe
     {
         if( !getOperation(EmetconProtocol::GetConfig_Time, OutMessage->Buffer.BSt) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Operation GetConfig_Time not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Operation GetConfig_Time not found");
+
             return ClientErrors::NoConfigData;
         }
 
@@ -4236,8 +4214,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestM
 
     if( !deviceConfig )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - deviceConfig not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "deviceConfig not found");
+
         return ClientErrors::NoConfigData;
     }
                                                                 /* overwrite the request command                        */
@@ -4249,10 +4227,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestM
 
         if( timeAdjustTolerance < 0 || timeAdjustTolerance > 0xFF )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - no or bad value stored **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "no or bad timeAdjustTolerance value stored");
+
             return ClientErrors::NoConfigData;
         }
 
@@ -4263,8 +4239,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestM
             {
                 if( !getOperation(EmetconProtocol::PutConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - Operation PutConfig_TimeAdjustTolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_ERROR(dout, "Operation PutConfig_TimeAdjustTolerance not found");
+
                     return ClientErrors::NoConfigData;
                 }
 
@@ -4286,8 +4262,8 @@ YukonError_t Mct440_213xBDevice::executePutConfigTimeAdjustTolerance(CtiRequestM
     {
         if( !getOperation(EmetconProtocol::GetConfig_TimeAdjustTolerance, OutMessage->Buffer.BSt) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Operation GetConfig_TimeAdjustTolerance not found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Operation GetConfig_TimeAdjustTolerance not found");
+
             return ClientErrors::NoConfigData;
         }
 
@@ -4339,8 +4315,8 @@ YukonError_t Mct440_213xBDevice::decodePutConfig(const INMESS   &InMessage,
         // check if config part is supported by this device
         if( std::find(supported_parts.begin(), supported_parts.end(), config_part) == supported_parts.end() )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - unsupported config part \"" << config_part << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "unsupported config part \"" << config_part << "\"");
+
             return ClientErrors::InvalidRequest;
         }
 
@@ -4348,8 +4324,8 @@ YukonError_t Mct440_213xBDevice::decodePutConfig(const INMESS   &InMessage,
         if( InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Read ||
             InMessage.Return.ProtocolInfo.Emetcon.IO == EmetconProtocol::IO_Function_Read )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - Invalid InMessage IO  received for config part \"" << config_part << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            CTILOG_ERROR(dout, "Invalid InMessage IO  received for config part \"" << config_part << "\"");
+
             return ClientErrors::InvalidRequest;
         }
 

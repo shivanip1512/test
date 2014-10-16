@@ -58,10 +58,7 @@ int BinaryInput::restoreVariation(const unsigned char *buf, int len, int variati
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
 
             _valid = false;
             pos = len;
@@ -80,7 +77,9 @@ int BinaryInput::restoreBits(const unsigned char *buf, int bitoffset, int len)
 
     bitpos = bitoffset;
 
-    switch( getVariation() )
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BI_SingleBitPacked:
         {
@@ -92,15 +91,10 @@ int BinaryInput::restoreBits(const unsigned char *buf, int bitoffset, int len)
 
         default:
         {
-            {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
 
             _valid = false;
             bitpos = len * 8;
-
-            break;
         }
     }
 
@@ -112,7 +106,8 @@ int BinaryInput::serializeVariation(unsigned char *buf, int variation) const
 {
     int pos = 0;
 
-    switch(getVariation())
+    // TODO: was this a mistake?
+    switch(variation)
     {
         case BI_WithStatus:
         {
@@ -123,12 +118,7 @@ int BinaryInput::serializeVariation(unsigned char *buf, int variation) const
 
         default:
         {
-            {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -154,9 +144,11 @@ void BinaryInput::setOnlineFlag(bool online)
 
 int BinaryInput::getSerializedLen(void) const
 {
-    int retVal;
+    int retVal = 0;
 
-    switch(getVariation())
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BI_WithStatus:
         {
@@ -167,12 +159,7 @@ int BinaryInput::getSerializedLen(void) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            retVal = 0;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -218,9 +205,7 @@ CtiPointDataMsg *BinaryInput::getPoint( const TimeCTO *cto ) const
 
     if( gDNPVerbose )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "Binary input, value " << val << endl;
+        CTILOG_INFO(dout, "Binary input, value "<< val);
     }
 
     //  the ID will be replaced by the offset by the object block, which will then be used by the
@@ -246,7 +231,9 @@ int BinaryInputChange::restore(const unsigned char *buf, int len)
 
     _valid = true;
 
-    switch( getVariation() )
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BIC_WithoutTime:
         {
@@ -270,9 +257,7 @@ int BinaryInputChange::restore(const unsigned char *buf, int len)
 
             if( isDebugLudicrous() )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                dout << "Time Relative: " << _timeRelative.getSeconds() << "s, " << _timeRelative.getMilliseconds() << "ms" << endl;
+                CTILOG_DEBUG(dout, "Time Relative: "<< _timeRelative.getSeconds() <<"s, "<< _timeRelative.getMilliseconds() <<"ms");
             }
 
             break;
@@ -280,10 +265,7 @@ int BinaryInputChange::restore(const unsigned char *buf, int len)
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
 
             _valid = false;
             pos = len;
@@ -298,7 +280,9 @@ int BinaryInputChange::serialize(unsigned char *buf) const
 {
     int pos = 0;
 
-    switch( getVariation() )
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BIC_WithoutTime:
         {
@@ -325,10 +309,7 @@ int BinaryInputChange::serialize(unsigned char *buf) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 
@@ -340,7 +321,9 @@ int BinaryInputChange::getSerializedLen(void) const
 {
     int len = 0;
 
-    switch( getVariation() )
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BIC_WithoutTime:
         {
@@ -365,11 +348,7 @@ int BinaryInputChange::getSerializedLen(void) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
             len = 0;
         }
     }
@@ -384,7 +363,9 @@ CtiPointDataMsg *BinaryInputChange::getPoint( const TimeCTO *cto ) const
 
     tmpMsg = BinaryInput::getPoint(cto);
 
-    switch(getVariation())
+    const int variation = getVariation();
+
+    switch(variation)
     {
         case BIC_WithoutTime:
         {
@@ -418,12 +399,7 @@ CtiPointDataMsg *BinaryInputChange::getPoint( const TimeCTO *cto ) const
 
         default:
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
-
-            break;
+            CTILOG_ERROR(dout, "unknown variation ("<< variation <<")");
         }
     }
 

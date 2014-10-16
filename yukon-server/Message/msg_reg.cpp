@@ -39,19 +39,18 @@ CtiMessage* CtiRegistrationMsg::replicateMessage() const
 }
 
 
-void CtiRegistrationMsg::dump() const
+std::string CtiRegistrationMsg::toString() const
 {
-   Inherited::dump();
+    Cti::FormattedList itemList;
 
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
+    itemList <<"CtiRegistrationMsg";
+    itemList.add("Client Name")                  << _appName;
+    itemList.add("Client App Id")                << _appId;
+    itemList.add("Is client unique?")            << _appIsUnique;
+    itemList.add("Client Known connection Port") << _appKnownPort;
+    itemList.add("Client Expiration Delay")      << _appExpirationDelay; // How many seconds till I believe this guy is DEAD.
 
-   dout << " Client Name                   " << _appName << endl;
-   dout << " Client App Id                 " << _appId << endl;
-   dout << " Is client unique?             " << _appIsUnique << endl;
-
-   dout << " Client Known connection Port  " << _appKnownPort << endl;
-   dout << " Client Expiration Delay       " << _appExpirationDelay << endl;     // How many seconds till I believe this guy is DEAD.
-
+    return (Inherited::toString() += itemList.toString());
 }
 
 CtiRegistrationMsg::CtiRegistrationMsg() :

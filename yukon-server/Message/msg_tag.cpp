@@ -1,18 +1,6 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_email
-*
-* Date:   8/3/2003
-*
-* Author: Aaron Lauinger
-*
-* Copyright (c) 2003 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include <iostream>
-#include <iomanip>
 using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include "collectable.h"
@@ -122,7 +110,7 @@ CtiMessage* CtiTagMsg::replicateMessage() const
    return pNew;
 }
 
-void CtiTagMsg::dump() const
+std::string CtiTagMsg::toString() const
 {
     string actn;
     switch(getAction())
@@ -140,22 +128,23 @@ void CtiTagMsg::dump() const
         actn = "ReportAction";
         break;
     default:
-        actn = "Unknown " + CtiNumStr(getAction());
-        break;
+        actn = "Unknown";
     }
 
-   CtiLockGuard<CtiLogger> doubt_guard(dout);
-   Inherited::dump();
+    Cti::FormattedList itemList;
 
-   dout << "InstanceID                     " << getInstanceID() << endl;
-   dout << "PointID                        " << getPointID() << endl;
-   dout << "TagID                          " << getTagID() << endl;
-   dout << "Description                    " << getDescriptionStr() << endl;
-   dout << "Action                         " << getAction() << ": " << actn << endl;
-   dout << "TagTime                        " << getTagTime() << endl;
-   dout << "RefStr                         " << getReferenceStr() << endl;
-   dout << "TaggedFor                      " << getTaggedForStr() << endl;
-   dout << "ClientMsgId                    " << getClientMsgId() << endl;
+    itemList <<"CtiTagMsg";
+    itemList.add("InstanceID")  << getInstanceID();
+    itemList.add("PointID")     << getPointID();
+    itemList.add("TagID")       << getTagID();
+    itemList.add("Description") << getDescriptionStr();
+    itemList.add("Action")      << actn <<" ("<< getAction() <<")";
+    itemList.add("TagTime")     << getTagTime();
+    itemList.add("RefStr")      << getReferenceStr();
+    itemList.add("TaggedFor")   << getTaggedForStr();
+    itemList.add("ClientMsgId") << getClientMsgId();
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 CtiTagMsg::CtiTagMsg() :

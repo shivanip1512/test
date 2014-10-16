@@ -13,6 +13,7 @@
 #include "logger.h"
 #include "math.h"
 #include "std_ansi_tbl_62.h"
+#include "boost/lexical_cast.hpp"
 
 using std::string;
 using std::endl;
@@ -137,116 +138,76 @@ CtiAnsiTable62& CtiAnsiTable62::operator=(const CtiAnsiTable62& aRef)
 //=========================================================================================================================================
 void CtiAnsiTable62::printResult( const string& deviceName )
 {
-    int index;
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=================== "<<deviceName<<" Std Table 62  ========================" << endl;
-        dout << endl << "   --- Load Profile Control Table ---" << endl;
-    }
+    Cti::FormattedList itemList;
 
-    for ( index = 0; index < 4; index++ )
+    for (int index = 0; index < 4; index++)
     {
         if (_lpCtrlDataSetUsed[index])
         {
-            {
-                CtiLockGuard< CtiLogger > doubt_guard( dout );
-                dout << "   Load Profile Ctrl Data Set "<<index + 1<<endl;
-            }
-            printLPSelSet(index, _numChansSet[index]);
+            itemList <<"Load Profile Ctrl Data Set "<< index+1;
+
+            appendLPSelSet(index, _numChansSet[index], itemList);
             if (_scalarDivisorFlagSet[index])
             {
-                printScalarsDivisorSet(index, _numChansSet[index]);
+                appendScalarsDivisorSet(index, _numChansSet[index], itemList);
             }
         }
     }
+
+    CTILOG_INFO(dout,
+            endl << formatTableName(deviceName +" Std Table 62") <<
+            endl <<"** Load Profile Control Table **"<< 
+            itemList
+            );
 }
 
-void CtiAnsiTable62::printLPSelSet(int index, int numChans)
+void CtiAnsiTable62::appendLPSelSet(int index, int numChans, Cti::FormattedList& itemList)
 {
-    int x;
+    Cti::StreamBufferSink& end_rdg_flag = itemList.add("EndRdgFlg");
+    for (int x = 0; x < numChans; x++)
     {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << "       EndRdgFlg:  ";
-    }
-    for (x = 0; x < numChans; x++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<(bool)_lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].chnl_flag.end_rdg_flag;
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<< "       NoMultFlg: ";
-    }
-    for (x = 0; x < numChans; x++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<(bool)_lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].chnl_flag.no_multiplier_flag;
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<< "       LPAlgorithm: ";
-    }
-    for (x = 0; x < numChans; x++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<(int)_lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].chnl_flag.lp_algorithm;
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<< "       IntSrcSel: ";
-    }
-    for (x = 0; x < numChans; x++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<(int)_lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].lp_source_sel;
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<< "       EndBlkRdgSrcSel:";
-    }
-    for (x = 0; x < numChans; x++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<(int) _lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].end_blk_rdg_source_select;
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<< "       IntFmtCde: "<<(int)_lp_ctrl_tbl.lp_sel[index].int_fmt_cde<<endl;
-    }
-}
-void CtiAnsiTable62::printScalarsDivisorSet(int index, int numChans)
-{
-    int x;
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<"       Scalars Set: ";
-    }
-    for (x = 0; x < numChans; x++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<_lp_ctrl_tbl.lp_sel[index].scalars_set[x];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl<<"       Divisor Set: ";
-    }
-    for (x = 0; x < numChans; x++)
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " "<<_lp_ctrl_tbl.lp_sel[index].divisor_set[x];
-    }
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout <<endl;
+        end_rdg_flag << (bool)_lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].chnl_flag.end_rdg_flag <<" ";
     }
 
+    Cti::StreamBufferSink& no_multiplier_flag = itemList.add("NoMultFlg");
+    for (int x = 0; x < numChans; x++)
+    {
+        no_multiplier_flag << (bool)_lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].chnl_flag.no_multiplier_flag <<" ";
+    }
+
+    Cti::StreamBufferSink& lp_algorithm = itemList.add("LPAlgorithm");
+    for (int x = 0; x < numChans; x++)
+    {
+        lp_algorithm << _lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].chnl_flag.lp_algorithm <<" ";
+    }
+
+    Cti::StreamBufferSink& lp_source_sel = itemList.add("IntSrcSel");
+    for (int x = 0; x < numChans; x++)
+    {
+        lp_source_sel << _lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].lp_source_sel <<" ";
+    }
+
+    Cti::StreamBufferSink& end_blk_rdg_source_select = itemList.add("EndBlkRdgSrcSel");
+    for (int x = 0; x < numChans; x++)
+    {
+        end_blk_rdg_source_select << _lp_ctrl_tbl.lp_sel[index].lp_sel_set[x].end_blk_rdg_source_select <<" ";
+    }
+
+    itemList.add("IntFmtCde") << _lp_ctrl_tbl.lp_sel[index].int_fmt_cde;
+}
+void CtiAnsiTable62::appendScalarsDivisorSet(int index, int numChans, Cti::FormattedList& itemList)
+{
+    Cti::StreamBufferSink& scalars_set = itemList.add("Scalars Set");
+    for (int x = 0; x < numChans; x++)
+    {
+        scalars_set << _lp_ctrl_tbl.lp_sel[index].scalars_set[x] <<" ";
+    }
+
+    Cti::StreamBufferSink& divisor_set = itemList.add("Divisor Set");
+    for (int x = 0; x < numChans; x++)
+    {
+        divisor_set << _lp_ctrl_tbl.lp_sel[index].divisor_set[x] <<" ";
+    }
 }
 
 bool  CtiAnsiTable62::getNoMultiplierFlag(int setNbr)

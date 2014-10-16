@@ -112,23 +112,17 @@ void ActiveMQConnectionManager::run()
                 dispatchIncomingMessages();
             }
         }
-        catch( ActiveMQ::ConnectionException &ce )
+        catch( ActiveMQ::ConnectionException &e )
         {
             releaseConnectionObjects();
 
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Unable to connect to the broker." << std::endl;
-            }
+            CTILOG_EXCEPTION_ERROR(dout, e, "Unable to connect to the broker");
         }
-        catch( cms::CMSException &ce )
+        catch( cms::CMSException &e )
         {
             releaseConnectionObjects();
 
-            {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " CMS exception caught - \"" << ce.what() << "\"" << std::endl;
-            }
+            CTILOG_EXCEPTION_ERROR(dout, e);
         }
 
         sleep(1000);
@@ -141,10 +135,7 @@ bool ActiveMQConnectionManager::verifyConnectionObjects()
     if( ! _connection ||
         ! _connection->verifyConnection() )
     {
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Connection invalid, creating connection " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-        }
+        CTILOG_INFO(dout, "Connection invalid, creating connection");
 
         releaseConnectionObjects();
 
@@ -161,28 +152,19 @@ bool ActiveMQConnectionManager::verifyConnectionObjects()
 
         _connection->start(); // start the connection outside the lock
 
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " ActiveMQ CMS connection established" << std::endl;
-        }
+        CTILOG_INFO(dout, "ActiveMQ CMS connection established");
     }
 
     if( ! _producerSession.get() )
     {
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Producer session invalid, creating producer " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-        }
+        CTILOG_INFO(dout, "Producer session invalid, creating producer");
 
         _producerSession.reset(_connection->createSession());
     }
 
     if( ! _consumerSession.get() )
     {
-        {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Consumer session invalid, creating consumer " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-        }
+        CTILOG_INFO(dout,  "Consumer session invalid, creating consumer");
 
         _consumerSession.reset(_connection->createSession());
 
@@ -222,10 +204,7 @@ void ActiveMQConnectionManager::registerConsumer(const ActiveMQ::Queues::Inbound
     consumer->managedConsumer->setMessageListener(
             consumer->listener.get());
 
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " Listener registered for destination \"" << inboundQueue->name << "\" id " << reinterpret_cast<unsigned long>(inboundQueue) << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-    }
+    CTILOG_INFO(dout, "Listener registered for destination \"" << inboundQueue->name << "\" id " << reinterpret_cast<unsigned long>(inboundQueue));
 
     _consumers.insert(inboundQueue, consumer);
 }
@@ -264,8 +243,7 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
 
         if( debugActivityInfo() )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Sending outgoing message for queue \"" << e->queue->name << "\" id " << reinterpret_cast<unsigned long>(e->queue) << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_DEBUG(dout, "Sending outgoing message for queue \"" << e->queue->name << "\" id " << reinterpret_cast<unsigned long>(e->queue));
         }
 
         if( e->callback )
@@ -293,8 +271,7 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
 
             if( debugActivityInfo() )
             {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Created temporary queue for callback reply for \"" << destinationPhysicalName << "\" " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                CTILOG_DEBUG(dout, "Created temporary queue for callback reply for \"" << destinationPhysicalName << "\"");
             }
 
             _temporaryConsumers.insert(
@@ -332,8 +309,7 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
     {
         if( debugActivityInfo() )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Received incoming message(s) for queue \"" << queueMsgs_itr->first->name << "\" id " << reinterpret_cast<unsigned long>(queueMsgs_itr->first) << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_DEBUG(dout, "Received incoming message(s) for queue \"" << queueMsgs_itr->first->name << "\" id " << reinterpret_cast<unsigned long>(queueMsgs_itr->first));
         }
 
         //  we should only look up the callbacks once if we receive a bunch of inbound messages for the same queue
@@ -348,10 +324,8 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
         {
             if( debugActivityInfo() )
             {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Dispatching message to callbacks from queue \"" << queueMsgs_itr->first->name << "\" id " << reinterpret_cast<unsigned long>(queueMsgs_itr->first) << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                dout << reinterpret_cast<unsigned long>(queueMsgs_itr->first) << ": " << msg << std::endl;
+                CTILOG_DEBUG(dout, "Dispatching message to callbacks from queue \"" << queueMsgs_itr->first->name << "\" id " << reinterpret_cast<unsigned long>(queueMsgs_itr->first) << std::endl
+                        << reinterpret_cast<unsigned long>(queueMsgs_itr->first) << ": " << msg);
             }
 
             CallbacksPerQueue::const_iterator cb_itr = queueCallbacks.first;
@@ -360,8 +334,7 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
             {
                 if( debugActivityInfo() )
                 {
-                    CtiLockGuard<CtiLogger> dout_guard(dout);
-                    dout << CtiTime() << " Calling callback " << reinterpret_cast<unsigned long>(&(cb_itr->second)) << " for queue \"" << queueMsgs_itr->first->name << "\" id " << reinterpret_cast<unsigned long>(queueMsgs_itr->first) << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+                    CTILOG_DEBUG(dout, "Calling callback " << reinterpret_cast<unsigned long>(&(cb_itr->second)) << " for queue \"" << queueMsgs_itr->first->name << "\" id " << reinterpret_cast<unsigned long>(queueMsgs_itr->first));
                 }
 
                 cb_itr->second(msg);
@@ -390,18 +363,14 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
 
         if( itr == _temporaryConsumers.end() )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Message received with no consumer; destination [" << reply.first << "] in " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
+            CTILOG_ERROR(dout, "Message received with no consumer; destination [" << reply.first << "]");
             continue;
         }
 
         if( debugActivityInfo() )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Calling temp queue callback " << reinterpret_cast<unsigned long>(&(itr->second->callback)) << " for temp queue \"" << reply.first << "\" " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-            dout << reinterpret_cast<unsigned long>(&(itr->second->callback)) << ": " << reply.second << std::endl;
+            CTILOG_DEBUG(dout, "Calling temp queue callback " << reinterpret_cast<unsigned long>(&(itr->second->callback)) << " for temp queue \"" << reply.first << "\"" << std::endl
+                    << reinterpret_cast<unsigned long>(&(itr->second->callback)) << ": " << reply.second);
         }
 
         itr->second->callback(reply.second);
@@ -433,8 +402,7 @@ struct DeserializationHelper
         }
         else
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Failed to deserialize " << typeid(Msg).name() << " from payload [" << buf << "] " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
+            CTILOG_ERROR(dout, "Failed to deserialize " << typeid(Msg).name() << " from payload [" << buf << "]");
         }
     }
 };
@@ -520,10 +488,8 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(const ActiveMQ::Queues::O
 
     if( debugActivityInfo() )
     {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " Enqueuing outbound message for queue \"" << queue.name << "\" id " << reinterpret_cast<unsigned long>(&queue) << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-        dout << reinterpret_cast<unsigned long>(&queue) << ": " << message << std::endl;
+        CTILOG_DEBUG(dout,  "Enqueuing outbound message for queue \"" << queue.name << "\" id " << reinterpret_cast<unsigned long>(&queue) << std::endl
+                << reinterpret_cast<unsigned long>(&queue) << ": " << message);
     }
 
     {
@@ -552,10 +518,7 @@ ActiveMQ::QueueProducer &ActiveMQConnectionManager::getQueueProducer(cms::Sessio
     std::auto_ptr<ActiveMQ::QueueProducer> queueProducer(
             ActiveMQ::createQueueProducer(session, queueName));
 
-    {
-        CtiLockGuard<CtiLogger> dout_guard(dout);
-        dout << CtiTime() << " ActiveMQ CMS producer established (" << queueName << ")" << std::endl;
-    }
+    CTILOG_INFO(dout, "ActiveMQ CMS producer established (" << queueName << ")");
 
     queueProducer->setTimeToLiveMillis(DefaultTimeToLiveMillis);
 
@@ -593,10 +556,8 @@ void ActiveMQConnectionManager::onInboundMessage(const ActiveMQ::Queues::Inbound
 
         if( debugActivityInfo() )
         {
-            CtiLockGuard<CtiLogger> dout_guard(dout);
-            dout << CtiTime() << " Received inbound message for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << " " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-            dout << reinterpret_cast<unsigned long>(queue) << ": " << payload << std::endl;
+            CTILOG_DEBUG(dout, "Received inbound message for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue) << std::endl
+                    << reinterpret_cast<unsigned long>(queue) << ": " << payload);
         }
     }
 }
@@ -620,10 +581,8 @@ void ActiveMQConnectionManager::onTempQueueReply(const cms::Message *message)
 
             if( debugActivityInfo() )
             {
-                CtiLockGuard<CtiLogger> dout_guard(dout);
-                dout << CtiTime() << " Received temp queue reply for \"" << ActiveMQ::destPhysicalName(*dest) << "\" " << __FUNCTION__ << " @ " << __FILE__ << " (" << __LINE__ << ")" << std::endl;
-
-                dout << ActiveMQ::destPhysicalName(*dest) << ": " << payload << std::endl;
+                CTILOG_DEBUG(dout, "Received temp queue reply for \"" << ActiveMQ::destPhysicalName(*dest) << "\"" << std::endl
+                        << ActiveMQ::destPhysicalName(*dest) << ": " << payload);
             }
         }
     }

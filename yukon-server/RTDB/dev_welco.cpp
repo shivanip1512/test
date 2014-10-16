@@ -234,22 +234,7 @@ YukonError_t CtiDeviceWelco::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser
             OutMessage->Buffer.OutMessage[7] = LOBYTE (AccumFirst);
             OutMessage->Buffer.OutMessage[8] = LOBYTE (AccumLast);
             AIOffset = 4;
-
-#ifdef DEBUG1
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " Accum Scan of device " << getName() << " in progress " << endl;
-            }
-#endif
         }
-#ifdef DEBUG1
-        else
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " Integrity Scan of device " << getName() << " in progress " << endl;
-        }
-#endif
-
 
         /* Load the sectn to scan the stati */
         OutMessage->Buffer.OutMessage[5  + AIOffset] = IDLC_STATUSDUMP;
@@ -338,8 +323,8 @@ YukonError_t CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime
 
     if(InMessage.InLength == 0)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << TimeNow << " Message returned for " << getName() << " is zero bytes in length " << endl;
+        CTILOG_ERROR(dout, "Message returned for "<< getName() <<" is zero bytes in length");
+
         return ClientErrors::ReadTimeout;
     }
 
@@ -354,19 +339,10 @@ YukonError_t CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime
     /* Check to see if this is a null response */
     if((*(InMessage.Buffer.InMessage - 3)) & 0x80)
     {
-        // CtiLockGuard<CtiLogger> doubt_guard(dout);
-        // dout << TimeNow << " " << getName() << " No exceptions.. " << endl;
         return ClientErrors::None;
     }
 
-    if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage.Return.CommandStr)) == NULL)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
-
-        return ClientErrors::MemoryAccess;
-    }
-
+    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
     /* Walk through the sectins */
@@ -389,8 +365,8 @@ YukonError_t CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime
                 if(MyInMessage[2] & (EW_HDW_BIT))
                 {
                     result += string("Hardware error is indicated by RTU\n");
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Hardware error is indicated by RTU " << getName() << endl;
+
+                    CTILOG_ERROR(dout, "Hardware error is indicated by RTU " << getName());
                 }
 
                 if(MyInMessage[2] & (EW_FMW_BIT))
@@ -486,10 +462,8 @@ YukonError_t CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Throwing away unexpected freeze response" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Throwing away unexpected freeze response");
+
                     // What is this ??? DeviceRecord->ScanStatus &= SCANFREEZEFAILED;
                     setScanFlag(ScanFreezeFailed);   // FIX FIX FIX 090799 CGP ?????
                     /* message for screwed up freeze */
@@ -512,34 +486,8 @@ YukonError_t CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime
 
                 if(isScanFlagSet(ScanFreezePending))
                 {
-
                     // This is a per device message, not per point....
-
-                    for(PointOffset = (USHORT)StartPoint; PointOffset <= (USHORT)FinishPoint; PointOffset++)
-                    {
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)))
-                        {
-                            pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
-
-                            // Freeze Failed to dispatch message
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-
-
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, PulseAccumulatorPointType)))
-                        {
-                            pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
-
-                            // Freeze Failed to dispatch message
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-                    }
+                    CTILOG_ERROR(dout, getName() <<" - scan freeze still pending");
 
                     if(!accums_spill_frame)
                     {
@@ -667,34 +615,8 @@ YukonError_t CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime
 
                 if(isScanFlagSet(ScanFreezePending))
                 {
-
                     // This is a per device message, not per point....
-
-                    for(PointOffset = (USHORT)StartPoint; PointOffset <= (USHORT)FinishPoint; PointOffset++)
-                    {
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, DemandAccumulatorPointType)))
-                        {
-                            pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
-
-                            // Freeze Failed to dispatch message
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-
-
-                        if((PointRecord = getDevicePointOffsetTypeEqual(PointOffset, PulseAccumulatorPointType)))
-                        {
-                            pAccumPoint = boost::static_pointer_cast<CtiPointAccumulator>(PointRecord);
-
-                            // Freeze Failed to dispatch message
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-                    }
+                    CTILOG_ERROR(dout, getName() <<" - scan freeze still pending");
 
                     if(!accums_spill_frame)
                     {
@@ -780,16 +702,17 @@ YukonError_t CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime
 
                                 if(getDebugLevel() & DEBUGLEVEL_WELCO_PROTOCOL && PValue > 100000.0)
                                 {
-                                    {
-                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                                        dout << " " << getName() << " Demand Accum pt. " << pAccumPoint->getName() << " = " << PValue << endl;
-                                        dout << " Previous Pulses   " << prevpulses << endl;
-                                        dout << " Present Pulses    " << prespulses << endl;
-                                        dout << " Point Multiplier  " << multiplier << endl;
-                                        dout << " Point Data Offset " << dataoffset << endl;
-                                        dout << " Part Hour         " << PartHour << endl;
-                                    }
+                                    Cti::FormattedList itemList;
+
+                                    itemList.add("Previous Pulses")   << prevpulses;
+                                    itemList.add("Present Pulses")    << prespulses;
+                                    itemList.add("Point Multiplier")  << multiplier;
+                                    itemList.add("Point Data Offset") << dataoffset;
+                                    itemList.add("Part Hour")         << PartHour;
+
+                                    CTILOG_DEBUG(dout, getName() <<" Demand Accum pt. "<< pAccumPoint->getName() <<" = "<< PValue <<
+                                            itemList
+                                            );
                                 }
                             }
                         }
@@ -850,12 +773,6 @@ YukonError_t CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime
                             PValue = STATE_OPENED;
                         }
 
-#if (DEBUG_PRINT_DECODE > 0)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl;
-                        }
-#endif
                         /*
                          *  If this next bit is too confusing, you haven't read the protocol document.
                          *
@@ -870,12 +787,6 @@ YukonError_t CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime
                         if((MyInMessage[4 + 2 * ((PointOffset - StartPoint) / 8) + 1] >> ((PointOffset - StartPoint) % 8)) & 0x01)
                         {
                             PValue = ( (PValue == STATE_CLOSED) ? STATE_OPENED : STATE_CLOSED );
-#if (DEBUG_PRINT_DECODE > 0)
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl;
-                            }
-#endif
                         }
 
                         str = string(getName() + " point " + PointRecord->getName() + " = " + ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)));
@@ -930,20 +841,10 @@ YukonError_t CtiDeviceWelco::ResultDecode(const INMESS &InMessage, const CtiTime
                             PValue = STATE_OPENED;
                         }
 
-#if (DEBUG_PRINT_DECODE > 0)
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " " << PointRecord->getName() << " Status " << PointOffset << " is " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl;
-                        }
-#endif
-
                         /* Check if this is "changed" */
                         if(MyInMessage[(StartPoint * 2) + 3] & 0x40)
                         {
                             PValue = ( (PValue == STATE_CLOSED) ? STATE_OPENED : STATE_CLOSED );
-#if (DEBUG_PRINT_DECODE > 0)
-                            { CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " " << PointRecord->getName() << " Status " << PointOffset << " was " << ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)) << endl; }
-#endif
                         }
 
                         str = string(getName() + " point " + PointRecord->getName() + " = " + ResolveStateName(PointRecord->getStateGroupID(), (LONG)(PValue)));
@@ -1215,8 +1116,7 @@ YukonError_t CtiDeviceWelco::WelCoContinue (OUTMESS *OutMessage, INT Priority)
 
     if(getDebugLevel() & DEBUGLEVEL_WELCO_PROTOCOL)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Issuing a continue message! " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Issuing a continue message!");
     }
 
     /* Load the sectn to scan the stati */
@@ -1644,12 +1544,8 @@ YukonError_t CtiDeviceWelco::ExecuteRequest(CtiRequestMsg     *pReq,
     case GetConfigRequest:
     default:
         {
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-            }
+            CTILOG_ERROR(dout, "Command not supported ("<< parse.getCommand() <<")");
+
             nRet = ClientErrors::NoMethodForExecuteRequest;
             /* Set the error value in the base class. */
             // FIX FIX FIX 092999
@@ -1737,9 +1633,7 @@ YukonError_t CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParse
                 {
                     if(INT_MIN == ctlpt || !(parse.getFlags() & (CMD_FLAG_CTL_CLOSE | CMD_FLAG_CTL_OPEN)))
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Poorly formed control message.  Specify select pointid and open or close" << endl;
+                        CTILOG_ERROR(dout, "Poorly formed control message.  Specify select pointid and open or close");
                     }
                     else    // We have all our info available.
                     {
@@ -1825,30 +1719,19 @@ YukonError_t CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParse
                 }
                 else
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        dout << "  Control Point " << ctlPoint->getName() << " is disabled" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Control Point " << ctlPoint->getName() << " is disabled");
                 }
             }
         }
         else
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << getName() << " Control point " << ctlpt << " does not exist" << endl;
-            }
+            CTILOG_ERROR(dout, getName() <<" Control point "<< ctlpt <<" does not exist");
         }
     }
     else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getName() << " is disabled" << endl;
-        }
+        CTILOG_WARN(dout, getName() <<" is disabled"); // FIXME is this a warning or an error?
     }
-
 
     return status;
 }

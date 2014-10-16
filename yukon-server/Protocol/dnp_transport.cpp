@@ -38,10 +38,8 @@ TransportLayer &TransportLayer::operator=(const TransportLayer &aRef)
 {
     if( this != &aRef )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        //TODO: Remove this log or make this class non-copyable
+        CTILOG_TRACE(dout, "inside "<<__FUNCTION__);
     }
 
     return *this;
@@ -92,10 +90,7 @@ int TransportLayer::initForOutput(unsigned char *buf, unsigned len, unsigned sho
 
         //  maybe set error return... ?
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - error initializing transport layer, len = \"" << len << "\", buf = \"" << buf << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        CTILOG_ERROR(dout, "error initializing transport layer, len = \""<< len <<"\", buf = \""<< buf);
     }
 
     return retVal;
@@ -152,8 +147,7 @@ YukonError_t TransportLayer::generate( CtiXfer &xfer )
 
             default:
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unhandled state " << _ioState << " in Cti::Protocol::DNP::Transport::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                CTILOG_ERROR(dout, "unhandled state ("<< _ioState <<")");
             }
             case Failed:
             {
@@ -196,10 +190,7 @@ YukonError_t TransportLayer::decode( CtiXfer &xfer, YukonError_t status )
 
                     if( _payload_out.length < _payload_out.used )
                     {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - sent > length **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
+                        CTILOG_ERROR(dout, "payload sent > length ("<< _payload_out.used <<" > "<< _payload_out.length <<")");
                     }
                 }
 
@@ -225,8 +216,7 @@ YukonError_t TransportLayer::decode( CtiXfer &xfer, YukonError_t status )
 
                         if( payload.size() >= _payload_in.length )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - (" << payload.size() << ") >= (" << _payload_in.length << ") in Cti::Protocol::DNP::Transport::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            CTILOG_ERROR(dout, "payload.size() >= _payload_in.length ("<< payload.size() <<" >= "<< _payload_in.length <<")");
                         }
 
                         _payload_in.used = std::min(_payload_in.length, payload.size());
@@ -246,10 +236,7 @@ YukonError_t TransportLayer::decode( CtiXfer &xfer, YukonError_t status )
 
             default:
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
+                CTILOG_ERROR(dout, "unhandled state ("<< _ioState <<")");
 
                 _ioState = Failed;
             }

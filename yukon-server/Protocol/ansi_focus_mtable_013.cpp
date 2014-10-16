@@ -61,38 +61,30 @@ CtiAnsiFocusMfgTable13::~CtiAnsiFocusMfgTable13()
 //=========================================================================================================================================
 void CtiAnsiFocusMfgTable13::printResult(  )
 {
+    Cti::FormattedList itemList;
 
-    /**************************************************************
-    * its been discovered that if a method goes wrong while having the logger locked
-    * unpleasant consquences may happen (application lockup for instance)  Because
-    * of this, we make ugly printout calls so we aren't locking the logger at the time
-    * of the method call
-    ***************************************************************
-    */
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << endl << "=======================  Focus MFG Table 13  ========================" << endl;
-    }
+    itemList.add("Phase A Voltage")              << _gyrboxPhaseInfo.phaseVoltage[A].asValue(_xyFormat);
+    itemList.add("Phase B Voltage")              << _gyrboxPhaseInfo.phaseVoltage[B].asValue(_xyFormat);
+    itemList.add("Phase C Voltage")              << _gyrboxPhaseInfo.phaseVoltage[C].asValue(_xyFormat);
+    itemList.add("Phase A Voltage Angle")        << _gyrboxPhaseInfo.phaseVoltageAngle[A].asValue(_xyFormat);
+    itemList.add("Phase B Voltage Angle")        << _gyrboxPhaseInfo.phaseVoltageAngle[B].asValue(_xyFormat);
+    itemList.add("Phase C Voltage Angle")        << _gyrboxPhaseInfo.phaseVoltageAngle[C].asValue(_xyFormat);
+    itemList.add("Phase A Current")              << _gyrboxPhaseInfo.phaseCurrent[A].asValue(_xyFormat);
+    itemList.add("Phase B Current")              << _gyrboxPhaseInfo.phaseCurrent[B].asValue(_xyFormat);
+    itemList.add("Phase C Current")              << _gyrboxPhaseInfo.phaseCurrent[C].asValue(_xyFormat);
+    itemList.add("Instant Power")                << _instantMeasure.instantPower;
+    itemList.add("Neutral Current")              << _instantMeasure.neutralCurrent.asValue(_xyFormat);
+    itemList.add("Temperature")                  << _temperature;
+    itemList.add("Line Frequency")               << _lineFrequency.asValue(_xyFormat);
+    itemList.add("Reverse Rotation Pulse Count") << _reverseRotationPulseCnt;
+    itemList.add("Load Side Phase A Voltage")    << _loadSidePhaseAVoltage.asValue(_xyFormat);
+    itemList.add("Load Side Phase C Voltage")    << _loadSidePhaseCVoltage.asValue(_xyFormat);
 
-    {
-        CtiLockGuard< CtiLogger > doubt_guard( dout );
-        dout << " Phase A Voltage: " << _gyrboxPhaseInfo.phaseVoltage[A].asValue(_xyFormat)  << endl;
-        dout << " Phase B Voltage: " << _gyrboxPhaseInfo.phaseVoltage[B].asValue(_xyFormat)  << endl;
-        dout << " Phase C Voltage: " << _gyrboxPhaseInfo.phaseVoltage[C].asValue(_xyFormat)  << endl;
-        dout << " Phase A Voltage Angle: " << _gyrboxPhaseInfo.phaseVoltageAngle[A].asValue(_xyFormat)  << endl;
-        dout << " Phase B Voltage Angle: " << _gyrboxPhaseInfo.phaseVoltageAngle[B].asValue(_xyFormat)  << endl;
-        dout << " Phase C Voltage Angle: " << _gyrboxPhaseInfo.phaseVoltageAngle[C].asValue(_xyFormat)  << endl;
-        dout << " Phase A Current: " << _gyrboxPhaseInfo.phaseCurrent[A].asValue(_xyFormat)  << endl;
-        dout << " Phase B Current: " << _gyrboxPhaseInfo.phaseCurrent[B].asValue(_xyFormat)  << endl;
-        dout << " Phase C Current: " << _gyrboxPhaseInfo.phaseCurrent[C].asValue(_xyFormat)  << endl;
-        dout << " Instant Power: "   << _instantMeasure.instantPower << endl;
-        dout << " Neutral Current: "   << _instantMeasure.neutralCurrent.asValue(_xyFormat) << endl;
-        dout << " Temperature: "   << (int) _temperature << endl;
-        dout << " Line Frequency: "   << _lineFrequency.asValue(_xyFormat) << endl;
-        dout << " Reverse Rotation Pulse Count: "   << (int) _reverseRotationPulseCnt << endl;
-        dout << " Load Side Phase A Voltage: "   << _loadSidePhaseAVoltage.asValue(_xyFormat) << endl;
-        dout << " Load Side Phase C Voltage: "   << _loadSidePhaseCVoltage.asValue(_xyFormat) << endl;
-    }
+    CTILOG_INFO(dout,
+            endl << formatTableName("Focus MFG Table 13") <<
+            itemList
+            );
+
 }
 
 short CtiAnsiFocusMfgTable13::getPhaseVoltage(PhaseType phase)

@@ -251,6 +251,13 @@ std::ostream& operator<< (std::ostream& os, const CtiFDRPoint& point)
     return os << "[point id " << point.getPointID() << "]";
 }
 
+std::string CtiFDRPoint::toString() const
+{
+    std::ostringstream oss;
+    oss << *this;
+    return oss.str();
+}
+
 bool CtiFDRPoint::isCommStatus()
 {
     return (iPointOffset == 2000 ? true : false);

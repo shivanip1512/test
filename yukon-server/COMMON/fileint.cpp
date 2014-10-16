@@ -13,8 +13,8 @@
 
 #include "fileint.h"
 #include "dllbase.h"
-
 #include "ctitime.h"
+#include "logger.h"
 
 using namespace std;
 
@@ -113,10 +113,7 @@ void CtiFileInterface::stop()
             //Cancellation started but didn't complete - kick it over
             _watchthr.terminate();
 
-            {
-                RWMutexLock::LockGuard coutGuard(coutMux);
-                cerr << CtiTime() << " - CtiFileInterface::stop() - Watch thread aborted cancellation and has been terminated" << endl;
-            }
+            CTILOG_WARN(dout, "Watch thread aborted cancellation and has been terminated");
         }
     }
 }
@@ -145,18 +142,12 @@ void CtiFileInterface::_watch()
     {
         //The find functions work in the current directory
         //Lets hope there are no conflicts with others!
+        CTILOG_INFO(dout, "Setting Current Directory to "<< _dir);
 
-        {
-            RWMutexLock::LockGuard guard(coutMux);
-            cout << CtiTime() << " - Setting Current Directory to:  " << _dir << endl;
-        }
         if ( !SetCurrentDirectory( _dir.c_str() ) )
         {
-            {
-                RWMutexLock::LockGuard guard(coutMux);
-                cerr << CtiTime() << " - CtiFileInterface::_watch() - An error occured changing the current directory" << endl;
-                //where should this be going FIX FIX - maybe that'll get someones attention
-            }
+            CTILOG_ERROR(dout, "An error occurred changing the current directory");
+            //where should this be going FIX FIX - maybe that'll get someones attention
             return;
         }
 
@@ -191,19 +182,12 @@ void CtiFileInterface::_watch()
                 if( !do_delete)
                 {
                     //Actually handle the file in some child class
-                    {
-                        RWMutexLock::LockGuard guard(coutMux);
-                        cout << CtiTime()  << " File Interface: handling file " << FileData.cFileName << endl;
-                    }
-
+                    CTILOG_INFO(dout, "Handling file "<< FileData.cFileName);
                     handleFile( FileData.cFileName );
                 }
                 else
                 {
-                    {
-                        RWMutexLock::LockGuard guard(coutMux);
-                        cout << CtiTime()  << " File Interface: deleting file " << FileData.cFileName << endl;
-                    }
+                    CTILOG_INFO(dout, "Deleting file "<< FileData.cFileName);
                 }
 
                 //Delete it
@@ -214,13 +198,13 @@ void CtiFileInterface::_watch()
             FindClose(hSearch);
 
         }
-    } catch (RWCancellation&)
+    }
+    catch (RWCancellation&)
     {
         _valid = false;
-        {
-            RWMutexLock::LockGuard guard(coutMux);
-            cout << CtiTime()  << " file interface exiting" << endl;
-        }
+
+        CTILOG_INFO(dout, "Exiting");
+
         throw;
     }
 

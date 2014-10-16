@@ -89,6 +89,6 @@ public:
     CtiMultiMsg_vec&       PointData();
     CtiReturnMsg&    setPointData(const CtiMultiMsg_vec& point_data);
 
-    virtual void dump() const;
+    virtual std::string toString() const override;
 };
 

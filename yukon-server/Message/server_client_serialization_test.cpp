@@ -3,6 +3,7 @@
 #define private public
 #define protected public
 
+#include "logManager.h"
 #include "message.h"
 #include "msg_cmd.h"
 #include "msg_dbchg.h"
@@ -43,7 +44,7 @@ void __cdecl Purecall(void)
 
 
 bool bGCtrlC;
-DLLIMPORT extern CtiLogger dout;
+DLLIMPORT extern Cti::Logging::LogManager doutManager;
 
 CtiListenerConnection listenerConn( "com.eaton.eas.yukon.conntest" );
 
@@ -134,12 +135,12 @@ void main(int argc, char* argv[])
     bGCtrlC = false;
 
     // fire up the logger thread
-    dout.start              ();
-    dout.setOutputPath      ( gLogDirectory );
-    dout.setRetentionLength ( gLogRetention );
-    dout.setOutputFile      ( "server_client_serialization_test" );
-    dout.setToStdOut        ( true );
-    dout.setWriteInterval   ( 1000 );
+
+    doutManager.setOutputPath    ( gLogDirectory );
+    doutManager.setRetentionDays ( gLogRetention );
+    doutManager.setOutputFile    ( "server_client_serialization_test" );
+    doutManager.setToStdOut      ( true );
+    doutManager.start();
 
     if( argc != 2 )
     {

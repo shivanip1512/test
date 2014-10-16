@@ -8,7 +8,7 @@ using namespace std;
 namespace Cti {
 namespace Simulator {
 
-SimulatorLogger::SimulatorLogger(CtiLogger &logger) :
+SimulatorLogger::SimulatorLogger(Logging::LoggerPtr &logger) :
     _logger(logger),
     _scope(0)
 {
@@ -44,36 +44,34 @@ ScopedLogger SimulatorLogger::getNewScope(const string &str)
 
 void SimulatorLogger::log(const string &str)
 {
-    CtiLockGuard<CtiLogger> guard(_logger);
-
-    _logger << prefix() << str << endl;
+    CTILOG_INFO(dout, prefix() << str);
 }
 
 void SimulatorLogger::log(const string &str, int i)
 {
-    log(string(str + " (" + CtiNumStr(i) + ")\n"));
+    CTILOG_INFO(dout, prefix() << str <<" ("<< i <<")");
 }
 
 void SimulatorLogger::log(const string &str, const bytes &l_bytes)
 {
-    log(string(str + "\n" + formatIOBytes(l_bytes) + "\n"));
+    CTILOG_INFO(dout, prefix() <<
+            endl << formatIOBytes(l_bytes));
 }
 
 void SimulatorLogger::breadcrumbLog(const string &str)
 {
-    CtiLockGuard<CtiLogger> guard(_logger);
-
-    _logger << breadcrumbPrefix() << str << endl;
+    CTILOG_INFO(dout, breadcrumbPrefix() << str);
 }
 
 void SimulatorLogger::breadcrumbLog(const string &str, int i)
 {
-    breadcrumbLog(string(str + " (" + CtiNumStr(i) + ")\n"));
+    CTILOG_INFO(dout, breadcrumbPrefix() << str <<" ("<< i <<")");
 }
 
 void SimulatorLogger::breadcrumbLog(const string &str, const bytes &l_bytes)
 {
-    breadcrumbLog(string(str + "\n" + formatIOBytes(l_bytes) + "\n"));
+    CTILOG_INFO(dout, breadcrumbPrefix() <<
+            endl << formatIOBytes(l_bytes));
 }
 
 string SimulatorLogger::formatIOBytes(const bytes &buf)

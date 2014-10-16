@@ -330,21 +330,22 @@ CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setUser(const string
 }
 
 
-void CtiTableDynamicPointAlarming::dump()
+std::string CtiTableDynamicPointAlarming::toString() const
 {
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "getPointID()        " << getPointID() << endl;
-        dout << "getAlarmCondition() " << getAlarmCondition() << endl;
-        dout << "getCategoryID()     " << getCategoryID() << endl;
-        dout << "getAlarmDBTime()    " << getAlarmDBTime() << endl;
-        dout << "getAction()         " << getAction() << endl;
-        dout << "getDescription()    " << getDescription() << endl;
-        dout << "getTags()            0x" << CtiNumStr(getTags()).xhex().zpad(8).toString() << endl;
-        dout << "getLogID()          " << getLogID() << endl;
-        dout << "getSOE()            " << getSOE() << endl;
-        dout << "getLogType()        " << getLogType() << endl;
-        dout << "getUser()           " << getUser() << endl;
+    Cti::FormattedList itemList;
 
-    }
+    itemList <<"CtiTableDynamicPointAlarming";
+    itemList.add("getPointID()")        << getPointID();
+    itemList.add("getAlarmCondition()") << getAlarmCondition();
+    itemList.add("getCategoryID()")     << getCategoryID();
+    itemList.add("getAlarmDBTime()")    << getAlarmDBTime();
+    itemList.add("getAction()")         << getAction();
+    itemList.add("getDescription()")    << getDescription();
+    itemList.add("getTags()")           << CtiNumStr(getTags()).xhex().zpad(8);
+    itemList.add("getLogID()")          << getLogID();
+    itemList.add("getSOE()")            << getSOE();
+    itemList.add("getLogType()")        << getLogType();
+    itemList.add("getUser()")           << getUser();
+
+    return itemList.toString();
 }

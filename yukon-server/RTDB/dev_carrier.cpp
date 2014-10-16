@@ -42,9 +42,9 @@ void CarrierDevice::DecodeDatabaseReader(RowReader &rdr)
     Inherited::DecodeDatabaseReader(rdr);       // get the base class handled
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
+
     loadProfile->DecodeDatabaseReader(rdr);
 }
 

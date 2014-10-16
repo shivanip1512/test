@@ -67,11 +67,9 @@ YukonError_t CtiDevicePagingReceiver::GeneralScan(CtiRequestMsg *pReq, CtiComman
     YukonError_t status = ClientErrors::None;
     CtiCommandParser newParse("scan general");
 
-
     if( getDebugLevel() & DEBUGLEVEL_SCANTYPES )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** GeneralScan for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "GeneralScan for \""<< getName() <<"\"");
     }
 
     pReq->setCommandString("scan general");
@@ -583,8 +581,7 @@ void CtiDevicePagingReceiver::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel() & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 
     _tbl.DecodeDatabaseReader(rdr);

@@ -3,10 +3,15 @@
 #include "fdrpointlist.h"
 #include "fdrscadaserver.h"
 #include "fdrscadahelper.h"
+#include "loggable.h"
 
 #pragma pack(push, valmetmulti_packing, 1)
 
-struct IM_EX_FDRBASE CtiValmetPortId
+// forward declarations
+struct CtiValmetPortId;
+std::ostream& operator<< (std::ostream&, const CtiValmetPortId&);
+
+struct CtiValmetPortId : public Cti::Loggable
 {
     std::string PointName;
     int PortNumber;
@@ -23,13 +28,18 @@ struct IM_EX_FDRBASE CtiValmetPortId
         }
     }
 
+    std::string toString() const
+    {
+        std::ostringstream oss;
+        oss << *this;
+        return oss.str();
+    }
 };
 
 inline std::ostream& operator<< (std::ostream& os, const CtiValmetPortId& id)
 {
     return os << "[VALMET: N=" << id.PointName << ", P=" << id.PortNumber << "]";
 };
-
 
 #pragma pack(pop, valmetmulti_packing)
 #define VALMET_MULTI_HEADER_SIZE        32

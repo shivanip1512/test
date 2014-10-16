@@ -236,10 +236,7 @@ void CtiLMEnergyExchangeHourlyCustomer::addLMEnergyExchangeHourlyCustomerTable()
 {
     static const std::string sql = "insert into lmenergyexchangehourlycustomer values (?, ?, ?, ?, ?)";
 
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Inserted customer activity into LMEnergyExchangeHourlyCustomer, customerid: " << getCustomerId() << ", offerid: " << getOfferId() << ", revisionnumber: " << getRevisionNumber() << endl;
-    }
+    CTILOG_INFO(dout, "Inserted customer activity into LMEnergyExchangeHourlyCustomer, customerid: " << getCustomerId() << ", offerid: " << getOfferId() << ", revisionnumber: " << getRevisionNumber());
 
     Cti::Database::DatabaseConnection   conn;
     Cti::Database::DatabaseWriter       inserter(conn, sql);

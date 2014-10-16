@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_pt_unit
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_unit.cpp-arc  $
-* REVISION     :  $Revision: 1.11.2.1 $
-* DATE         :  $Date: 2008/11/18 20:11:29 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <limits.h>
@@ -37,8 +24,7 @@ void CtiTablePointUnit::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
     rdr   >> _unitID;
@@ -70,14 +56,16 @@ CtiTablePointUnit& CtiTablePointUnit::setLogFrequency(INT i)
     return *this;
 }
 
-void CtiTablePointUnit::dump() const
+std::string CtiTablePointUnit::toString() const
 {
-    CtiLockGuard<CtiLogger> doubt_guard(dout);
-    dout << " UOM ID                                   : " << _unitID << endl;
-    dout << " Decimal Places                           : " << _decimalPlaces << endl;
-    dout << " Decimal Digits                           : " << _decimalDigits << endl;
-    //dout << " High Reasonabiliy Limit                  : " << _highReasonablityLimit << endl;
-    //dout << " Low  Reasonabiliy Limit                  : " << _lowReasonablityLimit << endl;
+    Cti::FormattedList itemList;
+
+    itemList <<"CtiTablePointUnit";
+    itemList.add("UOM ID")         << _unitID;
+    itemList.add("Decimal Places") << _decimalPlaces;
+    itemList.add("Decimal Digits") << _decimalDigits;
+
+    return itemList.toString();
 }
 
 string CtiTablePointUnit::getTableName()

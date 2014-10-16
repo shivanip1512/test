@@ -40,18 +40,18 @@ CtiDeviceMacro::CtiDeviceMacro( )
 {
 }
 
-void CtiDeviceMacro::DumpData( )
+std::string CtiDeviceMacro::toString() const
 {
-    Inherited::DumpData( );
+    Cti::FormattedList itemList;
+    itemList <<"CtiDeviceMacro";
 
+    for( int i = 0; i < _deviceList.size( ); i++ )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-
-        dout << "Macro device, id " << getID( ) << endl;
-
-        for( int i = 0; i < _deviceList.size( ); i++ )
-            dout << "id of subdevice " << i+1 << ": " << _deviceList[i]->getID() << endl;
+        Cti::StreamBuffer sb;
+        itemList.add(sb <<"id of subdevice "<< i+1) << _deviceList[i]->getID();
     }
+
+    return (Inherited::toString() += itemList.toString());
 }
 
 
@@ -88,8 +88,7 @@ void CtiDeviceMacro::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if( getDebugLevel( ) & DEBUGLEVEL_DATABASE )
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_DEBUG(dout, "Decoding DB reader");
     }
 }
 
@@ -178,9 +177,7 @@ YukonError_t CtiDeviceMacro::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandPars
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << "No devices in macro device \'" << getName( ) << "\'" << endl;
+        CTILOG_ERROR(dout, "No devices in macro device \"" << getName() << "\"");
     }
 
     return nRet;
@@ -224,18 +221,16 @@ bool CtiDeviceMacro::coalesceRippleGroups( CtiRequestMsg *pReq, CtiCommandParser
 
         if(getDebugLevel() & DEBUGLEVEL_RIPPLE)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << "  Ripple message has been bit-packed ";
+            std::ostringstream output;
+            output << "Ripple message has been bit-packed " << hex << setfill('0');
 
-            char of = dout .fill('0');
             int i, j;
             for(i = 0; i < 7; i++)
             {
-                dout << hex << setw(2) << (int)RippleMessage[i] << " ";
+                output << setw(2) << (int)RippleMessage[i] << " ";
             }
 
-            dout << dec << endl;
-            dout .fill(of);
+            CTILOG_DEBUG(dout, output);
         }
     }
 

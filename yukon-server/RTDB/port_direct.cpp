@@ -57,10 +57,7 @@ YukonError_t CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbit
                 {
                     close(false);
 
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Port " << getName() << " *** ERROR *** acquiring port handle on " << _localSerial.getPhysicalPort() << endl;
-                    }
+                    CTILOG_ERROR(dout, "Could not acquire port handle"<< _localSerial.getPhysicalPort());
 
                     Sleep(5000);
 
@@ -68,8 +65,7 @@ YukonError_t CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbit
                 }
                 else
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Port " << getName() << " acquiring port handle" << endl;
+                    CTILOG_INFO(dout, "Port "<< getName() <<" acquiring port handle");
                 }
 
 
@@ -81,30 +77,24 @@ YukonError_t CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbit
                 /* set the baud rate bits parity etc! on the port */
                 if( i = setLine() )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Could not set baud rate/parity on port "<< getName());
+
                     return(i);
                 }
 
                 /* set the Read Timeout for the port */
                 if( i = setPortReadTimeOut(1000) )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Could not set the read timeout on port "<< getName());
+
                     return(i);
                 }
 
                 /* set the write timeout for the port */
                 if( i = setPortWriteTimeOut(1000) )
                 {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    CTILOG_ERROR(dout, "Could not set the write timeout on port "<< getName());
+
                     return(i);
                 }
 
@@ -116,22 +106,17 @@ YukonError_t CtiPortDirect::openPort(INT rate, INT bits, INT parity, INT stopbit
 
                 if( status = reset(true) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Error resetting port on " << getName() << endl;
+                    CTILOG_ERROR(dout, "Could not reset port on "<< getName());
                 }
                 /* set the modem parameters */
                 if( status = setup(true) )
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Error setting port on " << getName() << endl;
+                    CTILOG_ERROR(dout, "Could not set port on "<< getName());
                 }
             }
             catch(...)
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << "**** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ") " << getName() << endl;
-                }
+                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
         }
     }
@@ -286,13 +271,6 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
                 bytesavail = 0;
                 bytesavail = getPortInQueueCount();
 
-                if(0)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    dout << "   There are " << bytesavail << " on the port..  I wanted " << expected << "  I waited " << lpcnt << " 1/20 seconds " << endl;
-                }
-
                 if( (expected > 0 && bytesavail >= expected) ||  (expected == 0 && bytesavail > 0) )
                 {
                     /*
@@ -324,15 +302,13 @@ YukonError_t CtiPortDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMe
             {
                 if(getDebugLevel() & DEBUGLEVEL_PORTCOMM)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "  Flushing inbound buffer " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, "Flushing inbound buffer");
                 }
                 CTISleep ((ULONG) getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY));
 
                 if(getDebugLevel() & DEBUGLEVEL_PORTCOMM)
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << "  Done flushing inbound buffer " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    CTILOG_DEBUG(dout, "Done flushing inbound buffer");
                 }
                 inClear();
             }
@@ -500,10 +476,7 @@ YukonError_t CtiPortDirect::readIDLCHeader(CtiXfer& Xfer, unsigned long *byteCou
         if( matching && pos == out_count )
         {
             //  if it's an echo
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - discarding IDLC echo message **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            CTILOG_WARN(dout, "Discarding IDLC echo message");
 
             //  start all over, but don't check for an echo - it's already been caught
             status = readIDLCHeader(Xfer, byteCount, false);
@@ -562,10 +535,7 @@ YukonError_t CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiM
     {
         if(Xfer.getOutCount() > 4096)
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " *** ERROR *** to attempt an OutMess of " << Xfer.getOutCount() << " bytes" << endl;
-            }
+            CTILOG_ERROR(dout, "attempting an OutMess of "<< Xfer.getOutCount() <<" bytes");
 
             Xfer.setOutCount(100);     // Only allow 100 or so...
         }
@@ -614,11 +584,7 @@ YukonError_t CtiPortDirect::outMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiM
             // We should determine if CTS is high.
             if( getDebugLevel() & DEBUGLEVEL_PORTCOMM && !ctsTest() )
             {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << getName() << " CTS has not come high." << endl;
-                    dout << "  CTS has not come high.  Check your communications channel timings" << endl;
-                }
+                CTILOG_DEBUG(dout, getName() <<" CTS has not come high. Check your communications channel timings");
             }
 
             /* Remember when we started writing */
@@ -698,10 +664,8 @@ INT CtiPortDirect::close(INT trace)
             _dialable->disconnect(CtiDeviceSPtr(), trace);
         }
 
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " " << getName() << " releasing port handle" << endl;
-        }
+        CTILOG_INFO(dout, getName() <<" releasing port handle");
+
         status = CTIClose(getHandle());
     }
 
@@ -797,8 +761,7 @@ YukonError_t CtiPortDirect::waitForPortResponse(PULONG ResponseSize,  PCHAR Resp
     }
     else
     {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        CTILOG_ERROR(dout, "_dialable is NULL");
     }
 
     return status;

@@ -198,8 +198,7 @@ void RfnMeterDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandP
             {
                 result = "ERROR: Invalid config data. Config name:" + configPart;
 
-                logInfo("had no configuration for config: " + configPart,
-                        __FUNCTION__, __FILE__, __LINE__ );
+                CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - had no configuration for config: "<< configPart);
 
                 break;
             }
@@ -226,8 +225,7 @@ void RfnMeterDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandP
 
                 result = "ERROR: " + error_description + ". Config name:" + configPart;
 
-                logInfo("had a configuration error using config: " + configPart,
-                        __FUNCTION__, __FILE__, __LINE__ );
+                CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - had a configuration error using config: "<< configPart);
             }
         }
 
@@ -495,15 +493,13 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
     }
     catch( const MissingConfigDataException &e )
     {
-        logInfo( e.what(),
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
         return ClientErrors::NoConfigData;
     }
     catch( const InvalidConfigDataException &e )
     {
-        logInfo( e.what(),
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
         return ClientErrors::InvalidConfigData;
     }
@@ -579,15 +575,13 @@ YukonError_t RfnMeterDevice::executePutConfigTemperatureAlarm( CtiRequestMsg * p
     }
     catch ( const MissingConfigDataException &e )
     {
-        logInfo( e.what(),
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
         return ClientErrors::NoConfigData;
     }
     catch ( const InvalidConfigDataException &e )
     {
-        logInfo( e.what(),
-                __FUNCTION__, __FILE__, __LINE__ );
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
         return ClientErrors::InvalidConfigData;
     }

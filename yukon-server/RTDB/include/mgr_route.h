@@ -1,13 +1,13 @@
 #pragma once
 
-
 #include "repeaterrole.h"
 #include "rte_base.h"
 #include "dlldefs.h"
 #include "slctdev.h"
 #include "smartmap.h"
+#include "loggable.h"
 
-class IM_EX_DEVDB CtiRouteManager
+class IM_EX_DEVDB CtiRouteManager : public Cti::Loggable
 {
 private:
 
@@ -39,14 +39,14 @@ public:
     typedef CtiSmartMap< CtiRouteBase >::ptr_type       ptr_type;
     typedef CtiSmartMap< CtiRouteBase >::spiterator     spiterator;
     typedef CtiSmartMap< CtiRouteBase >::insert_pair    insert_pair;
-
+    typedef CtiSmartMap< CtiRouteBase >::const_spiterator  const_spiterator;
 
     CtiRouteManager();
     virtual ~CtiRouteManager();
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
 
-    void DumpList(void);
+    virtual std::string toString() const override;
 
     void RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &) = RouteFactory);
     ptr_type getRouteById( LONG rid );
@@ -54,6 +54,9 @@ public:
 
     spiterator begin();
     spiterator end();
+
+    const_spiterator begin() const;
+    const_spiterator end() const;
 
     static spiterator nextPos(spiterator &my_itr); // This is to overcome MS's flaw in the STL.  We MUST use this method in binaries other than this DLL.
 
