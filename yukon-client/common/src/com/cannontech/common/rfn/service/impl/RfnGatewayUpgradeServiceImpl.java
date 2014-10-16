@@ -54,7 +54,7 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
     }
 
     @Override
-    public void sendUpgrade(Set<RfnGateway> rfnGateways, String upgradeId, File upgradePackage,
+    public void sendUpgrade(Set<RfnGateway> rfnGateways, File upgradePackage,
                             final RfnGatewayUpgradeCallback callback) {
         // Read upgrade package into byte[].
         byte[] upgradeData = null;
@@ -62,9 +62,7 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
             upgradeData = IOUtils.toByteArray(fis);
         } catch (IOException e) {
             callback.handleException(e);
-            for (Throwable t : e.getSuppressed()) {
-                log.warn("Failed to close upgrade package file.", t);
-            }
+            callback.complete();
             return;
         }
 
@@ -75,6 +73,18 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
             }
         }
 
+        String upgradeId;
+        try {
+            upgradeId = getUpgradeId(upgradePackage);
+        } catch (Exception e) {
+            callback.handleException(e);
+            callback.complete();
+            for (Throwable t : e.getSuppressed()) {
+                log.warn("Failed to close upgrade package file.", t);
+            }
+            return;
+        }
+        
         RfnGatewayUpgradeRequest request = new RfnGatewayUpgradeRequest();
         request.setRfnIdentifiers(rfnIdentifiers);
         request.setUpgradeId(upgradeId);
@@ -114,9 +124,9 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
     }
 
     @Override
-    public void sendUpgradeAll(String upgradeId, File upgradePackage,
+    public void sendUpgradeAll(File upgradePackage,
                                RfnGatewayUpgradeCallback callback) {
-        sendUpgrade(null, upgradeId, upgradePackage, callback);
+        sendUpgrade(null, upgradePackage, callback);
     }
 
     // *.pkg.nm itself is composed of fragments/parts for transport purposes:
