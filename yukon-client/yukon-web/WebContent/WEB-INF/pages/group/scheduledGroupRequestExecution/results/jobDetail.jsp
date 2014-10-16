@@ -59,7 +59,7 @@
 
         <%-- name --%>
         <tags:nameValue name="${scheduleNameText}" nameColumnWidth="160px">
-            ${jobWrapper.name}
+            ${fn:escapeXml(jobWrapper.name)}
         </tags:nameValue>
         
         <%-- cre type --%>
