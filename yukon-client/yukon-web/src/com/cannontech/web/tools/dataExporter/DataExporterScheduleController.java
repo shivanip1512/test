@@ -42,6 +42,8 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
@@ -73,6 +75,7 @@ public class DataExporterScheduleController {
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
+    @Autowired private EmailService emailService;
     
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     private ScheduledFileExportValidator scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
@@ -88,6 +91,7 @@ public class DataExporterScheduleController {
         DataRange dataRange;
         ScheduledFileExportData exportData;
         CronExpressionTagState cronTagState;
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         if(jobId != null) {
             //edit existing schedule
@@ -109,7 +113,12 @@ public class DataExporterScheduleController {
             exportData.setExportFileExtension(task.getExportFileExtension());
             exportData.setIncludeExportCopy(task.isIncludeExportCopy());
             exportData.setExportPath(task.getExportPath());
-            exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
+            if (task.getNotificationEmailAddresses() != null) {
+                exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
+                exportData.setSendEmail(task.isSendEmail());
+            } else {
+                exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
+            }
         } else {
             //create new schedule
             deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -131,6 +140,7 @@ public class DataExporterScheduleController {
             dataRange = archivedValuesExporter.getScheduleDataRange();
             exportData = new ScheduledFileExportData();
             cronTagState = new CronExpressionTagState();
+            exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
         }
 
         model.addAttribute("exportFormat", format);
@@ -141,46 +151,48 @@ public class DataExporterScheduleController {
         model.addAttribute("cronExpressionTagState", cronTagState);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
         model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
-        
+        model.addAttribute("isSMTPConfigured",emailService.isSmtpConfigured());
+       
         return "data-exporter/schedule.jsp";
     }
     
+
     @RequestMapping("/data-exporter/doSchedule")
     public String doSchedule(ModelMap model, @ModelAttribute("exportData") ScheduledFileExportData exportData, BindingResult bindingResult, HttpServletRequest request,
-            int formatId, String[] attributes, Integer jobId, YukonUserContext userContext, FlashScope flashScope) 
+     int formatId, String[] attributes, Integer jobId, YukonUserContext userContext, FlashScope flashScope) 
             throws ServletRequestBindingException, IllegalArgumentException, ParseException {
         
-        //Build parameters
+        // Build parameters
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         DataRange dataRange = getDataRangeFromRequest(request);
-        
+
         Set<Attribute> attributeSet = Sets.newHashSet();
-        if(attributes != null) {
-            for(String attribute : attributes) {
+        if (attributes != null) {
+            for (String attribute : attributes) {
                 attributeSet.add(attributeService.resolveAttributeName(attribute));
             }
         }
         ArchivedDataExportFileGenerationParameters parameters = new ArchivedDataExportFileGenerationParameters(deviceCollection, formatId, attributeSet, dataRange);
         exportData.setParameters(parameters);
-        
+
         try {
             String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
             exportData.setScheduleCronString(scheduleCronString);
         } catch (ServletRequestBindingException | IllegalArgumentException | ParseException e) {
             bindingResult.rejectValue("scheduleCronString", "yukon.common.invalidCron");
         }
-        
+
         scheduledFileExportValidator.validate(exportData, bindingResult);
-        
+
         if (bindingResult.hasErrors()) {
-            
+
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setError(messages);
             model.addAttribute("exportFormat", archiveValuesExportFormatDao.getByFormatId(formatId));
             model.addAttribute("attributes", attributeSet);
             model.addAttribute("dataRange", dataRange);
             model.addAttribute("deviceCollection", deviceCollection);
-            
+
             if (bindingResult.hasFieldErrors("scheduleCronString")) {
                 CronExpressionTagState state = new CronExpressionTagState();
                 state.setCronTagStyleType(CronTagStyleType.CUSTOM);
@@ -197,46 +209,46 @@ public class DataExporterScheduleController {
             
             return "data-exporter/schedule.jsp";
         }
-        
-        if(jobId == null) {
+
+        if (jobId == null) {
             scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
-            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.scheduleSuccess", exportData.getScheduleName()));
+            flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.scheduleSuccess",exportData.getScheduleName()));
         } else {
             scheduledFileExportService.updateFileExport(exportData, userContext, request, jobId);
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.updateSuccess", exportData.getScheduleName()));
         }
-        
+                    
         return "redirect:view";
     }
-    
+
     private DataRange getDataRangeFromRequest(HttpServletRequest request) throws ServletRequestBindingException {
         DataRange dataRange = new DataRange();
         
         String dataRangeTypeString = ServletRequestUtils.getStringParameter(request, "dataRange.dataRangeType");
         dataRange.setDataRangeType(DataRangeType.valueOf(dataRangeTypeString));
-        
-        if(dataRange.getDataRangeType() == DataRangeType.DATE_RANGE) {
+
+        if (dataRange.getDataRangeType() == DataRangeType.DATE_RANGE) {
             LocalDateRange localDateRange = new LocalDateRange();
             LocalDate startDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "dataRange.dateRange.startDate"));
             LocalDate endDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "dataRange.dateRange.endDate"));
             localDateRange.setStartDate(startDate);
             localDateRange.setEndDate(endDate);
             dataRange.setLocalDateRange(localDateRange);
-        } else if(dataRange.getDataRangeType() == DataRangeType.DAYS_PREVIOUS) {
+        } else if (dataRange.getDataRangeType() == DataRangeType.DAYS_PREVIOUS) {
             int daysPrevious = ServletRequestUtils.getIntParameter(request, "dataRange.daysPrevious");
             dataRange.setDaysPrevious(daysPrevious);
-        } else if(dataRange.getDataRangeType() == DataRangeType.END_DATE) {
-            //don't worry about this, task will set it when run
-        } else if(dataRange.getDataRangeType() == DataRangeType.SINCE_LAST_CHANGE_ID) {
-            //don't worry about this, task will set it when run
+        } else if (dataRange.getDataRangeType() == DataRangeType.END_DATE) {
+            // don't worry about this, task will set it when run
+        } else if (dataRange.getDataRangeType() == DataRangeType.SINCE_LAST_CHANGE_ID) {
+            // don't worry about this, task will set it when run
         }
         
         return dataRange;
     }
-    
+
     @InitBinder
     public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
-        
+
         if (binder.getTarget() != null) {
             MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver(baseKey);
             binder.setMessageCodesResolver(msgCodesResolver);
@@ -244,11 +256,11 @@ public class DataExporterScheduleController {
 
         binder.registerCustomEditor(Attribute.class, new EnumPropertyEditor<>(BuiltInAttribute.class));
         binder.registerCustomEditor(DataRangeType.class, new EnumPropertyEditor<>(DataRangeType.class));
-        
+
         PropertyEditor localDatePropertyEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
         binder.registerCustomEditor(LocalDate.class, "runDataRange.endDate", localDatePropertyEditor);
         binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.endDate", localDatePropertyEditor);
-        
+
         PropertyEditor dayStartDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
         PropertyEditor dayEndDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
 

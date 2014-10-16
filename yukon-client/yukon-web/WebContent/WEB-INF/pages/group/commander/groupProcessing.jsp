@@ -36,6 +36,12 @@ function validateGroupIsSelected(btn, alertText) {
     yukon.ui.busy('.js-group-commander');
     $('#groupCommanderForm').submit();
 }
+
+function toggleEmailNotificaionField() {
+
+    yukon.ui.util.toggleEmailNotificationAddressField(
+            'input[name =\'sendEmail\']', 'input[name =\'emailAddress\']');
+}
 </script>
 
 <%-- ERROR MSG --%>
@@ -73,12 +79,21 @@ function validateGroupIsSelected(btn, alertText) {
         selectedCommandString="${param.commandString}" selectedSelectValue="${param.commandSelectValue}"/>
 
     <br><br>
-    <%-- EMAIL --%>
-    <div class="stacked">
-        <div><i:inline key="yukon.web.deviceGroups.commander.emailLabel"/></div>
-        <input type="text" name="emailAddress" value="" size="40">
-    </div>
-
+      <c:if test="${isSMTPConfigured}">
+        <cti:msg var="sendEmailAddressLabel" key="yukon.common.device.commander.sendEmailNotification" />
+        <div>
+            ${sendEmailAddressLabel} <input type="checkbox" name="sendEmail" onclick="toggleEmailNotificaionField();">
+        </div>
+        <br>
+        
+        <%-- EMAIL --%>
+        <div class="stacked">
+            <div>
+                <i:inline key="yukon.web.deviceGroups.commander.emailLabel" />  <input type="text" name="emailAddress"  size="40" disabled="disabled" value="${email}">
+            </div>
+           
+        </div>
+	  </c:if>
     <%-- EXECUTE BUTTON --%>
     <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
     <cti:url var="waitImgUrl" value="/WebConfig/yukon/Icons/spinner.gif" />

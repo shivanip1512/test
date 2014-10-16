@@ -82,6 +82,13 @@
         <tags:cronExpressionData id="scheduleCronString" state="${cronExpressionTagState}" allowTypeChange="false" />
     </tags:nameValue2>
 
-    <tags:inputNameValue nameKey=".notificationEmailAddresses" path="notificationEmailAddresses"/>
-
+    <c:if test="${isSMTPConfigured}">
+        <tags:nameValue2 nameKey=".sendEmailNotification" excludeColon="true">
+            <form:checkbox path="sendEmail" id="sendEmail"/>
+        </tags:nameValue2>
+    
+        <tags:nameValue2 nameKey=".notificationEmailAddresses">
+            <tags:input id="emailNotificationAddress" path="notificationEmailAddresses" disabled="true"/>
+        </tags:nameValue2>
+    </c:if>
 </cti:msgScope>

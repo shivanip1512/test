@@ -58,6 +58,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
     protected boolean overrideFileExtension;
     protected String exportFileExtension;
     protected boolean includeExportCopy;
+    protected boolean sendEmail;
 	
 	private Logger log = YukonLogManager.getLogger(ScheduledFileExportTask.class);
 	
@@ -166,6 +167,13 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
         this.overrideFileExtension = overrideFileExtension;
     }
 
+    public boolean isSendEmail() {
+        return sendEmail;
+    }
+    
+    public void setSendEmail(boolean sendEmail) {
+        this.sendEmail = sendEmail;
+    }
 	/**
 	 * Convenience method for exporting to csv.
 	 */
@@ -191,7 +199,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
             log.error("Attempted to send notification for scheduled file export, but export information was not properly archived.");
         } else {
             //send notifications
-            if (org.apache.commons.lang3.StringUtils.isNotEmpty(notificationEmailAddresses)) {
+            if ((org.apache.commons.lang3.StringUtils.isNotEmpty(notificationEmailAddresses)) && sendEmail ) {
                 sendNotificationEmails(historyEntry);
             }
         }

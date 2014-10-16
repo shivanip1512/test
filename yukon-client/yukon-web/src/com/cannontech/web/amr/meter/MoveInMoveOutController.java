@@ -34,6 +34,7 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -49,18 +50,22 @@ public class MoveInMoveOutController {
     @Autowired private MoveInMoveOutEmailService moveInMoveOutEmailService;
     @Autowired private MoveInMoveOutService moveInMoveOutService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private EmailService emailService;
 
     @RequestMapping("moveIn")
     public String moveIn(HttpServletRequest request, ModelMap model) throws ServletRequestBindingException {
         PlcMeter meter = getMeter(request);
         SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
         LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         // Adds the group to the mav object
         model.addAttribute("meter", meter);
         model.addAttribute("deviceId", meter.getDeviceId());
         model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
         model.addAttribute("currentDate", new Date());
+        model.addAttribute("email", emailService.getUserEmail(userContext));
+        model.addAttribute("isSMTPConfigured", emailService.isSmtpConfigured());
         
         // readable?
         boolean readable = moveInMoveOutService.isAuthorized(liteYukonUser, meter);
@@ -74,7 +79,7 @@ public class MoveInMoveOutController {
 
         PlcMeter meter = getMeter(request);
         SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
-        LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
+        LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);      
 
         // Adds the group to the mav object
         model.addAttribute("meter", meter);
@@ -120,7 +125,10 @@ public class MoveInMoveOutController {
         MoveInResult moveInResult = null;
         moveInResult = moveInMoveOutService.scheduleMoveIn(moveInForm);
         moveInResult.setMoveInDate(moveInDate);
+        boolean sendEmailNotification = ServletRequestUtils.getBooleanParameter(request, "sendEmail", false);
+        if (sendEmailNotification) {
         moveInMoveOutEmailService.createMoveInEmail(moveInResult, userContext);
+        }
 
         model.addAttribute("currentReading", moveInResult.getCurrentReading());
         model.addAttribute("calculatedDifference",
@@ -169,12 +177,15 @@ public class MoveInMoveOutController {
         PlcMeter meter = getMeter(request);
         SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
         LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         // Adds the group to the mav object
         model.addAttribute("meter", meter);
         model.addAttribute("deviceId", meter.getDeviceId());
         model.addAttribute("deviceName", paoLoadingService.getDisplayablePao(device).getName());
         model.addAttribute("currentDate", new Date());
+        model.addAttribute("email", emailService.getUserEmail(userContext));
+        model.addAttribute("isSMTPConfigured", emailService.isSmtpConfigured());
         
         // readable?
         boolean readable = moveInMoveOutService.isAuthorized(liteYukonUser, meter);

@@ -28,6 +28,7 @@ public class ScheduledFileExportData {
     private String exportFileExtension;
     private boolean includeExportCopy;
     private String exportPath;
+    private boolean sendEmail;
 
     private static final String DEFAULT_TIMESTAMP_PATTERN  = "_yyyyMMddHHmmss";
 
@@ -163,4 +164,12 @@ public class ScheduledFileExportData {
 			this.notificationEmailAddresses = null;
 		}
 	}
+    
+    public boolean isSendEmail() {
+        return sendEmail;
+    }
+
+    public void setSendEmail(boolean sendEmail) {
+        this.sendEmail = sendEmail;
+    }
 }

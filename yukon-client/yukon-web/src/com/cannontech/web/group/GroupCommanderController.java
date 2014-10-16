@@ -59,6 +59,7 @@ import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.SimpleReportOutputter;
 import com.cannontech.simplereport.SimpleYukonReportDefinition;
 import com.cannontech.tools.email.EmailAttachmentMessage;
@@ -115,29 +116,35 @@ public class GroupCommanderController {
     }
 
     @RequestMapping("collectionProcessing")
-    public void collectionProcessing(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model)
+    public void collectionProcessing(HttpServletRequest request, DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model)
     throws ServletException {
         
         List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, user);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         model.addAttribute("commands", commands);
         
         model.addAttribute("deviceCollection", deviceCollection);
+        model.addAttribute("email", emailService.getUserEmail(userContext));
+        model.addAttribute("isSMTPConfigured", emailService.isSmtpConfigured());
         
     }
     
     @RequestMapping("groupProcessing")
-    public void groupProcessing(LiteYukonUser user, ModelMap model)
+    public void groupProcessing(HttpServletRequest request, LiteYukonUser user, ModelMap model)
             throws ServletException {
 
         List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, user);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         model.addAttribute("commands", commands);
+        model.addAttribute("email", emailService.getUserEmail(userContext));
+        model.addAttribute("isSMTPConfigured",emailService.isSmtpConfigured());
     }
     
     @RequestMapping(value="executeGroupCommand", method=RequestMethod.POST)
-    public String executeGroupCommand(HttpServletRequest request, String groupName, String commandSelectValue, String commandString, String emailAddress, YukonUserContext userContext, ModelMap map) throws ServletException {
+    public String executeGroupCommand(HttpServletRequest request, String groupName, String commandSelectValue, String commandString, String emailAddress, boolean sendEmail, YukonUserContext userContext, ModelMap map) throws ServletException {
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
-        boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue, commandString, emailAddress, groupName, userContext, map);
+        boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue, commandString, emailAddress, sendEmail, groupName, userContext, map);
         if (success) {
             return "redirect:resultDetail";
         } else {
@@ -146,9 +153,9 @@ public class GroupCommanderController {
     }
 
     @RequestMapping(value="executeCollectionCommand", method=RequestMethod.POST)
-    public String executeCollectionCommand(HttpServletRequest request, DeviceCollection deviceCollection, String commandSelectValue, String commandString, final String emailAddress, final YukonUserContext userContext, ModelMap map)
+    public String executeCollectionCommand(HttpServletRequest request, DeviceCollection deviceCollection, String commandSelectValue, String commandString, final String emailAddress, boolean sendEmail, final YukonUserContext userContext, ModelMap map)
     throws ServletException {
-        boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue, commandString, emailAddress, null, userContext, map);
+        boolean success = doCollectionCommand(request, deviceCollection, commandSelectValue, commandString, emailAddress, sendEmail, null, userContext, map);
         if (success) {
             return "redirect:resultDetail";
         } else {
@@ -162,7 +169,7 @@ public class GroupCommanderController {
             DeviceCollection deviceCollection, 
             String commandSelectValue, 
             String commandString, 
-            final String emailAddress, 
+            final String emailAddress, final boolean sendEmail,
             String groupName,
             final YukonUserContext userContext, 
             ModelMap map)
@@ -205,8 +212,9 @@ public class GroupCommanderController {
             public void handle(GroupCommandResult result) {
                 GroupCommandCompletionAlert commandCompletionAlert = new GroupCommandCompletionAlert(new Date(), result);
                 alertService.add(commandCompletionAlert);
-                
-                sendEmail(emailAddress, hostURL, result, userContext);
+                if (sendEmail) {
+                    sendEmail(emailAddress, hostURL, result, userContext);
+                }
             }
 
         };

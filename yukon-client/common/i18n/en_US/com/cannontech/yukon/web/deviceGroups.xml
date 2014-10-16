@@ -164,7 +164,7 @@ Group names may not be blank or contain slashes.
 <entry key="yukon.web.deviceGroups.commander.pageTitle">Group Processing</entry>
 <entry key="yukon.web.deviceGroups.commander.tab.title">Command Processing</entry>
 <entry key="yukon.web.deviceGroups.commander.groupSelectionLabel">Group:</entry>
-<entry key="yukon.web.deviceGroups.commander.emailLabel">Email Address (optional):</entry>
+<entry key="yukon.web.deviceGroups.commander.emailLabel">Email Address:</entry>
 <entry key="yukon.web.deviceGroups.commander.recentResultsLabel">Recent Results</entry>
 
 </properties>

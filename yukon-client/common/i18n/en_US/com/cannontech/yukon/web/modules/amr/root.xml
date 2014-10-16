@@ -113,7 +113,8 @@
     <entry key="yukon.web.modules.amr.moveIn.meterNumber">Meter Number</entry>
     <entry key="yukon.web.modules.amr.moveIn.deviceName">Device Name</entry>
     <entry key="yukon.web.modules.amr.moveIn.moveInDate">Move In Date</entry>
-    <entry key="yukon.web.modules.amr.moveIn.emailNotification">Email Notification</entry>
+    <entry key="yukon.web.modules.amr.moveIn.emailNotification">Email Address</entry>
+    <entry key="yukon.web.modules.amr.moveIn.sendEmailNotification">Send Email Notification</entry>
     <!--  moveInResults.jsp -->
     <entry key="yukon.web.modules.amr.moveIn.success">A meter reading for {0} is scheduled to be retrieved for {1}.</entry>
     <entry key="yukon.web.modules.amr.moveIn.rename">Device Name {0} is scheduled to be {1}.</entry>
@@ -134,7 +135,8 @@
     <!-- moveOutForm.jsp -->
     <entry key="yukon.web.modules.amr.moveOut.moveOutForm.title">Move Out</entry>
     <entry key="yukon.web.modules.amr.moveOut.moveOutDate">Move Out Date</entry>
-    <entry key="yukon.web.modules.amr.moveOut.emailNotification">Email Notification</entry>
+    <entry key="yukon.web.modules.amr.moveOut.sendEmailNotification">Send Email Notification</entry>
+    <entry key="yukon.web.modules.amr.moveOut.emailNotification">Email Address</entry>
     <entry key="yukon.web.modules.amr.moveOut.moveOutDesc">A meter reading is being calculated based on usage for the date supplied</entry>
     <entry key="yukon.web.modules.amr.moveOut.moveOut">Move Out</entry>
     <entry key="yukon.web.modules.amr.moveOut.movingOut">Moving Out</entry>

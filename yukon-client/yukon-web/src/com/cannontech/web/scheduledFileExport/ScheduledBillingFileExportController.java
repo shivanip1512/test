@@ -40,7 +40,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
-import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
@@ -60,9 +60,9 @@ public class ScheduledBillingFileExportController {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
-    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private ScheduledFileExportHelper exportHelper;
+    @Autowired private EmailService emailService;
 
     private static final int MAX_GROUPS_DISPLAYED = 2;
     private ScheduledFileExportValidator scheduledFileExportValidator;
@@ -98,9 +98,16 @@ public class ScheduledBillingFileExportController {
             exportData.setExportFileExtension(task.getExportFileExtension());
             exportData.setIncludeExportCopy(task.isIncludeExportCopy());
             exportData.setExportPath(task.getExportPath());
-            exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
+            if (task.getNotificationEmailAddresses() != null) {
+                exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
+                exportData.setSendEmail(task.isSendEmail());
+            } else {
+                exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
+            }
             cronExpressionTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
             model.addAttribute("jobId", jobId);
+        } else {
+            exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
         }
 
         model.addAttribute("exportData", exportData);
@@ -118,7 +125,8 @@ public class ScheduledBillingFileExportController {
 
         String formatName = FileFormatTypes.getFormatType(fileFormat);
         model.addAttribute("formatName", formatName);
-
+        model.addAttribute("isSMTPConfigured",emailService.isSmtpConfigured());
+        
         return "_schedule.jsp";
     }
 

@@ -435,6 +435,19 @@ yukon.ui.util = (function () {
             compositeRgb = hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
             compositeRgb = compositeRgb.toLowerCase();
             return '#' + compositeRgb;
+        },
+        
+        /** 
+         * This method toggles between enabling and disabling the email notifcation address filed
+         * @param {Object} checkBoxId - Instance of the checkbox selected.
+         * @param {Object} changeItemId - Instance of the email notification address input field.
+         */
+        toggleEmailNotificationAddressField : function (checkBoxId,changeItemId) {
+            if ($(checkBoxId).is(":checked")) {
+                $(changeItemId).prop('disabled', false);
+            } else {
+                $(changeItemId).prop('disabled', true);
+            }
         }
         
     };
@@ -466,6 +479,10 @@ yukon.tag.scheduledFileExportInputs = (function () {
         } else {
             $(changeItemId).prop("disabled", true).closest("tr").hide();
         }
+    },
+    
+    _toggleEmailNotificationAddressField = function(){
+        yukon.ui.util.toggleEmailNotificationAddressField("#sendEmail", "#emailNotificationAddress");
     },
 
     _toggleTimestampPatternField = function() {
@@ -503,6 +520,7 @@ yukon.tag.scheduledFileExportInputs = (function () {
         _toggleTimestampPatternField();
         _toggleFileExtensionField();
         _toggleExportPathField();
+        _toggleEmailNotificationAddressField();
         _sameAsNameClicked();
     },
 
@@ -518,6 +536,7 @@ yukon.tag.scheduledFileExportInputs = (function () {
             $(document).on('keyup', "#scheduleName", _nameChanged);
             $(document).on('change', "#scheduleName", _nameChanged);
             $(document).on('click', "#sameAsSchedName", _sameAsNameClicked);
+            $(document).on('click', "#sendEmail", _toggleEmailNotificationAddressField);
             _intializeAllFields();
         }
     };

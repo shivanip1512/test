@@ -76,8 +76,10 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakCustomerInfoService;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
@@ -132,6 +134,7 @@ public class WaterLeakReportController {
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private DeviceCollectionService deviceCollectionService;
+    @Autowired private EmailService emailService;
     
     private ScheduledFileExportValidator scheduledFileExportValidator;
     private final static String baseKey = "yukon.web.modules.amr.waterLeakReport.report";
@@ -236,10 +239,10 @@ public class WaterLeakReportController {
     
     /** Get schedule popup */
     @RequestMapping(value="schedule", method = RequestMethod.GET)
-    public String schedule(ModelMap model, Integer jobId) {
-        
+    public String schedule(HttpServletRequest request, ModelMap model, Integer jobId) {
         CronExpressionTagState cronTagState = new CronExpressionTagState();
         ScheduledFileExportData exportData = new ScheduledFileExportData();
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         if (jobId != null) {
             // populate schedule from job data
@@ -261,13 +264,21 @@ public class WaterLeakReportController {
             exportData.setExportFileExtension(task.getExportFileExtension());
             exportData.setIncludeExportCopy(task.isIncludeExportCopy());
             exportData.setExportPath(task.getExportPath());
-            exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
+            if (task.getNotificationEmailAddresses() != null) {
+                exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
+                exportData.setSendEmail(task.isSendEmail());
+            } else {
+                exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
+            }
+        } else {
+            exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
         }
         
         model.addAttribute("cronExpressionTagState", cronTagState);
         model.addAttribute("fileExportData", exportData);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
         model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
+        model.addAttribute("isSMTPConfigured",emailService.isSmtpConfigured());
         
         return "waterLeakReport/schedule.jsp";
     }

@@ -1,6 +1,9 @@
 package com.cannontech.system;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.*;
+import static com.cannontech.core.roleproperties.InputTypeFactory.booleanType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.integerType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.userType;
 
 import java.math.RoundingMode;
 import java.util.Set;
@@ -88,7 +91,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     // Yukon Services
     JMS_BROKER_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "localhost"),
     JMS_BROKER_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), 61616),
-    SMTP_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "127.0.0.1"),
+    SMTP_HOST(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
     SMTP_PORT(GlobalSettingSubCategory.YUKON_SERVICES, integerType(), null),
     SMTP_USERNAME(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),
     SMTP_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), null),

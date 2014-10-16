@@ -122,6 +122,13 @@
                         		<bean class="com.cannontech.web.input.type.BooleanType"/>
                         	</property>
                         </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="sendEmail" />
+                            <property name="displayName" value="Send Email Notification" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.BooleanType" />
+                            </property>
+                        </bean>
     				</list>
     			</property>
     		</bean>
@@ -271,6 +278,13 @@
                         		<bean class="com.cannontech.web.input.type.DateType"/>
                         	</property>
                         </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="sendEmail" />
+                            <property name="displayName" value="Send Email Notification" />
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.BooleanType" />
+                            </property>
+                        </bean>
     				</list>
     			</property>
     		</bean>
@@ -384,6 +398,13 @@
                         	<property name="type">
                         		<bean class="com.cannontech.web.input.type.BooleanType"/>
                         	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="sendEmail"/>
+                            <property name="displayName" value="Send Email Notification"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.BooleanType"/>
+                            </property>
                         </bean>
     				</list>
     			</property>
@@ -512,6 +533,13 @@
                         	<property name="type">
                         		<bean class="com.cannontech.web.input.type.AttributeSetType"/>
                         	</property>
+                        </bean>
+                           <bean class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="sendEmail"/>
+                            <property name="displayName" value="Send Email Notification"/>
+                            <property name="type">
+                                <bean class="com.cannontech.web.input.type.BooleanType"/>
+                            </property>
                         </bean>
     				</list>
     			</property>

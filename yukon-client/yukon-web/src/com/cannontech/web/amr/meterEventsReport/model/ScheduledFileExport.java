@@ -12,6 +12,7 @@ public class ScheduledFileExport {
     private boolean includeExportCopy;
     private String exportPath;
     private String notificationEmailAddresses;
+    private boolean sendEmail;
 
     public String getScheduleName() {
         return scheduleName;
@@ -67,5 +68,12 @@ public class ScheduledFileExport {
     public void setNotificationEmailAddresses(String notificationEmailAddresses) {
         this.notificationEmailAddresses = notificationEmailAddresses;
     }
-
+    
+    public boolean isSendEmail() {
+        return sendEmail;
+    }
+    
+    public void setSendEmail(boolean sendEmail) {
+        this.sendEmail = sendEmail;
+    }
 }

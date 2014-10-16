@@ -18,16 +18,21 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.tools.email.EmailService;
 import com.cannontech.tools.email.EmailMessage;
+import com.cannontech.tools.email.EmailService;
+import com.cannontech.user.YukonUserContext;
 
 public class EmailServiceImpl implements EmailService {
     private static final Logger log = YukonLogManager.getLogger(EmailServiceImpl.class);
     
     @Autowired private GlobalSettingDao globalSettingDao;
-    
+    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private ContactDao contactDao; 
 
     @Override
     public void sendMessage(EmailMessage data) throws MessagingException {
@@ -148,6 +153,7 @@ public class EmailServiceImpl implements EmailService {
             }
         }
         
+        @Override
         protected PasswordAuthentication getPasswordAuthentication() {
             return authentication;
         }
@@ -178,5 +184,28 @@ public class EmailServiceImpl implements EmailService {
      */
     private InternetAddress getGlobalSettingsFromAddress() throws AddressException, MessagingException {
         return new InternetAddress(getRequiredGlobalSettingsString(GlobalSettingType.MAIL_FROM_ADDRESS));
+    }
+
+    @Override
+    public String getUserEmail(YukonUserContext userContext) {
+        LiteContact contact = yukonUserDao.getLiteContact(userContext.getYukonUser().getUserID());
+        String email = "";
+        if (contact != null) {
+            String[] allEmailAddresses = contactDao.getAllEmailAddresses(contact.getContactID());
+            if (allEmailAddresses.length > 0) {
+                email = allEmailAddresses[0];
+            }
+        }
+        return email;
+    }
+
+    @Override
+    public boolean isSmtpConfigured() {
+        boolean isSmtpConfigured = true;
+        String smtpHost = globalSettingDao.getString(GlobalSettingType.SMTP_HOST);   
+        if(StringUtils.isBlank(smtpHost)){
+            isSmtpConfigured = false;
+        }
+        return isSmtpConfigured;
     }
 }

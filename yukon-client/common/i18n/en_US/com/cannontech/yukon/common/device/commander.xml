@@ -28,5 +28,7 @@
     <entry key="yukon.common.device.commander.attributeSelector.selectAttribute">Select Attribute</entry>
     
     <entry key="yukon.common.device.commander.prompterDialog.title">Enter value for command parameter</entry>
+    <entry key="yukon.common.device.commander.sendEmailNotification">Send Email Notification</entry>
+    <entry key="yukon.common.device.commander.emailNotificationAddr">Email Address</entry>
     
 </properties>

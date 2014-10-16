@@ -172,6 +172,8 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
         task.setOverrideFileExtension(data.isOverrideFileExtension());
         task.setExportFileExtension(data.getExportFileExtension());
         task.setIncludeExportCopy(data.isIncludeExportCopy());
+        task.setSendEmail(data.isSendEmail());
+        
         return task;
     }
 

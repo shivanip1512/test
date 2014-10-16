@@ -68,6 +68,8 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meterEventsReport.model.MeterEventsFilter;
 import com.cannontech.web.amr.meterEventsReport.model.ScheduledFileExport;
@@ -107,7 +109,8 @@ public class MeterEventsReportController {
     @Autowired private ScheduledFileExportService exportService;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-
+    @Autowired private EmailService emailService;
+    
     private ScheduledFileExportValidator exportValidator = 
             new ScheduledFileExportValidator(MeterEventsReportController.class);
     
@@ -154,6 +157,12 @@ public class MeterEventsReportController {
         ScheduledFileExportData exportData = task.getPartialData();
         exportData.setDaysPrevious(task.getDaysPrevious());
         exportData.setScheduleCronString(job.getCronString());
+        if (task.getNotificationEmailAddresses() != null) {
+            exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
+            exportData.setSendEmail(task.isSendEmail());
+        } else {
+            exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
+        }
         CronExpressionTagState cronExpressionTagState = 
                 cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
         //set backing bean parameters
@@ -192,6 +201,7 @@ public class MeterEventsReportController {
         model.addAttribute("fromInstant", fromInstant);
         model.addAttribute("toInstant", toInstant);
         model.addAttribute("jobId", jobId);
+        model.addAttribute("isSMTPConfigured",emailService.isSmtpConfigured());
     }
     
     private void setupNewHomeModelMap(ModelMap model, DeviceCollection collection, YukonUserContext userContext) {
@@ -335,15 +345,16 @@ public class MeterEventsReportController {
     }
 
     @RequestMapping("scheduledMeterEventsDialog")
-    public String scheduledMeterEventsDialog(ModelMap model, DeviceCollection collection) {
-        
+    public String scheduledMeterEventsDialog(HttpServletRequest request, ModelMap model, DeviceCollection collection) {
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request); 
         ScheduledFileExportData exportData = new ScheduledFileExportData();
+        exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
         model.addAttribute("exportData", exportData);
         model.addAttribute("cronExpressionTagState", new CronExpressionTagState());
         model.addAttribute("deviceCollection", collection);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
         model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
-        
+        model.addAttribute("isSMTPConfigured",emailService.isSmtpConfigured());
         return "meterEventsReport/scheduledMeterEventsDialog.jsp";
     }
 
