@@ -77,7 +77,7 @@ yukon.dr.dataUpdater.showAction = (function () {
                         if (!enableDisableProgramsAllowed) {
                         	menu=_updateMenuForEnableDisableActions(menu,controlAreaState);
                     	}   
-                    }else{
+                    } else {
                     	if (!isGearChangeEnabled) {
                     		menu['change-gears'].state = 'off';
                             menu['change-gears'].title = controlAreaState.noChangeGearsMsg;
