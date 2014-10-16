@@ -10,6 +10,7 @@ import javax.jms.ConnectionFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -34,19 +35,11 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
     private final static String configName = "RFN_GATEWAY_UPGRADE_REQUEST";
     private final static String queueName = "yukon.qr.obj.gw.rfn.upgradeRequest";
     
-    private ConnectionFactory connectionFactory;
-    private ConfigurationSource configurationSource;
-    private RfnGatewayService gatewayService;
+    @Autowired private ConnectionFactory connectionFactory;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private RfnGatewayService gatewayService;
     
     private RequestReplyTemplate<RfnGatewayUpgradeResponse> qrTemplate;
-    
-    public RfnGatewayUpgradeServiceImpl(ConnectionFactory connectionFactory,
-                                        ConfigurationSource configurationSource,
-                                        RfnGatewayService gatewayService) {
-        this.connectionFactory = connectionFactory;
-        this.configurationSource = configurationSource;
-        this.gatewayService = gatewayService;
-    }
     
     @PostConstruct
     public void initialize() {
