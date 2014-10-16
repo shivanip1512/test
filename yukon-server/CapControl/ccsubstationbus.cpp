@@ -2827,10 +2827,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(double lagLevel, double lea
         {
             if( getKVARSolution() < 0 && !(getMaxDailyOpsHitFlag() && getStrategy()->getMaxOperationDisableFlag()) ) //end day on a trip.
             {
-                //if( _CC_DEBUG )
-                {
-                    CTILOG_DEBUG(dout, "Attempting to Decrease Var level in substation bus: " << getPaoName().c_str());
-                }
+                CTILOG_INFO(dout, "Attempting to Decrease Var level in substation bus: " << getPaoName().c_str());
 
                 CtiCCCapBank* capBank = NULL;
                 while( capBank == NULL &&

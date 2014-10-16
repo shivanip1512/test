@@ -143,7 +143,7 @@ void VerificationExecutor::startVerification()
         {
             CTILOG_DEBUG(dout, "Verification Not Enabled on SubBus: "
                 << currentSubstationBus->getPaoName()
-                << " due to missing parent Sub Station.");
+                << " due to missing parent Substation.");
         }
         return;
 
@@ -228,7 +228,7 @@ void VerificationExecutor::startVerification()
     //before verification controls start.
     if( _CC_DEBUG & CC_DEBUG_STANDARD )
     {
-        CTILOG_DEBUG(dout, "Verification Start Message received from client for sub: "<<currentSubstationBus->getPaoName()<<" ("<<currentSubstationBus->getPaoId()<<")");
+        CTILOG_DEBUG(dout, "Verification Start Message received from client for SubBus: "<<currentSubstationBus->getPaoName()<<" ("<<currentSubstationBus->getPaoId()<<")");
     }
 
     CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();

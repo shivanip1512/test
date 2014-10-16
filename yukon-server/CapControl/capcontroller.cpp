@@ -2749,7 +2749,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         else if( !( ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
                                     ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit)) )
                         {
-                            CTILOG_ERROR(dout, "No Watt Point, cannot calculate power factor");
+                            CTILOG_ERROR(dout, "No Watt Point attached to bus: " << currentSubstationBus->getPaoName() <<", cannot calculate power factor");
                         }
 
                         if (currentSubstationBus->getStrategy()->getUnitType() != ControlStrategy::IntegratedVoltVar)
@@ -2799,7 +2799,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                         }
                         else if( !ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
                         {
-                            CTILOG_ERROR(dout, "No Var Point, cannot calculate power factor");
+                            CTILOG_ERROR(dout, "No Var Point attached to bus: " << currentSubstationBus->getPaoName() <<", cannot calculate power factor");
                         }
                         adjustAlternateBusModeValues(pointID, value, currentSubstationBus);
                     }
@@ -3083,7 +3083,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                             else if( !( ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
                                         ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ))
                             {
-                                CTILOG_ERROR(dout, "No Watt Point, cannot calculate power factor");
+                                CTILOG_ERROR(dout, "No Watt Point attached to bus: " << currentSubstationBus->getPaoName() <<", cannot calculate power factor");
                             }
                             currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getStrategy()->getControlMethod(), currentSubstationBus->getStrategy()->getControlUnits(), currentSubstationBus->getPeakTimeFlag());
                         }
@@ -3124,7 +3124,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                             }
                             else if( !ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
                             {
-                                CTILOG_ERROR(dout, "No Var Point, cannot calculate power factor");
+                                CTILOG_ERROR(dout, "No Var Point attached to bus: " << currentSubstationBus->getPaoName() <<", cannot calculate power factor");
                             }
 
                             currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getStrategy()->getControlMethod(), currentSubstationBus->getStrategy()->getControlUnits(), currentSubstationBus->getPeakTimeFlag());
@@ -3277,7 +3277,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             {
                                 if (value < 0)
                                 {
-                                    CTILOG_INFO(dout, "CapBank: "<<currentCapBank->getPaoName()<<" received an invalid control state value ("
+                                    CTILOG_WARN(dout, "CapBank: "<<currentCapBank->getPaoName()<<" received an invalid control state value ("
                                          << (long)value << "). Not adjusting the cap bank state.");
                                 }
                                 else

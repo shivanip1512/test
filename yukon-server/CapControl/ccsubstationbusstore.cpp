@@ -1237,7 +1237,7 @@ void CtiCCSubstationBusStore::reset()
             **************************************************************/
             if ( _CC_DEBUG )
             {
-                CTILOG_DEBUG(dout, "DataBase Reload Begin - ");
+                CTILOG_DEBUG(dout, "Database reload beginning");
             }
 
             if ( !reloadStrategyFromDatabase(-1) )
@@ -1355,7 +1355,8 @@ void CtiCCSubstationBusStore::reset()
 
             if ( _CC_DEBUG )
             {
-                CTILOG_DEBUG(dout, "DataBase Reload End - " << " - Done Loading values into capcontrol - ");            }
+                CTILOG_DEBUG(dout, "Database reload end, done Loading values into Cap Control");
+            }
 
             _isvalid = true;
             _2wayFlagUpdate = false;
@@ -9068,7 +9069,7 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementOpCount(CtiMultiMsg_ve
 
     if( status < 0 )
     {
-        CTILOG_INFO(dout, "Control state value (" << status << ") is not valid. Not adjusting the cap bank state.");
+        CTILOG_WARN(dout, "Control state value (" << status << ") is not valid. Not adjusting the cap bank state.");
         return;
     }
 
@@ -9661,7 +9662,7 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementFailCount(CtiMultiMsg_
 
     if( status < 0 )
     {
-        CTILOG_INFO(dout, "Control state value (" << status << ") is not valid. Not adjusting the cap bank state.");
+        CTILOG_WARN(dout, "Control state value (" << status << ") is not valid. Not adjusting the cap bank state.");
         return;
     }
 
