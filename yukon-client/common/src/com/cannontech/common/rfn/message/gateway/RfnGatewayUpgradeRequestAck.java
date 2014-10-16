@@ -13,115 +13,99 @@ public class RfnGatewayUpgradeRequestAck implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private RfnGatewayUpgradeRequestAckType requestAckType;
-    private String upgradeID;
+    private String upgradeId;
     private Set<RfnIdentifier> beingUpgradedRfnIdentifiers;
     private Map<RfnIdentifier, String> invalidRfnIdentifiers;
     private Map<RfnIdentifier, String> invalidSuperAdminPasswordRfnIdentifiers;
     private Map<RfnIdentifier, String> lastUpgradeInProcessRfnIdentifiers;
     private String requestAckMessage;
     
-    public RfnGatewayUpgradeRequestAckType getRequestAckType()
-    {
+    public RfnGatewayUpgradeRequestAckType getRequestAckType() {
         return requestAckType;
     }
-    public void setRequestAckType(RfnGatewayUpgradeRequestAckType requestAckType)
-    {
+    
+    public void setRequestAckType(RfnGatewayUpgradeRequestAckType requestAckType) {
         this.requestAckType = requestAckType;
     }
-    public String getUpgradeID()
-    {
-        return upgradeID;
+    
+    public String getUpgradeId() {
+        return upgradeId;
     }
-    public void setUpgradeID(String upgradeID)
-    {
-        this.upgradeID = upgradeID;
+    
+    public void setUpgradeId(String upgradeId) {
+        this.upgradeId = upgradeId;
     }
-    public Set<RfnIdentifier> getBeingUpgradedRfnIdentifiers()
-    {
+    
+    public Set<RfnIdentifier> getBeingUpgradedRfnIdentifiers() {
         return beingUpgradedRfnIdentifiers;
     }
-    public void setBeingUpgradedRfnIdentifiers(
-        Set<RfnIdentifier> beingUpgradedRfnIdentifiers)
-    {
+    
+    public void setBeingUpgradedRfnIdentifiers(Set<RfnIdentifier> beingUpgradedRfnIdentifiers) {
         this.beingUpgradedRfnIdentifiers = beingUpgradedRfnIdentifiers;
     }
-    public Map<RfnIdentifier, String> getInvalidRfnIdentifiers()
-    {
+    
+    public Map<RfnIdentifier, String> getInvalidRfnIdentifiers() {
         return invalidRfnIdentifiers;
     }
-    public void setInvalidRfnIdentifiers(
-        Map<RfnIdentifier, String> invalidRfnIdentifiers)
-    {
+    
+    public void setInvalidRfnIdentifiers(Map<RfnIdentifier, String> invalidRfnIdentifiers) {
         this.invalidRfnIdentifiers = invalidRfnIdentifiers;
     }
-    public Map<RfnIdentifier, String> getInvalidSuperAdminPasswordRfnIdentifiers()
-    {
+    
+    public Map<RfnIdentifier, String> getInvalidSuperAdminPasswordRfnIdentifiers() {
         return invalidSuperAdminPasswordRfnIdentifiers;
     }
-    public void setInvalidSuperAdminPasswordRfnIdentifiers(
-        Map<RfnIdentifier, String> invalidSuperAdminPasswordRfnIdentifiers)
-    {
-        this.invalidSuperAdminPasswordRfnIdentifiers =
-            invalidSuperAdminPasswordRfnIdentifiers;
+    
+    public void setInvalidSuperAdminPasswordRfnIdentifiers(Map<RfnIdentifier, String> invalidSuperAdminPasswordRfnIdentifiers) {
+        this.invalidSuperAdminPasswordRfnIdentifiers = invalidSuperAdminPasswordRfnIdentifiers;
     }
-    public Map<RfnIdentifier, String> getLastUpgradeInProcessRfnIdentifiers()
-    {
+    
+    public Map<RfnIdentifier, String> getLastUpgradeInProcessRfnIdentifiers() {
         return lastUpgradeInProcessRfnIdentifiers;
     }
-    public void setLastUpgradeInProcessRfnIdentifiers(
-        Map<RfnIdentifier, String> lastUpgradeInProcessRfnIdentifiers)
-    {
-        this.lastUpgradeInProcessRfnIdentifiers =
-            lastUpgradeInProcessRfnIdentifiers;
+    
+    public void setLastUpgradeInProcessRfnIdentifiers(Map<RfnIdentifier, String> lastUpgradeInProcessRfnIdentifiers) {
+        this.lastUpgradeInProcessRfnIdentifiers = lastUpgradeInProcessRfnIdentifiers;
     }
-    public String getRequestAckMessage()
-    {
+    
+    public String getRequestAckMessage() {
         return requestAckMessage;
     }
-    public void setRequestAckMessage(String requestAckMessage)
-    {
+    
+    public void setRequestAckMessage(String requestAckMessage) {
         this.requestAckMessage = requestAckMessage;
     }
+
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
         result =
             prime
-                * result
-                + ((beingUpgradedRfnIdentifiers == null) ? 0
-                    : beingUpgradedRfnIdentifiers.hashCode());
-        result =
-            prime
-                * result
-                + ((invalidRfnIdentifiers == null) ? 0 : invalidRfnIdentifiers
-                    .hashCode());
-        result =
-            prime
-                * result
-                + ((invalidSuperAdminPasswordRfnIdentifiers == null) ? 0
-                    : invalidSuperAdminPasswordRfnIdentifiers.hashCode());
-        result =
-            prime
-                * result
-                + ((lastUpgradeInProcessRfnIdentifiers == null) ? 0
-                    : lastUpgradeInProcessRfnIdentifiers.hashCode());
-        result =
-            prime
-                * result
-                + ((requestAckMessage == null) ? 0 : requestAckMessage
-                    .hashCode());
+                    * result
+                    + ((beingUpgradedRfnIdentifiers == null) ? 0 : beingUpgradedRfnIdentifiers
+                        .hashCode());
         result =
             prime * result
-                + ((requestAckType == null) ? 0 : requestAckType.hashCode());
+                    + ((invalidRfnIdentifiers == null) ? 0 : invalidRfnIdentifiers.hashCode());
         result =
-            prime * result + ((upgradeID == null) ? 0 : upgradeID.hashCode());
+            prime
+                    * result
+                    + ((invalidSuperAdminPasswordRfnIdentifiers == null) ? 0
+                            : invalidSuperAdminPasswordRfnIdentifiers.hashCode());
+        result =
+            prime
+                    * result
+                    + ((lastUpgradeInProcessRfnIdentifiers == null) ? 0
+                            : lastUpgradeInProcessRfnIdentifiers.hashCode());
+        result = prime * result + ((requestAckMessage == null) ? 0 : requestAckMessage.hashCode());
+        result = prime * result + ((requestAckType == null) ? 0 : requestAckType.hashCode());
+        result = prime * result + ((upgradeId == null) ? 0 : upgradeId.hashCode());
         return result;
     }
+
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (this == obj)
             return true;
         if (obj == null)
@@ -132,8 +116,7 @@ public class RfnGatewayUpgradeRequestAck implements Serializable {
         if (beingUpgradedRfnIdentifiers == null) {
             if (other.beingUpgradedRfnIdentifiers != null)
                 return false;
-        } else if (!beingUpgradedRfnIdentifiers
-            .equals(other.beingUpgradedRfnIdentifiers))
+        } else if (!beingUpgradedRfnIdentifiers.equals(other.beingUpgradedRfnIdentifiers))
             return false;
         if (invalidRfnIdentifiers == null) {
             if (other.invalidRfnIdentifiers != null)
@@ -159,24 +142,24 @@ public class RfnGatewayUpgradeRequestAck implements Serializable {
             return false;
         if (requestAckType != other.requestAckType)
             return false;
-        if (upgradeID == null) {
-            if (other.upgradeID != null)
+        if (upgradeId == null) {
+            if (other.upgradeId != null)
                 return false;
-        } else if (!upgradeID.equals(other.upgradeID))
+        } else if (!upgradeId.equals(other.upgradeId))
             return false;
         return true;
     }
+
     @Override
-    public String toString()
-    {
-        return "RfnGatewayUpgradeRequestAck [requestAckType=" + requestAckType
-            + ", upgradeID=" + upgradeID + ", beingUpgradedRfnIdentifiers="
-            + beingUpgradedRfnIdentifiers + ", invalidRfnIdentifiers="
-            + invalidRfnIdentifiers
-            + ", invalidSuperAdminPasswordRfnIdentifiers="
-            + invalidSuperAdminPasswordRfnIdentifiers
-            + ", lastUpgradeInProcessRfnIdentifiers="
-            + lastUpgradeInProcessRfnIdentifiers + ", requestAckMessage="
-            + requestAckMessage + "]";
+    public String toString() {
+        return String
+            .format("RfnGatewayUpgradeRequestAck [requestAckType=%s, upgradeId=%s, beingUpgradedRfnIdentifiers=%s, invalidRfnIdentifiers=%s, invalidSuperAdminPasswordRfnIdentifiers=%s, lastUpgradeInProcessRfnIdentifiers=%s, requestAckMessage=%s]",
+                    requestAckType,
+                    upgradeId,
+                    beingUpgradedRfnIdentifiers,
+                    invalidRfnIdentifiers,
+                    invalidSuperAdminPasswordRfnIdentifiers,
+                    lastUpgradeInProcessRfnIdentifiers,
+                    requestAckMessage);
     }
 }

@@ -20,4 +20,9 @@ public interface RfnGatewayUpgradeCallback {
      * @param reply NM's reply to the gateway upgrade request.
      */
     public void handleReply(RfnGatewayUpgradeResponse reply);
+    
+    /**
+     * Guaranteed to be called last whether or not there were errors.
+     */
+    public void complete();
 }

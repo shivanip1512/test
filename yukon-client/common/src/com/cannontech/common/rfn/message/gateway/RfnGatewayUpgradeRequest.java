@@ -12,52 +12,46 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 public class RfnGatewayUpgradeRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String upgradeID;
+    private String upgradeId;
     private Set<RfnIdentifier> rfnIdentifiers; // when null or empty, all Gateways will be upgraded
     private byte[] upgradeData;
     
-    public String getUpgradeID()
-    {
-        return upgradeID;
+    public String getUpgradeId() {
+        return upgradeId;
     }
-    public void setUpgradeID(String upgradeID)
-    {
-        this.upgradeID = upgradeID;
+    
+    public void setUpgradeId(String upgradeId) {
+        this.upgradeId = upgradeId;
     }
-    public Set<RfnIdentifier> getRfnIdentifiers()
-    {
+    
+    public Set<RfnIdentifier> getRfnIdentifiers() {
         return rfnIdentifiers;
     }
-    public void setRfnIdentifiers(Set<RfnIdentifier> rfnIdentifiers)
-    {
+    
+    public void setRfnIdentifiers(Set<RfnIdentifier> rfnIdentifiers) {
         this.rfnIdentifiers = rfnIdentifiers;
     }
-    public byte[] getUpgradeData()
-    {
+    
+    public byte[] getUpgradeData() {
         return upgradeData;
     }
-    public void setUpgradeData(byte[] upgradeData)
-    {
+    
+    public void setUpgradeData(byte[] upgradeData) {
         this.upgradeData = upgradeData;
     }
-    
+
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result =
-            prime * result
-                + ((rfnIdentifiers == null) ? 0 : rfnIdentifiers.hashCode());
+        result = prime * result + ((rfnIdentifiers == null) ? 0 : rfnIdentifiers.hashCode());
         result = prime * result + Arrays.hashCode(upgradeData);
-        result =
-            prime * result + ((upgradeID == null) ? 0 : upgradeID.hashCode());
+        result = prime * result + ((upgradeId == null) ? 0 : upgradeId.hashCode());
         return result;
     }
-    
+
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (this == obj)
             return true;
         if (obj == null)
@@ -72,19 +66,20 @@ public class RfnGatewayUpgradeRequest implements Serializable {
             return false;
         if (!Arrays.equals(upgradeData, other.upgradeData))
             return false;
-        if (upgradeID == null) {
-            if (other.upgradeID != null)
+        if (upgradeId == null) {
+            if (other.upgradeId != null)
                 return false;
-        } else if (!upgradeID.equals(other.upgradeID))
+        } else if (!upgradeId.equals(other.upgradeId))
             return false;
         return true;
     }
 
     @Override
-    public String toString()
-    {
-        return "RfnGatewayUpgradeRequest [upgradeID=" + upgradeID
-            + ", rfnIdentifiers=" + rfnIdentifiers + ", upgradeData="
-            + Arrays.toString(upgradeData) + "]";
+    public String toString() {
+        return String
+            .format("RfnGatewayUpgradeRequest [upgradeId=%s, rfnIdentifiers=%s, upgradeData=%s]",
+                    upgradeId,
+                    rfnIdentifiers,
+                    Arrays.toString(upgradeData));
     }
 }

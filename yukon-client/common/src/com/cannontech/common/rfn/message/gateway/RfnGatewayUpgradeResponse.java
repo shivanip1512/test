@@ -11,82 +11,77 @@ import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 public class RfnGatewayUpgradeResponse implements RfnIdentifyingMessage, Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String upgradeID;
+    private String upgradeId;
     private RfnIdentifier rfnIdentifier;
     private RfnGatewayUpgradeResponseType responseType;
     private short gatewayMessageType;
     private byte gatewayMessageStatus;
-    private int fragmentID;
-    public String getUpgradeID()
-    {
-        return upgradeID;
+    private int fragmentId;
+    
+    public String getUpgradeId() {
+        return upgradeId;
     }
-    public void setUpgradeID(String upgradeID)
-    {
-        this.upgradeID = upgradeID;
+    
+    public void setUpgradeId(String upgradeId) {
+        this.upgradeId = upgradeId;
     }
+    
     @Override
-    public RfnIdentifier getRfnIdentifier()
-    {
+    public RfnIdentifier getRfnIdentifier() {
         return rfnIdentifier;
     }
-    public void setRfnIdentifier(RfnIdentifier rfnIdentifier)
-    {
+    
+    public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
         this.rfnIdentifier = rfnIdentifier;
     }
-    public RfnGatewayUpgradeResponseType getResponseType()
-    {
+    
+    public RfnGatewayUpgradeResponseType getResponseType() {
         return responseType;
     }
-    public void setResponseType(RfnGatewayUpgradeResponseType responseType)
-    {
+    
+    public void setResponseType(RfnGatewayUpgradeResponseType responseType) {
         this.responseType = responseType;
     }
-    public short getGatewayMessageType()
-    {
+    
+    public short getGatewayMessageType() {
         return gatewayMessageType;
     }
-    public void setGatewayMessageType(short gatewayMessageType)
-    {
+    
+    public void setGatewayMessageType(short gatewayMessageType) {
         this.gatewayMessageType = gatewayMessageType;
     }
-    public byte getGatewayMessageStatus()
-    {
+    
+    public byte getGatewayMessageStatus() {
         return gatewayMessageStatus;
     }
-    public void setGatewayMessageStatus(byte gatewayMessageStatus)
-    {
+    
+    public void setGatewayMessageStatus(byte gatewayMessageStatus) {
         this.gatewayMessageStatus = gatewayMessageStatus;
     }
-    public int getFragmentID()
-    {
-        return fragmentID;
+    
+    public int getFragmentId() {
+        return fragmentId;
     }
-    public void setFragmentID(int fragmentID)
-    {
-        this.fragmentID = fragmentID;
+    
+    public void setFragmentId(int fragmentId) {
+        this.fragmentId = fragmentId;
     }
+
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + fragmentID;
+        result = prime * result + fragmentId;
         result = prime * result + gatewayMessageStatus;
         result = prime * result + gatewayMessageType;
-        result =
-            prime * result
-                + ((responseType == null) ? 0 : responseType.hashCode());
-        result =
-            prime * result
-                + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
-        result =
-            prime * result + ((upgradeID == null) ? 0 : upgradeID.hashCode());
+        result = prime * result + ((responseType == null) ? 0 : responseType.hashCode());
+        result = prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
+        result = prime * result + ((upgradeId == null) ? 0 : upgradeId.hashCode());
         return result;
     }
+
     @Override
-    public boolean equals(Object obj)
-    {
+    public boolean equals(Object obj) {
         if (this == obj)
             return true;
         if (obj == null)
@@ -94,7 +89,7 @@ public class RfnGatewayUpgradeResponse implements RfnIdentifyingMessage, Seriali
         if (getClass() != obj.getClass())
             return false;
         RfnGatewayUpgradeResponse other = (RfnGatewayUpgradeResponse) obj;
-        if (fragmentID != other.fragmentID)
+        if (fragmentId != other.fragmentId)
             return false;
         if (gatewayMessageStatus != other.gatewayMessageStatus)
             return false;
@@ -107,20 +102,23 @@ public class RfnGatewayUpgradeResponse implements RfnIdentifyingMessage, Seriali
                 return false;
         } else if (!rfnIdentifier.equals(other.rfnIdentifier))
             return false;
-        if (upgradeID == null) {
-            if (other.upgradeID != null)
+        if (upgradeId == null) {
+            if (other.upgradeId != null)
                 return false;
-        } else if (!upgradeID.equals(other.upgradeID))
+        } else if (!upgradeId.equals(other.upgradeId))
             return false;
         return true;
     }
+
     @Override
-    public String toString()
-    {
-        return "RfnGatewayUpgradeResponse [upgradeID=" + upgradeID
-            + ", rfnIdentifier=" + rfnIdentifier + ", responseType="
-            + responseType + ", gatewayMessageType=" + gatewayMessageType
-            + ", gatewayMessageStatus=" + gatewayMessageStatus
-            + ", fragmentID=" + fragmentID + "]";
+    public String toString() {
+        return String
+            .format("RfnGatewayUpgradeResponse [upgradeId=%s, rfnIdentifier=%s, responseType=%s, gatewayMessageType=%s, gatewayMessageStatus=%s, fragmentId=%s]",
+                    upgradeId,
+                    rfnIdentifier,
+                    responseType,
+                    gatewayMessageType,
+                    gatewayMessageStatus,
+                    fragmentId);
     }
 }
