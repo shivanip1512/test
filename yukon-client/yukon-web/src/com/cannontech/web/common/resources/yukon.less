@@ -1082,6 +1082,9 @@ li:hover .show-on-hover {
     background-clip: padding-box;
     font-size: 13px;
 }
+
+.dropdown-trigger a { cursor: pointer; }
+
 .dropdown-menu.long-menu-list { font-size: 11px; }
 .dropdown-menu.no-icons .icon { display: none; }
 .dropdown-menu li { margin-top: 3px; }
@@ -1119,7 +1122,10 @@ li:hover .show-on-hover {
     background-color: #E5E5E5; 
     border-bottom: 1px solid white;
 }
-.dropdown-trigger a { cursor: pointer; }
+
+.dropdown-menu .dropdown-option .dropdown-option-label {
+    display: inline-block;
+}
 
 /* CRITERIA BUTTON */
 .criteria-button {text-align: left;position: relative;}

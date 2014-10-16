@@ -17,7 +17,7 @@
 <cti:default var="icon" value="icon-blank"/>
 <cti:default var="newTab" value="${false}"/>
 <c:set var="classes" value="dropdown-option ${pageScope.classes}"/>
-<c:set var="labelClasses" value="dropdown-option-label dib"/>
+<c:set var="labelClasses" value="dropdown-option-label"/>
 <c:set var="disabled" value="${not empty pageScope.disabled && disabled == 'true' ? 'disabled' : ''}"/>
 
 <li class="${classes}" <c:if test="${not empty pageScope.id}">id="${id}"</c:if> <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
