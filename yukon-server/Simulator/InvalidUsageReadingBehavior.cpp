@@ -5,6 +5,11 @@
 namespace Cti {
 namespace Simulator {
 
+InvalidUsageReadingBehavior::InvalidUsageReadingBehavior() :
+    _chance(0)
+{
+}
+
 void InvalidUsageReadingBehavior::setChance(double chance)
 {
     _chance = chance;

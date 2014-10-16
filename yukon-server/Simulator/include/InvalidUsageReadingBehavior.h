@@ -11,6 +11,8 @@ class InvalidUsageReadingBehavior : public MctBehavior
 
 public:
 
+    InvalidUsageReadingBehavior();
+
     void apply(target_type &message, Logger &logger) override;
     void setChance(double chance) override;
 };
