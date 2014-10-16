@@ -10,8 +10,8 @@ class FrozenPeakTimestampBehavior : public MctBehavior
 public:
 
     FrozenPeakTimestampBehavior();
-    virtual void apply(target_type &message, Logger &logger);
-    void setChance(double chance);
+    void apply(target_type &message, Logger &logger) override;
+    void setChance(double chance) override;
 
 private:
 
