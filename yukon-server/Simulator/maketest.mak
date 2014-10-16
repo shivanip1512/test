@@ -43,6 +43,7 @@ test_bch_behavior.obj \
 test_frozen_read_parity_behavior.obj \
 test_frozen_peak_timestamp_behavior.obj \
 test_random_consumption_behavior.obj \
+test_invalid_usage_reading_behavior.obj \
 test_mct410_sim.obj \
 
 
@@ -63,6 +64,7 @@ BchBehavior.obj \
 FrozenPeakTimestampBehavior.obj \
 FrozenReadParityBehavior.obj \
 RandomConsumptionBehavior.obj \
+InvalidUsageReadingBehavior.obj \
 
 LIBS=\
 kernel32.lib user32.lib advapi32.lib wsock32.lib \

@@ -10,6 +10,7 @@
 #include "FrozenReadParityBehavior.h"
 #include "FrozenPeakTimestampBehavior.h"
 #include "RandomConsumptionBehavior.h"
+#include "InvalidUsageReadingBehavior.h"
 
 using namespace std;
 
@@ -195,6 +196,14 @@ void Mct410Sim::initBehaviors(Logger &logger)
             std::auto_ptr<MctBehavior> consumption(new RandomConsumptionBehavior());
             consumption->setChance(randomReadingChance);
             _behaviorCollection.push_back(consumption);
+        }
+        if( double invalidUsageReadingChance = gConfigParms.getValueAsDouble("SIMULATOR_INVALID_USAGE_READING_CHANCE_PERCENT") )
+        {
+            logger.log("Invalid usage reading behavior enabled - Probability: " + CtiNumStr(invalidUsageReadingChance, 2) + "%");
+
+            std::auto_ptr<MctBehavior> invalidUsage(new InvalidUsageReadingBehavior());
+            invalidUsage->setChance(invalidUsageReadingChance);
+            _behaviorCollection.push_back(invalidUsage);
         }
 
         _behaviorsInited = true;

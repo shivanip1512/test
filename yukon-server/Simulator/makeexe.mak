@@ -48,6 +48,7 @@ DeviceMemoryManager.obj \
 FrozenReadParityBehavior.obj \
 FrozenPeakTimestampBehavior.obj \
 RandomConsumptionBehavior.obj \
+InvalidUsageReadingBehavior.obj \
 EmetconWords.obj \
 PlcTransmitter.obj \
 Ccu710.obj \
