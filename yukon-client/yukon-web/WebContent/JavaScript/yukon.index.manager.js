@@ -1,5 +1,5 @@
 /** Build indexes for specified indexName.
- * @param {String } indexName - Index Name
+ * @param {string} indexName - Index Name
  */ 
 function indexManager_buildIndex (indexName) {
     var indexManager_getProgressWrapper = function () {
@@ -17,7 +17,7 @@ function indexManager_buildIndex (indexName) {
 
 /**
  * Check Build Progress for given indexName. 
- * @param {String} indexName - Index Name.
+ * @param {string} indexName - Index Name.
  */
 var indexManager_getProgress = function (indexName) {
     var indexManager_updateProgressWrapper = function (transport, json) {
@@ -38,7 +38,7 @@ var indexManager_getProgress = function (indexName) {
  * Update progress for build index for given indexName.
  * @param {Object} transport - response object containing response text. 
  * @param {Object} json - json object having information  about index like percentage done etc.
- * @param {String} indexName - Index Name
+ * @param {string} indexName - Index Name
  */
 var indexManager_updateProgress = function (transport, json, indexName) {
     var percentDone = json.percentDone,
@@ -77,8 +77,8 @@ var indexManager_ajaxError = function (transport, json) {
 
 /**
  * Update the ProgressBar of the index.
- * @param {String} indexName - Index Name.
- * @param {Number}  percent - Percentage value of index build.
+ * @param {string} indexName - Index Name.
+ * @param {number}  percent - Percentage value of index build.
  */
 function indexManager_updateIndexProgressBar (indexName, percent) {
     $('#' + indexName + 'percentComplete').find('.progress-bar').width(percent + '%');
