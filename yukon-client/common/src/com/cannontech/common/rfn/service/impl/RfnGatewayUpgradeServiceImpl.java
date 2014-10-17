@@ -34,12 +34,9 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
     private final static String configName = "RFN_GATEWAY_UPGRADE_REQUEST";
     private final static String queueName = "yukon.qr.obj.rfn.GatewayUpgradeRequest";
 
-    @Autowired
-    private ConnectionFactory connectionFactory;
-    @Autowired
-    private ConfigurationSource configurationSource;
-    @Autowired
-    private RfnGatewayService gatewayService;
+    @Autowired private ConnectionFactory connectionFactory;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private RfnGatewayService gatewayService;
 
     private RequestReplyTemplate<RfnGatewayUpgradeResponse> qrTemplate;
 
