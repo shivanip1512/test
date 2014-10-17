@@ -703,9 +703,9 @@
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.RFN_MANUFACTURER"></entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.description.RFN_MODEL">Model of the RFN Meter.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.RFN_MODEL"></entry>
-    <entry key="yukon.common.device.bulk.columnHeader.update.description.LATITUDE">The device's latitude based on coordinate reference system EPSG:4326 (WGS84).</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.description.LATITUDE">The device's latitude based on coordinate reference system EPSG:4326 (WGS84). North (positive); South (negative).</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.LATITUDE"></entry>
-    <entry key="yukon.common.device.bulk.columnHeader.update.description.LONGITUDE">The device's longitude based on coordinate reference system EPSG:4326 (WGS84).</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.description.LONGITUDE">The device's longitude based on coordinate reference system EPSG:4326 (WGS84). East (positive); West (negative).</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.LONGITUDE"></entry>
     
     <!-- updateUpload.jsp: errors -->
