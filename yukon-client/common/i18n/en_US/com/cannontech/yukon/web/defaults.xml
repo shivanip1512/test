@@ -2,54 +2,44 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-<entry key="yukon.web.defaults.pageTitle">Energy Services Operations Center</entry>
-
-<entry key="yukon.web.defaults.blank"></entry>
-<entry key="yukon.web.defaults.none">(none)</entry>
-<entry key="yukon.web.defaults.all">All</entry>
-
-<entry key="yukon.web.defaults.add">Add</entry>
-<entry key="yukon.web.defaults.remove">Remove</entry>
-
 <entry key="yukon.web.defaults.actions">Actions</entry>
-<entry key="yukon.web.defaults.devices">Devices</entry>
-<entry key="yukon.web.defaults.deviceCount">Device Count</entry>
-<entry key="yukon.web.defaults.noDevices">(no devices selected)</entry>
-
-<entry key="yukon.web.defaults.showAll">Show All</entry>
-<entry key="yukon.web.defaults.quickView">Quick View</entry>
-
-<entry key="yukon.web.defaults.yes">Yes</entry>
-<entry key="yukon.web.defaults.no">No</entry>
-<entry key="yukon.web.defaults.na">N/A</entry>
-<entry key="yukon.web.defaults.default">Default</entry>
-<entry key="yukon.web.defaults.on">On</entry>
-<entry key="yukon.web.defaults.off">Off</entry>
-<entry key="yukon.web.defaults.stop">Stop</entry>
-<entry key="yukon.web.defaults.start">Start</entry>
-<entry key="yukon.web.defaults.or">or</entry>
-<entry key="yukon.web.defaults.date">Date</entry>
-<entry key="yukon.web.defaults.dateRange">Date Range</entry>
-<entry key="yukon.web.defaults.minuteAbbreviation">{0} min</entry>
-<entry key="yukon.web.defaults.hourAbbreviation">{0} hr</entry>
-<entry key="yukon.web.defaults.day">Day</entry>
-<entry key="yukon.web.defaults.month">Month</entry>
-<entry key="yukon.web.defaults.year">Year</entry>
-
-<entry key="yukon.web.defaults.dashes">---</entry>
-<entry key="yukon.web.defaults.dashesTwo">--</entry>
-
-<entry key="yukon.web.defaults.moreInfoSuffix">…</entry>
-
+<entry key="yukon.web.defaults.add">Add</entry>
+<entry key="yukon.web.defaults.all">All</entry>
+<entry key="yukon.web.defaults.blank"></entry>
 <entry key="yukon.web.defaults.celsius">°C</entry>
-<entry key="yukon.web.defaults.fahrenheit">°F</entry>
-<entry key="yukon.web.defaults.degree">°</entry>
-
 <entry key="yukon.web.defaults.copy.prefix">Copy of</entry>
 <entry key="yukon.web.defaults.copy.suffix"> - Copy</entry>
-
-<entry key="yukon.web.defaults.upload">Upload</entry>
+<entry key="yukon.web.defaults.dashes">---</entry>
+<entry key="yukon.web.defaults.dashesTwo">--</entry>
+<entry key="yukon.web.defaults.date">Date</entry>
+<entry key="yukon.web.defaults.dateRange">Date Range</entry>
+<entry key="yukon.web.defaults.day">Day</entry>
+<entry key="yukon.web.defaults.default">(default)</entry>
+<entry key="yukon.web.defaults.degree">°</entry>
+<entry key="yukon.web.defaults.deviceCount">Device Count</entry>
+<entry key="yukon.web.defaults.devices">Devices</entry>
 <entry key="yukon.web.defaults.download">Download</entry>
-
+<entry key="yukon.web.defaults.fahrenheit">°F</entry>
+<entry key="yukon.web.defaults.hourAbbreviation">{0} hr</entry>
+<entry key="yukon.web.defaults.minuteAbbreviation">{0} min</entry>
+<entry key="yukon.web.defaults.month">Month</entry>
+<entry key="yukon.web.defaults.moreInfoSuffix">…</entry>
+<entry key="yukon.web.defaults.na">N/A</entry>
+<entry key="yukon.web.defaults.no">No</entry>
+<entry key="yukon.web.defaults.noDevices">(no devices selected)</entry>
+<entry key="yukon.web.defaults.none">(none)</entry>
+<entry key="yukon.web.defaults.off">Off</entry>
+<entry key="yukon.web.defaults.on">On</entry>
+<entry key="yukon.web.defaults.or">or</entry>
+<entry key="yukon.web.defaults.pageTitle">Energy Services Operations Center</entry>
+<entry key="yukon.web.defaults.quickView">Quick View</entry>
+<entry key="yukon.web.defaults.remove">Remove</entry>
 <entry key="yukon.web.defaults.selector.selectOne">-- Select One --</entry>
+<entry key="yukon.web.defaults.showAll">Show All</entry>
+<entry key="yukon.web.defaults.start">Start</entry>
+<entry key="yukon.web.defaults.stop">Stop</entry>
+<entry key="yukon.web.defaults.upload">Upload</entry>
+<entry key="yukon.web.defaults.year">Year</entry>
+<entry key="yukon.web.defaults.yes">Yes</entry>
+
 </properties>

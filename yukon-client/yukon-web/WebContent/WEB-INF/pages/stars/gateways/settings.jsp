@@ -1,3 +1,5 @@
+<%@ page trimDirectiveWhitespaces="true" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -20,42 +22,83 @@
 <form action="${url}" method="${method}">
     <cti:csrfToken/>
     
-    <tags:nameValueContainer2>
-        <tags:nameValue2 nameKey=".name">
-            <input type="text" value="" class="js-focus full-width">
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".ipaddress">
-            <input type="text" value="" class="full-width">
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".user">
-            <input type="text" value="">
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".userPassword">
-            <input type="password" value="">
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".admin">
-            <input type="text" value="">
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".adminPassword">
-            <input type="password" value="">
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".superAdmin">
-            <input type="text" value="">
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".superAdminPassword">
-            <input type="password" value="">
-        </tags:nameValue2>
-    </tags:nameValueContainer2>
-    
-    <h3><i:inline key=".detail.location.title"/>&nbsp;<em class="subtle"><i:inline key=".optional"/></em></h3>
-    <tags:nameValueContainer2>
-        <tags:nameValue2 nameKey=".latitude">
-            <input type="text" value="">
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".longitude">
-            <input type="text" value="">
-        </tags:nameValue2>
-    </tags:nameValueContainer2>
+    <table class="name-value-table with-form-controls">
+        
+        <tr>
+            <td class="name"><i:inline key=".name"/></td>
+            <td class="value">
+                <input type="text" value="" class="js-focus full-width" tabindex="1">
+            </td>
+        </tr>
+        
+        <tr>
+            <td class="name"><i:inline key=".ipaddress"/></td>
+            <td class="value">
+                <input class="js-create-ip" type="text" maxlength="15" size="15" value="" tabindex="2">
+            </td>
+        </tr>
+        
+        <tr><td colspan="2"><strong><i:inline key=".credentials"/></strong></td></tr>
+        
+        <tr class="js-create-user">
+            <td class="name">
+                <i:inline key=".user"/>
+                <label class="db">
+                    <input type="radio" name="default" tabindex="3">
+                    <i:inline key="defaults.default"/>
+                </label>
+            </td>
+            <td class="value">
+                <input class="M0 left js-create-username" type="text" value="" placeholder="<cti:msg2 key=".username.ph"/>" tabindex="4"
+                ><input class="M0 middle js-create-password" type="password" value="" placeholder="<cti:msg2 key=".password.ph"/>" tabindex="5" 
+                ><cti:button renderMode="buttonImage" icon="icon-connect" classes="fn vat right js-conn-test-btn" disabled="true" nameKey="testConnection" tabindex="6"/>
+            </td>
+        </tr>
+        
+        <tr class="js-create-admin">
+            <td class="name">
+                <i:inline key=".admin"/>
+                <label class="db">
+                    <input type="radio" name="default" checked tabindex="3">
+                    <i:inline key="defaults.default"/>
+                </label>
+            </td>
+            <td class="value">
+                <input class="M0 left js-create-username" type="text" value="" placeholder="<cti:msg2 key=".username.ph"/>" tabindex="7"
+                ><input class="M0 middle js-create-password" type="password" value="" placeholder="<cti:msg2 key=".password.ph"/>" tabindex="8" 
+                ><cti:button renderMode="buttonImage" icon="icon-connect" classes="fn vat right js-conn-test-btn" disabled="true" nameKey="testConnection" tabindex="9"/>
+            </td>
+        </tr>
+        
+        <tr class="js-create-super-admin">
+            <td class="name">
+                <i:inline key=".superAdmin"/>
+                <label class="db">
+                    <input type="radio" name="default" tabindex="3">
+                    <i:inline key="defaults.default"/>
+                </label>
+            </td>
+            <td class="value">
+                <input class="M0 left js-create-username" type="text" value="" placeholder="<cti:msg2 key=".username.ph"/>" tabindex="10"
+                ><input class="M0 middle js-create-password" type="password" value="" placeholder="<cti:msg2 key=".password.ph"/>" tabindex="11" 
+                ><cti:button renderMode="buttonImage" icon="icon-connect" classes="fn vat right js-conn-test-btn" disabled="true" nameKey="testConnection" tabindex="12"/>
+            </td>
+        </tr>
+        
+        <tr><td colspan="2">&nbsp;</td></tr>
+        
+        <tr>
+            <td class="name">
+                <i:inline key=".detail.location.title"/>&nbsp;
+                <em class="subtle"><i:inline key=".optional"/></em>
+            </td>
+            <td class="value">
+                <input class="M0 left" type="text" value="" placeholder="<cti:msg2 key=".latitude"/>" tabindex="13"
+                ><input class="M0 right" type="text" value="" placeholder="<cti:msg2 key=".longitude"/>" tabindex="14">
+            </td>
+        </tr>
+        
+    </table>
     
 </form>
 

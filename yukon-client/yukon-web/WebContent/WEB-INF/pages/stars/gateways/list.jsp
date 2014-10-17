@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -13,8 +14,8 @@
         <cti:button icon="icon-plus-green" nameKey="create" data-popup="#gateway-create-popup"/>
     </div>
     <div id="gateway-create-popup" class="dn" data-title="Create Gateway" data-url="gateways/create" 
-        data-width="360" data-dialog data-event="yukon_assets_gateway_save">
-        
+        data-width="565" data-dialog data-event="yukon:assets:gateway:save" 
+        data-ok-text="<cti:msg2 key="components.button.save.label"/>" data-load-event="yukon:assets:gateway:load">
     </div>
     <table class="compact-results-table has-actions has-alerts">
         <thead>
@@ -65,7 +66,8 @@
                                         <c:set var="clazz" value="progress-bar-danger"/>
                                     </c:if>
                                     <div class="progress-bar ${clazz}" style="width: ${gateway.totalCompletionPercentage}%"></div>
-                                </div>&nbsp;${gateway.totalCompletionPercentage}%
+                                </div>&nbsp;
+                                <fmt:formatNumber pattern="###.##%" value="${gateway.totalCompletionPercentage / 100}"/>
                             </td>
                             <td class="action-column">
                                 <cm:dropdown>

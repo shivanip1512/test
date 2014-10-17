@@ -39,7 +39,6 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
                 rfnDeviceCreationService.incrementNewDeviceCreated();
                 log.debug("Created new gateway: " + device);
                 loadGatewayData(device.getPaoIdentifier());
-                incrementProcessedArchiveRequest();
                 return device;
             } catch (Exception e) {
                 log.warn("Creation failed for gateway: " + request.getRfnIdentifier(), e);
@@ -61,6 +60,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
         @Override
         public void processData(RfnDevice rfnDevice, GatewayArchiveRequest archiveRequest) {
             //no data to archive on this queue, just device creation requests that have no other payload
+            incrementProcessedArchiveRequest();
         }
     }
     

@@ -12,7 +12,13 @@
     <entry key="yukon.web.modules.operator.create.account">Create Account</entry>
     <entry key="yukon.web.modules.operator.create.device">Create Device</entry>
     
-    <!-- Gateway Dashboard -->
+    <!-- Gateways -->
+    <entry key="yukon.web.modules.operator.gateways.username.ph">username</entry>
+    <entry key="yukon.web.modules.operator.gateways.password.ph">password</entry>
+    <entry key="yukon.web.modules.operator.gateways.testConnection.hoverText">Test Connection</entry>
+    <entry key="yukon.web.modules.operator.gateways.credentials">Credentials</entry>
+    
+    <!-- Gateway List -->
     <entry key="yukon.web.modules.operator.gateways.list.pageName">Gateways</entry>
     <entry key="yukon.web.modules.operator.gateways.list.connected">Connected</entry>
     <entry key="yukon.web.modules.operator.gateways.list.loadingGatewayData">Loading Gateway Data...</entry>

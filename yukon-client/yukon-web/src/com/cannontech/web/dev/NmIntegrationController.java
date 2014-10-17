@@ -9,10 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
-import javax.jms.TextMessage;
 import javax.management.ObjectName;
 import javax.servlet.http.HttpServletResponse;
 
@@ -22,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
@@ -75,7 +70,9 @@ public class NmIntegrationController {
     private static final String lcrReadServiceBean = "com.cannontech.yukon.ServiceManager:name=lcrReadingArchiveRequestListener,type=LcrReadingArchiveRequestListener";
     private static final String lcrReadQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
     private static final String gatewayServiceBean = "com.cannontech.yukon.ServiceManager:name=gatewayArchiveRequestListener,type=GatewayArchiveRequestListener";
-    private static final String gatewayQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayArchiveRequest";
+    private static final String gatewayArchiveReqQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayArchiveRequest";
+    private static final String gatewayDataReqQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayDataRequest";
+    private static final String gatewayDataQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayData";
     private static final DecimalFormat df = new DecimalFormat("##,###.## ms");
     
     @RequestMapping("viewBase")
@@ -141,23 +138,59 @@ public class NmIntegrationController {
                     "value", df.format(lraet)));
             data.add(lcrData);
             
-            // Gateway Stats
-            Map<String, Object> gatewayData = new LinkedHashMap<>();
+            // Gateway Archive Stats
+            Map<String, Object> gatewayArchiveData = new LinkedHashMap<>();
             ObjectName gatewayService = ObjectName.getInstance(gatewayServiceBean);
-            gatewayData.put("gateway-archive-requests-processed", ImmutableMap.of(
+            gatewayArchiveData.put("gateway-archive-requests-processed", ImmutableMap.of(
                     "name", "Gateway Archive Requests Processed", 
                     "value", jmxQueryService.get(gatewayService, "ProcessedArchiveRequest")));
-            ObjectName gatewayQueue = ObjectName.getInstance(gatewayQueueBean);
-            gatewayData.put("gateway-archive-enqueue-count", ImmutableMap.of(
+            ObjectName gatewayQueue = ObjectName.getInstance(gatewayArchiveReqQueueBean);
+            gatewayArchiveData.put("gateway-archive-enqueue-count", ImmutableMap.of(
                     "name", "Gateway Archive Enqueue Count", 
                     "value", jmxQueryService.get(gatewayQueue, "EnqueueCount")));
-            gatewayData.put("gateway-archive-queue-size", ImmutableMap.of(
+            gatewayArchiveData.put("gateway-archive-dequeue-count", ImmutableMap.of(
+                    "name", "Gateway Archive Dequeue Count", 
+                    "value", jmxQueryService.get(gatewayQueue, "DequeueCount")));
+            gatewayArchiveData.put("gateway-archive-queue-size", ImmutableMap.of(
                     "name", "Gateway Archive Queue Size", 
                     "value", jmxQueryService.get(gatewayQueue, "QueueSize")));
             Double gaaet = (Double) jmxQueryService.get(gatewayQueue, "AverageEnqueueTime");
-            gatewayData.put("gateway-archive-average-enqueue-time", ImmutableMap.of(
+            gatewayArchiveData.put("gateway-archive-average-enqueue-time", ImmutableMap.of(
                     "name", "Gateway Archive Average Enqueue Time", 
                     "value", df.format(gaaet)));
+            data.add(gatewayArchiveData);
+            
+            // Gateway Data Stats
+            Map<String, Object> gatewayData = new LinkedHashMap<>();
+            gatewayQueue = ObjectName.getInstance(gatewayDataReqQueueBean);
+            gatewayData.put("gateway-data-req-enqueue-count", ImmutableMap.of(
+                    "name", "Gateway Data Request Enqueue Count", 
+                    "value", jmxQueryService.get(gatewayQueue, "EnqueueCount")));
+            gatewayData.put("gateway-data-req-dequeue-count", ImmutableMap.of(
+                    "name", "Gateway Data Request Dequeue Count", 
+                    "value", jmxQueryService.get(gatewayQueue, "DequeueCount")));
+            gatewayData.put("gateway-data-req-queue-size", ImmutableMap.of(
+                    "name", "Gateway Data Request Queue Size", 
+                    "value", jmxQueryService.get(gatewayQueue, "QueueSize")));
+            Double gdaet = (Double) jmxQueryService.get(gatewayQueue, "AverageEnqueueTime");
+            gatewayData.put("gateway-data-req-average-enqueue-time", ImmutableMap.of(
+                    "name", "Gateway Data Request Average Enqueue Time", 
+                    "value", df.format(gdaet)));
+            
+            gatewayQueue = ObjectName.getInstance(gatewayDataQueueBean);
+            gatewayData.put("gateway-data-enqueue-count", ImmutableMap.of(
+                    "name", "Gateway Data Enqueue Count", 
+                    "value", jmxQueryService.get(gatewayQueue, "EnqueueCount")));
+            gatewayData.put("gateway-data-dequeue-count", ImmutableMap.of(
+                    "name", "Gateway Data Dequeue Count", 
+                    "value", jmxQueryService.get(gatewayQueue, "DequeueCount")));
+            gatewayData.put("gateway-data-queue-size", ImmutableMap.of(
+                    "name", "Gateway Data Queue Size", 
+                    "value", jmxQueryService.get(gatewayQueue, "QueueSize")));
+            Double gdraet = (Double) jmxQueryService.get(gatewayQueue, "AverageEnqueueTime");
+            gatewayData.put("gateway-data-average-enqueue-time", ImmutableMap.of(
+                    "name", "Gateway Data Average Enqueue Time", 
+                    "value", df.format(gdraet)));
             data.add(gatewayData);
             
         } catch (Exception e) {
@@ -234,37 +267,15 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("sendMeterArchiveRequest")
-    public String send(int serialFrom, int serialTo, String manufacturer, String model, Double value, RfnMeterReadingType type, boolean random, String uom, 
-                       boolean quad1, boolean quad2, boolean quad3, boolean quad4, boolean max, boolean min, boolean avg,
-                       boolean phaseA, boolean phaseB, boolean phaseC, boolean touRateA, boolean touRateB, boolean touRateC,
-                       boolean touRateD, boolean touRateE, boolean netFlow, boolean coincident, boolean harmonic, boolean cumulative) {
-        rfnEventTestingService.sendMeterArchiveRequests(serialFrom,
-                                                        serialTo,
-                                                        manufacturer,
-                                                        model,
-                                                        value,
-                                                        type,
-                                                        random,
-                                                        uom,
-                                                        quad1,
-                                                        quad2,
-                                                        quad3,
-                                                        quad4,
-                                                        max,
-                                                        min,
-                                                        avg,
-                                                        phaseA,
-                                                        phaseB,
-                                                        phaseC,
-                                                        touRateA,
-                                                        touRateB,
-                                                        touRateC,
-                                                        touRateD,
-                                                        touRateE,
-                                                        netFlow,
-                                                        coincident,
-                                                        harmonic,
-                                                        cumulative);
+    public String send(int serialFrom, int serialTo, String manufacturer, String model, Double value, 
+            RfnMeterReadingType type, boolean random, String uom, boolean quad1, boolean quad2,
+            boolean quad3, boolean quad4, boolean max, boolean min, boolean avg, boolean phaseA, 
+            boolean phaseB, boolean phaseC, boolean touRateA, boolean touRateB, boolean touRateC,
+            boolean touRateD, boolean touRateE, boolean netFlow, boolean coincident, boolean harmonic, boolean cumulative) {
+        
+        rfnEventTestingService.sendMeterArchiveRequests(serialFrom, serialTo, manufacturer, model, value, type, random, 
+                uom, quad1, quad2, quad3, quad4, max, min, avg, phaseA, phaseB, phaseC,
+                touRateA, touRateB, touRateC, touRateD, touRateE, netFlow, coincident, harmonic, cumulative);
         return "redirect:viewMeterReadArchiveRequest";
     }
     
@@ -285,10 +296,12 @@ public class NmIntegrationController {
         int numEventsSent = rfnEventTestingService.sendEventsAndAlarms(event);
         
         if (numEventsSent > 0) {
-            MessageSourceResolvable createMessage = new YukonMessageSourceResolvable("yukon.web.modules.support.rfnTest.numEventsSent", numEventsSent);
+            MessageSourceResolvable createMessage = 
+                    new YukonMessageSourceResolvable("yukon.web.modules.support.rfnTest.numEventsSent", numEventsSent);
             flashScope.setConfirm(createMessage);
         } else {
-            MessageSourceResolvable createMessage = new YukonMessageSourceResolvable("yukon.web.modules.support.rfnTest.numEventsSent", numEventsSent);
+            MessageSourceResolvable createMessage = 
+                    new YukonMessageSourceResolvable("yukon.web.modules.support.rfnTest.numEventsSent", numEventsSent);
             flashScope.setError(createMessage);
         }
         
@@ -300,25 +313,11 @@ public class NmIntegrationController {
         rfnEventTestingService.calculationStressTest();
     }
     
-    /** TODO This doesn't actually work.  
-     * javax.jms.JMSException: Failed to build body from content. 
-     * Serializable class not available to broker. 
-     * Reason: java.lang.ClassNotFoundException: com.cannontech.common.rfn.message.RfnArchiveStartupNotification
-     * Should just use a text message instead.
-     */
     @RequestMapping("resend-startup")
     public void startup(HttpServletResponse resp) {
         RfnArchiveStartupNotification notif = new RfnArchiveStartupNotification();
         try {
             jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
-            
-            // Send a text message for startup notification
-//            jmsTemplate.send(new MessageCreator() {
-//                public Message createMessage(Session session) throws JMSException {
-//                    TextMessage message = session.createTextMessage("sync all the things!");
-//                    return message;
-//                }
-//            });
             resp.setStatus(HttpStatus.NO_CONTENT.value());
         } catch (Exception e) {
             resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -327,13 +326,11 @@ public class NmIntegrationController {
     
     @InitBinder
     public void setupBinder(WebDataBinder binder, YukonUserContext userContext) {
-        EnumPropertyEditor.register(binder, RfnConditionType.class);
         
-        PropertyEditor instantEditor =
-                datePropertyEditorFactory.getInstantPropertyEditor(DateFormatEnum.DATEHM,
-                                                                   userContext,
-                                                                   BlankMode.ERROR);
-            binder.registerCustomEditor(Instant.class, instantEditor);
+        EnumPropertyEditor.register(binder, RfnConditionType.class);
+        PropertyEditor instantEditor = datePropertyEditorFactory.getInstantPropertyEditor(DateFormatEnum.DATEHM, 
+                userContext, BlankMode.ERROR);
+        binder.registerCustomEditor(Instant.class, instantEditor);
     }
     
     @Autowired
