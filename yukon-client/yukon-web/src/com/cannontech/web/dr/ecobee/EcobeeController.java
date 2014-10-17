@@ -69,7 +69,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dr.ecobee.service.DataDownloadService;
 import com.cannontech.web.dr.model.EcobeeSettings;
 import com.cannontech.web.input.DatePropertyEditorFactory;
-import com.cannontech.web.maintenance.tasks.RepeatingWeatherDataTask;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Iterables;
@@ -92,9 +91,9 @@ public class EcobeeController {
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     @Autowired private JobManager jobManager;
     @Autowired @Qualifier("ecobeeReconciliationReport")
-        private YukonJobDefinition<RepeatingWeatherDataTask> ecobeeReconciliationReportJobDef;
+        private YukonJobDefinition<EcobeeReconciliationReportTask> ecobeeReconciliationReportJobDef;
     @Autowired @Qualifier("ecobeePointUpdate")
-        private YukonJobDefinition<RepeatingWeatherDataTask> ecobeePointUpdateJobDef;
+        private YukonJobDefinition<EcobeePointUpdateTask> ecobeePointUpdateJobDef;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired @Qualifier("ecobeeReads") RecentResultsCache<EcobeeReadResult> readResultsCache;
     @Autowired private EcobeeReconciliationService ecobeeReconciliation;
