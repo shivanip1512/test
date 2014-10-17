@@ -1,20 +1,18 @@
-/**
- * Singleton that manages the data exporter page
- * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
- */
-
 yukon.namespace('yukon.dataExporter');
 
+/**
+ * Singleton that manages the data exporter page.
+ * @module yukon.dataExporter
+ * @requires JQUERY
+ * @requires JQUERY UI
+ */
 yukon.dataExporter = (function () {
     
-    /** private fields */
     var mod = {},
         _initialized = false,
         _config = {},
     
-    /** private methods */
+	/** Displays the dynamic attributes. */
     _showAttributeRow = function() {
         if ($('#archivedValuesExportFormatType').val() == 'DYNAMIC_ATTRIBUTE') {
             $('#attributeRow').show();
@@ -22,18 +20,28 @@ yukon.dataExporter = (function () {
             $('#attributeRow').hide();
         }
     },
+    
+    /** Exports the format. */
     _runOkPressed = function() {
         $('#runDialog').dialog('close');
         $('#runInputsDiv').clone().appendTo($('#exporterForm'));
         _submitForm('generateReport');
         $('#exporterForm #runInputsDiv').remove();
     },
+    
+    /** Opens the schedule details form. */
     _scheduleOkPressed = function() {
         $('#scheduleDialog').dialog('close');
         $('#scheduleInputsDiv').clone().appendTo($('#exporterForm'));
         _submitForm('scheduleReport');
         $('#exporterForm #scheduleInputsDiv').remove();
     },
+    
+    /** Handles the OK click of Export/Schedule dialog.
+     * @param {Object} dialogIdentifier - id of dialog that needs to be opened.
+     * @param {string} titleMsg - Title of dialog.
+     * @param {string} okFunction - Function name that needs to be invoked on OK button click.
+     **/
     _createOkCancelDialog = function(dialogIdentifier, titleMsg, okFunction) {
         var buttons = [];
         buttons.push({'text' : _config.text.ok, 'class' : 'primary', 'click' : okFunction });
@@ -53,11 +61,25 @@ yukon.dataExporter = (function () {
             $(dialogIdentifier).dialog(dialogOpts);
         }
     },
+    
+    /** Submits the form.
+     * @param {Object} dialogIdentifier - id of dialog that needs to be opened.
+     * @param {string} titleMsg - Title of dialog.
+     * @param {string} okFunction - Function name that needs to be invoked on OK button click.
+     **/
     _submitForm = function(action) {
         var exporterForm = $('#exporterForm');
         exporterForm.attr('action', action);
         exporterForm[0].submit();
     },
+    
+    /** Toggles between export and schedule dialog.
+     * @param {Object} dialogId - id of dialog opened.
+     * @param {string} archivedValuesExporterFormat - Format in which we want to export data.
+     * @param {Array.<string>} dataRangeTypes - Date ranges.
+     * @param {Array.<string>} fixedDataRangeTypes - Fixed date range..
+     * @param {Array.<string>} dynamicDataRangeTypes - Dynamic date range.
+     **/
     _toggleForm = function(dialogId, archivedValuesExporterFormat, dataRangeTypes, fixedDataRangeTypes, dynamicDataRangeTypes) {
 
         for (var i = 0;  i < dataRangeTypes.length; i++) {
@@ -79,8 +101,7 @@ yukon.dataExporter = (function () {
 
     mod = {
         
-        /** public methods */
-            
+    
         /*
          * Initializes the module hooking up event handlers to components.
          * Depends on localized text in the jsp, so only run after DOM is ready.

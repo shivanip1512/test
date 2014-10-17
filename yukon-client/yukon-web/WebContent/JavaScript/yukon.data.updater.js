@@ -24,14 +24,31 @@ yukon.namespace('yukon.dataUpdater');
  */
 yukon.dataUpdater = (function () {
     
+    /** @type {number} - The ms interval to timeout */
     var _updaterTimeout = null,
+    
+    	/** @type {number} - last update to store the latest date of update . */
         _lastUpdate = 0,
+        
+        /** @type {number} - failure count to track number of failures before showing message */
         _failureCount = 0,
+        
+        /** @type {boolean} - flag used to highlight the elements */
         _disableHighlight = false,
+        
+        /** @type {Object} - Tracks the registration callback calls with identifier */
         _callbackRegistrations = [],
+        
+        /** @type {string} - URL */
         _url = '',
+        
+        /** @type {number} - Delay in milliseconds */ 
         _delayMS = 4000,
         
+        /**
+         * Update the page elements in case anything changed
+         * @param {Object} response - Response passed.
+         */
         _processResponseCallback = function (response) {
         
             var someValueHasUpdated = false;
@@ -153,6 +170,9 @@ yukon.dataUpdater = (function () {
             _updaterTimeout = setTimeout(_doUpdate, _delayMS);
         },
         
+        /**
+         * Manage failure to update the page elements
+         */
         _failureCallback = function () {
             // something bad happened, show user that updates are off
             _failureCount++;
@@ -170,10 +190,16 @@ yukon.dataUpdater = (function () {
             _updaterTimeout = setTimeout(_doUpdate, _delayMS * 5);
         },
         
+        /**
+         * Show warning dialog
+         */
         _warnStaleData = function () {
             $('#updatedWarning').dialog('open');
         },
         
+        /**
+         * Update the page
+         */
         _doUpdate = function () {
             // if none exist on this page, get out
             // build up JS object to be used for request
@@ -236,8 +262,8 @@ yukon.dataUpdater = (function () {
         
         /**
          * Register a callback function to fire for the provided identifiers.
-         * @param callback {function} Function to fire on update.
-         * @param identifierMap {Object} 
+         * @param {function} callback - Function to fire on update.
+         * @param {Object} identifierMap - Identifier Map
          */
         registerCallback: function (callback, identifierMap) {
             _callbackRegistrations.push({
@@ -249,8 +275,8 @@ yukon.dataUpdater = (function () {
         /**
          * Register a callback that will only fire if the response contains a 'boolean' property 
          * whose value is 'true' or true. Once fired the callback will never be fired again.
-         * @param callback {function} Function to fire on update.
-         * @param identifier {DOM id}
+         * @param {function} callback - Function to fire on update.
+         * @param {DOM id} identifier - Identifier Id
          */
         registerEventCallback: function (callback, identifier) {
             var didIt = false,
@@ -266,8 +292,8 @@ yukon.dataUpdater = (function () {
         /**
          * Schedules the first update request after waiting 'delay' milliseconds.
          * The first update recursively reschedules consecutive updates from then on.
-         * @param url
-         * @param delay
+         * @param {string} url - url
+         * @param {number} delay - delay time
          */
         start: function (url, delay) {
             _url = url;

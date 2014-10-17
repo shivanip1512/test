@@ -1,15 +1,19 @@
+yukon.namespace('yukon.favorites');
 /**
  * Singleton that manages Yukon favorites feature
  * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
+ * @requires JQUERY
+ * @requires JQUERY UI
  */
-
-yukon.namespace('yukon.favorites');
-
 yukon.favorites = (function () {
 
-    var _dataFavoriteButton = function (button) {
+    var 
+    
+    /** 
+     * Returns the data for the favorite button specified.
+     * @param {Object} button - jquery button object.
+     */
+    _dataFavoriteButton = function (button) {
 
         var data = { module:    button.data('module'),
                      name:      button.data('name'),
@@ -26,6 +30,10 @@ yukon.favorites = (function () {
         return data;
     },
 
+    /** 
+     * Returns the data for which the subscribe button is hit.
+     * @param {Object} button - jquery button object.
+     */
     _dataSubscribeButton = function (button) {
 
         var data = { subscriptionType: button.data('subscriptionType'),
@@ -34,6 +42,10 @@ yukon.favorites = (function () {
         return data;
     },
 
+    /** 
+     * Initialize the favorite icon for a button specified
+     * @param {Object} button - jquery button object.
+     */
     _initializeFavoriteIcon = function (button) {
 
         var data = {};
@@ -49,6 +61,10 @@ yukon.favorites = (function () {
         });
     },
 
+    /** 
+     * Initialize the subscribed icon for a button specified
+     * @param {Object} button - jquery button object.
+     */
     _initializeSubscribedIcon = function (button) {
 
         var data = _dataSubscribeButton(button);
@@ -58,6 +74,13 @@ yukon.favorites = (function () {
         });
     },
 
+    /** 
+     * Initialize the favorite icon for a button specified
+     * @param {Object} jQueryItem - jquery Item object.
+     * @param {boolean} isOn - indicator to indicate if the icon is relevant
+     * @param {string} iconOn - Name of the icon which is on
+     * @param {string} iconOff - Name of the icon which is off
+     */
     _setIcon = function (jQueryItem, isOn, iconOn, iconOff) {
 
         var icon = jQueryItem.find('i');
@@ -74,6 +97,9 @@ yukon.favorites = (function () {
         }
     },
 
+    /** 
+     * Add the favorite icon to the history
+     */
     _addToHistory = function () {
 
         var button = $('#favButton'),
@@ -85,6 +111,12 @@ yukon.favorites = (function () {
         }
     },
     
+    /** 
+     * Toggle the favorite icon
+     * @param {Object} button - jquery button object.
+     * @param {string} iconOn - Name of the icon which is on
+     * @param {string} iconOff - Name of the icon which is off
+     */
     _toggleFavorite = function (button, iconOn, iconOff) {
 
         var data = _dataFavoriteButton(button);
@@ -94,6 +126,12 @@ yukon.favorites = (function () {
         });
     },
 
+    /** 
+     * Toggle the subscribed icon
+     * @param {Object} button - jquery button object.
+     * @param {string} iconOn - Name of the icon which is on
+     * @param {string} iconOff - Name of the icon which is off
+     */
     _toggleSubscribed = function (button, iconOn, iconOff) {
 
         var data = _dataSubscribeButton(button);
@@ -110,10 +148,7 @@ yukon.favorites = (function () {
 
     mod = {
 
-        /******************
-         * Public Methods *
-         ******************/
-
+        /** Initialize this module. Depends on DOM elements so only call after DOM is loaded. */   
         init: function() {
 
             var localUi = yukon.ui;
@@ -150,6 +185,7 @@ yukon.favorites = (function () {
             });
         },
 
+        /** Initialize the subscribe Icon */
         initSubscribe: function() {
 
             var localUi = yukon.ui;

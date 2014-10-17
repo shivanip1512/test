@@ -1,22 +1,29 @@
-/**
- * @module yukon.dataExporterFormat
- * 
- * Singleton that manages the data exporter format page
- * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
- */
-
 yukon.namespace('yukon.dataExporterFormat');
 
+/**
+ * Singleton that manages the data exporter format page.
+ * @module yukon.dataExporterFormat
+ * @requires JQUERY
+ * @requires JQUERY UI
+ * @requires yukon
+ * @requires yukon.ui
+ */
 yukon.dataExporterFormat = (function () {
     
     var
     _initialized = false,
-    _config = {}, /** Configuration object containing any data this module needs when initializing (i18n text) */
-    _attributeUrl = yukon.url('/tools/data-exporter/format/attribute'), /** @constant {string} URL for attribute popup retrieval and posting. */
-    _fieldUrl = yukon.url('/tools/data-exporter/format/field'), /** @constant {string} URL for field popup retrieval and posting. */
-    _previewUrl = yukon.url('/tools/data-exporter/format/preview'), /** @constant {string} URL that returns the preview for the format in JSON. */
+    
+    /** Configuration object containing any data this module needs when initializing (i18n text) */
+    _config = {},
+    
+    /** @constant {string} - URL for attribute popup retrieval and posting. */
+    _attributeUrl = yukon.url('/tools/data-exporter/format/attribute'),
+    
+    /** @constant {string} - URL for field popup retrieval and posting. */
+    _fieldUrl = yukon.url('/tools/data-exporter/format/field'),
+    
+    /** @constant {string} - URL that returns the preview for the format in JSON. */
+    _previewUrl = yukon.url('/tools/data-exporter/format/preview'), 
     
     /** Retrieves a preview of the format */
     _updatePreview = function () {

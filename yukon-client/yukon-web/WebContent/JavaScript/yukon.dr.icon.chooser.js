@@ -1,12 +1,29 @@
 
-yukon.namespace('yukon.dr');
 yukon.namespace('yukon.dr.iconChooser');
 
+/**
+ * Singleton that manages the demand response icons.
+ * 
+ * @module yukon.tools.map
+ * @requires JQUERY
+ */
 yukon.dr.iconChooser = (function () {
     var mod,
+    
+	    /**
+    	 * Returns file names of the icons.
+	     * @param {string} id -  Id.
+	     * @param {Object} fileNames - List of file names.
+	     */
         _iconFilenames = function (id, fileNames) {
             $('#' + id + 'IconInput').data(id + 'data', fileNames);
         },
+ 
+ 	   /**
+    	 * Initialize the selected icons.
+	     * @param {string} id -  Id.
+	     * @param {Object} selected - selected options
+	     */
         _initSelected = function (id, selected) {
             var iconInput,
                 iconInputVal;
@@ -33,6 +50,11 @@ yukon.dr.iconChooser = (function () {
                 }
             }
         },
+   
+   		 /**
+    	 * Initialize the Event listeners for icons.
+	     * @param {string} id -  Id.
+	     */
         _initEventListeners = function (id) {
             $('#' + id + 'IconInput').on('keyup blur', function (event) {
                 mod.iconInputChanged(id);
@@ -45,6 +67,12 @@ yukon.dr.iconChooser = (function () {
                 .load(function() {return _afterImageLoad(id, true);})
                 .error(function() {return _afterImageLoad(id, false);});
         },
+	
+	    /**
+    	 * Initialize the selected icons.
+	     * @param {string} id -  Id.
+	     * @param {boolean} didLoad - Indicator to indicate if the icon is loaded
+	     */
         _afterImageLoad = function(id, didLoad) {
             var isCustomImage = $('#' + id + 'IconSelect').val() === 'OTHER',
                 iconInputField  = $('#' + id + 'IconInput'),
@@ -64,6 +92,8 @@ yukon.dr.iconChooser = (function () {
             }
         };
     mod = {
+    
+        /** Initialize this module. Depends on DOM elements so only call after DOM is loaded. */
         init : function (id, baseDir, fileNames) {
             var elemObj = $('#' + id + 'IconInput');
             elemObj.data('timeout', false);
@@ -73,6 +103,8 @@ yukon.dr.iconChooser = (function () {
             _initEventListeners(id);
             _initSelected(id, $('#' + id + 'IconSelect').val());
         },
+    
+        /** Check the input of icon if has changed  */
         iconInputChanged : function (id) {
             var iconInput = $('#' + id + 'IconInput'),
                 baseDir = iconInput.data(id + 'baseDir'),

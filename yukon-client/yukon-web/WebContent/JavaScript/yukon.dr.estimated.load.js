@@ -1,12 +1,16 @@
-
-yukon.namespace('yukon.dr');
 yukon.namespace('yukon.dr.estimatedLoad');
 
+/**
+ * Singleton that manages the Demand Response Load estimation feature.
+ * 
+ * @module yukon.dr.estimatedLoad
+ * @requires JQUERY
+ */
 yukon.dr.estimatedLoad = (function() {
    
     mod = {
 
-            
+            /** Display the program value as per the message passed */
             displayProgramValue : function (msg) {
                 var data = $.parseJSON(msg.value);
                 var status = data.status;
