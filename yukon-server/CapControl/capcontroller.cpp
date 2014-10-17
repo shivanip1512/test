@@ -3083,7 +3083,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                             else if( !( ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) ||
                                         ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) ))
                             {
-                                CTILOG_ERROR(dout, "No Watt Point attached to bus: " << currentSubstationBus->getPaoName() <<", cannot calculate power factor");
+                                CTILOG_ERROR(dout, "No Watt Point attached to feeder: " << currentFeeder->getPaoName() <<", cannot calculate power factor");
                             }
                             currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getStrategy()->getControlMethod(), currentSubstationBus->getStrategy()->getControlUnits(), currentSubstationBus->getPeakTimeFlag());
                         }
@@ -3124,7 +3124,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                             }
                             else if( !ciStringEqual(currentSubstationBus->getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) )
                             {
-                                CTILOG_ERROR(dout, "No Var Point attached to bus: " << currentSubstationBus->getPaoName() <<", cannot calculate power factor");
+                                CTILOG_ERROR(dout, "No Var Point attached to feeder: " << currentFeeder->getPaoName() <<", cannot calculate power factor");
                             }
 
                             currentFeeder->figureAndSetTargetVarValue(currentSubstationBus->getStrategy()->getControlMethod(), currentSubstationBus->getStrategy()->getControlUnits(), currentSubstationBus->getPeakTimeFlag());

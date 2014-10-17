@@ -12,6 +12,9 @@
 #include "msg_dbchg.h"
 #include <queue>
 
+class CtiCommandMsg;
+class CtiSignalMsg;
+
 class CtiCalcLogicService : public CService
 {
 public:
@@ -29,8 +32,8 @@ protected:
     virtual void ParseArgs(DWORD argc, LPTSTR* argv);
 
     bool readCalcPoints( CtiCalculateThread *calcThread );
-    BOOL isANewCalcPointID(const long aPointID);
-    BOOL parseMessage( const CtiMessage *message, CtiCalculateThread *calcThread );
+    bool isDatabaseCalcPointID(const long aPointID);
+    void parseMessage( const CtiMessage &message, CtiCalculateThread &calcThread );
     void terminateThreads( );
     void pauseInputThread();
     void resumeInputThread();
@@ -48,10 +51,10 @@ private:
     bool _dispatchConnectionBad;
     bool _ok, _restart, _update;
     bool _threadsStarted;
-    
+
     typedef std::queue<CtiDBChangeMsg> messageQueue;
     messageQueue _dbChangeMessages;
-    
+
     CtiCalculateThread::CtiCalcThreadInterruptReason _interruptReason;
 
     boost::scoped_ptr<CtiCalculateThread>  calcThread;
@@ -61,6 +64,12 @@ private:
     void _outputThread();
 
     void _registerForPoints();
+
+    void handleDbChangeMsg ( const CtiDBChangeMsg  &, CtiCalculateThread & );
+    void handleCommandMsg  ( const CtiCommandMsg   & );
+    void handlePointDataMsg( const CtiPointDataMsg &, CtiCalculateThread & );
+    void handleMultiMsg    ( const CtiMultiMsg     &, CtiCalculateThread & );
+    void handleSignalMsg   ( const CtiSignalMsg    &, CtiCalculateThread & );
 
     static void sendUserQuit( const std::string & who );
 
