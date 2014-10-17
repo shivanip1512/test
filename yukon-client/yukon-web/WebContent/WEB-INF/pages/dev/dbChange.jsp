@@ -27,10 +27,10 @@
             newRow.find('[data-database]').text(_shortenString(previouslySent.database));
             newRow.find('[data-category]').text(_shortenString(previouslySent.category));
             newRow.find('[data-type]').text(previouslySent.type);
-            newRow.find('[data-resubmit-button]').data("itemId", previouslySent.itemId);
-            newRow.find('[data-resubmit-button]').data("database", previouslySent.database);
-            newRow.find('[data-resubmit-button]').data("category", previouslySent.category);
-            newRow.find('[data-resubmit-button]').data("type", previouslySent.type);
+            newRow.find('[data-resubmit-button]').data({"itemId" : previouslySent.itemId,
+                                                        "database" : previouslySent.database,
+                                                        "category" : previouslySent.category,
+                                                        "type" : previouslySent.type});
             newRow.show();
             return newRow;
         },
@@ -89,15 +89,14 @@
                 _showTempError('Failed to submit DbChangeMessage. Due to ' + data.statusText + '.');
             }).always(function() {
                 var previouslySent = JSON.parse(localStorage['previouslySent']);
-                if (!_isEqual(sendData, previouslySent[0])) {
+                if (previouslySent[0] && _isEqual(sendData, previouslySent[0])) {
+                    previouslySent[0].numTimes++;
+                } else {
                     sendData.numTimes = 1;
                     previouslySent.unshift(sendData);
                     previouslySent = previouslySent.slice(0, 10);
-                    localStorage.setItem('previouslySent', JSON.stringify(previouslySent));
-                } else {
-                    previouslySent[0].numTimes++;
-                    localStorage.setItem('previouslySent', JSON.stringify(previouslySent));
                 }
+                localStorage.setItem('previouslySent', JSON.stringify(previouslySent));
                 _updatePreviouslySent();
             });
         },
