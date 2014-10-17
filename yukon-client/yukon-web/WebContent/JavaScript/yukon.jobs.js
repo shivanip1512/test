@@ -6,6 +6,7 @@ yukon.namespace('yukon.jobs');
  * @module yukon.jobs
  * @requires JQUERY
  * @requires yukon
+ * @requires yukon.dialog.confirm
  */
 yukon.jobs = (function () {
     
@@ -58,6 +59,10 @@ yukon.jobs = (function () {
             _initialized = true;
         },
         
+        /**
+         * Display jobs based on the state of the job.
+         * @param  {number} jobId - JobID for the job.
+         */
         setTrClassByJobState: function (jobId) {
             return function (data) {
                 
@@ -89,6 +94,10 @@ yukon.jobs = (function () {
             };
         },
 
+        /**
+         * Build  tool tip.
+         * @param {string} id - element id 
+         */
         buildTooltipText: function (id) {
             return function (data) {
                 var tooltipText = data.tooltip;

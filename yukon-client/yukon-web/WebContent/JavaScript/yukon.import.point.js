@@ -1,3 +1,6 @@
+/**
+ * To Hide/show Calculation Instructions based on importSelect type 
+ */
 $(function(){
     var calculationDiv = $('#calculationFile');
     var importSelect = $('#importTypeSelect');

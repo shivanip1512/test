@@ -2,12 +2,17 @@ yukon.namespace('yukon.substation.mappings');
 
 /**
  * This module handles behavior on the device configuration pages.
- * @module yukon.deviceConfig
+ * @module yukon.substation.mappings
  * @requires JQUERY
  * @requires yukon
+ * @requires yukon.dialog.confirm
+ * 
  */
 yukon.substation.mappings = (function () {
 
+    /**
+     * Reload Mapping Table
+     */
     var _reloadAllMappingsTable = function () {
             var sortColumnLink = $('[data-mappings-table]').find('.sortable.desc, .sortable.asc'),
                 dir = sortColumnLink.is('asc') ? 'asc' : 'desc',
@@ -19,6 +24,10 @@ yukon.substation.mappings = (function () {
             container.load(url, params);
         },
 
+        /**
+         * Get names of strategyName and substation and fire a callback.
+         * @param {function} [callback] - A callback function to fire after the Json data is fetched.
+         */
         _getMappedName = function (callback) {
             $.getJSON(yukon.url('/multispeak/setup/lmMappings/find-mapping'),
                 {
@@ -108,6 +117,9 @@ yukon.substation.mappings = (function () {
                 });
             },
 
+            /**
+             * Sets Mapped Name Id and reloads the mapping table.
+             */
             setMappedNameId : function () {
                 var strategyName = $('.js-strategy.js-mapping-input').val(),
                     substationName = $('.js-substation.js-mapping-input').val(),

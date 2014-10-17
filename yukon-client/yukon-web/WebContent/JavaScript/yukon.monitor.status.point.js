@@ -1,12 +1,13 @@
+yukon.namespace('yukon.StatusPointMonitor');
+
 /**
  * Singleton that manages the status point monitor feature
  * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
+ * @module yukon.StatusPointMonitor
+ * @requires JQUERY
+ * @requires yukon 
+ * @requires yukon.dialog.confirm.
  */
-
-yukon.namespace('yukon.StatusPointMonitor');
-
 yukon.StatusPointMonitor = (function () {
     
     var mod = {
