@@ -8,12 +8,10 @@
 
 <cti:standardPage module="operator" page="gateways.list">
     
-    <cti:includeScript link="/JavaScript/yukon.assets.gateway.list.js"/>
-    
     <div id="page-buttons" class="dn">
         <cti:button icon="icon-plus-green" nameKey="create" data-popup="#gateway-create-popup"/>
     </div>
-    <div id="gateway-create-popup" class="dn" data-title="Create Gateway" data-url="gateways/create" 
+    <div id="gateway-create-popup" class="dn" data-title="<cti:msg2 key=".create.title"/>" data-url="gateways/create" 
         data-width="565" data-dialog data-event="yukon:assets:gateway:save" 
         data-ok-text="<cti:msg2 key="components.button.save.label"/>" data-load-event="yukon:assets:gateway:load">
     </div>
@@ -91,5 +89,8 @@
             </c:forEach>
         </tbody>
     </table>
+    
+    <cti:includeScript link="/JavaScript/yukon.assets.gateway.list.js"/>
+    <cti:includeScript link="/JavaScript/yukon.assets.gateway.shared.js"/>
     
 </cti:standardPage>

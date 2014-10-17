@@ -44,22 +44,6 @@ yukon.assets.gateway.list = (function () {
                 // TODO
             });
             
-            /** 'Save' button clicked on the create gateway popup. */
-            $(document).on('input', '.js-create-ip, .js-create-username, .js-create-password', function (ev) {
-                var ip = $('.js-create-ip').val(),
-                    usernames = $('.js-create-username');
-                if (ip) {
-                    usernames.each(function (idx, item) {
-                        item = $(item);
-                        var disabled = !item.val().trim() || !item.siblings('.js-create-password').val().trim();
-                        item.siblings('.button').prop('disabled', disabled);
-                    });
-                } else {
-                    $('.js-create-super-admin .button, .js-create-admin .button, .js-create-user .button')
-                    .prop('disabled', true);
-                }
-            });
-            
             var pending = [];
             $('[data-pending]').each(function (idx, item) {
                 pending.push(new Number($(item).data('pending')));

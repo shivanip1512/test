@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -23,19 +24,24 @@
 <c:if test="${not empty gateway.location}"><cti:toJson id="gateway-geojson" object="${gateway.location}"/></c:if>
 
 <div id="page-actions" class="dn">
-    <cm:dropdownOption icon="icon-pencil" key="components.button.edit.label" data-popup="#gateway-edit-popup"/>
-    <cm:dropdownOption icon="icon-cross" key="components.button.delete.label"/>
+    <cm:dropdownOption icon="icon-table-row-insert" key=".collectData"/>
     <li class="divider"></li>
     <cm:dropdownOption icon="icon-connect" key=".connect"/>
     <cm:dropdownOption icon="icon-disconnect" key=".disconnect"/>
     <li class="divider"></li>
-    <cm:dropdownOption icon="icon-table-row-insert" key=".collectData"/>
+    <cm:dropdownOption icon="icon-pencil" key="components.button.edit.label" data-popup="#gateway-edit-popup"/>
+    <cm:dropdownOption icon="icon-cross" key="components.button.delete.label"/>
 </div>
 
-<div id="gateway-edit-popup" class="dn" data-title="Edit Gateway" data-url="${gateway.paoIdentifier.paoId}/edit" 
-    data-width="360" data-dialog data-event="yukon_assets_gateway_save"></div>
+<div id="gateway-edit-popup" data-dialog class="dn" data-title="<cti:msg2 key=".edit.title"/>"
+    data-url="${gateway.paoIdentifier.paoId}/edit" 
+    data-width="565" 
+    data-event="yukon:assets:gateway:save" 
+    data-load-event="yukon:assets:gateway:load" 
+    data-ok-text="<cti:msg2 key="components.button.save.label"/>"></div>
 
 <div class="column-12-12 clearfix">
+
     <div class="column one">
         <tags:sectionContainer2 nameKey="info" styleClass="stacked">
             <tags:nameValueContainer2>
@@ -71,23 +77,29 @@
         <div class="buffered clearfix">
             <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup" classes="fr"/>
         </div>
-        
     </div>
+    
     <div class="column two nogutter">
         <tags:sectionContainer2 nameKey="location" styleClass="stacked">
-            <div id="gateway-location" class="map"></div>
-            <div class="buffered">
-                <div id="map-tiles" class="fr button-group">
-                    <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
-                    <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
-                    <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
+            <div class="empty-list form-control${not empty gateway.location ? 'dn' : ''}">
+                <i:inline key=".location.none"/>
+                <cti:button icon="icon-map-sat" nameKey="location.set" classes="fr M0"/>
+            </div>
+            <div id="gateway-location-container" class="${empty gateway.location ? 'dn' : ''}">
+                <div id="gateway-location" class="map" data-has-location="${not empty gateway.location}"></div>
+                <div class="buffered">
+                    <div id="map-tiles" class="fr button-group">
+                        <cti:button nameKey="map" data-layer="mqosm" icon="icon-map" classes="on"/>
+                        <cti:button nameKey="satellite" data-layer="mqsat" icon="icon-map-sat"/>
+                        <cti:button nameKey="hybrid" data-layer="hybrid" icon="icon-map-hyb"/>
+                    </div>
                 </div>
             </div>
         </tags:sectionContainer2>
-        
     </div>
     
 </div>
+
 <div class="stacked">
     <tags:sectionContainer2 nameKey="comms" styleClass="stacked">
         <div class="column-12-12 clearfix">
@@ -136,12 +148,12 @@
             </div>
             <div class="column two nogutter">
                 <tags:nameValueContainer2>
-    	            <tags:nameValue2 nameKey=".connectionStatus">
-    	                <span class="state-box green"></span>
+                    <tags:nameValue2 nameKey=".connectionStatus">
+                        <span class="state-box green"></span>
                         <i:inline key=".connectionStatus.${gateway.data.connectionStatus}"/>
-    	            </tags:nameValue2>
-    	            <tags:nameValue2 nameKey=".lastComms">
-    	                <c:set var="clazz" value="green"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".lastComms">
+                        <c:set var="clazz" value="green"/>
                         <c:if test="${gateway.lastCommFailed}">
                             <c:set var="clazz" value="red"/>
                         </c:if>
@@ -153,8 +165,8 @@
                         </c:if>
                         <span class="${clazz}"><i:inline key=".lastCommStatus.${gateway.data.lastCommStatus}"/></span>
                         (<cti:formatDate type="DATEHM" value="${gateway.data.lastCommStatusTimestamp}"/>)
-    	            </tags:nameValue2>
-    	        </tags:nameValueContainer2>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
                 <div class="action-area">
                     <cti:button nameKey="testConnection" busy="true" icon="icon-server-connect"/>
                 </div>
@@ -162,6 +174,7 @@
         </div>
     </tags:sectionContainer2>
 </div>
+
 <div class="stacked">
     <tags:sectionContainer2 nameKey="dataCollection">
         <div class="column-12-12 clearfix">
@@ -177,7 +190,8 @@
                                 <c:set var="clazz" value="progress-bar-danger"/>
                             </c:if>
                             <div class="progress-bar ${clazz}" style="width: ${gateway.totalCompletionPercentage}%"></div>
-                        </div>&nbsp;${gateway.totalCompletionPercentage}%
+                        </div>&nbsp;
+                        <fmt:formatNumber pattern="###.##%" value="${gateway.totalCompletionPercentage / 100}"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>
@@ -225,7 +239,8 @@
                                                 <c:set var="clazz" value="progress-bar-danger"/>
                                             </c:if>
                                             <div class="progress-bar ${clazz}" style="width: ${sequence.completionPercentage}%"></div>
-                                        </div>&nbsp;${sequence.completionPercentage}%
+                                        </div>&nbsp;
+                                        <fmt:formatNumber pattern="###.##%" value="${sequence.completionPercentage / 100}"/>
                                     </td>
                                 </c:if>
                                 <c:if test="${not status.first}">
@@ -243,5 +258,6 @@
 <cti:includeScript link="OPEN_LAYERS"/>
 <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
 <cti:includeScript link="/JavaScript/yukon.assets.gateway.details.js"/>
-    
+<cti:includeScript link="/JavaScript/yukon.assets.gateway.shared.js"/>
+
 </cti:standardPage>

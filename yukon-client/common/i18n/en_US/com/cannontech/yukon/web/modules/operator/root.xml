@@ -17,18 +17,22 @@
     <entry key="yukon.web.modules.operator.gateways.password.ph">password</entry>
     <entry key="yukon.web.modules.operator.gateways.testConnection.hoverText">Test Connection</entry>
     <entry key="yukon.web.modules.operator.gateways.credentials">Credentials</entry>
+    <entry key="yukon.web.modules.operator.gateways.edit.title">Edit Gateway</entry>
+    <entry key="yukon.web.modules.operator.gateways.create.title">Create Gateway</entry>
     
     <!-- Gateway List -->
     <entry key="yukon.web.modules.operator.gateways.list.pageName">Gateways</entry>
     <entry key="yukon.web.modules.operator.gateways.list.connected">Connected</entry>
     <entry key="yukon.web.modules.operator.gateways.list.loadingGatewayData">Loading Gateway Data...</entry>
-	
+    
     <!-- Gateway Details -->
     <entry key="yukon.web.modules.operator.gateways.detail.pageName">Gateway</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.pageDescription">{0}</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.info.title">Info</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.comms.title">Communication</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.location.title">Location</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.location.none">No location set</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.location.set.label">Set Location</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.users.title">Users</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.dataCollection.title">Data Collection</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.testConnection.label">Test Connection</entry>
@@ -39,7 +43,6 @@
     <entry key="yukon.web.modules.operator.gateways.detail.sequenceStart">Sequence Start</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.sequenceEnd">Sequence End</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.completeness">Completeness</entry>
-
     
     <!-- Gateway Common Words -->
     <entry key="yukon.web.modules.operator.gateways.connect">Connect</entry>

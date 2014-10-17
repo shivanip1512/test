@@ -161,6 +161,29 @@ var yukon = (function () {
         /** Fire a callback after a duration. */
         later: function (millis, callback) {
             setTimeout(function () { callback(); }, millis);
+        },
+        
+        /** General purpose validators */
+        validate: {
+            
+            /** Returns true if the supplied latitude is valid, otherwise false. */
+            latitude: function (lat) {
+                if (lat > 90 || lat < -90) {
+                    return false;
+                }
+                var validator = /^-?([0-8]?[0-9]|90).[0-9]{1,6}$/;
+                return validator.test(lat);
+            },
+            
+            /** Returns true if the supplied longitude is valid, otherwise false. */
+            longitude: function (long) {
+                if (long > 180 || long < -180) {
+                    return false;
+                }
+                var validator = /^-?((1?[0-7]?|[0-9]?)[0-9]|180)\.[0-9]{1,6}$/;
+                return validator.test(long);
+            }
+            
         }
         
     };

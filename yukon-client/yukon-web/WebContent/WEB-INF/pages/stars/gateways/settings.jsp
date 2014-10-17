@@ -34,13 +34,13 @@
         <tr>
             <td class="name"><i:inline key=".ipaddress"/></td>
             <td class="value">
-                <input class="js-create-ip" type="text" maxlength="15" size="15" value="" tabindex="2">
+                <input class="js-gateway-edit-ip" type="text" maxlength="15" size="15" value="" tabindex="2">
             </td>
         </tr>
         
         <tr><td colspan="2"><strong><i:inline key=".credentials"/></strong></td></tr>
         
-        <tr class="js-create-user">
+        <tr class="js-gateway-edit-user">
             <td class="name">
                 <i:inline key=".user"/>
                 <label class="db">
@@ -49,13 +49,13 @@
                 </label>
             </td>
             <td class="value">
-                <input class="M0 left js-create-username" type="text" value="" placeholder="<cti:msg2 key=".username.ph"/>" tabindex="4"
-                ><input class="M0 middle js-create-password" type="password" value="" placeholder="<cti:msg2 key=".password.ph"/>" tabindex="5" 
-                ><cti:button renderMode="buttonImage" icon="icon-connect" classes="fn vat right js-conn-test-btn" disabled="true" nameKey="testConnection" tabindex="6"/>
+                <input class="M0 left js-gateway-edit-username" type="text" value="" placeholder="<cti:msg2 key=".username.ph"/>" tabindex="4"
+                ><input class="M0 middle js-gateway-edit-password" type="password" value="" placeholder="<cti:msg2 key=".password.ph"/>" tabindex="5" 
+                ><cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" disabled="true" nameKey="testConnection" tabindex="6"/>
             </td>
         </tr>
         
-        <tr class="js-create-admin">
+        <tr class="js-gateway-edit-admin">
             <td class="name">
                 <i:inline key=".admin"/>
                 <label class="db">
@@ -64,13 +64,13 @@
                 </label>
             </td>
             <td class="value">
-                <input class="M0 left js-create-username" type="text" value="" placeholder="<cti:msg2 key=".username.ph"/>" tabindex="7"
-                ><input class="M0 middle js-create-password" type="password" value="" placeholder="<cti:msg2 key=".password.ph"/>" tabindex="8" 
-                ><cti:button renderMode="buttonImage" icon="icon-connect" classes="fn vat right js-conn-test-btn" disabled="true" nameKey="testConnection" tabindex="9"/>
+                <input class="M0 left js-gateway-edit-username" type="text" value="" placeholder="<cti:msg2 key=".username.ph"/>" tabindex="7"
+                ><input class="M0 middle js-gateway-edit-password" type="password" value="" placeholder="<cti:msg2 key=".password.ph"/>" tabindex="8" 
+                ><cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" disabled="true" nameKey="testConnection" tabindex="9"/>
             </td>
         </tr>
         
-        <tr class="js-create-super-admin">
+        <tr class="js-gateway-edit-super-admin">
             <td class="name">
                 <i:inline key=".superAdmin"/>
                 <label class="db">
@@ -79,9 +79,9 @@
                 </label>
             </td>
             <td class="value">
-                <input class="M0 left js-create-username" type="text" value="" placeholder="<cti:msg2 key=".username.ph"/>" tabindex="10"
-                ><input class="M0 middle js-create-password" type="password" value="" placeholder="<cti:msg2 key=".password.ph"/>" tabindex="11" 
-                ><cti:button renderMode="buttonImage" icon="icon-connect" classes="fn vat right js-conn-test-btn" disabled="true" nameKey="testConnection" tabindex="12"/>
+                <input class="M0 left js-gateway-edit-username" type="text" value="" placeholder="<cti:msg2 key=".username.ph"/>" tabindex="10"
+                ><input class="M0 middle js-gateway-edit-password" type="password" value="" placeholder="<cti:msg2 key=".password.ph"/>" tabindex="11" 
+                ><cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" disabled="true" nameKey="testConnection" tabindex="12"/>
             </td>
         </tr>
         

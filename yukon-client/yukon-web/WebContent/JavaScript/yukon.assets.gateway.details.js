@@ -37,7 +37,7 @@ yukon.assets.gateway.details = (function () {
      * Gets pao location as geojson format and adds an icon feature to the vector layer for the map.
      */
     _loadIcon = function() {
-        var source = _map.getLayers().getAt(3).getSource(),
+        var source = _map.getLayers().getArray()[3].getSource(),
             fc = yukon.fromJson('#gateway-geojson'),
             feature = fc.features[0],
             src_projection = fc.crs.properties.name,
@@ -72,7 +72,7 @@ yukon.assets.gateway.details = (function () {
             if (_initialized) return;
             
             /** Initialize map if we have a location. */
-            if ($('#gateway-location').length) {
+            if ($('#gateway-location').data('hasLocation') === 'true') {
                 
                 /** Setup the openlayers map. */
                 _map = new ol.Map({
@@ -83,7 +83,7 @@ yukon.assets.gateway.details = (function () {
                     ],
                     layers: _tiles,
                     target: 'gateway-location',
-                    view: new ol.View2D({ center: ol.proj.transform([-97.734375, 40.529458], 'EPSG:4326', 'EPSG:3857'), zoom: 4 })
+                    view: new ol.View({ center: ol.proj.transform([-97.734375, 40.529458], 'EPSG:4326', 'EPSG:3857'), zoom: 4 })
                 });
                 _destProjection = _map.getView().getProjection().getCode();
                 _map.addLayer(new ol.layer.Vector({ name: 'icons', source: new ol.source.Vector({ projection: _destProjection }) }));
@@ -111,7 +111,7 @@ yukon.assets.gateway.details = (function () {
                     
                 });
             }
-
+            
             _initialized = true;
         },
         
