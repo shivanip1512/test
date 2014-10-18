@@ -166,7 +166,10 @@ var yukon = (function () {
         /** General purpose validators */
         validate: {
             
-            /** Returns true if the supplied latitude is valid, otherwise false. */
+            /** 
+             * Returns true if the supplied latitude is valid, otherwise false.
+             * i.e. >= -90 and <= 90, with 6 or less decimal digits
+             */
             latitude: function (lat) {
                 if (lat > 90 || lat < -90) {
                     return false;
@@ -175,7 +178,10 @@ var yukon = (function () {
                 return validator.test(lat);
             },
             
-            /** Returns true if the supplied longitude is valid, otherwise false. */
+            /** 
+             * Returns true if the supplied longitude is valid, otherwise false.
+             * i.e. >= -180 and <= 180, with 6 or less decimal digits 
+             */
             longitude: function (long) {
                 if (long > 180 || long < -180) {
                     return false;

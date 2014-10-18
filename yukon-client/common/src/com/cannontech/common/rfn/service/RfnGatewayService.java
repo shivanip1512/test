@@ -24,11 +24,8 @@ public interface RfnGatewayService {
     /**
      * Retrieves all gateways that have paos in the Yukon database. If the gateway data is not
      * cached, it will be set as null in the RfnGateway, and the cache will be updated in a separate thread.
-     * 
-     * @throws NetworkManagerCommunicationException if there is a communication error betweek Yukon
-     *             and Network Manager.
      */
-    public Set<RfnGateway> getAllGateways() throws NetworkManagerCommunicationException;
+    public Set<RfnGateway> getAllGateways();
     
     /**
      * Retrieves the specified gateway. If the gateway data is not cached, a request will be sent to

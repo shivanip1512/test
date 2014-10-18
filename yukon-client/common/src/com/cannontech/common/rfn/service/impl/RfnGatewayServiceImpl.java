@@ -101,7 +101,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public Set<RfnGateway> getAllGateways() throws NetworkManagerCommunicationException {
+    public Set<RfnGateway> getAllGateways() {
         Set<RfnGateway> rfnGateways = new HashSet<RfnGateway>();
         // Get all base RfnDevices
         List<RfnDevice> gatewayDevices = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY);
@@ -121,7 +121,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         }
         return rfnGateways;
     }
-
+    
     @Override
     public RfnGateway getGatewayByPaoId(PaoIdentifier paoIdentifier)
             throws NetworkManagerCommunicationException {

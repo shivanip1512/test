@@ -11,17 +11,57 @@ yukon.assets.gateway.list = (function () {
     'use strict';
     
     var
+    /** {String} - The IANA timezone name. */
+    _tz = jstz.determine().name(),
+    
+    _timeFormat = 'MM/DD/YYYY hh:mm A',
+    
     _initialized = false,
     
-    _update = function (pending) {
+    _update = function () {
         $.ajax({
             url: yukon.url('/stars/gateways/data'),
-            type: 'post',
-            contentType: 'application/json',
-            dataType: 'json',
-            data: JSON.stringify({ pending: pending })
-        }).done(function (data) {
-            console.log(data);
+            contentType: 'application/json'
+        }).done(function (gateways) {
+            var ids = Object.keys(gateways);
+            ids.forEach(function (paoId) {
+                
+                var 
+                clone,
+                gateway = gateways[paoId],
+                data = gateway.data,
+                timestamp = moment(data.lastCommTimestamp).tz(_tz).format(_timeFormat),
+                percent = data.collectionPercent.toFixed(2),
+                row = $('[data-gateway="' + paoId + '"]');
+                
+                if (!row.data('loaded')) {
+                    clone = $('.js-loaded-row').clone();
+                    clone.attr('data-gateway', paoId)
+                    .removeClass('.js-loaded-row');
+                    clone.find('.js-gw-name').text(gateway.name);
+                    clone.find('.js-gw-sn').text(gateway.rfnId.sensorSerialNumber);
+                    row.replaceWith(clone);
+                    row = clone;
+                }
+                
+                row.find('.js-gw-conn-status').attr('title', data.connectionStatusText)
+                .find('.state-box').toggleClass('green', data.connected).toggleClass('red', !data.connected);
+                row.find('.js-gw-ip').text(data.ip);
+                row.find('.js-gw-last-comm').attr('title', timestamp).text(data.lastCommText)
+                .toggleClass('green', data.lastComm == 'SUCCESSFUL')
+                .toggleClass('red', data.lastComm == 'FAILED')
+                .toggleClass('orange', data.lastComm == 'MISSED')
+                .toggleClass('subtle', data.lastComm == 'UNKNOWN');
+                row.find('.js-gw-data-collection .progress-bar').css({ width: data.collectionPercent + '%' })
+                .toggleClass('progress-bar-success', !data.collectionDanger && !data.collectionWarning)
+                .toggleClass('progress-bar-warning', data.collectionWarning)
+                .toggleClass('progress-bar-danger', data.collectionDanger);
+                if (percent == 100) percent = 100;
+                row.find('.js-data-collection-percent').text(percent + '%');
+            });
+            
+        }).always(function () {
+            setTimeout(_update, 4000);
         });
     },
     
@@ -44,12 +84,7 @@ yukon.assets.gateway.list = (function () {
                 // TODO
             });
             
-            var pending = [];
-            $('[data-pending]').each(function (idx, item) {
-                pending.push(new Number($(item).data('pending')));
-            });
-            
-            _update(pending);
+            _update();
             
             _initialized = true;
         }

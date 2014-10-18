@@ -15,7 +15,7 @@
         data-width="565" data-dialog data-event="yukon:assets:gateway:save" 
         data-ok-text="<cti:msg2 key="components.button.save.label"/>" data-load-event="yukon:assets:gateway:load">
     </div>
-    <table class="compact-results-table has-actions has-alerts">
+    <table id="gateways-table" class="compact-results-table has-actions has-alerts">
         <thead>
             <tr>
                 <th></th>
@@ -29,33 +29,34 @@
         <tfoot></tfoot>
         <tbody>
             <c:forEach items="${gateways}" var="gateway">
-                <c:choose>
-                    <c:when test="${not empty gateway.data}">
-                        <tr>
-                            <!-- TODO : determine if they are connected and display the appropriate tool tip -->
-                            <td title="<cti:msg2 key=".connected"/> <cti:formatDate type="DATEHM" value="${gateway.data.lastCommStatusTimestamp}"/>">
-                                <c:set var="clazz" value="${gateway.data.connectionStatus == 'CONNECTED' ? 'green' : 'red'}"/>
+                <tr data-gateway="${gateway.paoIdentifier.paoId}" data-loaded="${not empty gateway.data}">
+                    <c:choose>
+                        <c:when test="${not empty gateway.data}">
+                            <c:set var="data" value="${gateway.data}"/>
+                            <c:set var="title"><cti:msg2 key=".connectionStatus.${data.connectionStatus}"/></c:set>
+                            <c:set var="clazz" value="${data.connectionStatus == 'CONNECTED' ? 'green' : 'red'}"/>
+                            <td class="js-gw-conn-status" title="${title}">
                                 <span class="state-box ${clazz}"></span>
                             </td>
                             <cti:url var="gatewayDetailLink" value="gateways/${gateway.paoIdentifier.paoId}"/>
-                            <td><a href="${gatewayDetailLink}">${fn:escapeXml(gateway.data.name)}</a></td>
-                            <td>${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
-                            <td>${fn:escapeXml(gateway.data.ipAddress)}</td>
-                            <td title="<cti:formatDate type="DATEHM" value="${gateway.data.lastCommStatusTimestamp}"/>">
-                                <c:set var="clazz" value="green"/>
-                                <c:if test="${gateway.lastCommFailed}">
-                                    <c:set var="clazz" value="red"/>
-                                </c:if>
-                                <c:if test="${gateway.lastCommMissed}">
-                                    <c:set var="clazz" value="orange"/>
-                                </c:if>
-                                <c:if test="${gateway.lastCommUnknown}">
-                                    <c:set var="clazz" value="subtle"/>
-                                </c:if>
-                                <span class="${clazz}"><i:inline key=".lastCommStatus.${gateway.data.lastCommStatus}"/></span>
+                            <td class="js-gw-name"><a href="${gatewayDetailLink}">${fn:escapeXml(gateway.name)}</a></td>
+                            <td class="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
+                            <td class="js-gw-ip">${fn:escapeXml(gateway.data.ipAddress)}</td>
+                            <c:set var="clazz" value="green"/>
+                            <c:if test="${gateway.lastCommFailed}">
+                                <c:set var="clazz" value="red"/>
+                            </c:if>
+                            <c:if test="${gateway.lastCommMissed}">
+                                <c:set var="clazz" value="orange"/>
+                            </c:if>
+                            <c:if test="${gateway.lastCommUnknown}">
+                                <c:set var="clazz" value="subtle"/>
+                            </c:if>
+                            <td class="js-gw-last-comm ${clazz}" title="<cti:formatDate type="DATEHM" value="${gateway.data.lastCommStatusTimestamp}"/>">
+                                <i:inline key=".lastCommStatus.${gateway.data.lastCommStatus}"/>
                             </td>
-                            <td>
-                                <div class="dib vam progress">
+                            <td class="js-gw-data-collection">
+                                <div class="dib vat progress">
                                     <c:set var="clazz" value="progress-bar-success"/>
                                     <c:if test="${gateway.totalCompletionLevelWarning}">
                                         <c:set var="clazz" value="progress-bar-warning"/>
@@ -65,7 +66,9 @@
                                     </c:if>
                                     <div class="progress-bar ${clazz}" style="width: ${gateway.totalCompletionPercentage}%"></div>
                                 </div>&nbsp;
-                                <fmt:formatNumber pattern="###.##%" value="${gateway.totalCompletionPercentage / 100}"/>
+                                <span class="js-data-collection-percent">
+                                    <fmt:formatNumber pattern="###.##%" value="${gateway.totalCompletionPercentage / 100}"/>
+                                </span>
                             </td>
                             <td class="action-column">
                                 <cm:dropdown>
@@ -75,17 +78,15 @@
                                     <cm:dropdownOption icon="icon-table-row-insert" key=".collectData"/>
                                 </cm:dropdown>
                             </td>
-                        </tr>
-                    </c:when>
-                    <c:otherwise>
-                        <tr data-pending="${gateway.paoIdentifier.paoId}">
+                        </c:when>
+                        <c:otherwise>
                             <td><cti:icon icon="icon-loading-bars"/></td>
                             <td></td>
                             <td>${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                             <td colspan="4"><i:inline key=".loadingGatewayData"/></td>
-                        </tr>
-                    </c:otherwise>
-                </c:choose>
+                        </c:otherwise>
+                    </c:choose>
+                </tr>
             </c:forEach>
         </tbody>
     </table>
@@ -93,4 +94,29 @@
     <cti:includeScript link="/JavaScript/yukon.assets.gateway.list.js"/>
     <cti:includeScript link="/JavaScript/yukon.assets.gateway.shared.js"/>
     
+<div id="gateway-templates" class="dn">
+    <table>
+        <tr class="js-loaded-row" data-gateway="" data-loaded="true">
+            <td class="js-gw-conn-status"><span class="state-box"></span></td>
+            <td class="js-gw-name"><a></a></td>
+            <td class="js-gw-sn"></td>
+            <td class="js-gw-ip"></td>
+            <td class="js-gw-last-comm"></td>
+            <td class="js-gw-data-collection">
+                <div class="dib vat progress">
+                    <div class="progress-bar progress-bar-success"></div>
+                </div>&nbsp;
+                <span class="js-gw-data-collection-percent"></span>
+            </td>
+            <td class="action-column">
+                <cm:dropdown>
+                    <cm:dropdownOption icon="icon-connect" key=".connect"/>
+                    <cm:dropdownOption icon="icon-disconnect" key=".disconnect"/>
+                    <li class="divider"></li>
+                    <cm:dropdownOption icon="icon-table-row-insert" key=".collectData"/>
+                </cm:dropdown>
+            </td>
+        </tr>
+    </table>
+</div>
 </cti:standardPage>

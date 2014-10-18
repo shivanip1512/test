@@ -158,8 +158,7 @@
 <h2>Compact Results Table</h2>
 <div class="table-example clearfix stacked">
     <p class="description"><span class="label label-attr">.compact-results-table</span> is the preffered table to use when
-    tabling data.  It has a .9em font size meaning the font-size will be 90% of the parent's font size. Be careful not to 
-    nest these tables since the inner table will be have the 90% applied once for every level of nesting.</p>
+    tabling data.  It has a font size 13px, down from the default 14px.</p>
     <h4 class="subtle">Example:</h4>
     <table class="compact-results-table">
         <thead>
