@@ -31,7 +31,6 @@ public final class RfnGatewayData {
     private final LastCommStatus lastCommStatus;
     private final long lastCommStatusTimestamp;
     private final Set<Radio> radios;
-    private final Authentication user;
     private final Authentication admin;
     private final Authentication superAdmin;
     private final String collectionSchedule; // Cron string
@@ -55,7 +54,6 @@ public final class RfnGatewayData {
         this.lastCommStatus = dataResponse.getLastCommStatus();
         this.lastCommStatusTimestamp = dataResponse.getLastCommStatusTimestamp();
         this.radios = dataResponse.getRadios(); //copy?
-        this.user = dataResponse.getUser();
         this.admin = dataResponse.getAdmin();
         this.superAdmin = dataResponse.getSuperAdmin();
         this.collectionSchedule = dataResponse.getCollectionSchedule();
@@ -86,7 +84,6 @@ public final class RfnGatewayData {
         this.lastCommStatus = lastCommStatus;
         this.lastCommStatusTimestamp = lastCommStatusTimestamp;
         this.radios = radios;
-        this.user = user;
         this.admin = admin;
         this.superAdmin = superAdmin;
         this.collectionSchedule = collectionSchedule;
@@ -152,10 +149,6 @@ public final class RfnGatewayData {
 
     public Set<Radio> getRadios() {
         return radios;
-    }
-
-    public Authentication getUser() {
-        return user;
     }
 
     public Authentication getAdmin() {
@@ -225,7 +218,6 @@ public final class RfnGatewayData {
             this.lastCommStatus = oldData.getLastCommStatus();
             this.lastCommStatusTimestamp = oldData.getLastCommStatusTimestamp();
             this.radios = oldData.getRadios();
-            this.user = oldData.getUser();
             this.admin = oldData.getAdmin();
             this.superAdmin = oldData.getSuperAdmin();
             this.collectionSchedule = oldData.getCollectionSchedule();
@@ -238,79 +230,74 @@ public final class RfnGatewayData {
             this.name = name;
             return this;
         }
-
+        
         public Builder hardwareVersion(String hardwareVersion) {
             this.hardwareVersion = hardwareVersion;
             return this;
         }
-
+        
         public Builder softwareVersion(String softwareVersion) {
             this.softwareVersion = softwareVersion;
             return this;
         }
-
+        
         public Builder upperStackVersion(String upperStackVersion) {
             this.upperStackVersion = upperStackVersion;
             return this;
         }
-
+        
         public Builder radioVersion(String radioVersion) {
             this.radioVersion = radioVersion;
             return this;
         }
-
+        
         public Builder releaseVersion(String releaseVersion) {
             this.releaseVersion = releaseVersion;
             return this;
         }
-
+        
         public Builder versionConflicts(Set<ConflictType> versionConflicts) {
             this.versionConflicts = versionConflicts;
             return this;
         }
-
+        
         public Builder mode(AppMode mode) {
             this.mode = mode;
             return this;
         }
-
+        
         public Builder connectionType(ConnectionType connectionType) {
             this.connectionType = connectionType;
             return this;
         }
-
+        
         public Builder ipAddress(String ipAddress) {
             this.ipAddress = ipAddress;
             return this;
         }
-
+        
         public Builder port(String port) {
             this.port = port;
             return this;
         }
-
+        
         public Builder connectionStatus(ConnectionStatus connectionStatus) {
             this.connectionStatus = connectionStatus;
             return this;
         }
-
+        
         public Builder lastCommStatus(LastCommStatus lastCommStatus) {
             this.lastCommStatus = lastCommStatus;
             return this;
         }
-
+        
         public Builder lastCommStatusTimestamp(long lastCommStatusTimestamp) {
             this.lastCommStatusTimestamp = lastCommStatusTimestamp;
             return this;
         }
-
+        
         public Builder radios(Set<Radio> radios) {
             this.radios = radios;
-            return this;
-        }
-        
-        public Builder user(Authentication user) {
-            this.user = user;
             return this;
         }
         
@@ -318,25 +305,26 @@ public final class RfnGatewayData {
             this.admin = admin;
             return this;
         }
-
+        
         public Builder superAdmin(Authentication superAdmin) {
             this.superAdmin = superAdmin;
             return this;
         }
-
+        
         public Builder collectionSchedule(String collectionSchedule) {
             this.collectionSchedule = collectionSchedule;
             return this;
         }
-
+        
         public Builder sequences(Set<DataSequence> sequences) {
             this.sequences = sequences;
             return this;
         }
-
+        
         public Builder routeColor(short routeColor) {
             this.routeColor = routeColor;
             return this;
         }
     }
+    
 }

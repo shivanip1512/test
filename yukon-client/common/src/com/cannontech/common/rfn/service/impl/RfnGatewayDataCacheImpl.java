@@ -115,6 +115,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
      * call blocks until the data is returned or an individual request times out.
      */
     private class InternalGatewayDataCache extends AbstractLoadingCache<PaoIdentifier, RfnGatewayData> {
+        
         private Map<PaoIdentifier, RfnGatewayData> cacheMap = new ConcurrentHashMap<>();
         private RfnDeviceDao rfnDeviceDao;
         

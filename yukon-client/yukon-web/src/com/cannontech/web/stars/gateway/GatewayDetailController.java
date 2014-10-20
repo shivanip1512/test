@@ -46,29 +46,4 @@ public class GatewayDetailController {
         return "gateways/settings.jsp";
     }
     
-    /*
-     * TEST CODE BELOW 
-     */
-    @Autowired GatewayHelper gatewayHelper;
-
-    @RequestMapping("/gatewaysMockup/{id}")
-    public String detailsMockup(ModelMap model, @PathVariable int id) {
-        
-        model.addAttribute("gateway", gatewayHelper.getGateways().get(0));
-        model.addAttribute("sequences", gatewayHelper.getSequences());
-        
-        FeatureCollection fc = paoLocationService.getLocationsAsGeoJson(ImmutableList.of(new SimpleDevice(1140, PaoType.MCT410IL)));
-        model.addAttribute("location", fc);
-        
-        return "gateways/detailsMockup.jsp";
-    }
-    
-    @RequestMapping("/gatewaysMockup/{id}/edit")
-    public String editMockup(ModelMap model, @PathVariable int id) {
-        
-        model.addAttribute("gateway", gatewayHelper.getGateways().get(0));
-        
-        return "gateways/settingsMockup.jsp";
-    }
-    
 }

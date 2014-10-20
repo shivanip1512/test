@@ -28,6 +28,7 @@ import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
+import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -46,7 +47,8 @@ public class RfnGatewayServiceTest {
     private Authentication user;
     private Authentication admin;
     private Authentication superAdmin;
-    private PaoLocation location;
+    private Double latitude = 1.0;
+    private Double longitude = 2.0;
     
     private final String ipAddress = "123.123.123.123";
     private final String name = "Test Gateway";
@@ -72,11 +74,6 @@ public class RfnGatewayServiceTest {
         superAdmin.setDefaultUser(true);
         superAdmin.setUsername("testSuperAdmin");
         superAdmin.setPassword("testSuperAdminPass");
-        
-        location = new PaoLocation();
-        location.setLatitude(1.0);
-        location.setLongitude(2.0);
-        location.setPaoIdentifier(gatewayPaoId);
         
         paos = new HashMap<Integer, LiteYukonPAObject>();
         LiteYukonPAObject gwPao = new LiteYukonPAObject(gatewayPaoId.getPaoId());
@@ -219,7 +216,15 @@ public class RfnGatewayServiceTest {
         fakeTemplate.setMode(Mode.EXCEPTION);
         ReflectionTestUtils.setField(service, "updateRequestTemplate", fakeTemplate);
         
-        service.createGateway(name, ipAddress, location, user, admin, superAdmin);
+        GatewaySettings settings = new GatewaySettings();
+        settings.setName(name);
+        settings.setUser(user);
+        settings.setAdmin(admin);
+        settings.setSuperAdmin(superAdmin);
+        settings.setLatitude(latitude);
+        settings.setLongitude(longitude);
+        
+        service.createGateway(settings);
     }
     
     @Test(expected=NetworkManagerCommunicationException.class)
@@ -231,7 +236,15 @@ public class RfnGatewayServiceTest {
         fakeTemplate.setMode(Mode.EXCEPTION);
         ReflectionTestUtils.setField(service, "updateRequestTemplate", fakeTemplate);
         
-        service.createGateway(name, ipAddress, location, user, admin, superAdmin);
+        GatewaySettings settings = new GatewaySettings();
+        settings.setName(name);
+        settings.setUser(user);
+        settings.setAdmin(admin);
+        settings.setSuperAdmin(superAdmin);
+        settings.setLatitude(latitude);
+        settings.setLongitude(longitude);
+        
+        service.createGateway(settings);
     }
     
     @Test(expected=GatewayUpdateException.class)
@@ -244,7 +257,15 @@ public class RfnGatewayServiceTest {
         fakeTemplate.setMode(Mode.REPLY);
         ReflectionTestUtils.setField(service, "updateRequestTemplate", fakeTemplate);
         
-        service.createGateway(name, ipAddress, location, user, admin, superAdmin);
+        GatewaySettings settings = new GatewaySettings();
+        settings.setName(name);
+        settings.setUser(user);
+        settings.setAdmin(admin);
+        settings.setSuperAdmin(superAdmin);
+        settings.setLatitude(latitude);
+        settings.setLongitude(longitude);
+        
+        service.createGateway(settings);
     }
     
     @Test
@@ -259,6 +280,10 @@ public class RfnGatewayServiceTest {
         EasyMock.replay(gatewayDataCache);
         
         PaoLocationDao paoLocationDao = EasyMock.createStrictMock(PaoLocationDao.class);
+        PaoLocation location = new PaoLocation();
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        
         paoLocationDao.save(location);
         EasyMock.expectLastCall().once();
         EasyMock.replay(paoLocationDao);
@@ -271,7 +296,15 @@ public class RfnGatewayServiceTest {
         fakeTemplate.setMode(Mode.REPLY);
         ReflectionTestUtils.setField(service, "updateRequestTemplate", fakeTemplate);
         
-        service.createGateway(name, ipAddress, location, user, admin, superAdmin);
+        GatewaySettings settings = new GatewaySettings();
+        settings.setName(name);
+        settings.setUser(user);
+        settings.setAdmin(admin);
+        settings.setSuperAdmin(superAdmin);
+        settings.setLatitude(latitude);
+        settings.setLongitude(longitude);
+        
+        service.createGateway(settings);
     }
     
     @Test
@@ -296,6 +329,11 @@ public class RfnGatewayServiceTest {
         // Expecting call to retrieve existing location.
         EasyMock.expect(paoLocationDao.getLocation(gwDevice.getPaoIdentifier().getPaoId())).andReturn(null);
         // Expecting new location to be saved.
+        
+        PaoLocation location = new PaoLocation();
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        
         paoLocationDao.save(location);
         EasyMock.expectLastCall().once();
         EasyMock.replay(paoLocationDao);
@@ -345,6 +383,9 @@ public class RfnGatewayServiceTest {
         // Expecting call to retrieve existing location.
         EasyMock.expect(paoLocationDao.getLocation(gwDevice.getPaoIdentifier().getPaoId())).andReturn(null);
         // Expecting new location to be saved.
+        PaoLocation location = new PaoLocation();
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
         paoLocationDao.save(location);
         EasyMock.expectLastCall().once();
         EasyMock.replay(paoLocationDao);
@@ -367,7 +408,6 @@ public class RfnGatewayServiceTest {
         GatewayDataResponse gatewayDataResponse = new GatewayDataResponse();
         gatewayDataResponse.setRfnIdentifier(gatewayRfnId);
         gatewayDataResponse.setIpAddress(ipAddress);
-        gatewayDataResponse.setUser(user);
         gatewayDataResponse.setAdmin(admin);
         gatewayDataResponse.setSuperAdmin(superAdmin);
         RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse);
@@ -422,11 +462,15 @@ public class RfnGatewayServiceTest {
         GatewayDataResponse gatewayDataResponse = new GatewayDataResponse();
         gatewayDataResponse.setRfnIdentifier(gatewayRfnId);
         gatewayDataResponse.setIpAddress(ipAddress);
-        gatewayDataResponse.setUser(user);
         gatewayDataResponse.setAdmin(admin);
         gatewayDataResponse.setSuperAdmin(superAdmin);
         RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse);
         RfnGateway rfnGateway = new RfnGateway("New Name", gatewayPaoId, gatewayRfnId, rfnGatewayData);
+        
+        PaoLocation location = new PaoLocation();
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        
         rfnGateway.setLocation(location);
         
         Assert.assertFalse("Unexpected gateway update", service.updateGateway(rfnGateway));
@@ -476,11 +520,15 @@ public class RfnGatewayServiceTest {
         GatewayDataResponse gatewayDataResponse = new GatewayDataResponse();
         gatewayDataResponse.setRfnIdentifier(gatewayRfnId);
         gatewayDataResponse.setIpAddress(ipAddress);
-        gatewayDataResponse.setUser(user);
         gatewayDataResponse.setAdmin(admin);
         gatewayDataResponse.setSuperAdmin(superAdmin);
         RfnGatewayData rfnGatewayData = new RfnGatewayData(gatewayDataResponse);
         RfnGateway rfnGateway = new RfnGateway("New Name", gatewayPaoId, gatewayRfnId, rfnGatewayData);
+        
+        PaoLocation location = new PaoLocation();
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        
         rfnGateway.setLocation(location);
         
         service.updateGateway(rfnGateway);

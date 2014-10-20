@@ -48,10 +48,10 @@ public class SequenceData {
     }
     
     public boolean isWarning() {
-        return percent >=70.0 && percent <90.0;
+        return percent >= 70.0 && percent < 90.0;
     }
     
     public boolean isError() {
-        return percent <70.0;
+        return percent < 70.0;
     }
 }

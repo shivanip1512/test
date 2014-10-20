@@ -36,6 +36,7 @@ import com.cannontech.common.rfn.message.gateway.GatewayScheduleDeleteRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayScheduleRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
+import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -144,17 +145,16 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public PaoIdentifier createGateway(String name, String ipAddress, PaoLocation location, Authentication user, 
-                                       Authentication admin, Authentication superAdmin) 
-                                       throws NetworkManagerCommunicationException, GatewayUpdateException {
+    public PaoIdentifier createGateway(GatewaySettings settings) 
+            throws NetworkManagerCommunicationException, GatewayUpdateException {
         
-        //Send the request
-        GatewayCreateRequest request = buildGatewayCreateRequest(ipAddress, user, admin, superAdmin);
+        // Send the request
+        GatewayCreateRequest request = buildGatewayCreateRequest(settings);
         log.debug("Attempting to create a new gateway: " + request);
         BlockingJmsReplyHandler<GatewayUpdateResponse> replyHandler = new BlockingJmsReplyHandler<>(GatewayUpdateResponse.class);
         updateRequestTemplate.send(request, replyHandler);
         
-        //Wait for the response
+        // Wait for the response
         GatewayUpdateResponse response;
         try {
             response = replyHandler.waitForCompletion();
@@ -164,31 +164,37 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                     "with Network Manager.", e);
         }
         
-        //Parse the response
+        // Parse the response
         if (response.getResult() == GatewayUpdateResult.SUCCESSFUL) {
-            //Create the device in Yukon DB
-            RfnDevice gateway = rfnDeviceCreationService.createGateway(name, response.getRfnIdentifier());
+            // Create the device in Yukon DB
+            RfnDevice gateway = rfnDeviceCreationService.createGateway(settings.getName(), response.getRfnIdentifier());
             PaoIdentifier gatewayIdentifier = gateway.getPaoIdentifier();
-            //Force the data cache to update
+            // Force the data cache to update
             dataCache.get(gatewayIdentifier);
-            //Add location data
-            if (location != null) {
+            
+            // Add location data
+            Double latitude = settings.getLatitude();
+            Double longitude = settings.getLongitude();
+            if (latitude != null && longitude != null) {
+                PaoLocation location = new PaoLocation();
                 location.setPaoIdentifier(gatewayIdentifier);
+                location.setLatitude(latitude);
+                location.setLongitude(longitude);
                 paoLocationDao.save(location);
             }
+            
             return gatewayIdentifier;
         }
         throw new GatewayUpdateException("Gateway creation failed");
     }
     
-    private GatewayCreateRequest buildGatewayCreateRequest(String ipAddress, Authentication user, Authentication admin,
-                                                           Authentication superAdmin) {
+    private GatewayCreateRequest buildGatewayCreateRequest(GatewaySettings settings) {
         GatewayCreateRequest request = new GatewayCreateRequest();
         GatewaySaveData data = new GatewaySaveData();
-        data.setIpAddress(ipAddress);
-        data.setUser(user);
-        data.setAdmin(admin);
-        data.setSuperAdmin(superAdmin);
+        data.setIpAddress(settings.getIpAddress());
+        data.setUser(settings.getUser());
+        data.setAdmin(settings.getAdmin());
+        data.setSuperAdmin(settings.getSuperAdmin());
         request.setData(data);
         return request;
     }
@@ -204,10 +210,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         boolean sendGatewayEditRequest = false;
         if (newGatewayData.getIpAddress() != null && !newGatewayData.getIpAddress().equals(existingGatewayData.getIpAddress())) {
             editData.setIpAddress(newGatewayData.getIpAddress());
-            sendGatewayEditRequest = true;
-        }
-        if (newGatewayData.getUser() != null && !newGatewayData.getUser().equals(existingGatewayData.getUser())) {
-            editData.setUser(newGatewayData.getUser());
             sendGatewayEditRequest = true;
         }
         if (newGatewayData.getAdmin() != null && !newGatewayData.getAdmin().equals(existingGatewayData.getAdmin())) {
@@ -300,7 +302,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         request.setRfnIdentifier(gateway.getRfnIdentifier());
         request.setIpAddress(gatewayData.getIpAddress());
         request.setAdmin(gatewayData.getAdmin());
-        request.setUser(gatewayData.getUser());
         request.setSuperAdmin(gatewayData.getSuperAdmin());
         
         return sendConnectionRequest(request);

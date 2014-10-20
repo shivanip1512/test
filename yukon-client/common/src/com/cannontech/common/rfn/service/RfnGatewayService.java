@@ -3,8 +3,8 @@ package com.cannontech.common.rfn.service;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.gateway.Authentication;
+import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -40,15 +40,12 @@ public interface RfnGatewayService {
     /**
      * Creates a new gateway in Yukon and Network Manager.
      * 
-     * @param location if null, no location information will be saved. Otherwise, this should contain latitude and
-     * longitude (any paoidentifier will be overwritten with the newly created pao's id).
      * @return The PaoIdentifier of the newly created gateway.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      * @throws GatewayUpdateException if gateway creation failed in Network Manager.
      */
-    public PaoIdentifier createGateway(String name, String ipAddress, PaoLocation location, Authentication user, 
-                                       Authentication admin, Authentication superAdmin) 
-                                       throws NetworkManagerCommunicationException, GatewayUpdateException;
+    public PaoIdentifier createGateway(GatewaySettings settings) 
+            throws NetworkManagerCommunicationException, GatewayUpdateException;
     
     /**
      * Update the gateway. If the name or location are updated, they will be stored in the Yukon

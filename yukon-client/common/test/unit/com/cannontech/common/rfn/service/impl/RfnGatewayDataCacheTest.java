@@ -130,9 +130,6 @@ public class RfnGatewayDataCacheTest {
     private RfnGatewayData buildTestData(String gatewayName) {
         RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
         
-        Authentication userAuth = new Authentication();
-        userAuth.setPassword("userPass");
-        userAuth.setUsername("user");
         Authentication adminAuth = new Authentication();
         adminAuth.setPassword("adminPass");
         adminAuth.setUsername("admin");
@@ -167,8 +164,7 @@ public class RfnGatewayDataCacheTest {
         Set<ConflictType> versionConflicts = new HashSet<>();
         versionConflicts.add(ConflictType.APPLICATION);
         
-        builder.user(userAuth)
-               .admin(adminAuth)
+        builder.admin(adminAuth)
                .superAdmin(superAdminAuth)
                .collectionSchedule("1 0 * * *")
                .connectionStatus(ConnectionStatus.CONNECTED)

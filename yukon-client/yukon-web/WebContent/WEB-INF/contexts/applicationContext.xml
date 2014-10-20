@@ -12,6 +12,8 @@
        
     <context:annotation-config/>
     
+    <bean class="com.cannontech.web.stars.gateway.model.GatewaySettingsValidator"/>
+    
     <bean class="com.cannontech.web.tools.commander.service.CommanderServiceImpl"/>
     
     <bean class="com.cannontech.web.tools.mapping.service.impl.PaoLocationServiceImpl"/>

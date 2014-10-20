@@ -14,9 +14,10 @@
 <%@ attribute name="onchange" %>
 <%@ attribute name="onblur" %>
 <%@ attribute name="maxlength" %>
-<%@ attribute name="path" required="true" rtexprvalue="true" %>
+<%@ attribute name="path" required="true" %>
 <%@ attribute name="readonly" %>
 <%@ attribute name="size" %>
+<%@ attribute name="tabindex" %>
 
 <spring:bind path="${path}">
 
@@ -30,7 +31,12 @@
     <c:set var="inputClass" value="error ${pageScope.inputClass}"/>
 </c:if>
 
-<form:input path="${pageScope.path}" id="${pageScope.id}" disabled="${pageScope.disabled}" readonly="${pageScope.readonly}" size="${pageScope.size}" maxlength="${pageScope.maxlength}" autocomplete="${pageScope.autocomplete}" cssClass="${pageScope.inputClass}" onkeyup="${pageScope.onkeyup}" onchange="${pageScope.onchange}" onblur="${pageScope.onblur}"/>
+<form:input path="${path}" id="${pageScope.id}" disabled="${pageScope.disabled}" 
+    readonly="${pageScope.readonly}" size="${pageScope.size}" 
+    maxlength="${pageScope.maxlength}" autocomplete="${pageScope.autocomplete}" 
+    cssClass="${pageScope.inputClass}" onkeyup="${pageScope.onkeyup}" 
+    onchange="${pageScope.onchange}" onblur="${pageScope.onblur}"
+    tabindex="${pageScope.tabindex}"/>
 <c:if test="${status.error}"><br><form:errors path="${path}" cssClass="error"/></c:if>
 
 </cti:displayForPageEditModes>

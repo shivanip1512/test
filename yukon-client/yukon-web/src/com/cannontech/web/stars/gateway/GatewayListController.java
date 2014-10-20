@@ -23,9 +23,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.stars.gateway.model.ConnectStatus;
-import com.cannontech.web.stars.gateway.model.Gateway;
-import com.cannontech.web.stars.gateway.model.LastComm;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
@@ -85,49 +82,10 @@ public class GatewayListController {
             dataJson.put("collectionDanger", gateway.isTotalCompletionLevelDanger());
             dataJson.put("collectionPercent", gateway.getTotalCompletionPercentage());
             gatewayJson.put("data", dataJson);
+            System.out.println("Cached Status: " + data.getConnectionStatus());
         }
         
         return gatewayJson;
-    }
-
-    @RequestMapping("/gateways/create")
-    public String createDialog(ModelMap model) {
-        
-        model.addAttribute("mode", "CREATE");
-        
-        return "gateways/settings.jsp";
-    }
-    
-    @RequestMapping(value = {"/gateways", "/gateways/"}, method = RequestMethod.POST)
-    public String create(ModelMap model) {
-        
-        //TODO
-        //PaoIdentifier gatewayId = rfnGatewayService.createGateway(name, ipAddress, location, user, admin, superAdmin)
-        log.info("Gateway Created");
-        
-        return "gateways/list.jsp";
-    }
-    
-    /*
-     * TEST CODE BELOW
-     */
-    @Autowired GatewayHelper gatewayHelper;
-    
-    @RequestMapping({"/gatewaysMockup", "/gatewaysMockup/"})
-    public String gatewaysMockup(ModelMap model) {
-        
-        model.addAttribute("gateways", gatewayHelper.getGateways());
-        
-        return "gateways/dashboardMockup.jsp";
-    }
-    
-    @RequestMapping("/gatewaysMockup/create")
-    public String editMockup(ModelMap model) {
-        
-        Gateway gateway = new Gateway("GW001", "7500000383", "10.219.240.51", "1000750_01", "R_5_2_1", LastComm.SUCCESS, 100.0, ConnectStatus.CONNECTED);
-        model.addAttribute("gateway", gateway);
-        
-        return "gateways/settingsMockup.jsp";
     }
     
 }

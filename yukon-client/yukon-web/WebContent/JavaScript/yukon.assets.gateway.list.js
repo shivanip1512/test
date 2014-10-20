@@ -27,37 +27,41 @@ yukon.assets.gateway.list = (function () {
             ids.forEach(function (paoId) {
                 
                 var 
-                clone,
+                clone, timestamp, percent,
                 gateway = gateways[paoId],
                 data = gateway.data,
-                timestamp = moment(data.lastCommTimestamp).tz(_tz).format(_timeFormat),
-                percent = data.collectionPercent.toFixed(2),
                 row = $('[data-gateway="' + paoId + '"]');
                 
-                if (!row.data('loaded')) {
-                    clone = $('.js-loaded-row').clone();
-                    clone.attr('data-gateway', paoId)
-                    .removeClass('.js-loaded-row');
-                    clone.find('.js-gw-name').text(gateway.name);
-                    clone.find('.js-gw-sn').text(gateway.rfnId.sensorSerialNumber);
-                    row.replaceWith(clone);
-                    row = clone;
+                if (data != null) {
+                    console.log('connected: ' + data.connected);
+                    timestamp = moment(data.lastCommTimestamp).tz(_tz).format(_timeFormat);
+                    percent = data.collectionPercent.toFixed(2);
+                    
+                    if (!row.data('loaded')) {
+                        clone = $('.js-loaded-row').clone();
+                        clone.attr('data-gateway', paoId)
+                        .removeClass('.js-loaded-row');
+                        clone.find('.js-gw-name').text(gateway.name);
+                        clone.find('.js-gw-sn').text(gateway.rfnId.sensorSerialNumber);
+                        row.replaceWith(clone);
+                        row = clone;
+                    }
+                    
+                    row.find('.js-gw-conn-status').attr('title', data.connectionStatusText)
+                    .find('.state-box').toggleClass('green', data.connected).toggleClass('red', !data.connected);
+                    row.find('.js-gw-ip').text(data.ip);
+                    row.find('.js-gw-last-comm').attr('title', timestamp).text(data.lastCommText)
+                    .toggleClass('green', data.lastComm == 'SUCCESSFUL')
+                    .toggleClass('red', data.lastComm == 'FAILED')
+                    .toggleClass('orange', data.lastComm == 'MISSED')
+                    .toggleClass('subtle', data.lastComm == 'UNKNOWN');
+                    row.find('.js-gw-data-collection .progress-bar').css({ width: data.collectionPercent + '%' })
+                    .toggleClass('progress-bar-success', !data.collectionDanger && !data.collectionWarning)
+                    .toggleClass('progress-bar-warning', data.collectionWarning)
+                    .toggleClass('progress-bar-danger', data.collectionDanger);
+                    if (percent == 100) percent = 100;
+                    row.find('.js-data-collection-percent').text(percent + '%');
                 }
-                
-                row.find('.js-gw-conn-status').attr('title', data.connectionStatusText)
-                .find('.state-box').toggleClass('green', data.connected).toggleClass('red', !data.connected);
-                row.find('.js-gw-ip').text(data.ip);
-                row.find('.js-gw-last-comm').attr('title', timestamp).text(data.lastCommText)
-                .toggleClass('green', data.lastComm == 'SUCCESSFUL')
-                .toggleClass('red', data.lastComm == 'FAILED')
-                .toggleClass('orange', data.lastComm == 'MISSED')
-                .toggleClass('subtle', data.lastComm == 'UNKNOWN');
-                row.find('.js-gw-data-collection .progress-bar').css({ width: data.collectionPercent + '%' })
-                .toggleClass('progress-bar-success', !data.collectionDanger && !data.collectionWarning)
-                .toggleClass('progress-bar-warning', data.collectionWarning)
-                .toggleClass('progress-bar-danger', data.collectionDanger);
-                if (percent == 100) percent = 100;
-                row.find('.js-data-collection-percent').text(percent + '%');
             });
             
         }).always(function () {

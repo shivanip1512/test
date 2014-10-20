@@ -12,14 +12,6 @@
     <entry key="yukon.web.modules.operator.create.account">Create Account</entry>
     <entry key="yukon.web.modules.operator.create.device">Create Device</entry>
     
-    <!-- Gateways -->
-    <entry key="yukon.web.modules.operator.gateways.username.ph">username</entry>
-    <entry key="yukon.web.modules.operator.gateways.password.ph">password</entry>
-    <entry key="yukon.web.modules.operator.gateways.testConnection.hoverText">Test Connection</entry>
-    <entry key="yukon.web.modules.operator.gateways.credentials">Credentials</entry>
-    <entry key="yukon.web.modules.operator.gateways.edit.title">Edit Gateway</entry>
-    <entry key="yukon.web.modules.operator.gateways.create.title">Create Gateway</entry>
-    
     <!-- Gateway List -->
     <entry key="yukon.web.modules.operator.gateways.list.pageName">Gateways</entry>
     <entry key="yukon.web.modules.operator.gateways.list.connected">Connected</entry>
@@ -45,6 +37,17 @@
     <entry key="yukon.web.modules.operator.gateways.detail.completeness">Completeness</entry>
     
     <!-- Gateway Common Words -->
+    <entry key="yukon.web.modules.operator.gateways.name.required">Username is required.</entry>
+    <entry key="yukon.web.modules.operator.gateways.password.required">Password is require.</entry>
+    <entry key="yukon.web.modules.operator.gateways.ipAddress.required">IP Address is require.</entry>
+    <entry key="yukon.web.modules.operator.gateways.ipAddress.invalid">Not a valid IP Address.</entry>
+    
+    <entry key="yukon.web.modules.operator.gateways.username.ph">username</entry>
+    <entry key="yukon.web.modules.operator.gateways.password.ph">password</entry>
+    <entry key="yukon.web.modules.operator.gateways.testConnection.hoverText">Test Connection</entry>
+    <entry key="yukon.web.modules.operator.gateways.credentials">Credentials</entry>
+    <entry key="yukon.web.modules.operator.gateways.edit.title">Edit Gateway</entry>
+    <entry key="yukon.web.modules.operator.gateways.create.title">Create Gateway</entry>
     <entry key="yukon.web.modules.operator.gateways.connect">Connect</entry>
     <entry key="yukon.web.modules.operator.gateways.disconnect">Disconnect</entry>
     <entry key="yukon.web.modules.operator.gateways.collectData">Collect Data</entry>
@@ -68,10 +71,6 @@
     <entry key="yukon.web.modules.operator.gateways.radios">Radios</entry>
     <entry key="yukon.web.modules.operator.gateways.superAdmin">Super Admin</entry>
     <entry key="yukon.web.modules.operator.gateways.admin">Admin</entry>
-    <entry key="yukon.web.modules.operator.gateways.user">User</entry>
-    <entry key="yukon.web.modules.operator.gateways.userPassword">User Password</entry>
-    <entry key="yukon.web.modules.operator.gateways.adminPassword">Admin Password</entry>
-    <entry key="yukon.web.modules.operator.gateways.superAdminPassword">Super Admin Password</entry>
     <entry key="yukon.web.modules.operator.gateways.defaultUser">Default User</entry>
     <entry key="yukon.web.modules.operator.gateways.optional">(optional)</entry>
     <entry key="yukon.web.modules.operator.gateways.latitude">Latitude</entry>

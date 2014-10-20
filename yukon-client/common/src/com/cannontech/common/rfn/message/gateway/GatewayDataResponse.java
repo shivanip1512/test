@@ -36,7 +36,6 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     
     private Authentication superAdmin;
     private Authentication admin;
-    private Authentication user;
     
     private String collectionSchedule; // Cron string
     private Set<DataSequence> sequences;
@@ -165,27 +164,19 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     public Authentication getSuperAdmin() {
         return superAdmin;
     }
-
+    
     public void setSuperAdmin(Authentication superAdmin) {
         this.superAdmin = superAdmin;
     }
-
+    
     public Authentication getAdmin() {
         return admin;
     }
-
+    
     public void setAdmin(Authentication admin) {
         this.admin = admin;
     }
-
-    public Authentication getUser() {
-        return user;
-    }
-
-    public void setUser(Authentication user) {
-        this.user = user;
-    }
-
+    
     public String getCollectionSchedule() {
         return collectionSchedule;
     }
@@ -209,7 +200,7 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     public void setRouteColor(short routeColor) {
         this.routeColor = routeColor;
     }
-
+    
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -235,7 +226,6 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + ((softwareVersion == null) ? 0 : softwareVersion.hashCode());
         result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
         result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
-        result = prime * result + ((user == null) ? 0 : user.hashCode());
         result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
         return result;
     }
@@ -326,11 +316,6 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
                 return false;
         } else if (!upperStackVersion.equals(other.upperStackVersion))
             return false;
-        if (user == null) {
-            if (other.user != null)
-                return false;
-        } else if (!user.equals(other.user))
-            return false;
         if (versionConflicts == null) {
             if (other.versionConflicts != null)
                 return false;
@@ -342,7 +327,7 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     @Override
     public String toString() {
         return String
-            .format("GatewayDataResponse [rfnIdentifier=%s, hardwareVersion=%s, softwareVersion=%s, upperStackVersion=%s, radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, routeColor=%s, superAdmin=%s, admin=%s, user=%s, collectionSchedule=%s, sequences=%s]",
+            .format("GatewayDataResponse [rfnIdentifier=%s, hardwareVersion=%s, softwareVersion=%s, upperStackVersion=%s, radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, routeColor=%s, superAdmin=%s, admin=%s, collectionSchedule=%s, sequences=%s]",
                     rfnIdentifier,
                     hardwareVersion,
                     softwareVersion,
@@ -361,7 +346,6 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
                     routeColor,
                     superAdmin,
                     admin,
-                    user,
                     collectionSchedule,
                     sequences);
     }
