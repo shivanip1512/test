@@ -4,4 +4,3 @@ drop user tempDatabase cascade;
 BEGIN
     DBMS_SCHEDULER.RUN_JOB('CLEANTEMPFILES');
 END;
-/
