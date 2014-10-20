@@ -10,19 +10,19 @@ import com.google.common.base.Function;
 import com.google.common.collect.Ordering;
 
 public final class PaoIdentifier implements YukonPao, Serializable {
+    
     private static final long serialVersionUID = 1L;
-
     public static final Comparator<PaoIdentifier> COMPARATOR;
-
+    
     private final int paoId;
     private final PaoType paoType;
-
+    
     public PaoIdentifier(int paoId, PaoType paoType) {
         checkNotNull(paoType, "paoType must not be null");
         this.paoId = paoId;
         this.paoType = paoType;
     }
-
+    
     public int getPaoId() {
         return paoId;
     }
@@ -30,7 +30,7 @@ public final class PaoIdentifier implements YukonPao, Serializable {
     public PaoType getPaoType() {
         return paoType;
     }
-
+    
     @Override
     @JsonIgnore
     public PaoIdentifier getPaoIdentifier() {
@@ -41,7 +41,7 @@ public final class PaoIdentifier implements YukonPao, Serializable {
     public String toString() {
         return paoType + ":" + paoId;
     }
-
+    
     static {
         Ordering<Integer> intComparer = Ordering.natural();
         Ordering<PaoIdentifier> paoIdOrdering = intComparer.onResultOf(new Function<PaoIdentifier, Integer>() {
@@ -59,7 +59,7 @@ public final class PaoIdentifier implements YukonPao, Serializable {
         });
         COMPARATOR = paoIdOrdering.compound(paoTypeOrdering);
     }
-
+    
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -68,7 +68,7 @@ public final class PaoIdentifier implements YukonPao, Serializable {
         result = prime * result + paoType.hashCode();
         return result;
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -89,4 +89,5 @@ public final class PaoIdentifier implements YukonPao, Serializable {
         }
         return true;
     }
+    
 }
