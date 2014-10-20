@@ -3,5 +3,5 @@ drop tablespace tempDatabase_temp including contents and datafiles;
 drop user tempDatabase cascade;
 BEGIN
     SYS.DBMS_SCHEDULER.RUN_JOB('CLEANTEMPFILES');
-END;
+END
 /
