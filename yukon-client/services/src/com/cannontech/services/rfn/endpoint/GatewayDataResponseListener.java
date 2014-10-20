@@ -49,7 +49,6 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<Gate
         public void processData(RfnDevice rfnDevice, GatewayDataResponse message) {
             try {
                 RfnGatewayData data = new RfnGatewayData(message);
-                System.out.println("Recieved Status: " + data.getConnectionStatus());
                 rfnGatewayDataCache.put(rfnDevice.getPaoIdentifier(), data);
             } catch (Exception e) {
                 log.warn("Data processing failed for " + rfnDevice, e);
