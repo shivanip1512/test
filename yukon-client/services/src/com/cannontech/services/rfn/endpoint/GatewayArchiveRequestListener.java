@@ -6,24 +6,19 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayArchiveRequest;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.google.common.collect.ImmutableList;
 
 @ManagedResource
 public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<GatewayArchiveRequest> {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayArchiveRequestListener.class);
-    
-    private @Autowired RfnGatewayDataCache rfnGatewayDataCache;
     
     private List<Worker> workers;
     
@@ -38,22 +33,10 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
                 RfnDevice device = rfnDeviceCreationService.createGateway(request.getName(), request.getRfnIdentifier());
                 rfnDeviceCreationService.incrementNewDeviceCreated();
                 log.debug("Created new gateway: " + device);
-                loadGatewayData(device.getPaoIdentifier());
                 return device;
             } catch (Exception e) {
                 log.warn("Creation failed for gateway: " + request.getRfnIdentifier(), e);
                 throw new RuntimeException("Creation failed for " + request.getRfnIdentifier(), e);
-            }
-        }
-        
-        private void loadGatewayData(PaoIdentifier paoIdentifier) {
-            try {
-                //requesting data not in the cache causes it to fetch the data from NM
-                rfnGatewayDataCache.get(paoIdentifier);
-                log.debug("Successfully cached data for gateway: " + paoIdentifier);
-            } catch (Exception e) {
-                //Catch any exceptions here - creation still succeeded even if data retrieval failed
-                log.warn("Exception updating gateway data cache for new gateway: " + paoIdentifier, e);
             }
         }
         

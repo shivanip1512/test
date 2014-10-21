@@ -4,23 +4,24 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.jms.ConnectionFactory;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
-import com.cannontech.common.rfn.model.RfnGatewayData;
-import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.google.common.collect.ImmutableList;
 
 public class GatewayDataResponseListener extends ArchiveRequestListenerBase<GatewayDataResponse> {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayDataResponseListener.class);
     
-    @Autowired RfnGatewayDataCache rfnGatewayDataCache;
+    private JmsTemplate outgoingJmsTemplate;
+    private final String outgoingTopicName = "yukon.qr.obj.common.rfn.GatewayDataTopic";
     
     private List<Worker> workers;
     
@@ -48,8 +49,9 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<Gate
         @Override
         public void processData(RfnDevice rfnDevice, GatewayDataResponse message) {
             try {
-                RfnGatewayData data = new RfnGatewayData(message);
-                rfnGatewayDataCache.put(rfnDevice.getPaoIdentifier(), data);
+                //This publishes the data to a topic, where the web server will receive and cache it
+                log.debug("Publishing gateway data on internal topic: " + message);
+                outgoingJmsTemplate.convertAndSend(outgoingTopicName, message);
             } catch (Exception e) {
                 log.warn("Data processing failed for " + rfnDevice, e);
                 log.debug("Gateway data: " + message);
@@ -96,5 +98,13 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<Gate
     @Override
     protected String getRfnArchiveResponseQueueName() {
         return null;
+    }
+    
+    @Override
+    @Autowired
+    public void setConnectionFactory(ConnectionFactory connectionFactory) {
+        super.setConnectionFactory(connectionFactory);
+        outgoingJmsTemplate = new JmsTemplate(connectionFactory);
+        outgoingJmsTemplate.setPubSubDomain(true);
     }
 }

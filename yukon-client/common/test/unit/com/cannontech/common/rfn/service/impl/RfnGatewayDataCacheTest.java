@@ -127,6 +127,30 @@ public class RfnGatewayDataCacheTest {
         cache.get(paoIdentifier);
     }
     
+    @Test
+    public void test_get_afterMultipleUpdates() {
+        RfnGatewayDataCache cache = new RfnGatewayDataCacheImpl(null, null, null, null);
+        
+        //create data
+        PaoIdentifier paoIdentifier = new PaoIdentifier(1, PaoType.RFN_GATEWAY);
+        RfnGatewayData firstData = buildTestData("Test Gateway 1");
+        
+        RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
+        RfnGatewayData secondData = builder.copyOf(firstData)
+                                           .connectionStatus(ConnectionStatus.DISCONNECTED)
+                                           .build();
+        
+        //add data to cache
+        cache.put(paoIdentifier, firstData);
+        cache.put(paoIdentifier, secondData);
+        
+        //retrieve data from cache
+        RfnGatewayData cachedData = cache.getIfPresent(paoIdentifier);
+        
+        //test equality
+        Assert.assertEquals("Cached data does not match latest data update.", cachedData, secondData);
+    }
+    
     private RfnGatewayData buildTestData(String gatewayName) {
         RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
         

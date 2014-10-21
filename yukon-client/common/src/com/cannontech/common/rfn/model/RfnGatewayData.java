@@ -171,6 +171,18 @@ public final class RfnGatewayData {
         return routeColor;
     }
     
+    @Override
+    public String toString() {
+        return String
+            .format("RfnGatewayData [name=%s, hardwareVersion=%s, softwareVersion=%s, upperStackVersion=%s, " +
+            		"radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, " +
+            		"port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, user=%s, " +
+            		"admin=%s, superAdmin=%s, collectionSchedule=%s, sequences=%s, routeColor=%s]",
+                    name, hardwareVersion, softwareVersion, upperStackVersion, radioVersion, releaseVersion,
+                    versionConflicts, mode, connectionType, ipAddress, port, connectionStatus, lastCommStatus,
+                    lastCommStatusTimestamp, radios, admin, superAdmin, collectionSchedule, sequences, routeColor);
+    }
+
     public static class Builder {
         private String name;
         private String hardwareVersion;

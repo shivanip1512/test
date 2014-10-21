@@ -1809,4 +1809,14 @@
     <bean id="userPageService" class="com.cannontech.web.common.userpage.service.impl.UserPageServiceImpl"/>
     <bean class="com.cannontech.web.dr.loadcontrol.FormulaBeanValidator"/>
     <bean class="com.cannontech.web.stars.dr.operator.validator.WorkOrderValidator"/>
+    
+    <bean id="gatewayDataTopicListener" class="com.cannontech.web.stars.gateway.listener.GatewayDataTopicListener" />
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.qr.obj.common.rfn.GatewayDataTopic" />
+        <property name="pubSubDomain" value="true"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="taskExecutor" ref="globalTaskExecutor"/>
+        <property name="messageListener" ref="gatewayDataTopicListener"/>
+    </bean>
 </beans>
