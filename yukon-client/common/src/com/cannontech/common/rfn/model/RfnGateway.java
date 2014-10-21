@@ -27,6 +27,9 @@ public class RfnGateway extends RfnDevice implements Locatable {
     }
     
     public double getTotalCompletionPercentage() {
+        if (gatewayData == null) {
+            return 0.0;
+        }
         
         Set<DataSequence> sequences = gatewayData.getSequences();
         int numberOfSequences = sequences.size();
@@ -49,18 +52,30 @@ public class RfnGateway extends RfnDevice implements Locatable {
     }
     
     public boolean isLastCommFailed() {
+        if (gatewayData == null) {
+            return false;
+        }
         return gatewayData.getLastCommStatus() == LastCommStatus.FAILED;
     }
     
     public boolean isLastCommMissed() {
+        if (gatewayData == null) {
+            return false;
+        }
         return gatewayData.getLastCommStatus() == LastCommStatus.MISSED;
     }
     
     public boolean isLastCommUnknown() {
+        if (gatewayData == null) {
+            return false;
+        }
         return gatewayData.getLastCommStatus() == LastCommStatus.UNKNOWN;
     }
     
     public boolean isAppModeNonNormal() {
+        if (gatewayData == null) {
+            return false;
+        }
         return gatewayData.getMode() != AppMode.NORMAL;
     }
     
