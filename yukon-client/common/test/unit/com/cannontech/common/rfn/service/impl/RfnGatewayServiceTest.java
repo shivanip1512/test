@@ -42,10 +42,10 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class RfnGatewayServiceTest {
+    
     private RfnGatewayServiceImpl service;
     
     private GatewaySettings settings;
-    private Authentication user;
     private Authentication admin;
     private Authentication superAdmin;
     private Double latitude = 1.0;

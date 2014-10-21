@@ -76,7 +76,7 @@ public class PaoLocation implements YukonPao {
         result = prime * result + ((paoIdentifier == null) ? 0 : paoIdentifier.hashCode());
         return result;
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -97,12 +97,10 @@ public class PaoLocation implements YukonPao {
             return false;
         return true;
     }
-
+    
     @Override
     public String toString() {
-        return String
-                .format("Location [paoIdentifier=%s, timestamp=%s, latitude=%s, longitude=%s]",
-                        paoIdentifier, latitude, longitude);
+        return String.format("PaoLocation [paoIdentifier=%s, latitude=%s, longitude=%s]", paoIdentifier, latitude, longitude);
     }
-    
+
 }
