@@ -1,8 +1,8 @@
 package com.cannontech.common.pao.attribute.service;
 
-import static com.cannontech.core.dao.MockUnitMeasureDaoImpl.*;
 import static com.cannontech.amr.meter.dao.MockMeterDaoImpl.*;
 import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.*;
+import static com.cannontech.core.dao.MockUnitMeasureDaoImpl.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,5 +29,10 @@ public class MockAttributeServiceImpl extends AttributeServiceImpl {
     public LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         Map<Attribute, LitePoint> attributeToPoints = paoToAttributeToPoints.get(pao);
         return attributeToPoints != null ? attributeToPoints.get(attribute) : null; 
+    }
+    
+    @Override
+    public LitePoint findPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
+        return getPointForAttribute(pao, attribute);
     }
 }
