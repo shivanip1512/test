@@ -573,6 +573,7 @@ public class PointForm extends DBEditorForm {
         }
         //special case for archiving the status point 
         handleArchiveStatus();
+        getWizData().setParentId(getPointBase().getPoint().getPaoID());
         
         //this message will be filled in by the super class
         FacesMessage facesMsg = new FacesMessage();
@@ -729,8 +730,7 @@ public class PointForm extends DBEditorForm {
         int offset = getPointBase().getPoint().getPointOffset().intValue();
         int type = PointTypes.getType (getPointBase().getPoint().getPointType());
         LitePoint litePoint = YukonSpringHook.getBean(PointDao.class).getLitePoint(getPointBase().getPoint().getPointID().intValue());
-        
-        Integer paoId = litePoint.getPaobjectID();
+        Integer paoId = getWizData().getParentId();
         if (!checkPointLimits())   
             throw new InvalidPointLimits ("High point limit can't be lower than Low point Limit");
         if (litePoint.getPointOffset() == offset)
