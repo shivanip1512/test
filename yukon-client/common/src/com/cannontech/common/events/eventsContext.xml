@@ -58,6 +58,10 @@
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.SystemEventLogService"/>
     </bean>
     
+    <bean id="toolsEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.ToolsEventLogService"/>
+    </bean>
+    
     <bean id="outageEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.OutageEventLogService"/>
     </bean>

@@ -46,6 +46,7 @@ import com.cannontech.amr.archivedValueExporter.model.TimestampPattern;
 import com.cannontech.amr.archivedValueExporter.model.YukonRoundingMode;
 import com.cannontech.amr.archivedValueExporter.service.ExportReportGeneratorService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -91,7 +92,7 @@ public class DataExporterFormatController {
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    
+    @Autowired private ToolsEventLogService toolsEventLogService;
     @RequestMapping(value = "/data-exporter/format/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
         
@@ -110,7 +111,9 @@ public class DataExporterFormatController {
     @RequestMapping(value = "/data-exporter/format/{id}/copy", method = RequestMethod.GET)
     public String copy(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
         
+        String name = "";
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(id);
+        name = format.getFormatName();
         format.setFormatId(0);
         format.setFormatName("");
 
@@ -118,6 +121,7 @@ public class DataExporterFormatController {
         model.addAttribute("mode", PageEditMode.CREATE);
         
         setupModel(model, userContext, format);
+        toolsEventLogService.dataExportFormatCopyAttempted(userContext.getYukonUser(), name);
         
         return "data-exporter/format/format.jsp";
     }
@@ -156,9 +160,11 @@ public class DataExporterFormatController {
         
         if (format.getFormatId() == 0) {
             archiveValuesExportFormatDao.create(format);
+            toolsEventLogService.dataExportFormatCreated(userContext.getYukonUser(), format.getFormatName());
             flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "createdFormat", format.getFormatName()));
         } else {
             archiveValuesExportFormatDao.update(format);
+            toolsEventLogService.dataExportFormatUpdated(userContext.getYukonUser(), format.getFormatName());
             flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "updatedFormat", format.getFormatName()));
         }
 
@@ -169,13 +175,13 @@ public class DataExporterFormatController {
     }
     
     @RequestMapping(value = "/data-exporter/format/{id}", method = RequestMethod.DELETE)
-    public String delete(FlashScope flashScope, @PathVariable int id) {
+    public String delete(FlashScope flashScope, @PathVariable int id, YukonUserContext userContext) {
         
         String name = archiveValuesExportFormatDao.getName(id);
         archiveValuesExportFormatDao.delete(id);
         //delete any jobs using this format
         scheduledFileExportService.deleteAdeJobsByFormatId(id);
-        
+        toolsEventLogService.dataExportFormatDeleted(userContext.getYukonUser(), name);
         flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "deletedFormat", name));
         
         return "redirect:/tools/data-exporter/view";

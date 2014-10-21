@@ -25,6 +25,7 @@ import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -69,6 +70,7 @@ public class ScheduledGroupRequestExecutionController {
 	@Autowired private AttributeService attributeService;
 	@Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
 	@Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
+	@Autowired private ToolsEventLogService toolsEventLogService;
 	
 	private List<LiteCommand> meterCommands;
 	
@@ -388,9 +390,13 @@ public class ScheduledGroupRequestExecutionController {
 		
 		if (editJobId <= 0) {
 			job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, selectedAttributes, DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
+            toolsEventLogService.groupRequestByAttributeScheduleCreated(userContext.getYukonUser(), scheduleName,
+                cronExpression);
 		} else {
 		    boolean isDisabled = scheduledRepeatingJobDao.getById(editJobId).isDisabled();
 		    job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, selectedAttributes, DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
+            toolsEventLogService.groupRequestByAttributeScheduleUpdated(userContext.getYukonUser(), scheduleName,
+                cronExpression);
 		    if(isDisabled) {
 		        jobManager.disableJob(job);
 		    }
@@ -449,9 +455,11 @@ public class ScheduledGroupRequestExecutionController {
         
         if (editJobId <= 0) {
         	job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, commandString, DeviceRequestType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
+        	toolsEventLogService.groupRequestByCommandScheduleCreated(userContext.getYukonUser(), scheduleName, cronExpression);
         } else {
             boolean isDisabled = scheduledRepeatingJobDao.getById(editJobId).isDisabled();
             job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, commandString, DeviceRequestType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
+            toolsEventLogService.groupRequestByCommandScheduleUpdate(userContext.getYukonUser(), scheduleName, cronExpression);
             if(isDisabled) {
                 jobManager.disableJob(job);
             }
@@ -513,11 +521,13 @@ public class ScheduledGroupRequestExecutionController {
     public ModelAndView deleteJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         ModelAndView mav = new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/jobs");
-        
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         int deleteJobId = ServletRequestUtils.getRequiredIntParameter(request, "deleteJobId");
         
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(deleteJobId);
         jobManager.deleteJob(job);
+        
+        toolsEventLogService.groupRequestScheduleDeleted(userContext.getYukonUser(), job.getBeanName());
         
         return mav;
     }

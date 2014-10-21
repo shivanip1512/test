@@ -66,5 +66,8 @@ public enum ArgEnum {
     username, 
     warehouseName,
     workOrderNumber,
+    name,
+    cron,
+    state
     ;
 }

@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import org.springframework.web.servlet.view.RedirectView;
 import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -47,6 +48,7 @@ public class MACSScheduleController extends MultiActionController {
     private DateFormattingService dateFormattingService;
     private RolePropertyDao rolePropertyDao;
     @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private ToolsEventLogService toolsEventLogService;
     
     static {
         sortByName = new Comparator<Schedule>() {
@@ -237,12 +239,14 @@ public class MACSScheduleController extends MultiActionController {
                 return mav;
             }
             service.start(schedule, start, stop);
+            toolsEventLogService.macsScriptStarted(liteYukonUser, schedule.getScheduleName(), start, stop);
         } else {
             final boolean stopNow = ServletRequestUtils.getBooleanParameter(request, "stopNow", false);
             if (stopNow) {
                 stop = Calendar.getInstance(timeZone).getTime();
             }
             service.stop(schedule, stop);
+            toolsEventLogService.macsScriptStopped(liteYukonUser, schedule.getScheduleName(), stop);
         }
 
         return mav;
@@ -265,6 +269,7 @@ public class MACSScheduleController extends MultiActionController {
         } else {
             service.disable(schedule);
         }
+        toolsEventLogService.macsScriptEnabled(user, schedule.getScheduleName(), currentState);
 
         mav.setView(createRedirectView(sortBy, descending));
         return mav;

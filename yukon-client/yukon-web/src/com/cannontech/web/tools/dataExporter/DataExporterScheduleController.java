@@ -30,6 +30,7 @@ import com.cannontech.amr.archivedValueExporter.model.dataRange.LocalDateRange;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -76,6 +77,7 @@ public class DataExporterScheduleController {
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private EmailService emailService;
+    @Autowired private ToolsEventLogService toolsEventLogService;
     
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     private ScheduledFileExportValidator scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
@@ -212,9 +214,13 @@ public class DataExporterScheduleController {
 
         if (jobId == null) {
             scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
+            toolsEventLogService.dataExportScheduleCreated(userContext.getYukonUser(), exportData.getScheduleName(),
+                exportData.getExportFileName(), exportData.getScheduleCronString());
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.scheduleSuccess",exportData.getScheduleName()));
         } else {
             scheduledFileExportService.updateFileExport(exportData, userContext, request, jobId);
+            toolsEventLogService.dataExportScheduleUpdated(userContext.getYukonUser(), exportData.getScheduleName(),
+                exportData.getExportFileName(), exportData.getScheduleCronString());
             flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporterScheduleSetup.updateSuccess", exportData.getScheduleName()));
         }
                     

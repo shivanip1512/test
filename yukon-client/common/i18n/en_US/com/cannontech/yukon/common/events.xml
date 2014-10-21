@@ -419,6 +419,26 @@
     <entry key="yukon.common.events.system.login.loginClient">User {1} logged in via GUI Client from remote address {2}.</entry>
     <entry key="yukon.common.events.system.login.loginOutboundVoice">User {1} logged in via Outbound voice from remote address {2}.</entry>    
     
+    <!-- Tools functionalities -->
+    <entry key="yukon.common.events.system.tools.dataExport.dataExportFormatCreated">Data export format {2} created by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dataExport.dataExportFormatUpdated">Data export format {2} updated by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dataExport.dataExportFormatDeleted">Data export format {2} deleted by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dataExport.dataExportFormatCopyAttempted">Data export format {name1} copy attempted by {username2}.</entry>
+    <entry key="yukon.common.events.system.tools.dataExport.dataExportScheduleCreated">Data export schedule {2} created for format {3} with scheduled run {4} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dataExport.dataExportScheduleUpdated">Data export schedule {2} updated for format {3} with scheduled run {4} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dataExport.dataExportScheduleDeleted">Data export schedule {2} deleted by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.macsScript.macsScriptStarted">MACS script {2} manually scheduled to start at {11} and stop at {12} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.macsScript.macsScriptStopped">MACS script {2} manually scheduled to stop at {11} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.macsScript.macsScriptEnabled">MACS script {2} {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.groupRead.groupRequestByAttributeScheduleCreated">Scheduled group read {2} created with scheduled run {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.groupRead.groupRequestByCommandScheduleCreated">Scheduled group command {2} created with scheduled run {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.groupRead.groupRequestByAttributeScheduleUpdated">Scheduled group read {2} updated with scheduled run {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.groupRead.groupRequestByCommandScheduleUpdate">Scheduled group command {2} updated with scheduled run {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.groupRead.groupRequestScheduleDeleted">Scheduled group request {2} deleted by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.billing.billingFormatCreated">Billing export schedule {2} created for format {3} with scheduled run {4} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.billing.billingFormatUpdated">Billing export schedule {2} updated for format {3} with scheduled run {4} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.billing.billingFormatDeleted">Billing export schedule {2} deleted by {1}.</entry>
+       
     <!--  System Administration -->
     <!-- Maintenance -->
     <entry key="yukon.common.events.system.maintenance.rphDeleteDuplicates">Deleted {7} duplicate RawPointHistory rows from database. Start time: {11}. Finish time: {12}.</entry>

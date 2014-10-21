@@ -41,6 +41,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationExce
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -83,6 +84,7 @@ public class DataExporterHomeController {
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ToolsEventLogService toolsEventLogService;
 
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     
@@ -157,14 +159,14 @@ public class DataExporterHomeController {
     }
     
     @RequestMapping("/data-exporter/deleteJob")
-    public String deleteJob(int jobId, FlashScope flashScope) {
+    public String deleteJob(int jobId, FlashScope flashScope, YukonUserContext userContext) {
         YukonJob job = jobManager.getJob(jobId);
         ScheduledArchivedDataFileExportTask task = (ScheduledArchivedDataFileExportTask) jobManager.instantiateTask(job);
         String jobName = task.getName();
         jobManager.deleteJob(job);
         int deviceCollectionId = task.getDeviceCollectionId();
         deviceCollectionService.deleteCollection(deviceCollectionId);
-        
+        toolsEventLogService.dataExportScheduleDeleted(userContext.getYukonUser(), jobName);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.tools.bulk.archivedValueExporter.deletedJobSuccess", jobName));
         return "redirect:view";
     }

@@ -28,12 +28,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.billing.FileFormatTypes;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.scheduledFileExport.BillingFileExportGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -63,6 +63,7 @@ public class ScheduledBillingFileExportController {
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private EmailService emailService;
+    @Autowired private ToolsEventLogService toolsEventLogService;
 
     private static final int MAX_GROUPS_DISPLAYED = 2;
     private ScheduledFileExportValidator scheduledFileExportValidator;
@@ -163,6 +164,8 @@ public class ScheduledBillingFileExportController {
         if (jobId == null) {
             //new schedule
             scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
+            toolsEventLogService.billingFormatCreated(userContext.getYukonUser(), exportData.getScheduleName(),
+                exportData.getExportFileName(), exportData.getScheduleCronString());
             msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobCreated", exportData.getScheduleName());
         } else {
             //edit schedule
@@ -197,6 +200,7 @@ public class ScheduledBillingFileExportController {
         ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
         String jobName = task.getName();
         jobManager.deleteJob(job);
+        toolsEventLogService.billingFormatDeleted(userContext.getYukonUser(), jobName);
 
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(userContext);
         MessageSourceResolvable msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.deletedSuccess", jobName);
