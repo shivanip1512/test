@@ -47,7 +47,8 @@ public class GatewaySettingsController {
     public String createDialog(ModelMap model) {
         
         model.addAttribute("mode", "CREATE");
-        model.addAttribute("settings", new GatewaySettings());
+        GatewaySettings settings = new GatewaySettings();
+        model.addAttribute("settings", settings);
         
         return "gateways/settings.jsp";
     }
@@ -65,6 +66,7 @@ public class GatewaySettingsController {
         
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", "CREATE");
             return "gateways/settings.jsp";
         }
         
@@ -81,6 +83,16 @@ public class GatewaySettingsController {
             return null;
             
         } catch (NetworkManagerCommunicationException|GatewayUpdateException e) {
+            
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", "CREATE");
+            String errorMsg;
+            if (e instanceof NetworkManagerCommunicationException) {
+                errorMsg = accessor.getMessage(baseKey + "create.error.comm");
+            } else {
+                errorMsg = accessor.getMessage(baseKey + "create.error");
+            }
+            model.addAttribute("errorMsg", errorMsg);
             
             return "gateways/settings.jsp";
         }

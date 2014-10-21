@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.gateway.model;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.InetAddressValidator;
 import org.springframework.validation.Errors;
 
@@ -22,17 +23,33 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
         YukonValidationUtils.checkExceedsMaxLength(errors, "name", settings.getName(), 60);
         
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "ipAddress", baseKey + "ipAddress.required");
-        boolean ipValid = InetAddressValidator.getInstance().isValid(settings.getIpAddress());
-        if (!ipValid) {
-            errors.rejectValue("ipAddress", baseKey + "ipAddress.invalid");
+        if (StringUtils.isNoneBlank(settings.getIpAddress())) {
+            boolean ipValid = InetAddressValidator.getInstance().isValid(settings.getIpAddress());
+            if (!ipValid) {
+                errors.rejectValue("ipAddress", baseKey + "ipAddress.invalid");
+            }
         }
         
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "admin.username", baseKey + "username.required");
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "admin.password", baseKey + "password.required");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "adminUsername", baseKey + "username.required");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "adminPassword", baseKey + "password.required");
         
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "superAdmin.username", baseKey + "password.required");
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "superAdmin.password", baseKey + "password.required");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "superAdminUsername", baseKey + "username.required");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "superAdminPassword", baseKey + "password.required");
         
+        Double latitude = settings.getLatitude();
+        Double longitude = settings.getLongitude();
+        if (latitude != null || longitude != null) {
+            if (latitude != null) {
+                if (latitude > 90 || latitude < 90) {
+                    errors.rejectValue("latitude", baseKey + "latitude.invalid");
+                }
+            }
+            if (longitude != null) {
+                if (longitude > 180 || longitude < 180) {
+                    errors.rejectValue("longitude", baseKey + "longitude.invalid");
+                }
+            }
+        }
     }
     
 }

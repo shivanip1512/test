@@ -44,6 +44,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class RfnGatewayServiceTest {
     private RfnGatewayServiceImpl service;
     
+    private GatewaySettings settings;
     private Authentication user;
     private Authentication admin;
     private Authentication superAdmin;
@@ -60,10 +61,6 @@ public class RfnGatewayServiceTest {
     
     @Before
     public void init() {
-        user = new Authentication();
-        user.setDefaultUser(true);
-        user.setUsername("testUser");
-        user.setPassword("testUserPass");
         
         admin = new Authentication();
         admin.setDefaultUser(false);
@@ -74,6 +71,16 @@ public class RfnGatewayServiceTest {
         superAdmin.setDefaultUser(true);
         superAdmin.setUsername("testSuperAdmin");
         superAdmin.setPassword("testSuperAdminPass");
+        
+        settings = new GatewaySettings();
+        settings.setName(name);
+        settings.setAdminUsername(admin.getUsername());
+        settings.setAdminPassword(admin.getPassword());
+        settings.setSuperAdminUsername(superAdmin.getUsername());
+        settings.setSuperAdminPassword(superAdmin.getPassword());
+        settings.setAdminDefault(false);
+        settings.setLatitude(latitude);
+        settings.setLongitude(longitude);
         
         paos = new HashMap<Integer, LiteYukonPAObject>();
         LiteYukonPAObject gwPao = new LiteYukonPAObject(gatewayPaoId.getPaoId());
@@ -216,14 +223,6 @@ public class RfnGatewayServiceTest {
         fakeTemplate.setMode(Mode.EXCEPTION);
         ReflectionTestUtils.setField(service, "updateRequestTemplate", fakeTemplate);
         
-        GatewaySettings settings = new GatewaySettings();
-        settings.setName(name);
-        settings.setUser(user);
-        settings.setAdmin(admin);
-        settings.setSuperAdmin(superAdmin);
-        settings.setLatitude(latitude);
-        settings.setLongitude(longitude);
-        
         service.createGateway(settings);
     }
     
@@ -235,14 +234,6 @@ public class RfnGatewayServiceTest {
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
         fakeTemplate.setMode(Mode.EXCEPTION);
         ReflectionTestUtils.setField(service, "updateRequestTemplate", fakeTemplate);
-        
-        GatewaySettings settings = new GatewaySettings();
-        settings.setName(name);
-        settings.setUser(user);
-        settings.setAdmin(admin);
-        settings.setSuperAdmin(superAdmin);
-        settings.setLatitude(latitude);
-        settings.setLongitude(longitude);
         
         service.createGateway(settings);
     }
@@ -256,14 +247,6 @@ public class RfnGatewayServiceTest {
         fakeTemplate.setGatewayUpdateResult(GatewayUpdateResult.FAILED);
         fakeTemplate.setMode(Mode.REPLY);
         ReflectionTestUtils.setField(service, "updateRequestTemplate", fakeTemplate);
-        
-        GatewaySettings settings = new GatewaySettings();
-        settings.setName(name);
-        settings.setUser(user);
-        settings.setAdmin(admin);
-        settings.setSuperAdmin(superAdmin);
-        settings.setLatitude(latitude);
-        settings.setLongitude(longitude);
         
         service.createGateway(settings);
     }
@@ -295,14 +278,6 @@ public class RfnGatewayServiceTest {
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
         fakeTemplate.setMode(Mode.REPLY);
         ReflectionTestUtils.setField(service, "updateRequestTemplate", fakeTemplate);
-        
-        GatewaySettings settings = new GatewaySettings();
-        settings.setName(name);
-        settings.setUser(user);
-        settings.setAdmin(admin);
-        settings.setSuperAdmin(superAdmin);
-        settings.setLatitude(latitude);
-        settings.setLongitude(longitude);
         
         service.createGateway(settings);
     }

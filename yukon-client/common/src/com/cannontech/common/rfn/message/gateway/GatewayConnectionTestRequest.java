@@ -11,13 +11,12 @@ public class GatewayConnectionTestRequest implements RfnIdentifyingMessage, Seri
     
     private RfnIdentifier rfnIdentifier;
     private String ipAddress;
-    private Authentication user;
     private Authentication admin;
     private Authentication superAdmin;
     
     @Override
     public RfnIdentifier getRfnIdentifier() {
-        return null;
+        return rfnIdentifier;
     }
     
     public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
@@ -31,31 +30,23 @@ public class GatewayConnectionTestRequest implements RfnIdentifyingMessage, Seri
     public void setIpAddress(String ipAddress) {
         this.ipAddress = ipAddress;
     }
-
-    public Authentication getUser() {
-        return user;
-    }
-
-    public void setUser(Authentication user) {
-        this.user = user;
-    }
-
+    
     public Authentication getAdmin() {
         return admin;
     }
-
+    
     public void setAdmin(Authentication admin) {
         this.admin = admin;
     }
-
+    
     public Authentication getSuperAdmin() {
         return superAdmin;
     }
-
+    
     public void setSuperAdmin(Authentication superAdmin) {
         this.superAdmin = superAdmin;
     }
-
+    
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -64,10 +55,9 @@ public class GatewayConnectionTestRequest implements RfnIdentifyingMessage, Seri
         result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
         result = prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
         result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
-        result = prime * result + ((user == null) ? 0 : user.hashCode());
         return result;
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -97,23 +87,12 @@ public class GatewayConnectionTestRequest implements RfnIdentifyingMessage, Seri
                 return false;
         } else if (!superAdmin.equals(other.superAdmin))
             return false;
-        if (user == null) {
-            if (other.user != null)
-                return false;
-        } else if (!user.equals(other.user))
-            return false;
         return true;
     }
-
+    
     @Override
     public String toString() {
-        return String
-            .format("GatewayConnectionTestRequest [rfnIdentifier=%s, ipAddress=%s, user=%s, admin=%s, superAdmin=%s]",
-                    rfnIdentifier,
-                    ipAddress,
-                    user,
-                    admin,
-                    superAdmin);
+        return String.format("GatewayConnectionTestRequest [rfnIdentifier=%s, ipAddress=%s, admin=%s, superAdmin=%s]", rfnIdentifier, ipAddress, admin, superAdmin);
     }
     
 }

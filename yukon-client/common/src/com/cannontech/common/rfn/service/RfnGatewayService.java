@@ -82,8 +82,8 @@ public interface RfnGatewayService {
      * @return true if the connection succeeded, false if the connection failed.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    boolean testConnection(String ipAddress, Authentication user, Authentication admin,
-                           Authentication superAdmin) throws NetworkManagerCommunicationException;
+    boolean testConnection(String ipAddress, Authentication admin, Authentication superAdmin) 
+            throws NetworkManagerCommunicationException;
     
     /**
      * Initiates a gateway "connect" action in Network Manager.

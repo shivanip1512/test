@@ -37,11 +37,15 @@
     <entry key="yukon.web.modules.operator.gateways.detail.completeness">Completeness</entry>
     
     <!-- Gateway Common Words -->
-    <entry key="yukon.web.modules.operator.gateways.name.required">Username is required.</entry>
-    <entry key="yukon.web.modules.operator.gateways.password.required">Password is require.</entry>
-    <entry key="yukon.web.modules.operator.gateways.ipAddress.required">IP Address is require.</entry>
+    <entry key="yukon.web.modules.operator.gateways.create.error.comm">Network Manager connection failed.</entry>
+    <entry key="yukon.web.modules.operator.gateways.create.error">Could not create gateway.</entry>
+    <entry key="yukon.web.modules.operator.gateways.name.required">Name is required.</entry>
+    <entry key="yukon.web.modules.operator.gateways.username.required">Username is required.</entry>
+    <entry key="yukon.web.modules.operator.gateways.password.required">Password is required.</entry>
+    <entry key="yukon.web.modules.operator.gateways.ipAddress.required">IP Address is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.ipAddress.invalid">Not a valid IP Address.</entry>
-    
+    <entry key="yukon.web.modules.operator.gateways.latitude.invalid">Latitude must be between -90 and 90.</entry>
+    <entry key="yukon.web.modules.operator.gateways.longitude.invalid">Longitude must be between -180 and 180.</entry>
     <entry key="yukon.web.modules.operator.gateways.username.ph">username</entry>
     <entry key="yukon.web.modules.operator.gateways.password.ph">password</entry>
     <entry key="yukon.web.modules.operator.gateways.testConnection.hoverText">Test Connection</entry>

@@ -85,7 +85,37 @@ yukon.assets.gateway.list = (function () {
             
             /** 'Save' button clicked on the create gateway popup. */
             $(document).on('yukon:assets:gateway:save', function (ev) {
-                // TODO
+                
+                var btns = $('#gateway-create-popup').closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                    primary = btns.find('.js-primary-action'),
+                    secondary = btns.find('.js-secondary-action');
+                yukon.ui.busy(primary);
+                secondary.prop('disabled', true);
+                
+                $('#gateway-create-popup').find('.user-message').remove();
+                
+                $('#gateway-settings-form').ajaxSubmit({
+                    url: yukon.url('/stars/gateways'), 
+                    type: 'post',
+                    success: function (gateway, status, xhr, $form) {
+                        
+                        $('#gateway-create-popup').dialog('close');
+                        
+                        var row = $('.js-loading-row').clone();
+                        row.attr('data-gateway', paoId)
+                        .removeClass('.js-loading-row');
+                        row.find('.js-gw-name').text(gateway.name);
+                        row.find('.js-gw-sn').text(gateway.rfnId.sensorSerialNumber);
+                        $('#gateways-table tbody').prepend(row);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#gateway-create-popup').html(xhr.responseText);
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
+                        secondary.prop('disabled', false);
+                    }
+                });
             });
             
             _update();

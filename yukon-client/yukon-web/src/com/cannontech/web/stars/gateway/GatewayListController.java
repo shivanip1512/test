@@ -82,7 +82,6 @@ public class GatewayListController {
             dataJson.put("collectionDanger", gateway.isTotalCompletionLevelDanger());
             dataJson.put("collectionPercent", gateway.getTotalCompletionPercentage());
             gatewayJson.put("data", dataJson);
-            System.out.println("Cached Status: " + data.getConnectionStatus());
         }
         
         return gatewayJson;

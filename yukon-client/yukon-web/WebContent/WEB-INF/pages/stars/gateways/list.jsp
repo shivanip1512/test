@@ -12,7 +12,7 @@
         <cti:button icon="icon-plus-green" nameKey="create" data-popup="#gateway-create-popup"/>
     </div>
     <div id="gateway-create-popup" class="dn" data-title="<cti:msg2 key=".create.title"/>" data-url="gateways/create" 
-        data-width="565" data-dialog data-event="yukon:assets:gateway:save" 
+        data-width="570" data-min-width="570" data-dialog data-event="yukon:assets:gateway:save" 
         data-ok-text="<cti:msg2 key="components.button.save.label"/>" data-load-event="yukon:assets:gateway:load">
     </div>
     <table id="gateways-table" class="compact-results-table has-actions has-alerts">
@@ -116,6 +116,12 @@
                     <cm:dropdownOption icon="icon-table-row-insert" key=".collectData"/>
                 </cm:dropdown>
             </td>
+        </tr>
+        <tr class="js-loading-row" data-gateway="" data-loaded="false">
+            <td><cti:icon icon="icon-loading-bars"/></td>
+            <td></td>
+            <td></td>
+            <td colspan="4"><i:inline key=".loadingGatewayData"/></td>
         </tr>
     </table>
 </div>

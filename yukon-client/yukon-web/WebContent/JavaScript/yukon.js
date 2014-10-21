@@ -326,20 +326,25 @@ yukon.ui = (function () {
                 $.extend(defaults, options);
             }
             
-            return [{text: defaults.cancelText, click: function (ev) { $(this).dialog('close'); }},
-                    {text: defaults.okText, 
-                     click: function (ev) {
-                         // Don't close the popup here.  We may want it to stay open, ie: validation failed.
-                         if (defaults.hasOwnProperty('form')) {
-                             var form = $(defaults.form);
-                             if (!form.is('form')) form = $(this).closest('.ui-dialog-content').find('form');
-                             form.submit();
-                         } else {
-                             defaults.target = defaults.target ? defaults.target : $(this).closest('.ui-dialog-content');
-                             $(defaults.target).trigger(defaults.event);
-                         }
-                     }, 
-                     'class': 'primary action'}];
+            return [{
+                        text: defaults.cancelText, click: function (ev) { $(this).dialog('close'); }, 
+                        'class': 'js-secondary-action' 
+                    },
+                    { 
+                        text: defaults.okText, 
+                        click: function (ev) {
+                            // Don't close the popup here.  We may want it to stay open, ie: validation failed.
+                            if (defaults.hasOwnProperty('form')) {
+                                var form = $(defaults.form);
+                                if (!form.is('form')) form = $(this).closest('.ui-dialog-content').find('form');
+                                form.submit();
+                            } else {
+                                defaults.target = defaults.target ? defaults.target : $(this).closest('.ui-dialog-content');
+                                $(defaults.target).trigger(defaults.event);
+                            }
+                        }, 
+                        'class': 'primary action js-primary-action' 
+                    }];
         },
         
         autowire: function () {
@@ -671,8 +676,10 @@ yukon.ui = (function () {
             popup = $(popup);
             var dialog = popup.is('[data-dialog]'),
                 options = {
+                    minWidth: popup.is('[data-min-width]') ? popup.data('minWidth') : '150',
                     width: popup.is('[data-width]') ? popup.data('width') : 'auto',
-                    height: popup.is('[data-height]') ? popup.data('height') : 'auto'
+                    height: popup.is('[data-height]') ? popup.data('height') : 'auto',
+                    minHeight: popup.is('[data-min-height]') ? popup.data('minHeight') : '150'
                 },
                 buttonOptions = {},
                 positionOptions = {};

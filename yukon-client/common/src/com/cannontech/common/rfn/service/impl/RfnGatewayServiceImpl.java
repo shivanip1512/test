@@ -189,18 +189,31 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     private GatewayCreateRequest buildGatewayCreateRequest(GatewaySettings settings) {
+        
         GatewayCreateRequest request = new GatewayCreateRequest();
         GatewaySaveData data = new GatewaySaveData();
         data.setIpAddress(settings.getIpAddress());
-        data.setUser(settings.getUser());
-        data.setAdmin(settings.getAdmin());
-        data.setSuperAdmin(settings.getSuperAdmin());
+        
+        Authentication admin = new Authentication();
+        admin.setDefaultUser(settings.isAdminDefault());
+        admin.setUsername(settings.getAdminUsername());
+        admin.setPassword(settings.getAdminPassword());
+        data.setAdmin(admin);
+        
+        Authentication superAdmin = new Authentication();
+        superAdmin.setDefaultUser(!settings.isAdminDefault());
+        superAdmin.setUsername(settings.getSuperAdminUsername());
+        superAdmin.setPassword(settings.getSuperAdminPassword());
+        data.setSuperAdmin(superAdmin);
+        
         request.setData(data);
+        
         return request;
     }
     
     @Override
     public boolean updateGateway(RfnGateway gateway) throws NetworkManagerCommunicationException {
+        
         // Determine if change is local Yukon DB change (i.e. name) or remote Network Manager change.
         PaoIdentifier paoIdentifier = gateway.getPaoIdentifier();
         RfnGateway existingGateway = getGatewayByPaoId(paoIdentifier);
@@ -222,7 +235,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         }
         
         // If necessary, send GatewayEditRequest
-        if(sendGatewayEditRequest) {
+        if (sendGatewayEditRequest) {
             GatewayEditRequest request = new GatewayEditRequest();
             request.setRfnIdentifier(existingGateway.getRfnIdentifier());
             request.setData(editData);
@@ -265,11 +278,11 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
 
     @Override
     public boolean deleteGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
-        RfnDevice gateway = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         
+        RfnDevice gateway = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         GatewayDeleteRequest request = new GatewayDeleteRequest();
         request.setRfnIdentifier(gateway.getRfnIdentifier());
-
+        
         BlockingJmsReplyHandler<GatewayUpdateResponse> replyHandler =
             new BlockingJmsReplyHandler<>(GatewayUpdateResponse.class);
         updateRequestTemplate.send(request, replyHandler);
@@ -294,10 +307,11 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Override
     public boolean testConnection(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
+        
         RfnDevice gateway = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         RfnGatewayData gatewayData = dataCache.get(paoIdentifier);
         
-        //Build request
+        // Build request
         GatewayConnectionTestRequest request = new GatewayConnectionTestRequest();
         request.setRfnIdentifier(gateway.getRfnIdentifier());
         request.setIpAddress(gatewayData.getIpAddress());
@@ -308,20 +322,20 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public boolean testConnection(String ipAddress, Authentication user, Authentication admin, 
-                                  Authentication superAdmin) throws NetworkManagerCommunicationException {
-        //Build request
+    public boolean testConnection(String ipAddress, Authentication admin, Authentication superAdmin) 
+            throws NetworkManagerCommunicationException {
+        // Build request
         GatewayConnectionTestRequest request = new GatewayConnectionTestRequest();
-        request.setRfnIdentifier(null); //request is not for an existing gateway
+        request.setRfnIdentifier(null); // Request is not for an existing gateway
         request.setIpAddress(ipAddress);
         request.setAdmin(admin);
-        request.setUser(user);
         request.setSuperAdmin(superAdmin);
         
         return sendConnectionRequest(request);
     }
     
     private boolean sendConnectionRequest(GatewayConnectionTestRequest request) throws NetworkManagerCommunicationException {
+        
         BlockingJmsReplyHandler<GatewayConnectionTestResponse> replyHandler = 
                 new BlockingJmsReplyHandler<>(GatewayConnectionTestResponse.class);
                 

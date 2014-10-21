@@ -14,7 +14,6 @@ public class GatewaySaveData implements Serializable {
     private String ipAddress;
     private Authentication superAdmin;
     private Authentication admin;
-    private Authentication user;
     
     public String getIpAddress() {
         return ipAddress;
@@ -40,24 +39,13 @@ public class GatewaySaveData implements Serializable {
         this.admin = admin;
     }
     
-    public Authentication getUser() {
-        return user;
-    }
-    
-    public void setUser(Authentication user) {
-        this.user = user;
-    }
-    
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((admin == null) ? 0 : admin.hashCode());
-        result = prime * result
-                + ((ipAddress == null) ? 0 : ipAddress.hashCode());
-        result = prime * result
-                + ((superAdmin == null) ? 0 : superAdmin.hashCode());
-        result = prime * result + ((user == null) ? 0 : user.hashCode());
+        result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
+        result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
         return result;
     }
     
@@ -85,18 +73,12 @@ public class GatewaySaveData implements Serializable {
                 return false;
         } else if (!superAdmin.equals(other.superAdmin))
             return false;
-        if (user == null) {
-            if (other.user != null)
-                return false;
-        } else if (!user.equals(other.user))
-            return false;
         return true;
     }
     
     @Override
     public String toString() {
-        return String.format("GatewaySaveData [ipAddress=%s, superAdmin=%s, admin=%s, user=%s]",
-                        ipAddress, superAdmin, admin, user);
+        return String.format("GatewaySaveData [ipAddress=%s, superAdmin=%s, admin=%s]", ipAddress, superAdmin, admin);
     }
     
 }
