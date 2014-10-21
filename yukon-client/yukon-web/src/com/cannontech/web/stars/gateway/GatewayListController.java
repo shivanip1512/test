@@ -50,7 +50,6 @@ public class GatewayListController {
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         for (RfnGateway gateway : gateways) {
             Map<String, Object> data = buildGatewayModel(gateway, userContext);
-            
             json.put(gateway.getPaoIdentifier().getPaoId(), data);
         }
         
@@ -73,7 +72,8 @@ public class GatewayListController {
         } else {
             Map<String, Object> dataJson = new HashMap<>();
             dataJson.put("connected", data.getConnectionStatus() == ConnectionStatus.CONNECTED);
-            dataJson.put("connectionStatusText", accessor.getMessage(baseKey + "connectionStatus." + data.getConnectionStatus()));
+            dataJson.put("connectionStatusText", accessor.getMessage(baseKey + "connectionStatus." 
+                    + data.getConnectionStatus()));
             dataJson.put("ip", data.getIpAddress());
             dataJson.put("lastComm", data.getLastCommStatus());
             dataJson.put("lastCommText", accessor.getMessage(baseKey + "lastCommStatus." + data.getLastCommStatus()));

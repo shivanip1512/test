@@ -5,6 +5,7 @@ import java.util.Collection;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
 import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.google.common.cache.LoadingCache;
 
 /**
  * A cache of RfnGatewayData - essentially all the gateway data that Network Manager stores and Yukon doesn't.
@@ -43,4 +44,7 @@ public interface RfnGatewayDataCache {
      * Remove RfnGatewayData for the specified id from the cache.
      */
     public void remove(PaoIdentifier paoIdentifier);
+    
+    /** Return underlying loading cache. */
+    public LoadingCache<PaoIdentifier, RfnGatewayData> getCache();
 }

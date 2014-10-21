@@ -13,7 +13,6 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.amr.rfn.model.CalculationData;
-import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.PaoType;
@@ -64,7 +63,7 @@ public class CalculatedPointDataProducer {
             if (calculator != null) {
                 calculator.calculate(recentReadings, data, toArchive);
             } else {
-                LogHelper.debug(log, "No point calculator found for %s", ptpi);
+                log.debug("No point calculator found for " + ptpi);
             }
         }
     }

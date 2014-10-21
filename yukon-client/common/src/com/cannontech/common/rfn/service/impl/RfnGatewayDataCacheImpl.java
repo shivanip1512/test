@@ -1,8 +1,8 @@
 package com.cannontech.common.rfn.service.impl;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
@@ -116,7 +116,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
      */
     private class InternalGatewayDataCache extends AbstractLoadingCache<PaoIdentifier, RfnGatewayData> {
         
-        private Map<PaoIdentifier, RfnGatewayData> cacheMap = new ConcurrentHashMap<>();
+        private ConcurrentHashMap<PaoIdentifier, RfnGatewayData> cacheMap = new ConcurrentHashMap<>();
         private RfnDeviceDao rfnDeviceDao;
         
         public InternalGatewayDataCache(RfnDeviceDao rfnDeviceDao) {
@@ -161,5 +161,16 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
         public void invalidate(Object key) {
             cacheMap.remove(key);
         }
+        
+        @Override
+        public ConcurrentMap<PaoIdentifier, RfnGatewayData> asMap() {
+            return cacheMap;
+        }
     }
+
+    @Override
+    public LoadingCache<PaoIdentifier, RfnGatewayData> getCache() {
+        return cache;
+    }
+    
 }

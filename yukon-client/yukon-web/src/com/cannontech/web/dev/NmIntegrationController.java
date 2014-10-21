@@ -34,6 +34,7 @@ import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
+import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.RfnEventTestingService;
@@ -62,6 +63,7 @@ public class NmIntegrationController {
     @Autowired private RfnPerformanceVerificationService performanceVerificationService;
     @Autowired private RfnLcrDataSimulatorService dataSimulator;
     @Autowired private YsmJmxQueryService jmxQueryService;
+    @Autowired private RfnGatewayDataCache gatewayCache;
     
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
@@ -308,9 +310,14 @@ public class NmIntegrationController {
         return setupEventAlarmAttributes(model, event);
     }
     
-    @RequestMapping("calcStressTest")
+    @RequestMapping("calc-stress-test")
     public void calcStressTest() {
         rfnEventTestingService.calculationStressTest();
+    }
+    
+    @RequestMapping("clear-gateway-cache")
+    public void clearGatewayCache() {
+        gatewayCache.getCache().asMap().clear();
     }
     
     @RequestMapping("resend-startup")

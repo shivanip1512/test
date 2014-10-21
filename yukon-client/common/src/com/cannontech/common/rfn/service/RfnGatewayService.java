@@ -131,4 +131,6 @@ public interface RfnGatewayService {
      */
     public boolean deleteCollectionSchedule(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
     
+    /** Clears gateway data cache, mostly for testing/debugging */
+    public void clearCache();
 }

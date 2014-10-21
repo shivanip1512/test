@@ -426,5 +426,11 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                     "communication error with Network Manager.", e);
         }
     }
+
+    @Override
+    public void clearCache() {
+        dataCache.getCache().asMap().clear();
+        
+    }
     
 }

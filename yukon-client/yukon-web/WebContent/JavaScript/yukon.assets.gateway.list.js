@@ -33,18 +33,18 @@ yukon.assets.gateway.list = (function () {
                 row = $('[data-gateway="' + paoId + '"]');
                 
                 if (data != null) {
-                    console.log('connected: ' + data.connected);
                     timestamp = moment(data.lastCommTimestamp).tz(_tz).format(_timeFormat);
                     percent = data.collectionPercent.toFixed(2);
                     
                     if (!row.data('loaded')) {
                         clone = $('.js-loaded-row').clone();
                         clone.attr('data-gateway', paoId)
-                        .removeClass('.js-loaded-row');
-                        clone.find('.js-gw-name').text(gateway.name);
-                        clone.find('.js-gw-sn').text(gateway.rfnId.sensorSerialNumber);
-                        row.replaceWith(clone);
-                        row = clone;
+                        .removeClass('js-loaded-row')
+                        .find('.js-gw-name').text(gateway.name)
+                        .next('.js-gw-sn').text(gateway.rfnId.sensorSerialNumber);
+                        row.after(clone);
+                        row.remove();
+                        row = $('[data-gateway="' + paoId + '"]');
                     }
                     
                     row.find('.js-gw-conn-status').attr('title', data.connectionStatusText)
@@ -60,7 +60,7 @@ yukon.assets.gateway.list = (function () {
                     .toggleClass('progress-bar-warning', data.collectionWarning)
                     .toggleClass('progress-bar-danger', data.collectionDanger);
                     if (percent == 100) percent = 100;
-                    row.find('.js-data-collection-percent').text(percent + '%');
+                    row.find('.js-gw-data-collection-percent').text(percent + '%');
                 }
             });
             

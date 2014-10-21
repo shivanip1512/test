@@ -52,7 +52,7 @@ yukon.dev.rfn = (function () {
             
             if (_initialized) return;
             
-            $('#startupNotif').click(function(event) {
+            $('#startup-notif').click(function (ev) {
                 $.ajax({
                     url: yukon.url('/dev/rfn/resend-startup'),
                 }).done(function () {
@@ -62,16 +62,16 @@ yukon.dev.rfn = (function () {
                 });
             });
             
-            $('#calcStressTest').click(function(event) {
+            $('#calc-stress-test').click(function (ev) {
                 $.ajax({
-                    url: yukon.url('/dev/rfn/calcStressTest'),
+                    url: yukon.url('/dev/rfn/calc-stress-test'),
                     type: "POST"
                 });
             });
             
-            $('#clearCache').click(function(event) {
+            $('#clear-gateway-cache').click(function (ev) {
                 $.ajax({
-                    url: yukon.url('/dev/rfn/clearCache'),
+                    url: yukon.url('/dev/rfn/clear-gateway-cache'),
                     type: "POST"
                 });
             });
@@ -101,9 +101,11 @@ $(function () { yukon.dev.rfn.init(); });
             <li><a href="viewLcrDataSimulator"><i:inline key=".lcrDataSimulator.label"/></a></li>
         </ul>
         <div class="page-action-area stacked">
-            <cti:button id="clearCache" label="Clear Cache" classes="left"/>
-            <cti:button id="calcStressTest" label="Calc Stress Test, DO NOT CLICK" classes="action red right"/>
-            <cti:button id="startupNotif" label="Resend Startup Notif"/>
+            <cti:button id="calc-stress-test" label="Calc Stress Test, DO NOT CLICK" classes="action red"/>
+        </div>
+        <div class="page-action-area stacked">
+            <cti:button id="startup-notif" label="Resend Startup Notif"/>
+            <cti:button id="clear-gateway-cache" label="Clear Gateway Cache"/>
         </div>
     </div>
     <div class="column two nogutter">
