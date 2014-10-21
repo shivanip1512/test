@@ -5,8 +5,8 @@ public enum RfnGatewayUpgradeResponseType {
     ACCEPTED,
     FAILED,
     ABORTED,
-    ALREADY_IN_PROGRESS,
-    BAD_FILE_FORMAT,
-    TIMEOUT,
+    JOB_ALREADY_EXISTS,
+    JOB_SCHEDULE_FAILED,
+    JOB_EXECUTE_FAILED,
     ;
 }
