@@ -10132,7 +10132,7 @@
         <points>
             <point type="Analog" offset="1">
                 <init>false</init>
-                <name>Diversified Load</name>
+                <name>Connected Load</name>
                 <archive>
                     <type>ON_UPDATE</type>
                     <interval>ZERO</interval>
@@ -10143,7 +10143,29 @@
             </point>
             <point type="Analog" offset="2">
                 <init>false</init>
+                <name>Diversified Load</name>
+                <archive>
+                    <type>ON_UPDATE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kW" />
+                <decimalplaces value="1" />
+            </point>
+            <point type="Analog" offset="3">
+                <init>false</init>
                 <name>Max Load Reduction</name>
+                <archive>
+                    <type>ON_UPDATE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kW" />
+                <decimalplaces value="1" />
+            </point>
+            <point type="Analog" offset="4">
+                <init>false</init>
+                <name>Available Load Reduction</name>
                 <archive>
                     <type>ON_UPDATE</type>
                     <interval>ZERO</interval>
@@ -10182,7 +10204,7 @@
         <points>
             <point type="Analog" offset="1">
                 <init>false</init>
-                <name>Diversified Load</name>
+                <name>Connected Load</name>
                 <archive>
                     <type>ON_UPDATE</type>
                     <interval>ZERO</interval>
@@ -10193,7 +10215,29 @@
             </point>
             <point type="Analog" offset="2">
                 <init>false</init>
+                <name>Diversified Load</name>
+                <archive>
+                    <type>ON_UPDATE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kW" />
+                <decimalplaces value="1" />
+            </point>
+            <point type="Analog" offset="3">
+                <init>false</init>
                 <name>Max Load Reduction</name>
+                <archive>
+                    <type>ON_UPDATE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kW" />
+                <decimalplaces value="1" />
+            </point>
+            <point type="Analog" offset="4">
+                <init>false</init>
+                <name>Available Load Reduction</name>
                 <archive>
                     <type>ON_UPDATE</type>
                     <interval>ZERO</interval>
@@ -10214,7 +10258,7 @@
         <points>
             <point type="Analog" offset="1">
                 <init>false</init>
-                <name>Diversified Load</name>
+                <name>Connected Load</name>
                 <archive>
                     <type>ON_UPDATE</type>
                     <interval>ZERO</interval>
@@ -10225,7 +10269,29 @@
             </point>
             <point type="Analog" offset="2">
                 <init>false</init>
+                <name>Diversified Load</name>
+                <archive>
+                    <type>ON_UPDATE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kW" />
+                <decimalplaces value="1" />
+            </point>
+            <point type="Analog" offset="3">
+                <init>false</init>
                 <name>Max Load Reduction</name>
+                <archive>
+                    <type>ON_UPDATE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kW" />
+                <decimalplaces value="1" />
+            </point>
+            <point type="Analog" offset="4">
+                <init>false</init>
+                <name>Available Load Reduction</name>
                 <archive>
                     <type>ON_UPDATE</type>
                     <interval>ZERO</interval>

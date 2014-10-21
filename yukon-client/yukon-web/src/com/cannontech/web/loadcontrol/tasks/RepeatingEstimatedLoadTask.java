@@ -96,14 +96,22 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
             }
             
             if (amount != null) {
-                LitePoint diversifiedPoint = pointService.getPointForPao(new PaoPointIdentifier(paoIdent,
+                LitePoint connectedPoint = pointService.getPointForPao(new PaoPointIdentifier(paoIdent,
                         new PointIdentifier(PointType.Analog, 1)));
                 
-                LitePoint maxKwPoint = pointService.getPointForPao(new PaoPointIdentifier(paoIdent, new PointIdentifier(
-                        PointType.Analog, 2)));
+                LitePoint diversifiedPoint = pointService.getPointForPao(new PaoPointIdentifier(paoIdent,
+                        new PointIdentifier(PointType.Analog, 2)));
                 
+                LitePoint maxKwPoint = pointService.getPointForPao(new PaoPointIdentifier(paoIdent, new PointIdentifier(
+                        PointType.Analog, 3)));
+                
+                LitePoint nowKwPoint = pointService.getPointForPao(new PaoPointIdentifier(paoIdent, new PointIdentifier(
+                        PointType.Analog, 4)));
+                
+                pointAccessDao.setPointValue(connectedPoint, amount.getConnectedLoad());
                 pointAccessDao.setPointValue(diversifiedPoint, amount.getDiversifiedLoad());
                 pointAccessDao.setPointValue(maxKwPoint, amount.getMaxKwSavings());
+                pointAccessDao.setPointValue(nowKwPoint, amount.getNowKwSavings());
             } else {
                 log.warn("Unable to archive estimated load data for pao: " + paoIdent);
             }
@@ -111,15 +119,27 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
     }
 
     /**
-     * Will create 'Diversifed Load' & 'Max Load Reduction' points on all programs if the points don't already exist.
+     * Will create 'Connected Load', Diversifed Load', 'Max Load Reduction', and 'Availalbe Load Reduction' points
+     * on all LM paos if the points don't already exist.
      */
     private void createPoints(List<PaoIdentifier> lmPaos) {
-        PointIdentifier diversifiedPointIdent = new PointIdentifier(PointType.Analog, 1);
-        PointIdentifier maxKwPointIdent = new PointIdentifier(PointType.Analog, 2);
-
+        PointIdentifier connectedPointIdent = new PointIdentifier(PointType.Analog, 1);
+        PointIdentifier diversifiedPointIdent = new PointIdentifier(PointType.Analog, 2);
+        PointIdentifier maxKwPointIdent = new PointIdentifier(PointType.Analog, 3);
+        PointIdentifier nowKwPointIdent = new PointIdentifier(PointType.Analog, 4);
+        
         for (PaoIdentifier paoIdent : lmPaos) {
             YukonPao pao = paoDao.getYukonPao(paoIdent.getPaoId());
-
+            
+            boolean connectedPointExists = pointService.pointExistsForPao(pao, connectedPointIdent);
+            if(!connectedPointExists) {
+                PointTemplate pointTemplate
+                = paoDefinitionDao.getPointTemplateByTypeAndOffset(paoIdent.getPaoType(), connectedPointIdent);
+                PointBase newPoint = pointCreationService.createPoint(paoIdent, pointTemplate);
+                dbPersistentDao.performDBChange(newPoint, TransactionType.INSERT);
+                log.info("New point created for Connected Load on pao " + paoIdent);
+            }
+            
             boolean diversifiedPointExits = pointService.pointExistsForPao(pao, diversifiedPointIdent);
             if (!diversifiedPointExits) {
                 PointTemplate pointTemplate
@@ -128,14 +148,23 @@ public class RepeatingEstimatedLoadTask extends YukonTaskBase {
                 dbPersistentDao.performDBChange(newPoint, TransactionType.INSERT);
                 log.info("New point created for Diversifed Load on pao " + paoIdent);
             }
-
+            
             boolean maxKwPointExists = pointService.pointExistsForPao(pao, maxKwPointIdent);
             if(!maxKwPointExists) {
                 PointTemplate pointTemplate
                     = paoDefinitionDao.getPointTemplateByTypeAndOffset(paoIdent.getPaoType(), maxKwPointIdent);
                 PointBase newPoint = pointCreationService.createPoint(paoIdent, pointTemplate);
                 dbPersistentDao.performDBChange(newPoint, TransactionType.INSERT);
-                log.info("New point created for Diversifed Load on pao " + paoIdent);
+                log.info("New point created for Max kW Savings on pao " + paoIdent);
+            }
+            
+            boolean nowKwPointExists = pointService.pointExistsForPao(pao, nowKwPointIdent);
+            if(!nowKwPointExists) {
+                PointTemplate pointTemplate
+                = paoDefinitionDao.getPointTemplateByTypeAndOffset(paoIdent.getPaoType(), nowKwPointIdent);
+                PointBase newPoint = pointCreationService.createPoint(paoIdent, pointTemplate);
+                dbPersistentDao.performDBChange(newPoint, TransactionType.INSERT);
+                log.info("New point created for Now kW Savings on pao " + paoIdent);
             }
         }
     }
