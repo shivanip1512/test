@@ -3,6 +3,7 @@ package com.cannontech.common.rfn.service;
 import java.io.File;
 import java.util.Set;
 
+import com.cannontech.common.rfn.model.GatewayCertificateException;
 import com.cannontech.common.rfn.model.RfnGateway;
 
 public interface RfnGatewayUpgradeService {
@@ -31,8 +32,8 @@ public interface RfnGatewayUpgradeService {
      * Reads the upgradeId from a given gateway upgrade package file and returns it.
      * @param upgradePackage gateway upgrade package file.
      * @return upgradeId
-     * @throws Exception if the format of the gateway upgrade package file is invalid or the
-     *             upgradeId cannot be found.
+     * @throws GatewayCertificateException if the format of the gateway upgrade package file is
+     *             invalid or the upgradeId cannot be found.
      */
-    public String getUpgradeId(File upgradePackage) throws Exception;
+    public String getUpgradeId(File upgradePackage) throws GatewayCertificateException;
 }

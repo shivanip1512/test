@@ -18,6 +18,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequest;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponse;
+import com.cannontech.common.rfn.model.GatewayCertificateException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.service.RfnGatewayUpgradeCallback;
@@ -76,9 +77,6 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
         } catch (Exception e) {
             callback.handleException(e);
             callback.complete();
-            for (Throwable t : e.getSuppressed()) {
-                log.warn("Failed to close upgrade package file.", t);
-            }
             return;
         }
         
@@ -150,33 +148,33 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
     //
     // The upgradeId itself is stored in upgrade info type 0. You should be able to build the
     // upgradeId string from that array of bytes.
-    public String getUpgradeId(File upgradePackage) throws Exception {
+    public String getUpgradeId(File upgradePackage) throws GatewayCertificateException {
         byte[] upgradeData = null;
         try (FileInputStream fis = new FileInputStream(upgradePackage)) {
             upgradeData = IOUtils.toByteArray(fis);
             ByteBuffer buf = ByteBuffer.wrap(upgradeData);
             int upgradeImgLen = buf.getInt();
             if (upgradeImgLen > buf.remaining()) {
-                throw new Exception("Upgrade package " + upgradePackage.getName()
+                throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
                                     + " is invalid: Upgrade image length " + upgradeImgLen
                                     + " exceeds package size");
             }
             // We are only interested in the first fragment.
             int fragmentLen = buf.getInt();
             if (fragmentLen > upgradeImgLen) {
-                throw new Exception("Upgrade package " + upgradePackage.getName()
+                throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
                                     + " is invalid: Fragment length " + fragmentLen
                                     + " exceeds upgrade image length " + upgradeImgLen);
             }
             int totalLen = buf.getInt();
             if (totalLen + 4 > fragmentLen) {
-                throw new Exception("Upgrade package " + upgradePackage.getName()
+                throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
                                     + " is invalid: Fragment's total length " + fragmentLen
                                     + " exceeds fragment length " + upgradeImgLen);
             }
             short infoLen = buf.getShort();
             if (infoLen > fragmentLen) {
-                throw new Exception("Upgrade package " + upgradePackage.getName()
+                throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
                                     + " is invalid: Fragment's total length " + fragmentLen
                                     + " exceeds fragment length " + upgradeImgLen);
             }
@@ -187,7 +185,7 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
                 short tlvLen = buf.getShort();
                 infoLen -= 2;
                 if (tlvLen > infoLen) {
-                    throw new Exception("Upgrade package " + upgradePackage.getName()
+                    throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
                                         + " is invalid: Info TLV length " + tlvLen
                                         + " exceeds remaining info length " + infoLen);
                 }
@@ -197,13 +195,14 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
                     return new String(cbuf);
                 }
             }
-            throw new Exception("Upgrade package " + upgradePackage.getName()
+            throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
                                 + " is invalid: upgradeId not found.");
         } catch (IOException e) {
             for (Throwable t : e.getSuppressed()) {
                 log.warn("Failed to close upgrade package file.", t);
             }
-            throw e;
+            throw new GatewayCertificateException("Unable to access upgrade package file "
+                                                  + upgradePackage.getName(), e);
         }
     }
 }
