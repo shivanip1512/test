@@ -32,7 +32,9 @@ const Mct420Device::CommandSet       Mct420Device::_commandStore = boost::assign
 
 const Mct420Device::ConfigPartsList  Mct420Device::_config_parts = boost::assign::list_of
     (PutConfigPart_display)
-    (PutConfigPart_meter_parameters);
+    (PutConfigPart_meter_parameters)
+    (PutConfigPart_disconnect)
+    (PutConfigPart_freeze_day);
 
 
 const Mct420Device::FunctionReadValueMappings Mct420Device::_readValueMaps = boost::assign::map_list_of
