@@ -170,6 +170,8 @@ public class ScheduledBillingFileExportController {
         } else {
             //edit schedule
             scheduledFileExportService.updateFileExport(exportData, userContext, request, jobId);
+            toolsEventLogService.billingFormatUpdated(userContext.getYukonUser(), exportData.getScheduleName(),
+                exportData.getExportFileName(), exportData.getScheduleCronString());
             msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobUpdated", exportData.getScheduleName());
         }
         
