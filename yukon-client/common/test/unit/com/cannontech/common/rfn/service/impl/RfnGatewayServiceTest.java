@@ -264,6 +264,7 @@ public class RfnGatewayServiceTest {
         
         PaoLocationDao paoLocationDao = EasyMock.createStrictMock(PaoLocationDao.class);
         PaoLocation location = new PaoLocation();
+        location.setPaoIdentifier(gatewayPaoId);
         location.setLatitude(latitude);
         location.setLongitude(longitude);
         
