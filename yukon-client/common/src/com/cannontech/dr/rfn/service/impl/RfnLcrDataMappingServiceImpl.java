@@ -168,8 +168,8 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
             List<Integer> intervalData = data.evaluateAsIntegerList("/DRReport/Relays/Relay" + 
                     relay.getRelayIdXPathString() + "/IntervalData/Interval");
             
-            LitePoint runTimePoint = attributeService.getPointForAttribute(device, relay.getRunTimeAttribute());
-            LitePoint shedTimePoint = attributeService.getPointForAttribute(device, relay.getShedTimeAttribute());
+            LitePoint runTimePoint = attributeService.findPointForAttribute(device, relay.getRunTimeAttribute());
+            LitePoint shedTimePoint = attributeService.findPointForAttribute(device, relay.getShedTimeAttribute());
             
             Long intervalStartTime = data.evaluateAsLong("/DRReport/Relays/Relay" + relay.getRelayIdXPathString() + "/IntervalData/@startTime");
             if (intervalStartTime == null) continue;
@@ -209,15 +209,16 @@ public class RfnLcrDataMappingServiceImpl implements RfnLcrDataMappingService {
                 if(runTime > 0 && relayTime == null) {
                     assetAvailabilityTimes.setRelayRuntime(relay.getIndex(), currentIntervalTimestamp);
                 }
-                
-                PointData runTimePointData = buildPointData(runTimePoint.getPointID(), 
+                if (runTimePoint != null) {
+                    PointData runTimePointData = buildPointData(runTimePoint.getPointID(), 
                         runTimePoint.getPointType(), currentIntervalTimestamp.toDate(), new Double(runTime));
-                PointData shedTimePointData = buildPointData(shedTimePoint.getPointID(), 
+                    intervalPointData.add(runTimePointData);
+                }
+                if (shedTimePoint != null) {
+                    PointData shedTimePointData = buildPointData(shedTimePoint.getPointID(), 
                         shedTimePoint.getPointType(), currentIntervalTimestamp.toDate(), new Double(shedTime));
-                
-                intervalPointData.add(runTimePointData);
-                intervalPointData.add(shedTimePointData);
-                
+                    intervalPointData.add(shedTimePointData);
+                }
                 currentIntervalTimestamp = currentIntervalTimestamp.minus(Duration.standardMinutes(intervalLengthMinutes));
             }
         }

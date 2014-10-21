@@ -38,6 +38,15 @@ public interface AttributeService {
     LitePoint getPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
 
     /**
+     * Method to find the lite point for the given pao for the given attribute
+     * 
+     * @param pao - Pao to get point for
+     * @param attribute - Attribute to get point for
+     * @return The point for the given attribute
+     */
+    LitePoint findPointForAttribute(YukonPao pao, Attribute attribute);
+
+    /**
      * Method to get the PaoPointIdentifier for the given PAO for the given attribute.
      *
      * This is a temporary method designed to be used by code that wishes to assert
