@@ -1,3 +1,5 @@
+#include "precompiled.h"
+
 #include "guard.h"
 #include "logManager.h"
 #include "logger.h"

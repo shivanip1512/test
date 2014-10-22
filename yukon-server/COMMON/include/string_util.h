@@ -4,7 +4,6 @@
 #include "boost/lexical_cast.hpp"
 #include "boost/optional.hpp"
 #include "boost/ptr_container/ptr_vector.hpp"
-#include "boost/shared_ptr.hpp"
 #include "dlldefs.h"
 #include "streamBuffer.h"
 

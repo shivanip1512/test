@@ -16,6 +16,7 @@ INCLPATHS+= \
 -I$(DBGHELP)\include \
 -I$(XERCES)\include \
 -I$(CAJUN_INCLUDE) \
+-I$(LOG4CXX_INCLUDE) \
 
 .PATH.H = \
 .\include \
@@ -105,6 +106,12 @@ streamBuffer.obj \
 string_util.obj \
 exception_helper.obj \
 
+LOGGEROBJS=\
+logLayout.obj \
+logFileAppender.obj \
+logManager.obj \
+logger.obj \
+
 
 CTIPROGS=\
 ctibase.dll
@@ -126,14 +133,18 @@ ALL:            $(CTIPROGS)
 $(COMMON_FULLBUILD):
         @touch $@
         @echo:
+        @echo Compiling logger cpp to obj
+        @echo:
+        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(DLLBUILDNAME) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(LOGGEROBJS)] /wd4275 /wd4251
+        @echo:
         @echo Compiling cpp to obj
         @echo:
         $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(PARALLEL) $(DLLBUILDNAME) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(BASEOBJS)]
 
-ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) Makefile $(OBJ)\ctibase.res
+ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) $(LOGGEROBJS) Makefile $(OBJ)\ctibase.res
                 @build -nologo -f $(_InputFile) id
                 @%cd $(OBJ)
-                $(CC) $(BASEOBJS) $(LOGGEROBJS) id_ctibase.obj $(WINLIBS) $(SQLAPILIB) $(XERCESCLIB) $(OPENSSL_LIBS) $(DLLFLAGS) $(RWLIBS) $(BOOST_LIBS) $(DBGHELP_LIBS) $(LOG4CXX_LIB) logger.lib /Fe..\$@ $(LINKFLAGS) ctibase.res
+                $(CC) $(BASEOBJS) $(LOGGEROBJS) id_ctibase.obj $(WINLIBS) $(SQLAPILIB) $(XERCESCLIB) $(OPENSSL_LIBS) $(DLLFLAGS) $(RWLIBS) $(BOOST_LIBS) $(DBGHELP_LIBS) $(LOG4CXX_LIB) /Fe..\$@ $(LINKFLAGS) ctibase.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -387,6 +398,28 @@ id_ctibase.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 json.obj:	precompiled.h MetricIdLookup.h PointAttribute.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h resource_helper.h
 litepoint.obj:	precompiled.h LitePoint.h dlldefs.h pointtypes.h
+logfileappender.obj:	precompiled.h utility.h ctitime.h dlldefs.h \
+		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
+		constants.h numstr.h logFileAppender.h logManager.h \
+		module_util.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h \
+		critical_section.h atomic.h ctidate.h
+logger.obj:	precompiled.h guard.h utility.h ctitime.h dlldefs.h \
+		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h \
+		critical_section.h atomic.h logManager.h module_util.h
+loglayout.obj:	precompiled.h ctitime.h dlldefs.h logLayout.h \
+		logManager.h module_util.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h utility.h \
+		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
+		constants.h numstr.h critical_section.h atomic.h
+logmanager.obj:	precompiled.h logLayout.h dlldefs.h logManager.h \
+		module_util.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h utility.h \
+		ctitime.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
+		os2_2w32.h constants.h numstr.h critical_section.h atomic.h \
+		logFileAppender.h ctidate.h ctistring.h
 macro_offset.obj:	precompiled.h macro_offset.h dlldefs.h
 master.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		yukon.h ctidbgmem.h cti_asmc.h queues.h constants.h dsm2.h \

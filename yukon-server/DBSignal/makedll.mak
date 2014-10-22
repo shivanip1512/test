@@ -101,29 +101,27 @@ $(BIN)\*.exe
 #UPDATE#
 dbsigsend.obj:	precompiled.h dllbase.h dsm2.h streamConnection.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
-		timing_util.h immutable.h readers_writer_lock.h \
-		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h mutex.h dsm2err.h \
-		words.h optional.h macro_offset.h tbl_signal.h row_reader.h \
-		database_connection.h dbaccess.h dbmemobject.h
+		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h tbl_signal.h \
+		row_reader.h database_connection.h dbaccess.h dbmemobject.h
 tbl_rawpthistory.obj:	precompiled.h tbl_rawpthistory.h ctitime.h \
-		dlldefs.h row_writer.h logger.h streamBuffer.h string_util.h \
-		dllbase.h dsm2.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h netports.h timing_util.h immutable.h \
-		readers_writer_lock.h critical_section.h guard.h utility.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h \
-		exception_helper.h
+		dlldefs.h row_writer.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h utility.h \
+		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
+		constants.h numstr.h critical_section.h atomic.h
 tbl_signal.obj:	precompiled.h tbl_signal.h ctitime.h dlldefs.h \
 		row_reader.h database_connection.h dbaccess.h dllbase.h \
 		dsm2.h streamConnection.h yukon.h types.h ctidbgmem.h \
-		netports.h timing_util.h immutable.h readers_writer_lock.h \
+		netports.h timing_util.h immutable.h atomic.h \
 		critical_section.h guard.h utility.h queues.h cticalls.h \
-		os2_2w32.h constants.h numstr.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h dbmemobject.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h \
-		database_writer.h row_writer.h database_reader.h \
-		database_util.h
+		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
+		loggable.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		dbmemobject.h database_writer.h row_writer.h \
+		database_reader.h database_util.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

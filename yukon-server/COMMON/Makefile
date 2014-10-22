@@ -3,7 +3,6 @@
 
 all:
          @build -nologo -f $(PRECOMPILED)\makepch.mak
-         @build -nologo -f makelogger.mak
          @build -nologo -f makebase.mak
 	 @build -nologo -f maketest.mak
 
@@ -20,7 +19,6 @@ copy:
 
 
 deps:
-        @build -nologo -f makelogger.mak $@
         @build -nologo -f makebase.mak $@
 	@build -nologo -f maketest.mak $@
 

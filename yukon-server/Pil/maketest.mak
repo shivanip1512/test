@@ -97,16 +97,17 @@ deps:
 #UPDATE#
 test_pilserver.obj:	pilserver.h dsm2.h streamConnection.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h timing_util.h \
-		immutable.h readers_writer_lock.h critical_section.h guard.h \
-		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		constants.h numstr.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h server_b.h con_mgr.h connection_server.h \
-		connection.h message.h collectable.h msg_multi.h msg_pdata.h \
-		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h rwutil.h database_connection.h dbaccess.h dllbase.h \
-		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h logger.h thread.h CtiPCPtrQueue.h \
-		string_utility.h connection_base.h worker_thread.h \
+		immutable.h atomic.h critical_section.h guard.h utility.h \
+		ctitime.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
+		logger.h streamBuffer.h loggable.h string_util.h \
+		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h server_b.h con_mgr.h \
+		connection_server.h connection.h message.h collectable.h \
+		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h rwutil.h database_connection.h \
+		dbaccess.h dllbase.h database_reader.h row_reader.h \
+		boost_time.h configkey.h configval.h string_utility.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
 		connection_listener.h ctibase.h streamSocketConnection.h \
 		socket_helper.h win_helper.h smartmap.h msg_pcrequest.h \
 		mgr_device.h rtdb.h hashkey.h hash_functions.h dev_base.h \
@@ -121,6 +122,7 @@ test_pilserver.obj:	pilserver.h dsm2.h streamConnection.h yukon.h \
 		cmd_device.h dev_single.h msg_pcreturn.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h xfer.h exceptions.h rfn_asid.h \
 		rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h RfnE2eMsg.h \
-		RfnE2eDataConfirmMsg.h RfnE2eDataRequestMsg.h
+		RfnE2eDataConfirmMsg.h RfnE2eDataRequestMsg.h \
+		cmd_rfn_demandFreeze.h
 #ENDUPDATE#
 

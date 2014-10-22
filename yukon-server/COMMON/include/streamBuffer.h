@@ -5,11 +5,7 @@
 
 #include <string>
 #include <sstream>
-#include <iomanip>
-#include <vector>
 #include <boost/scoped_ptr.hpp>
-#include <boost/noncopyable.hpp>
-#include <boost/range/iterator_range.hpp>
 
 class CtiNumStr;
 class CtiDate;

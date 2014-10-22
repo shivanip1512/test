@@ -1,3 +1,5 @@
+#include "precompiled.h"
+
 #include "utility.h"
 #include "logFileAppender.h"
 

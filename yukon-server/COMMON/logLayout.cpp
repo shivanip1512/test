@@ -1,3 +1,5 @@
+#include "precompiled.h"
+
 #include "ctitime.h"
 #include "logLayout.h"
 

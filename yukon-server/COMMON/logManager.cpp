@@ -1,3 +1,5 @@
+#include "precompiled.h"
+
 #include "logLayout.h"
 #include "logFileAppender.h"
 #include "logManager.h"

@@ -214,13 +214,14 @@ test_capcontroller.obj:	capcontroller.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
 		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h mutex.h dsm2err.h \
-		words.h optional.h macro_offset.h connection_client.h \
-		connection.h message.h collectable.h msg_multi.h msg_pdata.h \
-		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h rwutil.h database_connection.h database_reader.h \
-		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
-		logger.h thread.h CtiPCPtrQueue.h string_utility.h \
+		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
+		streamBuffer.h loggable.h string_util.h exception_helper.h \
+		boostutil.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h connection_client.h connection.h message.h \
+		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
+		database_connection.h database_reader.h row_reader.h \
+		boost_time.h configkey.h configval.h string_utility.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		DispatchConnection.h MessageListener.h \
 		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
@@ -234,7 +235,7 @@ test_capcontroller.obj:	capcontroller.h dbaccess.h dllbase.h dsm2.h \
 		ccmonitorpoint.h ccutil.h pointattribute.h devicetypes.h \
 		msg_pcrequest.h mgr_paosched.h pao_schedule.h ctibase.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
-		pao_event.h dbmemobject.h amq_connection.h \
+		pao_event.h dbmemobject.h amq_connection.h thread.h \
 		StreamableMessage.h RfnBroadcastReplyMessage.h \
 		CapControlOperationMessage.h cctwowaycbcpoints.h \
 		PointValueHolder.h LitePoint.h ctidate.h PointResponse.h \
@@ -250,20 +251,21 @@ test_capcontroller.obj:	capcontroller.h dbaccess.h dllbase.h dsm2.h \
 		VoltageRegulatorLoader.h DatabaseDaoFactory.h \
 		PointResponseDao.h PointResponseDatabaseDao.h \
 		database_writer.h row_writer.h ccexecutor.h msg_signal.h \
-		ctdpcptrq.h ccunittestutil.h PointDataRequest.h \
-		PointDataRequestFactory.h kvarstrategy.h \
+		ctdpcptrq.h CtiPCPtrQueue.h ccunittestutil.h \
+		PointDataRequest.h PointDataRequestFactory.h kvarstrategy.h \
 		pfactorkwkvarstrategy.h msg_pcreturn.h
 test_ccexecutor.obj:	capcontroller.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
 		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h mutex.h dsm2err.h \
-		words.h optional.h macro_offset.h connection_client.h \
-		connection.h message.h collectable.h msg_multi.h msg_pdata.h \
-		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h rwutil.h database_connection.h database_reader.h \
-		row_reader.h boost_time.h boostutil.h configkey.h configval.h \
-		logger.h thread.h CtiPCPtrQueue.h string_utility.h \
+		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
+		streamBuffer.h loggable.h string_util.h exception_helper.h \
+		boostutil.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h connection_client.h connection.h message.h \
+		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
+		database_connection.h database_reader.h row_reader.h \
+		boost_time.h configkey.h configval.h string_utility.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		DispatchConnection.h MessageListener.h \
 		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
@@ -277,7 +279,7 @@ test_ccexecutor.obj:	capcontroller.h dbaccess.h dllbase.h dsm2.h \
 		ccmonitorpoint.h ccutil.h pointattribute.h devicetypes.h \
 		msg_pcrequest.h mgr_paosched.h pao_schedule.h ctibase.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
-		pao_event.h dbmemobject.h amq_connection.h \
+		pao_event.h dbmemobject.h amq_connection.h thread.h \
 		StreamableMessage.h RfnBroadcastReplyMessage.h \
 		CapControlOperationMessage.h cctwowaycbcpoints.h \
 		PointValueHolder.h LitePoint.h ctidate.h PointResponse.h \
@@ -293,23 +295,24 @@ test_ccexecutor.obj:	capcontroller.h dbaccess.h dllbase.h dsm2.h \
 		VoltageRegulatorLoader.h DatabaseDaoFactory.h \
 		PointResponseDao.h PointResponseDatabaseDao.h \
 		database_writer.h row_writer.h ccexecutor.h msg_signal.h \
-		ctdpcptrq.h ccunittestutil.h PointDataRequest.h \
-		PointDataRequestFactory.h kvarstrategy.h \
+		ctdpcptrq.h CtiPCPtrQueue.h ccunittestutil.h \
+		PointDataRequest.h PointDataRequestFactory.h kvarstrategy.h \
 		pfactorkwkvarstrategy.h executorfactory.h
 test_ccfeeder.obj:	ccfeeder.h Controllable.h CapControlPao.h yukon.h \
 		types.h ctidbgmem.h cctypes.h StrategyManager.h \
 		readers_writer_lock.h dlldefs.h critical_section.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		constants.h numstr.h ControlStrategy.h ccOperationStats.h \
-		message.h collectable.h ccConfirmationStats.h \
-		ccOriginalParent.h regression.h cccapbank.h ccmonitorpoint.h \
-		ccutil.h pointattribute.h devicetypes.h msg_pcrequest.h \
-		dsm2.h streamConnection.h netports.h timing_util.h \
-		immutable.h atomic.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h mgr_paosched.h pao_schedule.h row_reader.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h dllbase.h logger.h thread.h CtiPCPtrQueue.h \
-		pao_event.h dbmemobject.h amq_connection.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h atomic.h \
+		ControlStrategy.h ccOperationStats.h message.h collectable.h \
+		ccConfirmationStats.h ccOriginalParent.h regression.h \
+		cccapbank.h ccmonitorpoint.h ccutil.h pointattribute.h \
+		devicetypes.h msg_pcrequest.h dsm2.h streamConnection.h \
+		netports.h timing_util.h immutable.h mutex.h dsm2err.h \
+		words.h optional.h macro_offset.h mgr_paosched.h \
+		pao_schedule.h row_reader.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h \
+		dllbase.h pao_event.h dbmemobject.h amq_connection.h thread.h \
 		StreamableMessage.h connection_base.h \
 		RfnBroadcastReplyMessage.h CapControlOperationMessage.h \
 		cctwowaycbcpoints.h PointValueHolder.h pointtypes.h \
@@ -334,27 +337,27 @@ test_ccfeeder.obj:	ccfeeder.h Controllable.h CapControlPao.h yukon.h \
 		database_writer.h row_writer.h ccUnitTestUtil.h \
 		capcontroller.h connection_client.h connection.h msg_multi.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h boost_time.h \
-		boostutil.h configkey.h configval.h string_utility.h \
-		worker_thread.h DispatchConnection.h \
-		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
-		ccexecutor.h msg_signal.h ctdpcptrq.h PointDataRequest.h \
-		PointDataRequestFactory.h kvarstrategy.h \
-		pfactorkwkvarstrategy.h
+		configkey.h configval.h string_utility.h worker_thread.h \
+		DispatchConnection.h CapControlDispatchConnection.h msg_cmd.h \
+		msg_dbchg.h ccexecutor.h msg_signal.h ctdpcptrq.h \
+		CtiPCPtrQueue.h PointDataRequest.h PointDataRequestFactory.h \
+		kvarstrategy.h pfactorkwkvarstrategy.h
 test_ccsubstationbus.obj:	ccsubstationbus.h Controllable.h \
 		CapControlPao.h yukon.h types.h ctidbgmem.h cctypes.h \
 		StrategyManager.h readers_writer_lock.h dlldefs.h \
 		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h ControlStrategy.h \
-		ccOperationStats.h message.h collectable.h \
-		ccConfirmationStats.h regression.h ccfeeder.h \
-		ccOriginalParent.h cccapbank.h ccmonitorpoint.h ccutil.h \
-		pointattribute.h devicetypes.h msg_pcrequest.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
-		atomic.h mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		mgr_paosched.h pao_schedule.h row_reader.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		dllbase.h logger.h thread.h CtiPCPtrQueue.h pao_event.h \
-		dbmemobject.h amq_connection.h StreamableMessage.h \
+		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
+		streamBuffer.h loggable.h string_util.h exception_helper.h \
+		boostutil.h atomic.h ControlStrategy.h ccOperationStats.h \
+		message.h collectable.h ccConfirmationStats.h regression.h \
+		ccfeeder.h ccOriginalParent.h cccapbank.h ccmonitorpoint.h \
+		ccutil.h pointattribute.h devicetypes.h msg_pcrequest.h \
+		dsm2.h streamConnection.h netports.h timing_util.h \
+		immutable.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h mgr_paosched.h pao_schedule.h row_reader.h \
+		ctibase.h streamSocketConnection.h socket_helper.h \
+		win_helper.h dllbase.h pao_event.h dbmemobject.h \
+		amq_connection.h thread.h StreamableMessage.h \
 		connection_base.h RfnBroadcastReplyMessage.h \
 		CapControlOperationMessage.h cctwowaycbcpoints.h \
 		PointValueHolder.h pointtypes.h msg_pdata.h pointdefs.h \
@@ -378,22 +381,23 @@ test_ccsubstationbus.obj:	ccsubstationbus.h Controllable.h \
 		database_writer.h row_writer.h ccUnitTestUtil.h \
 		capcontroller.h connection_client.h connection.h msg_multi.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h boost_time.h \
-		boostutil.h configkey.h configval.h string_utility.h \
-		worker_thread.h DispatchConnection.h \
-		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
-		ccexecutor.h msg_signal.h ctdpcptrq.h PointDataRequest.h \
-		PointDataRequestFactory.h kvarstrategy.h \
-		pfactorkwkvarstrategy.h ExecutorFactory.h MsgVerifyBanks.h
+		configkey.h configval.h string_utility.h worker_thread.h \
+		DispatchConnection.h CapControlDispatchConnection.h msg_cmd.h \
+		msg_dbchg.h ccexecutor.h msg_signal.h ctdpcptrq.h \
+		CtiPCPtrQueue.h PointDataRequest.h PointDataRequestFactory.h \
+		kvarstrategy.h pfactorkwkvarstrategy.h ExecutorFactory.h \
+		MsgVerifyBanks.h
 test_ccutil.obj:	ccutil.h pointattribute.h yukon.h types.h ctidbgmem.h \
 		dlldefs.h devicetypes.h msg_pcrequest.h message.h ctitime.h \
-		collectable.h dsm2.h streamConnection.h netports.h \
+		collectable.h loggable.h dsm2.h streamConnection.h netports.h \
 		timing_util.h immutable.h atomic.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		mgr_paosched.h pao_schedule.h row_reader.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		dllbase.h logger.h thread.h CtiPCPtrQueue.h pao_event.h \
-		dbmemobject.h amq_connection.h StreamableMessage.h \
+		logger.h streamBuffer.h string_util.h exception_helper.h \
+		boostutil.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h mgr_paosched.h pao_schedule.h row_reader.h \
+		ctibase.h streamSocketConnection.h socket_helper.h \
+		win_helper.h dllbase.h pao_event.h dbmemobject.h \
+		amq_connection.h thread.h StreamableMessage.h \
 		connection_base.h RfnBroadcastReplyMessage.h \
 		CapControlOperationMessage.h pointdefs.h
 test_controlstrategies.obj:	ControlStrategy.h NoStrategy.h \
@@ -401,16 +405,17 @@ test_controlstrategies.obj:	ControlStrategy.h NoStrategy.h \
 		Controllable.h CapControlPao.h yukon.h types.h ctidbgmem.h \
 		cctypes.h StrategyManager.h readers_writer_lock.h dlldefs.h \
 		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h ccOperationStats.h \
-		message.h collectable.h ccConfirmationStats.h regression.h \
-		ccfeeder.h ccOriginalParent.h cccapbank.h ccmonitorpoint.h \
-		ccutil.h pointattribute.h devicetypes.h msg_pcrequest.h \
-		dsm2.h streamConnection.h netports.h timing_util.h \
-		immutable.h atomic.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h mgr_paosched.h pao_schedule.h row_reader.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h dllbase.h logger.h thread.h CtiPCPtrQueue.h \
-		pao_event.h dbmemobject.h amq_connection.h \
+		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
+		streamBuffer.h loggable.h string_util.h exception_helper.h \
+		boostutil.h atomic.h ccOperationStats.h message.h \
+		collectable.h ccConfirmationStats.h regression.h ccfeeder.h \
+		ccOriginalParent.h cccapbank.h ccmonitorpoint.h ccutil.h \
+		pointattribute.h devicetypes.h msg_pcrequest.h dsm2.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		mgr_paosched.h pao_schedule.h row_reader.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h \
+		dllbase.h pao_event.h dbmemobject.h amq_connection.h thread.h \
 		StreamableMessage.h connection_base.h \
 		RfnBroadcastReplyMessage.h CapControlOperationMessage.h \
 		cctwowaycbcpoints.h PointValueHolder.h pointtypes.h \
@@ -421,22 +426,22 @@ test_controlstrategies.obj:	ControlStrategy.h NoStrategy.h \
 		DispatchConnection.h connection_client.h connection.h \
 		msg_multi.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_connection.h dbaccess.h database_reader.h \
-		boost_time.h boostutil.h configkey.h configval.h \
-		string_utility.h worker_thread.h MessageListener.h \
-		ZoneManager.h Zone.h
+		boost_time.h configkey.h configval.h string_utility.h \
+		worker_thread.h MessageListener.h ZoneManager.h Zone.h
 test_gangoperatedvoltageregulator.obj:	capcontroller.h dbaccess.h \
 		dllbase.h dsm2.h streamConnection.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h timing_util.h immutable.h \
 		atomic.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h \
-		connection_client.h connection.h message.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h rwutil.h database_connection.h \
-		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h logger.h thread.h CtiPCPtrQueue.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h DispatchConnection.h MessageListener.h \
+		queues.h cticalls.h os2_2w32.h constants.h numstr.h logger.h \
+		streamBuffer.h loggable.h string_util.h exception_helper.h \
+		boostutil.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h connection_client.h connection.h message.h \
+		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
+		database_connection.h database_reader.h row_reader.h \
+		boost_time.h configkey.h configval.h string_utility.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		DispatchConnection.h MessageListener.h \
 		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
 		ccsubstationbusstore.h ccarea.h ccAreaBase.h Controllable.h \
 		CapControlPao.h cctypes.h StrategyManager.h ControlStrategy.h \
@@ -448,7 +453,7 @@ test_gangoperatedvoltageregulator.obj:	capcontroller.h dbaccess.h \
 		ccmonitorpoint.h ccutil.h pointattribute.h devicetypes.h \
 		msg_pcrequest.h mgr_paosched.h pao_schedule.h ctibase.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
-		pao_event.h dbmemobject.h amq_connection.h \
+		pao_event.h dbmemobject.h amq_connection.h thread.h \
 		StreamableMessage.h RfnBroadcastReplyMessage.h \
 		CapControlOperationMessage.h cctwowaycbcpoints.h \
 		PointValueHolder.h LitePoint.h ctidate.h PointResponse.h \
@@ -464,26 +469,27 @@ test_gangoperatedvoltageregulator.obj:	capcontroller.h dbaccess.h \
 		VoltageRegulatorLoader.h DatabaseDaoFactory.h \
 		PointResponseDao.h PointResponseDatabaseDao.h \
 		database_writer.h row_writer.h ccexecutor.h msg_signal.h \
-		ctdpcptrq.h GangOperatedVoltageRegulator.h
+		ctdpcptrq.h CtiPCPtrQueue.h GangOperatedVoltageRegulator.h
 test_ivvcalgorithm.obj:	ccUnitTestUtil.h ccsubstationbusstore.h \
 		ccarea.h ccAreaBase.h Controllable.h CapControlPao.h yukon.h \
 		types.h ctidbgmem.h cctypes.h StrategyManager.h \
 		readers_writer_lock.h dlldefs.h critical_section.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		constants.h numstr.h ControlStrategy.h ccOperationStats.h \
-		message.h collectable.h ccConfirmationStats.h ccsparea.h \
-		ccid.h ccstate.h ccmessage.h MsgCapControlCommand.h \
-		ccsubstation.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
-		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
-		ccsubstationbus.h regression.h ccfeeder.h ccOriginalParent.h \
-		cccapbank.h ccmonitorpoint.h ccutil.h pointattribute.h \
-		devicetypes.h msg_pcrequest.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h atomic.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h mgr_paosched.h \
-		pao_schedule.h row_reader.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		dllbase.h logger.h thread.h CtiPCPtrQueue.h pao_event.h \
-		dbmemobject.h amq_connection.h StreamableMessage.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h atomic.h \
+		ControlStrategy.h ccOperationStats.h message.h collectable.h \
+		ccConfirmationStats.h ccsparea.h ccid.h ccstate.h ccmessage.h \
+		MsgCapControlCommand.h ccsubstation.h MsgItemCommand.h \
+		EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		MsgCapControlMessage.h MsgSubstationBus.h ccsubstationbus.h \
+		regression.h ccfeeder.h ccOriginalParent.h cccapbank.h \
+		ccmonitorpoint.h ccutil.h pointattribute.h devicetypes.h \
+		msg_pcrequest.h dsm2.h streamConnection.h netports.h \
+		timing_util.h immutable.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h mgr_paosched.h pao_schedule.h \
+		row_reader.h ctibase.h streamSocketConnection.h \
+		socket_helper.h win_helper.h dllbase.h pao_event.h \
+		dbmemobject.h amq_connection.h thread.h StreamableMessage.h \
 		connection_base.h RfnBroadcastReplyMessage.h \
 		CapControlOperationMessage.h cctwowaycbcpoints.h \
 		PointValueHolder.h pointtypes.h msg_pdata.h pointdefs.h \
@@ -502,27 +508,28 @@ test_ivvcalgorithm.obj:	ccUnitTestUtil.h ccsubstationbusstore.h \
 		dbaccess.h PointResponseDatabaseDao.h database_reader.h \
 		database_writer.h row_writer.h capcontroller.h \
 		connection_client.h connection.h msg_multi.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h rwutil.h boost_time.h boostutil.h \
-		configkey.h configval.h string_utility.h worker_thread.h \
+		msg_reg.h queue.h cparms.h rwutil.h boost_time.h configkey.h \
+		configval.h string_utility.h worker_thread.h \
 		DispatchConnection.h CapControlDispatchConnection.h msg_cmd.h \
 		msg_dbchg.h ccexecutor.h msg_signal.h ctdpcptrq.h \
-		PointDataRequest.h PointDataRequestFactory.h kvarstrategy.h \
-		pfactorkwkvarstrategy.h IVVCStrategy.h IVVCAlgorithm.h \
-		IVVCState.h
+		CtiPCPtrQueue.h PointDataRequest.h PointDataRequestFactory.h \
+		kvarstrategy.h pfactorkwkvarstrategy.h IVVCStrategy.h \
+		IVVCAlgorithm.h IVVCState.h
 test_likedaycontrol.obj:	ccfeeder.h Controllable.h CapControlPao.h \
 		yukon.h types.h ctidbgmem.h cctypes.h StrategyManager.h \
 		readers_writer_lock.h dlldefs.h critical_section.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
-		constants.h numstr.h ControlStrategy.h ccOperationStats.h \
-		message.h collectable.h ccConfirmationStats.h \
-		ccOriginalParent.h regression.h cccapbank.h ccmonitorpoint.h \
-		ccutil.h pointattribute.h devicetypes.h msg_pcrequest.h \
-		dsm2.h streamConnection.h netports.h timing_util.h \
-		immutable.h atomic.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h mgr_paosched.h pao_schedule.h row_reader.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h dllbase.h logger.h thread.h CtiPCPtrQueue.h \
-		pao_event.h dbmemobject.h amq_connection.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h atomic.h \
+		ControlStrategy.h ccOperationStats.h message.h collectable.h \
+		ccConfirmationStats.h ccOriginalParent.h regression.h \
+		cccapbank.h ccmonitorpoint.h ccutil.h pointattribute.h \
+		devicetypes.h msg_pcrequest.h dsm2.h streamConnection.h \
+		netports.h timing_util.h immutable.h mutex.h dsm2err.h \
+		words.h optional.h macro_offset.h mgr_paosched.h \
+		pao_schedule.h row_reader.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h \
+		dllbase.h pao_event.h dbmemobject.h amq_connection.h thread.h \
 		StreamableMessage.h connection_base.h \
 		RfnBroadcastReplyMessage.h CapControlOperationMessage.h \
 		cctwowaycbcpoints.h PointValueHolder.h pointtypes.h \
@@ -546,30 +553,32 @@ test_likedaycontrol.obj:	ccfeeder.h Controllable.h CapControlPao.h \
 		dbaccess.h PointResponseDatabaseDao.h database_reader.h \
 		database_writer.h row_writer.h capcontroller.h \
 		connection_client.h connection.h msg_multi.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h rwutil.h boost_time.h boostutil.h \
-		configkey.h configval.h string_utility.h worker_thread.h \
+		msg_reg.h queue.h cparms.h rwutil.h boost_time.h configkey.h \
+		configval.h string_utility.h worker_thread.h \
 		DispatchConnection.h CapControlDispatchConnection.h msg_cmd.h \
 		msg_dbchg.h ccexecutor.h msg_signal.h ctdpcptrq.h \
-		PointDataRequest.h PointDataRequestFactory.h kvarstrategy.h \
-		pfactorkwkvarstrategy.h VoltStrategy.h
+		CtiPCPtrQueue.h PointDataRequest.h PointDataRequestFactory.h \
+		kvarstrategy.h pfactorkwkvarstrategy.h VoltStrategy.h
 test_main.obj:	amq_connection.h thread.h mutex.h dlldefs.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h yukon.h types.h \
-		ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		critical_section.h StreamableMessage.h connection_base.h \
-		RfnBroadcastReplyMessage.h
+		ctidbgmem.h os2_2w32.h constants.h numstr.h logger.h \
+		streamBuffer.h loggable.h string_util.h exception_helper.h \
+		boostutil.h critical_section.h atomic.h StreamableMessage.h \
+		connection_base.h RfnBroadcastReplyMessage.h
 test_phaseoperatedvoltageregulator.obj:	capcontroller.h dbaccess.h \
 		dllbase.h dsm2.h streamConnection.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h timing_util.h immutable.h \
 		atomic.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h \
-		connection_client.h connection.h message.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h rwutil.h database_connection.h \
-		database_reader.h row_reader.h boost_time.h boostutil.h \
-		configkey.h configval.h logger.h thread.h CtiPCPtrQueue.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h DispatchConnection.h MessageListener.h \
+		queues.h cticalls.h os2_2w32.h constants.h numstr.h logger.h \
+		streamBuffer.h loggable.h string_util.h exception_helper.h \
+		boostutil.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h connection_client.h connection.h message.h \
+		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
+		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
+		database_connection.h database_reader.h row_reader.h \
+		boost_time.h configkey.h configval.h string_utility.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		DispatchConnection.h MessageListener.h \
 		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
 		ccsubstationbusstore.h ccarea.h ccAreaBase.h Controllable.h \
 		CapControlPao.h cctypes.h StrategyManager.h ControlStrategy.h \
@@ -581,7 +590,7 @@ test_phaseoperatedvoltageregulator.obj:	capcontroller.h dbaccess.h \
 		ccmonitorpoint.h ccutil.h pointattribute.h devicetypes.h \
 		msg_pcrequest.h mgr_paosched.h pao_schedule.h ctibase.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
-		pao_event.h dbmemobject.h amq_connection.h \
+		pao_event.h dbmemobject.h amq_connection.h thread.h \
 		StreamableMessage.h RfnBroadcastReplyMessage.h \
 		CapControlOperationMessage.h cctwowaycbcpoints.h \
 		PointValueHolder.h LitePoint.h ctidate.h PointResponse.h \
@@ -597,30 +606,31 @@ test_phaseoperatedvoltageregulator.obj:	capcontroller.h dbaccess.h \
 		VoltageRegulatorLoader.h DatabaseDaoFactory.h \
 		PointResponseDao.h PointResponseDatabaseDao.h \
 		database_writer.h row_writer.h ccexecutor.h msg_signal.h \
-		ctdpcptrq.h PhaseOperatedVoltageRegulator.h
+		ctdpcptrq.h CtiPCPtrQueue.h PhaseOperatedVoltageRegulator.h
 test_pointholder.obj:	PointValueHolder.h yukon.h types.h ctidbgmem.h \
 		pointtypes.h ctitime.h dlldefs.h msg_pdata.h pointdefs.h \
-		message.h collectable.h
+		message.h collectable.h loggable.h
 test_strategymanager.obj:	StrategyManager.h readers_writer_lock.h \
 		dlldefs.h critical_section.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
-		constants.h numstr.h ControlStrategy.h StrategyLoader.h \
-		KVarStrategy.h NoStrategy.h PFactorKWKVarStrategy.h \
-		ccunittestutil.h ccsubstationbusstore.h ccarea.h ccAreaBase.h \
-		Controllable.h CapControlPao.h cctypes.h ccOperationStats.h \
-		message.h collectable.h ccConfirmationStats.h ccsparea.h \
-		ccid.h ccstate.h ccmessage.h MsgCapControlCommand.h \
-		ccsubstation.h MsgItemCommand.h EventTypes.h MsgBankMove.h \
-		MsgObjectMove.h MsgCapControlMessage.h MsgSubstationBus.h \
-		ccsubstationbus.h regression.h ccfeeder.h ccOriginalParent.h \
-		cccapbank.h ccmonitorpoint.h ccutil.h pointattribute.h \
-		devicetypes.h msg_pcrequest.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h atomic.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h mgr_paosched.h \
-		pao_schedule.h row_reader.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		dllbase.h logger.h thread.h CtiPCPtrQueue.h pao_event.h \
-		dbmemobject.h amq_connection.h StreamableMessage.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h atomic.h \
+		ControlStrategy.h StrategyLoader.h KVarStrategy.h \
+		NoStrategy.h PFactorKWKVarStrategy.h ccunittestutil.h \
+		ccsubstationbusstore.h ccarea.h ccAreaBase.h Controllable.h \
+		CapControlPao.h cctypes.h ccOperationStats.h message.h \
+		collectable.h ccConfirmationStats.h ccsparea.h ccid.h \
+		ccstate.h ccmessage.h MsgCapControlCommand.h ccsubstation.h \
+		MsgItemCommand.h EventTypes.h MsgBankMove.h MsgObjectMove.h \
+		MsgCapControlMessage.h MsgSubstationBus.h ccsubstationbus.h \
+		regression.h ccfeeder.h ccOriginalParent.h cccapbank.h \
+		ccmonitorpoint.h ccutil.h pointattribute.h devicetypes.h \
+		msg_pcrequest.h dsm2.h streamConnection.h netports.h \
+		timing_util.h immutable.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h mgr_paosched.h pao_schedule.h \
+		row_reader.h ctibase.h streamSocketConnection.h \
+		socket_helper.h win_helper.h dllbase.h pao_event.h \
+		dbmemobject.h amq_connection.h thread.h StreamableMessage.h \
 		connection_base.h RfnBroadcastReplyMessage.h \
 		CapControlOperationMessage.h cctwowaycbcpoints.h \
 		PointValueHolder.h pointtypes.h msg_pdata.h pointdefs.h \
@@ -639,43 +649,43 @@ test_strategymanager.obj:	StrategyManager.h readers_writer_lock.h \
 		PointResponseDatabaseDao.h database_reader.h \
 		database_writer.h row_writer.h capcontroller.h \
 		connection_client.h connection.h msg_multi.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h rwutil.h boost_time.h boostutil.h \
-		configkey.h configval.h string_utility.h worker_thread.h \
+		msg_reg.h queue.h cparms.h rwutil.h boost_time.h configkey.h \
+		configval.h string_utility.h worker_thread.h \
 		DispatchConnection.h CapControlDispatchConnection.h msg_cmd.h \
 		msg_dbchg.h ccexecutor.h msg_signal.h ctdpcptrq.h \
-		PointDataRequest.h PointDataRequestFactory.h
+		CtiPCPtrQueue.h PointDataRequest.h PointDataRequestFactory.h
 test_twowaycbcpoints.obj:	cctwowaycbcpoints.h types.h PointAttribute.h \
 		yukon.h ctidbgmem.h dlldefs.h PointValueHolder.h pointtypes.h \
 		ctitime.h msg_pdata.h pointdefs.h message.h collectable.h \
-		LitePoint.h ctidate.h logger.h thread.h mutex.h guard.h \
-		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		CtiPCPtrQueue.h
+		loggable.h LitePoint.h ctidate.h
 test_utils.obj:	ccutil.h pointattribute.h yukon.h types.h ctidbgmem.h \
 		dlldefs.h devicetypes.h msg_pcrequest.h message.h ctitime.h \
-		collectable.h dsm2.h streamConnection.h netports.h \
+		collectable.h loggable.h dsm2.h streamConnection.h netports.h \
 		timing_util.h immutable.h atomic.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		mgr_paosched.h pao_schedule.h row_reader.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		dllbase.h logger.h thread.h CtiPCPtrQueue.h pao_event.h \
-		dbmemobject.h amq_connection.h StreamableMessage.h \
+		logger.h streamBuffer.h string_util.h exception_helper.h \
+		boostutil.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h mgr_paosched.h pao_schedule.h row_reader.h \
+		ctibase.h streamSocketConnection.h socket_helper.h \
+		win_helper.h dllbase.h pao_event.h dbmemobject.h \
+		amq_connection.h thread.h StreamableMessage.h \
 		connection_base.h RfnBroadcastReplyMessage.h \
 		CapControlOperationMessage.h
 test_voltageregulatormanager.obj:	GangOperatedVoltageRegulator.h \
 		VoltageRegulator.h yukon.h types.h ctidbgmem.h \
 		CapControlPao.h cctypes.h UpdatablePao.h msg_pdata.h \
 		dlldefs.h pointdefs.h pointtypes.h message.h ctitime.h \
-		collectable.h LitePoint.h PointValueHolder.h \
+		collectable.h loggable.h LitePoint.h PointValueHolder.h \
 		AttributeService.h PointAttribute.h ccid.h ccutil.h \
 		devicetypes.h msg_pcrequest.h dsm2.h streamConnection.h \
 		netports.h timing_util.h immutable.h atomic.h \
 		critical_section.h guard.h utility.h queues.h cticalls.h \
-		os2_2w32.h constants.h numstr.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h mgr_paosched.h pao_schedule.h \
-		row_reader.h ctibase.h streamSocketConnection.h \
-		socket_helper.h win_helper.h dllbase.h logger.h thread.h \
-		CtiPCPtrQueue.h pao_event.h dbmemobject.h amq_connection.h \
+		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h mgr_paosched.h \
+		pao_schedule.h row_reader.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h \
+		dllbase.h pao_event.h dbmemobject.h amq_connection.h thread.h \
 		StreamableMessage.h connection_base.h \
 		RfnBroadcastReplyMessage.h CapControlOperationMessage.h \
 		EventTypes.h ccsubstationbusstore.h ccarea.h ccAreaBase.h \
@@ -701,17 +711,17 @@ test_voltageregulatormanager.obj:	GangOperatedVoltageRegulator.h \
 		database_writer.h row_writer.h
 test_zonemanager.obj:	ZoneManager.h Zone.h ccutil.h pointattribute.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h devicetypes.h \
-		msg_pcrequest.h message.h ctitime.h collectable.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h utility.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h mutex.h dsm2err.h \
-		words.h optional.h macro_offset.h mgr_paosched.h \
-		pao_schedule.h row_reader.h ctibase.h \
+		msg_pcrequest.h message.h ctitime.h collectable.h loggable.h \
+		dsm2.h streamConnection.h netports.h timing_util.h \
+		immutable.h atomic.h critical_section.h guard.h utility.h \
+		queues.h cticalls.h os2_2w32.h constants.h numstr.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		mgr_paosched.h pao_schedule.h row_reader.h ctibase.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
-		dllbase.h logger.h thread.h CtiPCPtrQueue.h pao_event.h \
-		dbmemobject.h amq_connection.h StreamableMessage.h \
-		connection_base.h RfnBroadcastReplyMessage.h \
-		CapControlOperationMessage.h readers_writer_lock.h \
-		ZoneLoader.h
+		dllbase.h pao_event.h dbmemobject.h amq_connection.h thread.h \
+		StreamableMessage.h connection_base.h \
+		RfnBroadcastReplyMessage.h CapControlOperationMessage.h \
+		readers_writer_lock.h ZoneLoader.h
 #ENDUPDATE#
 

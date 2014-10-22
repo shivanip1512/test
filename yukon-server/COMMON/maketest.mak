@@ -317,27 +317,28 @@ id_ctibase.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 json.obj:	precompiled.h MetricIdLookup.h PointAttribute.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h resource_helper.h
 litepoint.obj:	precompiled.h LitePoint.h dlldefs.h pointtypes.h
-logfileappender.obj:	utility.h ctitime.h dlldefs.h queues.h cticalls.h \
-		yukon.h types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		logFileAppender.h logManager.h module_util.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h critical_section.h atomic.h ctidate.h
-logger.obj:	guard.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
-		yukon.h types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		logger.h streamBuffer.h loggable.h string_util.h \
-		exception_helper.h boostutil.h critical_section.h atomic.h \
-		logManager.h module_util.h
-loglayout.obj:	ctitime.h dlldefs.h logLayout.h logManager.h \
+logfileappender.obj:	precompiled.h utility.h ctitime.h dlldefs.h \
+		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
+		constants.h numstr.h logFileAppender.h logManager.h \
 		module_util.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h \
+		critical_section.h atomic.h ctidate.h
+logger.obj:	precompiled.h guard.h utility.h ctitime.h dlldefs.h \
+		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h \
+		critical_section.h atomic.h logManager.h module_util.h
+loglayout.obj:	precompiled.h ctitime.h dlldefs.h logLayout.h \
+		logManager.h module_util.h logger.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h utility.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
 		constants.h numstr.h critical_section.h atomic.h
-logmanager.obj:	logLayout.h dlldefs.h logManager.h module_util.h \
-		logger.h streamBuffer.h loggable.h string_util.h \
-		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
-		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
-		numstr.h critical_section.h atomic.h logFileAppender.h \
-		ctidate.h ctistring.h
+logmanager.obj:	precompiled.h logLayout.h dlldefs.h logManager.h \
+		module_util.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h utility.h \
+		ctitime.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
+		os2_2w32.h constants.h numstr.h critical_section.h atomic.h \
+		logFileAppender.h ctidate.h ctistring.h
 macro_offset.obj:	precompiled.h macro_offset.h dlldefs.h
 master.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		yukon.h ctidbgmem.h cti_asmc.h queues.h constants.h dsm2.h \
