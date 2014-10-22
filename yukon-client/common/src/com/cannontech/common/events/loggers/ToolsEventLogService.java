@@ -18,7 +18,7 @@ public interface ToolsEventLogService {
     public void dataExportFormatDeleted(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.name) String name);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.dataExport")
-    public void dataExportFormatCopyAttempted(@Arg(ArgEnum.username) LiteYukonUser user, 
+    public void dataExportFormatCopyAttempted(@Arg(ArgEnum.username) LiteYukonUser user,
             @Arg(ArgEnum.name) String name);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.dataExport")
@@ -57,7 +57,7 @@ public interface ToolsEventLogService {
             @Arg(ArgEnum.name) String name, @Arg(ArgEnum.cron) String cron);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.groupRead")
-    public void groupRequestByCommandScheduleUpdate(@Arg(ArgEnum.username) LiteYukonUser user,
+    public void groupRequestByCommandScheduleUpdated(@Arg(ArgEnum.username) LiteYukonUser user,
             @Arg(ArgEnum.name) String name, @Arg(ArgEnum.cron) String cron);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.tools.groupRead")

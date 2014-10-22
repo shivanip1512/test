@@ -459,7 +459,7 @@ public class ScheduledGroupRequestExecutionController {
         } else {
             boolean isDisabled = scheduledRepeatingJobDao.getById(editJobId).isDisabled();
             job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, commandString, DeviceRequestType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
-            toolsEventLogService.groupRequestByCommandScheduleUpdate(userContext.getYukonUser(), scheduleName, cronExpression);
+            toolsEventLogService.groupRequestByCommandScheduleUpdated(userContext.getYukonUser(), scheduleName, cronExpression);
             if(isDisabled) {
                 jobManager.disableJob(job);
             }

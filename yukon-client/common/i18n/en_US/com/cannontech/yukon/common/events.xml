@@ -433,7 +433,7 @@
     <entry key="yukon.common.events.system.tools.groupRead.groupRequestByAttributeScheduleCreated">Scheduled group read {2} created with scheduled run {3} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.groupRead.groupRequestByCommandScheduleCreated">Scheduled group command {2} created with scheduled run {3} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.groupRead.groupRequestByAttributeScheduleUpdated">Scheduled group read {2} updated with scheduled run {3} by {1}.</entry>
-    <entry key="yukon.common.events.system.tools.groupRead.groupRequestByCommandScheduleUpdate">Scheduled group command {2} updated with scheduled run {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.groupRead.groupRequestByCommandScheduleUpdated">Scheduled group command {2} updated with scheduled run {3} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.groupRead.groupRequestScheduleDeleted">Scheduled group request {2} deleted by {1}.</entry>
     <entry key="yukon.common.events.system.tools.billing.billingFormatCreated">Billing export schedule {2} created for format {3} with scheduled run {4} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.billing.billingFormatUpdated">Billing export schedule {2} updated for format {3} with scheduled run {4} by {1}.</entry>
