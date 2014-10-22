@@ -368,18 +368,13 @@ void CtiPort::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     if(gLogPorts && !_portLogManager.isStarted())
     {
-        const string outputFile = getName() + "_";
-        const string comlogdir  = gLogDirectory + "\\Comm";
+        const string comlogdir = gLogDirectory + "\\Comm";
 
         // Create a subdirectory called Comm beneath Log.
         CreateDirectoryEx( gLogDirectory.c_str(), comlogdir.c_str(), NULL);
 
-        _portLogManager.setToStdOut      ( false );  // Not to std out.
-        _portLogManager.setOwnerInfo     ( CompileInfo );
-        _portLogManager.setOutputPath    ( comlogdir );
-        _portLogManager.setRetentionDays ( gLogRetention );
-        _portLogManager.setOutputFile    ( outputFile );
-
+        _portLogManager.setOutputPath(comlogdir);
+        _portLogManager.setOutputFile(getName());
         _portLogManager.start();
     }
 }
@@ -459,6 +454,11 @@ _entryMsecTime(0),
 _portLogManager("port" + CtiNumStr(++portCount))
 {
     _postEvent = CreateEvent( NULL, TRUE, FALSE, NULL);
+
+    _portLogManager.setToStdOut     ( false );  // Not to std out - traces are logged in ANSI color to the console by traceBytes().
+    _portLogManager.setOwnerInfo    ( CompileInfo );
+    _portLogManager.setRetentionDays( gLogRetention );
+    _portLogManager.setOutputFormat ( Cti::Logging::LogFormat_CommLog );
 
     _portLog = _portLogManager.getLogger();
 }

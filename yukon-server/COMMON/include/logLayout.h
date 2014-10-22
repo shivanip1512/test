@@ -10,16 +10,26 @@
 namespace Cti {
 namespace Logging {
 
-class IM_EX_CTIBASE LogLayout : public log4cxx::PatternLayout
+class LogLayout : public log4cxx::PatternLayout
 {
     const OwnerInfo _ownerInfo;
     bool            _bFirstHeader;
 
-public:
-    LogLayout(const OwnerInfo& ownerInfo);
-
     void appendHeader(log4cxx::LogString& output, log4cxx::helpers::Pool& p) override;
     void appendFooter(log4cxx::LogString& output, log4cxx::helpers::Pool& p) override;
+
+protected:
+    LogLayout(const OwnerInfo& ownerInfo, const log4cxx::logchar *patternFormat);
+};
+
+struct IM_EX_CTIBASE GeneralLogLayout : LogLayout
+{
+    GeneralLogLayout(const OwnerInfo& ownerInfo);
+};
+
+struct IM_EX_CTIBASE CommsLogLayout : LogLayout
+{
+    CommsLogLayout(const OwnerInfo& ownerInfo);
 };
 
 }

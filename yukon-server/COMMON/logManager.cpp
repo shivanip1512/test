@@ -1,5 +1,3 @@
-#include "precompiled.h"
-
 #include "logLayout.h"
 #include "logFileAppender.h"
 #include "logManager.h"
@@ -103,6 +101,7 @@ bool FileInfo::shouldDeleteFile(const std::string& fileToDelete, const CtiDate& 
 
 LogManager::LogManager(const std::string &baseLoggerName)
     :   _baseLoggerName(baseLoggerName),
+        _format(LogFormat_General),
         _started(false)
 {
 }
@@ -140,7 +139,7 @@ void LogManager::setOwnerInfo(const compileinfo_t &ownerinfo)
     _ownerInfo._date    = ownerinfo.date;
 }
 
-void LogManager::setToStdOut(bool toStdout)
+void LogManager::setToStdOut(const bool toStdout)
 {
     _toStdout = toStdout;
 }
@@ -150,6 +149,11 @@ void LogManager::setRetentionDays(const unsigned long days)
     _fileInfo._logRetentionDays = days;
 }
 
+void LogManager::setOutputFormat(const LogFormats format)
+{
+    _format = format;
+}
+
 const FileInfo& LogManager::getFileInfo() const
 {
     return _fileInfo;
@@ -157,8 +161,20 @@ const FileInfo& LogManager::getFileInfo() const
 
 void LogManager::start()
 {
-    const log4cxx::LoggerPtr   baseLogger = log4cxx::Logger::getLogger(_baseLoggerName);
-    const log4cxx::LayoutPtr   logLayout(new LogLayout(_ownerInfo));
+    const log4cxx::LoggerPtr baseLogger = log4cxx::Logger::getLogger(_baseLoggerName);
+
+    log4cxx::LayoutPtr logLayout;
+    switch( _format )
+    {
+        case LogFormat_CommLog:
+            logLayout = new CommsLogLayout(_ownerInfo);
+            break;
+        default:
+        case LogFormat_General:
+            logLayout = new GeneralLogLayout(_ownerInfo);
+            break;
+    }
+
     const log4cxx::AppenderPtr logFileAppender(new LogFileAppender(logLayout, _fileInfo));
     baseLogger->addAppender(logFileAppender);
 
@@ -176,14 +192,24 @@ bool LogManager::isStarted() const
     return _started;
 }
 
+Indents getIndentFor(const LogFormats format)
+{
+    switch( format )
+    {
+        default:
+        LogFormat_General:  return Indent_SingleTab;
+        LogFormat_CommLog:  return Indent_None;
+    }
+}
+
 LoggerPtr LogManager::getLogger() const
 {
-    return LoggerPtr(new Logger(_baseLoggerName));
+    return LoggerPtr(new Logger(_baseLoggerName, getIndentFor(_format)));
 }
 
 LoggerPtr LogManager::getLogger(const std::string &loggerName) const
 {
-    return LoggerPtr(new Logger(_baseLoggerName + "." + loggerName));
+    return LoggerPtr(new Logger(_baseLoggerName + "." + loggerName, getIndentFor(_format)));
 }
 
 }

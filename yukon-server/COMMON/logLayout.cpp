@@ -1,5 +1,3 @@
-#include "precompiled.h"
-
 #include "ctitime.h"
 #include "logLayout.h"
 
@@ -70,7 +68,7 @@ log4cxx::LogString toLogStr(const std::string &str)
  *
  * %M - Used to output the method location from where the logging request was issued.
  *
- * NOTE: 
+ * NOTE:
  * The %M conversion character will only works with windows - it does not currently appear in the log4cxx doxygen doc
  *
  * -------------------------------------------------------------------------
@@ -91,8 +89,8 @@ log4cxx::LogString toLogStr(const std::string &str)
  *                                                                  then truncate from the beginning.
  */
 
-LogLayout::LogLayout(const OwnerInfo& ownerInfo) :
-    log4cxx::PatternLayout(LOG4CXX_STR("%d{MM/dd/yyyy HH:mm:ss} [%t] %p %M:%L - %m%n")),
+LogLayout::LogLayout(const OwnerInfo& ownerInfo, const log4cxx::logchar *patternFormat) :
+    log4cxx::PatternLayout(patternFormat),
     _bFirstHeader(true),
     _ownerInfo(ownerInfo)
 {
@@ -104,20 +102,20 @@ void LogLayout::appendHeader(log4cxx::LogString& output, log4cxx::helpers::Pool&
 
     if( ! _ownerInfo._project.empty() && ! _ownerInfo._version.empty() )
     {
-        oss <<"--------  "<< _ownerInfo._project <<" [Version "<< _ownerInfo._version <<"]  --------"<< std::endl;
+        oss <<"--------  "<< _ownerInfo._project <<" [Version "<< _ownerInfo._version <<"]  --------";
     }
 
     if( _bFirstHeader )
     {
         _bFirstHeader = false;
-        oss <<"--------  LOG BEGINS ("<< gRunningSince <<")  --------"<< std::endl;
+        oss <<"--------  LOG BEGINS ("<< gRunningSince <<")  --------";
     }
     else
     {
-        oss <<"--------  LOG CONTINUES (Running since "<< gRunningSince <<")  --------"<< std::endl;
+        oss <<"--------  LOG CONTINUES (Running since "<< gRunningSince <<")  --------";
     }
 
-    output.append(toLogStr(oss.str()));
+    output.append(toLogStr(oss.str()) + LOG4CXX_EOL);
 }
 
 void LogLayout::appendFooter(log4cxx::LogString& output, log4cxx::helpers::Pool& p)
@@ -126,9 +124,19 @@ void LogLayout::appendFooter(log4cxx::LogString& output, log4cxx::helpers::Pool&
 
     const CtiTime footerTime;
 
-    oss <<"--------  LOG ENDS ("<< footerTime <<")  --------"<< std::endl;
+    oss <<"--------  LOG ENDS ("<< footerTime <<")  --------";
 
-    output.append(toLogStr(oss.str()));
+    output.append(toLogStr(oss.str()) + LOG4CXX_EOL);
+}
+
+GeneralLogLayout::GeneralLogLayout(const OwnerInfo &ownerInfo) :
+    LogLayout(ownerInfo, LOG4CXX_STR("%d{MM/dd/yyyy HH:mm:ss} [%t] %p %M:%L - %m%n"))  //  include date/time, thread, log level, call site, message, and a newline
+{
+}
+
+CommsLogLayout::CommsLogLayout(const OwnerInfo &ownerInfo) :
+    LogLayout(ownerInfo, LOG4CXX_STR("%m%n"))  //  just the message and a newline
+{
 }
 
 }

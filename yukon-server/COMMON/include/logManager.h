@@ -41,6 +41,12 @@ struct IM_EX_CTIBASE FileInfo
     bool        shouldDeleteFile (const std::string& fileToDelete, const CtiDate& cutOffDate) const;
 };
 
+enum LogFormats
+{
+    LogFormat_General,
+    LogFormat_CommLog,
+};
+
 class IM_EX_CTIBASE LogManager : private boost::noncopyable
 {
     // WORKAROUND:
@@ -52,10 +58,11 @@ class IM_EX_CTIBASE LogManager : private boost::noncopyable
 
     const std::string _baseLoggerName;
 
-    bool      _toStdout;
-    bool      _started;
-    FileInfo  _fileInfo;
-    OwnerInfo _ownerInfo;
+    bool        _toStdout;
+    bool        _started;
+    FileInfo    _fileInfo;
+    OwnerInfo   _ownerInfo;
+    LogFormats  _format;
 
 protected:
     static std::string scrub(std::string fileName);
@@ -67,8 +74,9 @@ public:
     void setOutputPath    (const std::string &path);
     void setOutputFile    (const std::string &basefilename);
     void setOwnerInfo     (const compileinfo_t &ownerinfo);
-    void setToStdOut      (bool toStdout);
-    void setRetentionDays (unsigned long days);
+    void setToStdOut      (const bool toStdout);
+    void setRetentionDays (const unsigned long days);
+    void setOutputFormat  (const LogFormats format);
     void start();
 
     bool isStarted() const;

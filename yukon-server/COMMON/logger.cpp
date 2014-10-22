@@ -1,5 +1,3 @@
-#include "precompiled.h"
-
 #include "guard.h"
 #include "logManager.h"
 #include "logger.h"
@@ -71,7 +69,7 @@ std::string preformatMethodName(const char * func)
 struct Logger::LoggerObj
 {
     const log4cxx::LoggerPtr _logger;
-    LoggerObj(log4cxx::LoggerPtr logger) : _logger(logger) 
+    LoggerObj(log4cxx::LoggerPtr logger) : _logger(logger)
     {}
 };
 
@@ -81,7 +79,20 @@ struct Logger::LogEvent
     log4cxx::spi::LoggingEventPtr _event;
 };
 
-Logger::Logger(const std::string &loggerName) : _logger(new LoggerObj(log4cxx::Logger::getLogger(loggerName)))
+
+const char * const getNewlineForIndent(const Indents indent)
+{
+    switch( indent )
+    {
+        case Indent_SingleTab:  return "\x0d\x0a\t"; // preformat the message: convert newlines to CRLF and add a tab at the start of the new line
+        default:
+        case Indent_None:       return "\x0d\x0a";   // otherwise just convert newlines to CRLF
+    }
+}
+
+Logger::Logger(const std::string &loggerName, const Indents indentStyle)
+    :   _logger(new LoggerObj(log4cxx::Logger::getLogger(loggerName))),
+        _newline(getNewlineForIndent(indentStyle))
 {}
 
 Logger::~Logger()
@@ -90,8 +101,8 @@ Logger::~Logger()
 void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const char* file, const char* func, int line)
 {
     std::string message = logStream.extractToString();
-    boost::replace_all(message, "\n", "\n\t"); // preformat the message: add a tab before each newline
-    
+    boost::replace_all(message, "\n", _newline);
+
     LOG4CXX_DECODE_CHAR(msg, message);
 
     std::string methodName = preformatMethodName(func);

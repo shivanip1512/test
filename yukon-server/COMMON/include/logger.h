@@ -18,6 +18,12 @@
 namespace Cti {
 namespace Logging {
 
+enum Indents
+{
+    Indent_None,
+    Indent_SingleTab
+};
+
 class IM_EX_CTIBASE Logger : private boost::noncopyable
 {
     // WORKAROUND:
@@ -36,13 +42,15 @@ class IM_EX_CTIBASE Logger : private boost::noncopyable
     boost::ptr_vector<LogEvent> _preBufferLogEvents;
     CtiCriticalSection          _preBufferMux;
 
+    const char * const _newline;
+
     Atomic<bool> _ready;
 
-    Logger (const std::string &loggerName);
+    Logger (const std::string &loggerName, const Indents indentStyle);
 
 public:
 
-    ~Logger ();
+    ~Logger ();  //  explicit destructor delays deletion of forward declared objects until defined in CPP (e.g. LoggerObj, LogEvent)
 
     enum Level
     {

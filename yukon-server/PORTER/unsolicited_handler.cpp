@@ -65,9 +65,7 @@ void UnsolicitedHandler::startLog()
 {
     if( gLogPorts && !_portLogManager.isStarted() )
     {
-        const string outputFile = describePort() + "_";
-        string comlogdir = gLogDirectory.data();
-        comlogdir += "\\Comm";
+        const string comlogdir = gLogDirectory + "\\Comm";
 
         // Create a subdirectory called Comm beneath Log.
         CreateDirectoryEx(gLogDirectory.data(), comlogdir.data(), NULL);
@@ -76,7 +74,8 @@ void UnsolicitedHandler::startLog()
         _portLogManager.setOwnerInfo     ( CompileInfo );
         _portLogManager.setOutputPath    ( comlogdir );
         _portLogManager.setRetentionDays ( gLogRetention );
-        _portLogManager.setOutputFile    ( outputFile );
+        _portLogManager.setOutputFormat  ( Cti::Logging::LogFormat_CommLog );
+        _portLogManager.setOutputFile    ( describePort() );
         _portLogManager.start();
     }
 }
