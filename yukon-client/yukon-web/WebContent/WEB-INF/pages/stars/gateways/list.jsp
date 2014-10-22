@@ -11,10 +11,13 @@
 <div id="page-buttons" class="dn">
     <cti:button icon="icon-plus-green" nameKey="create" data-popup="#gateway-create-popup"/>
 </div>
+
 <div id="gateway-create-popup" class="dn" data-title="<cti:msg2 key=".create.title"/>" data-url="gateways/create" 
     data-width="570" data-min-width="570" data-dialog data-event="yukon:assets:gateway:save" 
-    data-ok-text="<cti:msg2 key="components.button.save.label"/>" data-load-event="yukon:assets:gateway:load">
-</div>
+    data-ok-text="<cti:msg2 key="components.button.save.label"/>" data-load-event="yukon:assets:gateway:load"></div>
+
+<div id="gateway-collect-data-popup" class="dn"></div>
+
 <table id="gateways-table" class="compact-results-table has-actions has-alerts">
     <thead>
         <tr>
@@ -71,14 +74,12 @@
                             </span>
                         </td>
                         <td class="action-column">
-                            <cm:dropdown data-name="${fn:escapeXml(gateway.name)}">
-                                <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect" 
-                                    data-id="${gateway.paoIdentifier.paoId}"/>
-                                <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect" 
-                                    data-id="${gateway.paoIdentifier.paoId}"/>
+                            <cm:dropdown data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}">
+                                <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>
+                                <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"/>
                                 <li class="divider"></li>
                                 <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" 
-                                    classes="js-gw-collect-data" data-id="${gateway.paoIdentifier.paoId}"/>
+                                    classes="js-gw-collect-data"/>
                             </cm:dropdown>
                         </td>
                     </c:when>
@@ -110,10 +111,10 @@
             </td>
             <td class="action-column">
                 <cm:dropdown>
-                    <cm:dropdownOption icon="icon-connect" key=".connect"/>
-                    <cm:dropdownOption icon="icon-disconnect" key=".disconnect"/>
+                    <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>
+                    <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"/>
                     <li class="divider"></li>
-                    <cm:dropdownOption icon="icon-table-row-insert" key=".collectData"/>
+                    <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" classes="js-gw-collect-data"/>
                 </cm:dropdown>
             </td>
         </tr>

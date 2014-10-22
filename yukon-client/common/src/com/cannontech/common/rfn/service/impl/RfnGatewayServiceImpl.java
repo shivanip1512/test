@@ -1,7 +1,6 @@
 package com.cannontech.common.rfn.service.impl;
 
 import java.io.Serializable;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,6 +51,7 @@ import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Sets;
 
 public class RfnGatewayServiceImpl implements RfnGatewayService {
 
@@ -387,12 +387,11 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public boolean collectData(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
+    public boolean collectData(PaoIdentifier paoIdentifier, DataType... types) throws NetworkManagerCommunicationException {
         
         RfnDevice gateway = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
-        
         GatewayCollectionRequest request = new GatewayCollectionRequest();
-        request.setTypes(EnumSet.allOf(DataType.class));
+        request.setTypes(Sets.newHashSet(types));
         request.setRfnIdentifier(gateway.getRfnIdentifier());
         
         return sendActionRequest(request, "data collection");

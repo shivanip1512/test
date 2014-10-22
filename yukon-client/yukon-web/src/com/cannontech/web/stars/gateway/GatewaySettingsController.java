@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
@@ -54,6 +55,7 @@ public class GatewaySettingsController {
         return "gateways/settings.jsp";
     }
     
+    /** Create a gateway, return gateway settings popup when validation or creation fails, otherwise return success json payload. */
     @RequestMapping(value={"/gateways", "/gateways/"}, method=RequestMethod.POST)
     public String create(ModelMap model,
             YukonUserContext userContext,
@@ -100,6 +102,7 @@ public class GatewaySettingsController {
         
     }
     
+    /** Test the connection, return result as json. */
     @RequestMapping("/gateways/test-connection")
     public @ResponseBody Map<String, Object> testConnection(String ip, String username, String password) {
         
@@ -112,6 +115,15 @@ public class GatewaySettingsController {
         }
         
         return json;
+    }
+    
+    /** Collect data popup. */
+    @RequestMapping("/gateways/collect-data/options")
+    public String collectData(ModelMap model) {
+        
+        model.addAttribute("dataTypes", DataType.values());
+        
+        return "gateways/collect.data.options.jsp";
     }
     
 }

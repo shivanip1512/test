@@ -3,6 +3,7 @@ package com.cannontech.common.rfn.service;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
@@ -109,7 +110,7 @@ public interface RfnGatewayService {
      * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean collectData(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
+    public boolean collectData(PaoIdentifier paoIdentifier, DataType... types) throws NetworkManagerCommunicationException;
     
     /**
      * Sets the data collection schedule for the specified gateway.

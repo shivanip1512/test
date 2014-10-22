@@ -6,9 +6,11 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
+import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
@@ -34,6 +37,7 @@ public class GatewayListController {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayListController.class);
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
+    private static final String json = MediaType.APPLICATION_JSON_VALUE;
     
     @Autowired private ServerDatabaseCache cache;
     @Autowired private RfnGatewayService rfnGatewayService;
@@ -56,6 +60,7 @@ public class GatewayListController {
         text.put("collect.data.pending", accessor.getMessage(baseKey + "collect.data.pending"));
         text.put("collect.data.success", accessor.getMessage(baseKey + "collect.data.success"));
         text.put("collect.data.failure", accessor.getMessage(baseKey + "collect.data.failure"));
+        text.put("collect.data.title", accessor.getMessage(baseKey + "collect.data.title"));
         model.addAttribute("text", text);
         
         return "gateways/list.jsp";
@@ -112,14 +117,15 @@ public class GatewayListController {
         return json;
     }
     
-    @RequestMapping("/gateways/{id}/collect-data")
-    public @ResponseBody Map<String, Object> collectData(YukonUserContext userContext, @PathVariable int id) {
+    @RequestMapping(value="/gateways/{id}/collect-data", consumes=json, produces=json)
+    public @ResponseBody Map<String, Object> collectData(YukonUserContext userContext, @PathVariable int id,
+            @RequestBody DataType[] types) {
         
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         LiteYukonPAObject gateway = cache.getAllPaosMap().get(id);
         try {
-            boolean success = rfnGatewayService.collectData(gateway.getPaoIdentifier());
+            boolean success = rfnGatewayService.collectData(gateway.getPaoIdentifier(), types);
             json.put("success", success);
         } catch (NetworkManagerCommunicationException e) {
             String errorMsg = accessor.getMessage(baseKey + "error.comm");

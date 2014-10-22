@@ -25,7 +25,8 @@ yukon.assets.gateway.shared = (function () {
             _text = yukon.fromJson('#gateway-text');
             
             /** User input happened in create or edit popup, adjust 'test connection' buttons. */
-            $(document).on('input', '.js-gateway-edit-ip, .js-gateway-edit-username, .js-gateway-edit-password', function (ev) {
+            $(document).on('input', '.js-gateway-edit-ip, .js-gateway-edit-username, .js-gateway-edit-password', 
+                    function (ev) {
                 var ip = $('.js-gateway-edit-ip').val(),
                     usernames = $('.js-gateway-edit-username');
                 if (ip) {
@@ -41,9 +42,13 @@ yukon.assets.gateway.shared = (function () {
             });
             
             $(document).on('click', '.js-gw-connect', function (ev) {
-                var id = $(this).data('id'),
-                    name = $(this).closest('.dropdown-menu').data('trigger').data('name');
+                
+                var trigger = $(this).closest('.dropdown-menu').data('trigger'), 
+                    id = trigger.data('id'),
+                    name = trigger.data('name');
+                
                 yukon.ui.alertPending(_text['connect.pending'].replace('{0}', name));
+                
                 $.ajax({ url: yukon.url('/stars/gateways/' + id + '/connect') })
                 .done(function (result) { 
                     if (result.success) {
@@ -55,8 +60,11 @@ yukon.assets.gateway.shared = (function () {
             });
             
             $(document).on('click', '.js-gw-disconnect', function (ev) {
-                var id = $(this).data('id'),
-                name = $(this).closest('.dropdown-menu').data('trigger').data('name');
+                
+                var trigger = $(this).closest('.dropdown-menu').data('trigger'), 
+                    id = trigger.data('id'),
+                    name = trigger.data('name');
+                
                 yukon.ui.alertPending(_text['disconnect.pending'].replace('{0}', name));
                 $.ajax({ url: yukon.url('/stars/gateways/' + id + '/disconnect') })
                 .done(function (result) { 
@@ -69,12 +77,38 @@ yukon.assets.gateway.shared = (function () {
             });
             
             $(document).on('click', '.js-gw-collect-data', function (ev) {
-                var id = $(this).data('id'),
-                name = $(this).closest('.dropdown-menu').data('trigger').data('name');
+                
+                var popup = $('#gateway-collect-data-popup'),
+                    trigger = $(this).closest('.dropdown-menu').data('trigger');
+                
+                popup.load(yukon.url('/stars/gateways/collect-data/options'), function () {
+                    popup.dialog({
+                        title: _text['collect.data.title'].replace('{0}', trigger.data('name')),
+                        width: 550,
+                        buttons: yukon.ui.buttons({ event: 'yukon:assets:gateway:collect:data', target: trigger })
+                    });
+                });
+            });
+            
+            $(document).on('yukon:assets:gateway:collect:data', function (ev) {
+                
+                var popup = $('#gateway-collect-data-popup'),
+                    id = $(ev.target).data('id'),
+                    name = $(ev.target).data('name'),
+                    types = [];
+                
+                popup.find('.js-sequence-type:checked').each(function (idx, item) { types.push(item.name); });
+                
                 yukon.ui.alertPending(_text['collect.data.pending'].replace('{0}', name));
-                $.ajax({ url: yukon.url('/stars/gateways/' + id + '/collect-data') })
-                .done(function (result) { 
+                
+                $.ajax({
+                    url: yukon.url('/stars/gateways/' + id + '/collect-data'), 
+                    data: JSON.stringify(types),
+                    contentType: 'application/json', 
+                    type: 'post'
+                }).done(function (result) {
                     if (result.success) {
+                        popup.dialog('close');
                         yukon.ui.alertSuccess(_text['collect.data.success'].replace('{0}', name));
                     } else {
                         yukon.ui.alertError(_text['collect.data.failure'].replace('{0}', name));
@@ -82,9 +116,31 @@ yukon.assets.gateway.shared = (function () {
                 });
             });
             
+            $(document).on('click', '#gateway-collect-data-popup .js-select-all', function (ev) {
+                $('#gateway-collect-data-popup .js-sequence-type').prop('checked', $(this).prop('checked'));
+            });
+            
+            $(document).on('click', '#gateway-collect-data-popup .js-sequence-type', function (ev) {
+                
+                var selectAll = true,
+                    selected = $(this).prop('checked'),
+                    allTypes = $('#gateway-collect-data-popup .js-sequence-type');
+                
+                if (selected) {
+                    allTypes.each(function (idx, item) {
+                        if (!$(item).prop('checked')) {
+                            selectAll = false;
+                        }
+                    });
+                    $('#gateway-collect-data-popup .js-select-all').prop('checked', selectAll);
+                } else {
+                    $('#gateway-collect-data-popup .js-select-all').prop('checked', false);
+                }
+            });
+            
             _initialized = true;
         }
-
+    
     };
     
     return mod;

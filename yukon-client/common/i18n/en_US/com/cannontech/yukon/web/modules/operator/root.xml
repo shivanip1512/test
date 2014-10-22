@@ -50,6 +50,7 @@
     <entry key="yukon.web.modules.operator.gateways.collect.data.pending">{0}: collect data request pending...</entry>
     <entry key="yukon.web.modules.operator.gateways.collect.data.success">{0}: collect data request successful.</entry>
     <entry key="yukon.web.modules.operator.gateways.collect.data.failure">{0}: collect data request failed.</entry>
+    <entry key="yukon.web.modules.operator.gateways.collect.data.title">Collect Data: {0}</entry>
     <entry key="yukon.web.modules.operator.gateways.error.comm">Network Manager connection failed.</entry>
     <entry key="yukon.web.modules.operator.gateways.create.error">Could not create gateway.</entry>
     <entry key="yukon.web.modules.operator.gateways.name.required">Name is required.</entry>
