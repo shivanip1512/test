@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
 
 <cti:standardPage module="operator" page="gateways.detail">
 
@@ -23,6 +24,8 @@
 
 <c:if test="${not empty gateway.location}"><cti:toJson id="gateway-geojson" object="${gateway.location}"/></c:if>
 
+<d:confirm on="#gateway-delete" nameKey="delete.confirm"/>
+
 <div id="page-actions" class="dn">
     <cm:dropdownOption icon="icon-table-row-insert" key=".collectData"/>
     <li class="divider"></li>
@@ -30,7 +33,8 @@
     <cm:dropdownOption icon="icon-disconnect" key=".disconnect"/>
     <li class="divider"></li>
     <cm:dropdownOption icon="icon-pencil" key="components.button.edit.label" data-popup="#gateway-edit-popup"/>
-    <cm:dropdownOption icon="icon-cross" key="components.button.delete.label"/>
+    <cm:dropdownOption icon="icon-cross" key="components.button.delete.label" id="gateway-delete"
+        data-ok-event="yukon:assets:gateways:delete"/>
 </div>
 
 <div id="gateway-edit-popup" data-dialog class="dn" data-title="<cti:msg2 key=".edit.title"/>"
@@ -105,14 +109,6 @@
         <div class="column-12-12 clearfix">
             <div class="column one">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".user">
-                        <c:if test="${empty gateway.data.user}">
-                            <span class="empty-list"><i:inline key="yukon.web.defaults.none"/></span>
-                        </c:if>
-                        <c:if test="${not empty gateway.data.user}">
-                            <span class="empty-list">${fn:escapeXml(gateway.data.user.username)}</span>
-                        </c:if>
-                    </tags:nameValue2>
                     <tags:nameValue2 nameKey=".admin">
                         <c:if test="${empty gateway.data.admin}">
                             <span class="empty-list"><i:inline key="yukon.web.defaults.none"/></span>
@@ -254,6 +250,14 @@
         </div>
     </tags:sectionContainer2>
 </div>
+
+<div id="gateway-templates" class="dn">
+    <cti:toJson object="${text}" id="gateway-text"/>
+</div>
+
+<form id="delete-gw-form" action="<cti:url value="/stars/gateways/${gateway.paoIdentifier.paoId}"/>" method="post" class="dn">
+    <input type="hidden" name="_method" value="delete">
+</form>
 
 <cti:includeScript link="OPEN_LAYERS"/>
 <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>

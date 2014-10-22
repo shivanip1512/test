@@ -134,7 +134,7 @@
             }
             
             function updatePassword(event){
-                $("#passwordDialog").removeMessage();
+                $("#passwordDialog").removeMessages();
                 $("#passwordDialog .error").removeClass('error');
                 
                 prepPasswordFields();
@@ -150,7 +150,7 @@
                         success:    function(data){
                             //reset the dialog and clear the errors
                             $("#passwordDialog").dialog('close');
-                            yukon.ui.flashSuccess(data.flash);
+                            yukon.ui.alertSuccess(data.flash);
                         },
                         error:      function(xhr){
                             var data = $.parseJSON(xhr.responseText);
@@ -178,7 +178,7 @@
             function resetPasswordDialog(){
                 var dialog = $("#passwordDialog");
                 dialog.find("input:text, input:password").val("");
-                dialog.removeMessage();
+                dialog.removeMessages();
                 dialog.find(".error").removeClass('error');
             }
         </script>

@@ -118,6 +118,32 @@ yukon.assets.gateway.list = (function () {
                 });
             });
             
+            /** Test the connection */
+            $(document).on('click', '.js-conn-test-btn', function (ev) {
+                var btn = $(this),
+                    row = btn.closest('tr'),
+                    ip = $('#gateway-settings-form .js-gateway-edit-ip').val(),
+                    username = row.find('.js-gateway-edit-username').val(),
+                    password = row.find('.js-gateway-edit-password').val();
+                yukon.ui.busy(btn);
+                $.ajax({ 
+                    url: yukon.url('/stars/gateways/test-connection'),
+                    data: {
+                        ip: ip,
+                        username: username,
+                        password: password
+                    }
+                }).done(function (result) {
+                    if (result.success) {
+                        console.log('yep');
+                    } else {
+                        console.log('nope');
+                    }
+                }).always(function () {
+                    yukon.ui.unbusy(btn);
+                });
+            });
+            
             _update();
             
             _initialized = true;

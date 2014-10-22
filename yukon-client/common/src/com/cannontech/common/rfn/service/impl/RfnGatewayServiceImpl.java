@@ -322,14 +322,19 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public boolean testConnection(String ipAddress, Authentication admin, Authentication superAdmin) 
+    public boolean testConnection(String ipAddress, String username, String password) 
             throws NetworkManagerCommunicationException {
+        
+        Authentication auth = new Authentication();
+        auth.setDefaultUser(true);
+        auth.setUsername(username);
+        auth.setPassword(password);
+        
         // Build request
         GatewayConnectionTestRequest request = new GatewayConnectionTestRequest();
         request.setRfnIdentifier(null); // Request is not for an existing gateway
         request.setIpAddress(ipAddress);
-        request.setAdmin(admin);
-        request.setSuperAdmin(superAdmin);
+        request.setAdmin(auth);
         
         return sendConnectionRequest(request);
     }

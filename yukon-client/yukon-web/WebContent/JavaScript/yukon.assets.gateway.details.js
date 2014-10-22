@@ -112,6 +112,11 @@ yukon.assets.gateway.details = (function () {
                 });
             }
             
+            /** Delete this gateway. */
+            $(document).on('yukon:assets:gateways:delete', function (ev) {
+                $('#delete-gw-form').submit();
+            });
+            
             _initialized = true;
         },
         

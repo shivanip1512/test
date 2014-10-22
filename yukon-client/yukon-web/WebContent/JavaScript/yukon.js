@@ -773,27 +773,44 @@ yukon.ui = (function () {
                 mod.pageGlass.hide();
             }
         },
-
+        
         /** Block out the whole page */
         blockPage: function (args) {
             mod.pageGlass.show();
         },
-
+        
         /** Unblock the whole page */
         unblockPage: function () {
             mod.pageGlass.hide();
         },
-
-        /** Add a success 'flash scope' message */
-        flashSuccess: function (markup) {
+        
+        /** Add a success alert box. */
+        alertSuccess: function (markup) {
             $('.main-container').addMessage({message: markup, messageClass: 'success'});
         },
-
-        /** Add an error 'flash scope' message */
-        flashError: function (markup) {
+        
+        /** Add an info alert box. */
+        alertInfo: function (markup) {
+            $('.main-container').addMessage({message: markup, messageClass: 'info'});
+        },
+        
+        /** Add a warning alert box. */
+        alertWarning: function (markup) {
+            $('.main-container').addMessage({message: markup, messageClass: 'warning'});
+        },
+        
+        /** Add an error alert box. */
+        alertError: function (markup) {
             $('.main-container').addMessage({message: markup, messageClass: 'error'});
         },
-
+        
+        /** Add a pending alert box. */
+        alertPending: function (markup) {
+            $('.main-container').addMessage({message: markup, messageClass: 'pending'});
+        },
+        
+        removeAlerts : function () { $('.main-container').removeMessages(); },
+        
         /** Format a phone number input */
         formatPhone: function (input) {
             // strip the input down to just numbers, then format
@@ -814,7 +831,7 @@ yukon.ui = (function () {
                 input.value = '';
             }
         },
-
+        
         /** Disable or enable all inputs in a contianer */
         toggleInputs: function (input) {
             // find matching inputs. Note: jQuery next gets the immediately following
@@ -1199,7 +1216,7 @@ yukon.ui = (function () {
 })();
 
 /** JQUERY PLUGINS */
-(function () {
+(function ($) {
     
     /** Selects all text inside an element. Useful for copy action. */
     $.fn.selectText = function () {
@@ -1272,7 +1289,58 @@ yukon.ui = (function () {
         });
     };
     
-})();
+    /** Add an alert box to an element. */
+    $.fn.addMessage = function (args) {
+        
+        return this.each(function () {
+            var messages = [];
+            var create = !$(this).children('.user-message').length;
+            
+            switch (typeof (args.message)) {
+            case 'string':
+                messages.push('<li>' + args.message + '</li>');
+                break;
+            case 'object':
+                //array
+                if(typeof (args.message.length) != 'undefined'){
+                    for (var i = 0; i < args.message.length; i++) {
+                        messages.push('<li>' + args.message[i] + '</li>');
+                    }
+                } else {
+                    for (var key in args.message) {
+                        switch (typeof (args.message[key])){
+                        case 'number':
+                        case 'string':
+                            messages.push('<li>' + args.message[key] + '</li>');
+                            break;
+                        default:
+                            break;
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+            }
+            
+            if (messages.length > 0) {
+                if (create) {
+                    $(this).prepend('<div class="user-message ' + args.messageClass + '"><ul class="simple-list">' + messages.join('') + '</ul></div>');
+                } else {
+                    $(this).children('.user-message').removeClass('error success info warning pending').addClass(args.messageClass).find('ul').html(messages.join(''));
+                }
+            }
+        });
+    };
+    
+    /** Remove all alert boxes from an element. */
+    $.fn.removeMessages = function() {
+        return this.each(function() {
+            $(this).children('.user-message').remove();
+        });
+    };
+    
+})(jQuery);
 
 /** Initialize the lib */
 $(function () {

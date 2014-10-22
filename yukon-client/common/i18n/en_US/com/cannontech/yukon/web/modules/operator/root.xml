@@ -35,9 +35,22 @@
     <entry key="yukon.web.modules.operator.gateways.detail.sequenceStart">Sequence Start</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.sequenceEnd">Sequence End</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.completeness">Completeness</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.delete.confirm.title">Delete Gateway</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.delete.confirm.message">Are you sure you want to delete this gateway?</entry>
     
     <!-- Gateway Common Words -->
-    <entry key="yukon.web.modules.operator.gateways.create.error.comm">Network Manager connection failed.</entry>
+    <entry key="yukon.web.modules.operator.gateways.delete.success">Gateway {0} deleted successfully.</entry>
+    <entry key="yukon.web.modules.operator.gateways.delete.failure">Gateway {0} deleted failed.</entry>
+    <entry key="yukon.web.modules.operator.gateways.connect.pending">{0}: connect request pending...</entry>
+    <entry key="yukon.web.modules.operator.gateways.connect.success">{0}: connect request successful.</entry>
+    <entry key="yukon.web.modules.operator.gateways.connect.failure">{0}: connect request failed.</entry>
+    <entry key="yukon.web.modules.operator.gateways.disconnect.pending">{0}: disconnect request pending...</entry>
+    <entry key="yukon.web.modules.operator.gateways.disconnect.success">{0}: disconnect request successful.</entry>
+    <entry key="yukon.web.modules.operator.gateways.disconnect.failure">{0}: disconnect request failed.</entry>
+    <entry key="yukon.web.modules.operator.gateways.collect.data.pending">{0}: collect data request pending...</entry>
+    <entry key="yukon.web.modules.operator.gateways.collect.data.success">{0}: collect data request successful.</entry>
+    <entry key="yukon.web.modules.operator.gateways.collect.data.failure">{0}: collect data request failed.</entry>
+    <entry key="yukon.web.modules.operator.gateways.error.comm">Network Manager connection failed.</entry>
     <entry key="yukon.web.modules.operator.gateways.create.error">Could not create gateway.</entry>
     <entry key="yukon.web.modules.operator.gateways.name.required">Name is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.username.required">Username is required.</entry>

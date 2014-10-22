@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -15,11 +16,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
+import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
@@ -31,14 +35,28 @@ public class GatewayListController {
     private static final Logger log = YukonLogManager.getLogger(GatewayListController.class);
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
     
+    @Autowired private ServerDatabaseCache cache;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     @RequestMapping(value = {"/gateways", "/gateways/"}, method = RequestMethod.GET)
-    public String gateways(ModelMap model, FlashScope flashScope) {
+    public String gateways(ModelMap model, FlashScope flashScope, YukonUserContext userContext) {
         
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         model.addAttribute("gateways", gateways);
+        
+        Map<String, String> text = new HashMap<>();
+        text.put("connect.pending", accessor.getMessage(baseKey + "connect.pending"));
+        text.put("connect.success", accessor.getMessage(baseKey + "connect.success"));
+        text.put("connect.failure", accessor.getMessage(baseKey + "connect.failure"));
+        text.put("disconnect.pending", accessor.getMessage(baseKey + "disconnect.pending"));
+        text.put("disconnect.success", accessor.getMessage(baseKey + "disconnect.success"));
+        text.put("disconnect.failure", accessor.getMessage(baseKey + "disconnect.failure"));
+        text.put("collect.data.pending", accessor.getMessage(baseKey + "collect.data.pending"));
+        text.put("collect.data.success", accessor.getMessage(baseKey + "collect.data.success"));
+        text.put("collect.data.failure", accessor.getMessage(baseKey + "collect.data.failure"));
+        model.addAttribute("text", text);
         
         return "gateways/list.jsp";
     }
@@ -51,6 +69,63 @@ public class GatewayListController {
         for (RfnGateway gateway : gateways) {
             Map<String, Object> data = buildGatewayModel(gateway, userContext);
             json.put(gateway.getPaoIdentifier().getPaoId(), data);
+        }
+        
+        return json;
+    }
+    
+    @RequestMapping("/gateways/{id}/connect")
+    public @ResponseBody Map<String, Object> connect(YukonUserContext userContext, @PathVariable int id) {
+        
+        Map<String, Object> json = new HashMap<>();
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        LiteYukonPAObject gateway = cache.getAllPaosMap().get(id);
+        try {
+            boolean success = rfnGatewayService.connectGateway(gateway.getPaoIdentifier());
+            json.put("success", success);
+        } catch (NetworkManagerCommunicationException e) {
+            String errorMsg = accessor.getMessage(baseKey + "error.comm");
+            json.put("success", false);
+            json.put("message", errorMsg);
+            log.error("Failed communicating to NM.", e);
+        }
+        
+        return json;
+    }
+    
+    @RequestMapping("/gateways/{id}/disconnect")
+    public @ResponseBody Map<String, Object> disconnect(YukonUserContext userContext, @PathVariable int id) {
+        
+        Map<String, Object> json = new HashMap<>();
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        LiteYukonPAObject gateway = cache.getAllPaosMap().get(id);
+        try {
+            boolean success = rfnGatewayService.disconnectGateway(gateway.getPaoIdentifier());
+            json.put("success", success);
+        } catch (NetworkManagerCommunicationException e) {
+            String errorMsg = accessor.getMessage(baseKey + "error.comm");
+            json.put("success", false);
+            json.put("message", errorMsg);
+            log.error("Failed communicating to NM.", e);
+        }
+        
+        return json;
+    }
+    
+    @RequestMapping("/gateways/{id}/collect-data")
+    public @ResponseBody Map<String, Object> collectData(YukonUserContext userContext, @PathVariable int id) {
+        
+        Map<String, Object> json = new HashMap<>();
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        LiteYukonPAObject gateway = cache.getAllPaosMap().get(id);
+        try {
+            boolean success = rfnGatewayService.collectData(gateway.getPaoIdentifier());
+            json.put("success", success);
+        } catch (NetworkManagerCommunicationException e) {
+            String errorMsg = accessor.getMessage(baseKey + "error.comm");
+            json.put("success", false);
+            json.put("message", errorMsg);
+            log.error("Failed communicating to NM.", e);
         }
         
         return json;

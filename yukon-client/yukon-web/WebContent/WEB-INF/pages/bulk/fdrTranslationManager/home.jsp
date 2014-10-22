@@ -18,7 +18,7 @@
                 dataType:   'json',
                 success:    function(data) {
                     if(data.error) {
-                        yukon.ui.flashError(data.error);
+                        yukon.ui.alertError(data.error);
                     } else {
                         var url = yukon.url('/bulk/fdrTranslationManager/importResults?');
                         url += 'resultId=' + data.resultId;

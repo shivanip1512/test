@@ -72,7 +72,7 @@
             }).done(function(data) {
                 _checkStatus(true);
             }).fail(function(data) {
-                yukon.ui.flashError("Failed to run point injection. Try again.");
+                yukon.ui.alertError("Failed to run point injection. Try again.");
             });
         },
         

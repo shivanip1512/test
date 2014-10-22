@@ -93,7 +93,6 @@ public class LayoutController {
         
         b.add(dev ? JsLibrary.JQUERY.getPath() : JsLibrary.JQUERY_MIN.getPath());
         b.add(dev ? JsLibrary.JQUERY_UI.getPath() : JsLibrary.JQUERY_UI_MIN.getPath());
-        b.add(JsLibrary.JQUERY_UI_DIALOG_HELPER.getPath());
         b.add(JsLibrary.JQUERY_CHECK_ALL.getPath());
         b.add(JsLibrary.JQUERY_FORM.getPath());
         b.add(JsLibrary.JQUERY_PLACEHOLDER.getPath());

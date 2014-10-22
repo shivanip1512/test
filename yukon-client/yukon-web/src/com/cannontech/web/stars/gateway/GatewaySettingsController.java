@@ -15,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -53,7 +54,7 @@ public class GatewaySettingsController {
         return "gateways/settings.jsp";
     }
     
-    @RequestMapping(value = {"/gateways", "/gateways/"}, method = RequestMethod.POST)
+    @RequestMapping(value={"/gateways", "/gateways/"}, method=RequestMethod.POST)
     public String create(ModelMap model,
             YukonUserContext userContext,
             HttpServletResponse resp,
@@ -88,7 +89,7 @@ public class GatewaySettingsController {
             model.addAttribute("mode", "CREATE");
             String errorMsg;
             if (e instanceof NetworkManagerCommunicationException) {
-                errorMsg = accessor.getMessage(baseKey + "create.error.comm");
+                errorMsg = accessor.getMessage(baseKey + "error.comm");
             } else {
                 errorMsg = accessor.getMessage(baseKey + "create.error");
             }
@@ -97,6 +98,20 @@ public class GatewaySettingsController {
             return "gateways/settings.jsp";
         }
         
+    }
+    
+    @RequestMapping("/gateways/test-connection")
+    public @ResponseBody Map<String, Object> testConnection(String ip, String username, String password) {
+        
+        Map<String, Object> json = new HashMap<>();
+        try {
+            boolean success = rfnGatewayService.testConnection(ip, username, password);
+            json.put("success", success);
+        } catch (NetworkManagerCommunicationException e) {
+            json.put("success", false);
+        }
+        
+        return json;
     }
     
 }
