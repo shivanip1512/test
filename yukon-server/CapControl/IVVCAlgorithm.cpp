@@ -58,6 +58,27 @@ void IVVCAlgorithm::setPointDataRequestFactory(const PointDataRequestFactoryPtr&
 }
 
 
+bool IVVCAlgorithm::checkBusHasAtLeastOneZone(IVVCStatePtr state, CtiCCSubstationBusPtr subbus)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    ZoneManager & zoneManager = store->getZoneManager();
+
+    Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
+
+    unsigned zoneCount = subbusZoneIds.size();
+
+    if ( zoneCount == 0 )
+    {
+        if ( state->isShowNoZonesOnBusMsg() )
+        {
+            CTILOG_ERROR(dout, "IVVC Configuration Error. No Zones created on bus: " << subbus->getPaoName());
+        }
+    }
+
+    return ( zoneCount > 0 );
+}
+
+
 bool IVVCAlgorithm::checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSubstationBusPtr subbus)
 {
     unsigned missingRegulatorCount = 0;
@@ -166,6 +187,17 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     long subbusId = subbus->getPaoId();
+
+    // Make sure there is at least one zone
+    if ( ! checkBusHasAtLeastOneZone( state, subbus ) )
+    {
+        state->setShowNoZonesOnBusMsg(false);
+        state->setState(IVVCState::IVVC_WAIT);
+
+        return;
+    }
+
+    state->setShowNoZonesOnBusMsg(true);
 
     // Make sure all zones on the subbus have a regulator attached.
     if ( ! checkConfigAllZonesHaveRegulator(state, subbus) )
@@ -2160,6 +2192,11 @@ static bool pointValueComparator(const PointValueMap::value_type & v1, const Poi
 double IVVCAlgorithm::calculateVoltageViolation(const PointValueMap & voltages,
                                                 const IVVCStrategy * strategy, const bool isPeakTime)
 {
+    if ( voltages.empty() )
+    {
+        return 0.0;
+    }
+
     PointValueMap::const_iterator minElement = std::min_element( voltages.begin(), voltages.end(), pointValueComparator );
     PointValueMap::const_iterator maxElement = std::max_element( voltages.begin(), voltages.end(), pointValueComparator );
 

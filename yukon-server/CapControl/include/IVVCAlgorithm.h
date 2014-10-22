@@ -34,6 +34,8 @@ class IVVCAlgorithm
 
         void sendIVVCAnalysisMessage( Cti::Messaging::CapControl::IVVCAnalysisMessage * message );
 
+        bool checkBusHasAtLeastOneZone(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);
+
         bool checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSubstationBusPtr subbus);
 
         virtual bool hasValidData( PointDataRequestPtr& request, CtiTime timeNow, CtiCCSubstationBusPtr subbus, IVVCStrategy* strategy );

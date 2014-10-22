@@ -9,6 +9,7 @@ IVVCState::IVVCState() :
     _showVarCheckFailMsg(true),
     _showSubbusDisableMsg(true),
     _showNoRegulatorAttachedMsg(true),
+    _showNoZonesOnBusMsg(true),
     _commsLost(false),
     _commsRetryCount(0),
     _firstPass(true)
@@ -154,7 +155,15 @@ const std::set<long>& IVVCState::getReportedControllers()
     return _reportedControllers;
 }
 
+void IVVCState::setShowNoZonesOnBusMsg(const bool flag)
+{
+    _showNoZonesOnBusMsg = flag;
+}
 
+bool IVVCState::isShowNoZonesOnBusMsg() const
+{
+    return _showNoZonesOnBusMsg;
+}
 
 void IVVCState::setConsecutiveCapBankOps(const unsigned ops)
 {
