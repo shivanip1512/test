@@ -199,17 +199,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         GatewaySaveData data = new GatewaySaveData();
         data.setIpAddress(settings.getIpAddress());
         
-        Authentication admin = new Authentication();
-        admin.setDefaultUser(settings.isAdminDefault());
-        admin.setUsername(settings.getAdminUsername());
-        admin.setPassword(settings.getAdminPassword());
-        data.setAdmin(admin);
-        
-        Authentication superAdmin = new Authentication();
-        superAdmin.setDefaultUser(!settings.isAdminDefault());
-        superAdmin.setUsername(settings.getSuperAdminUsername());
-        superAdmin.setPassword(settings.getSuperAdminPassword());
-        data.setSuperAdmin(superAdmin);
+        data.setAdmin(settings.getAdmin());
+        data.setSuperAdmin(settings.getSuperAdmin());
         
         request.setData(data);
         
@@ -320,8 +311,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         GatewayConnectionTestRequest request = new GatewayConnectionTestRequest();
         request.setRfnIdentifier(gateway.getRfnIdentifier());
         request.setIpAddress(gatewayData.getIpAddress());
-        request.setAdmin(gatewayData.getAdmin());
-        request.setSuperAdmin(gatewayData.getSuperAdmin());
+        request.setAuthentication(gatewayData.getAdmin()); // Defaulting to test admin
         
         return sendConnectionRequest(request);
     }
@@ -331,7 +321,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             throws NetworkManagerCommunicationException {
         
         Authentication auth = new Authentication();
-        auth.setDefaultUser(true);
         auth.setUsername(username);
         auth.setPassword(password);
         
@@ -339,7 +328,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         GatewayConnectionTestRequest request = new GatewayConnectionTestRequest();
         request.setRfnIdentifier(null); // Request is not for an existing gateway
         request.setIpAddress(ipAddress);
-        request.setAdmin(auth);
+        request.setAuthentication(auth);
         
         return sendConnectionRequest(request);
     }

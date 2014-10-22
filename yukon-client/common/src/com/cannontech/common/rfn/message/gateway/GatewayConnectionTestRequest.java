@@ -11,8 +11,7 @@ public class GatewayConnectionTestRequest implements RfnIdentifyingMessage, Seri
     
     private RfnIdentifier rfnIdentifier;
     private String ipAddress;
-    private Authentication admin;
-    private Authentication superAdmin;
+    private Authentication authentication;
     
     @Override
     public RfnIdentifier getRfnIdentifier() {
@@ -31,33 +30,24 @@ public class GatewayConnectionTestRequest implements RfnIdentifyingMessage, Seri
         this.ipAddress = ipAddress;
     }
     
-    public Authentication getAdmin() {
-        return admin;
+    public Authentication getAuthentication() {
+        return authentication;
     }
     
-    public void setAdmin(Authentication admin) {
-        this.admin = admin;
+    public void setAuthentication(Authentication authentication) {
+        this.authentication = authentication;
     }
-    
-    public Authentication getSuperAdmin() {
-        return superAdmin;
-    }
-    
-    public void setSuperAdmin(Authentication superAdmin) {
-        this.superAdmin = superAdmin;
-    }
-    
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((admin == null) ? 0 : admin.hashCode());
+        result = prime * result + ((authentication == null) ? 0 : authentication.hashCode());
         result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
         result = prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
-        result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
         return result;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -67,10 +57,10 @@ public class GatewayConnectionTestRequest implements RfnIdentifyingMessage, Seri
         if (getClass() != obj.getClass())
             return false;
         GatewayConnectionTestRequest other = (GatewayConnectionTestRequest) obj;
-        if (admin == null) {
-            if (other.admin != null)
+        if (authentication == null) {
+            if (other.authentication != null)
                 return false;
-        } else if (!admin.equals(other.admin))
+        } else if (!authentication.equals(other.authentication))
             return false;
         if (ipAddress == null) {
             if (other.ipAddress != null)
@@ -82,17 +72,12 @@ public class GatewayConnectionTestRequest implements RfnIdentifyingMessage, Seri
                 return false;
         } else if (!rfnIdentifier.equals(other.rfnIdentifier))
             return false;
-        if (superAdmin == null) {
-            if (other.superAdmin != null)
-                return false;
-        } else if (!superAdmin.equals(other.superAdmin))
-            return false;
         return true;
     }
-    
+
     @Override
     public String toString() {
-        return String.format("GatewayConnectionTestRequest [rfnIdentifier=%s, ipAddress=%s, admin=%s, superAdmin=%s]", rfnIdentifier, ipAddress, admin, superAdmin);
+        return String.format("GatewayConnectionTestRequest [rfnIdentifier=%s, ipAddress=%s, authentication=%s]", rfnIdentifier, ipAddress, authentication);
     }
     
 }

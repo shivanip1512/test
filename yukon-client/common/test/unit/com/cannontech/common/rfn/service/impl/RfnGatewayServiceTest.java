@@ -63,22 +63,17 @@ public class RfnGatewayServiceTest {
     public void init() {
         
         admin = new Authentication();
-        admin.setDefaultUser(false);
         admin.setUsername("testAdmin");
         admin.setPassword("testAdminPass");
         
         superAdmin = new Authentication();
-        superAdmin.setDefaultUser(true);
         superAdmin.setUsername("testSuperAdmin");
         superAdmin.setPassword("testSuperAdminPass");
         
         settings = new GatewaySettings();
         settings.setName(name);
-        settings.setAdminUsername(admin.getUsername());
-        settings.setAdminPassword(admin.getPassword());
-        settings.setSuperAdminUsername(superAdmin.getUsername());
-        settings.setSuperAdminPassword(superAdmin.getPassword());
-        settings.setAdminDefault(false);
+        settings.setAdmin(admin);
+        settings.setSuperAdmin(superAdmin);
         settings.setLatitude(latitude);
         settings.setLongitude(longitude);
         

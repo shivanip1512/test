@@ -11,9 +11,15 @@ public class GatewaySaveData implements Serializable {
     
     private static final long serialVersionUID = 1L;
     
+    public enum AccessLevel { USER, ADMIN, SUPER_ADMIN }
+    
     private String ipAddress;
     private Authentication superAdmin;
     private Authentication admin;
+    
+    // Default gateway access level is ADMIN
+    private AccessLevel defaultAccessLevel = AccessLevel.ADMIN;
+    
     
     public String getIpAddress() {
         return ipAddress;
@@ -39,11 +45,20 @@ public class GatewaySaveData implements Serializable {
         this.admin = admin;
     }
     
+    public AccessLevel getDefaultAccessLevel() {
+        return defaultAccessLevel;
+    }
+    
+    public void setDefaultAccessLevel(AccessLevel defaultAccessLevel) {
+        this.defaultAccessLevel = defaultAccessLevel;
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((admin == null) ? 0 : admin.hashCode());
+        result = prime * result + ((defaultAccessLevel == null) ? 0 : defaultAccessLevel.hashCode());
         result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
         result = prime * result + ((superAdmin == null) ? 0 : superAdmin.hashCode());
         return result;
@@ -63,6 +78,8 @@ public class GatewaySaveData implements Serializable {
                 return false;
         } else if (!admin.equals(other.admin))
             return false;
+        if (defaultAccessLevel != other.defaultAccessLevel)
+            return false;
         if (ipAddress == null) {
             if (other.ipAddress != null)
                 return false;
@@ -78,7 +95,7 @@ public class GatewaySaveData implements Serializable {
     
     @Override
     public String toString() {
-        return String.format("GatewaySaveData [ipAddress=%s, superAdmin=%s, admin=%s]", ipAddress, superAdmin, admin);
+        return String.format("GatewaySaveData [ipAddress=%s, superAdmin=%s, admin=%s, defaultAccessLevel=%s]", ipAddress, superAdmin, admin, defaultAccessLevel);
     }
     
 }
