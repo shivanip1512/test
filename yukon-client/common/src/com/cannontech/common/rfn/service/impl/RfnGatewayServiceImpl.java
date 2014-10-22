@@ -1,6 +1,7 @@
 package com.cannontech.common.rfn.service.impl;
 
 import java.io.Serializable;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -21,14 +22,15 @@ import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
+import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.message.gateway.GatewayActionResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayActionResult;
+import com.cannontech.common.rfn.message.gateway.GatewayCollectionRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayConnectRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayConnectionTestRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayConnectionTestResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayConnectionTestResult;
 import com.cannontech.common.rfn.message.gateway.GatewayCreateRequest;
-import com.cannontech.common.rfn.message.gateway.GatewayDataRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayDeleteRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayEditRequest;
 import com.cannontech.common.rfn.message.gateway.GatewaySaveData;
@@ -103,6 +105,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Override
     public Set<RfnGateway> getAllGateways() {
+        
         Set<RfnGateway> rfnGateways = new HashSet<RfnGateway>();
         // Get all base RfnDevices
         List<RfnDevice> gatewayDevices = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY);
@@ -141,6 +144,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         if (gatewayLoc != null) {
             rfnGateway.setLocation(gatewayLoc);
         }
+        
         return rfnGateway;
     }
     
@@ -185,6 +189,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             
             return gatewayIdentifier;
         }
+        
         throw new GatewayUpdateException("Gateway creation failed");
     }
     
@@ -383,9 +388,11 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Override
     public boolean collectData(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
+        
         RfnDevice gateway = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         
-        GatewayDataRequest request = new GatewayDataRequest();
+        GatewayCollectionRequest request = new GatewayCollectionRequest();
+        request.setTypes(EnumSet.allOf(DataType.class));
         request.setRfnIdentifier(gateway.getRfnIdentifier());
         
         return sendActionRequest(request, "data collection");
@@ -406,6 +413,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
 
     @Override
     public boolean deleteCollectionSchedule(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
+        
         RfnDevice gateway = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         
         GatewayScheduleDeleteRequest request = new GatewayScheduleDeleteRequest();
@@ -435,7 +443,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     @Override
     public void clearCache() {
         dataCache.getCache().asMap().clear();
-        
     }
     
 }
