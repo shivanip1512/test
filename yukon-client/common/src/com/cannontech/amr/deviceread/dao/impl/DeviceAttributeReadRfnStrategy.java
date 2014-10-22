@@ -1,7 +1,6 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +33,6 @@ import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -119,7 +117,8 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
                 delegateCallback.receivedError(pao, error);
                 errors.add(error);
-                saveCommandRequestExecutionResult(execution, pao.getPaoId(), error.getType().getErrorCode());
+                commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution, pao.getPaoId(),
+                    error.getType().getErrorCode());
             }
             
             @Override
@@ -136,7 +135,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             public void receivedLastValue(PaoIdentifier pao, String value) {
                 //ignore the last value if this device had an error
                 if (!errors.contains(pao)) {
-                    saveCommandRequestExecutionResult(execution,  pao.getPaoId(),  0);
+                    commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution,  pao.getPaoId(),  0);
                 }
                 delegateCallback.receivedLastValue(pao, value);
             }
@@ -174,7 +173,8 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
                 command.setDevice(new SimpleDevice(pao));
                 SpecificDeviceErrorDescription errorDescription = getError(error.getType().getErrorCode());
                 groupCallback.receivedLastError(command, errorDescription);
-                saveCommandRequestExecutionResult(groupCallback.getExecution(), pao.getPaoId(), error.getType().getErrorCode());
+                commandRequestExecutionResultDao.saveCommandRequestExecutionResult(groupCallback.getExecution(),
+                    pao.getPaoId(), error.getType().getErrorCode());
             }
             
             @Override
@@ -198,7 +198,8 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
                     CommandRequestDevice command = new CommandRequestDevice();
                     command.setDevice(new SimpleDevice(pao));
                     groupCallback.receivedLastResultString(command, value);
-                    saveCommandRequestExecutionResult(groupCallback.getExecution(),  pao.getPaoId(),  0);
+                    commandRequestExecutionResultDao.saveCommandRequestExecutionResult(groupCallback.getExecution(),
+                        pao.getPaoId(), 0);
                 }
             }
 
@@ -400,19 +401,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
         sendMeterRequests(rfnMeters, strategyCallback);        
         sendDeviceRequests(rfnDevices, devicePointIds, strategyCallback);
     }
-    
-    private void saveCommandRequestExecutionResult(CommandRequestExecution execution,
-                                                   int deviceId, int errorCode) {
-
-        CommandRequestExecutionResult result = new CommandRequestExecutionResult();
-        result.setCommandRequestExecutionId(execution.getId());
-        result.setCommand(execution.getCommandRequestExecutionType().getShortName());
-        result.setCompleteTime(new Date());
-        result.setDeviceId(deviceId);
-        result.setErrorCode(errorCode);
-        commandRequestExecutionResultDao.saveOrUpdate(result);
-    }
-        
+            
     @Override
     public CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(DeviceCollection deviceCollection,
                                                                                         Set<? extends Attribute> attributes,

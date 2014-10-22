@@ -2,7 +2,6 @@ package com.cannontech.amr.demandreset.service.impl;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -36,7 +35,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
@@ -180,9 +178,9 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                                 deviceIterator.remove();
                                 asyncDynamicDataSource.unRegisterForPointData(RfnDemandResetServiceImpl.this,
                                                                               ImmutableSet.of(pointId));
-                                saveCommandRequestExecutionResult(verificationInfo.verificationExecution,
-                                                                  device.getDeviceId(),
-                                                                  NetworkManagerError.TIMEOUT.getErrorCode());
+                                commandRequestExecutionResultDao.saveCommandRequestExecutionResult(
+                                    verificationInfo.verificationExecution, device.getDeviceId(),
+                                    NetworkManagerError.TIMEOUT.getErrorCode());
                             }
 
                         }
@@ -299,7 +297,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                             log.debug(rfnMeterIdentifier + "=RfnMeterDemandResetReply: " + replyType);
                         }
                         if (replyType == RfnMeterDemandResetReplyType.OK) {
-                            saveCommandRequestExecutionResult(sendExecution, device.getDeviceId(), 0);
+                            commandRequestExecutionResultDao.saveCommandRequestExecutionResult(sendExecution, device.getDeviceId(), 0);
                         } else {
                             processError(device, replyType.getErrorCode());
                         }
@@ -320,8 +318,8 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                  */
                 private void processError(SimpleDevice device, int errorCode) {
                     
-                    saveCommandRequestExecutionResult(sendExecution, device.getDeviceId(), errorCode);
-                    errors.put(device, getError(errorCode));
+                commandRequestExecutionResultDao.saveCommandRequestExecutionResult(sendExecution, device.getDeviceId(), errorCode);
+                errors.put(device, getError(errorCode));
                     // check if this device needs to be verified
                     if (verifiableDevices.contains(device)) {
 
@@ -338,9 +336,8 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                                         deviceIterator.remove();
                                         asyncDynamicDataSource.unRegisterForPointData(RfnDemandResetServiceImpl.this,
                                                                                       ImmutableSet.of(pointId));
-                                        saveCommandRequestExecutionResult(verificationInfo.verificationExecution,
-                                                                          device.getDeviceId(),
-                                                                          errorCode);
+                                        commandRequestExecutionResultDao.saveCommandRequestExecutionResult(
+                                            verificationInfo.verificationExecution, device.getDeviceId(), errorCode);
                                     }
                                 }
                                 if (verificationInfo.isAllVerified()) {
@@ -445,24 +442,13 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                     }
                     verificationInfo.removeDevice(pointData.getId());
                     asyncDynamicDataSource.unRegisterForPointData(this, ImmutableSet.of(pointData.getId()));
-                    saveCommandRequestExecutionResult(verificationInfo.verificationExecution,
-                                                      device.getDeviceId(),
-                                                      0);
+                    commandRequestExecutionResultDao.saveCommandRequestExecutionResult(
+                        verificationInfo.verificationExecution, device.getDeviceId(), 0);
                 }
             }
         }
     }
-    
-    private void saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode) {
-        CommandRequestExecutionResult result = new CommandRequestExecutionResult();
-        result.setCommandRequestExecutionId(execution.getId());
-        result.setCommand(execution.getCommandRequestExecutionType().getShortName());
-        result.setCompleteTime(new Date());
-        result.setDeviceId(deviceId);
-        result.setErrorCode(errorCode);
-        commandRequestExecutionResultDao.saveOrUpdate(result);
-    }
-    
+        
     private SpecificDeviceErrorDescription getError(Integer errorCode) {
         DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(errorCode);
         SpecificDeviceErrorDescription deviceErrorDescription =

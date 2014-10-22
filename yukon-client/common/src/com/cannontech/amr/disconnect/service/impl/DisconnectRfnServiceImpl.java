@@ -1,6 +1,5 @@
 package com.cannontech.amr.disconnect.service.impl;
 
-import java.util.Date;
 import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -28,7 +27,6 @@ import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
-import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.service.NetworkManagerError;
@@ -206,20 +204,10 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
                     throw new UnsupportedOperationException(state + " is not supported");
                 }
             }
-            saveCommandRequestExecutionResult(execution, meter.getDeviceId(), errorCode);
+            commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution, meter.getDeviceId(), errorCode);
         }
     }
-    
-    private void saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode) {
-        CommandRequestExecutionResult result = new CommandRequestExecutionResult();
-        result.setCommandRequestExecutionId(execution.getId());
-        result.setCommand(execution.getCommandRequestExecutionType().getShortName());
-        result.setCompleteTime(new Date());
-        result.setDeviceId(deviceId);
-        result.setErrorCode(errorCode);
-        commandRequestExecutionResultDao.saveOrUpdate(result);
-    }
-
+   
     @Resource(name="longRunningExecutor")
     public void setExecutor(Executor executor) {
         this.executor = executor;

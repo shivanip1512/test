@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.commands.dao.model.CommandRequestUnsupported;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -40,4 +41,6 @@ public interface CommandRequestExecutionResultDao {
 
     public void saveUnsupported(Set<? extends YukonPao> devices, int commandRequestExecutionId,
                                 CommandRequestUnsupportedType type);
+    
+    public void saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode);
 }

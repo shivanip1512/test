@@ -1,9 +1,11 @@
 package com.cannontech.dr.ecobee.service.impl;
 
-import static com.cannontech.dr.ecobee.service.EcobeeCommunicationService.*;
+import static com.cannontech.dr.ecobee.service.EcobeeCommunicationService.YUKON_CYCLE_EVENT_NAME;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.joda.time.Instant;
@@ -14,6 +16,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dynamic.DynamicDataSource;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.stategroup.TrueFalse;
 import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
@@ -32,12 +35,15 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
     @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
 
     @Override
-    public void updatePointData(PaoIdentifier paoIdentifier, EcobeeDeviceReadings deviceReadings) {
+    public Set<PointValueHolder> updatePointData(PaoIdentifier paoIdentifier, EcobeeDeviceReadings deviceReadings) {
         // indoor/outdoor data store first valid value in hour (archives on update)
         // set heat/cool data store every interval (archives on change)
         // runtime store all values added up set to on hour BEFORE hour (archives on update)
 
         // device readings are 5 minutes apart. partition these into hourly buckets to work with
+        
+        Set<PointValueHolder> pointValues = new HashSet<>(); 
+        
         Instant lastReading = null;
         Instant lastRuntime = null;
         for (List<EcobeeDeviceReading> readings : Iterables.partition(deviceReadings.getReadings(), 12)) {
@@ -62,33 +68,35 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
                     outdoorTempToUpdate = reading.getOutdoorTempInF();
                 }
                 if (reading.getSetHeatTempInF() != null) {
-                    setPointValue(paoIdentifier, BuiltInAttribute.HEAT_SET_TEMPERATURE, 
-                                  startDate, reading.getSetHeatTempInF());
+                    setPointValue(pointValues, paoIdentifier, BuiltInAttribute.HEAT_SET_TEMPERATURE, startDate,
+                        reading.getSetHeatTempInF());
                 }
                 if (reading.getSetCoolTempInF() != null) {
-                    setPointValue(paoIdentifier, BuiltInAttribute.COOL_SET_TEMPERATURE, 
-                                  startDate, reading.getSetCoolTempInF());
+                    setPointValue(pointValues, paoIdentifier, BuiltInAttribute.COOL_SET_TEMPERATURE, startDate,
+                        reading.getSetCoolTempInF());
                 }
                 if (reading.getRuntimeSeconds() != 0 && lastRuntime == null || reading.getDate().isAfter(lastRuntime)) {
                     lastRuntime = reading.getDate();
                 }
                 runtime += reading.getRuntimeSeconds();
                 TrueFalse controlStatus = checkEventActivity(reading.getEventActivity());
-                setPointValue(paoIdentifier, BuiltInAttribute.CONTROL_STATUS, 
-                              reading.getDate(), controlStatus.getRawState());
+                setPointValue(pointValues, paoIdentifier, BuiltInAttribute.CONTROL_STATUS, reading.getDate(),
+                    controlStatus.getRawState());
             }
             if (outdoorTempToUpdate != null) {
-                setPointValue(paoIdentifier, BuiltInAttribute.OUTDOOR_TEMPERATURE, startDate, outdoorTempToUpdate);
+                setPointValue(pointValues, paoIdentifier, BuiltInAttribute.OUTDOOR_TEMPERATURE, startDate, outdoorTempToUpdate);
             }
             if (indoorTempToUpdate != null) {
-                setPointValue(paoIdentifier, BuiltInAttribute.INDOOR_TEMPERATURE, startDate, indoorTempToUpdate);
+                setPointValue(pointValues, paoIdentifier, BuiltInAttribute.INDOOR_TEMPERATURE, startDate, indoorTempToUpdate);
             }
             if (shouldUpdateRuntime) {
-                setPointValue(paoIdentifier, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG,
-                              startDate, TimeUnit.SECONDS.toMinutes(runtime));
+                setPointValue(pointValues, paoIdentifier, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, startDate,
+                    TimeUnit.SECONDS.toMinutes(runtime));
             }
         }
         updateAssetAvailability(paoIdentifier, lastReading, lastRuntime);
+        
+        return pointValues;
     }
     
     /**
@@ -128,7 +136,8 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
         }
     }
 
-    private void setPointValue(PaoIdentifier paoIdentifier, BuiltInAttribute attribute, Instant time, double value) {
+    private void setPointValue(Set<PointValueHolder> pointValues, PaoIdentifier paoIdentifier,
+            BuiltInAttribute attribute, Instant time, double value) {
         LitePoint point = attributeService.getPointForAttribute(paoIdentifier, attribute);
 
         PointData pointData = new PointData();
@@ -139,6 +148,7 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
         pointData.setTime(time.toDate());
         pointData.setTagsDataTimestampValid(true);
 
+        pointValues.add(pointData);
         dynamicDataSource.putValue(pointData);
     }
 }

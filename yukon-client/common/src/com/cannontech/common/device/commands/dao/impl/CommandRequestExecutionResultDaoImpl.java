@@ -1,5 +1,6 @@
 package com.cannontech.common.device.commands.dao.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.device.commands.CommandRequestUnsupportedType;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultsFilterType;
+import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.commands.dao.model.CommandRequestUnsupported;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -175,6 +177,17 @@ public class CommandRequestExecutionResultDaoImpl implements CommandRequestExecu
         }
 
         return jdbcTemplate.queryForInt(sql);
+    }
+
+    @Override
+    public void saveCommandRequestExecutionResult(CommandRequestExecution execution, int deviceId, int errorCode) {
+        CommandRequestExecutionResult result = new CommandRequestExecutionResult();
+        result.setCommandRequestExecutionId(execution.getId());
+        result.setCommand(execution.getCommandRequestExecutionType().getShortName());
+        result.setCompleteTime(new Date());
+        result.setDeviceId(deviceId);
+        result.setErrorCode(errorCode);
+        saveOrUpdate(result);
     }
 
     @PostConstruct
