@@ -97,15 +97,17 @@ yukon.assets.gateway.list = (function () {
                 $('#gateway-settings-form').ajaxSubmit({
                     url: yukon.url('/stars/gateways'), 
                     type: 'post',
-                    success: function (gateway, status, xhr, $form) {
+                    success: function (result, status, xhr, $form) {
                         
                         $('#gateway-create-popup').dialog('close');
                         
-                        var row = $('.js-loading-row').clone();
-                        row.attr('data-gateway', paoId)
+                        var row = $('.js-loading-row').clone(),
+                            gateway = result.gateway;
+                        
+                        row.attr('data-gateway', gateway.paoIdentifier.paoId)
                         .removeClass('.js-loading-row');
                         row.find('.js-gw-name').text(gateway.name);
-                        row.find('.js-gw-sn').text(gateway.rfnId.sensorSerialNumber);
+                        row.find('.js-gw-sn').text(gateway.rfnIdentifier.sensorSerialNumber);
                         $('#gateways-table tbody').prepend(row);
                     },
                     error: function (xhr, status, error, $form) {

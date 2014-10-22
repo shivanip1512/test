@@ -36,8 +36,9 @@ yukon.assets.gateway.shared = (function () {
                         item.siblings('.button').prop('disabled', disabled);
                     });
                 } else {
-                    $('.js-gateway-edit-super-admin .button, .js-gateway-edit-admin .button, .js-gateway-edit-user .button')
-                    .prop('disabled', true);
+                    $('.js-gateway-edit-super-admin .button,' 
+                            + ' .js-gateway-edit-admin .button,' 
+                            + ' .js-gateway-edit-user .button').prop('disabled', true);
                 }
             });
             
@@ -108,11 +109,12 @@ yukon.assets.gateway.shared = (function () {
                     type: 'post'
                 }).done(function (result) {
                     if (result.success) {
-                        popup.dialog('close');
                         yukon.ui.alertSuccess(_text['collect.data.success'].replace('{0}', name));
                     } else {
                         yukon.ui.alertError(_text['collect.data.failure'].replace('{0}', name));
                     }
+                }).always(function () {
+                    popup.dialog('close');
                 });
             });
             

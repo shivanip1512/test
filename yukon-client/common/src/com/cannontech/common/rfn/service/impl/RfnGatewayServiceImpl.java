@@ -149,7 +149,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public PaoIdentifier createGateway(GatewaySettings settings) 
+    public RfnDevice createGateway(GatewaySettings settings) 
             throws NetworkManagerCommunicationException, GatewayUpdateException {
         
         // Send the request
@@ -187,7 +187,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                 paoLocationDao.save(location);
             }
             
-            return gatewayIdentifier;
+            return gateway;
         }
         
         throw new GatewayUpdateException("Gateway creation failed");

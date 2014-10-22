@@ -7,6 +7,7 @@ import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.core.dao.NotFoundException;
 
@@ -40,11 +41,11 @@ public interface RfnGatewayService {
     /**
      * Creates a new gateway in Yukon and Network Manager.
      * 
-     * @return The PaoIdentifier of the newly created gateway.
+     * @return The {@link RfnDevice} of the newly created gateway.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      * @throws GatewayUpdateException if gateway creation failed in Network Manager.
      */
-    public PaoIdentifier createGateway(GatewaySettings settings) 
+    public RfnDevice createGateway(GatewaySettings settings) 
             throws NetworkManagerCommunicationException, GatewayUpdateException;
     
     /**

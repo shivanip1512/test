@@ -33,6 +33,9 @@ public class RfnGateway extends RfnDevice implements Locatable {
         
         Set<DataSequence> sequences = gatewayData.getSequences();
         int numberOfSequences = sequences.size();
+        
+        if (numberOfSequences == 0) return 0.0;
+        
         double sumOfCompletionPercentages = 0.0;
         
         for (DataSequence sequence : sequences) {

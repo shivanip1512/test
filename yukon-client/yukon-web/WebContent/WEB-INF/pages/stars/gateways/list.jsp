@@ -55,7 +55,8 @@
                         <c:if test="${gateway.lastCommUnknown}">
                             <c:set var="clazz" value="subtle"/>
                         </c:if>
-                        <td class="js-gw-last-comm ${clazz}" title="<cti:formatDate type="DATEHM" value="${gateway.data.lastCommStatusTimestamp}"/>">
+                        <td class="js-gw-last-comm ${clazz}" 
+                            title="<cti:formatDate type="DATEHM" value="${gateway.data.lastCommStatusTimestamp}"/>">
                             <i:inline key=".lastCommStatus.${gateway.data.lastCommStatus}"/>
                         </td>
                         <td class="js-gw-data-collection">
@@ -67,14 +68,16 @@
                                 <c:if test="${gateway.totalCompletionLevelDanger}">
                                     <c:set var="clazz" value="progress-bar-danger"/>
                                 </c:if>
-                                <div class="progress-bar ${clazz}" style="width: ${gateway.totalCompletionPercentage}%"></div>
+                                <div class="progress-bar ${clazz}" 
+                                    style="width: ${gateway.totalCompletionPercentage}%"></div>
                             </div>&nbsp;
                             <span class="js-data-collection-percent">
                                 <fmt:formatNumber pattern="###.##%" value="${gateway.totalCompletionPercentage / 100}"/>
                             </span>
                         </td>
                         <td class="action-column">
-                            <cm:dropdown data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}">
+                            <cm:dropdown data-name="${fn:escapeXml(gateway.name)}" 
+                                    data-id="${gateway.paoIdentifier.paoId}">
                                 <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>
                                 <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"/>
                                 <li class="divider"></li>

@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -74,13 +74,13 @@ public class GatewaySettingsController {
         }
         
         try {
-            PaoIdentifier gateway = rfnGatewayService.createGateway(settings);
+            RfnDevice gateway = rfnGatewayService.createGateway(settings);
             log.info("Gateway Created: " + gateway);
             
             // Success
             model.clear();
             Map<String, Object> json = new HashMap<>();
-            
+            json.put("gateway", gateway);
             resp.setContentType("application/json");
             JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
             return null;
