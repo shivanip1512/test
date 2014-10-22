@@ -114,15 +114,16 @@ if (!String.prototype.trim) {
 
 /** Yukon Module */
 var yukon = (function () {
-    var mod;
-
-    mod = {
+    
+    var mod = {
+        
         /** support for inheritance: inherit superType's prototype */
         inheritPrototype : function (subType, superType) {
             var prototype = Object.create(superType.prototype);
             prototype.constructor = subType;
             subType.prototype = prototype;
         },
+        
         /** Handle app name prepending here */
         url : function (url) {
             if (url.startsWith('/')) {
@@ -131,10 +132,12 @@ var yukon = (function () {
                 return url;
             }
         },
+        
         /** JavaScript side of JsonTag.java */
         fromJson : function (selector) {
             return JSON.parse($(selector).text());
         },
+        
         /** Convenient 'do nothing' function that doesn't require an argument like void(0); */
         nothing: function () {},
         
@@ -193,6 +196,7 @@ var yukon = (function () {
         }
         
     };
+    
     return mod;
 })();
 
@@ -206,21 +210,22 @@ var yukon = (function () {
  * Javascript Patterns, pp. 89-90
  */
 yukon.namespace = function (ns) {
-    var parts = ns.split('.'),
-        object = this,
-        i,
-        len;
+    
+    var parts = ns.split('.'), object = this, i, len;
+    
     // strip parts[0] if it is the initial name
     // if first element in namespace exists, skip it
     if (window[parts[0]]) {
         parts = parts.slice(1);
     }
+    
     for (i=0, len=parts.length; i < len; i++) {
         if (!object[parts[i]]) {
             object[parts[i]] = {};
         }
         object = object[parts[i]];
     }
+    
     return object;
 };
 
@@ -237,9 +242,9 @@ yukon.namespace = function (ns) {
  */
 yukon.namespace('yukon.ui');
 yukon.ui = (function () {
-    var initialized = false,
-        mod = {};
-
+    
+    var initialized = false, mod = {};
+    
     mod = {
             
         init: function () {
@@ -255,14 +260,14 @@ yukon.ui = (function () {
             item.siblings().removeClass('selected');
             item.addClass('selected');
         },
-
+        
         busy: function (item) {
             var btn = $(item),
                 spinner = btn.children('.icon.busy'),
                 label,
                 busyText,
                 originalText;
-
+            
             btn.prop('disabled', true);
             btn.addClass('busy');
             // if this button has an icon hide it
@@ -272,7 +277,7 @@ yukon.ui = (function () {
                 spinner = btn.children('.icon.busy');
             }
             spinner.show(); 
-
+            
             label = btn.children('.b-label');
             busyText = btn.attr('data-busy');
             if (busyText && label.length > 0) {
@@ -283,12 +288,12 @@ yukon.ui = (function () {
             
             return btn;
         },
-
+        
         unbusy: function (item) {
             var btn = $(item),
                 label,
                 originalText;
-    
+            
             btn.prop('disabled', false);
             btn.removeClass('busy');
             // if this button has an icon show it
@@ -307,12 +312,16 @@ yukon.ui = (function () {
         /** 
          * Returns button array for jquery ui dialogs.  The 'ok' action can have a 
          * custom target and/or event.
-         * @param {object} options - An object literal with the following properties:
-         *        {string} [event=yukon.dialog.ok] - The name of the event to fire when 'ok' button is clicked. Defaults to 'yukon.dialog.ok'.
-         *        {string, element} [form] - If present, submits the form supplied or the first form element found inside the popup. 
-         *                                   'event' is not fired when 'form' is present. 
-         *        {string|element} [target=the popup element] - The target of the event (element or selector). Defaults to the popup.
-         *        {string} [okText=yg.text.ok] - The text of the ok button. Defaults to yg.text.ok.
+         * 
+         * @param {object} options                     - An object literal with the following properties:
+         *        {string} [event=yukon.dialog.ok]     - The name of the event to fire when 'ok' button is clicked. 
+         *                                               Defaults to 'yukon.dialog.ok'.
+         *        {string, element} [form]             - If present, submits the form supplied or the first form element 
+         *                                               found inside the popup. 'event' is not fired when 'form' is 
+         *                                               present. 
+         *        {string|element} [target]            - The target of the event (element or selector). 
+         *                                               Defaults to the popup.
+         *        {string} [okText=yg.text.ok]         - The text of the ok button. Defaults to yg.text.ok.
          *        {string} [cancelText=yg.text.cancel] - The text of the cancel button. Defaults to yg.text.cancel.
          */
         buttons: function (options) {
@@ -333,13 +342,14 @@ yukon.ui = (function () {
                     { 
                         text: defaults.okText, 
                         click: function (ev) {
+                            var dialog = $(this).closest('.ui-dialog-content');
                             // Don't close the popup here.  We may want it to stay open, ie: validation failed.
                             if (defaults.hasOwnProperty('form')) {
                                 var form = $(defaults.form);
-                                if (!form.is('form')) form = $(this).closest('.ui-dialog-content').find('form');
+                                if (!form.is('form')) form = dialog.find('form');
                                 form.submit();
                             } else {
-                                defaults.target = defaults.target ? defaults.target : $(this).closest('.ui-dialog-content');
+                                defaults.target = defaults.target ? defaults.target : dialog;
                                 $(defaults.target).trigger(defaults.event);
                             }
                         }, 
@@ -423,7 +433,8 @@ yukon.ui = (function () {
             });
             
             /** Paging Handler: Get the next or previous page, or change page size. */
-            $(document).on('click', '.paging-area .previous-page .button, .paging-area .next-page .button, .paging-area .page-size a', function (ev) {
+            $(document).on('click', '.paging-area .previous-page .button,' 
+                    + ' .paging-area .next-page .button, .paging-area .page-size a', function (ev) {
                 
                 var 
                 target = $(this),
@@ -529,7 +540,8 @@ yukon.ui = (function () {
                     
                         // insert the name and or value of the button into the form action
                         if (typeof button.attr('name') != 'undefined' && button.attr('name').length != 0) {
-                            form.prepend('<input name="'+ button.attr('name') + '" value="' + button.attr('value') + '" type="hidden"/>');
+                            form.prepend('<input name="'+ button.attr('name') + '" value="' + button.attr('value') 
+                                    + '" type="hidden"/>');
                         }
                         form.trigger('submit');
                     }
@@ -1325,9 +1337,11 @@ yukon.ui = (function () {
             
             if (messages.length > 0) {
                 if (create) {
-                    $(this).prepend('<div class="user-message ' + args.messageClass + '"><ul class="simple-list">' + messages.join('') + '</ul></div>');
+                    $(this).prepend('<div class="user-message ' + args.messageClass + '"><ul class="simple-list">' 
+                            + messages.join('') + '</ul></div>');
                 } else {
-                    $(this).children('.user-message').removeClass('error success info warning pending').addClass(args.messageClass).find('ul').html(messages.join(''));
+                    $(this).children('.user-message').removeClass('error success info warning pending')
+                    .addClass(args.messageClass).find('ul').html(messages.join(''));
                 }
             }
         });
