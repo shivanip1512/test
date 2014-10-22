@@ -104,20 +104,20 @@ void LogLayout::appendHeader(log4cxx::LogString& output, log4cxx::helpers::Pool&
 
     if( ! _ownerInfo._project.empty() && ! _ownerInfo._version.empty() )
     {
-        oss <<"--------  "<< _ownerInfo._project <<" [Version "<< _ownerInfo._version <<"]  --------";
+        oss <<"--------  "<< _ownerInfo._project <<" [Version "<< _ownerInfo._version <<"]  --------\r\n";
     }
 
     if( _bFirstHeader )
     {
         _bFirstHeader = false;
-        oss <<"--------  LOG BEGINS ("<< gRunningSince <<")  --------";
+        oss <<"--------  LOG BEGINS ("<< gRunningSince <<")  --------\r\n";
     }
     else
     {
-        oss <<"--------  LOG CONTINUES (Running since "<< gRunningSince <<")  --------";
+        oss <<"--------  LOG CONTINUES (Running since "<< gRunningSince <<")  --------\r\n";
     }
 
-    output.append(toLogStr(oss.str()) + LOG4CXX_EOL);
+    output.append(toLogStr(oss.str()));
 }
 
 void LogLayout::appendFooter(log4cxx::LogString& output, log4cxx::helpers::Pool& p)
@@ -126,9 +126,9 @@ void LogLayout::appendFooter(log4cxx::LogString& output, log4cxx::helpers::Pool&
 
     const CtiTime footerTime;
 
-    oss <<"--------  LOG ENDS ("<< footerTime <<")  --------";
+    oss <<"--------  LOG ENDS ("<< footerTime <<")  --------\r\n";
 
-    output.append(toLogStr(oss.str()) + LOG4CXX_EOL);
+    output.append(toLogStr(oss.str()));
 }
 
 GeneralLogLayout::GeneralLogLayout(const OwnerInfo &ownerInfo) :
