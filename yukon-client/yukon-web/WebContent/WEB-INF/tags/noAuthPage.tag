@@ -39,6 +39,7 @@
 <cti:includeScript link="JQUERY_COOKIE" force="true"/>
 <cti:includeScript link="JQUERY_UI" force="true"/>
 <cti:includeScript link="JQUERY_CHOSEN" force="true"/>
+<cti:includeScript link="JQUERY_HIDDEN_DIMENSIONS" force="true"/>
 <cti:includeScript link="JQUERY_CHECK_ALL" force="true"/>
 <cti:includeScript link="JQUERY_FORM" force="true"/>
 <cti:includeScript link="JQUERY_PLACEHOLDER" force="true"/>

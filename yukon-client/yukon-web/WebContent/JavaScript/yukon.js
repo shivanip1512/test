@@ -360,7 +360,9 @@ yukon.ui = (function () {
         autowire: function () {
             
             /** Initialize any chosen selects on page load. */
-            $('.js-init-chosen').chosen();
+            $('.js-init-chosen').each( function () {
+                $(this).chosen({'width': $(this).getHiddenDimensions().width + 'px'});
+            });
             
             /** Initialize any tabbed containers on page load. */
             $('.js-init-tabs').tabs().show();
