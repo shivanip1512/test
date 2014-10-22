@@ -106,6 +106,7 @@ public class CBCCopyUtils {
 		cbc702.setDisabled(controller.isDisabled());
 		cbc702.setPAOName(controller.getPAOName());
 		cbc702.setDnpConfiguration(controller.getDnpConfiguration());
+		cbc702.setDeviceScanRateMap(controller.getDeviceScanRateMap());
 		return cbc702;
 	}
 	
