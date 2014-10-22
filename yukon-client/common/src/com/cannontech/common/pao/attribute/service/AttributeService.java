@@ -39,11 +39,11 @@ public interface AttributeService {
 
     /**
      * Method to find the lite point for the given pao for the given attribute
-     * Returns a value of null if a point cannot be found for the attribute. (This is the NotFoundException catch)
-     * Returns a value of null if an attribute is not supported by pao. (This is the IllegalUseOfAttribute catch that you added)
+     * Returns a value of null if a point cannot be found for the attribute.
+     * Returns a value of null if an attribute is not supported by pao.
      * @param pao - Pao to get point for
      * @param attribute - Attribute to get point for
-     * @return The point for the given attribute
+     * @return The point for the given attribute or null (if point doesn't exist or attribute not supported).
      */
     LitePoint findPointForAttribute(YukonPao pao, Attribute attribute);
 
