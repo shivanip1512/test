@@ -13,7 +13,7 @@
     <cti:csrfToken/>
     <div class="column-18-6 clearfix">
         <div class="column one">
-            <div class="stacked-medium">
+            <div class="stacked-md">
                 <select id="routeIdSelectList" name="routeid" size="10" style="width:200px">
                     <c:forEach var="route" items="${list}">
                         <option value="${route.id}">

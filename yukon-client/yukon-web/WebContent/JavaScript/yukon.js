@@ -588,17 +588,31 @@ yukon.ui = (function () {
                 });
                 mod.toggleInputs(elem);
             });
-
-            /** Select all ? */
-            $("input.js-select-all").each(function (index, input) {
-                $(input).on('focus', function (elem) {
-                    elem.target.select();
-                });
+            
+            /** Select all checkbox was clicked, select or unselect all items in a .js-select-all-container. */
+            $(document).on('click', '.js-select-all', function (ev) {
+                $(this).closest('.js-select-all-container').find('.js-select-all-item').prop('checked', $(this).prop('checked'));
             });
-
+            
+            /** A checkbox in a 'select all' container was clicked. */
+            $(document).on('click', '.js-select-all-item', function (ev) {
+                
+                var selectAll = true,
+                    selected = $(this).prop('checked'),
+                    container = $(this).closest('.js-select-all-container'),
+                    allItems = container.find('.js-select-all-item');
+                
+                if (selected) {
+                    allItems.each(function (idx, item) { if (!$(item).prop('checked')) selectAll = false; });
+                    container.find('.js-select-all').prop('checked', selectAll);
+                } else {
+                    container.find('.js-select-all').prop('checked', false);
+                }
+            });
+            
             /** Focus the designated input element */
             mod.autofocus();
-
+            
             /** Init page 'Actions' button */
             var pageActions = $('#page-actions');
             if (pageActions.length) {

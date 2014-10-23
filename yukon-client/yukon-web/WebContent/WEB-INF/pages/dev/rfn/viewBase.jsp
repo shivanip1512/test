@@ -111,7 +111,7 @@ $(function () { yukon.dev.rfn.init(); });
     <div class="column two nogutter">
         <h3>YSM Server Broker Stats</h3>
         <c:forEach items="${data}" var="type">
-            <table class="name-value-table striped stacked-medium">
+            <table class="name-value-table striped stacked-md">
                 <thead></thead>
                 <tfoot></tfoot>
                 <tbody>

@@ -89,6 +89,7 @@ yukon.assets.gateway.list = (function () {
                 var btns = $('#gateway-create-popup').closest('.ui-dialog').find('.ui-dialog-buttonset'),
                     primary = btns.find('.js-primary-action'),
                     secondary = btns.find('.js-secondary-action');
+                
                 yukon.ui.busy(primary);
                 secondary.prop('disabled', true);
                 

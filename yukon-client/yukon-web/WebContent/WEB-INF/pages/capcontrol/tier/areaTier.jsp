@@ -17,7 +17,7 @@
     <c:forEach var="item" items="${areasMap}">
         <c:set var="searchResults" value="${item.value}" />
         <c:set var="areaType" value="${item.key}" />
-        <tags:sectionContainer2 nameKey="areasContainer.${areaType.type}" styleClass="stacked-medium">
+        <tags:sectionContainer2 nameKey="areasContainer.${areaType.type}" styleClass="stacked-md">
             <div data-url="areas/${areaType}">
                 <%@ include file="areaTierTable.jsp" %>
             </div>

@@ -98,7 +98,7 @@ yukon.assets.gateway.shared = (function () {
                     name = $(ev.target).data('name'),
                     types = [];
                 
-                popup.find('.js-sequence-type:checked').each(function (idx, item) { types.push(item.name); });
+                popup.find('.js-select-all-item:checked').each(function (idx, item) { types.push(item.name); });
                 
                 yukon.ui.alertPending(_text['collect.data.pending'].replace('{0}', name));
                 
@@ -118,26 +118,53 @@ yukon.assets.gateway.shared = (function () {
                 });
             });
             
-            $(document).on('click', '#gateway-collect-data-popup .js-select-all', function (ev) {
-                $('#gateway-collect-data-popup .js-sequence-type').prop('checked', $(this).prop('checked'));
-            });
-            
-            $(document).on('click', '#gateway-collect-data-popup .js-sequence-type', function (ev) {
+            $(document).on('yukon:assets:gateway:cert:update', function (ev) {
                 
-                var selectAll = true,
-                    selected = $(this).prop('checked'),
-                    allTypes = $('#gateway-collect-data-popup .js-sequence-type');
+                var popup = $('#gateway-cert-popup'),
+                    file = popup.find('input[type=file]'),
+                    gateways = popup.find('.js-select-all-item'),
+                    chosen = popup.find('.js-select-all-item:checked'),
+                    btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                    primary = btns.find('.js-primary-action'),
+                    secondary = btns.find('.js-secondary-action'),
+                    valid = true;
                 
-                if (selected) {
-                    allTypes.each(function (idx, item) {
-                        if (!$(item).prop('checked')) {
-                            selectAll = false;
-                        }
-                    });
-                    $('#gateway-collect-data-popup .js-select-all').prop('checked', selectAll);
-                } else {
-                    $('#gateway-collect-data-popup .js-select-all').prop('checked', false);
+                if (!file.val()) {
+                    file.addClass('animated shake-subtle error')
+                    .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
+                    valid = false;
                 }
+                
+                if (!chosen.length) {
+                    gateways.addClass('animated shake-subtle error')
+                    .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
+                    valid = false;
+                }
+                
+                if (!valid) return;
+                
+                yukon.ui.busy(primary);
+                secondary.prop('disabled', true);
+            
+                popup.find('.user-message').remove();
+                
+                $('#gateway-cert-form').ajaxSubmit({
+                    url: yukon.url('/stars/gateways/cert-update'), 
+                    type: 'post',
+                    success: function (result, status, xhr, $form) {
+                        
+                        popup.dialog('close');
+                        
+                        console.log('yep');
+                    },
+                    error: function (xhr, status, error, $form) {
+                        popup.html(xhr.responseText);
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
+                        secondary.prop('disabled', false);
+                    }
+                });
             });
             
             _initialized = true;

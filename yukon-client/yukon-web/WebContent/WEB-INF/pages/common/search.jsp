@@ -42,7 +42,7 @@
         </cti:url>
         <div data-url="${url}" data-static>
             <c:forEach var="result" items="${results.resultList}">
-                <div class="stacked-medium">
+                <div class="stacked-md">
                     <div>
                         <a href="<cti:url value="${result.path}"/>">
                             <cti:searchTerm term="${query}" asLuceneTerms="true">

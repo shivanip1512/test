@@ -124,7 +124,7 @@ $(function(){
                                 temperatureUnit="${temperatureUnit}"
                                 actionPath="/stars/operator/thermostatSchedule"
                                 thermostatType="${thermostatType}"
-                                styleClass="vh stacked-medium"/>
+                                styleClass="vh stacked-md"/>
                         </c:forEach>    
                     </tags:sectionContainer2>
                 </c:if>

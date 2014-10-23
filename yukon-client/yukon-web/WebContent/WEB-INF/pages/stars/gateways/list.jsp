@@ -12,12 +12,20 @@
     <cti:button icon="icon-plus-green" nameKey="create" data-popup="#gateway-create-popup"/>
 </div>
 
-<div id="gateway-create-popup" class="dn" data-title="<cti:msg2 key=".create.title"/>" data-url="gateways/create" 
+<div id="gateway-create-popup" class="dn" 
+    data-title="<cti:msg2 key=".create.title"/>" data-url="gateways/create" 
     data-width="570" data-min-width="570" data-dialog data-event="yukon:assets:gateway:save" 
     data-ok-text="<cti:msg2 key="components.button.save.label"/>" data-load-event="yukon:assets:gateway:load"></div>
 
 <div id="gateway-collect-data-popup" class="dn"></div>
 
+<div id="gateway-cert-popup" class="dn" data-dialog 
+    data-title="<cti:msg2 key=".cert.update.label"/>"
+    data-event="yukon:assets:gateway:cert:update"
+    data-url="<cti:url value="/stars/gateways/cert-update/options"/>"
+    data-ok-text="<cti:msg2 key="components.button.start.label"/>"></div>
+
+<div class="scroll-lg stacked-lg">
 <table id="gateways-table" class="compact-results-table has-actions has-alerts">
     <thead>
         <tr>
@@ -97,6 +105,54 @@
         </c:forEach>
     </tbody>
 </table>
+</div>
+
+<h3>Certificate Updates</h3>
+<div class="scroll-lg">
+<table id="cert-table" class="compact-results-table">
+    <thead>
+        <tr>
+            <th>Timestamp</th>
+            <th>Certificate</th>
+            <th>Gateways</th>
+            <th>Status</th>
+            <th class="tar">Pending</th>
+            <th class="tar">Failed</th>
+            <th class="tar">Successful</th>
+        </tr>
+    </thead>
+    <tfoot></tfoot>
+    <tbody>
+        <tr data-upgrade="${upgrade.upgradeId}">
+            <td><a href="javascript:void(0);">10/23/2014 10:30 AM</a></td>
+            <td>asdfadf.lkjjlkj.nm</td>
+            <td>Meters, LCRs and 168 more...</td>
+            <td>
+                <div class="progress dib vat">
+                    <div class="progress-bar progress-bar-success" style="width: 70.59%;"></div>
+                    <div class="progress-bar progress-bar-danger" style="width: 1.18%;"></div>
+                </div>
+                <span class="js-percent">71.77%</span>
+            </td>
+            <td class="tar subtle">48</td>
+            <td class="tar error">2</td>
+            <td class="tar success">120</td>
+        </tr>
+        <tr data-upgrade="${upgrade.upgradeId}">
+            <td><a href="javascript:void(0);">10/22/2014 09:30 AM</a></td>
+            <td>asdfadf.asdfasdf.nm</td>
+            <td>Meters, LCRs and 168 more...</td>
+            <td><span class="success">Complete</span></td>
+            <td class="tar subtle">0</td>
+            <td class="tar error">0</td>
+            <td class="tar success">170</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+<div class="page-action-area">
+    <cti:button icon="icon-plus-green" nameKey="cert.update" data-popup="#gateway-cert-popup"/>
+</div>
 
 <div id="gateway-templates" class="dn">
     <table>
