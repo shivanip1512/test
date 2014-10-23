@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
+import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
@@ -37,7 +38,10 @@ public class GatewayDataTopicListener implements MessageListener {
                 Serializable object = objMessage.getObject();
                 if (object instanceof GatewayDataResponse) {
                     GatewayDataResponse gatewayDataMessage = (GatewayDataResponse) object;
-                    handleMessage(gatewayDataMessage);
+                    handleDataMessage(gatewayDataMessage);
+                } else if (object instanceof RfnGatewayUpgradeResponse) {
+                    RfnGatewayUpgradeResponse gatewayUpgradeMessage = (RfnGatewayUpgradeResponse) object;
+                    handleGatewayUpgradeMessage(gatewayUpgradeMessage);
                 }
             } catch (JMSException e) {
                 log.warn("Unable to extract GatewayDataResponse from message", e);
@@ -45,7 +49,7 @@ public class GatewayDataTopicListener implements MessageListener {
         }
     }
     
-    private void handleMessage(GatewayDataResponse message) {
+    private void handleDataMessage(GatewayDataResponse message) {
         RfnIdentifier rfnIdentifier = message.getRfnIdentifier();
         try {
             RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
@@ -54,5 +58,10 @@ public class GatewayDataTopicListener implements MessageListener {
         } catch (NotFoundException e) {
             log.info("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
         }
+    }
+    
+    private void handleGatewayUpgradeMessage(RfnGatewayUpgradeResponse gatewayUpgradeMessage) {
+        //TODO: save this info
+        //TODO: ack to NM?
     }
 }

@@ -354,5 +354,11 @@
       <sequence name="EcobeeReconReportError">
         <table name="EcobeeReconReportError" identitycolumn="EcobeeReconReportErrorId" initsequence="true"/>
       </sequence>
+      <sequence>
+        <table name="GatewayCertificateUpdate" identitycolumn="UpdateId" initsequence="true"/>
+      </sequence>
+      <sequence>
+        <table name="GatewayCertificateUpdateEntry" identitycolumn="EntryId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

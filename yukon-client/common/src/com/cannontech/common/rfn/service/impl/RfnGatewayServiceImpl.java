@@ -73,7 +73,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private RfnDeviceCreationService rfnDeviceCreationService;
     private PaoLocationDao paoLocationDao;
     
-    //Created in post-contruct
+    //Created in post-construct
     private RequestReplyTemplate<GatewayUpdateResponse> updateRequestTemplate;
     private RequestReplyTemplate<GatewayActionResponse> actionRequestTemplate;
     private RequestReplyTemplate<GatewayConnectionTestResponse> connectionTestRequestTemplate;

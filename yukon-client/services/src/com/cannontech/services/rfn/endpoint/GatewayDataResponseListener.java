@@ -12,11 +12,11 @@ import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
+import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.google.common.collect.ImmutableList;
 
-public class GatewayDataResponseListener extends ArchiveRequestListenerBase<GatewayDataResponse> {
+public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnIdentifyingMessage> {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayDataResponseListener.class);
     
@@ -32,7 +32,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<Gate
         }
         
         @Override
-        protected RfnDevice processCreation(GatewayDataResponse message, RfnIdentifier identifier) {
+        protected RfnDevice processCreation(RfnIdentifyingMessage message, RfnIdentifier identifier) {
             //Somehow, we got data for a gateway that is not in the database.
             log.warn("Received data for a gateway that is not in the database. Creating " + identifier);
             try {
@@ -47,7 +47,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<Gate
         }
         
         @Override
-        public void processData(RfnDevice rfnDevice, GatewayDataResponse message) {
+        public void processData(RfnDevice rfnDevice, RfnIdentifyingMessage message) {
             try {
                 //This publishes the data to a topic, where the web server will receive and cache it
                 log.debug("Publishing gateway data on internal topic: " + message);
@@ -90,7 +90,7 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<Gate
     
     //Not needed, no response is sent for this message
     @Override
-    protected Object getRfnArchiveResponse(GatewayDataResponse archiveRequest) {
+    protected Object getRfnArchiveResponse(RfnIdentifyingMessage archiveRequest) {
         return null;
     }
     

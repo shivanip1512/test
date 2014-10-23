@@ -17,20 +17,20 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequest;
-import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponse;
+import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAck;
 import com.cannontech.common.rfn.model.GatewayCertificateException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
-import com.cannontech.common.rfn.service.RfnGatewayUpgradeCallback;
-import com.cannontech.common.rfn.service.RfnGatewayUpgradeService;
+import com.cannontech.common.rfn.service.RfnGatewayUpdateCallback;
+import com.cannontech.common.rfn.service.RfnGatewayUpdateService;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.google.common.collect.Sets;
 
-public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
+public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
 
-    private static final Logger log = YukonLogManager.getLogger(RfnGatewayUpgradeServiceImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(RfnGatewayUpdateServiceImpl.class);
 
     private final static String configName = "RFN_GATEWAY_UPGRADE_REQUEST";
     private final static String queueName = "yukon.qr.obj.rfn.GatewayUpgradeRequest";
@@ -39,12 +39,12 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private RfnGatewayService gatewayService;
 
-    private RequestReplyTemplate<RfnGatewayUpgradeResponse> qrTemplate;
+    private RequestReplyTemplate<RfnGatewayUpgradeRequestAck> qrTemplate;
 
     @PostConstruct
     public void initialize() {
         qrTemplate =
-            new RequestReplyTemplateImpl<RfnGatewayUpgradeResponse>(configName,
+            new RequestReplyTemplateImpl<RfnGatewayUpgradeRequestAck>(configName,
                                                                     configurationSource,
                                                                     connectionFactory,
                                                                     queueName,
@@ -52,8 +52,7 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
     }
 
     @Override
-    public void sendUpgrade(Set<RfnGateway> rfnGateways, File upgradePackage,
-                            final RfnGatewayUpgradeCallback callback) {
+    public void sendUpdate(Set<RfnGateway> rfnGateways, File upgradePackage, final RfnGatewayUpdateCallback callback) {
         // Read upgrade package into byte[].
         byte[] upgradeData = null;
         try (FileInputStream fis = new FileInputStream(upgradePackage)) {
@@ -73,7 +72,7 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
 
         String upgradeId;
         try {
-            upgradeId = getUpgradeId(upgradePackage);
+            upgradeId = getCertificateId(upgradePackage);
         } catch (Exception e) {
             callback.handleException(e);
             callback.complete();
@@ -87,8 +86,7 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
 
         // Expect acknowledgment reply only.
         // Gateway's upgrade reply will be received by RfnGatewayUpgradeListener.
-        JmsReplyHandler<RfnGatewayUpgradeResponse> handler =
-            new JmsReplyHandler<RfnGatewayUpgradeResponse>() {
+        JmsReplyHandler<RfnGatewayUpgradeRequestAck> handler = new JmsReplyHandler<RfnGatewayUpgradeRequestAck>() {
                 // Delegate all calls to callback handler.
                 @Override
                 public void handleException(Exception e) {
@@ -106,49 +104,51 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
                 }
 
                 @Override
-                public void handleReply(RfnGatewayUpgradeResponse reply) {
+                public void handleReply(RfnGatewayUpgradeRequestAck reply) {
                     callback.handleReply(reply);
                 }
 
                 @Override
-                public Class<RfnGatewayUpgradeResponse> getExpectedType() {
-                    return RfnGatewayUpgradeResponse.class;
+                public Class<RfnGatewayUpgradeRequestAck> getExpectedType() {
+                    return RfnGatewayUpgradeRequestAck.class;
                 }
             };
         qrTemplate.send(request, handler);
     }
 
     @Override
-    public void sendUpgradeAll(File upgradePackage,
-                               RfnGatewayUpgradeCallback callback) {
-        sendUpgrade(null, upgradePackage, callback);
+    public void sendUpgradeAll(File upgradePackage, RfnGatewayUpdateCallback callback) {
+        sendUpdate(null, upgradePackage, callback);
     }
 
-    // *.pkg.nm itself is composed of fragments/parts for transport purposes:
-    //
-    // <upgrade img length> :== <int32>
-    // <upgrade img>_______ :== <byte>*<upgrade img_length>
-    // ____________________ :== [<fragment length><fragment>]*
-    // <fragment length>___ :== <int32>
-    // <fragment>__________ :== <byte>*<fragment length>
-    //
-    // At the beginning of the first fragment will be the following data structure:
-    //
-    // <total length> :== <int32>
-    // <info length>_ :== <int16>
-    // <info data>___ :== <byte>*<info length>
-    // ______________ :== [<type><length><value>]*
-    // <type>________ :== <int16>
-    // <length>______ :== <int16>
-    // <value>_______ :== <byte>*<length>
-    //
-    // I.E. After the total length there is an info length, the following info length number of
-    // bytes are broken into upgrade info TLV fields. The type and length of each of these fields is
-    // a short int.
-    //
-    // The upgradeId itself is stored in upgrade info type 0. You should be able to build the
-    // upgradeId string from that array of bytes.
-    public String getUpgradeId(File upgradePackage) throws GatewayCertificateException {
+    /** 
+     * *.pkg.nm itself is composed of fragments/parts for transport purposes:
+     *
+     * <upgrade img length> :== <int32>
+     * <upgrade img>_______ :== <byte>*<upgrade img_length>
+     * ____________________ :== [<fragment length><fragment>]*
+     * <fragment length>___ :== <int32>
+     * <fragment>__________ :== <byte>*<fragment length>
+     *
+     * At the beginning of the first fragment will be the following data structure:
+     *
+     * <total length> :== <int32>
+     * <info length>_ :== <int16>
+     * <info data>___ :== <byte>*<info length>
+     * ______________ :== [<type><length><value>]*
+     * <type>________ :== <int16>
+     * <length>______ :== <int16>
+     * <value>_______ :== <byte>*<length>
+     *
+     * I.E. After the total length there is an info length, the following info length number of
+     * bytes are broken into upgrade info TLV fields. The type and length of each of these fields is
+     * a short int.
+     *
+     * The upgradeId itself is stored in upgrade info type 0. You should be able to build the
+     * upgradeId string from that array of bytes.
+     */
+    @Override
+    public String getCertificateId(File upgradePackage) throws GatewayCertificateException {
         byte[] upgradeData = null;
         try (FileInputStream fis = new FileInputStream(upgradePackage)) {
             upgradeData = IOUtils.toByteArray(fis);
@@ -156,15 +156,15 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
             int upgradeImgLen = buf.getInt();
             if (upgradeImgLen > buf.remaining()) {
                 throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
-                                    + " is invalid: Upgrade image length " + upgradeImgLen
-                                    + " exceeds package size");
+                                                      + " is invalid: Upgrade image length " + upgradeImgLen
+                                                      + " exceeds package size");
             }
             // We are only interested in the first fragment.
             int fragmentLen = buf.getInt();
             if (fragmentLen > upgradeImgLen) {
                 throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
-                                    + " is invalid: Fragment length " + fragmentLen
-                                    + " exceeds upgrade image length " + upgradeImgLen);
+                                                      + " is invalid: Fragment length " + fragmentLen
+                                                      + " exceeds upgrade image length " + upgradeImgLen);
             }
             int totalLen = buf.getInt();
             if (totalLen + 4 > fragmentLen) {
@@ -186,8 +186,8 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
                 infoLen -= 2;
                 if (tlvLen > infoLen) {
                     throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
-                                        + " is invalid: Info TLV length " + tlvLen
-                                        + " exceeds remaining info length " + infoLen);
+                                                          + " is invalid: Info TLV length " + tlvLen
+                                                          + " exceeds remaining info length " + infoLen);
                 }
                 byte[] cbuf = new byte[tlvLen];
                 buf.get(cbuf);
@@ -196,7 +196,7 @@ public class RfnGatewayUpgradeServiceImpl implements RfnGatewayUpgradeService {
                 }
             }
             throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
-                                + " is invalid: upgradeId not found.");
+                                                  + " is invalid: upgradeId not found.");
         } catch (IOException e) {
             for (Throwable t : e.getSuppressed()) {
                 log.warn("Failed to close upgrade package file.", t);

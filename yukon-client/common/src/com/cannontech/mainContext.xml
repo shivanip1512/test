@@ -374,7 +374,8 @@
     <bean class="com.cannontech.common.rfn.service.impl.RfDaCreationServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayServiceImpl"/>
     <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayDataCacheImpl"/>
-    <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayUpgradeServiceImpl"/>
+    <bean class="com.cannontech.common.rfn.service.impl.RfnGatewayUpdateServiceImpl"/>
+    <bean class="com.cannontech.common.rfn.dao.impl.GatewayCertificateUpdateDaoImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnExpressComMessageServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrDataMappingServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RawExpressComCommandBuilderImpl"/>
