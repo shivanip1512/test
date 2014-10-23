@@ -373,14 +373,9 @@ bool CtiTableDynamicPaoInfoBase::Insert(Cti::Database::DatabaseConnection &conn,
 {
     std::string keyString = getKeyString();
 
-    if( owner.empty() || keyString.empty() || _value.empty() )
+    if( getPaoID() < 0 || owner.empty() || keyString.empty() || _value.empty() )
     {
-        if( keyString.empty() )
-        {
-            keyString = "boost::none";
-        }
-
-        CTILOG_ERROR(dout, "invalid attempt to insert into DynamicPaoInfo - paoid = "<< _pao_id <<", owner = \""<< owner <<"\", and keyString = \""<< keyString <<"\"");
+        CTILOG_ERROR(dout, "invalid attempt to insert into DynamicPaoInfo - paoid = "<< getPaoID() <<", owner = \""<< owner <<"\", keyString = \""<< keyString <<"\", and value = \"" << _value << "\"");
 
         return false;
     }
@@ -410,14 +405,9 @@ bool CtiTableDynamicPaoInfoBase::Update(Cti::Database::DatabaseConnection &conn,
 {
     std::string keyString = getKeyString();
 
-    if( getPaoID() <= 0 || owner.empty() || keyString.empty() || _value.empty() )
+    if( getPaoID() < 0 || owner.empty() || keyString.empty() || _value.empty() )
     {
-        if( keyString.empty() )
-        {
-            keyString = "boost::none";
-        }
-
-        CTILOG_ERROR(dout, "invalid attempt to update into DynamicPaoInfo - paoid = "<< _pao_id <<", owner = \""<< owner <<"\", and keyString = \""<< keyString <<"\"");
+        CTILOG_ERROR(dout, "invalid attempt to insert into DynamicPaoInfo - paoid = "<< getPaoID() <<", owner = \""<< owner <<"\", keyString = \""<< keyString <<"\", and value = \"" << _value << "\"");
 
         return false;
     }
@@ -436,7 +426,7 @@ bool CtiTableDynamicPaoInfoBase::Update(Cti::Database::DatabaseConnection &conn,
 
     updater
         << _value
-        << CtiTime::now()
+        << CtiTime()
         << getPaoID()
         << owner
         << keyString;
