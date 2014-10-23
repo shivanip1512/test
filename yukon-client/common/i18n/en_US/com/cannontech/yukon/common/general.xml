@@ -132,20 +132,6 @@
 
 <entry key="yukon.web.common.rfnExpressComMessage.error">RF ExpressCom message error: {0}</entry>
 
-<!-- keys for the filteredBy.tag -->
-<entry key="yukon.common.filteredBy.devices.label">for devices in</entry>
-<entry key="yukon.common.filteredBy.devices.value.individual">Individually Selected</entry>
-<entry key="yukon.common.filteredBy.dates.label">between</entry>
-<entry key="yukon.common.filteredBy.threshold.label">with a threshold of</entry>
-<entry key="yukon.common.filteredBy.threshold.value.galPerHour">{0,number,0.0} gal/hr</entry>
-<entry key="yukon.common.filteredBy.disabledDevices.label">including</entry>
-<entry key="yukon.common.filteredBy.disabledDevices.value">disabled devices</entry>
-<entry key="yukon.common.filteredBy.reset.label">or</entry>
-<entry key="yukon.common.filteredBy.reset.value">reset to defaults</entry>
-
-<entry key="yukon.common.adobeRequired">The Adobe Flash Player is required to view this graph.</entry>
-<entry key="yukon.common.adobePleaseDL">Please download the latest version of the Flash Player by following the link below.</entry>
-
 <entry key="yukon.common.true">True</entry>
 <entry key="yukon.common.false">False</entry>
 

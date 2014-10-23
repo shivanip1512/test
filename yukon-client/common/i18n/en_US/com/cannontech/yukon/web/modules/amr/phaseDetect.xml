@@ -146,8 +146,6 @@
     <entry key="yukon.web.modules.amr.phaseDetect.results.last">Last:</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.delta">Delta:</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.exportCsv">Export to CSV</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.results.adobeRequired">The Adobe Flash Player is required to view this graph.</entry>
-    <entry key="yukon.web.modules.amr.phaseDetect.results.adobePleaseDL">Please download the latest version of the Flash Player by following the link below.</entry> 
     <entry key="yukon.web.modules.amr.phaseDetect.results.detectionResults.title">Step 6: Phase Detection Results</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.phaseA.collectionActionLabel">Perform A Collection Action On Phase A Meters</entry>
     <entry key="yukon.web.modules.amr.phaseDetect.results.phaseB.collectionActionLabel">Perform A Collection Action On Phase B Meters</entry>
