@@ -62,14 +62,7 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
             callback.complete();
             return;
         }
-
-        Set<RfnIdentifier> rfnIdentifiers = Sets.newHashSet();
-        if (rfnGateways != null) {
-            for (RfnGateway rfnGateway : rfnGateways) {
-                rfnIdentifiers.add(rfnGateway.getRfnIdentifier());
-            }
-        }
-
+        
         String upgradeId;
         try {
             upgradeId = getCertificateId(upgradePackage);
@@ -77,6 +70,13 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
             callback.handleException(e);
             callback.complete();
             return;
+        }
+        
+        Set<RfnIdentifier> rfnIdentifiers = Sets.newHashSet();
+        if (rfnGateways != null) {
+            for (RfnGateway rfnGateway : rfnGateways) {
+                rfnIdentifiers.add(rfnGateway.getRfnIdentifier());
+            }
         }
         
         RfnGatewayUpgradeRequest request = new RfnGatewayUpgradeRequest();
@@ -117,7 +117,7 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
     }
 
     @Override
-    public void sendUpgradeAll(File upgradePackage, RfnGatewayUpdateCallback callback) {
+    public void sendUpdateAll(File upgradePackage, RfnGatewayUpdateCallback callback) {
         sendUpdate(null, upgradePackage, callback);
     }
 

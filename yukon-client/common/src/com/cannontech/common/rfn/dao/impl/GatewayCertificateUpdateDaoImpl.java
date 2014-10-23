@@ -26,7 +26,7 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     @Override
-    public int createUpdate(int certificateId, String fileName) {
+    public int createUpdate(String certificateId, String fileName) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.insertInto("GatewayCertificateUpdate");
         int updateId = nextValueHelper.getNextValue("GatewayCertificateUpdate");
@@ -103,7 +103,7 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
                 int updateId = rs.getInt("UpdateId");
                 GatewayCertificateUpdateInfo info = updateMap.get(updateId);
                 if (info == null) {
-                    int certificateId = rs.getInt("CertificateId");
+                    String certificateId = rs.getString("CertificateId");
                     Instant sendDate = rs.getInstant("SendDate");
                     String fileName = rs.getString("FileName");
                     info = new GatewayCertificateUpdateInfo(updateId, certificateId, sendDate, fileName);
@@ -119,7 +119,7 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
     }
     
     @Override
-    public int getLatestUpdateForCertificate(int certificateId) {
+    public int getLatestUpdateForCertificate(String certificateId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select UpdateId");
         sql.append("from GatewayCertificateUpdate");
@@ -136,7 +136,7 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
         @Override
         public GatewayCertificateUpdateInfo mapRow(YukonResultSet rs) throws SQLException {
             int updateId = rs.getInt("UpdateId");
-            int certificateId = rs.getInt("CertificateId");
+            String certificateId = rs.getString("CertificateId");
             Instant sendDate = rs.getInstant("SendDate");
             String fileName = rs.getString("FileName");
             

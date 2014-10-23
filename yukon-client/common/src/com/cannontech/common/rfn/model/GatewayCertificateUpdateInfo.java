@@ -7,12 +7,12 @@ import org.joda.time.Instant;
 
 public class GatewayCertificateUpdateInfo {
     private final int updateId;
-    private final int certificateId;
+    private final String certificateId;
     private final Instant sendDate;
     private final String fileName;
     private Map<Integer, GatewayCertificateUpdateStatus> gatewayStatuses;
     
-    public GatewayCertificateUpdateInfo(int updateId, int certificateId, Instant sendDate, String fileName) {
+    public GatewayCertificateUpdateInfo(int updateId, String certificateId, Instant sendDate, String fileName) {
         this.updateId = updateId;
         this.certificateId = certificateId;
         this.sendDate = sendDate;
@@ -28,7 +28,7 @@ public class GatewayCertificateUpdateInfo {
         return updateId;
     }
 
-    public int getCertificateId() {
+    public String getCertificateId() {
         return certificateId;
     }
     

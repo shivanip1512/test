@@ -25,7 +25,7 @@ public interface RfnGatewayUpdateService {
      * @param callback caller will be notified of NM's response to the gateway certificate upgrade request or
      * any errors through this callback.
      */
-    public void sendUpgradeAll(File certificatePackage, final RfnGatewayUpdateCallback callback);
+    public void sendUpdateAll(File certificatePackage, final RfnGatewayUpdateCallback callback);
 
     /**
      * Reads the upgradeId from a given gateway upgrade package file and returns it.
@@ -35,4 +35,5 @@ public interface RfnGatewayUpdateService {
      * upgradeId cannot be found.
      */
     public String getCertificateId(File certificatePackage) throws GatewayCertificateException;
+
 }
