@@ -478,6 +478,11 @@ struct timeSyncDNPDevices
 
     void operator()(CtiDeviceSPtr &RemoteRecord)
     {
+        if( RemoteRecord->getPortID() != port_id || RemoteRecord->isInhibited())
+        {
+            return;
+        }
+
         Cti::Config::DeviceConfigSPtr config = RemoteRecord->getDeviceConfig();
         if( !config )
         {
