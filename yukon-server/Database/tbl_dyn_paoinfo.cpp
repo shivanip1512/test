@@ -407,7 +407,7 @@ bool CtiTableDynamicPaoInfoBase::Update(Cti::Database::DatabaseConnection &conn,
 
     if( getPaoID() < 0 || owner.empty() || keyString.empty() || _value.empty() )
     {
-        CTILOG_ERROR(dout, "invalid attempt to insert into DynamicPaoInfo - paoid = "<< getPaoID() <<", owner = \""<< owner <<"\", keyString = \""<< keyString <<"\", and value = \"" << _value << "\"");
+        CTILOG_ERROR(dout, "invalid attempt to update DynamicPaoInfo - paoid = "<< getPaoID() <<", owner = \""<< owner <<"\", keyString = \""<< keyString <<"\", and value = \"" << _value << "\"");
 
         return false;
     }
