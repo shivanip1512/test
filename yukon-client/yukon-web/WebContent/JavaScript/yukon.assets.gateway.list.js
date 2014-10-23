@@ -40,7 +40,8 @@ yukon.assets.gateway.list = (function () {
                         clone = $('.js-loaded-row').clone();
                         clone.attr('data-gateway', paoId)
                         .removeClass('js-loaded-row')
-                        .find('.js-gw-name').text(gateway.name)
+                        .find('.js-gw-name a').text(gateway.name)
+                        .attr('href', yukon.url('/stars/gateways/' + paoId))
                         .next('.js-gw-sn').text(gateway.rfnId.sensorSerialNumber);
                         row.after(clone);
                         row.remove();

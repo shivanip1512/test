@@ -1,10 +1,14 @@
 package com.cannontech.web.stars.gateway;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -30,6 +34,8 @@ import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.stars.gateway.model.CertificateUpdate;
+import com.google.common.collect.Lists;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
@@ -50,6 +56,8 @@ public class GatewayListController {
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         model.addAttribute("gateways", gateways);
         
+        model.addAttribute("certUpdates", getCertUpdates());
+        
         Map<String, String> text = new HashMap<>();
         text.put("connect.pending", accessor.getMessage(baseKey + "connect.pending"));
         text.put("connect.success", accessor.getMessage(baseKey + "connect.success"));
@@ -64,6 +72,33 @@ public class GatewayListController {
         model.addAttribute("text", text);
         
         return "gateways/list.jsp";
+    }
+    
+    private List<CertificateUpdate> getCertUpdates() {
+        
+        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+        
+        List<CertificateUpdate> updates = new ArrayList<>();
+        
+        CertificateUpdate one = new CertificateUpdate();
+        one.setFileName("asdfadf.lkjjlkj.nm");
+        one.setTimestamp(new Instant().plus(Duration.standardDays(7)));
+        one.setSuccessful(Lists.newArrayList(gateways.get(0)));
+        one.setFailed(Lists.newArrayList(gateways.get(1)));
+        one.setUpgradeId("654asd67f54as76f4v");
+        
+        CertificateUpdate two = new CertificateUpdate();
+        two.setFileName("asdfadf.asdfasdf.nm");
+        two.setTimestamp(new Instant().plus(Duration.standardDays(8)));
+        two.setPending(Lists.newArrayList(gateways.get(0)));
+        two.setFailed(Lists.newArrayList(gateways.get(1)));
+        two.setUpgradeId("ads6587a56ds96dsaf");
+        
+        updates.add(one);
+        updates.add(two);
+        
+        return updates;
+        
     }
     
     @RequestMapping("/gateways/data")

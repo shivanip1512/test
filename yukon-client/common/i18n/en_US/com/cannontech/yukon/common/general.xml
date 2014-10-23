@@ -3,114 +3,10 @@
 
 <properties>
 
-<entry key="yukon.common.left">Left</entry>
-<entry key="yukon.common.right">Right</entry>
-<entry key="yukon.common.view">View</entry>
-<entry key="yukon.common.copyof">Copy of {0}</entry>
-
-<entry key="yukon.common.selectall">Select All</entry>
-
-<entry key="yukon.common.search">Search</entry>
-<entry key="yukon.common.search.placeholder">search</entry>
-
-<entry key="yukon.common.filter">Filter</entry>
-
-<entry key="yukon.common.deviceName">Device Name</entry>
-<entry key="yukon.common.deviceType">Device Type</entry>
-<entry key="yukon.common.device">Device</entry>
-<entry key="yukon.common.point">Point</entry>
-<entry key="yukon.common.route">Route</entry>
 <entry key="yukon.common.address">Address</entry>
-
-<entry key="yukon.common.okButton">OK</entry>
-<entry key="yukon.common.choose">Choose</entry>
-<entry key="yukon.common.disable">Disable</entry>
-<entry key="yukon.common.enable">Enable</entry>
-<entry key="yukon.common.disabled">Disabled</entry>
-<entry key="yukon.common.enabled">Enabled</entry>
-<entry key="yukon.common.cancel">Cancel</entry>
-<entry key="yukon.common.save">Save</entry>
-<entry key="yukon.common.help">Help</entry>
-<entry key="yukon.common.historyTooltip">Click to view history</entry>
-<entry key="yukon.common.loading">Loading…</entry>
-<entry key="yukon.common.networkManager">Network Manager</entry>
-
-<entry key="yukon.common.from">From</entry>
-<entry key="yukon.common.to">to</entry>
-<entry key="yukon.common.To">To</entry>
-
-<entry key="yukon.common.warning">Warning</entry>
-<entry key="yukon.common.warningMessage">Warning: {0}</entry>
-
-<entry key="yukon.common.loginStatus.ENABLED">Enabled</entry>
-<entry key="yukon.common.loginStatus.DISABLED">Disabled</entry>
-
-<entry key="yukon.common.authType.HASH_SHA">Hashed</entry>
-<entry key="yukon.common.authType.HASH_SHA_V2">Hashed v.2</entry>
-<entry key="yukon.common.authType.RADIUS">Radius</entry>
-<entry key="yukon.common.authType.NONE">No Login</entry>
-<entry key="yukon.common.authType.AD">Active Directory</entry>
-<entry key="yukon.common.authType.LDAP">LDAP</entry>
-<entry key="yukon.common.authType.PLAIN">PLAIN</entry>
-
-<entry key="yukon.common.authenticationCategory.AD">Active Directory</entry>
-<entry key="yukon.common.authenticationCategory.ENCRYPTED">Encrypted</entry>
-<entry key="yukon.common.authenticationCategory.LDAP">LDAP</entry>
-<entry key="yukon.common.authenticationCategory.RADIUS">Radius</entry>
-<entry key="yukon.common.authenticationCategory.NONE">No Login</entry>
-
-<entry key="yukon.common.clientApplicationRememberMe.NONE">None</entry>
-<entry key="yukon.common.clientApplicationRememberMe.USERNAME">Username (recomended)</entry>
-<entry key="yukon.common.clientApplicationRememberMe.USERNAME_AND_PASSWORD">Username and Password (less secure)</entry>
-
-<entry key="yukon.common.phase">Phase</entry>
-<entry key="yukon.common.noPhase">No Phase</entry>
-<entry key="yukon.common.phase.phase">All</entry>
-<entry key="yukon.common.phase.phaseA">A</entry>
-<entry key="yukon.common.phase.phaseB">B</entry>
-<entry key="yukon.common.phase.phaseC">C</entry>
-
-<entry key="yukon.common.thermostat.mode.AUTO">Auto</entry>
-<entry key="yukon.common.thermostat.mode.COOL">Cool</entry>
-<entry key="yukon.common.thermostat.mode.HEAT">Heat</entry>
-<entry key="yukon.common.thermostat.mode.EMERGENCY_HEAT">Emergency Heat</entry>
-<entry key="yukon.common.thermostat.mode.OFF">Off</entry>
-<entry key="yukon.common.thermostat.mode.DEFAULT">Default</entry>
-
-<entry key="yukon.common.prefixedByteValue.noPrefix">{0,number,#,##0} bytes</entry>
-<entry key="yukon.common.prefixedByteValue.kibi">{0,number,#,##0.0} kB</entry>
-<entry key="yukon.common.prefixedByteValue.mebi">{0,number,#,##0.0} MB</entry>
-<entry key="yukon.common.prefixedByteValue.gibi">{0,number,#,##0.0} GB</entry>
-<entry key="yukon.common.prefixedByteValue.tebi">{0,number,#,##0.0} TB</entry>
-<entry key="yukon.common.prefixedByteValue.pebi">{0,number,#,##0.0} PB</entry>
-<entry key="yukon.common.prefixedByteValue.exbi">{0,number,#,##0.0} EB</entry>
-
-<entry key="yukon.common.float.tenths">{0,number,#,##0.0}</entry>
-<entry key="yukon.common.float.hundredths">{0,number,#,##0.00}</entry>
-<entry key="yukon.common.float.thousandths">{0,number,#,##0.000}</entry>
-<entry key="yukon.common.float.ten_thousandths">{0,number,#,##0.0000}</entry>
-<entry key="yukon.common.float.hundred_thousandths">{0,number,#,##0.00000}</entry>
-<entry key="yukon.common.float.millionths">{0,number,#,##0.000000}</entry>
-<entry key="yukon.common.float.ten_millionths">{0,number,#,##0.0000000}</entry>
-<entry key="yukon.common.float.hundred_millionths">{0,number,#,##0.00000000}</entry>
-
-<entry key="yukon.common.decimalSeparator">.</entry>
-<entry key="yukon.common.thousandSeparator">,</entry>
-<entry key="yukon.common.comma">,</entry>
-
 <entry key="yukon.common.attribute">Attribute</entry>
 <entry key="yukon.common.attribute.select">Select Attribute</entry>
 <entry key="yukon.common.attribute.select.multi">Select Attribute(s)</entry>
-<entry key="yukon.common.units">Units</entry>
-<entry key="yukon.common.timestamp">Timestamp</entry>
-<entry key="yukon.common.value">State/Value</entry>
-<entry key="yukon.common.quality">Quality</entry>
-<entry key="yukon.common.pointName">Point Name</entry>
-<entry key="yukon.common.pointType">Point Type</entry>
-<entry key="yukon.common.pointOffset">Point Offset</entry>
-
-<entry key="yukon.common.attributes.pointNotFound">Point not configured.</entry>
-
 <entry key="yukon.common.attributeGroups.BLINK_AND_OUTAGE">Blink &amp; Outage</entry>
 <entry key="yukon.common.attributeGroups.CURRENT">Current</entry>
 <entry key="yukon.common.attributeGroups.DEMAND">Demand</entry>
@@ -118,10 +14,6 @@
 <entry key="yukon.common.attributeGroups.PROFILE">Profile</entry>
 <entry key="yukon.common.attributeGroups.REACTIVE">Reactive</entry>
 <entry key="yukon.common.attributeGroups.RELAY">Relay</entry>
-<entry key="yukon.common.attributeGroups.STATUS">Status</entry>
-<entry key="yukon.common.attributeGroups.USAGE">Usage</entry>
-<entry key="yukon.common.attributeGroups.VOLTAGE">Voltage</entry>
-
 <entry key="yukon.common.attributeGroups.RFN_CURRENT_EVENT">Current Events</entry>
 <entry key="yukon.common.attributeGroups.RFN_DEMAND_EVENT">Demand Events</entry>
 <entry key="yukon.common.attributeGroups.RFN_HARDWARE_EVENT">Hardware Events</entry>
@@ -129,48 +21,128 @@
 <entry key="yukon.common.attributeGroups.RFN_OTHER_EVENT">Other Events</entry>
 <entry key="yukon.common.attributeGroups.RFN_SOFTWARE_EVENT">Software Events</entry>
 <entry key="yukon.common.attributeGroups.RFN_VOLTAGE_EVENT">Voltage Events</entry>
-
-<entry key="yukon.web.common.rfnExpressComMessage.error">RF ExpressCom message error: {0}</entry>
-
-<entry key="yukon.common.true">True</entry>
-<entry key="yukon.common.false">False</entry>
-
-<entry key="yukon.common.html">HTML</entry>
-<entry key="yukon.common.csv">CSV</entry>
-<entry key="yukon.common.pdf">PDF</entry>
-
-<entry key="yukon.common.console">Console</entry>
-<entry key="yukon.common.file">File</entry>
-<entry key="yukon.common.view">view</entry>
-<entry key="yukon.common.range">Range</entry>
-<entry key="yukon.common.status">Status</entry>
-<entry key="yukon.common.email">Email</entry>
+<entry key="yukon.common.attributeGroups.STATUS">Status</entry>
+<entry key="yukon.common.attributeGroups.USAGE">Usage</entry>
+<entry key="yukon.common.attributeGroups.VOLTAGE">Voltage</entry>
+<entry key="yukon.common.attributes.pointNotFound">Point not configured.</entry>
+<entry key="yukon.common.authenticationCategory.AD">Active Directory</entry>
+<entry key="yukon.common.authenticationCategory.ENCRYPTED">Encrypted</entry>
+<entry key="yukon.common.authenticationCategory.LDAP">LDAP</entry>
+<entry key="yukon.common.authenticationCategory.NONE">No Login</entry>
+<entry key="yukon.common.authenticationCategory.RADIUS">Radius</entry>
+<entry key="yukon.common.authType.AD">Active Directory</entry>
+<entry key="yukon.common.authType.HASH_SHA">Hashed</entry>
+<entry key="yukon.common.authType.HASH_SHA_V2">Hashed v.2</entry>
+<entry key="yukon.common.authType.LDAP">LDAP</entry>
+<entry key="yukon.common.authType.NONE">No Login</entry>
+<entry key="yukon.common.authType.PLAIN">PLAIN</entry>
+<entry key="yukon.common.authType.RADIUS">Radius</entry>
+<entry key="yukon.common.cancel">Cancel</entry>
+<entry key="yukon.common.choose">Choose</entry>
+<entry key="yukon.common.clientApplicationRememberMe.NONE">None</entry>
+<entry key="yukon.common.clientApplicationRememberMe.USERNAME">Username (recomended)</entry>
+<entry key="yukon.common.clientApplicationRememberMe.USERNAME_AND_PASSWORD">Username and Password (less secure)</entry>
+<entry key="yukon.common.collapseAll">Collapse All</entry>
+<entry key="yukon.common.comma">,</entry>
+<entry key="yukon.common.complete">Complete</entry>
 <entry key="yukon.common.completed">Completed</entry>
-<entry key="yukon.common.pending">Pending...</entry>
-<entry key="yukon.common.requestFailed">Request Failed</entry>
-
-<entry key="yukon.common.search.noResultsFound">No results found.</entry>
-
+<entry key="yukon.common.console">Console</entry>
+<entry key="yukon.common.copyof">Copy of {0}</entry>
+<entry key="yukon.common.csv">CSV</entry>
+<entry key="yukon.common.decimalSeparator">.</entry>
+<entry key="yukon.common.device">Device</entry>
+<entry key="yukon.common.deviceName">Device Name</entry>
+<entry key="yukon.common.deviceType">Device Type</entry>
+<entry key="yukon.common.disable">Disable</entry>
+<entry key="yukon.common.disabled">Disabled</entry>
+<entry key="yukon.common.distance.KILOMETERS">km</entry>
+<entry key="yukon.common.distance.MILES">mi.</entry>
+<entry key="yukon.common.distance.NAUTICAL_MILES">n.m.</entry>
+<entry key="yukon.common.email">Email</entry>
+<entry key="yukon.common.enable">Enable</entry>
+<entry key="yukon.common.enabled">Enabled</entry>
+<entry key="yukon.common.expandAll">Expand All</entry>
+<entry key="yukon.common.failed">Failed</entry>
+<entry key="yukon.common.false">False</entry>
+<entry key="yukon.common.file">File</entry>
 <entry key="yukon.common.file1">File 1</entry>
 <entry key="yukon.common.file2">File 2</entry>
 <entry key="yukon.common.file3">File 3</entry>
 <entry key="yukon.common.file4">File 4</entry>
-
-<entry key="yukon.common.undo">Undo</entry>
-<entry key="yukon.common.expandAll">Expand All</entry>
-<entry key="yukon.common.collapseAll">Collapse All</entry>
-
+<entry key="yukon.common.filter">Filter</entry>
+<entry key="yukon.common.float.hundredths">{0,number,#,##0.00}</entry>
+<entry key="yukon.common.float.hundred_millionths">{0,number,#,##0.00000000}</entry>
+<entry key="yukon.common.float.hundred_thousandths">{0,number,#,##0.00000}</entry>
+<entry key="yukon.common.float.millionths">{0,number,#,##0.000000}</entry>
+<entry key="yukon.common.float.tenths">{0,number,#,##0.0}</entry>
+<entry key="yukon.common.float.ten_millionths">{0,number,#,##0.0000000}</entry>
+<entry key="yukon.common.float.ten_thousandths">{0,number,#,##0.0000}</entry>
+<entry key="yukon.common.float.thousandths">{0,number,#,##0.000}</entry>
+<entry key="yukon.common.from">From</entry>
+<entry key="yukon.common.help">Help</entry>
+<entry key="yukon.common.historyTooltip">Click to view history</entry>
+<entry key="yukon.common.html">HTML</entry>
 <entry key="yukon.common.invalidCron">Invalid Cron Expression</entry>
+<entry key="yukon.common.left">Left</entry>
+<entry key="yukon.common.loading">Loading…</entry>
+<entry key="yukon.common.loginStatus.DISABLED">Disabled</entry>
+<entry key="yukon.common.loginStatus.ENABLED">Enabled</entry>
+<entry key="yukon.common.networkManager">Network Manager</entry>
+<entry key="yukon.common.noPhase">No Phase</entry>
+<entry key="yukon.common.okButton">OK</entry>
 <entry key="yukon.common.operationSuccess">Operation Successful</entry>
-
+<entry key="yukon.common.pdf">PDF</entry>
+<entry key="yukon.common.pending">Pending</entry>
+<entry key="yukon.common.phase">Phase</entry>
+<entry key="yukon.common.phase.phase">All</entry>
+<entry key="yukon.common.phase.phaseA">A</entry>
+<entry key="yukon.common.phase.phaseB">B</entry>
+<entry key="yukon.common.phase.phaseC">C</entry>
+<entry key="yukon.common.point">Point</entry>
+<entry key="yukon.common.pointName">Point Name</entry>
+<entry key="yukon.common.pointOffset">Point Offset</entry>
+<entry key="yukon.common.pointType">Point Type</entry>
+<entry key="yukon.common.prefixedByteValue.exbi">{0,number,#,##0.0} EB</entry>
+<entry key="yukon.common.prefixedByteValue.gibi">{0,number,#,##0.0} GB</entry>
+<entry key="yukon.common.prefixedByteValue.kibi">{0,number,#,##0.0} kB</entry>
+<entry key="yukon.common.prefixedByteValue.mebi">{0,number,#,##0.0} MB</entry>
+<entry key="yukon.common.prefixedByteValue.noPrefix">{0,number,#,##0} bytes</entry>
+<entry key="yukon.common.prefixedByteValue.pebi">{0,number,#,##0.0} PB</entry>
+<entry key="yukon.common.prefixedByteValue.tebi">{0,number,#,##0.0} TB</entry>
+<entry key="yukon.common.quality">Quality</entry>
+<entry key="yukon.common.range">Range</entry>
+<entry key="yukon.common.requestFailed">Request Failed</entry>
+<entry key="yukon.common.right">Right</entry>
+<entry key="yukon.common.route">Route</entry>
+<entry key="yukon.common.save">Save</entry>
+<entry key="yukon.common.search">Search</entry>
+<entry key="yukon.common.search.noResultsFound">No results found.</entry>
+<entry key="yukon.common.search.placeholder">search</entry>
+<entry key="yukon.common.selectall">Select All</entry>
 <entry key="yukon.common.selectGroup">select device group...</entry>
-<entry key="yukon.common.selectGroups">select device group(s)...</entry>
-<entry key="yukon.common.selectGroup.title">Select Device Group</entry>
-<entry key="yukon.common.selectGroups.title">Select Device Group(s)</entry>
 <entry key="yukon.common.selectGroup.more">and {0} more</entry>
-
-<entry key="yukon.common.distance.MILES">mi.</entry>
-<entry key="yukon.common.distance.KILOMETERS">km</entry>
-<entry key="yukon.common.distance.NAUTICAL_MILES">n.m.</entry>
+<entry key="yukon.common.selectGroup.title">Select Device Group</entry>
+<entry key="yukon.common.selectGroups">select device group(s)...</entry>
+<entry key="yukon.common.selectGroups.title">Select Device Group(s)</entry>
+<entry key="yukon.common.status">Status</entry>
+<entry key="yukon.common.successful">Successful</entry>
+<entry key="yukon.common.thermostat.mode.AUTO">Auto</entry>
+<entry key="yukon.common.thermostat.mode.COOL">Cool</entry>
+<entry key="yukon.common.thermostat.mode.DEFAULT">Default</entry>
+<entry key="yukon.common.thermostat.mode.EMERGENCY_HEAT">Emergency Heat</entry>
+<entry key="yukon.common.thermostat.mode.HEAT">Heat</entry>
+<entry key="yukon.common.thermostat.mode.OFF">Off</entry>
+<entry key="yukon.common.thousandSeparator">,</entry>
+<entry key="yukon.common.timestamp">Timestamp</entry>
+<entry key="yukon.common.To">To</entry>
+<entry key="yukon.common.to">to</entry>
+<entry key="yukon.common.true">True</entry>
+<entry key="yukon.common.undo">Undo</entry>
+<entry key="yukon.common.units">Units</entry>
+<entry key="yukon.common.value">State/Value</entry>
+<entry key="yukon.common.view">View</entry>
+<entry key="yukon.common.warning">Warning</entry>
+<entry key="yukon.common.warningMessage">Warning: {0}</entry>
+<entry key="yukon.web.common.rfnExpressComMessage.error">RF ExpressCom message error: {0}</entry>
 
 </properties>

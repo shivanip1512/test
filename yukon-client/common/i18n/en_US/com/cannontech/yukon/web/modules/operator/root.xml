@@ -39,6 +39,8 @@
     <entry key="yukon.web.modules.operator.gateways.detail.delete.confirm.message">Are you sure you want to delete this gateway?</entry>
     
     <!-- Gateway Common Words -->
+    <entry key="yukon.web.modules.operator.gateways.cert">Certificate</entry>
+    <entry key="yukon.web.modules.operator.gateways.cert.update.more"> and {0} more...</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.gateways">Gateways</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.label">Certificate Update</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.file">Certificate File</entry>

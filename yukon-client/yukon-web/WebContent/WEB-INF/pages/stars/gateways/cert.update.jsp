@@ -15,7 +15,7 @@
     </tags:nameValue2>
 </tags:nameValueContainer2>
 
-<h3 class="subtle"><i:inline key=".gateways"/></h3>
+<h3><i:inline key=".gateways"/></h3>
 <div class="column-12-12 clearfix js-select-all-container scroll-md">
 <c:forEach var="gateway" items="${gateways}" varStatus="status">
     <c:choose>

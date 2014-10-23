@@ -1,5 +1,6 @@
 package com.cannontech.common.util;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -7,13 +8,20 @@ import java.util.StringTokenizer;
 import com.google.common.collect.Lists;
 
 public final class StringUtils {
-    /**
-     * StringUtils constructor comment.
-     */
-    private StringUtils() {
-        super();
+    
+    private StringUtils() {}
+    
+    public static String percent(int total, int count, int maxFractionDigits) {
+        
+        double percent = count / (double)total;
+        
+        DecimalFormat decimalFormat = new DecimalFormat("###.##%");
+        decimalFormat.setMaximumFractionDigits(maxFractionDigits);
+        decimalFormat.setMinimumFractionDigits(0);
+        
+        return decimalFormat.format(percent);
     }
-
+    
     public static String addCharBetweenWords(char addedChar, String str) {
         if (str == null) {
             return null;

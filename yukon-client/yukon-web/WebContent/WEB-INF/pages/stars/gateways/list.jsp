@@ -112,41 +112,49 @@
 <table id="cert-table" class="compact-results-table">
     <thead>
         <tr>
-            <th>Timestamp</th>
-            <th>Certificate</th>
-            <th>Gateways</th>
-            <th>Status</th>
-            <th class="tar">Pending</th>
-            <th class="tar">Failed</th>
-            <th class="tar">Successful</th>
+            <th><i:inline key="yukon.common.timestamp"/></th>
+            <th><i:inline key=".cert"/></th>
+            <th><i:inline key=".cert.update.gateways"/></th>
+            <th><i:inline key="yukon.common.status"/></th>
+            <th class="tar"><i:inline key="yukon.common.pending"/></th>
+            <th class="tar"><i:inline key="yukon.common.failed"/></th>
+            <th class="tar"><i:inline key="yukon.common.successful"/></th>
         </tr>
     </thead>
     <tfoot></tfoot>
     <tbody>
-        <tr data-upgrade="${upgrade.upgradeId}">
-            <td><a href="javascript:void(0);">10/23/2014 10:30 AM</a></td>
-            <td>asdfadf.lkjjlkj.nm</td>
-            <td>Meters, LCRs and 168 more...</td>
-            <td>
-                <div class="progress dib vat">
-                    <div class="progress-bar progress-bar-success" style="width: 70.59%;"></div>
-                    <div class="progress-bar progress-bar-danger" style="width: 1.18%;"></div>
-                </div>
-                <span class="js-percent">71.77%</span>
-            </td>
-            <td class="tar subtle">48</td>
-            <td class="tar error">2</td>
-            <td class="tar success">120</td>
+        <c:forEach var="update" items="${certUpdates}">
+            <tr data-update-id="${update.upgradeId}">
+                <td>
+                    <a href="javascript:void(0);"><cti:formatDate value="${update.timestamp}" type="BOTH"/></a>
+                </td>
+                <td>${fn:escapeXml(update.fileName)}</td>
+                <c:set var="all" value="${update.sortedGateways}"/>
+                <td>${fn:escapeXml(all[0].name)}<c:if test="${fn:length(all) > 1}">,&nbsp;${fn:escapeXml(all[1].name)}</c:if>
+                    <c:if test="${fn:length(all) > 2}">
+                        <i:inline key=".cert.update.more" arguments="${fn:length(all) - 2}"/>
+                    </c:if>
+                </td>
+                <td>
+                    <c:choose>
+                        <c:when test="${fn:length(update.pending) == 0}">
+                            <span class="success"><i:inline key="yukon.common.complete"/></span>
+                        </c:when>
+                        <c:otherwise>
+                            <div class="progress dib vat">
+                                <div class="progress-bar progress-bar-success" style="width: ${update.successPercent};"></div>
+                                <div class="progress-bar progress-bar-danger" style="width: ${update.failedPercent};"></div>
+                            </div>
+                            <span class="js-percent">${update.totalPercent}</span>
+                        </c:otherwise>
+                    </c:choose>
+                </td>
+                <td class="tar subtle">${fn:length(update.pending)}</td>
+                <td class="tar error">${fn:length(update.failed)}</td>
+                <td class="tar success">${fn:length(update.successful)}</td>
         </tr>
-        <tr data-upgrade="${upgrade.upgradeId}">
-            <td><a href="javascript:void(0);">10/22/2014 09:30 AM</a></td>
-            <td>asdfadf.asdfasdf.nm</td>
-            <td>Meters, LCRs and 168 more...</td>
-            <td><span class="success">Complete</span></td>
-            <td class="tar subtle">0</td>
-            <td class="tar error">0</td>
-            <td class="tar success">170</td>
-        </tr>
+        </c:forEach>
+        
     </tbody>
 </table>
 </div>
