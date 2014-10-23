@@ -41,11 +41,12 @@ yukon.assets.gateway.list = (function () {
                         clone.attr('data-gateway', paoId)
                         .removeClass('js-loaded-row')
                         .find('.js-gw-name a').text(gateway.name)
-                        .attr('href', yukon.url('/stars/gateways/' + paoId))
-                        .next('.js-gw-sn').text(gateway.rfnId.sensorSerialNumber);
+                        .attr('href', yukon.url('/stars/gateways/' + paoId));
+                        clone.find('.js-gw-sn').text(gateway.rfnId.sensorSerialNumber);
                         row.after(clone);
                         row.remove();
                         row = $('[data-gateway="' + paoId + '"]');
+                        row.find('.dropdown-trigger').attr('data-id', paoId).attr('data-name', gateway.name);
                     }
                     
                     row.find('.js-gw-conn-status').attr('title', data.connectionStatusText)

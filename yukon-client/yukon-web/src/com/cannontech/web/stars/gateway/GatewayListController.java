@@ -80,22 +80,22 @@ public class GatewayListController {
         
         List<CertificateUpdate> updates = new ArrayList<>();
         
-        CertificateUpdate one = new CertificateUpdate();
-        one.setFileName("asdfadf.lkjjlkj.nm");
-        one.setTimestamp(new Instant().plus(Duration.standardDays(7)));
-        one.setSuccessful(Lists.newArrayList(gateways.get(0)));
-        one.setFailed(Lists.newArrayList(gateways.get(1)));
-        one.setUpgradeId("654asd67f54as76f4v");
-        
-        CertificateUpdate two = new CertificateUpdate();
-        two.setFileName("asdfadf.asdfasdf.nm");
-        two.setTimestamp(new Instant().plus(Duration.standardDays(8)));
-        two.setPending(Lists.newArrayList(gateways.get(0)));
-        two.setFailed(Lists.newArrayList(gateways.get(1)));
-        two.setUpgradeId("ads6587a56ds96dsaf");
-        
-        updates.add(one);
-        updates.add(two);
+//        CertificateUpdate one = new CertificateUpdate();
+//        one.setFileName("asdfadf.lkjjlkj.nm");
+//        one.setTimestamp(new Instant().plus(Duration.standardDays(7)));
+//        one.setSuccessful(Lists.newArrayList(gateways.get(0)));
+//        one.setFailed(Lists.newArrayList(gateways.get(1)));
+//        one.setUpgradeId("654asd67f54as76f4v");
+//        
+//        CertificateUpdate two = new CertificateUpdate();
+//        two.setFileName("asdfadf.asdfasdf.nm");
+//        two.setTimestamp(new Instant().plus(Duration.standardDays(8)));
+//        two.setPending(Lists.newArrayList(gateways.get(0)));
+//        two.setFailed(Lists.newArrayList(gateways.get(1)));
+//        two.setUpgradeId("ads6587a56ds96dsaf");
+//        
+//        updates.add(one);
+//        updates.add(two);
         
         return updates;
         

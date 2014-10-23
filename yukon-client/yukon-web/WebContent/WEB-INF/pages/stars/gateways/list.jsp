@@ -107,9 +107,13 @@
 </table>
 </div>
 
-<h3>Certificate Updates</h3>
+<h3><i:inline key=".cert.updates"/></h3>
 <div class="scroll-lg">
-<table id="cert-table" class="compact-results-table">
+<c:set var="clazz" value="${empty certUpdates ? 'dn' : ''}"/>
+<c:if test="${empty certUpdates}">
+    <div class="empty-list"><i:inline key=".cert.updates.none"/></div>
+</c:if>
+<table id="cert-table" class="compact-results-table ${clazz}">
     <thead>
         <tr>
             <th><i:inline key="yukon.common.timestamp"/></th>
@@ -186,9 +190,9 @@
             </td>
         </tr>
         <tr class="js-loading-row" data-gateway="" data-loaded="false">
-            <td><cti:icon icon="icon-loading-bars"/></td>
-            <td></td>
-            <td></td>
+            <td class="js-gw-conn-status"><cti:icon icon="icon-loading-bars"/></td>
+            <td class="js-gw-name"></td>
+            <td class="js-gw-sn"></td>
             <td colspan="4"><i:inline key=".loadingGatewayData"/></td>
         </tr>
     </table>
