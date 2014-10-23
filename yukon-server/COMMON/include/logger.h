@@ -130,7 +130,7 @@ IM_EX_CTIBASE extern Cti::Logging::LoggerPtr slog; // Global instance. Simulator
 #define CTILOG_EXCEPTION_LOG_3(level, logger, ex) { \
         if( logger->isLevelEnable(level) ) { \
             Cti::StreamBufferSink logStream_; \
-            logStream_ <<"\ncaused by exception "<< typeid(ex).name(); \
+            logStream_ <<"caused by exception "<< typeid(ex).name(); \
             const std::string cause_ = Cti::Logging::getExceptionCause(ex); \
             if( ! cause_.empty() ) { \
                 logStream_ <<" - "<< cause_; \
@@ -161,7 +161,7 @@ IM_EX_CTIBASE extern Cti::Logging::LoggerPtr slog; // Global instance. Simulator
 #define CTILOG_UNKNOWN_EXCEPTION_LOG_2(level, logger) { \
         if( logger->isLevelEnable(level) ) { \
             Cti::StreamBufferSink logStream_; \
-            logStream_ <<"\ncaused by "<< Cti::Logging::getUnknownExceptionCause(); \
+            logStream_ <<"caused by "<< Cti::Logging::getUnknownExceptionCause(); \
             logger->formatAndForceLog(level, logStream_, __FILE__, __FUNCSIG__, __LINE__); \
         }}
 

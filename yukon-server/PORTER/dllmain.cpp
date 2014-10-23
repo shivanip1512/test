@@ -71,7 +71,7 @@ BOOL APIENTRY DllMain(HANDLE hModule,
 
             for(int i = 0 ;i < NUMPORTEREVENTS; i++)
             {
-                if(i = P_QUIT_EVENT)
+                if(i == P_QUIT_EVENT)
                     continue;
 
                 hPorterEvents[i] = CreateEvent(NULL,
