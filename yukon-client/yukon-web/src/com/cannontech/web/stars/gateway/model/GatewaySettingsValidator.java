@@ -30,11 +30,8 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
             }
         }
         
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "adminUsername", baseKey + "username.required");
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "adminPassword", baseKey + "password.required");
-        
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "superAdminUsername", baseKey + "username.required");
-        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "superAdminPassword", baseKey + "password.required");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "admin.username", baseKey + "username.required");
+        YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "superAdmin.username", baseKey + "username.required");
         
         Double latitude = settings.getLatitude();
         Double longitude = settings.getLongitude();

@@ -29,84 +29,61 @@
 <form:form id="gateway-settings-form" action="${url}" method="${method}" commandName="settings">
     <cti:csrfToken/>
     
-    <table class="name-value-table with-form-controls">
+    <tags:nameValueContainer2 tableClass="with-form-controls">
         
-        <tr>
-            <td class="name"><i:inline key=".name"/></td>
-            <td class="value">
-                <tags:input path="name" inputClass="js-focus full-width" tabindex="1" maxlength="60"/>
-            </td>
-        </tr>
+        <tags:nameValue2 nameKey=".name">
+            <tags:input path="name" inputClass="js-focus full-width" tabindex="1" maxlength="60"/>
+        </tags:nameValue2>
         
-        <tr>
-            <td class="name"><i:inline key=".ipaddress"/></td>
-            <td class="value">
-                <tags:input path="ipAddress" inputClass="js-gateway-edit-ip" maxlength="15" size="15" tabindex="2"/>
-            </td>
-        </tr>
+        <tags:nameValue2 nameKey=".ipaddress">
+            <tags:input path="ipAddress" inputClass="js-gateway-edit-ip" maxlength="15" size="15" tabindex="2"/>
+        </tags:nameValue2>
         
-        <tr><td colspan="2"><strong><i:inline key=".credentials"/></strong></td></tr>
+        <tags:nameValue2 nameKey=".authentication" nameClass="fwb" excludeColon="true" valueClass="js-test-results">
+        </tags:nameValue2>
         
-        <tr class="js-gateway-edit-admin">
-            <td class="name">
-                <i:inline key=".admin"/>
-                <label class="db">
-                    <form:radiobutton path="adminDefault" tabindex="3" value="true"/>
-                    <i:inline key="defaults.default"/>
-                </label>
-            </td>
-            <td class="value">
-                <spring:bind path="adminUsername">
-                    <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                    <form:input path="adminUsername" cssClass="M0 left js-gateway-edit-username ${clazz}" 
-                        placeholder="${phUsername}" tabindex="4"/>
-                </spring:bind>
-                <spring:bind path="adminPassword">
-                    <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                    <form:input path="adminPassword" cssClass="M0 middle js-gateway-edit-password ${clazz}" 
-                        placeholder="${phPassword}" tabindex="5"/>
-                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
-                        disabled="true" nameKey="testConnection" tabindex="6"/>
-                </spring:bind>
-                
-                <spring:bind path="adminUsername">
-                    <c:if test="${status.error}"><form:errors path="adminUsername" cssClass="error" element="div"/></c:if>
-                </spring:bind>
-                <spring:bind path="adminPassword">
-                    <c:if test="${status.error}"><form:errors path="adminPassword" cssClass="error" element="div"/></c:if>
-                </spring:bind>
-            </td>
-        </tr>
+        <tags:nameValue2 rowClass="js-gateway-edit-admin" nameKey=".admin">
+            <spring:bind path="admin.username">
+                <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
+                <form:input path="admin.username" cssClass="M0 left js-gateway-edit-username ${clazz}" 
+                    placeholder="${phUsername}" tabindex="3"/>
+            </spring:bind>
+            <spring:bind path="admin.password">
+                <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
+                <form:input path="admin.password" cssClass="M0 middle js-gateway-edit-password ${clazz}" 
+                    placeholder="${phPassword}" tabindex="4"/>
+                <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
+                    disabled="true" nameKey="testConnection" tabindex="5"/>
+            </spring:bind>
+            
+            <spring:bind path="admin.username">
+                <c:if test="${status.error}"><form:errors path="admin.username" cssClass="error" element="div"/></c:if>
+            </spring:bind>
+            <spring:bind path="admin.password">
+                <c:if test="${status.error}"><form:errors path="admin.password" cssClass="error" element="div"/></c:if>
+            </spring:bind>
+        </tags:nameValue2>
         
-        <tr class="js-gateway-edit-super-admin">
-            <td class="name">
-                <i:inline key=".superAdmin"/>
-                <label class="db">
-                    <form:radiobutton path="adminDefault" tabindex="3" value="false"/>
-                    <i:inline key="defaults.default"/>
-                </label>
-            </td>
-            <td class="value">
-                <spring:bind path="superAdminUsername">
-                    <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                    <form:input path="superAdminUsername" cssClass="M0 left js-gateway-edit-username ${clazz}" 
-                        placeholder="${phUsername}" tabindex="7"/>
-                </spring:bind>
-                <spring:bind path="superAdminPassword">
-                    <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                    <form:input path="superAdminPassword" cssClass="M0 middle js-gateway-edit-password ${clazz}" 
-                        placeholder="${phPassword}" tabindex="8"/>
-                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
-                        disabled="true" nameKey="testConnection" tabindex="9"/>
-                </spring:bind>
-                <spring:bind path="superAdminUsername">
-                    <c:if test="${status.error}"><form:errors path="superAdminUsername" cssClass="error" element="div"/></c:if>
-                </spring:bind>
-                <spring:bind path="superAdminPassword">
-                    <c:if test="${status.error}"><form:errors path="superAdminPassword" cssClass="error" element="div"/></c:if>
-                </spring:bind>
-            </td>
-        </tr>
+        <tags:nameValue2 rowClass="js-gateway-edit-super-admin" nameKey=".superAdmin">
+            <spring:bind path="superAdmin.username">
+                <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
+                <form:input path="superAdmin.username" cssClass="M0 left js-gateway-edit-username ${clazz}" 
+                    placeholder="${phUsername}" tabindex="6"/>
+            </spring:bind>
+            <spring:bind path="superAdmin.password">
+                <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
+                <form:input path="superAdmin.password" cssClass="M0 middle js-gateway-edit-password ${clazz}" 
+                    placeholder="${phPassword}" tabindex="7"/>
+                <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
+                    disabled="true" nameKey="testConnection" tabindex="8"/>
+            </spring:bind>
+            <spring:bind path="superAdmin.username">
+                <c:if test="${status.error}"><form:errors path="superAdmin.username" cssClass="error" element="div"/></c:if>
+            </spring:bind>
+            <spring:bind path="superAdmin.password">
+                <c:if test="${status.error}"><form:errors path="superAdmin.password" cssClass="error" element="div"/></c:if>
+            </spring:bind>
+        </tags:nameValue2>
         
         <tr><td colspan="2">&nbsp;</td></tr>
         
@@ -121,12 +98,12 @@
                 <spring:bind path="latitude">
                     <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                     <form:input path="latitude" cssClass="M0 left ${clazz}" maxlength="10" size="10"
-                        placeholder="${phLatitude}" tabindex="13" title="${phLatitude}"/>
+                        placeholder="${phLatitude}" tabindex="9" title="${phLatitude}"/>
                 </spring:bind>
                 <spring:bind path="longitude">
                     <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                     <form:input path="longitude" cssClass="M0 right ${clazz}" maxlength="11" size="11"
-                        placeholder="${phLongitude}" tabindex="14" title="${phLongitude}"/>
+                        placeholder="${phLongitude}" tabindex="10" title="${phLongitude}"/>
                 </spring:bind>
                 <spring:bind path="latitude">
                     <c:if test="${status.error}"><form:errors path="latitude" cssClass="error" element="div"/></c:if>
@@ -137,7 +114,7 @@
             </td>
         </tr>
         
-    </table>
+    </tags:nameValueContainer2>
     
 </form:form>
 
