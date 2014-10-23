@@ -13,10 +13,10 @@ public class RfnGatewayUpgradeResponse implements RfnIdentifyingMessage, Seriali
 
     private String upgradeId;
     private RfnIdentifier rfnIdentifier;
-    private RfnGatewayUpgradeResponseType responseType;
-    private short gatewayMessageType;
-    private byte gatewayMessageStatus;
-    private int fragmentId;
+    private RfnGatewayUpgradeResponseType responseType = RfnGatewayUpgradeResponseType.UNKNOWN;
+    private short gatewayMessageType = -1;
+    private byte gatewayMessageStatus = -1;
+    private int fragmentId = -1;
     
     public String getUpgradeId() {
         return upgradeId;

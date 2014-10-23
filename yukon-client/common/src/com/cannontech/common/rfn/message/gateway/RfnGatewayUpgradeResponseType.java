@@ -5,6 +5,7 @@ public enum RfnGatewayUpgradeResponseType {
     ACCEPTED,
     FAILED,
     ABORTED,
+    UNKNOWN,
     JOB_ALREADY_EXISTS,
     JOB_SCHEDULE_FAILED,
     JOB_EXECUTE_FAILED,
