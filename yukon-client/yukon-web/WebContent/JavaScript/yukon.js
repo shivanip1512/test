@@ -577,17 +577,12 @@ yukon.ui = (function () {
             $(document).on('blur', 'input.js-format-phone', function (event) {
                 mod.formatPhone(event.target);
             });
-
-            /** Disable or enable all form controls */
-            $('input.js-toggle:checkbox').each(function (idx, elem) {
-                $(elem).on('change', function (e) {
-                    mod.toggleInputs(e.target);
-                });
-                $(elem).on('click', function (e) {
-                    mod.toggleInputs(e.target);
-                });
-                mod.toggleInputs(elem);
+            
+            /** Enable or disable elements based on the state of a checkbox. */
+            $(document).on('change click', '[data-toggle]', function (ev) {
+                mod.toggleInputs($(this));
             });
+            $('[data-toggle]').each(function (idx, item) { mod.toggleInputs(item); });
             
             /** Select all checkbox was clicked, select or unselect all items in a .js-select-all-container. */
             $(document).on('click', '.js-select-all', function (ev) {
@@ -860,26 +855,14 @@ yukon.ui = (function () {
             }
         },
         
-        /** Disable or enable all inputs in a contianer */
-        toggleInputs: function (input) {
-            // find matching inputs. Note: jQuery next gets the immediately following
-            // sibling, so we have to use nextAll here.
-            var container = $($(input).nextAll('div.js-toggle')[0]),
-                enable = input.checked,
-                inputList = ['input', 'select', 'textarea', 'button'],
-                inputInd;
-            if (enable) {
-                container.removeClass('disabled');
-            } else {
-                container.addClass('disabled');
-            }
-            for (inputInd = 0; inputInd < inputList.length; inputInd += 1) {
-                container.find(inputList[inputInd]).each(function (idx, elem) {
-                    $(elem).prop('disabled', !enable);
-                });
-            }
+        /** Enable or disable elements based on the state of a checkbox. */
+        toggleInputs: function (checkbox) {
+            checkbox = $(checkbox);
+            var enable = checkbox.is('[data-toggle-inverse]') ? checkbox.not(':checked') : checkbox.is(':checked'),
+                inputs = $('[data-toggle-group="' + checkbox.data('toggle') + '"]');
+            inputs.each(function (idx, input) { $(input).prop('disabled', !enable); });
         },
-    
+        
         /** 
          * Reindex the name of every input in a table to support spring binding.
          * Will also enable/disable any move up/move down buttons properly.

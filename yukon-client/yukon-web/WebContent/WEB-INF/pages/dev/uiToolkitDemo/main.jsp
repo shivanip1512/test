@@ -113,42 +113,43 @@ $(function() {
                 </tr>
                 <tr>
                     <td><label class="ex-label" class="ex-label" for="enabled">Enabled?</label><input type="checkbox"
-                        name="enabled" class="js-toggle" /> <br /> <br />
-                        <div class="js-toggle box">
-                            <label class="ex-label" class="ex-label" for="name">Name:</label><input type="text" name="name" /> <br />
-                            <br /> <label class="ex-label" for="group">Group:</label><select name="group">
+                        name="enabled" data-toggle="my-toggle-grp"><br><br>
+                        <div class="box">
+                            <label class="ex-label" class="ex-label" for="name">Name:</label>
+                            <input type="text" name="name" data-toggle-group="my-toggle-grp"><br><br>
+                            <label class="ex-label" for="group">Select:</label>
+                            <select name="group" data-toggle-group="my-toggle-grp">
                                 <option>Select One</option>
                                 <option>A</option>
                                 <option>B</option>
                                 <option>C</option>
-                            </select> <br /> <br /> <label class="ex-label" for="cool">Cool?</label><input type="checkbox"
-                                name="cool"> <br /> <br /> <label class="ex-label" for="notes">Notes:</label>
-                            <textarea name="notes"></textarea>
-                            <br /> <br />
-                            <button name="save">Save</button>
-                        </div> <br /> <br /> <label class="ex-label" for="enabled2">Edit</label><input type="checkbox"
-                        name="enabled2" class="js-toggle" checked="checked" /> <br /> <br />
-                        <div class="js-toggle box">
-                            <label class="ex-label" for="address">Address:</label><input type="text" name="address" />
-                            <br /> <br /> <label class="ex-label" for="City">City:</label><input type="text"
-                                name="City" /> <br /> <br />
-                            <button name="save" >Save</button>
-                            <button name="save">Delete</button>
-                        </div></td>
-                    <td>Works on page load and clicking a checkbox. <br /> Add the <b>js-toggle</b>
-                        class to the checkbox input.<br />Then wrap the inputs you want to be
-                        toggled in a div with a <b>js-toggle</b> class. <br /> <br /> <pre class="code">
-&lt;input type="checkbox" name="enabled" class="js-toggle"/&gt;
-
-&lt;div class="js-toggle"&gt;
-    ...INPUTS HERE...
-&lt;/div&gt;
-        </pre> <br /> <br /> Will disable the following: <pre class="code">
-input
-select
-textarea
-button
-        </pre>
+                            </select><br><br>
+                            <label class="ex-label" for="cool">Cool?</label>
+                            <input type="checkbox" data-toggle-group="my-toggle-grp" name="cool"><br><br>
+                            <label class="ex-label" for="notes">Notes:</label>
+                            <textarea name="notes" data-toggle-group="my-toggle-grp"></textarea><br><br>
+                            <cti:button label="Save" data-toggle-group="my-toggle-grp"/>
+                        </div><br><br>
+                        <label class="ex-label" for="enabled2">Edit</label>
+                        <input type="checkbox" data-toggle="my-toggle-grp2" name="enabled2" checked><br><br>
+                        <div class="box">
+                            <label class="ex-label" for="address">Address:</label>
+                            <input type="text" name="address" data-toggle-group="my-toggle-grp2"><br><br>
+                            <label class="ex-label" for="City">City:</label>
+                            <input type="text" name="City" data-toggle-group="my-toggle-grp2"><br><br>
+                            <cti:button label="Save" data-toggle-group="my-toggle-grp2"/>
+                            <cti:button label="Delete" data-toggle-group="my-toggle-grp2"/>
+                        </div>
+                    </td>
+                    <td>Works on page load and clicking a checkbox. Add the <b>data-toggle="group-name"</b>
+                        attribute to a checkbox. Then add the <b>data-toggle-group="group-name"</b> attribute to 
+                        any elements you want enabled/disabled by that checkbox. Notice the value of the attributes
+                        should be unique to the group you want to enable/disable.
+<pre class="code">
+&lt;input type="checkbox" name="enabled" data-toggle="my-toggle-grp"&gt;
+&lt;input type="text" data-toggle-group="my-toggle-grp"&gt;
+&lt;cti:button nameKey="save" data-toggle-group="my-toggle-grp"/&gt;
+</pre>
                     </td>
                 </tr>
                 <tr>
