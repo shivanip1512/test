@@ -37,12 +37,12 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
         Double longitude = settings.getLongitude();
         if (latitude != null || longitude != null) {
             if (latitude != null) {
-                if (latitude > 90 || latitude < 90) {
+                if (latitude > 90 || latitude < -90) {
                     errors.rejectValue("latitude", baseKey + "latitude.invalid");
                 }
             }
             if (longitude != null) {
-                if (longitude > 180 || longitude < 180) {
+                if (longitude > 180 || longitude < -180) {
                     errors.rejectValue("longitude", baseKey + "longitude.invalid");
                 }
             }
