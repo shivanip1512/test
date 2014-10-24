@@ -25,7 +25,7 @@
     data-url="<cti:url value="/stars/gateways/cert-update/options"/>"
     data-ok-text="<cti:msg2 key="components.button.start.label"/>"></div>
 
-<div class="scroll-lg stacked-lg">
+<div class="stacked-lg">
 <table id="gateways-table" class="compact-results-table has-actions has-alerts">
     <thead>
         <tr>
@@ -108,7 +108,6 @@
 </div>
 
 <h3><i:inline key=".cert.updates"/></h3>
-<div class="scroll-lg">
 <c:set var="clazz" value="${empty certUpdates ? 'dn' : ''}"/>
 <c:if test="${empty certUpdates}">
     <div class="empty-list"><i:inline key=".cert.updates.none"/></div>
@@ -156,12 +155,11 @@
                 <td class="tar subtle">${fn:length(update.pending)}</td>
                 <td class="tar error">${fn:length(update.failed)}</td>
                 <td class="tar success">${fn:length(update.successful)}</td>
-        </tr>
+            </tr>
         </c:forEach>
         
     </tbody>
 </table>
-</div>
 <div class="page-action-area">
     <cti:button icon="icon-plus-green" nameKey="cert.update" data-popup="#gateway-cert-popup"/>
 </div>
@@ -194,6 +192,17 @@
             <td class="js-gw-name"></td>
             <td class="js-gw-sn"></td>
             <td colspan="4"><i:inline key=".loadingGatewayData"/></td>
+        </tr>
+        <tr class="js-new-cert-update" data-update-id="">
+            <td class="js-cert-update-timestamp">
+                <a href="javascript:void(0);"></a>
+            </td>
+            <td class="js-cert-update-file"></td>
+            <td class="js-cert-update-gateways"></td>
+            <td class="js-cert-update-status"></td>
+            <td class="tar subtle"></td>
+            <td class="tar error"></td>
+            <td class="tar success"></td>
         </tr>
     </table>
     <cti:toJson object="${text}" id="gateway-text"/>

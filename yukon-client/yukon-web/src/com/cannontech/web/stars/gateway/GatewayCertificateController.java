@@ -1,0 +1,94 @@
+package com.cannontech.web.stars.gateway;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.joda.time.Duration;
+import org.joda.time.Instant;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.stars.gateway.model.CertificateUpdate;
+import com.google.common.collect.Lists;
+
+@Controller
+@CheckRole(YukonRole.INVENTORY)
+public class GatewayCertificateController {
+    
+    private static final String baseKey = "yukon.web.modules.operator.gateways.";
+    
+    @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    
+    /** Certificate update popup. */
+    @RequestMapping("/gateways/cert-update/options")
+    public String certificate(ModelMap model) {
+        
+        Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
+        model.addAttribute("gateways", gateways);
+        
+        return "gateways/cert.update.jsp";
+    }
+    
+    @RequestMapping(value="/gateways/cert-update", method=RequestMethod.POST)
+    public String certUpdate(HttpServletResponse resp, ModelMap model, YukonUserContext userContext, 
+            @RequestParam("file") MultipartFile file, int[] gateways) {
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        
+        if (!file.isEmpty()) {
+            try {
+                byte[] bytes = file.getBytes();
+                // TODO Sam does a thing with the stuff
+                
+                // Success
+                model.clear();
+                
+                // TEST CODE
+                List<RfnGateway> rfgateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+                CertificateUpdate update = new CertificateUpdate();
+                update.setFileName("asdfadf.lkjjlkj.nm");
+                update.setTimestamp(new Instant().plus(Duration.standardDays(7)));
+                update.setSuccessful(Lists.newArrayList(rfgateways.get(0)));
+                update.setFailed(Lists.newArrayList(rfgateways.get(1)));
+                update.setUpgradeId("654asd67f54as76f4v");
+                // END TEST CODE
+                
+                resp.setContentType("application/json");
+                JsonUtils.getWriter().writeValue(resp.getOutputStream(), update);
+                return null;
+            } catch (Exception e) {
+                
+                model.addAttribute("gateways", rfnGatewayService.getAllGateways());
+                String errorMsg = "";
+                model.addAttribute("errorMsg", errorMsg);
+                
+                return "gateways/cert.update.jsp";
+            }
+        } else {
+            
+            model.addAttribute("gateways", rfnGatewayService.getAllGateways());
+            model.addAttribute("errorMsg", accessor.getMessage(baseKey + "cert.update.file.empty"));
+            
+            return "gateways/cert.update.jsp";
+        }
+    }
+    
+}

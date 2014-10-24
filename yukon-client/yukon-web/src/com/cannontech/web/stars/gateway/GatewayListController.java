@@ -62,6 +62,8 @@ public class GatewayListController {
         text.put("connect.pending", accessor.getMessage(baseKey + "connect.pending"));
         text.put("connect.success", accessor.getMessage(baseKey + "connect.success"));
         text.put("connect.failure", accessor.getMessage(baseKey + "connect.failure"));
+        text.put("login.successful", accessor.getMessage(baseKey + "login.successful"));
+        text.put("login.failed", accessor.getMessage(baseKey + "login.failed"));
         text.put("disconnect.pending", accessor.getMessage(baseKey + "disconnect.pending"));
         text.put("disconnect.success", accessor.getMessage(baseKey + "disconnect.success"));
         text.put("disconnect.failure", accessor.getMessage(baseKey + "disconnect.failure"));
@@ -80,22 +82,22 @@ public class GatewayListController {
         
         List<CertificateUpdate> updates = new ArrayList<>();
         
-//        CertificateUpdate one = new CertificateUpdate();
-//        one.setFileName("asdfadf.lkjjlkj.nm");
-//        one.setTimestamp(new Instant().plus(Duration.standardDays(7)));
-//        one.setSuccessful(Lists.newArrayList(gateways.get(0)));
-//        one.setFailed(Lists.newArrayList(gateways.get(1)));
-//        one.setUpgradeId("654asd67f54as76f4v");
-//        
-//        CertificateUpdate two = new CertificateUpdate();
-//        two.setFileName("asdfadf.asdfasdf.nm");
-//        two.setTimestamp(new Instant().plus(Duration.standardDays(8)));
-//        two.setPending(Lists.newArrayList(gateways.get(0)));
-//        two.setFailed(Lists.newArrayList(gateways.get(1)));
-//        two.setUpgradeId("ads6587a56ds96dsaf");
-//        
-//        updates.add(one);
-//        updates.add(two);
+        CertificateUpdate one = new CertificateUpdate();
+        one.setFileName("asdfadf.lkjjlkj.nm");
+        one.setTimestamp(new Instant().plus(Duration.standardDays(7)));
+        one.setSuccessful(Lists.newArrayList(gateways.get(0)));
+        one.setFailed(Lists.newArrayList(gateways.get(1)));
+        one.setUpgradeId("654asd67f54as76f4v");
+        
+        CertificateUpdate two = new CertificateUpdate();
+        two.setFileName("asdfadf.asdfasdf.nm");
+        two.setTimestamp(new Instant().plus(Duration.standardDays(8)));
+        two.setPending(Lists.newArrayList(gateways.get(0)));
+        two.setFailed(Lists.newArrayList(gateways.get(1)));
+        two.setUpgradeId("ads6587a56ds96dsaf");
+        
+        updates.add(one);
+        updates.add(two);
         
         return updates;
         

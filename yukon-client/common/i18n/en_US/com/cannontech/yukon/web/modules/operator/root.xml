@@ -53,6 +53,8 @@
     <entry key="yukon.web.modules.operator.gateways.connect.pending">{0}: connect request pending...</entry>
     <entry key="yukon.web.modules.operator.gateways.connect.success">{0}: connect request successful.</entry>
     <entry key="yukon.web.modules.operator.gateways.connect.failure">{0}: connect request failed.</entry>
+    <entry key="yukon.web.modules.operator.gateways.login.successful">Login successful.</entry>
+    <entry key="yukon.web.modules.operator.gateways.login.failed">Login failed.</entry>
     <entry key="yukon.web.modules.operator.gateways.disconnect.pending">{0}: disconnect request pending...</entry>
     <entry key="yukon.web.modules.operator.gateways.disconnect.success">{0}: disconnect request successful.</entry>
     <entry key="yukon.web.modules.operator.gateways.disconnect.failure">{0}: disconnect request failed.</entry>

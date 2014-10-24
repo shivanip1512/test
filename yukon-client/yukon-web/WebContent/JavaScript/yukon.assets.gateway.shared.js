@@ -24,24 +24,6 @@ yukon.assets.gateway.shared = (function () {
             
             _text = yukon.fromJson('#gateway-text');
             
-            /** User input happened in create or edit popup, adjust 'test connection' buttons. */
-            $(document).on('input', '.js-gateway-edit-ip, .js-gateway-edit-username, .js-gateway-edit-password', 
-                    function (ev) {
-                var ip = $('.js-gateway-edit-ip').val(),
-                    usernames = $('.js-gateway-edit-username');
-                if (ip) {
-                    usernames.each(function (idx, item) {
-                        item = $(item);
-                        var disabled = !item.val().trim() || !item.siblings('.js-gateway-edit-password').val().trim();
-                        item.siblings('.button').prop('disabled', disabled);
-                    });
-                } else {
-                    $('.js-gateway-edit-super-admin .button,' 
-                            + ' .js-gateway-edit-admin .button,' 
-                            + ' .js-gateway-edit-user .button').prop('disabled', true);
-                }
-            });
-            
             $(document).on('click', '.js-gw-connect', function (ev) {
                 
                 var trigger = $(this).closest('.dropdown-menu').data('trigger'), 
@@ -167,7 +149,60 @@ yukon.assets.gateway.shared = (function () {
                 });
             });
             
+            /** User input happened in create or edit popup, adjust 'test connection' buttons. */
+            $(document).on('input', '.js-gateway-edit-ip, .js-gateway-edit-username', function (ev) {
+                mod.adjustTestConnectionButtons();
+            });
+            
+            /** Test a connection for username and password. */
+            $(document).on('click', '.js-conn-test-btn', function (ev) {
+                
+                var btn = $(this),
+                    row = btn.closest('tr'),
+                    ip = $('#gateway-settings-form .js-gateway-edit-ip').val(),
+                    username = row.find('.js-gateway-edit-username').val(),
+                    password = row.find('.js-gateway-edit-password').val();
+                
+                yukon.ui.busy(btn);
+                $('.js-test-results').removeClass('success error').text('');
+                
+                $.ajax({
+                    url: yukon.url('/stars/gateways/test-connection'),
+                    data: {
+                        ip: ip,
+                        username: username,
+                        password: password
+                    }
+                }).done(function (result) {
+                    if (result.success) {
+                        $('.js-test-results').addClass('success').text(_text['login.successful']);
+                    } else {
+                        $('.js-test-results').addClass('error').text(_text['login.failed']);
+                    }
+                }).always(function () {
+                    yukon.ui.unbusy(btn);
+                });
+                
+            });
+            
             _initialized = true;
+        },
+        
+        adjustTestConnectionButtons: function () {
+            var ip = $('.js-gateway-edit-ip').val(),
+                usernames = $('.js-gateway-edit-username');
+            
+            if (ip) {
+                usernames.each(function (idx, item) {
+                    item = $(item);
+                    var disabled = !item.val().trim();
+                    item.siblings('.button').prop('disabled', disabled);
+                });
+            } else {
+                $('.js-gateway-edit-super-admin .button,' 
+                        + ' .js-gateway-edit-admin .button,' 
+                        + ' .js-gateway-edit-user .button').prop('disabled', true);
+            }
         }
     
     };
