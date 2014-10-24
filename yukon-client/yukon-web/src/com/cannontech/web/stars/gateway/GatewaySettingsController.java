@@ -33,6 +33,7 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.gateway.model.GatewaySettingsValidator;
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -52,7 +53,7 @@ public class GatewaySettingsController {
     @RequestMapping("/gateways/create")
     public String createDialog(ModelMap model) {
         
-        model.addAttribute("mode", "CREATE");
+        model.addAttribute("mode", PageEditMode.CREATE);
         GatewaySettings settings = new GatewaySettings();
         model.addAttribute("settings", settings);
         
@@ -73,7 +74,7 @@ public class GatewaySettingsController {
         
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            model.addAttribute("mode", "CREATE");
+            model.addAttribute("mode", PageEditMode.CREATE);
             return "gateways/settings.jsp";
         }
         
@@ -92,7 +93,7 @@ public class GatewaySettingsController {
         } catch (NetworkManagerCommunicationException|GatewayUpdateException e) {
             
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            model.addAttribute("mode", "CREATE");
+            model.addAttribute("mode", PageEditMode.CREATE);
             String errorMsg;
             if (e instanceof NetworkManagerCommunicationException) {
                 errorMsg = accessor.getMessage(baseKey + "error.comm");
