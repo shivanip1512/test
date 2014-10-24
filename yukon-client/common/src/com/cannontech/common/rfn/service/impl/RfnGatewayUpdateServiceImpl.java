@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -15,18 +16,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequest;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAck;
 import com.cannontech.common.rfn.model.GatewayCertificateException;
+import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.service.RfnGatewayUpdateCallback;
 import com.cannontech.common.rfn.service.RfnGatewayUpdateService;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
-import com.google.common.collect.Sets;
 
 public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
 
@@ -38,6 +41,8 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private RfnGatewayService gatewayService;
+    @Autowired private GatewayCertificateUpdateDao certificateUpdateDao;
+    @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
 
     private RequestReplyTemplate<RfnGatewayUpgradeRequestAck> qrTemplate;
 
@@ -72,12 +77,18 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
             return;
         }
         
-        Set<RfnIdentifier> rfnIdentifiers = Sets.newHashSet();
+        final int updateDbId = certificateUpdateDao.createUpdate(upgradeId, upgradePackage.getName());
+        
+        Set<RfnIdentifier> rfnIdentifiers = new HashSet<>();
+        Set<Integer> paoIds = new HashSet<>();
         if (rfnGateways != null) {
             for (RfnGateway rfnGateway : rfnGateways) {
+                paoIds.add(rfnGateway.getPaoIdentifier().getPaoId());
                 rfnIdentifiers.add(rfnGateway.getRfnIdentifier());
             }
         }
+        
+        certificateUpdateDao.createEntries(updateDbId, GatewayCertificateUpdateStatus.STARTED, paoIds);
         
         RfnGatewayUpgradeRequest request = new RfnGatewayUpgradeRequest();
         request.setRfnIdentifiers(rfnIdentifiers);
@@ -105,6 +116,7 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
 
                 @Override
                 public void handleReply(RfnGatewayUpgradeRequestAck reply) {
+                    logGatewayUpgradeStatusFromAck(updateDbId, reply);
                     callback.handleReply(reply);
                 }
 
@@ -115,7 +127,30 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
             };
         qrTemplate.send(request, handler);
     }
-
+    
+    //TODO: clean up inefficient calls
+    private void logGatewayUpgradeStatusFromAck(int updateId, RfnGatewayUpgradeRequestAck message) {
+        for (RfnIdentifier rfnId : message.getBeingUpgradedRfnIdentifiers()) {
+            int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();
+            certificateUpdateDao.updateEntry(updateId, paoId, GatewayCertificateUpdateStatus.REQUEST_ACCEPTED);
+        }
+        
+        for (RfnIdentifier rfnId : message.getInvalidRfnIdentifiers().keySet()) {
+            int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();
+            certificateUpdateDao.updateEntry(updateId, paoId, GatewayCertificateUpdateStatus.INVALID_RFN_ID);
+        }
+        
+        for (RfnIdentifier rfnId : message.getInvalidSuperAdminPasswordRfnIdentifiers().keySet()) {
+            int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();
+            certificateUpdateDao.updateEntry(updateId, paoId, GatewayCertificateUpdateStatus.INVALID_SUPER_ADMIN_PASSWORD);
+        }
+        
+        for (RfnIdentifier rfnId : message.getLastUpgradeInProcessRfnIdentifiers().keySet()) {
+            int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();
+            certificateUpdateDao.updateEntry(updateId, paoId, GatewayCertificateUpdateStatus.ALREADY_IN_PROGRESS);
+        }
+    }
+    
     @Override
     public void sendUpdateAll(File upgradePackage, RfnGatewayUpdateCallback callback) {
         sendUpdate(null, upgradePackage, callback);

@@ -1,5 +1,6 @@
 package com.cannontech.common.rfn.dao;
 
+import java.util.Collection;
 import java.util.List;
 
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateInfo;
@@ -16,12 +17,12 @@ public interface GatewayCertificateUpdateDao {
      * @return The id of this certificate update.
      */
     int createUpdate(String certificateId, String fileName);
-    
+
     /**
      * Create one or more gateway-specific entries within a certificate update. Each entry is initialized to
      * the specified state.
      */
-    void createEntries(int updateId, GatewayCertificateUpdateStatus status, int... gatewayIds);
+    void createEntries(int updateId, GatewayCertificateUpdateStatus status, Collection<Integer> gatewayIds);
     
     /**
      * Update the status of a gateway within a certificate update.

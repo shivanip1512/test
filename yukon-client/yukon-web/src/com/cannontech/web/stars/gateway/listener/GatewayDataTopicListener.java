@@ -11,9 +11,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponse;
+import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponseType;
+import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
@@ -29,6 +32,7 @@ public class GatewayDataTopicListener implements MessageListener {
     
     @Autowired private RfnGatewayDataCache cache;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
+    @Autowired private GatewayCertificateUpdateDao certificateUpdateDao;
     
     @Override
     public void onMessage(Message message) {
@@ -61,7 +65,18 @@ public class GatewayDataTopicListener implements MessageListener {
     }
     
     private void handleGatewayUpgradeMessage(RfnGatewayUpgradeResponse gatewayUpgradeMessage) {
-        //TODO: save this info
+        
+        String certificateId = gatewayUpgradeMessage.getUpgradeId();
+        int updateId = certificateUpdateDao.getLatestUpdateForCertificate(certificateId);
+        
+        RfnIdentifier rfnId = gatewayUpgradeMessage.getRfnIdentifier();
+        int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();
+        
+        RfnGatewayUpgradeResponseType responseType = gatewayUpgradeMessage.getResponseType();
+        GatewayCertificateUpdateStatus status = GatewayCertificateUpdateStatus.of(responseType);
+        
+        certificateUpdateDao.updateEntry(updateId, paoId, status);
+        
         //TODO: ack to NM?
     }
 }

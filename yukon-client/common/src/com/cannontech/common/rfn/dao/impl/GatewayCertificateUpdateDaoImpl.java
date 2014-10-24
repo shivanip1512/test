@@ -2,6 +2,7 @@ package com.cannontech.common.rfn.dao.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,10 +40,10 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
         
         return updateId;
     }
-
+    
     @Override
     @Transactional
-    public void createEntries(int updateId, GatewayCertificateUpdateStatus status, int... gatewayIds) {
+    public void createEntries(int updateId, GatewayCertificateUpdateStatus status, Collection<Integer> gatewayIds) {
         for (int gatewayId : gatewayIds) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             SqlParameterSink sink = sql.insertInto("GatewayCertificateUpdateEntry");
@@ -54,6 +55,7 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
             
             jdbcTemplate.update(sql);
         }
+        
     }
 
     @Override
