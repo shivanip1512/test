@@ -14,6 +14,7 @@
 <entry key="yukon.common.dateFormatting.FULL">MM/dd/yyyy HH:mm:ss zz</entry>
 <entry key="yukon.common.dateFormatting.BOTH">MM/dd/yyyy HH:mm:ss</entry>
 <entry key="yukon.common.dateFormatting.DATEHM">MM/dd/yyyy HH:mm</entry>
+<entry key="yukon.common.dateFormatting.DATEHM_12">MM/dd/yyyy hh:mm a</entry>
 <entry key="yukon.common.dateFormatting.DATEH">MM/dd/yyyy HH</entry>
 <entry key="yukon.common.dateFormatting.HOUR">HH zz</entry>
 <entry key="yukon.common.dateFormatting.DATE_MIDNIGHT_PREV">MM/dd/yyyy</entry>

@@ -11,9 +11,14 @@ yukon.assets.gateway.shared = (function () {
     'use strict';
     
     var
+    /** {String} - The IANA timezone name. */
+    _tz = jstz.determine().name(),
+    
+    _timeFormat = 'MM/DD/YYYY hh:mm A',
+    
+    _text,
     
     _initialized = false,
-    _text,
     
     mod = {
         
@@ -127,17 +132,52 @@ yukon.assets.gateway.shared = (function () {
                 
                 yukon.ui.busy(primary);
                 secondary.prop('disabled', true);
-            
+                
                 popup.find('.user-message').remove();
                 
                 $('#gateway-cert-form').ajaxSubmit({
                     url: yukon.url('/stars/gateways/cert-update'), 
                     type: 'post',
-                    success: function (result, status, xhr, $form) {
+                    success: function (update, status, xhr, $form) {
                         
+                        console.log(update);
                         popup.dialog('close');
                         
-                        console.log('yep');
+                        var 
+                        row = $('.js-new-cert-update').clone()
+                              .removeClass('js-new-cert-update')
+                              .attr('data-update-id', update.updateId), 
+                        gwText, 
+                        complete = update.pending.length == 0,
+                        timestamp = moment(update.timestamp.millis).tz(_tz).format(_timeFormat);
+                        
+                        row.find('.js-cert-update-timestamp a').text(timestamp);
+                        row.find('.js-cert-update-file').text(update.fileName);
+                        gwText = update.gateways[0].name;
+                        if (update.gateways.length > 1) {
+                            gwText += ', ' + update.gateways[1].name;
+                        }
+                        if (update.gateways.length > 2) {
+                            gwText += _text['cert.update.more'].replace('{0}', update.length - 2);
+                        }
+                        row.find('.js-cert-update-gateways').text(gwText);
+                        if (complete) {
+                            row.find('.js-cert-update-status').html('<span class="success">' 
+                                    + _text['complete'] + '</span>');
+                        } else {
+                            row.find('.js-cert-update-status .progress-bar-success')
+                            .css('width', yukon.percent(update.successful.length, update.gateways.length, 2))
+                            .siblings('.progress-bar-danger')
+                            .css('width', yukon.percent(update.failed.length, update.gateways.length, 2));
+                            row.find('.js-cert-update-status .js-percent')
+                            .text(yukon.percent(update.failed.length + update.successful.length, 
+                                    update.gateways.length, 2));
+                        }
+                        row.find('.js-cert-update-pending').text(update.pending.length)
+                        .siblings('.js-cert-update-failed').text(update.failed.length)
+                        .siblings('.js-cert-update-successful').text(update.successful.length);
+                        
+                        $('#cert-table tbody').append(row);
                     },
                     error: function (xhr, status, error, $form) {
                         popup.html(xhr.responseText);

@@ -14,7 +14,7 @@ public class CertificateUpdate {
     
     private Instant timestamp;
     private String fileName;
-    private String upgradeId;
+    private String updateId;
     private List<RfnGateway> pending = new ArrayList<>();
     private List<RfnGateway> failed = new ArrayList<>();
     private List<RfnGateway> successful = new ArrayList<>();
@@ -35,12 +35,12 @@ public class CertificateUpdate {
         this.fileName = fileName;
     }
     
-    public String getUpgradeId() {
-        return upgradeId;
+    public String getUpdateId() {
+        return updateId;
     }
     
-    public void setUpgradeId(String upgradeId) {
-        this.upgradeId = upgradeId;
+    public void setUpdateId(String updateId) {
+        this.updateId = updateId;
     }
     
     public List<RfnGateway> getPending() {
@@ -76,7 +76,7 @@ public class CertificateUpdate {
         result = prime * result + ((pending == null) ? 0 : pending.hashCode());
         result = prime * result + ((successful == null) ? 0 : successful.hashCode());
         result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
-        result = prime * result + ((upgradeId == null) ? 0 : upgradeId.hashCode());
+        result = prime * result + ((updateId == null) ? 0 : updateId.hashCode());
         return result;
     }
     
@@ -114,20 +114,20 @@ public class CertificateUpdate {
                 return false;
         } else if (!timestamp.equals(other.timestamp))
             return false;
-        if (upgradeId == null) {
-            if (other.upgradeId != null)
+        if (updateId == null) {
+            if (other.updateId != null)
                 return false;
-        } else if (!upgradeId.equals(other.upgradeId))
+        } else if (!updateId.equals(other.updateId))
             return false;
         return true;
     }
     
     @Override
     public String toString() {
-        return String.format("CertificateUpdate [timestamp=%s, fileName=%s, upgradeId=%s, pending=%s, failed=%s, successful=%s]", timestamp, fileName, upgradeId, pending, failed, successful);
+        return String.format("CertificateUpdate [timestamp=%s, fileName=%s, updateId=%s, pending=%s, failed=%s, successful=%s]", timestamp, fileName, updateId, pending, failed, successful);
     }
     
-    public List<RfnGateway> getSortedGateways() {
+    public List<RfnGateway> getGateways() {
         List<RfnGateway> all = new ArrayList<>();
         all.addAll(successful);
         all.addAll(failed);

@@ -32,6 +32,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 
 public class DateFormattingServiceImpl implements DateFormattingService {
+    
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private SystemDateFormattingService systemDateFormattingService;
 

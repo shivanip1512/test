@@ -1,8 +1,6 @@
 package com.cannontech.web.stars.gateway;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -64,11 +62,11 @@ public class GatewayCertificateController {
                 // TEST CODE
                 List<RfnGateway> rfgateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
                 CertificateUpdate update = new CertificateUpdate();
-                update.setFileName("asdfadf.lkjjlkj.nm");
-                update.setTimestamp(new Instant().plus(Duration.standardDays(7)));
-                update.setSuccessful(Lists.newArrayList(rfgateways.get(0)));
+                update.setFileName("licertupgrade.pkg.nm");
+                update.setTimestamp(new Instant().minus(Duration.standardDays(7)));
+                update.setPending(Lists.newArrayList(rfgateways.get(0)));
                 update.setFailed(Lists.newArrayList(rfgateways.get(1)));
-                update.setUpgradeId("654asd67f54as76f4v");
+                update.setUpdateId("654asd67f54as76f4v");
                 // END TEST CODE
                 
                 resp.setContentType("application/json");

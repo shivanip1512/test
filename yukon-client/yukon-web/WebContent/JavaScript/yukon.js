@@ -144,10 +144,11 @@ var yukon = (function () {
         /** 
          * Return a percent formatted to the decimal places specified.
          * i.e.
-         * yukon.percent(13, 205, 3); results in "6.341%"
+         * yukon.percent(13, 205, 3) results in "6.341%"
+         * yukon.percent(5, 10, 3) results in "50%"
          */
         percent: function (count, total, decimals) {
-            return (parseFloat(count / total, 10) * 100).toFixed(decimals) + '%';
+            return Number((count / total * 100).toFixed(2)).toString() + '%';
         },
         
         /** 

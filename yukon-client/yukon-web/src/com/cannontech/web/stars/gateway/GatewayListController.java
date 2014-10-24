@@ -71,6 +71,8 @@ public class GatewayListController {
         text.put("collect.data.success", accessor.getMessage(baseKey + "collect.data.success"));
         text.put("collect.data.failure", accessor.getMessage(baseKey + "collect.data.failure"));
         text.put("collect.data.title", accessor.getMessage(baseKey + "collect.data.title"));
+        text.put("cert.update.more", accessor.getMessage(baseKey + "cert.update.more"));
+        text.put("complete", accessor.getMessage("yukon.common.complete"));
         model.addAttribute("text", text);
         
         return "gateways/list.jsp";
@@ -83,18 +85,18 @@ public class GatewayListController {
         List<CertificateUpdate> updates = new ArrayList<>();
         
         CertificateUpdate one = new CertificateUpdate();
-        one.setFileName("asdfadf.lkjjlkj.nm");
-        one.setTimestamp(new Instant().plus(Duration.standardDays(7)));
+        one.setFileName("licertupgrade.pkg.nm");
+        one.setTimestamp(new Instant().minus(Duration.standardDays(7)));
         one.setSuccessful(Lists.newArrayList(gateways.get(0)));
         one.setFailed(Lists.newArrayList(gateways.get(1)));
-        one.setUpgradeId("654asd67f54as76f4v");
+        one.setUpdateId("654asd67f54as76f4v");
         
         CertificateUpdate two = new CertificateUpdate();
-        two.setFileName("asdfadf.asdfasdf.nm");
-        two.setTimestamp(new Instant().plus(Duration.standardDays(8)));
+        two.setFileName("licertupgrade.pkg.nm");
+        two.setTimestamp(new Instant().minus(Duration.standardDays(8)));
         two.setPending(Lists.newArrayList(gateways.get(0)));
         two.setFailed(Lists.newArrayList(gateways.get(1)));
-        two.setUpgradeId("ads6587a56ds96dsaf");
+        two.setUpdateId("ads6587a56ds96dsaf");
         
         updates.add(one);
         updates.add(two);

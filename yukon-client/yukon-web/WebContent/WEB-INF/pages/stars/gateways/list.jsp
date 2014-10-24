@@ -127,12 +127,12 @@
     <tfoot></tfoot>
     <tbody>
         <c:forEach var="update" items="${certUpdates}">
-            <tr data-update-id="${update.upgradeId}">
+            <tr data-update-id="${update.updateId}">
                 <td>
-                    <a href="javascript:void(0);"><cti:formatDate value="${update.timestamp}" type="BOTH"/></a>
+                    <a href="javascript:void(0);"><cti:formatDate value="${update.timestamp}" type="DATEHM_12"/></a>
                 </td>
                 <td>${fn:escapeXml(update.fileName)}</td>
-                <c:set var="all" value="${update.sortedGateways}"/>
+                <c:set var="all" value="${update.gateways}"/>
                 <td>${fn:escapeXml(all[0].name)}<c:if test="${fn:length(all) > 1}">,&nbsp;${fn:escapeXml(all[1].name)}</c:if>
                     <c:if test="${fn:length(all) > 2}">
                         <i:inline key=".cert.update.more" arguments="${fn:length(all) - 2}"/>
@@ -199,10 +199,16 @@
             </td>
             <td class="js-cert-update-file"></td>
             <td class="js-cert-update-gateways"></td>
-            <td class="js-cert-update-status"></td>
-            <td class="tar subtle"></td>
-            <td class="tar error"></td>
-            <td class="tar success"></td>
+            <td class="js-cert-update-status">
+                <div class="progress dib vat">
+                    <div class="progress-bar progress-bar-success"></div>
+                    <div class="progress-bar progress-bar-danger"></div>
+                </div>
+                <span class="js-percent"></span>
+            </td>
+            <td class="js-cert-update-pending tar subtle"></td>
+            <td class="js-cert-update-failed tar error"></td>
+            <td class="js-cert-update-successful tar success"></td>
         </tr>
     </table>
     <cti:toJson object="${text}" id="gateway-text"/>
