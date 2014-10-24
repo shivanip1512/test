@@ -1,14 +1,20 @@
 package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.Pair;
@@ -40,9 +46,10 @@ public class ControlAuditServiceImpl implements ControlAuditService {
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
 
+    private static String baseKey = "yukon.web.modules.operator.controlAudit";
+
     @Override
     public ControlAuditResult runAudit(AuditSettings settings) {
-
         BiMap<InventoryIdentifier, PaoIdentifier> inventoryToPao = HashBiMap.create();
 
         ListMultimap<BuiltInAttribute, YukonPao> rphLookup = ArrayListMultimap.create();
@@ -59,6 +66,8 @@ public class ControlAuditServiceImpl implements ControlAuditService {
         BuiltInAttribute r2 = BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG;
         BuiltInAttribute r3 = BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG;
 
+        Map<PaoType, Set<? extends Attribute>> supportedAttrs = new HashMap<>();
+
         for (InventoryIdentifier inventory : settings.getCollection()) {
 
             AuditRow row = new AuditRow();
@@ -71,15 +80,24 @@ public class ControlAuditServiceImpl implements ControlAuditService {
                 YukonPao pao = paoDao.getYukonPao(deviceId);
                 inventoryToPao.put(inventory, pao.getPaoIdentifier());
 
+                Set<? extends Attribute> availableAttributes;
+                PaoType paoType = pao.getPaoIdentifier().getPaoType();
+                if (supportedAttrs.containsKey(paoType)) {
+                    availableAttributes = supportedAttrs.get(paoType);
+                } else {
+                    availableAttributes = attributeService.getAvailableAttributes(paoType);
+                    supportedAttrs.put(paoType, availableAttributes);
+                }
+
                 /* Devices that support relay shed time will always at least support relay #1 shed time. */
-                if (!attributeService.isAttributeSupported(pao, r1)) {
+                if (!availableAttributes.contains(r1)) {
                     unsupporedList.add(new Pair<InventoryIdentifier, AuditRow>(inventory, row));
                 } else {
                     rphLookup.put(r1, pao);
-                    if (attributeService.isAttributeSupported(pao, r2)) {
+                    if (availableAttributes.contains(r2)) {
                         rphLookup.put(r2, pao);
                     }
-                    if (attributeService.isAttributeSupported(pao, r3)) {
+                    if (availableAttributes.contains(r3)) {
                         rphLookup.put(r3, pao);
                     }
                 }
@@ -122,11 +140,11 @@ public class ControlAuditServiceImpl implements ControlAuditService {
             if (pvl.isEmpty()) {
                 unknownList.add(new Pair<InventoryIdentifier, AuditRow>(inventory, row));
             } else {
-                Duration d = new Duration(0); // Duration of shed time
+                long durationMinutes = 0;
                 for (PointValueQualityHolder pv : pvl) {
-                    long value = (long) pv.getValue();
-                    d = d.plus(Duration.standardMinutes(value));
+                    durationMinutes += (long) pv.getValue();
                 }
+                Duration d = Duration.standardMinutes(durationMinutes); // Duration of shed time
                 row.setControl(d);
                 if (d.isLongerThan(Duration.standardMinutes(1))) {
                     controlledList.add(new Pair<InventoryIdentifier, AuditRow>(inventory, row));
@@ -135,15 +153,14 @@ public class ControlAuditServiceImpl implements ControlAuditService {
                 }
             }
         }
-
         /** Controlled */
         List<InventoryIdentifier> controlledCollection = Lists.newArrayList();
         for (Pair<InventoryIdentifier, AuditRow> controlled : controlledList) {
             controlledCollection.add(controlled.first);
             result.getControlledRows().add(controlled.second);
         }
-        String code = "yukon.web.modules.operator.controlAudit.controlledCollectionDescription";
-        String description = resolver.getMessageSourceAccessor(settings.getContext()).getMessage(code);
+        MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(settings.getContext());
+        String description = messageSourceAccessor.getMessage(baseKey + ".controlledCollectionDescription");
         result.setControlled(memoryCollectionProducer.createCollection(controlledCollection.iterator(), description));
 
         /** Uncontrolled */
@@ -152,8 +169,7 @@ public class ControlAuditServiceImpl implements ControlAuditService {
             uncontrolledCollection.add(uncontrolled.first);
             result.getUncontrolledRows().add(uncontrolled.second);
         }
-        code = "yukon.web.modules.operator.controlAudit.uncontrolledCollectionDescription";
-        description = resolver.getMessageSourceAccessor(settings.getContext()).getMessage(code);
+        description = messageSourceAccessor.getMessage(baseKey + ".uncontrolledCollectionDescription");
         result.setUncontrolled(memoryCollectionProducer.createCollection(uncontrolledCollection.iterator(), description));
 
         /** Unknown */
@@ -162,8 +178,7 @@ public class ControlAuditServiceImpl implements ControlAuditService {
             unknownCollection.add(unknown.first);
             result.getUnknownRows().add(unknown.second);
         }
-        code = "yukon.web.modules.operator.controlAudit.unknownCollectionDescription";
-        description = resolver.getMessageSourceAccessor(settings.getContext()).getMessage(code);
+        description = messageSourceAccessor.getMessage(baseKey + ".unknownCollectionDescription");
         result.setUnknown(memoryCollectionProducer.createCollection(unknownCollection.iterator(), description));
 
         /** Unsupported */
@@ -172,10 +187,8 @@ public class ControlAuditServiceImpl implements ControlAuditService {
             unsupportedCollection.add(unsupported.first);
             result.getUnsupportedRows().add(unsupported.second);
         }
-        code = "yukon.web.modules.operator.controlAudit.unsupportedCollectionDescription";
-        description = resolver.getMessageSourceAccessor(settings.getContext()).getMessage(code);
+        description = messageSourceAccessor.getMessage(baseKey + ".unsupportedCollectionDescription");
         result.setUnsupported(memoryCollectionProducer.createCollection(unsupportedCollection.iterator(), description));
-
         return result;
     }
 
