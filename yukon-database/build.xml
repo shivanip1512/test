@@ -204,7 +204,12 @@
             </classpath>
             <transaction src="tempDropDatabase.sql" />
         </sql>
-    
+        
+        <echo message="Cleaning remaining temporary .ora files">
+        <delete performGCOnFailedDelete="true" failonerror="false">
+            <fileset dir="C:\app\Administrator\product\11.2.0\dbhome_2\database" includes="tempDbCreation*.ora"/>
+        </delete>
+        
         <echo message="Latest diff" />
         <exec executable="svn" dir="${dbSnapshotTempDir}">
             <arg value="diff"/>
