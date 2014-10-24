@@ -11,20 +11,22 @@ yukon.assets.gateway.list = (function () {
     'use strict';
     
     var
+    _initialized = false,
+    
+    _text,
+    
     /** {String} - The IANA timezone name. */
     _tz = jstz.determine().name(),
     
     _timeFormat = 'MM/DD/YYYY hh:mm A',
-    
-    _initialized = false,
     
     _update = function () {
         $.ajax({
             url: yukon.url('/stars/gateways/data'),
             contentType: 'application/json'
         }).done(function (gateways) {
-            var ids = Object.keys(gateways);
-            ids.forEach(function (paoId) {
+            
+            Object.keys(gateways).forEach(function (paoId) {
                 
                 var 
                 clone, timestamp, percent,
@@ -71,12 +73,69 @@ yukon.assets.gateway.list = (function () {
         });
     },
     
+    _updateCerts = function () {
+        $.ajax({
+            url: yukon.url('/stars/gateways/cert-update/data'),
+            contentType: 'application/json'
+        }).done(function (updates) {
+            
+            Object.keys(updates).forEach(function (updateId) {
+                
+                var 
+                update = updates[updateId],
+                row = $('[data-update-id="' + updateId + '"]');
+                
+                _updateCertRow(row, update);
+                
+            });
+            
+        }).always(function () {
+            setTimeout(_updateCerts, 4000);
+        });
+    },
+    
+    _updateCertRow = function (row, update) {
+        
+        var 
+        gwText, 
+        complete = update.pending.length == 0,
+        timestamp = moment(update.timestamp.millis).tz(_tz).format(_timeFormat);
+        
+        row.find('.js-cert-update-timestamp a').text(timestamp);
+        row.find('.js-cert-update-file').text(update.fileName);
+        gwText = update.gateways[0].name;
+        if (update.gateways.length > 1) {
+            gwText += ', ' + update.gateways[1].name;
+        }
+        if (update.gateways.length > 2) {
+            gwText += _text['cert.update.more'].replace('{0}', update.length - 2);
+        }
+        row.find('.js-cert-update-gateways').text(gwText);
+        if (complete) {
+            row.find('.js-cert-update-status').html('<span class="success">' 
+                    + _text['complete'] + '</span>');
+        } else {
+            row.find('.js-cert-update-status .progress-bar-success')
+            .css('width', yukon.percent(update.successful.length, update.gateways.length, 2))
+            .siblings('.progress-bar-danger')
+            .css('width', yukon.percent(update.failed.length, update.gateways.length, 2));
+            row.find('.js-cert-update-status .js-percent')
+            .text(yukon.percent(update.failed.length + update.successful.length, 
+                    update.gateways.length, 2));
+        }
+        row.find('.js-cert-update-pending').text(update.pending.length)
+        .siblings('.js-cert-update-failed').text(update.failed.length)
+        .siblings('.js-cert-update-successful').text(update.successful.length);
+    },
+    
     mod = {
         
         /** Initialize this module. */
         init: function () {
             
             if (_initialized) return;
+            
+            _text = yukon.fromJson('#gateway-text');
             
             /** Create gateway popup opened. */
             $(document).on('yukon:assets:gateway:load', function (ev) {
@@ -124,7 +183,65 @@ yukon.assets.gateway.list = (function () {
                 });
             });
             
+            /** Start clicked on the certificate update popup. */
+            $(document).on('yukon:assets:gateway:cert:update', function (ev) {
+                
+                var popup = $('#gateway-cert-popup'),
+                    file = popup.find('input[type=file]'),
+                    gateways = popup.find('.js-select-all-item'),
+                    chosen = popup.find('.js-select-all-item:checked'),
+                    btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                    primary = btns.find('.js-primary-action'),
+                    secondary = btns.find('.js-secondary-action'),
+                    valid = true;
+                
+                if (!file.val()) {
+                    file.addClass('animated shake-subtle error')
+                    .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
+                    valid = false;
+                }
+                
+                if (!chosen.length) {
+                    gateways.addClass('animated shake-subtle error')
+                    .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
+                    valid = false;
+                }
+                
+                if (!valid) return;
+                
+                yukon.ui.busy(primary);
+                secondary.prop('disabled', true);
+                
+                popup.find('.user-message').remove();
+                
+                $('#gateway-cert-form').ajaxSubmit({
+                    url: yukon.url('/stars/gateways/cert-update'), 
+                    type: 'post',
+                    success: function (update, status, xhr, $form) {
+                        
+                        popup.dialog('close');
+                        
+                        var 
+                        row = $('.js-new-cert-update').clone()
+                              .removeClass('js-new-cert-update')
+                              .attr('data-update-id', update.updateId);
+                        
+                        _updateCertRow(row, update);
+                        
+                        $('#cert-table tbody').append(row);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        popup.html(xhr.responseText);
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
+                        secondary.prop('disabled', false);
+                    }
+                });
+            });
+            
             _update();
+            _updateCerts();
             
             _initialized = true;
         }

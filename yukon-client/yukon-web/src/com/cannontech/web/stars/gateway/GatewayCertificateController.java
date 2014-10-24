@@ -1,6 +1,8 @@
 package com.cannontech.web.stars.gateway;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -13,6 +15,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -43,6 +46,35 @@ public class GatewayCertificateController {
         model.addAttribute("gateways", gateways);
         
         return "gateways/cert.update.jsp";
+    }
+    
+    @RequestMapping("/gateways/cert-update/data")
+    public @ResponseBody Map<String, Object> data(YukonUserContext userContext) {
+        
+        Map<String, Object> json = new HashMap<>();
+        
+        // TEST CODE
+        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+        CertificateUpdate one = new CertificateUpdate();
+        one.setFileName("licertupgrade.pkg.nm");
+        one.setTimestamp(new Instant().minus(Duration.standardDays(7)));
+        one.setSuccessful(Lists.newArrayList(gateways.get(0)));
+        one.setFailed(Lists.newArrayList(gateways.get(1)));
+        one.setUpdateId("654asd67f54as76f4v");
+        
+        CertificateUpdate two = new CertificateUpdate();
+        two.setFileName("licertupgrade.pkg.nm");
+        two.setTimestamp(new Instant().minus(Duration.standardDays(8)));
+        two.setPending(Lists.newArrayList(gateways.get(0)));
+        two.setFailed(Lists.newArrayList(gateways.get(1)));
+        two.setUpdateId("ads6587a56ds96dsaf");
+        
+        json.put(one.getUpdateId(), one);
+        json.put(two.getUpdateId(), two);
+        
+        // END TEST CODE
+        
+        return json;
     }
     
     @RequestMapping(value="/gateways/cert-update", method=RequestMethod.POST)

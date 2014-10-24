@@ -128,17 +128,17 @@
     <tbody>
         <c:forEach var="update" items="${certUpdates}">
             <tr data-update-id="${update.updateId}">
-                <td>
+                <td class="js-cert-update-timestamp">
                     <a href="javascript:void(0);"><cti:formatDate value="${update.timestamp}" type="DATEHM_12"/></a>
                 </td>
-                <td>${fn:escapeXml(update.fileName)}</td>
+                <td class="js-cert-update-file">${fn:escapeXml(update.fileName)}</td>
                 <c:set var="all" value="${update.gateways}"/>
-                <td>${fn:escapeXml(all[0].name)}<c:if test="${fn:length(all) > 1}">,&nbsp;${fn:escapeXml(all[1].name)}</c:if>
+                <td class="js-cert-update-gateways">${fn:escapeXml(all[0].name)}<c:if test="${fn:length(all) > 1}">,&nbsp;${fn:escapeXml(all[1].name)}</c:if>
                     <c:if test="${fn:length(all) > 2}">
                         <i:inline key=".cert.update.more" arguments="${fn:length(all) - 2}"/>
                     </c:if>
                 </td>
-                <td>
+                <td class="js-cert-update-status">
                     <c:choose>
                         <c:when test="${fn:length(update.pending) == 0}">
                             <span class="success"><i:inline key="yukon.common.complete"/></span>
@@ -152,9 +152,9 @@
                         </c:otherwise>
                     </c:choose>
                 </td>
-                <td class="tar subtle">${fn:length(update.pending)}</td>
-                <td class="tar error">${fn:length(update.failed)}</td>
-                <td class="tar success">${fn:length(update.successful)}</td>
+                <td class="js-cert-update-pending tar subtle">${fn:length(update.pending)}</td>
+                <td class="js-cert-update-failed tar error">${fn:length(update.failed)}</td>
+                <td class="js-cert-update-successful tar success">${fn:length(update.successful)}</td>
             </tr>
         </c:forEach>
         
