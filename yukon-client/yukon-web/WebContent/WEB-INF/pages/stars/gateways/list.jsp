@@ -17,13 +17,14 @@
     data-width="570" data-min-width="570" data-dialog data-event="yukon:assets:gateway:save" 
     data-ok-text="<cti:msg2 key="components.button.save.label"/>" data-load-event="yukon:assets:gateway:load"></div>
 
-<div id="gateway-collect-data-popup" class="dn"></div>
-
 <div id="gateway-cert-popup" class="dn" data-dialog 
     data-title="<cti:msg2 key=".cert.update.label"/>"
     data-event="yukon:assets:gateway:cert:update"
     data-url="<cti:url value="/stars/gateways/cert-update/options"/>"
     data-ok-text="<cti:msg2 key="components.button.start.label"/>"></div>
+    
+<div id="gateway-collect-data-popup" class="dn"></div>
+<div id="gateway-cert-details-popup" class="dn"></div>
 
 <div class="stacked-lg">
 <table id="gateways-table" class="compact-results-table has-actions has-alerts">
@@ -161,7 +162,7 @@
     </tbody>
 </table>
 <div class="page-action-area">
-    <cti:button icon="icon-plus-green" nameKey="cert.update" data-popup="#gateway-cert-popup"/>
+    <cti:button icon="icon-plus-green" nameKey="cert.update" data-popup="#gateway-cert-popup" classes="M0"/>
 </div>
 
 <div id="gateway-templates" class="dn">

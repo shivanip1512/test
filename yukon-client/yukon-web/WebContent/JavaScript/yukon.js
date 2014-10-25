@@ -330,7 +330,7 @@ yukon.ui = (function () {
             var defaults = {
                     event: 'yukon.dialog.ok',
                     okText: yg.text.ok,
-                    cancelText: yg.text.cancel,
+                    cancelText: yg.text.cancel
                 };
             if (typeof(options) !== 'undefined') {
                 $.extend(defaults, options);

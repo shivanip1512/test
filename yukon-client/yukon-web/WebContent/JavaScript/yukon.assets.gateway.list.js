@@ -240,6 +240,25 @@ yukon.assets.gateway.list = (function () {
                 });
             });
             
+            /** User clicked one of the cert update timestamp links, show details popup */
+            $(document).on('click', '.js-cert-update-timestamp a', function () {
+                
+                var id = $(this).closest('tr').data('updateId'),
+                    timestamp = $(this).text(),
+                    popup = $('#gateway-cert-details-popup');
+                
+                $.ajax({ url: yukon.url('/stars/gateways/cert-update/' + id + '/details') })
+                .done(function (details) {
+                    popup.html(details).dialog({
+                        title: _text['cert.update.label'] + ': ' + timestamp,
+                        width: 620,
+                        height: 400,
+                        buttons: [{ text: yg.text.close, click: function () { $(this).dialog('close'); } }]
+                    });
+                });
+                
+            });
+            
             _update();
             _updateCerts();
             

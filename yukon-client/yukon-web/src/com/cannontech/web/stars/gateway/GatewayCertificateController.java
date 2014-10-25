@@ -12,6 +12,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -75,6 +76,22 @@ public class GatewayCertificateController {
         // END TEST CODE
         
         return json;
+    }
+    
+    @RequestMapping("/gateways/cert-update/{updateId}/details")
+    public String details(ModelMap model, @PathVariable String updateId) {
+        
+        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+        CertificateUpdate update = new CertificateUpdate();
+        update.setFileName("licertupgrade.pkg.nm");
+        update.setTimestamp(new Instant().minus(Duration.standardDays(7)));
+        update.setSuccessful(Lists.newArrayList(gateways.get(0)));
+        update.setFailed(Lists.newArrayList(gateways.get(1)));
+        update.setUpdateId("654asd67f54as76f4v");
+        
+        model.addAttribute("update", update);
+        
+        return "gateways/cert.update.details.jsp";
     }
     
     @RequestMapping(value="/gateways/cert-update", method=RequestMethod.POST)

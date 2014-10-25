@@ -83,11 +83,14 @@
 <entry key="yukon.common.historyTooltip">Click to view history</entry>
 <entry key="yukon.common.html">HTML</entry>
 <entry key="yukon.common.invalidCron">Invalid Cron Expression</entry>
+<entry key="yukon.common.ipaddress">IP Address</entry>
 <entry key="yukon.common.left">Left</entry>
 <entry key="yukon.common.loading">Loading…</entry>
 <entry key="yukon.common.loginStatus.DISABLED">Disabled</entry>
 <entry key="yukon.common.loginStatus.ENABLED">Enabled</entry>
+<entry key="yukon.common.name">Name</entry>
 <entry key="yukon.common.networkManager">Network Manager</entry>
+<entry key="yukon.common.none">None</entry>
 <entry key="yukon.common.noPhase">No Phase</entry>
 <entry key="yukon.common.okButton">OK</entry>
 <entry key="yukon.common.operationSuccess">Operation Successful</entry>
@@ -124,6 +127,7 @@
 <entry key="yukon.common.selectGroup.title">Select Device Group</entry>
 <entry key="yukon.common.selectGroups">select device group(s)...</entry>
 <entry key="yukon.common.selectGroups.title">Select Device Group(s)</entry>
+<entry key="yukon.common.serialNumber">Serial Number</entry>
 <entry key="yukon.common.status">Status</entry>
 <entry key="yukon.common.successful">Successful</entry>
 <entry key="yukon.common.thermostat.mode.AUTO">Auto</entry>

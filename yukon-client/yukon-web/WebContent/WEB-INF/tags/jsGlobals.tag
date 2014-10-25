@@ -20,6 +20,7 @@ var yg = {
     
     text: {
         cancel: '<cti:msg2 key="yukon.web.components.button.cancel.label"/>',
+        close: '<cti:msg2 key="yukon.web.components.button.close.label"/>',
         'delete': '<cti:msg2 key="yukon.web.components.button.delete.label"/>',
         edit: '<cti:msg2 key="yukon.web.components.button.edit.label"/>',
         ok: '<cti:msg2 key="yukon.web.components.button.ok.label"/>',
