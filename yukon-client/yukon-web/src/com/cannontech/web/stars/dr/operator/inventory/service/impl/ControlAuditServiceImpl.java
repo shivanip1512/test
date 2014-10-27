@@ -52,7 +52,7 @@ public class ControlAuditServiceImpl implements ControlAuditService {
     public ControlAuditResult runAudit(AuditSettings settings) {
         BiMap<InventoryIdentifier, PaoIdentifier> inventoryToPao = HashBiMap.create();
 
-        ListMultimap<BuiltInAttribute, YukonPao> rphLookup = ArrayListMultimap.create();
+        ListMultimap<BuiltInAttribute, YukonPao> paosByAttribute = ArrayListMultimap.create();
 
         List<Pair<InventoryIdentifier, AuditRow>> controlledList = Lists.newArrayList();
         List<Pair<InventoryIdentifier, AuditRow>> uncontrolledList = Lists.newArrayList();
@@ -70,12 +70,11 @@ public class ControlAuditServiceImpl implements ControlAuditService {
 
         for (InventoryIdentifier inventory : settings.getCollection()) {
 
-            AuditRow row = new AuditRow();
-            LiteLmHardware hardware = inventoryDao.getLiteLmHardwareByInventory(inventory);
-            row.setHardware(hardware);
-
             int deviceId = inventoryDao.getDeviceId(inventory.getInventoryId());
-            if (deviceId > 0) {
+            boolean isSupported = true;
+            if (deviceId <= 0) {
+                isSupported = false;
+            } else {
 
                 YukonPao pao = paoDao.getYukonPao(deviceId);
                 inventoryToPao.put(inventory, pao.getPaoIdentifier());
@@ -89,20 +88,25 @@ public class ControlAuditServiceImpl implements ControlAuditService {
                     supportedAttrs.put(paoType, availableAttributes);
                 }
 
-                /* Devices that support relay shed time will always at least support relay #1 shed time. */
+                // Devices that support relay shed time will always at least support relay #1 shed time.
                 if (!availableAttributes.contains(r1)) {
-                    unsupporedList.add(new Pair<InventoryIdentifier, AuditRow>(inventory, row));
+                    isSupported = false;
                 } else {
-                    rphLookup.put(r1, pao);
+                    paosByAttribute.put(r1, pao);
                     if (availableAttributes.contains(r2)) {
-                        rphLookup.put(r2, pao);
+                        paosByAttribute.put(r2, pao);
                     }
                     if (availableAttributes.contains(r3)) {
-                        rphLookup.put(r3, pao);
+                        paosByAttribute.put(r3, pao);
                     }
                 }
-            } else {
+            }
+            if (!isSupported) {
+                AuditRow row = new AuditRow();
+                LiteLmHardware hardware = inventoryDao.getLiteLmHardwareByInventory(inventory);
+                row.setHardware(hardware);
                 unsupporedList.add(new Pair<InventoryIdentifier, AuditRow>(inventory, row));
+
             }
         }
 
@@ -112,21 +116,21 @@ public class ControlAuditServiceImpl implements ControlAuditService {
         Date end = settings.getTo().toDate();
 
         ListMultimap<PaoIdentifier, PointValueQualityHolder> r1Data =
-            rphDao.getAttributeData(rphLookup.get(r1), r1, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE,
-                Order.FORWARD, null);
+            rphDao.getAttributeData(paosByAttribute.get(r1), r1, start,
+                end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD, null);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> r2Data =
-            rphDao.getAttributeData(rphLookup.get(r2), r2, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE,
-                Order.FORWARD, null);
+            rphDao.getAttributeData(paosByAttribute.get(r2), r2, start,
+                end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD, null);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> r3Data =
-            rphDao.getAttributeData(rphLookup.get(r3), r3, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE,
-                Order.FORWARD, null);
+            rphDao.getAttributeData(paosByAttribute.get(r3), r3, start,
+                end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD, null);
 
         ListMultimap<PaoIdentifier, PointValueQualityHolder> all = ArrayListMultimap.create();
         all.putAll(r1Data);
         all.putAll(r2Data);
         all.putAll(r3Data);
 
-        for (YukonPao yukonPao : rphLookup.get(r1)) {
+        for (YukonPao yukonPao : paosByAttribute.get(r1)) {
 
             PaoIdentifier pao = yukonPao.getPaoIdentifier();
 

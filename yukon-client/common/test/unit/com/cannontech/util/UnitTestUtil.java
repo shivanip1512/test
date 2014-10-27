@@ -1,9 +1,15 @@
 package com.cannontech.util;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.joda.time.DateTimeUtils;
 import org.joda.time.Duration;
+import org.springframework.util.Assert;
 
 public class UnitTestUtil {
 
@@ -31,5 +37,27 @@ public class UnitTestUtil {
 
     public static boolean withinOneMinute(Duration duration1, Duration duration2) {
         return areClose(duration1, duration2, Duration.standardMinutes(1));
+    }
+
+    /**
+     * Asserts object is not null and all getter methods return non-null objects.
+     */
+    public static void assertPropertiesNotNull(Object object) {
+        Assert.notNull(object, "Object itself is null.");
+
+        BeanInfo beanInfo;
+        try {
+            Class<?> clazz = object.getClass();
+            beanInfo = Introspector.getBeanInfo(clazz);
+            for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
+                Method readMethod = property.getReadMethod();
+                if (readMethod != null) {
+                    Assert.notNull(readMethod.invoke(object), "Method " + clazz.getSimpleName() + "." + readMethod.getName()
+                        + "() returned null.");
+                }
+            }
+        } catch (ReflectiveOperationException | IntrospectionException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
