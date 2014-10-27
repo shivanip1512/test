@@ -25,6 +25,7 @@ yukon.assets.gateway.shared = (function () {
             
             _text = yukon.fromJson('#gateway-text');
             
+            /** User clicked the connect option, send connect request. */
             $(document).on('click', '.js-gw-connect', function (ev) {
                 
                 var trigger = $(this).closest('.dropdown-menu').data('trigger'), 
@@ -43,6 +44,7 @@ yukon.assets.gateway.shared = (function () {
                 });
             });
             
+            /** User clicked the disconnect option, send disconnect request. */
             $(document).on('click', '.js-gw-disconnect', function (ev) {
                 
                 var trigger = $(this).closest('.dropdown-menu').data('trigger'), 
@@ -60,6 +62,7 @@ yukon.assets.gateway.shared = (function () {
                 });
             });
             
+            /** User clicked the collect data option, send collect data request. */
             $(document).on('click', '.js-gw-collect-data', function (ev) {
                 
                 var popup = $('#gateway-collect-data-popup'),

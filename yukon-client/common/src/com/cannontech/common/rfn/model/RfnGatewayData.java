@@ -13,6 +13,7 @@ import com.cannontech.common.rfn.message.gateway.LastCommStatus;
 import com.cannontech.common.rfn.message.gateway.Radio;
 
 public final class RfnGatewayData {
+    
     //Based on paoName
     private final String name;
     
@@ -38,6 +39,7 @@ public final class RfnGatewayData {
     private final short routeColor;
     
     public RfnGatewayData(GatewayDataResponse dataResponse) {
+        
         this.name = dataResponse.getRfnIdentifier().getSensorSerialNumber();
         
         this.hardwareVersion = dataResponse.getHardwareVersion();
@@ -61,7 +63,7 @@ public final class RfnGatewayData {
         this.routeColor = dataResponse.getRouteColor();
     }
     
-    //private constructor for builder
+    /** Private constructor for builder */
     private RfnGatewayData(String name, String hardwareVersion, String softwareVersion, String upperStackVersion, 
                            String radioVersion, String releaseVersion, Set<ConflictType> versionConflicts, 
                            AppMode mode, ConnectionType connectionType, String ipAddress, String port, 
@@ -90,79 +92,79 @@ public final class RfnGatewayData {
         this.sequences = sequences;
         this.routeColor = routeColor;
     }
-
+    
     public String getName() {
         return name;
     }
-
+    
     public String getHardwareVersion() {
         return hardwareVersion;
     }
-
+    
     public String getSoftwareVersion() {
         return softwareVersion;
     }
-
+    
     public String getUpperStackVersion() {
         return upperStackVersion;
     }
-
+    
     public String getRadioVersion() {
         return radioVersion;
     }
-
+    
     public String getReleaseVersion() {
         return releaseVersion;
     }
-
+    
     public Set<ConflictType> getVersionConflicts() {
         return versionConflicts;
     }
-
+    
     public AppMode getMode() {
         return mode;
     }
-
+    
     public ConnectionType getConnectionType() {
         return connectionType;
     }
-
+    
     public String getIpAddress() {
         return ipAddress;
     }
-
+    
     public String getPort() {
         return port;
     }
-
+    
     public ConnectionStatus getConnectionStatus() {
         return connectionStatus;
     }
-
+    
     public LastCommStatus getLastCommStatus() {
         return lastCommStatus;
     }
-
+    
     public long getLastCommStatusTimestamp() {
         return lastCommStatusTimestamp;
     }
-
+    
     public Set<Radio> getRadios() {
         return radios;
     }
-
+    
     public Authentication getAdmin() {
         return admin;
     }
-
+    
     public Authentication getSuperAdmin() {
         return superAdmin;
     }
-
+    
     public String getCollectionSchedule() {
         return collectionSchedule;
     }
-
+    
     public Set<DataSequence> getSequences() {
         return sequences;
     }
@@ -175,15 +177,16 @@ public final class RfnGatewayData {
     public String toString() {
         return String
             .format("RfnGatewayData [name=%s, hardwareVersion=%s, softwareVersion=%s, upperStackVersion=%s, " +
-            		"radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, " +
-            		"port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, user=%s, " +
-            		"admin=%s, superAdmin=%s, collectionSchedule=%s, sequences=%s, routeColor=%s]",
+                    "radioVersion=%s, releaseVersion=%s, versionConflicts=%s, mode=%s, connectionType=%s, ipAddress=%s, " +
+                    "port=%s, connectionStatus=%s, lastCommStatus=%s, lastCommStatusTimestamp=%s, radios=%s, user=%s, " +
+                    "admin=%s, superAdmin=%s, collectionSchedule=%s, sequences=%s, routeColor=%s]",
                     name, hardwareVersion, softwareVersion, upperStackVersion, radioVersion, releaseVersion,
                     versionConflicts, mode, connectionType, ipAddress, port, connectionStatus, lastCommStatus,
                     lastCommStatusTimestamp, radios, admin, superAdmin, collectionSchedule, sequences, routeColor);
     }
-
+    
     public static class Builder {
+        
         private String name;
         private String hardwareVersion;
         private String softwareVersion;
@@ -207,6 +210,7 @@ public final class RfnGatewayData {
         private short routeColor;
         
         public RfnGatewayData build() {
+            
             return new RfnGatewayData(name, hardwareVersion, softwareVersion, upperStackVersion, radioVersion, 
                                       releaseVersion, versionConflicts, mode, connectionType, ipAddress, port, 
                                       connectionStatus, lastCommStatus, lastCommStatusTimestamp, radios, user, admin,
@@ -215,6 +219,7 @@ public final class RfnGatewayData {
         }
         
         public Builder copyOf(RfnGatewayData oldData) {
+            
             this.name = oldData.getName();
             this.hardwareVersion = oldData.getHardwareVersion();
             this.softwareVersion = oldData.getSoftwareVersion();
@@ -235,6 +240,7 @@ public final class RfnGatewayData {
             this.collectionSchedule = oldData.getCollectionSchedule();
             this.sequences = oldData.getSequences();
             this.routeColor = oldData.getRouteColor();
+            
             return this;
         }
         

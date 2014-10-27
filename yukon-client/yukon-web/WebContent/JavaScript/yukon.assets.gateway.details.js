@@ -117,6 +117,42 @@ yukon.assets.gateway.details = (function () {
                 $('#delete-gw-form').submit();
             });
             
+            
+            /** Edit popup was opened, adjust test connection buttons. */
+            $(document).on('yukon:assets:gateway:edit:load', function (ev) {
+                yukon.assets.gateway.shared.adjustTestConnectionButtons();
+            });
+            
+            /** Save button clicked on edit popup. */
+            $(document).on('yukon:assets:gateway:save', function (ev) {
+                
+                var btns = $('#gateway-create-popup').closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                    primary = btns.find('.js-primary-action'),
+                    secondary = btns.find('.js-secondary-action');
+                
+                yukon.ui.busy(primary);
+                secondary.prop('disabled', true);
+                
+                $('#gateway-create-popup').find('.user-message').remove();
+                
+                $('#gateway-settings-form').ajaxSubmit({
+                    type: 'post',
+                    success: function (result, status, xhr, $form) {
+                        
+                        $('#gateway-edit-popup').dialog('close');
+                        window.location.href = window.location.href;
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#gateway-edit-popup').html(xhr.responseText);
+                        yukon.assets.gateway.shared.adjustTestConnectionButtons();
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
+                        secondary.prop('disabled', false);
+                    }
+                });
+            });
+            
             _initialized = true;
         },
         

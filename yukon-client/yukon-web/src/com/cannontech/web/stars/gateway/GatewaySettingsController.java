@@ -13,21 +13,27 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.security.annotation.CheckRole;
@@ -42,6 +48,7 @@ public class GatewaySettingsController {
     private static final Logger log = YukonLogManager.getLogger(GatewayListController.class);
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
     
+    @Autowired private ServerDatabaseCache cache;
     @Autowired private GatewaySettingsValidator validator;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
@@ -56,7 +63,10 @@ public class GatewaySettingsController {
         return "gateways/settings.jsp";
     }
     
-    /** Create a gateway, return gateway settings popup when validation or creation fails, otherwise return success json payload. */
+    /** 
+     * Create a gateway, return gateway settings popup when validation or creation fails, 
+     * otherwise return success json payload. 
+     */
     @RequestMapping(value={"/gateways", "/gateways/"}, method=RequestMethod.POST)
     public String create(ModelMap model,
             YukonUserContext userContext,
@@ -101,6 +111,104 @@ public class GatewaySettingsController {
             return "gateways/settings.jsp";
         }
         
+    }
+    
+    @RequestMapping("/gateways/{id}/edit")
+    public String editDialog(ModelMap model, @PathVariable int id) {
+        
+        model.addAttribute("mode", PageEditMode.EDIT);
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
+        
+        try {
+            
+            RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(pao.getPaoIdentifier());
+            
+            GatewaySettings settings = new GatewaySettings();
+            settings.setId(id);
+            settings.setName(gateway.getName());
+            settings.setIpAddress(gateway.getData().getIpAddress());
+            settings.setAdmin(gateway.getData().getAdmin());
+            settings.setSuperAdmin(gateway.getData().getSuperAdmin());
+            if (gateway.getLocation() != null) {
+                settings.setLatitude(gateway.getLocation().getLatitude());
+                settings.setLongitude(gateway.getLocation().getLongitude());
+            }
+            
+            model.addAttribute("settings", settings);
+            
+        } catch (NetworkManagerCommunicationException e) {
+            // TODO 
+        }
+        
+        return "gateways/settings.jsp";
+    }
+    
+    /** Update the gateway */
+    @RequestMapping(value="/gateways/{id}", method=RequestMethod.PUT)
+    public String update(ModelMap model,
+            YukonUserContext userContext,
+            HttpServletResponse resp,
+            @PathVariable int id,
+            @ModelAttribute("settings") GatewaySettings settings,
+            BindingResult result) throws JsonGenerationException, JsonMappingException, IOException {
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        
+        validator.validate(settings, result);
+        
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.EDIT);
+            return "gateways/settings.jsp";
+        }
+        
+        try {
+            
+            LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
+            
+            RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(pao.getPaoIdentifier());
+            
+            gateway.setName(settings.getName());
+            if (settings.getLatitude() != null) {
+                gateway.setLocation(PaoLocation.of(settings.getLatitude(), settings.getLongitude()));
+            }
+            
+            RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
+            RfnGatewayData data = builder.copyOf(gateway.getData())
+           .ipAddress(settings.getIpAddress())
+           .name(settings.getName())
+           .admin(settings.getAdmin())
+           .superAdmin(settings.getSuperAdmin())
+           .build();
+            
+            gateway.setData(data);
+            
+            rfnGatewayService.updateGateway(gateway);
+            log.info("Gateway updated: " + gateway);
+            
+            // Success
+            model.clear();
+            Map<String, Object> json = new HashMap<>();
+            json.put("success", true);
+            resp.setContentType("application/json");
+            JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
+            
+            return null;
+            
+        } catch (NetworkManagerCommunicationException e) {
+            
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.EDIT);
+            String errorMsg;
+            if (e instanceof NetworkManagerCommunicationException) {
+                errorMsg = accessor.getMessage(baseKey + "error.comm");
+            } else {
+                errorMsg = accessor.getMessage(baseKey + "create.error");
+            }
+            model.addAttribute("errorMsg", errorMsg);
+            
+            return "gateways/settings.jsp";
+        }
     }
     
     /** Test the connection, return result as json. */

@@ -117,11 +117,9 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     public RfnGateway getGatewayByPaoId(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
         // Get base RfnDevice
         RfnDevice gwDevice = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
-        // Get PAO name
-        String name = cache.getAllPaosMap().get(gwDevice.getPaoIdentifier().getPaoId()).getPaoName();
         // Get RfnGatewayData from cache
         RfnGatewayData gatewayData = dataCache.get(paoIdentifier);
-        RfnGateway rfnGateway = new RfnGateway(name, gwDevice.getPaoIdentifier(),
+        RfnGateway rfnGateway = new RfnGateway(gwDevice.getName(), gwDevice.getPaoIdentifier(),
                                                gwDevice.getRfnIdentifier(),
                                                gatewayData);
         // Get PaoLocation from PaoLocationDao
@@ -294,6 +292,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         if (gateway.getLocation() != null && !gateway.getLocation().equals(existingGateway.getLocation())) {
             paoLocationDao.save(gateway.getLocation());
         }
+        
         return true;
     }
 

@@ -41,7 +41,7 @@
     data-url="${gateway.paoIdentifier.paoId}/edit" 
     data-width="565" 
     data-event="yukon:assets:gateway:save" 
-    data-load-event="yukon:assets:gateway:load" 
+    data-load-event="yukon:assets:gateway:edit:load" 
     data-ok-text="<cti:msg2 key="components.button.save.label"/>"></div>
 
 <div class="column-12-12 clearfix">
@@ -49,7 +49,7 @@
     <div class="column one">
         <tags:sectionContainer2 nameKey="info" styleClass="stacked">
             <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".name">${fn:escapeXml(gateway.data.name)}</tags:nameValue2>
+                <tags:nameValue2 nameKey=".name">${fn:escapeXml(gateway.name)}</tags:nameValue2>
                 <tags:nameValue2 nameKey=".serialNumber">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</tags:nameValue2>
                 <tags:nameValue2 nameKey=".hardwareVersion">${gateway.data.hardwareVersion}</tags:nameValue2>
                 <tags:nameValue2 nameKey=".softwareVersion">${gateway.data.softwareVersion}</tags:nameValue2>
@@ -261,7 +261,7 @@
 
 <cti:includeScript link="OPEN_LAYERS"/>
 <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
-<cti:includeScript link="/JavaScript/yukon.assets.gateway.details.js"/>
 <cti:includeScript link="/JavaScript/yukon.assets.gateway.shared.js"/>
+<cti:includeScript link="/JavaScript/yukon.assets.gateway.details.js"/>
 
 </cti:standardPage>

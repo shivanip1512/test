@@ -136,19 +136,19 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
         
         // CREATE ADDITIONAL YUKON DEVICE FOR TWO WAY LCR
         if(lmHardware) {
-        	LiteLmHardwareBase lmHw = (LiteLmHardwareBase) liteInv;
-        	int hardwareTypeID = lmHw.getLmHardwareTypeID();
-	        if (InventoryUtils.is3102(hardwareTypeID)) {
-	        	
-	    		YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
-	    		String deviceTypeName = entry.getEntryText();
-	    		int yukonDeviceTypeId = PaoType.getPaoTypeId(deviceTypeName);
-	    		if (!PaoType.getForId(yukonDeviceTypeId).isTwoWayLcr()) {
-	    			throw new Lcr3102YukonDeviceCreationException("Selected yukon device must be a Two Way LCR.");
-	    		}
-	    		
-	        	starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, yukonDeviceTypeId, null, null, allowCreateLcrIfAlreadyHasAssignedDevice);
-	        }
+            LiteLmHardwareBase lmHw = (LiteLmHardwareBase) liteInv;
+            int hardwareTypeID = lmHw.getLmHardwareTypeID();
+            if (InventoryUtils.is3102(hardwareTypeID)) {
+                
+                YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
+                String deviceTypeName = entry.getEntryText();
+                int yukonDeviceTypeId = PaoType.getPaoTypeId(deviceTypeName);
+                if (!PaoType.getForId(yukonDeviceTypeId).isTwoWayLcr()) {
+                    throw new Lcr3102YukonDeviceCreationException("Selected yukon device must be a Two Way LCR.");
+                }
+                
+                starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, energyCompany, yukonDeviceTypeId, null, null, allowCreateLcrIfAlreadyHasAssignedDevice);
+            }
         }
         
         CustomerAccount customerAccount = customerAccountDao.getById(liteInv.getAccountID());
@@ -259,7 +259,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                     RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(liteInv.getDeviceID());
                     RfnIdentifier previous = rfnDevice.getRfnIdentifier();
                     RfnIdentifier rfnIdentifier = new RfnIdentifier(lmHw.getManufacturerSerialNumber(), previous.getSensorManufacturer(), previous.getSensorModel());
-                    rfnDevice = new RfnDevice(rfnDevice.getPaoIdentifier(), rfnIdentifier);
+                    rfnDevice = new RfnDevice(rfnDevice.getName(), rfnDevice.getPaoIdentifier(), rfnIdentifier);
                     rfnDeviceDao.updateDevice(rfnDevice);
                 }
 
@@ -268,17 +268,17 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 // - updateDeviceOnAccount() does not support updating a Yukon device already assigned
                 int hardwareTypeID = lmHw.getLmHardwareTypeID();
                 if (InventoryUtils.is3102(hardwareTypeID)) {
-                	if (liteInv.getDeviceID() < 1) {
-                		
-                		YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
-        	    		String deviceTypeName = entry.getEntryText();
-        	    		int yukonDeviceTypeId = PaoType.getPaoTypeId(deviceTypeName);
-        	    		if (!PaoType.getForId(yukonDeviceTypeId).isTwoWayLcr()) {
-        	    			throw new StarsDeviceSerialNumberAlreadyExistsException("Selected yukon device must be a Two Way LCR.");
-        	    		} 
-        	    		
-                		starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, lsec, yukonDeviceTypeId, null, null, false);
-                	}
+                    if (liteInv.getDeviceID() < 1) {
+                        
+                        YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
+                        String deviceTypeName = entry.getEntryText();
+                        int yukonDeviceTypeId = PaoType.getPaoTypeId(deviceTypeName);
+                        if (!PaoType.getForId(yukonDeviceTypeId).isTwoWayLcr()) {
+                            throw new StarsDeviceSerialNumberAlreadyExistsException("Selected yukon device must be a Two Way LCR.");
+                        } 
+                        
+                        starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, lsec, yukonDeviceTypeId, null, null, false);
+                    }
                 }
             }
             // update install event

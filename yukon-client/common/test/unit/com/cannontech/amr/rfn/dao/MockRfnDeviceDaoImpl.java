@@ -34,8 +34,9 @@ public class MockRfnDeviceDaoImpl extends RfnDeviceDaoImpl {
         // Building up paoToRfnDeviceMap
         for (Object[] paoToRfnDeviceEntry : paoToRfnDeviceData) {
             YukonPao pao = (YukonPao) paoToRfnDeviceEntry[0];
-            RfnIdentifier rfnIdentifier = new RfnIdentifier(String.valueOf(paoToRfnDeviceEntry[1]), String.valueOf(paoToRfnDeviceEntry[2]), String.valueOf(paoToRfnDeviceEntry[3]));
-            RfnDevice rfnDevice = new RfnDevice(pao, rfnIdentifier);
+            RfnIdentifier rfnIdentifier = new RfnIdentifier(String.valueOf(paoToRfnDeviceEntry[1]), 
+                    String.valueOf(paoToRfnDeviceEntry[2]), String.valueOf(paoToRfnDeviceEntry[3]));
+            RfnDevice rfnDevice = new RfnDevice(rfnIdentifier.getSensorSerialNumber(), pao, rfnIdentifier);
             paoToRfnDeviceMap.put(pao, rfnDevice);
         }
     }
@@ -46,7 +47,7 @@ public class MockRfnDeviceDaoImpl extends RfnDeviceDaoImpl {
             return paoToRfnDeviceMap.get(pao);
         }
         
-        throw new NotFoundException("The pao "+pao+" does not exist in the test data.");
+        throw new NotFoundException("The pao " + pao + " does not exist in the test data.");
     }
     
     @Override
@@ -58,7 +59,7 @@ public class MockRfnDeviceDaoImpl extends RfnDeviceDaoImpl {
             }
         }
         
-        throw new NotFoundException("The paoId "+paoId+" does not exist in the test data.");
+        throw new NotFoundException("The paoId " + paoId + " does not exist in the test data.");
     }
     
 }

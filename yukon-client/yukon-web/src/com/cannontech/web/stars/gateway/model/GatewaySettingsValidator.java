@@ -40,11 +40,15 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
                 if (latitude > 90 || latitude < -90) {
                     errors.rejectValue("latitude", baseKey + "latitude.invalid");
                 }
+            } else {
+                YukonValidationUtils.rejectValues(errors, baseKey + "latitude.required", "latitude");
             }
             if (longitude != null) {
                 if (longitude > 180 || longitude < -180) {
                     errors.rejectValue("longitude", baseKey + "longitude.invalid");
                 }
+            } else {
+                YukonValidationUtils.rejectValues(errors, baseKey + "longitude.required", "longitude");
             }
         }
     }

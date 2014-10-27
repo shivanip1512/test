@@ -38,7 +38,7 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
             }
         };
         RfnIdentifier rfnId = new RfnIdentifier("10000", "CPS", "RF_GATEWAY");
-        return new RfnDevice(pao, rfnId);
+        return new RfnDevice("10000", pao, rfnId);
     }
 
     @Override

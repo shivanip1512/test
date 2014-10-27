@@ -141,7 +141,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                 try {
                     String deviceName = rfnIdentifier.getSensorSerialNumber().trim();
                     YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templateName, deviceName, true);
-                    RfnDevice device = new RfnDevice(newDevice.getPaoIdentifier(), rfnIdentifier);
+                    RfnDevice device = new RfnDevice(deviceName, newDevice.getPaoIdentifier(), rfnIdentifier);
                     rfnDeviceDao.updateDevice(device);
                     if (newDevice.getPaoIdentifier().getPaoType().isMeter()) {
                         deviceDao.changeMeterNumber(device, deviceName);
@@ -190,7 +190,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
                                                                                 rfnIdentifier.getSensorManufacturer(), 
                                                                                 rfnIdentifier.getSensorSerialNumber(), 
                                                                                 true);
-        return new RfnDevice(device.getPaoIdentifier(), rfnIdentifier);
+        return new RfnDevice(name, device.getPaoIdentifier(), rfnIdentifier);
     }
     
     private void createStarsDevice(HardwareType type, YukonDevice device, RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user) {

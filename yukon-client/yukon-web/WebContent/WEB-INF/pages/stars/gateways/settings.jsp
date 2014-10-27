@@ -20,7 +20,7 @@
         <c:set var="method" value="post"/>
     </c:when>
     <c:otherwise>
-        <cti:url var="url" value="/stars/gateways/${gateway.paoIdentifier.paoId}"/>
+        <cti:url var="url" value="/stars/gateways/${settings.id}"/>
         <c:set var="method" value="put"/>
     </c:otherwise>
 </c:choose>
@@ -43,15 +43,18 @@
         <tags:nameValue2 rowClass="js-gateway-edit-admin" nameKey=".admin">
             <spring:bind path="admin.username">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                <form:input path="admin.username" cssClass="M0 left js-gateway-edit-username ${clazz}" 
+                <form:input path="admin.username" cssClass="js-gateway-edit-username M0 left ${clazz}" 
                     placeholder="${phUsername}" tabindex="3"/>
             </spring:bind>
             <spring:bind path="admin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                <form:input path="admin.password" cssClass="M0 middle js-gateway-edit-password ${clazz}" 
+                <c:set var="clazz" value="${clazz} ${mode == 'CREATE' ? 'right' : 'middle'}"/>
+                <form:input path="admin.password" cssClass="js-gateway-edit-password M0 ${clazz}" 
                     placeholder="${phPassword}" tabindex="4"/>
-                <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
-                    disabled="true" nameKey="testConnection" tabindex="5"/>
+                <c:if test="${mode == 'EDIT'}">
+                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
+                        disabled="true" nameKey="testConnection" tabindex="5"/>
+                </c:if>
             </spring:bind>
             
             <spring:bind path="admin.username">
@@ -65,15 +68,18 @@
         <tags:nameValue2 rowClass="js-gateway-edit-super-admin" nameKey=".superAdmin">
             <spring:bind path="superAdmin.username">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                <form:input path="superAdmin.username" cssClass="M0 left js-gateway-edit-username ${clazz}" 
+                <form:input path="superAdmin.username" cssClass="js-gateway-edit-username M0 left ${clazz}" 
                     placeholder="${phUsername}" tabindex="6"/>
             </spring:bind>
             <spring:bind path="superAdmin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                <form:input path="superAdmin.password" cssClass="M0 middle js-gateway-edit-password ${clazz}" 
+                <c:set var="clazz" value="${clazz} ${mode == 'CREATE' ? 'right' : 'middle'}"/>
+                <form:input path="superAdmin.password" cssClass="js-gateway-edit-password M0 ${clazz}" 
                     placeholder="${phPassword}" tabindex="7"/>
-                <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
-                    disabled="true" nameKey="testConnection" tabindex="8"/>
+                <c:if test="${mode == 'EDIT'}">
+                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
+                        disabled="true" nameKey="testConnection" tabindex="8"/>
+                </c:if>
             </spring:bind>
             <spring:bind path="superAdmin.username">
                 <c:if test="${status.error}"><form:errors path="superAdmin.username" cssClass="error" element="div"/></c:if>

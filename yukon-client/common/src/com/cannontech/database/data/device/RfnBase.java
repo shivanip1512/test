@@ -95,8 +95,10 @@ public abstract class RfnBase extends DeviceBase {
         /* Use the rfn device dao to do updating since depending on the address arguments
          * we will either be doing a delete, and insert or an update. */
         RfnDeviceDao rfnDeviceDao = YukonSpringHook.getBean("rfnDeviceDao", RfnDeviceDao.class);
-        RfnDevice device = new RfnDevice(new PaoIdentifier(getPAObjectID(), getPaoType()), 
-                                      new RfnIdentifier(getRfnAddress().getSerialNumber(), getRfnAddress().getManufacturer(), getRfnAddress().getModel()));
+        PaoIdentifier pao = new PaoIdentifier(getPAObjectID(), getPaoType());
+        RfnIdentifier rfn = new RfnIdentifier(getRfnAddress().getSerialNumber(), getRfnAddress().getManufacturer(), getRfnAddress().getModel());
+        RfnDevice device = new RfnDevice(getPAOName(), pao, rfn);
+        
         rfnDeviceDao.updateDevice(device);
     }
     

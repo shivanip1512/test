@@ -10,28 +10,32 @@ import com.cannontech.common.rfn.message.gateway.AppMode;
 import com.cannontech.common.rfn.message.gateway.DataSequence;
 import com.cannontech.common.rfn.message.gateway.LastCommStatus;
 
-public class RfnGateway extends RfnDevice implements Locatable {
+public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGateway> {
     
-    private RfnGatewayData gatewayData;
+    private RfnGatewayData data;
     private PaoLocation paoLocation;
     private String name;
     
-    public RfnGateway(String name, YukonPao pao, RfnIdentifier rfnIdentifier, RfnGatewayData gatewayData) {
-        super(pao, rfnIdentifier);
-        this.gatewayData = gatewayData;
+    public RfnGateway(String name, YukonPao pao, RfnIdentifier rfnIdentifier, RfnGatewayData data) {
+        super(name, pao, rfnIdentifier);
+        this.data = data;
         this.name = name;
     }
     
     public RfnGatewayData getData() {
-        return gatewayData;
+        return data;
+    }
+    
+    public void setData(RfnGatewayData data) {
+        this.data = data;
     }
     
     public double getTotalCompletionPercentage() {
-        if (gatewayData == null) {
+        if (data == null) {
             return 0.0;
         }
         
-        Set<DataSequence> sequences = gatewayData.getSequences();
+        Set<DataSequence> sequences = data.getSequences();
         int numberOfSequences = sequences.size();
         
         if (numberOfSequences == 0) return 0.0;
@@ -55,31 +59,31 @@ public class RfnGateway extends RfnDevice implements Locatable {
     }
     
     public boolean isLastCommFailed() {
-        if (gatewayData == null) {
+        if (data == null) {
             return false;
         }
-        return gatewayData.getLastCommStatus() == LastCommStatus.FAILED;
+        return data.getLastCommStatus() == LastCommStatus.FAILED;
     }
     
     public boolean isLastCommMissed() {
-        if (gatewayData == null) {
+        if (data == null) {
             return false;
         }
-        return gatewayData.getLastCommStatus() == LastCommStatus.MISSED;
+        return data.getLastCommStatus() == LastCommStatus.MISSED;
     }
     
     public boolean isLastCommUnknown() {
-        if (gatewayData == null) {
+        if (data == null) {
             return false;
         }
-        return gatewayData.getLastCommStatus() == LastCommStatus.UNKNOWN;
+        return data.getLastCommStatus() == LastCommStatus.UNKNOWN;
     }
     
     public boolean isAppModeNonNormal() {
-        if (gatewayData == null) {
+        if (data == null) {
             return false;
         }
-        return gatewayData.getMode() != AppMode.NORMAL;
+        return data.getMode() != AppMode.NORMAL;
     }
     
     @Override
@@ -95,4 +99,14 @@ public class RfnGateway extends RfnDevice implements Locatable {
     public String getName() {
         return name;
     }
+    
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    @Override
+    public int compareTo(RfnGateway o) {
+        return this.name.compareToIgnoreCase(o.getName());
+    }
+    
 }

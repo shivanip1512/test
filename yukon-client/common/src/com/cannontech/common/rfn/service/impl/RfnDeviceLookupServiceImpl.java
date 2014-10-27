@@ -43,7 +43,7 @@ public class RfnDeviceLookupServiceImpl implements RfnDeviceLookupService {
             try {
                 RfnDevice oldDevice = rfnDeviceDao.getDeviceForExactIdentifier(identifierWithOldModel);
                 // if we find it, we need to update the database to represent the new model name
-                RfnDevice newDevice = new RfnDevice(oldDevice.getPaoIdentifier(), rfnIdentifier);
+                RfnDevice newDevice = new RfnDevice(oldDevice.getName(), oldDevice.getPaoIdentifier(), rfnIdentifier);
                 rfnDeviceDao.updateDevice(newDevice);
                 log.info("updating older " + oldDevice + " to " + newDevice + " when " + rfnIdentifier + " was requested");
                 return newDevice;

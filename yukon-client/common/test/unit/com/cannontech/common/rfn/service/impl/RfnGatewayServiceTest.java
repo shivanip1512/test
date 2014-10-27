@@ -91,7 +91,7 @@ public class RfnGatewayServiceTest {
     
     private static RfnDevice createRfnDevice(final PaoIdentifier paoIdentifier,
                                              RfnIdentifier rfnIdentifier) {
-        return new RfnDevice(new YukonPao() {
+        return new RfnDevice(rfnIdentifier.getSensorSerialNumber(), new YukonPao() {
             @Override
             public PaoIdentifier getPaoIdentifier() {
                 return paoIdentifier;
@@ -250,7 +250,7 @@ public class RfnGatewayServiceTest {
     public void test_createGateway_successResponse() throws NetworkManagerCommunicationException, GatewayUpdateException {
         RfnDeviceCreationService rfnDeviceCreationService = EasyMock.createStrictMock(RfnDeviceCreationService.class);
         EasyMock.expect(rfnDeviceCreationService.createGateway(gatewayName, gatewayRfnId))
-                .andReturn(new RfnDevice(gatewayPaoId, gatewayRfnId));
+                .andReturn(new RfnDevice(gatewayName, gatewayPaoId, gatewayRfnId));
         EasyMock.replay(rfnDeviceCreationService);
         
         RfnGatewayDataCache gatewayDataCache = EasyMock.createStrictMock(RfnGatewayDataCache.class);

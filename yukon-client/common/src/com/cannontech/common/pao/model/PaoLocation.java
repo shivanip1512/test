@@ -54,6 +54,15 @@ public class PaoLocation implements YukonPao {
         return dist;
     }
     
+    public static PaoLocation of(double latitude, double longitude) {
+        
+        PaoLocation location = new PaoLocation();
+        location.setLatitude(latitude);
+        location.setLongitude(longitude);
+        
+        return location;
+    }
+    
     /** Converts decimal degrees to radians */
     public static double deg2rad(double deg) {
         return deg * Math.PI / 180.0;

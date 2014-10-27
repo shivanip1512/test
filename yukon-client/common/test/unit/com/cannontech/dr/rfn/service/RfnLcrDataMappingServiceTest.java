@@ -71,7 +71,7 @@ public class RfnLcrDataMappingServiceTest {
         AssetAvailabilityPointDataTimes assetAvailabilityTimes = new AssetAvailabilityPointDataTimes(identifier.getPaoId());
         assetAvailabilityTimes.setLastCommunicationTime(instantOfReading);
 
-        RfnDevice device = new RfnDevice(identifier, new RfnIdentifier("serialNumber", "sensorManufacturer", "sensorModel") );
+        RfnDevice device = new RfnDevice("serialNumber", identifier, new RfnIdentifier("serialNumber", "sensorManufacturer", "sensorModel") );
         List<PointData> mapIntervalData = ReflectionTestUtils.invokeMethod(dataMappingServiceImpl, "mapIntervalData", data, device, assetAvailabilityTimes);
         
         Assert.assertEquals(mapIntervalData.size(), 0);

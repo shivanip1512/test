@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.gateway;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.google.common.collect.Lists;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
@@ -46,7 +48,8 @@ public class GatewayCertificateController {
     @RequestMapping("/gateways/cert-update/options")
     public String certificate(ModelMap model) {
         
-        Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
+        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+        Collections.sort(gateways);
         model.addAttribute("gateways", gateways);
         
         return "gateways/cert.update.jsp";
@@ -56,27 +59,6 @@ public class GatewayCertificateController {
     public @ResponseBody Map<String, Object> data(YukonUserContext userContext) {
         
         Map<String, Object> json = new HashMap<>();
-        
-        // TEST CODE
-//        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-//        CertificateUpdate one = new CertificateUpdate();
-//        one.setFileName("licertupgrade.pkg.nm");
-//        one.setTimestamp(new Instant().minus(Duration.standardDays(7)));
-//        one.setSuccessful(Lists.newArrayList((RfnDevice)gateways.get(0)));
-//        one.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
-//        one.setUpdateId("654asd67f54as76f4v");
-//        
-//        CertificateUpdate two = new CertificateUpdate();
-//        two.setFileName("licertupgrade.pkg.nm");
-//        two.setTimestamp(new Instant().minus(Duration.standardDays(8)));
-//        two.setPending(Lists.newArrayList((RfnDevice)gateways.get(0)));
-//        two.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
-//        two.setUpdateId("ads6587a56ds96dsaf");
-//        
-//        json.put(one.getUpdateId(), one);
-//        json.put(two.getUpdateId(), two);
-       
-        // END TEST CODE
         
         List<CertificateUpdate> updates = certificateUpdateService.getAllCertificateUpdates();
         for (CertificateUpdate update : updates) {
@@ -91,14 +73,6 @@ public class GatewayCertificateController {
         
         int dbId = certificateUpdateDao.getLatestUpdateForCertificate(updateId);
         CertificateUpdate update = certificateUpdateService.getCertificateUpdate(dbId);
-        
-//        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-//        CertificateUpdate update = new CertificateUpdate();
-//        update.setFileName("licertupgrade.pkg.nm");
-//        update.setTimestamp(new Instant().minus(Duration.standardDays(7)));
-//        update.setSuccessful(Lists.newArrayList((RfnDevice)gateways.get(0)));
-//        update.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
-//        update.setUpdateId("654asd67f54as76f4v");
         
         model.addAttribute("update", update);
         
@@ -126,15 +100,6 @@ public class GatewayCertificateController {
                 
                 int updateId = certificateUpdateDao.getLatestUpdateForCertificate(certificateId);
                 CertificateUpdate update = certificateUpdateService.getCertificateUpdate(updateId);
-                // TEST CODE
-//                List<RfnGateway> rfgateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-//                CertificateUpdate update = new CertificateUpdate();
-//                update.setFileName("licertupgrade.pkg.nm");
-//                update.setTimestamp(new Instant().minus(Duration.standardDays(7)));
-//                update.setPending(Lists.newArrayList((RfnDevice)rfgateways.get(0)));
-//                update.setFailed(Lists.newArrayList((RfnDevice)rfgateways.get(1)));
-//                update.setUpdateId("654asd67f54as76f4v");
-                // END TEST CODE
                 
                 resp.setContentType("application/json");
                 JsonUtils.getWriter().writeValue(resp.getOutputStream(), update);

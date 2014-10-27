@@ -1343,7 +1343,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             // Check if different first, then update only if change needed
             if (!((RfnMeter) existingMeter).getRfnIdentifier().getSensorSerialNumber().equals(newMeterRfnIdentifier.getSensorSerialNumber())) {
                 String originalSerialNumber = ((RfnMeter) existingMeter).getRfnIdentifier().getSensorSerialNumber();
-                RfnDevice deviceToUpdate = new RfnDevice(existingMeter, newMeterRfnIdentifier);
+                RfnDevice deviceToUpdate = new RfnDevice(existingMeter.getName(), existingMeter, newMeterRfnIdentifier);
                 rfnDeviceDao.updateDevice(deviceToUpdate);
                 existingMeter = new RfnMeter(existingMeter, newMeterRfnIdentifier, existingMeter.getMeterNumber(), existingMeter.getName(), existingMeter.isDisabled()); // update local object with new RfnIdentifier
                 multispeakEventLogService.serialNumberOrAddressUpdated(originalSerialNumber, existingMeter, mspMethod, mspVendor.getCompanyName());

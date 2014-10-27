@@ -24,46 +24,50 @@ import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 
 public class RfnDeviceDaoImpl implements RfnDeviceDao {
+    
     private final static Logger log = Logger.getLogger(RfnDeviceDaoImpl.class);
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private PaoDao paoDao;
+    @Autowired private IDatabaseCache cache;
 
     private final static YukonRowMapper<RfnDevice> rfnDeviceRowMapper = new YukonRowMapper<RfnDevice>() {
         @Override
         public RfnDevice mapRow(YukonResultSet rs) throws SQLException {
             
+            String name = rs.getString("PaoName");
             PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PaobjectId", "Type");
             RfnIdentifier rfnIdentifier = new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
                                                      rs.getStringSafe("Manufacturer"), 
                                                      rs.getStringSafe("Model"));
-            RfnDevice rfnDevice = new RfnDevice(paoIdentifier, rfnIdentifier);
+            RfnDevice rfnDevice = new RfnDevice(name, paoIdentifier, rfnIdentifier);
+            
             return rfnDevice;
         }
     };
     
     @Override
     public RfnDevice getDeviceForExactIdentifier(RfnIdentifier rfnIdentifier) throws NotFoundException {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ypo.PAObjectID, ypo.Type");
+        sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
         sql.append("from YukonPaObject ypo");
-        sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
+        sql.append("join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
         sql.append("where rfn.SerialNumber").eq(rfnIdentifier.getSensorSerialNumber());
-        sql.append(  "and rfn.Manufacturer").eq(rfnIdentifier.getSensorManufacturer());
-        sql.append(  "and rfn.Model").eq(rfnIdentifier.getSensorModel());
+        sql.append("and rfn.Manufacturer").eq(rfnIdentifier.getSensorManufacturer());
+        sql.append("and rfn.Model").eq(rfnIdentifier.getSensorModel());
         
         try {
-            PaoIdentifier pao = jdbcTemplate.queryForObject(sql, RowMapper.PAO_IDENTIFIER);
-            RfnDevice rfnDevice = new RfnDevice(pao, rfnIdentifier);
+            RfnDevice rfnDevice = jdbcTemplate.queryForObject(sql, rfnDeviceRowMapper);
             return rfnDevice;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Unknown rfn identifier " + rfnIdentifier);
@@ -73,9 +77,9 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Override
     public RfnDevice getDeviceForId(int paoId) throws NotFoundException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select pao.Type, pao.PaobjectId, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("select pao.paoName, pao.Type, pao.PaobjectId, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
         sql.append("from YukonPaobject pao");
-        sql.append(  "join RfnAddress rfn on rfn.DeviceId = pao.PaobjectId");
+        sql.append("join RfnAddress rfn on rfn.DeviceId = pao.PaobjectId");
         sql.append("where rfn.DeviceId").eq(paoId);
         
         try {
@@ -92,16 +96,17 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             return getDeviceForId(pao.getPaoIdentifier().getPaoId());
         } catch (NotFoundException e) {
             log.warn("No RfnAddress found for " + pao.getPaoIdentifier() + ". Returning object with blank RfnIdentifier");
-            RfnDevice rfnDevice = new RfnDevice(pao, RfnIdentifier.BLANK);
+            String name = cache.getAllPaosMap().get(pao.getPaoIdentifier().getPaoId()).getPaoName();
+            RfnDevice rfnDevice = new RfnDevice(name, pao, RfnIdentifier.BLANK);
             return rfnDevice;
         }
     }
-
+    
     @Override
     public <T extends YukonPao> Map<T, RfnIdentifier> getRfnIdentifiersByPao(Iterable<T> paos) {
         ChunkingMappedSqlTemplate template =
                 new ChunkingMappedSqlTemplate(jdbcTemplate);
-
+        
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
@@ -181,11 +186,11 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     public String getFormattedDeviceName(RfnDevice device) throws IllegalArgumentException{
         return device.getName();
     }
-
+    
     @Override
     public List<RfnDevice> getDevicesByPaoType(PaoType paoType) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
         sql.append("from YukonPaObject ypo");
         sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
         sql.append("where ypo.Type").eq(paoType);
@@ -213,7 +218,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Override
     public Map<Integer, RfnDevice> getPaoIdMappedDevicesByPaoType(PaoType paoType) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
         sql.append("from YukonPaObject ypo");
         sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
         sql.append("where ypo.Type").eq(paoType);
@@ -224,11 +229,12 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
             jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
                 @Override
                 public void processRow(YukonResultSet rs) throws SQLException {
+                    String name = rs.getString("PaoName");
                     PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PaobjectId", "Type");
                     RfnIdentifier rfnIdentifier = new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
                                                              rs.getStringSafe("Manufacturer"), 
                                                              rs.getStringSafe("Model"));
-                    RfnDevice rfnDevice = new RfnDevice(paoIdentifier, rfnIdentifier);
+                    RfnDevice rfnDevice = new RfnDevice(name, paoIdentifier, rfnIdentifier);
                     rfnDevices.put(paoIdentifier.getPaoId(), rfnDevice);
                 }
             });

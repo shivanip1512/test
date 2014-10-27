@@ -31,7 +31,7 @@
     <thead>
         <tr>
             <th></th>
-            <th><i:inline key=".name"/><cti:icon icon="icon-bullet-arrow-down" classes="fn M0"/></th>
+            <th><i:inline key=".name"/></th>
             <th><i:inline key=".serialNumber"/></th>
             <th><i:inline key=".ipaddress"/></th>
             <th><i:inline key=".lastComms"/></th>
@@ -80,7 +80,7 @@
                                 <div class="progress-bar ${clazz}" 
                                     style="width: ${gateway.totalCompletionPercentage}%"></div>
                             </div>&nbsp;
-                            <span class="js-data-collection-percent">
+                            <span class="js-gw-data-collection-percent">
                                 <fmt:formatNumber pattern="###.##%" value="${gateway.totalCompletionPercentage / 100}"/>
                             </span>
                         </td>

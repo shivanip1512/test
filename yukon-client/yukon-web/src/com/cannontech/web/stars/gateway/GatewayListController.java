@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.gateway;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,7 @@ import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.google.common.collect.Lists;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
@@ -51,7 +53,8 @@ public class GatewayListController {
     public String gateways(ModelMap model, FlashScope flashScope, YukonUserContext userContext) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
+        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+        Collections.sort(gateways);
         model.addAttribute("gateways", gateways);
         
         List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
@@ -77,33 +80,6 @@ public class GatewayListController {
         
         return "gateways/list.jsp";
     }
-    
-//    private List<CertificateUpdate> getCertUpdates() {
-//        
-//        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-//        
-//        List<CertificateUpdate> updates = new ArrayList<>();
-//        
-//        CertificateUpdate one = new CertificateUpdate();
-//        one.setFileName("licertupgrade.pkg.nm");
-//        one.setTimestamp(new Instant().minus(Duration.standardDays(7)));
-//        one.setSuccessful(Lists.newArrayList((RfnDevice)gateways.get(0)));
-//        one.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
-//        one.setUpdateId("654asd67f54as76f4v");
-//        
-//        CertificateUpdate two = new CertificateUpdate();
-//        two.setFileName("licertupgrade.pkg.nm");
-//        two.setTimestamp(new Instant().minus(Duration.standardDays(8)));
-//        two.setPending(Lists.newArrayList((RfnDevice)gateways.get(0)));
-//        two.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
-//        two.setUpdateId("ads6587a56ds96dsaf");
-//        
-//        updates.add(one);
-//        updates.add(two);
-//        
-//        return updates;
-//        
-//    }
     
     @RequestMapping("/gateways/data")
     public @ResponseBody Map<Integer, Object> data(YukonUserContext userContext) {

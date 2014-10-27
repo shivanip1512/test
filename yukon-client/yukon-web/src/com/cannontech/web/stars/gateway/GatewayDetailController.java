@@ -44,15 +44,6 @@ public class GatewayDetailController {
         return "gateways/detail.jsp";
     }
     
-    @RequestMapping("/gateways/{id}/edit")
-    public String edit(ModelMap model, @PathVariable int id) throws NetworkManagerCommunicationException {
-        
-        //TODO: handle network manager communication exception gracefully
-        RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(new PaoIdentifier(id, PaoType.RFN_GATEWAY));
-        model.addAttribute("gateway", gateway);
-        return "gateways/settings.jsp";
-    }
-    
     @RequestMapping(value="/gateways/{id}", method=RequestMethod.DELETE)
     public String delete(FlashScope flash, ModelMap model, @PathVariable int id) 
             throws NetworkManagerCommunicationException {

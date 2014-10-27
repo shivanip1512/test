@@ -45,13 +45,15 @@ import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class StarsControllableDeviceHelperImpl implements StarsControllableDeviceHelper {
 
     @Autowired private StarsSearchDao starsSearchDao;
     @Autowired private CustomerAccountDao customerAccountDao;    
     @Autowired private StarsInventoryBaseService starsInventoryBaseService;
-    @Autowired private StarsDatabaseCache cache;
+    @Autowired private StarsDatabaseCache starsCache;
+    @Autowired private IDatabaseCache cache;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DeviceCreationService deviceCreationService;
@@ -123,7 +125,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         
         //Get energyCompany for the user
         YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
-        LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec);
+        LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(yec);
         
         // Get Inventory, if exists on account
         LiteInventoryBase  liteInv = getInventoryOnAccount(dto, lsec);
@@ -237,7 +239,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
 
         // call service to add device on the customer account
         lib = starsInventoryBaseService.addDeviceToAccount(lib, lsec, user, true);
-        if(isNewDevice){
+        if (isNewDevice) {
             YukonListEntry deviceType = getDeviceType(dto, lsec);
             HardwareType ht = HardwareType.valueOf(deviceType.getYukonDefID());
             if (ht.isRf()) {
@@ -246,10 +248,13 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                 RfnManufacturerModel mm = RfnManufacturerModel.getForType(ht.getForHardwareType()).get(0);
                 String manufacturer = mm.getManufacturer().trim();
                 String model = mm.getModel().trim();
-                String templatePrefix = configurationSource.getString(MasterConfigStringKeysEnum.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
+                String templatePrefix = configurationSource.getString(MasterConfigStringKeysEnum.RFN_METER_TEMPLATE_PREFIX, 
+                        "*RfnTemplate_");
                 String templateName = templatePrefix + manufacturer + "_" + model;
                 YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templateName, dto.getSerialNumber(), true);
-                RfnDevice device = new RfnDevice(newDevice.getPaoIdentifier(), new RfnIdentifier(dto.getSerialNumber(), manufacturer, model));
+                String name = cache.getAllPaosMap().get(newDevice.getPaoIdentifier().getPaoId()).getPaoName();
+                RfnIdentifier rfn = new RfnIdentifier(dto.getSerialNumber(), manufacturer, model);
+                RfnDevice device = new RfnDevice(name, newDevice.getPaoIdentifier(), rfn);
                 rfnDeviceDao.updateDevice(device);
                 inventoryBaseDao.updateInventoryBaseDeviceId(lib.getInventoryID(), device.getPaoIdentifier().getPaoId());
                 dbChangeManager.processDbChange(lib.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
@@ -306,7 +311,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         
         //Get energyCompany for the user
         YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
-        LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec);
+        LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(yec);
         
         // Get Inventory if exists on account
         lib = getInventoryOnAccount(dto, lsec);
@@ -334,7 +339,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         
         //Get energyCompany for the user
         YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
-        LiteStarsEnergyCompany lsec = cache.getEnergyCompany(yec);
+        LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(yec);
 
         // Get Inventory if exists on account
         liteInv = getInventoryOnAccount(dto, lsec);

@@ -20,7 +20,7 @@
 <c:forEach var="gateway" items="${gateways}" varStatus="status">
     <c:choose>
         <c:when test="${status.index % 2 == 0}">
-            <div class="column one">
+            <div class="column one stacked">
                 <label>
                     <input class="js-select-all-item" type="checkbox" 
                         name="gateways" value="${gateway.paoIdentifier.paoId}">${fn:escapeXml(gateway.name)}
@@ -28,7 +28,7 @@
             </div>
         </c:when>
         <c:otherwise>
-            <div class="column two nogutter">
+            <div class="column two nogutter stacked">
                 <label>
                     <input class="js-select-all-item" type="checkbox" 
                         name="gateways" value="${gateway.paoIdentifier.paoId}">${fn:escapeXml(gateway.name)}
@@ -37,7 +37,9 @@
         </c:otherwise>
     </c:choose>
 </c:forEach>
-<label><input class="js-select-all" type="checkbox"><i:inline key="yukon.common.selectall"/></label>
+<div>
+    <label><input class="js-select-all" type="checkbox"><i:inline key="yukon.common.selectall"/></label>
+</div>
 </div>
 
 </form>

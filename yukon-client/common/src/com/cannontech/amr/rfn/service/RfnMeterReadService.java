@@ -97,7 +97,7 @@ public class RfnMeterReadService {
                 } else {
                     /* Data response successful, process point data */
                     List<PointValueHolder> pointDatas = Lists.newArrayList();
-                    RfnDevice rfnDevice = new RfnDevice(rfnMeter.getPaoIdentifier(), rfnMeter.getRfnIdentifier());
+                    RfnDevice rfnDevice = new RfnDevice(rfnMeter.getName(), rfnMeter.getPaoIdentifier(), rfnMeter.getRfnIdentifier());
                     rfnChannelDataConverter.convert(new RfnMeterPlusReadingData(rfnDevice, dataReplyMessage.getData()), pointDatas);
 
                     for (PointValueHolder pointValueHolder : pointDatas) {
