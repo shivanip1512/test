@@ -8,6 +8,11 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.getCurrentArguments;
 import static org.easymock.EasyMock.replay;
 
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,7 +53,6 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.model.LiteLmHardware;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.UnitTestUtil;
 import com.cannontech.web.stars.dr.operator.inventory.model.AuditRow;
 import com.cannontech.web.stars.dr.operator.inventory.model.AuditSettings;
 import com.cannontech.web.stars.dr.operator.inventory.model.ControlAuditResult;
@@ -228,7 +232,7 @@ public class ControlAuditServiceTest {
         ControlAuditResult runAudit = service.runAudit(getAuditSettings());
         runAudit.setAuditId("");
 
-        UnitTestUtil.assertPropertiesNotNull(runAudit);
+        assertPropertiesNotNull(runAudit);
 
         for (AuditRow row : runAudit.getControlledRows()) {
             int deviceId = row.getHardware().getDeviceId();
@@ -353,5 +357,27 @@ public class ControlAuditServiceTest {
 
         };
         return collection;
+    }
+
+    /**
+     * Asserts object is not null and all getter methods return non-null objects.
+     */
+    private static void assertPropertiesNotNull(Object object) {
+        Assert.notNull(object, "Object itself is null.");
+
+        BeanInfo beanInfo;
+        try {
+            Class<?> clazz = object.getClass();
+            beanInfo = Introspector.getBeanInfo(clazz);
+            for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
+                Method readMethod = property.getReadMethod();
+                if (readMethod != null) {
+                    Assert.notNull(readMethod.invoke(object),
+                        "Method " + clazz.getSimpleName() + "." + readMethod.getName() + "() returned null.");
+                }
+            }
+        } catch (ReflectiveOperationException | IntrospectionException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
