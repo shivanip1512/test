@@ -1,10 +1,8 @@
 package com.cannontech.multispeak.deploy.service.impl;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -12,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
-import com.cannontech.common.point.PointQuality;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.MspScadaAnalogReturnList;
 import com.cannontech.multispeak.deploy.service.AccumulatedValue;
 import com.cannontech.multispeak.deploy.service.DomainMember;
@@ -37,6 +35,7 @@ public class SCADA_ServerImpl implements SCADA_ServerSoap_PortType {
     @Autowired private MultispeakEventLogService multispeakEventLogService;
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MultispeakLMService multispeakLMService;
+    @Autowired private MspRawPointHistoryDao mspRawPointHistoryDao;
     
     private final Logger log = YukonLogManager.getLogger(SCADA_ServerImpl.class);
     private final static String[] methods = new String[] {
@@ -120,49 +119,20 @@ public class SCADA_ServerImpl implements SCADA_ServerSoap_PortType {
         init();
         MultispeakVendor mspVendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("getAllSCADAAnalogs", mspVendor.getCompanyName());
-
-        MspScadaAnalogReturnList scadaAnalogList;
+        
         Date timerStart = new Date();
-
-        // TODO YUK-13747 This is where the actual loading of all the data should be done, below is just some test data for now.
-        scadaAnalogList = fakeDataDao(lastReceived, mspVendor);    // replace this with a real dao that returns expected data
+        
+        MspScadaAnalogReturnList scadaAnalogList = new MspScadaAnalogReturnList();
+        List<ScadaAnalog> scadaAnalogData = mspRawPointHistoryDao.getAllSCADAAnalogData();
+        scadaAnalogList.setScadaAnalogs(scadaAnalogData);
         
         multispeakFuncs.updateResponseHeader(scadaAnalogList);
         ScadaAnalog[] scadaAnalogs = new ScadaAnalog[scadaAnalogList.getScadaAnalogs().size()];
         scadaAnalogList.getScadaAnalogs().toArray(scadaAnalogs);
-        log.info("Returning " + scadaAnalogs.length + " All Scada Analogs. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        log.info("Returning All Scada Analog data (" + scadaAnalogs.length + " points). (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
         multispeakEventLogService.returnObjects(scadaAnalogs.length, scadaAnalogList.getObjectsRemaining(), "ScadaAnalog", scadaAnalogList.getLastSent(),
                                                 "getAllSCADAAnalogs", mspVendor.getCompanyName());
         return scadaAnalogs;
-    }
-
-    /**
-     * TODO DELETE ME when YUK-13747 is done. This is a fake data provider method for initial endpoint deployment testing
-     */
-    private MspScadaAnalogReturnList fakeDataDao(String lastReceived, MultispeakVendor mspVendor) {
-        
-        MspScadaAnalogReturnList scadaAnalogList = new MspScadaAnalogReturnList();
-        
-        //some fake data, should load this from RawPointHistory; Latest data?
-        String objectId = "some guid";
-        Calendar cal = new GregorianCalendar();
-        Float value = new Float(23.45);
-        PointQuality quality = PointQuality.Normal;
-        String paoAndPointName = "put the Yukon specific name here for reference";
-        
-        ScadaAnalog scadaAnalog = new ScadaAnalog();
-        // scadaAnalog.setAnalogCondition(null);// unknown mapping
-        scadaAnalog.setObjectID(objectId);
-        scadaAnalog.setQuality(multispeakLMService.getQualityDescription(quality));
-        scadaAnalog.setComments(paoAndPointName);
-        scadaAnalog.setTimeStamp(cal);
-        //scadaAnalog.setUnit(null);  //will need to be loaded from the point, then converted to msp UOM...ick, hopefully we can skip
-        scadaAnalog.setValue(value);
-        List<ScadaAnalog> returnScadaAnalogs = new ArrayList<ScadaAnalog>();
-        returnScadaAnalogs.add(scadaAnalog);
-        scadaAnalogList.setScadaAnalogs(returnScadaAnalogs);
-        
-        return scadaAnalogList;
     }
 
     @Override

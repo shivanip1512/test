@@ -1,8 +1,11 @@
 package com.cannontech.multispeak.dao.impl;
 
+import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
@@ -21,6 +24,8 @@ import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.MeterReadProcessingService;
@@ -28,6 +33,8 @@ import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.MspBlockReturnList;
 import com.cannontech.multispeak.data.MspMeterReadReturnList;
 import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.cannontech.multispeak.deploy.service.QualityDescription;
+import com.cannontech.multispeak.deploy.service.ScadaAnalog;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -269,5 +276,48 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
         log.debug("Retrieved " + result.size() + " paos to process. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
         return result;
+    }
+
+    @Override
+    public List<ScadaAnalog> getAllSCADAAnalogData() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select ypao.PAOName, t.PointName, t.PointOffset, rph.Value, rph.Timestamp");
+        sql.append("from RawPointHistory rph");
+        sql.append("join (");
+        sql.append("    select p.PointId, p.PAObjectID, p.PointName, p.PointOffset, max(rph.Timestamp) as MostRecent ");
+        sql.append("    from RawPointHistory rph");
+        sql.append("    join Point p on p.PointId = rph.PointId");
+        sql.append("    where p.PointId in (");
+        sql.append("        select PointId");
+        sql.append("        from Point");
+        sql.append("        where PointType = 'Analog'");
+        sql.append("          and PAObjectID in (select PAObjectID");
+        sql.append("                             from YukonPAObject");
+        sql.append("                             where Type IN ('LM SEP PROGRAM', 'LM DIRECT PROGRAM')))");
+        sql.append("    group by p.PointId, p.PAObjectID, p.PointName, p.PointOffset) t on (rph.PointId = t.PointId and rph.Timestamp = t.MostRecent)");
+        sql.append("join YukonPAObject ypao on ypao.PAObjectID = t.PAObjectID");
+        sql.append("order by PaoName, PointOffset");
+        
+        return yukonJdbcTemplate.query(sql, new YukonRowMapper<ScadaAnalog>() {
+            @Override
+            public ScadaAnalog mapRow(YukonResultSet rs) throws SQLException {
+                ScadaAnalog scadaAnalog = new ScadaAnalog();
+
+                // objectId identifier is limited to 52 characters by customer system, so take first 
+                // 50 characters of pao name plus '.#' where # is the point offset, 1-4.
+                String paoName = rs.getString("PAOName");
+                String objectId = (paoName.length() > 50 ? paoName.substring(0, 50) : paoName) + "."
+                        + rs.getInt("PointOffset");
+                String comments = rs.getString("PAOName") + " - " + rs.getString("PointName");
+                scadaAnalog.setObjectID(objectId);
+                scadaAnalog.setComments(comments);
+                scadaAnalog.setQuality(QualityDescription.Measured);  // Corresponds to PointQuality.NORMAL.
+                Calendar cal = new GregorianCalendar();
+                cal.setTime(rs.getDate("Timestamp"));
+                scadaAnalog.setTimeStamp(cal);
+                scadaAnalog.setValue(rs.getFloat("Value"));
+                return scadaAnalog;
+            }
+        });
     }
 }
