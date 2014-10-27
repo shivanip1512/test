@@ -11,9 +11,13 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
+import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateInfo;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -25,6 +29,41 @@ import com.cannontech.database.incrementer.NextValueHelper;
 public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdateDao {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
+    
+    @Override
+    public List<CertificateUpdate> getAllCertificateUpdates() {
+        
+        Map<Integer, RfnDevice> gatewayDevices = rfnDeviceDao.getPaoIdMappedDevicesByPaoType(PaoType.RFN_GATEWAY);
+        List<CertificateUpdate> updates = new ArrayList<>();
+        
+        for (GatewayCertificateUpdateInfo info : getAllUpdateInfo()) {
+            CertificateUpdate certificateUpdate = new CertificateUpdate();
+            certificateUpdate.setFileName(info.getFileName());
+            certificateUpdate.setTimestamp(info.getSendDate());
+            certificateUpdate.setUpdateId(info.getCertificateId());
+            
+            List<RfnDevice> successful = new ArrayList<>();
+            List<RfnDevice> failed = new ArrayList<>();
+            List<RfnDevice> pending = new ArrayList<>();
+            for (Map.Entry<Integer, GatewayCertificateUpdateStatus> entry : info.getGatewayStatuses().entrySet()) {
+                RfnDevice gateway = gatewayDevices.get(entry.getKey());
+                if (entry.getValue().isSuccessful()) {
+                    successful.add(gateway);
+                } else if (entry.getValue().isInProgress()) {
+                    pending.add(gateway);
+                } else {
+                    failed.add(gateway);
+                }
+            }
+            
+            certificateUpdate.setSuccessful(successful);
+            certificateUpdate.setPending(pending);
+            certificateUpdate.setFailed(failed);
+            updates.add(certificateUpdate);
+        }
+        return updates;
+    }
     
     @Override
     public int createUpdate(String certificateId, String fileName) {

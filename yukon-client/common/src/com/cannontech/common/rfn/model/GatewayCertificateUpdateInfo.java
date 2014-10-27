@@ -32,7 +32,7 @@ public class GatewayCertificateUpdateInfo {
         return certificateId;
     }
     
-    public Instant sendDate() {
+    public Instant getSendDate() {
         return sendDate;
     }
     

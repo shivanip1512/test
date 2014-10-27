@@ -128,29 +128,6 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
         qrTemplate.send(request, handler);
     }
     
-    //TODO: clean up inefficient calls
-    private void logGatewayUpgradeStatusFromAck(int updateId, RfnGatewayUpgradeRequestAck message) {
-        for (RfnIdentifier rfnId : message.getBeingUpgradedRfnIdentifiers()) {
-            int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();
-            certificateUpdateDao.updateEntry(updateId, paoId, GatewayCertificateUpdateStatus.REQUEST_ACCEPTED);
-        }
-        
-        for (RfnIdentifier rfnId : message.getInvalidRfnIdentifiers().keySet()) {
-            int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();
-            certificateUpdateDao.updateEntry(updateId, paoId, GatewayCertificateUpdateStatus.INVALID_RFN_ID);
-        }
-        
-        for (RfnIdentifier rfnId : message.getInvalidSuperAdminPasswordRfnIdentifiers().keySet()) {
-            int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();
-            certificateUpdateDao.updateEntry(updateId, paoId, GatewayCertificateUpdateStatus.INVALID_SUPER_ADMIN_PASSWORD);
-        }
-        
-        for (RfnIdentifier rfnId : message.getLastUpgradeInProcessRfnIdentifiers().keySet()) {
-            int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();
-            certificateUpdateDao.updateEntry(updateId, paoId, GatewayCertificateUpdateStatus.ALREADY_IN_PROGRESS);
-        }
-    }
-    
     @Override
     public void sendUpdateAll(File upgradePackage, RfnGatewayUpdateCallback callback) {
         sendUpdate(null, upgradePackage, callback);
@@ -238,6 +215,29 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
             }
             throw new GatewayCertificateException("Unable to access upgrade package file "
                                                   + upgradePackage.getName(), e);
+        }
+    }
+    
+    //TODO: clean up inefficient calls
+    private void logGatewayUpgradeStatusFromAck(int updateId, RfnGatewayUpgradeRequestAck message) {
+        for (RfnIdentifier rfnId : message.getBeingUpgradedRfnIdentifiers()) {
+            int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();
+            certificateUpdateDao.updateEntry(updateId, paoId, GatewayCertificateUpdateStatus.REQUEST_ACCEPTED);
+        }
+        
+        for (RfnIdentifier rfnId : message.getInvalidRfnIdentifiers().keySet()) {
+            int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();
+            certificateUpdateDao.updateEntry(updateId, paoId, GatewayCertificateUpdateStatus.INVALID_RFN_ID);
+        }
+        
+        for (RfnIdentifier rfnId : message.getInvalidSuperAdminPasswordRfnIdentifiers().keySet()) {
+            int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();
+            certificateUpdateDao.updateEntry(updateId, paoId, GatewayCertificateUpdateStatus.INVALID_SUPER_ADMIN_PASSWORD);
+        }
+        
+        for (RfnIdentifier rfnId : message.getLastUpgradeInProcessRfnIdentifiers().keySet()) {
+            int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();
+            certificateUpdateDao.updateEntry(updateId, paoId, GatewayCertificateUpdateStatus.ALREADY_IN_PROGRESS);
         }
     }
 }

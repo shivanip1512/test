@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.gateway.model;
+package com.cannontech.common.rfn.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
-import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.util.StringUtils;
 
 public class CertificateUpdate {
@@ -15,9 +14,9 @@ public class CertificateUpdate {
     private Instant timestamp;
     private String fileName;
     private String updateId;
-    private List<RfnGateway> pending = new ArrayList<>();
-    private List<RfnGateway> failed = new ArrayList<>();
-    private List<RfnGateway> successful = new ArrayList<>();
+    private List<RfnDevice> pending = new ArrayList<>();
+    private List<RfnDevice> failed = new ArrayList<>();
+    private List<RfnDevice> successful = new ArrayList<>();
     
     public Instant getTimestamp() {
         return timestamp;
@@ -43,27 +42,27 @@ public class CertificateUpdate {
         this.updateId = updateId;
     }
     
-    public List<RfnGateway> getPending() {
+    public List<RfnDevice> getPending() {
         return pending;
     }
     
-    public void setPending(List<RfnGateway> pending) {
+    public void setPending(List<RfnDevice> pending) {
         this.pending = pending;
     }
     
-    public List<RfnGateway> getFailed() {
+    public List<RfnDevice> getFailed() {
         return failed;
     }
     
-    public void setFailed(List<RfnGateway> failed) {
+    public void setFailed(List<RfnDevice> failed) {
         this.failed = failed;
     }
     
-    public List<RfnGateway> getSuccessful() {
+    public List<RfnDevice> getSuccessful() {
         return successful;
     }
     
-    public void setSuccessful(List<RfnGateway> successful) {
+    public void setSuccessful(List<RfnDevice> successful) {
         this.successful = successful;
     }
     
@@ -127,15 +126,15 @@ public class CertificateUpdate {
         return String.format("CertificateUpdate [timestamp=%s, fileName=%s, updateId=%s, pending=%s, failed=%s, successful=%s]", timestamp, fileName, updateId, pending, failed, successful);
     }
     
-    public List<RfnGateway> getGateways() {
-        List<RfnGateway> all = new ArrayList<>();
+    public List<RfnDevice> getGateways() {
+        List<RfnDevice> all = new ArrayList<>();
         all.addAll(successful);
         all.addAll(failed);
         all.addAll(pending);
         
-        Collections.sort(all, new Comparator<RfnGateway>() {
+        Collections.sort(all, new Comparator<RfnDevice>() {
             @Override
-            public int compare(RfnGateway o1, RfnGateway o2) {
+            public int compare(RfnDevice o1, RfnDevice o2) {
                 return o1.getName().compareToIgnoreCase(o2.getName());
             }
         });

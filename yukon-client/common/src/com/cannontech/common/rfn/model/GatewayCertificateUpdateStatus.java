@@ -32,4 +32,16 @@ public enum GatewayCertificateUpdateStatus {
                 return NM_ERROR;
         }
     }
+    
+    public boolean isSuccessful() {
+        return this == COMPLETED;
+    }
+    
+    public boolean isInProgress() {
+        return this == STARTED || this == REQUEST_ACCEPTED;
+    }
+    
+    public boolean isFailed() {
+        return !isSuccessful() && !isInProgress();
+    }
 }

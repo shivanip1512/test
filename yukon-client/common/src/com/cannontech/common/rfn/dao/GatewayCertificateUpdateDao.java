@@ -3,6 +3,7 @@ package com.cannontech.common.rfn.dao;
 import java.util.Collection;
 import java.util.List;
 
+import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateInfo;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
 
@@ -43,4 +44,9 @@ public interface GatewayCertificateUpdateDao {
      * Retrieve info for all certificate  attempts, sorted from most recent to least recent.
      */
     List<GatewayCertificateUpdateInfo> getAllUpdateInfo();
+    
+    /**
+     * Retrieve all CertificateUpdates for display.
+     */
+    List<CertificateUpdate> getAllCertificateUpdates();
 }

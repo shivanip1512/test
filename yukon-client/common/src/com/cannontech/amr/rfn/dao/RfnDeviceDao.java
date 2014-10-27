@@ -55,5 +55,10 @@ public interface RfnDeviceDao {
      * @param paoType
      * @return List
      */
-    public List<RfnDevice> getDevicesByPaoType(PaoType paoType); 
+    public List<RfnDevice> getDevicesByPaoType(PaoType paoType);
+    
+    /**
+     * Returns a map of paoId to RfnDevice for all devices of the specified PaoType.
+     */
+    Map<Integer, RfnDevice> getPaoIdMappedDevicesByPaoType(PaoType paoType); 
 }

@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.rfn.model.CertificateUpdate;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
@@ -27,7 +29,6 @@ import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.stars.gateway.model.CertificateUpdate;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -59,15 +60,15 @@ public class GatewayCertificateController {
         CertificateUpdate one = new CertificateUpdate();
         one.setFileName("licertupgrade.pkg.nm");
         one.setTimestamp(new Instant().minus(Duration.standardDays(7)));
-        one.setSuccessful(Lists.newArrayList(gateways.get(0)));
-        one.setFailed(Lists.newArrayList(gateways.get(1)));
+        one.setSuccessful(Lists.newArrayList((RfnDevice)gateways.get(0)));
+        one.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
         one.setUpdateId("654asd67f54as76f4v");
         
         CertificateUpdate two = new CertificateUpdate();
         two.setFileName("licertupgrade.pkg.nm");
         two.setTimestamp(new Instant().minus(Duration.standardDays(8)));
-        two.setPending(Lists.newArrayList(gateways.get(0)));
-        two.setFailed(Lists.newArrayList(gateways.get(1)));
+        two.setPending(Lists.newArrayList((RfnDevice)gateways.get(0)));
+        two.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
         two.setUpdateId("ads6587a56ds96dsaf");
         
         json.put(one.getUpdateId(), one);
@@ -85,8 +86,8 @@ public class GatewayCertificateController {
         CertificateUpdate update = new CertificateUpdate();
         update.setFileName("licertupgrade.pkg.nm");
         update.setTimestamp(new Instant().minus(Duration.standardDays(7)));
-        update.setSuccessful(Lists.newArrayList(gateways.get(0)));
-        update.setFailed(Lists.newArrayList(gateways.get(1)));
+        update.setSuccessful(Lists.newArrayList((RfnDevice)gateways.get(0)));
+        update.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
         update.setUpdateId("654asd67f54as76f4v");
         
         model.addAttribute("update", update);
@@ -113,8 +114,8 @@ public class GatewayCertificateController {
                 CertificateUpdate update = new CertificateUpdate();
                 update.setFileName("licertupgrade.pkg.nm");
                 update.setTimestamp(new Instant().minus(Duration.standardDays(7)));
-                update.setPending(Lists.newArrayList(rfgateways.get(0)));
-                update.setFailed(Lists.newArrayList(rfgateways.get(1)));
+                update.setPending(Lists.newArrayList((RfnDevice)rfgateways.get(0)));
+                update.setFailed(Lists.newArrayList((RfnDevice)rfgateways.get(1)));
                 update.setUpdateId("654asd67f54as76f4v");
                 // END TEST CODE
                 

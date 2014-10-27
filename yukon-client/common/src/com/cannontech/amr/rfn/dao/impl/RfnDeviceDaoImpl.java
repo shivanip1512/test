@@ -2,6 +2,7 @@ package com.cannontech.amr.rfn.dao.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -26,6 +27,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
@@ -192,5 +194,34 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         } catch (EmptyResultDataAccessException e) {
             return new ArrayList<RfnDevice>();
         }
+    }
+    
+    @Override
+    public Map<Integer, RfnDevice> getPaoIdMappedDevicesByPaoType(PaoType paoType) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("from YukonPaObject ypo");
+        sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
+        sql.append("where ypo.Type").eq(paoType);
+        
+        final Map<Integer, RfnDevice> rfnDevices = new HashMap<>();
+        
+        try {
+            jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+                @Override
+                public void processRow(YukonResultSet rs) throws SQLException {
+                    PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PaobjectId", "Type");
+                    RfnIdentifier rfnIdentifier = new RfnIdentifier(rs.getStringSafe("SerialNumber"), 
+                                                             rs.getStringSafe("Manufacturer"), 
+                                                             rs.getStringSafe("Model"));
+                    RfnDevice rfnDevice = new RfnDevice(paoIdentifier, rfnIdentifier);
+                    rfnDevices.put(paoIdentifier.getPaoId(), rfnDevice);
+                }
+            });
+        } catch (EmptyResultDataAccessException e) {
+            //just return the empty map
+        }
+        
+        return rfnDevices;
     }
 }
