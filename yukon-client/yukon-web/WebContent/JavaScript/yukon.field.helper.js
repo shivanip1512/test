@@ -1,16 +1,21 @@
-/**
- * Singleton for UI functionality editing focusableFieldHolders
- * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
- */
-
 yukon.namespace('yukon.ui.FieldHelper');
+
+/**
+ * Module for UI functionality editing focusableFieldHolders
+ * @module   yukon.ui.FieldHelper
+ * @requires JQUERY
+ * @requires JQUERY UI
+ */
 yukon.ui.FieldHelper = function () {
 
     var _initialized = false,
+    
+        /** @type {number} - Id returned by set timeout */
         _timeout = null,
+        
+        /** @type {object} - jquery timeout event object */
         _timeoutArgs = null,
+        
         mod = {};
 
     //Initializer
@@ -34,6 +39,9 @@ yukon.ui.FieldHelper = function () {
             }
         },
 
+        /** Handles the blur event on input fields.
+          * @param {Object} event - jquery event object
+        */
         blurInput : function (event) {
             var inputField,
                 defaultField;
@@ -52,6 +60,9 @@ yukon.ui.FieldHelper = function () {
             }
         },
 
+        /** Handles the blur event on select fields.
+          * @param {Object} event - jquery event object
+        */
         blurSelect : function (event) {
             var inputField,
                 defaultField;
@@ -69,6 +80,9 @@ yukon.ui.FieldHelper = function () {
             }
         },
 
+        /** Handles the focus event on input fields.
+          * @param {Object} event - jquery event object
+        */
         focusInput : function (event) {
             var inputField,
                 defaultField;
@@ -81,6 +95,9 @@ yukon.ui.FieldHelper = function () {
             }
         },
 
+        /** Displays tool tip
+          * @param {Object} event - jquery event object
+        */
         showTooltip : function (event) {
             _timeoutArgs = event;
             clearTimeout(_timeout);
@@ -89,12 +106,17 @@ yukon.ui.FieldHelper = function () {
             }, 400);
         },
 
-    //just show a popup and remove the class name
+        /** Handles the focus event on select fields. It shows a popup and removes the class name
+          * @param {Object} event - jquery event object
+        */
         focusSelect : function (event) {
             mod.showPointingPopup(event);
             $(event.currentTarget).removeClass('usingNonDefaultValue');
         },
-
+        
+        /** Displays a description pop up
+          * @param {Object} event - jquery event object
+        */
         showPointingPopup : function (event) {
             var popup = $("#descriptionPopup"),
                 popupString,

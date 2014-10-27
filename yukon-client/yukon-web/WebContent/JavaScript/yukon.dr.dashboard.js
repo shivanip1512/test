@@ -1,12 +1,11 @@
-/**
- * Singleton that manages the javascript for DR Dashboard
- * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
- */
-
 yukon.namespace('yukon.dr.dashboard');
 
+/**
+ * Module that manages the javascript for DR Dashboard
+ * @module   yukon.dr.dashboard
+ * @requires JQUERY
+ * @requires JQUERY UI
+ */
 yukon.dr.dashboard = (function() {
     
     var timeFormatter = yukon.timeFormatter,

@@ -1,14 +1,12 @@
-/**
- * Singleton that manages the javascript for dr rf broadcast performance
- * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
- */
-
-yukon.namespace('yukon.dr');
-yukon.namespace('yukon.dr.rf');
 yukon.namespace('yukon.dr.rf.performance');
 
+/**
+ * Module that manages the javascript for dr rf broadcast performance
+ * @module   yukon.dr.rf.performance
+ * @requires JQUERY
+ * @requires JQUERYUI
+ * @requires yukon
+ */
 yukon.dr.rf.performance = (function () {
     
     var mod;

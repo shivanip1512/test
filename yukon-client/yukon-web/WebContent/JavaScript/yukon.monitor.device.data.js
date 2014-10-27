@@ -1,10 +1,10 @@
 yukon.namespace('yukon.DeviceDataMonitor');
 
 /**
- * Singleton that manages the device data monitor feature
- * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
+ * Module that manages the device data monitor feature
+ * @module   yukon.DeviceDataMonitor
+ * @requires JQUERY
+ * @requires JQUERYUI
  */
 yukon.DeviceDataMonitor = (function () {
     
@@ -70,6 +70,7 @@ yukon.DeviceDataMonitor = (function () {
         _supported_counts_xhr = null,
         _group_count_xhr = null,
 
+        /** Gets the total count of violations. */
         _get_violations_count = function () {
             $.ajax({
                 url: 'getViolationsCount',
@@ -93,6 +94,7 @@ yukon.DeviceDataMonitor = (function () {
             });
         },
 
+        /** Shows a update dialog based on the count_status. */
         _show_update_dialog = function () {
             var count_status = $(_supported_count).attr(_count_status);
             $(_update_dialog_ids).find(".user-message").remove();
@@ -106,11 +108,18 @@ yukon.DeviceDataMonitor = (function () {
             }
         },
 
+        /** Opens the supported count details dialog.
+          * @param {Object} e - jquery event object.  */
         _supported_details_toggle = function (e) {
             var opts = {width: 500, height: "auto"};
             $(_supported_count_details).dialog(opts);
         },
         
+
+        /** Gets the number of devices within the monitoring device group (and all it's child groups) 
+          * that support having all of the assigned processors. 
+          * @param {Object} params - Request paramters.  
+        */
         _get_supported_counts = function (params) {
             if(--_waiting_to_finish_N_before_doing_counts > 0)
                 return;
@@ -150,15 +159,27 @@ yukon.DeviceDataMonitor = (function () {
             });
         },
 
+        /** Checks if given 2 strings are equal or not. 
+          * @param {string} str1 - String to be compared.
+          * @param {string} str2 - String to be compared.  
+        */
         _str_equal = function ( str1, str2 ) {
             if( str1 == undefined && str2 == undefined)		return true;
             if( str1 == undefined || str2 == undefined)		return false;
             return str1.valueOf() == str2.valueOf();
         },
+        
+        /** Checks if given item is a point. 
+          * @param {string} itemType - Item type
+        */
         _check_row_type_is_point = function (itemType) {
             return _str_equal(itemType,_deviceViolationEnum_point);
         },
 
+        /** Gets supported success counts. 
+          * @param {Object} data - Json containing Count related data.
+          * @param {string} counts_selector - class id of count selector
+        */
         _get_supported_counts_success = function (data, counts_selector) {
             // clear out our data
             var countSel = counts_selector + ' ' + _supported_count,
@@ -265,17 +286,26 @@ yukon.DeviceDataMonitor = (function () {
             _hide_loading_and_show_counts();
         },  // ENDS _get_supported_counts_success()
 
+        /** Displays the  refreshed violations section 
+          * @param {Object} event - jquery event object.
+        */
         _display_violation_refresh = function (event) {
             $(_refresh_violations_selector).show();
             var key = $(event.target).attr('data-add-key');
             $(_refresh_violations_selector).attr('data-add-key', key);
         },
 
+        /** Refresh the violations. 
+          * @param {Object} event - jquery event object.
+        */
         _do_violation_refresh = function (event) {
             $(_refresh_violations_selector).hide();
             _get_supported_counts();
         },
 
+        /** Display the violation list.  
+         *  @param {Object} event - jquery event object.
+        */
         _display_violation_device_list = function (event) {
             var problemAnchor = $(event.currentTarget);
             problemAnchor.next().show();
@@ -291,42 +321,54 @@ yukon.DeviceDataMonitor = (function () {
             });
         },
 
+        /** Open the local help dialog  
+          * @param {Object} event - jquery event object.
+        */
         _display_local_help = function (event) {
             var problemAnchor = $(event.currentTarget);
             var problemHelpContainer = $('#'+ problemAnchor.attr('target-id'));
             problemHelpContainer.dialog({width: 500, minWidth: 500, title: problemAnchor.attr('target-title')});
         },
 
+        /** Hides the supported device count and displays loading.*/
         _hide_counts_and_show_loading = function () {
             $('.js-supported_devices_count ' + _supported_count_details).hide();
             $('.js-supported_devices_count ' + _supported_count).hide();
             $('.js-supported_devices_count .js-loading').show();
         },
         
+        /** Hides the loading and shows supported device count.*/
         _hide_loading_and_show_counts = function () {
             $('.js-supported_devices_count .js-loading').hide();
             $('.js-supported_devices_count ' + _supported_count).show();
         },
         
+        /** Update or create monitors */
         _monitor_update_or_create = function () {
             _disable_btns();
             $(_monitor_form).submit();
         },
 
+        /** Toggles Monitors enabling .*/
         _monitor_toggle_enabled = function () {
             _disable_btns();
             $(_monitor_toggle_form).submit();
         },
 
+        /** Deletes a monitor.*/
         _monitor_delete = function () {
             _disable_btns();
             $(_monitor_delete_form).submit();
         },
 
+        /** Disable the given set of buttons.*/
         _disable_btns = function () {
             $(_monitor_btns_to_disable).attr("disabled", "disabled");            
         },
 
+        /** Gets processed row id from element name. 
+          * @param {Object} jqueryElement - Jquery element.
+        */
         _get_proc_row_id_from_elem_name = function (jqueryElement) {
             var str     = jqueryElement.attr('name');
             var iStart  = str.indexOf("[")+1;
@@ -336,6 +378,9 @@ yukon.DeviceDataMonitor = (function () {
             return iInt;
         },
 
+        /** Add a processor 
+          * @param {Object} e - Jquery event object.
+        */
         _processor_add = function (e) {
             _waiting_to_finish_N_before_doing_counts = 0;
             var template_row = $(_processors_table_new_row_model);
@@ -377,6 +422,9 @@ yukon.DeviceDataMonitor = (function () {
             new_row.find('select').first().focus();
         },  // ENDS _processor_add
 
+        /** Change the state of processors.
+         * @param {Object} e - Jquery event.
+        */
         _state_group_changed = function (event) {
             _state_group_changed_worker($(event.target));
         },
@@ -419,6 +467,9 @@ yukon.DeviceDataMonitor = (function () {
             });
         }, // ENDS _state_group_changed_worker
 
+        /** Remove the states.
+          * @param {Object} containingRow - Jquery element
+        */        
         _blankout_states = function ( containingRow ) {
             var select_state    = containingRow.find('select.js-states');
             var input_state     = containingRow.find('.js-states input');
@@ -427,9 +478,16 @@ yukon.DeviceDataMonitor = (function () {
             containingRow.find('.js-states').replaceWith(str);
         },
 
+        /** Update the state on attribute change event.
+          * @param {Object} event - jquery event object.
+        */  
         _attribute_changed = function (event) {
             _update_state_groups_worker(event);
         },
+        
+        /** Update the state group.
+          * @param {Object} event - jquery event object.
+        */  
         _update_state_groups = function (event) {
             _update_state_groups_worker(event);
         },
@@ -503,6 +561,9 @@ yukon.DeviceDataMonitor = (function () {
             }
         }, // ENDS _update_state_groups_worker
 
+        /** Get the state group value of given row
+          * @param {Object} row - jquery element.
+        */  
         _get_state_group_value = function (row) {
             var state_group_select  = row.find('select.js-state_group');
             var state_group_input   = row.find('.js-state_group input:hidden');
@@ -510,6 +571,7 @@ yukon.DeviceDataMonitor = (function () {
             return state_group_id;
         },
 
+        /** Validate the processors. */
         _validate_processors = function () {
             var missingCount = 0;
             var procs = $(_processor_selector).filter(":visible");

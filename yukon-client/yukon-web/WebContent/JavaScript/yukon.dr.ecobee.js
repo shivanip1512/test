@@ -1,10 +1,13 @@
-/**
- * Singleton that serves the DR home page ecobee pane and the ecobee details page
- * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
- */
 yukon.namespace('yukon.dr.ecobee');
+
+/**
+ * Module that serves the DR home page ecobee pane and the ecobee details page
+ * @module   yukon.dr.ecobee
+ * @requires JQUERY
+ * @requires JQUERY UI
+ * @requires yukon
+ * @requires yukon.date.time.picker
+ */
 yukon.dr.ecobee = (function () {
     
     var 
@@ -12,8 +15,8 @@ yukon.dr.ecobee = (function () {
     
     /** 
      * Setup a slider.
-     * @param {String} containingDivSelector. div containing the .js-time-slider and .js-time-label
-     * @param {String} inputSelector. - the actual hidden input that holds the current value of this slider
+     * @param {string} containingDivSelector. div containing the .js-time-slider and .js-time-label
+     * @param {string} inputSelector. - the actual hidden input that holds the current value of this slider
      */
     _setupSlider = function (containingDivSelector, inputSelector) {
         
