@@ -7,8 +7,6 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.joda.time.Duration;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -19,17 +17,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
 import com.cannontech.common.rfn.model.CertificateUpdate;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.google.common.collect.Lists;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
@@ -38,6 +37,9 @@ public class GatewayCertificateController {
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
     
     @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private RfnGatewayCertificateUpdateService certificateUpdateService;
+    @Autowired private GatewayCertificateUpdateDao certificateUpdateDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     /** Certificate update popup. */
@@ -56,25 +58,30 @@ public class GatewayCertificateController {
         Map<String, Object> json = new HashMap<>();
         
         // TEST CODE
-        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        CertificateUpdate one = new CertificateUpdate();
-        one.setFileName("licertupgrade.pkg.nm");
-        one.setTimestamp(new Instant().minus(Duration.standardDays(7)));
-        one.setSuccessful(Lists.newArrayList((RfnDevice)gateways.get(0)));
-        one.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
-        one.setUpdateId("654asd67f54as76f4v");
-        
-        CertificateUpdate two = new CertificateUpdate();
-        two.setFileName("licertupgrade.pkg.nm");
-        two.setTimestamp(new Instant().minus(Duration.standardDays(8)));
-        two.setPending(Lists.newArrayList((RfnDevice)gateways.get(0)));
-        two.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
-        two.setUpdateId("ads6587a56ds96dsaf");
-        
-        json.put(one.getUpdateId(), one);
-        json.put(two.getUpdateId(), two);
-        
+//        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+//        CertificateUpdate one = new CertificateUpdate();
+//        one.setFileName("licertupgrade.pkg.nm");
+//        one.setTimestamp(new Instant().minus(Duration.standardDays(7)));
+//        one.setSuccessful(Lists.newArrayList((RfnDevice)gateways.get(0)));
+//        one.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
+//        one.setUpdateId("654asd67f54as76f4v");
+//        
+//        CertificateUpdate two = new CertificateUpdate();
+//        two.setFileName("licertupgrade.pkg.nm");
+//        two.setTimestamp(new Instant().minus(Duration.standardDays(8)));
+//        two.setPending(Lists.newArrayList((RfnDevice)gateways.get(0)));
+//        two.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
+//        two.setUpdateId("ads6587a56ds96dsaf");
+//        
+//        json.put(one.getUpdateId(), one);
+//        json.put(two.getUpdateId(), two);
+       
         // END TEST CODE
+        
+        List<CertificateUpdate> updates = certificateUpdateService.getAllCertificateUpdates();
+        for (CertificateUpdate update : updates) {
+            json.put(update.getUpdateId(), update);
+        }
         
         return json;
     }
@@ -82,13 +89,16 @@ public class GatewayCertificateController {
     @RequestMapping("/gateways/cert-update/{updateId}/details")
     public String details(ModelMap model, @PathVariable String updateId) {
         
-        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        CertificateUpdate update = new CertificateUpdate();
-        update.setFileName("licertupgrade.pkg.nm");
-        update.setTimestamp(new Instant().minus(Duration.standardDays(7)));
-        update.setSuccessful(Lists.newArrayList((RfnDevice)gateways.get(0)));
-        update.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
-        update.setUpdateId("654asd67f54as76f4v");
+        int dbId = certificateUpdateDao.getLatestUpdateForCertificate(updateId);
+        CertificateUpdate update = certificateUpdateService.getCertificateUpdate(dbId);
+        
+//        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+//        CertificateUpdate update = new CertificateUpdate();
+//        update.setFileName("licertupgrade.pkg.nm");
+//        update.setTimestamp(new Instant().minus(Duration.standardDays(7)));
+//        update.setSuccessful(Lists.newArrayList((RfnDevice)gateways.get(0)));
+//        update.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
+//        update.setUpdateId("654asd67f54as76f4v");
         
         model.addAttribute("update", update);
         
@@ -97,26 +107,33 @@ public class GatewayCertificateController {
     
     @RequestMapping(value="/gateways/cert-update", method=RequestMethod.POST)
     public String certUpdate(HttpServletResponse resp, ModelMap model, YukonUserContext userContext, 
-            @RequestParam("file") MultipartFile file, int[] gateways) {
+            @RequestParam("file") MultipartFile file, List<Integer> gateways) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
         if (!file.isEmpty()) {
             try {
-                byte[] bytes = file.getBytes();
-                // TODO Sam does a thing with the stuff
+                String certificateId;
+                if (gateways.size() == 0) {
+                    certificateId = certificateUpdateService.sendUpdateAll(file);
+                } else {
+                    Set<RfnGateway> rfnGateways = rfnGatewayService.getGatewaysByPaoIds(gateways);
+                    certificateId = certificateUpdateService.sendUpdate(rfnGateways, file);
+                }
                 
                 // Success
                 model.clear();
                 
+                int updateId = certificateUpdateDao.getLatestUpdateForCertificate(certificateId);
+                CertificateUpdate update = certificateUpdateService.getCertificateUpdate(updateId);
                 // TEST CODE
-                List<RfnGateway> rfgateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-                CertificateUpdate update = new CertificateUpdate();
-                update.setFileName("licertupgrade.pkg.nm");
-                update.setTimestamp(new Instant().minus(Duration.standardDays(7)));
-                update.setPending(Lists.newArrayList((RfnDevice)rfgateways.get(0)));
-                update.setFailed(Lists.newArrayList((RfnDevice)rfgateways.get(1)));
-                update.setUpdateId("654asd67f54as76f4v");
+//                List<RfnGateway> rfgateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+//                CertificateUpdate update = new CertificateUpdate();
+//                update.setFileName("licertupgrade.pkg.nm");
+//                update.setTimestamp(new Instant().minus(Duration.standardDays(7)));
+//                update.setPending(Lists.newArrayList((RfnDevice)rfgateways.get(0)));
+//                update.setFailed(Lists.newArrayList((RfnDevice)rfgateways.get(1)));
+//                update.setUpdateId("654asd67f54as76f4v");
                 // END TEST CODE
                 
                 resp.setContentType("application/json");

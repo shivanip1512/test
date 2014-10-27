@@ -60,5 +60,11 @@ public interface RfnDeviceDao {
     /**
      * Returns a map of paoId to RfnDevice for all devices of the specified PaoType.
      */
-    Map<Integer, RfnDevice> getPaoIdMappedDevicesByPaoType(PaoType paoType); 
+    Map<Integer, RfnDevice> getPaoIdMappedDevicesByPaoType(PaoType paoType);
+    
+    /**
+     * Returns a List of RfnDevices with the given paoIds. Any invalid ids will not cause an error - they will be
+     * ignored.
+     */
+    List<RfnDevice> getDevicesByPaoIds(Iterable<Integer> paoIds); 
 }

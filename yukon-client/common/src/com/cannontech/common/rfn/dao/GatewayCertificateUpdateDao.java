@@ -3,7 +3,6 @@ package com.cannontech.common.rfn.dao;
 import java.util.Collection;
 import java.util.List;
 
-import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateInfo;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
 
@@ -31,6 +30,11 @@ public interface GatewayCertificateUpdateDao {
     void updateEntry(int updateId, int gatewayId, GatewayCertificateUpdateStatus status);
     
     /**
+     * Set the status of all STARTED entries for the specified updateId to TIMEOUT.
+     */
+    void timeoutUpdate(int updateId);
+    
+    /**
      * Retrieve the id of the certificate update with the most recent SendDate and the specified certificateId;
      */
     int getLatestUpdateForCertificate(String certificateId);
@@ -46,7 +50,8 @@ public interface GatewayCertificateUpdateDao {
     List<GatewayCertificateUpdateInfo> getAllUpdateInfo();
     
     /**
-     * Retrieve all CertificateUpdates for display.
+     * Any entries with the specified updateId that are STARTED will be set to NM_ERROR.
      */
-    List<CertificateUpdate> getAllCertificateUpdates();
+    void failUnackedForUpdate(int updateId);
+    
 }

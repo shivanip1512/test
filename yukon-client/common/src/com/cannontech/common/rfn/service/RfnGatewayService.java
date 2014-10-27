@@ -1,5 +1,6 @@
 package com.cannontech.common.rfn.service;
 
+import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoIdentifier;
@@ -130,8 +131,18 @@ public interface RfnGatewayService {
      * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean deleteCollectionSchedule(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
+    boolean deleteCollectionSchedule(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
     
     /** Clears gateway data cache, mostly for testing/debugging */
-    public void clearCache();
+    void clearCache();
+    
+    /**
+     * Gets all RfnGateways with the specified paoids. If any ids are invalid, they will be ignored.
+     */
+    Set<RfnGateway> getGatewaysByPaoIds(Iterable<Integer> paoIds);
+    
+    /**
+     * Get a map of paoId to gateway for all gateways.
+     */
+    Map<Integer, RfnGateway> getAllGatewaysByPaoId();
 }

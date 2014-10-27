@@ -1,14 +1,11 @@
 package com.cannontech.web.stars.gateway;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.joda.time.Duration;
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -25,9 +22,9 @@ import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -36,7 +33,6 @@ import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.google.common.collect.Lists;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
@@ -48,6 +44,7 @@ public class GatewayListController {
     
     @Autowired private ServerDatabaseCache cache;
     @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private RfnGatewayCertificateUpdateService certificateUpdateService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     @RequestMapping(value = {"/gateways", "/gateways/"}, method = RequestMethod.GET)
@@ -57,7 +54,8 @@ public class GatewayListController {
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         model.addAttribute("gateways", gateways);
         
-        model.addAttribute("certUpdates", getCertUpdates());
+        List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
+        model.addAttribute("certUpdates", certUpdates);
         
         Map<String, String> text = new HashMap<>();
         text.put("connect.pending", accessor.getMessage(baseKey + "connect.pending"));
@@ -80,32 +78,32 @@ public class GatewayListController {
         return "gateways/list.jsp";
     }
     
-    private List<CertificateUpdate> getCertUpdates() {
-        
-        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
-        
-        List<CertificateUpdate> updates = new ArrayList<>();
-        
-        CertificateUpdate one = new CertificateUpdate();
-        one.setFileName("licertupgrade.pkg.nm");
-        one.setTimestamp(new Instant().minus(Duration.standardDays(7)));
-        one.setSuccessful(Lists.newArrayList((RfnDevice)gateways.get(0)));
-        one.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
-        one.setUpdateId("654asd67f54as76f4v");
-        
-        CertificateUpdate two = new CertificateUpdate();
-        two.setFileName("licertupgrade.pkg.nm");
-        two.setTimestamp(new Instant().minus(Duration.standardDays(8)));
-        two.setPending(Lists.newArrayList((RfnDevice)gateways.get(0)));
-        two.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
-        two.setUpdateId("ads6587a56ds96dsaf");
-        
-        updates.add(one);
-        updates.add(two);
-        
-        return updates;
-        
-    }
+//    private List<CertificateUpdate> getCertUpdates() {
+//        
+//        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+//        
+//        List<CertificateUpdate> updates = new ArrayList<>();
+//        
+//        CertificateUpdate one = new CertificateUpdate();
+//        one.setFileName("licertupgrade.pkg.nm");
+//        one.setTimestamp(new Instant().minus(Duration.standardDays(7)));
+//        one.setSuccessful(Lists.newArrayList((RfnDevice)gateways.get(0)));
+//        one.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
+//        one.setUpdateId("654asd67f54as76f4v");
+//        
+//        CertificateUpdate two = new CertificateUpdate();
+//        two.setFileName("licertupgrade.pkg.nm");
+//        two.setTimestamp(new Instant().minus(Duration.standardDays(8)));
+//        two.setPending(Lists.newArrayList((RfnDevice)gateways.get(0)));
+//        two.setFailed(Lists.newArrayList((RfnDevice)gateways.get(1)));
+//        two.setUpdateId("ads6587a56ds96dsaf");
+//        
+//        updates.add(one);
+//        updates.add(two);
+//        
+//        return updates;
+//        
+//    }
     
     @RequestMapping("/gateways/data")
     public @ResponseBody Map<Integer, Object> data(YukonUserContext userContext) {

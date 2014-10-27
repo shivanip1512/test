@@ -1,10 +1,12 @@
 package com.cannontech.common.rfn.service.impl;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -13,6 +15,7 @@ import javax.jms.ConnectionFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
@@ -20,20 +23,21 @@ import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequest;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAck;
+import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.GatewayCertificateException;
+import com.cannontech.common.rfn.model.GatewayCertificateUpdateInfo;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
+import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
-import com.cannontech.common.rfn.service.RfnGatewayUpdateCallback;
-import com.cannontech.common.rfn.service.RfnGatewayUpdateService;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 
-public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
+public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertificateUpdateService {
 
-    private static final Logger log = YukonLogManager.getLogger(RfnGatewayUpdateServiceImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(RfnGatewayCertificateUpdateServiceImpl.class);
 
     private final static String configName = "RFN_GATEWAY_UPGRADE_REQUEST";
     private final static String queueName = "yukon.qr.obj.rfn.GatewayUpgradeRequest";
@@ -57,24 +61,21 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
     }
 
     @Override
-    public void sendUpdate(Set<RfnGateway> rfnGateways, File upgradePackage, final RfnGatewayUpdateCallback callback) {
+    public String sendUpdate(Set<RfnGateway> rfnGateways, MultipartFile upgradePackage) 
+            throws IOException, GatewayCertificateException {
         // Read upgrade package into byte[].
         byte[] upgradeData = null;
-        try (FileInputStream fis = new FileInputStream(upgradePackage)) {
+        try (InputStream fis = upgradePackage.getInputStream()) {
             upgradeData = IOUtils.toByteArray(fis);
         } catch (IOException e) {
-            callback.handleException(e);
-            callback.complete();
-            return;
+            throw e;
         }
         
         String upgradeId;
         try {
             upgradeId = getCertificateId(upgradePackage);
-        } catch (Exception e) {
-            callback.handleException(e);
-            callback.complete();
-            return;
+        } catch (GatewayCertificateException e) {
+            throw e;
         }
         
         final int updateDbId = certificateUpdateDao.createUpdate(upgradeId, upgradePackage.getName());
@@ -96,28 +97,30 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
         request.setUpgradeData(upgradeData);
 
         // Expect acknowledgment reply only.
-        // Gateway's upgrade reply will be received by RfnGatewayUpgradeListener.
+        // Gateway's upgrade reply will be received by GatewayDataResponseListener.
         JmsReplyHandler<RfnGatewayUpgradeRequestAck> handler = new JmsReplyHandler<RfnGatewayUpgradeRequestAck>() {
-                // Delegate all calls to callback handler.
                 @Override
                 public void handleException(Exception e) {
-                    callback.handleException(e);
+                    log.error("Error occured in gateway certificate upgrade.", e);
                 }
 
                 @Override
                 public void complete() {
-                    callback.complete();
+                    //Ack is complete. Any ids not updated are assumed failed.
+                    log.debug("Callback complete for gateway certificate upgrade.");
+                    certificateUpdateDao.failUnackedForUpdate(updateDbId);
                 }
 
                 @Override
                 public void handleTimeout() {
-                    callback.handleTimeout();
+                    log.error("Timeout waiting for acknowledgement of gateway certificate upgrade.");
+                    certificateUpdateDao.timeoutUpdate(updateDbId);
                 }
 
                 @Override
                 public void handleReply(RfnGatewayUpgradeRequestAck reply) {
+                    log.debug("Received acknowledgement of gateway certificate upgrade from Network Manager.");
                     logGatewayUpgradeStatusFromAck(updateDbId, reply);
-                    callback.handleReply(reply);
                 }
 
                 @Override
@@ -126,11 +129,14 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
                 }
             };
         qrTemplate.send(request, handler);
+        
+        //This is the certificate identifier
+        return upgradeId;
     }
     
     @Override
-    public void sendUpdateAll(File upgradePackage, RfnGatewayUpdateCallback callback) {
-        sendUpdate(null, upgradePackage, callback);
+    public String sendUpdateAll(MultipartFile upgradePackage) throws IOException, GatewayCertificateException {
+        return sendUpdate(null, upgradePackage);
     }
 
     /** 
@@ -160,9 +166,9 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
      * upgradeId string from that array of bytes.
      */
     @Override
-    public String getCertificateId(File upgradePackage) throws GatewayCertificateException {
+    public String getCertificateId(MultipartFile upgradePackage) throws GatewayCertificateException {
         byte[] upgradeData = null;
-        try (FileInputStream fis = new FileInputStream(upgradePackage)) {
+        try (InputStream fis = upgradePackage.getInputStream()) {
             upgradeData = IOUtils.toByteArray(fis);
             ByteBuffer buf = ByteBuffer.wrap(upgradeData);
             int upgradeImgLen = buf.getInt();
@@ -216,6 +222,71 @@ public class RfnGatewayUpdateServiceImpl implements RfnGatewayUpdateService {
             throw new GatewayCertificateException("Unable to access upgrade package file "
                                                   + upgradePackage.getName(), e);
         }
+    }
+    
+    @Override
+    public CertificateUpdate getCertificateUpdate(int updateId) {
+        
+        GatewayCertificateUpdateInfo info = certificateUpdateDao.getUpdateInfo(updateId);
+        Map<Integer, RfnGateway> gateways = gatewayService.getAllGatewaysByPaoId();
+        
+        CertificateUpdate certificateUpdate = new CertificateUpdate();
+        certificateUpdate.setFileName(info.getFileName());
+        certificateUpdate.setTimestamp(info.getSendDate());
+        certificateUpdate.setUpdateId(info.getCertificateId());
+        
+        List<RfnGateway> successful = new ArrayList<>();
+        List<RfnGateway> failed = new ArrayList<>();
+        List<RfnGateway> pending = new ArrayList<>();
+        for (Map.Entry<Integer, GatewayCertificateUpdateStatus> entry : info.getGatewayStatuses().entrySet()) {
+            RfnGateway gateway = gateways.get(entry.getKey());
+            if (entry.getValue().isSuccessful()) {
+                successful.add(gateway);
+            } else if (entry.getValue().isInProgress()) {
+                pending.add(gateway);
+            } else {
+                failed.add(gateway);
+            }
+        }
+        
+        certificateUpdate.setSuccessful(successful);
+        certificateUpdate.setPending(pending);
+        certificateUpdate.setFailed(failed);
+        return certificateUpdate;
+    }
+    
+    @Override
+    public List<CertificateUpdate> getAllCertificateUpdates() {
+        
+        Map<Integer, RfnGateway> gateways = gatewayService.getAllGatewaysByPaoId();
+        List<CertificateUpdate> updates = new ArrayList<>();
+        
+        for (GatewayCertificateUpdateInfo info : certificateUpdateDao.getAllUpdateInfo()) {
+            CertificateUpdate certificateUpdate = new CertificateUpdate();
+            certificateUpdate.setFileName(info.getFileName());
+            certificateUpdate.setTimestamp(info.getSendDate());
+            certificateUpdate.setUpdateId(info.getCertificateId());
+            
+            List<RfnGateway> successful = new ArrayList<>();
+            List<RfnGateway> failed = new ArrayList<>();
+            List<RfnGateway> pending = new ArrayList<>();
+            for (Map.Entry<Integer, GatewayCertificateUpdateStatus> entry : info.getGatewayStatuses().entrySet()) {
+                RfnGateway gateway = gateways.get(entry.getKey());
+                if (entry.getValue().isSuccessful()) {
+                    successful.add(gateway);
+                } else if (entry.getValue().isInProgress()) {
+                    pending.add(gateway);
+                } else {
+                    failed.add(gateway);
+                }
+            }
+            
+            certificateUpdate.setSuccessful(successful);
+            certificateUpdate.setPending(pending);
+            certificateUpdate.setFailed(failed);
+            updates.add(certificateUpdate);
+        }
+        return updates;
     }
     
     //TODO: clean up inefficient calls

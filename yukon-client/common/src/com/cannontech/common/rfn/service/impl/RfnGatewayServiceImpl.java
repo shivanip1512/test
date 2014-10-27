@@ -1,8 +1,10 @@
 package com.cannontech.common.rfn.service.impl;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -106,29 +108,13 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     @Override
     public Set<RfnGateway> getAllGateways() {
         
-        Set<RfnGateway> rfnGateways = new HashSet<RfnGateway>();
-        // Get all base RfnDevices
         List<RfnDevice> gatewayDevices = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY);
-        for (RfnDevice gatewayDevice : gatewayDevices) {
-            // Get PAO name
-            String name = cache.getAllPaosMap().get(gatewayDevice.getPaoIdentifier().getPaoId()).getPaoName();
-            // Get available RfnGatewayData from cache via non-blocking call
-            RfnGatewayData gatewayData = dataCache.getIfPresent(gatewayDevice.getPaoIdentifier());
-            RfnGateway rfnGateway = new RfnGateway(name, gatewayDevice.getPaoIdentifier(), 
-                                                   gatewayDevice.getRfnIdentifier(), gatewayData);
-            // Get PaoLocation from PaoLocationDao
-            PaoLocation gatewayLocation = paoLocationDao.getLocation(gatewayDevice.getPaoIdentifier().getPaoId());
-            if (gatewayLocation != null) {
-                rfnGateway.setLocation(gatewayLocation);
-            }
-            rfnGateways.add(rfnGateway);
-        }
+        Set<RfnGateway> rfnGateways = getGatewaysFromDevices(gatewayDevices);
         return rfnGateways;
     }
     
     @Override
-    public RfnGateway getGatewayByPaoId(PaoIdentifier paoIdentifier)
-            throws NetworkManagerCommunicationException {
+    public RfnGateway getGatewayByPaoId(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
         // Get base RfnDevice
         RfnDevice gwDevice = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         // Get PAO name
@@ -146,6 +132,44 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         }
         
         return rfnGateway;
+    }
+    
+    @Override
+    public Set<RfnGateway> getGatewaysByPaoIds(Iterable<Integer> paoIds) {
+        
+        List<RfnDevice> gatewayDevices = rfnDeviceDao.getDevicesByPaoIds(paoIds);
+        Set<RfnGateway> rfnGateways = getGatewaysFromDevices(gatewayDevices);
+        return rfnGateways;
+    }
+    
+    @Override
+    public Map<Integer, RfnGateway> getAllGatewaysByPaoId() {
+        Set<RfnGateway> allGateways = getAllGateways();
+        
+        Map<Integer, RfnGateway> map = new HashMap<>();
+        for(RfnGateway gateway : allGateways) {
+            map.put(gateway.getPaoIdentifier().getPaoId(), gateway);
+        }
+        return map;
+    }
+    
+    private Set<RfnGateway> getGatewaysFromDevices(Iterable<RfnDevice> gatewayDevices) {
+        Set<RfnGateway> rfnGateways = new HashSet<RfnGateway>();
+        for (RfnDevice gatewayDevice : gatewayDevices) {
+            // Get PAO name
+            String name = cache.getAllPaosMap().get(gatewayDevice.getPaoIdentifier().getPaoId()).getPaoName();
+            // Get available RfnGatewayData from cache via non-blocking call
+            RfnGatewayData gatewayData = dataCache.getIfPresent(gatewayDevice.getPaoIdentifier());
+            RfnGateway rfnGateway = new RfnGateway(name, gatewayDevice.getPaoIdentifier(), 
+                                                   gatewayDevice.getRfnIdentifier(), gatewayData);
+            // Get PaoLocation from PaoLocationDao
+            PaoLocation gatewayLocation = paoLocationDao.getLocation(gatewayDevice.getPaoIdentifier().getPaoId());
+            if (gatewayLocation != null) {
+                rfnGateway.setLocation(gatewayLocation);
+            }
+            rfnGateways.add(rfnGateway);
+        }
+        return rfnGateways;
     }
     
     @Override

@@ -14,9 +14,9 @@ public class CertificateUpdate {
     private Instant timestamp;
     private String fileName;
     private String updateId;
-    private List<RfnDevice> pending = new ArrayList<>();
-    private List<RfnDevice> failed = new ArrayList<>();
-    private List<RfnDevice> successful = new ArrayList<>();
+    private List<RfnGateway> pending = new ArrayList<>();
+    private List<RfnGateway> failed = new ArrayList<>();
+    private List<RfnGateway> successful = new ArrayList<>();
     
     public Instant getTimestamp() {
         return timestamp;
@@ -42,27 +42,27 @@ public class CertificateUpdate {
         this.updateId = updateId;
     }
     
-    public List<RfnDevice> getPending() {
+    public List<RfnGateway> getPending() {
         return pending;
     }
     
-    public void setPending(List<RfnDevice> pending) {
+    public void setPending(List<RfnGateway> pending) {
         this.pending = pending;
     }
     
-    public List<RfnDevice> getFailed() {
+    public List<RfnGateway> getFailed() {
         return failed;
     }
     
-    public void setFailed(List<RfnDevice> failed) {
+    public void setFailed(List<RfnGateway> failed) {
         this.failed = failed;
     }
     
-    public List<RfnDevice> getSuccessful() {
+    public List<RfnGateway> getSuccessful() {
         return successful;
     }
     
-    public void setSuccessful(List<RfnDevice> successful) {
+    public void setSuccessful(List<RfnGateway> successful) {
         this.successful = successful;
     }
     

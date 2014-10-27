@@ -9,6 +9,7 @@ import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponseType;
 public enum GatewayCertificateUpdateStatus {
     STARTED, // Process initiated in Yukon, not acknowledged by NM
     REQUEST_ACCEPTED, // Network manager received request
+    TIMEOUT,
     INVALID_RFN_ID,
     INVALID_SUPER_ADMIN_PASSWORD,
     ALREADY_IN_PROGRESS,

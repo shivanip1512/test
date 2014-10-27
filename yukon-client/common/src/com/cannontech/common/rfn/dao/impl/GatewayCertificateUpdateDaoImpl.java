@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
-import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateInfo;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -30,40 +29,6 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private RfnDeviceDao rfnDeviceDao;
-    
-    @Override
-    public List<CertificateUpdate> getAllCertificateUpdates() {
-        
-        Map<Integer, RfnDevice> gatewayDevices = rfnDeviceDao.getPaoIdMappedDevicesByPaoType(PaoType.RFN_GATEWAY);
-        List<CertificateUpdate> updates = new ArrayList<>();
-        
-        for (GatewayCertificateUpdateInfo info : getAllUpdateInfo()) {
-            CertificateUpdate certificateUpdate = new CertificateUpdate();
-            certificateUpdate.setFileName(info.getFileName());
-            certificateUpdate.setTimestamp(info.getSendDate());
-            certificateUpdate.setUpdateId(info.getCertificateId());
-            
-            List<RfnDevice> successful = new ArrayList<>();
-            List<RfnDevice> failed = new ArrayList<>();
-            List<RfnDevice> pending = new ArrayList<>();
-            for (Map.Entry<Integer, GatewayCertificateUpdateStatus> entry : info.getGatewayStatuses().entrySet()) {
-                RfnDevice gateway = gatewayDevices.get(entry.getKey());
-                if (entry.getValue().isSuccessful()) {
-                    successful.add(gateway);
-                } else if (entry.getValue().isInProgress()) {
-                    pending.add(gateway);
-                } else {
-                    failed.add(gateway);
-                }
-            }
-            
-            certificateUpdate.setSuccessful(successful);
-            certificateUpdate.setPending(pending);
-            certificateUpdate.setFailed(failed);
-            updates.add(certificateUpdate);
-        }
-        return updates;
-    }
     
     @Override
     public int createUpdate(String certificateId, String fileName) {
@@ -83,6 +48,16 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
     @Override
     @Transactional
     public void createEntries(int updateId, GatewayCertificateUpdateStatus status, Collection<Integer> gatewayIds) {
+        
+        //If gatewayIds is empty, all gateways are being upgraded
+        if (gatewayIds == null || gatewayIds.size() == 0) {
+            gatewayIds = new ArrayList<>();
+            List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoType(PaoType.RFN_GATEWAY);
+            for (RfnDevice device : devices) {
+                gatewayIds.add(device.getPaoIdentifier().getPaoId());
+            }
+        }
+        
         for (int gatewayId : gatewayIds) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             SqlParameterSink sink = sql.insertInto("GatewayCertificateUpdateEntry");
@@ -104,6 +79,26 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
         sql.set("UpdateStatus", status);
         sql.append("where UpdateId").eq(updateId);
         sql.append("and gatewayId").eq(gatewayId);
+        
+        jdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public void timeoutUpdate(int updateId) {
+        setStatusOnStartedEntries(updateId, GatewayCertificateUpdateStatus.TIMEOUT);
+    }
+    
+    @Override
+    public void failUnackedForUpdate(int updateId) {
+        setStatusOnStartedEntries(updateId, GatewayCertificateUpdateStatus.NM_ERROR);
+    }
+    
+    private void setStatusOnStartedEntries(int updateId, GatewayCertificateUpdateStatus status) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("update GatewayCertificateUpdateEntry");
+        sql.set("UpdateStatus", status);
+        sql.append("where UpdateId").eq(updateId);
+        sql.append("and UpdateStatus").eq_k(GatewayCertificateUpdateStatus.STARTED);
         
         jdbcTemplate.update(sql);
     }
