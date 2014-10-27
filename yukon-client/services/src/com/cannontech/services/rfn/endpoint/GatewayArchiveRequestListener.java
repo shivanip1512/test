@@ -30,6 +30,7 @@ public class GatewayArchiveRequestListener extends ArchiveRequestListenerBase<Ga
         @Override
         protected RfnDevice processCreation(GatewayArchiveRequest request, RfnIdentifier identifier) {
             try {
+                // Create the device in Yukon and send a DB change message
                 RfnDevice device = rfnDeviceCreationService.createGateway(request.getName(), request.getRfnIdentifier());
                 rfnDeviceCreationService.incrementNewDeviceCreated();
                 log.debug("Created new gateway: " + device);

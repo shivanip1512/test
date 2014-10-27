@@ -194,7 +194,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         // Parse the response
         if (response.getResult() == GatewayUpdateResult.SUCCESSFUL) {
-            // Create the device in Yukon DB
+            // Create the device in Yukon DB (This also sends a DB Change message)
             RfnDevice gateway = rfnDeviceCreationService.createGateway(settings.getName(), response.getRfnIdentifier());
             PaoIdentifier gatewayIdentifier = gateway.getPaoIdentifier();
             // Force the data cache to update
@@ -288,6 +288,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         // Update yukon database
         if (gateway.getName() != null && !gateway.getName().equals(existingGateway.getName())) {
+            // (Also sends DB change message)
             deviceDao.changeName(existingGateway, gateway.getName());
         }
         if (gateway.getLocation() != null && !gateway.getLocation().equals(existingGateway.getLocation())) {
@@ -311,7 +312,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         try {
             GatewayUpdateResponse response = replyHandler.waitForCompletion();
             if (response.getResult() == GatewayUpdateResult.SUCCESSFUL) {
-                // Delete from yukon database, cache
+                // Delete from yukon database and cache, and send DB change message
                 deviceDao.removeDevice(gateway);
                 dataCache.remove(paoIdentifier);
                 return true;
