@@ -90,7 +90,7 @@ string SimulatorLogger::formatIOBytes(const bytes &buf)
 
 string SimulatorLogger::breadcrumbPrefix()
 {
-    string prefix = CtiTime::now().asString() + " ";
+    string prefix;
 
     if( !_tags.empty() )
     {
@@ -109,7 +109,7 @@ string SimulatorLogger::breadcrumbPrefix()
 
 string SimulatorLogger::prefix()
 {
-    string prefix = CtiTime::now().asString() + " ";
+    string prefix;
 
     if( !_tags.empty() )
     {
