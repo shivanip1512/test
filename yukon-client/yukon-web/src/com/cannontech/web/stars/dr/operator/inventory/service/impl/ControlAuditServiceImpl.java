@@ -1,10 +1,10 @@
 package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.joda.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +12,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.util.Pair;
+import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
@@ -31,169 +30,194 @@ import com.cannontech.web.stars.dr.operator.inventory.model.AuditSettings;
 import com.cannontech.web.stars.dr.operator.inventory.model.ControlAuditResult;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.stars.dr.operator.inventory.service.ControlAuditService;
+import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 public class ControlAuditServiceImpl implements ControlAuditService {
 
     @Autowired private InventoryDao inventoryDao;
     @Autowired private PaoDao paoDao;
-    @Autowired private AttributeService attributeService;
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private MemoryCollectionProducer memoryCollectionProducer;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
+    private final BuiltInAttribute r1 = BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG;
+    private final BuiltInAttribute r2 = BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG;
+    private final BuiltInAttribute r3 = BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG;
     private static String baseKey = "yukon.web.modules.operator.controlAudit";
+    private static Function<InventoryIdentifier, Integer> toInventoryId = new Function<InventoryIdentifier, Integer>() {
+        @Override
+        public Integer apply(InventoryIdentifier input) {
+            return input.getInventoryId();
+        }
+    };
+    private static Function<PaoIdentifier, Integer> toPaoId = new Function<PaoIdentifier, Integer>() {
+        @Override
+        public Integer apply(PaoIdentifier input) {
+            return input.getPaoId();
+        }
+    };
 
     @Override
     public ControlAuditResult runAudit(AuditSettings settings) {
-        BiMap<InventoryIdentifier, PaoIdentifier> inventoryToPao = HashBiMap.create();
+        Map<PaoIdentifier, InventoryIdentifier> inventoryByPao = new HashMap<>();
 
         ListMultimap<BuiltInAttribute, YukonPao> paosByAttribute = ArrayListMultimap.create();
 
-        List<Pair<InventoryIdentifier, AuditRow>> controlledList = Lists.newArrayList();
-        List<Pair<InventoryIdentifier, AuditRow>> uncontrolledList = Lists.newArrayList();
-        List<Pair<InventoryIdentifier, AuditRow>> unknownList = Lists.newArrayList();
-        List<Pair<InventoryIdentifier, AuditRow>> unsupporedList = Lists.newArrayList();
+        AuditDataBuilder auditDataBuidler = new AuditDataBuilder();
+
+        List<InventoryIdentifier> inventoryCollection = settings.getCollection().getList();
+        for (List<InventoryIdentifier> inventorySublist : Lists.partition(inventoryCollection, 1000)) {
+            Map<Integer, Integer> deviceIdsByInventoryId =
+                inventoryDao.getDeviceIds(Iterables.transform(inventorySublist, toInventoryId));
+            List<PaoIdentifier> paos = paoDao.getPaoIdentifiersForPaoIds(deviceIdsByInventoryId.values());
+            Map<Integer, PaoIdentifier> paosById = Maps.uniqueIndex(paos, toPaoId);
+
+            paosByAttribute.clear();
+            for (InventoryIdentifier inventory : inventorySublist) {
+                int deviceId = deviceIdsByInventoryId.get(inventory.getInventoryId());
+                boolean isSupported = true;
+                if (deviceId <= 0) {
+                    isSupported = false;
+                } else {
+                    YukonPao pao = paosById.get(deviceId);
+                    inventoryByPao.put(pao.getPaoIdentifier(), inventory);
+
+                    // Devices that support relay shed time will always at least support relay #1 shed time.
+                    if (!doesPaoSupport(pao, r1)) {
+                        isSupported = false;
+                    } else {
+                        paosByAttribute.put(r1, pao);
+                        if (doesPaoSupport(pao, r2)) {
+                            paosByAttribute.put(r2, pao);
+                        }
+                        if (doesPaoSupport(pao, r3)) {
+                            paosByAttribute.put(r3, pao);
+                        }
+                    }
+                }
+                if (!isSupported) {
+                    AuditRow row = new AuditRow();
+                    LiteLmHardware hardware = inventoryDao.getLiteLmHardwareByInventory(inventory);
+                    row.setHardware(hardware);
+                    auditDataBuidler.addUnsupported(inventory, row);
+                }
+            }
+
+            ListMultimap<PaoIdentifier, PointValueQualityHolder> allPointData =
+                getPointData(settings.getFrom().toDate(), settings.getTo().toDate(), paosByAttribute);
+
+            for (YukonPao yukonPao : paosByAttribute.get(r1)) {
+                PaoIdentifier pao = yukonPao.getPaoIdentifier();
+
+                AuditRow row = new AuditRow();
+                InventoryIdentifier inventory = inventoryByPao.get(pao);
+                row.setHardware(inventoryDao.getLiteLmHardwareByInventory(inventory));
+
+                List<PointValueQualityHolder> pvl = allPointData.get(pao);
+
+                if (pvl.isEmpty()) {
+                    auditDataBuidler.addUnknown(inventory, row);
+                } else {
+                    long durationMinutes = 0;
+                    for (PointValueQualityHolder pv : pvl) {
+                        durationMinutes += (long) pv.getValue();
+                    }
+                    Duration d = Duration.standardMinutes(durationMinutes); // Duration of shed time
+                    row.setControl(d);
+                    if (d.isLongerThan(Duration.standardMinutes(1))) {
+                        auditDataBuidler.addControlled(inventory, row);
+                    } else {
+                        auditDataBuidler.addUncontrolled(inventory, row);
+                    }
+                }
+            }
+        }
 
         ControlAuditResult result = new ControlAuditResult();
         result.setSettings(settings);
 
-        BuiltInAttribute r1 = BuiltInAttribute.RELAY_1_SHED_TIME_DATA_LOG;
-        BuiltInAttribute r2 = BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG;
-        BuiltInAttribute r3 = BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG;
+        MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(settings.getContext());
 
-        Map<PaoType, Set<? extends Attribute>> supportedAttrs = new HashMap<>();
+        String description = messageSourceAccessor.getMessage(baseKey + ".controlledCollectionDescription");
+        result.setControlled(memoryCollectionProducer.createCollection(auditDataBuidler.controlledInventory.iterator(), description));
+        result.setControlledRows(auditDataBuidler.controlledAuditRows);
 
-        for (InventoryIdentifier inventory : settings.getCollection()) {
+        description = messageSourceAccessor.getMessage(baseKey + ".uncontrolledCollectionDescription");
+        result.setUncontrolled(memoryCollectionProducer.createCollection(auditDataBuidler.uncontrolledInventory.iterator(), description));
+        result.setUncontrolledRows(auditDataBuidler.uncontrolledAuditRows);
 
-            int deviceId = inventoryDao.getDeviceId(inventory.getInventoryId());
-            boolean isSupported = true;
-            if (deviceId <= 0) {
-                isSupported = false;
-            } else {
+        description = messageSourceAccessor.getMessage(baseKey + ".unknownCollectionDescription");
+        result.setUnknown(memoryCollectionProducer.createCollection(auditDataBuidler.unknownInventory.iterator(), description));
+        result.setUnknownRows(auditDataBuidler.unknownAuditRows);
 
-                YukonPao pao = paoDao.getYukonPao(deviceId);
-                inventoryToPao.put(inventory, pao.getPaoIdentifier());
+        description = messageSourceAccessor.getMessage(baseKey + ".unsupportedCollectionDescription");
+        result.setUnsupported(memoryCollectionProducer.createCollection(auditDataBuidler.unsupporedInventory.iterator(), description));
+        result.setUnsupportedRows(auditDataBuidler.unsupporedAuditRows);
 
-                Set<? extends Attribute> availableAttributes;
-                PaoType paoType = pao.getPaoIdentifier().getPaoType();
-                if (supportedAttrs.containsKey(paoType)) {
-                    availableAttributes = supportedAttrs.get(paoType);
-                } else {
-                    availableAttributes = attributeService.getAvailableAttributes(paoType);
-                    supportedAttrs.put(paoType, availableAttributes);
-                }
+        return result;
+    }
 
-                // Devices that support relay shed time will always at least support relay #1 shed time.
-                if (!availableAttributes.contains(r1)) {
-                    isSupported = false;
-                } else {
-                    paosByAttribute.put(r1, pao);
-                    if (availableAttributes.contains(r2)) {
-                        paosByAttribute.put(r2, pao);
-                    }
-                    if (availableAttributes.contains(r3)) {
-                        paosByAttribute.put(r3, pao);
-                    }
-                }
-            }
-            if (!isSupported) {
-                AuditRow row = new AuditRow();
-                LiteLmHardware hardware = inventoryDao.getLiteLmHardwareByInventory(inventory);
-                row.setHardware(hardware);
-                unsupporedList.add(new Pair<InventoryIdentifier, AuditRow>(inventory, row));
-
-            }
-        }
-
-        BiMap<PaoIdentifier, InventoryIdentifier> pToI = inventoryToPao.inverse();
-
-        Date start = settings.getFrom().toDate();
-        Date end = settings.getTo().toDate();
+    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getPointData(Date start, Date end,
+            ListMultimap<BuiltInAttribute, YukonPao> paosByAttribute) {
 
         ListMultimap<PaoIdentifier, PointValueQualityHolder> r1Data =
-            rphDao.getAttributeData(paosByAttribute.get(r1), r1, start,
-                end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD, null);
+            rphDao.getAttributeData(paosByAttribute.get(r1), r1, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE,
+                Order.FORWARD, null);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> r2Data =
-            rphDao.getAttributeData(paosByAttribute.get(r2), r2, start,
-                end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD, null);
+            rphDao.getAttributeData(paosByAttribute.get(r2), r2, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE,
+                Order.FORWARD, null);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> r3Data =
-            rphDao.getAttributeData(paosByAttribute.get(r3), r3, start,
-                end, true, Clusivity.INCLUSIVE_EXCLUSIVE, Order.FORWARD, null);
+            rphDao.getAttributeData(paosByAttribute.get(r3), r3, start, end, true, Clusivity.INCLUSIVE_EXCLUSIVE,
+                Order.FORWARD, null);
 
         ListMultimap<PaoIdentifier, PointValueQualityHolder> all = ArrayListMultimap.create();
         all.putAll(r1Data);
         all.putAll(r2Data);
         all.putAll(r3Data);
 
-        for (YukonPao yukonPao : paosByAttribute.get(r1)) {
-
-            PaoIdentifier pao = yukonPao.getPaoIdentifier();
-
-            AuditRow row = new AuditRow();
-            InventoryIdentifier inventory = pToI.get(pao);
-            LiteLmHardware hardware = inventoryDao.getLiteLmHardwareByInventory(inventory);
-            row.setHardware(hardware);
-
-            List<PointValueQualityHolder> pvl = all.get(pao);
-
-            if (pvl.isEmpty()) {
-                unknownList.add(new Pair<InventoryIdentifier, AuditRow>(inventory, row));
-            } else {
-                long durationMinutes = 0;
-                for (PointValueQualityHolder pv : pvl) {
-                    durationMinutes += (long) pv.getValue();
-                }
-                Duration d = Duration.standardMinutes(durationMinutes); // Duration of shed time
-                row.setControl(d);
-                if (d.isLongerThan(Duration.standardMinutes(1))) {
-                    controlledList.add(new Pair<InventoryIdentifier, AuditRow>(inventory, row));
-                } else {
-                    uncontrolledList.add(new Pair<InventoryIdentifier, AuditRow>(inventory, row));
-                }
-            }
-        }
-        /** Controlled */
-        List<InventoryIdentifier> controlledCollection = Lists.newArrayList();
-        for (Pair<InventoryIdentifier, AuditRow> controlled : controlledList) {
-            controlledCollection.add(controlled.first);
-            result.getControlledRows().add(controlled.second);
-        }
-        MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(settings.getContext());
-        String description = messageSourceAccessor.getMessage(baseKey + ".controlledCollectionDescription");
-        result.setControlled(memoryCollectionProducer.createCollection(controlledCollection.iterator(), description));
-
-        /** Uncontrolled */
-        List<InventoryIdentifier> uncontrolledCollection = Lists.newArrayList();
-        for (Pair<InventoryIdentifier, AuditRow> uncontrolled : uncontrolledList) {
-            uncontrolledCollection.add(uncontrolled.first);
-            result.getUncontrolledRows().add(uncontrolled.second);
-        }
-        description = messageSourceAccessor.getMessage(baseKey + ".uncontrolledCollectionDescription");
-        result.setUncontrolled(memoryCollectionProducer.createCollection(uncontrolledCollection.iterator(), description));
-
-        /** Unknown */
-        List<InventoryIdentifier> unknownCollection = Lists.newArrayList();
-        for (Pair<InventoryIdentifier, AuditRow> unknown : unknownList) {
-            unknownCollection.add(unknown.first);
-            result.getUnknownRows().add(unknown.second);
-        }
-        description = messageSourceAccessor.getMessage(baseKey + ".unknownCollectionDescription");
-        result.setUnknown(memoryCollectionProducer.createCollection(unknownCollection.iterator(), description));
-
-        /** Unsupported */
-        List<InventoryIdentifier> unsupportedCollection = Lists.newArrayList();
-        for (Pair<InventoryIdentifier, AuditRow> unsupported : unsupporedList) {
-            unsupportedCollection.add(unsupported.first);
-            result.getUnsupportedRows().add(unsupported.second);
-        }
-        description = messageSourceAccessor.getMessage(baseKey + ".unsupportedCollectionDescription");
-        result.setUnsupported(memoryCollectionProducer.createCollection(unsupportedCollection.iterator(), description));
-        return result;
+        return all;
     }
 
+    private class AuditDataBuilder {
+        List<AuditRow> controlledAuditRows = new ArrayList<>();
+        List<AuditRow> uncontrolledAuditRows = new ArrayList<>();
+        List<AuditRow> unknownAuditRows = new ArrayList<>();
+        List<AuditRow> unsupporedAuditRows = new ArrayList<>();
+        List<InventoryIdentifier> controlledInventory = new ArrayList<>();
+        List<InventoryIdentifier> uncontrolledInventory = new ArrayList<>();
+        List<InventoryIdentifier> unknownInventory = new ArrayList<>();
+        List<InventoryIdentifier> unsupporedInventory = new ArrayList<>();
+
+        public void addControlled(InventoryIdentifier inventory, AuditRow auditRow) {
+            controlledAuditRows.add(auditRow);
+            controlledInventory.add(inventory);
+        }
+
+        public void addUncontrolled(InventoryIdentifier inventory, AuditRow auditRow) {
+            uncontrolledAuditRows.add(auditRow);
+            uncontrolledInventory.add(inventory);
+        }
+
+        public void addUnknown(InventoryIdentifier inventory, AuditRow auditRow) {
+            unknownAuditRows.add(auditRow);
+            unknownInventory.add(inventory);
+        }
+
+        public void addUnsupported(InventoryIdentifier inventory, AuditRow auditRow) {
+            unsupporedAuditRows.add(auditRow);
+            unsupporedInventory.add(inventory);
+        }
+    }
+
+    private boolean doesPaoSupport(YukonPao pao, Attribute attr) {
+        Map<Attribute, AttributeDefinition> map =
+            paoDefinitionDao.getPaoAttributeAttrDefinitionMap().get(pao.getPaoIdentifier().getPaoType());
+        return map.containsKey(attr);
+    }
 }

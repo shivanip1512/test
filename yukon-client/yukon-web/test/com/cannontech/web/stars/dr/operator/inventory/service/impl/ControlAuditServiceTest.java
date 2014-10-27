@@ -1,12 +1,6 @@
 package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
-import static org.easymock.EasyMock.anyBoolean;
-import static org.easymock.EasyMock.anyInt;
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createNiceMock;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.EasyMock.getCurrentArguments;
-import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.*;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -41,7 +35,8 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
@@ -70,10 +65,10 @@ public class ControlAuditServiceTest {
     private ControlAuditService service;
     private InventoryDao inventoryDao;
     private PaoDao paoDao;
-    private AttributeService attributeService;
     private RawPointHistoryDao rphDao;
     private YukonUserContextMessageSourceResolver resolver;
     private MemoryCollectionProducer memoryCollectionProducer;
+    private PaoDefinitionDao paoDefinitionDao;
 
     // Doesn't really matter what these are as long as they are different
     private PaoType supportsZero = PaoType.DIGIGATEWAY;
@@ -135,12 +130,15 @@ public class ControlAuditServiceTest {
                 return hardware;
             }
         }).anyTimes();
-        inventoryDao.getDeviceId(anyInt());
-        expectLastCall().andAnswer(new IAnswer<Object>() {
+        inventoryDao.getDeviceIds(anyObject(Iterable.class));
+        expectLastCall().andAnswer(new IAnswer<Map<Integer, Integer>>() {
             @Override
-            public Object answer() throws Throwable {
-                int inventoryId = (int) getCurrentArguments()[0];
-                return inventoryId;
+            public Map<Integer, Integer> answer() throws Throwable {
+                Map<Integer, Integer> deviceIds = new HashMap<>();
+                for (Integer deviceId : allPaos.keySet()) {
+                    deviceIds.put(deviceId, deviceId);
+                }
+                return deviceIds;
             }
         }).anyTimes();
 
@@ -159,14 +157,11 @@ public class ControlAuditServiceTest {
                 return pao;
             }
         }).anyTimes();
-
-        attributeService = createNiceMock(AttributeService.class);
-        attributeService.getAvailableAttributes(anyObject(PaoType.class));
-        expectLastCall().andAnswer(new IAnswer<Set<? extends Attribute>>() {
+        paoDao.getPaoIdentifiersForPaoIds(anyObject(Iterable.class));
+        expectLastCall().andAnswer(new IAnswer<List<PaoIdentifier>>() {
             @Override
-            public Set<? extends Attribute> answer() throws Throwable {
-                PaoType paoType = (PaoType) getCurrentArguments()[0];
-                return attributeSupport.get(paoType);
+            public List<PaoIdentifier> answer() throws Throwable {
+                return new ArrayList<>(allPaos.values());
             }
         }).anyTimes();
 
@@ -217,18 +212,36 @@ public class ControlAuditServiceTest {
             }
         }).anyTimes();
 
+        paoDefinitionDao = createNiceMock(PaoDefinitionDao.class);
+        paoDefinitionDao.getPaoAttributeAttrDefinitionMap();
+        expectLastCall().andAnswer(new IAnswer<Map<PaoType, Map<Attribute, AttributeDefinition>>>() {
+            @Override
+            public Map<PaoType, Map<Attribute, AttributeDefinition>> answer() throws Throwable {
+                Map<PaoType, Map<Attribute, AttributeDefinition>> supportedAttributes = new HashMap<>();
+                for (PaoType paoType : attributeSupport.keySet()) {
+                    Set<BuiltInAttribute> attrs = attributeSupport.get(paoType);
+                    Map<Attribute, AttributeDefinition> attrDefinitions = new HashMap<>();
+                    for (BuiltInAttribute attr : attrs) {
+                        attrDefinitions.put(attr, new AttributeDefinition(null, null, null));
+                    }
+                    supportedAttributes.put(paoType, attrDefinitions);
+                }
+                return supportedAttributes;
+            }
+        }).anyTimes();
+        
         ReflectionTestUtils.setField(service, "inventoryDao", inventoryDao);
         ReflectionTestUtils.setField(service, "paoDao", paoDao);
-        ReflectionTestUtils.setField(service, "attributeService", attributeService);
         ReflectionTestUtils.setField(service, "rphDao", rphDao);
         ReflectionTestUtils.setField(service, "resolver", resolver);
         ReflectionTestUtils.setField(service, "memoryCollectionProducer", memoryCollectionProducer);
+        ReflectionTestUtils.setField(service, "paoDefinitionDao", paoDefinitionDao);
 
-        replay(inventoryDao, paoDao, attributeService, rphDao, memoryCollectionProducer, resolver);
+        replay(inventoryDao, paoDao, rphDao, memoryCollectionProducer, resolver, paoDefinitionDao);
     }
 
     @Test
-    public void aTest() {
+    public void test_runAudit() {
         ControlAuditResult runAudit = service.runAudit(getAuditSettings());
         runAudit.setAuditId("");
 
