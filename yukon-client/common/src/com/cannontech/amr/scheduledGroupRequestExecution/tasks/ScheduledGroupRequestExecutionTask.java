@@ -1,9 +1,7 @@
 package com.cannontech.amr.scheduledGroupRequestExecution.tasks;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
@@ -16,7 +14,6 @@ import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.model.ScheduledGroupRequestExecutionPair;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
@@ -24,8 +21,6 @@ import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
-import com.cannontech.common.device.commands.impl.CommandCallbackBase;
-import com.cannontech.common.device.commands.impl.CommandRequestRetryExecutor;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -81,64 +76,34 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
             if (taskDeviceGroup == null) {
                 throw new IllegalArgumentException("DeviceGroup does not exist, task cannot run.");
             }
-            
+               
             final CountDownLatch taskCompletionLatch = new CountDownLatch(1);
-            CommandCompletionCallbackAdapter<CommandRequestDevice> dummyCallback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
-        		@Override
-        		public void complete() {
-        			taskCompletionLatch.countDown();
-        		}
-        	};
-            
-        	CommandRequestExecutionObjects<CommandRequestDevice> executionObjects = null;
-        	
-            if (getCommand() != null) {
-            	Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(getDeviceGroup()));
-                List<CommandRequestDevice> commandRequests = new ArrayList<>();
-                for (SimpleDevice device : devices) {
-                    
-                    CommandRequestDevice cmdReq = new CommandRequestDevice();
-                    cmdReq.setCommandCallback(new CommandCallbackBase(getCommand()));
-                    cmdReq.setDevice(device);
-                    
-                    commandRequests.add(cmdReq);
-                }
+            CommandCompletionCallbackAdapter<CommandRequestDevice> callback =
+                new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+                    @Override
+                    public void complete() {
+                        taskCompletionLatch.countDown();
+                    }
+                };
+            Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(getDeviceGroup()));
+            CommandRequestExecutionObjects<CommandRequestDevice> executionObjects =
+                deviceAttributeReadService.initiateRead(devices, attributes, command, commandRequestExecutionType,
+                    user, getRetryParameters(), callback);
+            currentExecutor = executionObjects.getCommandRequestExecutor();
+            currentCallback = executionObjects.getCallback();
 
-                CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor = 
-                    new CommandRequestRetryExecutor<>(commandRequestDeviceExecutor, getRetryParameters());
-                executionObjects = retryExecutor.execute(commandRequests, dummyCallback, getCommandRequestExecutionType(), user);
-                currentExecutor = commandRequestDeviceExecutor;
-                currentCallback = executionObjects.getCallback();
-            
-            } else if (getAttributes() != null) {
-                //Devices that are not MCTs will be marked as unsupported
-                DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(getDeviceGroup());
-                
-                executionObjects = deviceAttributeReadService.initiateRead(deviceCollection,
-                                                                           attributes,
-                                                                           getCommandRequestExecutionType(),
-                                                                           dummyCallback,
-                                                                           user,
-                                                                           getRetryParameters());
-                currentExecutor = executionObjects.getCommandRequestExecutor();
-                currentCallback = executionObjects.getCallback();
-            } else {
-                throw new UnsupportedOperationException("A command string or attribute is required to run task.");
+            // create ScheduledGroupRequestExecutionResult record
+            ScheduledGroupRequestExecutionPair pair = new ScheduledGroupRequestExecutionPair();
+            pair.setCommandRequestExecutionContextId(executionObjects.getContextId());
+            pair.setJobId(getJob().getId());
+
+            scheduledGroupRequestExecutionResultsDao.insert(pair);
+            try {
+                taskCompletionLatch.await();
+            } catch (InterruptedException e) {
+                throw new IllegalStateException("Task thread was interrupted while waiting for completion.", e);
             }
-	        // create ScheduledGroupRequestExecutionResult record
-	        ScheduledGroupRequestExecutionPair pair = new ScheduledGroupRequestExecutionPair();
-	        pair.setCommandRequestExecutionContextId(executionObjects.getContextId());
-	        pair.setJobId(getJob().getId());
-	        
-	        scheduledGroupRequestExecutionResultsDao.insert(pair);
-	        
-	        //Causes the method to block until the task completes
-	        try {
-				taskCompletionLatch.await();
-			} catch (InterruptedException e) {
-				throw new IllegalStateException("Task thread was interrupted while waiting for completion.", e);
-			}
-	        
+            
         } catch (NotFoundException e) {
         	log.error("Could not run command due to missing device group. command = " + getCommand() + ", name=" + getName() + ", groupName = " + getDeviceGroup().getFullName() + ", user = " + user.getUsername() + 
         	          ", retryCount=" + getRetryCount() + ", stopRetryAfterDate=" + getStopRetryAfterDate() + ", turnOffQueuingAfterRetryCount=" + getTurnOffQueuingAfterRetryCount() + ".", e);

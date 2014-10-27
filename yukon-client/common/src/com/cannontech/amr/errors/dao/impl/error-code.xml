@@ -798,6 +798,12 @@
             </ul>
         </troubleshooting>
     </error>
+    <error code="227">
+        <category>Yukon System</category>
+        <porter>Timeout</porter>
+        <description>Request timed out.</description>
+        <troubleshooting>Check Yukon Logs for errors.</troubleshooting>
+    </error>
     <error code="261">
         <category>Data Validation</category>
         <porter>The freeze check bit in the frozen reading does not match the last recorded freeze

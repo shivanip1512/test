@@ -25,7 +25,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
@@ -40,6 +39,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
@@ -245,14 +245,15 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 		return key;
 	}
 
-	@Override
-	public CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(DeviceCollection deviceCollection,
-			Set<? extends Attribute> attributes, DeviceRequestType type,
-			CommandCompletionCallback<CommandRequestDevice> callback, LiteYukonUser user,
-			RetryParameters retryParameters) {
-		return plcStrategy.initiateRead(deviceCollection, attributes, type, callback, user, retryParameters);
-
-	}
+    @Override
+    public CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(Set<SimpleDevice> devices,
+            Set<? extends Attribute> attributes, String command, DeviceRequestType type, LiteYukonUser user,
+            RetryParameters retryParameters, CommandCompletionCallbackAdapter<CommandRequestDevice> callback) {
+        if (log.isDebugEnabled()) {
+            log.debug("initiateRead (PLC with retries)");
+        }
+        return plcStrategy.initiateRead(devices, attributes, command, type, user, retryParameters, callback);
+    }
 
 	@Override
 	public DeviceReadResult initiateReadAndWait(YukonDevice device, Set<? extends Attribute> toRead,

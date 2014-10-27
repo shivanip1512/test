@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandCompletionRetryCallback;
 import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
@@ -26,77 +25,39 @@ public class CommandRequestRetryExecutor<T> {
     private Date stopRetryAfterDate = null;
     private Integer turnOffQueuingAfterRetryCount = null;
     private boolean cancelPending = false;
+    private final CommandRequestExecutionObjects<T> executionObjects;
+    private final CommandRequestExecutionTemplate<T> template;
     
     private final Logger log = YukonLogManager.getLogger(CommandRequestRetryExecutor.class);
     
-    // CONSTRUCTORS
     public CommandRequestRetryExecutor(CommandRequestExecutor<T> commandRequestExecutor,
-                                       RetryParameters retryParameters) {
+                                       RetryParameters retryParameters, CommandCompletionCallback<? super T> callback,
+                                       CommandRequestExecution execution, LiteYukonUser user) {
         
         this.commandRequestExecutor = commandRequestExecutor;
         this.retryCount = retryParameters.getRetryCount();
         this.stopRetryAfterDate = retryParameters.getStopRetryAfterDate();
         this.turnOffQueuingAfterRetryCount = retryParameters.getTurnOffQueuingAfterRetryCount();
-    }
-    
-    public CommandRequestRetryExecutor(CommandRequestExecutor<T> commandRequestExecutor, int retryCount) {
-        
-        this.commandRequestExecutor = commandRequestExecutor;
-        this.retryCount = retryCount;
-    }
-    
-    // EXECUTE
-    public CommandRequestExecutionObjects<T> execute(List<T> commands, 
-                                                  CommandCompletionCallback<? super T> callback,
-                                                  DeviceRequestType type,
-                                                  LiteYukonUser user) {
-        
-        CommandRequestExecutionTemplate<T> template = this.commandRequestExecutor.getExecutionTemplate(type, user);
+        template = this.commandRequestExecutor.getExecutionTemplate(execution, user);
         RetryCallback retryCallback =
-            new RetryCallback(this.commandRequestExecutor,
-                              callback,
-                              this.retryCount,
-                              this.stopRetryAfterDate,
-                              this.turnOffQueuingAfterRetryCount,
-                              template);
-
-        log.debug("Starting intial execution attempt using retry executor: contextId="
-                  + template.getContextId().getId() + " retryCount=" + retryCount + " stopRetryAfterDate="
-                  + stopRetryAfterDate + " turnOffQueuingAfterRetryCount=" + turnOffQueuingAfterRetryCount);
-        template.execute(commands, retryCallback);
-
-        CommandRequestExecutionObjects<T> executionObjects =
-            new CommandRequestExecutionObjects<T>(commandRequestExecutor, retryCallback, template.getContextId());
-        
-        return executionObjects;
+            new RetryCallback(this.commandRequestExecutor, callback, this.retryCount, this.stopRetryAfterDate,
+                this.turnOffQueuingAfterRetryCount, template);
+        executionObjects = new CommandRequestExecutionObjects<T>(commandRequestExecutor, retryCallback, execution);
     }
+
     
-    // EXECUTE
-    public CommandRequestExecutionObjects<T> execute(List<T> commands, 
-                                                  CommandCompletionCallback<? super T> callback,
-                                                  CommandRequestExecution execution,
-                                                  LiteYukonUser user) {
+    public void execute(List<T> commands) {
         
-        CommandRequestExecutionTemplate<T> template = this.commandRequestExecutor.getExecutionTemplate(execution, user);
-        RetryCallback retryCallback =
-            new RetryCallback(this.commandRequestExecutor,
-                              callback,
-                              this.retryCount,
-                              this.stopRetryAfterDate,
-                              this.turnOffQueuingAfterRetryCount,
-                              template);
-
         log.debug("Starting intial execution attempt using retry executor: contextId="
-                  + template.getContextId().getId() + " retryCount=" + retryCount + " stopRetryAfterDate="
+                  + executionObjects.getContextId() + " retryCount=" + retryCount + " stopRetryAfterDate="
                   + stopRetryAfterDate + " turnOffQueuingAfterRetryCount=" + turnOffQueuingAfterRetryCount);
-        template.execute(commands, retryCallback, execution, false);
-
-        CommandRequestExecutionObjects<T> executionObjects =
-            new CommandRequestExecutionObjects<T>(commandRequestExecutor, retryCallback, template.getContextId());
-        
-        return executionObjects;
+        template.execute(commands,  executionObjects.getCallback(), executionObjects.getExecution(), true);
     }
        
+    public CommandRequestExecutionObjects<T> getExecutionObjects() {
+        return executionObjects;
+    }
+
     // RETRY CALLBACK
     private class RetryCallback implements CommandCompletionRetryCallback<T> {
         

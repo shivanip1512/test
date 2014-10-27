@@ -356,6 +356,8 @@
     <entry key="yukon.common.setting.ECOBEE_PASSWORD.description">Password to authenticate with the ecobee service.</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL">ecobee API URL</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service.</entry>
+    <entry key="yukon.common.setting.SCHEDULED_REQUEST_MAX_RUN_HOURS">Scheduled Requests Timeout</entry>
+    <entry key="yukon.common.setting.SCHEDULED_REQUEST_MAX_RUN_HOURS.description">The maximum number of hours a scheduled request may run before automatically being cancelled.</entry>
 
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS">Admin Email Address</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS.description">Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.</entry>

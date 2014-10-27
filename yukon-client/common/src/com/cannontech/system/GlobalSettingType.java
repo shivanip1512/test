@@ -145,6 +145,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     HTTP_PROXY(GlobalSettingSubCategory.MISC, stringType(), "none"),
     CONTACT_EMAIL(GlobalSettingSubCategory.MISC, stringType(), "EAS-Support@Eaton.com"),
     CONTACT_PHONE(GlobalSettingSubCategory.MISC, stringType(), "1-800-815-2258"),
+    SCHEDULED_REQUEST_MAX_RUN_HOURS(GlobalSettingSubCategory.MISC, integerType(), 23),
 
     // Voice Server
     CALL_RESPONSE_TIMEOUT(GlobalSettingSubCategory.VOICE, integerType(), 240),

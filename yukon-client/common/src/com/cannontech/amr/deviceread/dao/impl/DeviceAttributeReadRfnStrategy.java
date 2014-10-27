@@ -25,15 +25,14 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnDeviceReadCompletionCallback;
 import com.cannontech.amr.rfn.service.RfnMeterReadService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.DeviceRequestType;
-import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionObjects;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -403,15 +402,14 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
     }
             
     @Override
-    public CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(DeviceCollection deviceCollection,
-                                                                                        Set<? extends Attribute> attributes,
-                                                                                        DeviceRequestType type,
-                                                                                        CommandCompletionCallback<CommandRequestDevice> callback,
-                                                                                        LiteYukonUser user,
-                                                                                        RetryParameters retryParameters) {
+    public CommandRequestExecutionObjects<CommandRequestDevice> initiateRead(Set<SimpleDevice> devices,
+            Set<? extends Attribute> attributes, String command, DeviceRequestType type, LiteYukonUser user,
+            RetryParameters retryParameters, CommandCompletionCallbackAdapter<CommandRequestDevice> callback) {
+        
         throw new UnsupportedOperationException(getType() + " Strategy does not support read with retries");
+        
     }
-    
+
     private SpecificDeviceErrorDescription getError(Integer errorCode) {
         DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(errorCode);
         SpecificDeviceErrorDescription deviceErrorDescription =
