@@ -63,10 +63,8 @@ yukon.dataExporter = (function () {
     },
     
     /** Submits the form.
-     * @param {Object} dialogIdentifier - id of dialog that needs to be opened.
-     * @param {string} titleMsg - Title of dialog.
-     * @param {string} okFunction - Function name that needs to be invoked on OK button click.
-     **/
+     *  @param {Object} action - action url
+     */
     _submitForm = function(action) {
         var exporterForm = $('#exporterForm');
         exporterForm.attr('action', action);
