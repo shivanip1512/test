@@ -74,18 +74,6 @@ public class AssetAvailabilityServiceTest {
         testApplianceAssetAvailabilitySummary(applianceSummary);
     }
     
-    @Test
-    public void getAssetAvailabilityFromDrGroup() {
-        PaoIdentifier drPaoIdentifier = new PaoIdentifier(107, PaoType.LM_CONTROL_AREA); //107 = area containing all inventory
-        
-        //All the data this method asserts against is set up here
-        AssetAvailabilityService assetAvailabilityService = buildServiceWithOneInEachState();
-        
-        AssetAvailabilitySummary aaSummary = assetAvailabilityService.getAssetAvailabilityFromDrGroup(drPaoIdentifier);
-        
-        testSimpleAssetAvailabilitySummary(aaSummary);
-    }
-    
     private void testApplianceAssetAvailabilitySummary(ApplianceAssetAvailabilitySummary applianceSummary) {
         //All appliances
         Set<Integer> expectedAllAppliances = Sets.newHashSet(10011, 10021, 10031, 10032, 10041, 10051, 10061, 10071, 10081);
