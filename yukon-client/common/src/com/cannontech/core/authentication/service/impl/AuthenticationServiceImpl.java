@@ -137,17 +137,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      */
     private void checkExpirationAndAuthentication(boolean isPasswordMatched, LiteYukonUser user, String username)
             throws BadAuthenticationException, PasswordExpiredException {
-        // Check to see if the user's password is expired.
-        boolean passwordExpired = isPasswordExpired(user);
         if (!isPasswordMatched) {
             // login must have failed
             log.info("Authentication failed (auth failed): username=" + username + ", id=" + user.getUserID());
             throw new BadAuthenticationException();
-        } else if (passwordExpired) {
+        } else {
             log.debug("Authentication succeeded: username=" + username);
             authenticationThrottleService.loginSucceeded(username);
-            throw new PasswordExpiredException("The user's password is expired.  Please login to the web "
-                + "interface to reset it. (" + user.getUsername() + ")");
+            // Check to see if the user's password is expired.
+            boolean passwordExpired = isPasswordExpired(user);
+            if (passwordExpired) {
+                throw new PasswordExpiredException("The user's password is expired.  Please login to the web "
+                        + "interface to reset it. (" + user.getUsername() + ")");
+            }
         }
     }
 
