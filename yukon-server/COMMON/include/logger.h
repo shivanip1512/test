@@ -38,8 +38,12 @@ class IM_EX_CTIBASE Logger : private boost::noncopyable
     struct LoggerObj; // forward declaration
     boost::scoped_ptr<LoggerObj> _logger;
 
+    typedef std::map<const char *, std::string> MethodLookup;
+     MethodLookup      _formattedMethodNames;
+    CtiCriticalSection _formattedMethodNameMux;
+
     struct LogEvent;  // forward declaration
-    boost::ptr_vector<LogEvent> _preBufferLogEvents;
+    boost::ptr_vector<LogEvent> _preBufferedLogEvents;
     CtiCriticalSection          _preBufferMux;
 
     const char * const _newline;

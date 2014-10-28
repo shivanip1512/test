@@ -7,6 +7,7 @@
 
 #include "log4cxx/logmanager.h"
 #include "log4cxx/consoleappender.h"
+#include "log4cxx/asyncappender.h"
 #include "log4cxx/helpers/loglog.h"
 #include "log4cxx/helpers/transcoder.h"
 
@@ -40,7 +41,7 @@ FileInfo::FileInfo() :
     _openRetryMillis  (1000),
     _logRetentionDays (0),
     _fileAppend       (true),
-    _bufferedIO       (false),
+    _bufferedIO       (true),
     _bufferSize       (1024 * 8)
 {}
 
@@ -177,14 +178,18 @@ void LogManager::start()
             break;
     }
 
+    log4cxx::helpers::ObjectPtrT<log4cxx::AsyncAppender> asyncAppender(new log4cxx::AsyncAppender);
+
     const log4cxx::AppenderPtr logFileAppender(new LogFileAppender(logLayout, _fileInfo));
-    baseLogger->addAppender(logFileAppender);
+    asyncAppender->addAppender(logFileAppender);
 
     if( _toStdout )
     {
         const log4cxx::AppenderPtr consoleAppender(new log4cxx::ConsoleAppender(logLayout));
-        baseLogger->addAppender(consoleAppender);
+        asyncAppender->addAppender(consoleAppender);
     }
+
+    baseLogger->addAppender(asyncAppender);
 
     _started = true;
 }

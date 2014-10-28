@@ -77,8 +77,7 @@ struct Logger::LoggerObj
 
 struct Logger::LogEvent
 {
-    std::string _methodName;
-    log4cxx::spi::LoggingEventPtr _event;
+    log4cxx::spi::LoggingEventPtr event;
 };
 
 
@@ -107,7 +106,27 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
 
     LOG4CXX_DECODE_CHAR(msg, message);
 
-    std::string methodName = preformatMethodName(func);
+    const char *methodName = 0;
+
+    {
+        CtiLockGuard<CtiCriticalSection> guard(_formattedMethodNameMux);
+
+        MethodLookup::iterator itr = _formattedMethodNames.find(func);
+
+        if( itr == _formattedMethodNames.end() )
+        {
+            itr = _formattedMethodNames.insert(make_pair(func, preformatMethodName(func))).first;
+        }
+
+        methodName = itr->second.c_str();
+    }
+
+    const log4cxx::spi::LoggingEventPtr event =
+            new log4cxx::spi::LoggingEvent(
+                    _logger->_logger->getName(),
+                    getLogLevel(level),
+                    msg,
+                    log4cxx::spi::LocationInfo(file, methodName, line));
 
     if( !_ready )
     {
@@ -117,27 +136,13 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
         {
             if( _logger->_logger->getAllAppenders().empty() )
             {
-                // no appenders are available, the logManager as not been started yet.
+                // no appenders are available, the logManager has not been started yet.
                 // save the logging event for later!
                 std::auto_ptr<LogEvent> logEvent(new LogEvent());
 
-                // move the contain of the method name
-                logEvent->_methodName.swap(methodName);
+                logEvent->event = event;
 
-                // create the logging event.
-                // contains raw all info (timestamp, location, TID, level, message, etc..)
-                //
-                // IMPORTANT:
-                // we use a temporary c_str, the logging event will be unusable if logEvent->_methodName is modified
-                logEvent->_event = new log4cxx::spi::LoggingEvent(
-                        _logger->_logger->getName(),
-                        getLogLevel(level),
-                        msg,
-                        log4cxx::spi::LocationInfo(file, logEvent->_methodName.c_str(), line));
-
-                // no appenders are available, the logManager as not been started yet.
-                // save the logging event for later!
-                _preBufferLogEvents.push_back(logEvent);
+                _preBufferedLogEvents.push_back(logEvent);
 
                 return;
             }
@@ -145,27 +150,15 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
             // the logManager as just been started!
             // log all saved event before logging our own event
             log4cxx::helpers::Pool pool;
-            for each(const LogEvent& event in _preBufferLogEvents)
+            for each(const LogEvent& event in _preBufferedLogEvents)
             {
-                _logger->_logger->callAppenders(event._event, pool);
+                _logger->_logger->callAppenders(event.event, pool);
             }
 
-            _preBufferLogEvents.clear();
+            _preBufferedLogEvents.clear();
             _ready = true;
         }
     }
-
-    // create the logging event.
-    // contains raw all info (timestamp, location, TID, level, message, etc..)
-    //
-    // IMPORTANT:
-    // we use a temporary c_str, the event will be unusable once methodName is out-of-scope
-    const log4cxx::spi::LoggingEventPtr event =
-            new log4cxx::spi::LoggingEvent(
-                _logger->_logger->getName(),
-                getLogLevel(level),
-                msg,
-                log4cxx::spi::LocationInfo(file, methodName.c_str(), line));
 
     log4cxx::helpers::Pool pool;
     _logger->_logger->callAppenders(event, pool);
