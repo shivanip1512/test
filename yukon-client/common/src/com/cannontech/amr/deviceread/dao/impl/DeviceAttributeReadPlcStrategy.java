@@ -179,12 +179,11 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             RetryParameters retryParameters, CommandCompletionCallbackAdapter<CommandRequestDevice> callback) {
 
         Set<YukonPao> unsupportedDevices = new HashSet<>();
-        List<PaoMultiPointIdentifier> supportedDevicesByAttribute = new ArrayList<>();
-        List<SimpleDevice> supportedDevicesByCommand = new ArrayList<>();
-
         List<CommandRequestDevice> commandRequests = new ArrayList<>();
+        List<SimpleDevice> allDevices = new ArrayList<>();
 
         if (attributes != null && !attributes.isEmpty()) {
+            List<PaoMultiPointIdentifier> supportedDevicesByAttribute = new ArrayList<>();
             PaoMultiPointIdentifierWithUnsupported paoPointIdentifiers =
                 attributeService.findPaoMultiPointIdentifiersForAttributesWithUnsupported(devices, attributes);
             unsupportedDevices = paoPointIdentifiers.getUnsupportedDevices();
@@ -197,7 +196,15 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
                 }
             }
             commandRequests.addAll(meterReadCommandGeneratorService.getCommandRequests(supportedDevicesByAttribute));
+            allDevices.addAll(Lists.transform(supportedDevicesByAttribute,
+                new Function<PaoMultiPointIdentifier, SimpleDevice>() {
+                    @Override
+                    public SimpleDevice apply(PaoMultiPointIdentifier device) {
+                        return new SimpleDevice(device.getPao());
+                    }
+                }));
         } else if (!StringUtils.isEmpty(command)) {
+            List<SimpleDevice> supportedDevicesByCommand = new ArrayList<>();
             for (SimpleDevice device : devices) {
                 if (device.getDeviceType().isMct()) {
                     supportedDevicesByCommand.add(device);
@@ -218,6 +225,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
                     }
 
                 }));
+            allDevices.addAll(supportedDevicesByCommand);
         } else {
             throw new UnsupportedOperationException("A command string or attribute is required to initiate read");
         }
@@ -240,20 +248,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             CommandRequestUnsupportedType.UNSUPPORTED);
 
         CommandRequestExecutionObjects<CommandRequestDevice> executionObjects = null;
-
-        List<SimpleDevice> allDevices = new ArrayList<>();
-        if (attributes != null && !attributes.isEmpty()) {
-            allDevices.addAll(Lists.transform(supportedDevicesByAttribute,
-                new Function<PaoMultiPointIdentifier, SimpleDevice>() {
-                    @Override
-                    public SimpleDevice apply(PaoMultiPointIdentifier device) {
-                        return new SimpleDevice(device.getPao());
-                    }
-                }));
-        } else if (!StringUtils.isEmpty(command)) {
-            allDevices.addAll(supportedDevicesByCommand);
-        }
-        
+       
         RetryCallback retryCallback = new RetryCallback(allDevices, execution, retryParameters.getStopRetryAfterDate(), callback);
         if (!commandRequests.isEmpty()) {
             execution.setRequestCount(commandRequests.size());
@@ -296,7 +291,8 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             if (stopRetryAfterDate != null) {
                 timeoutTime = new Instant(stopRetryAfterDate);
             } else {
-                Duration maxRunHours = Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.SCHEDULED_REQUEST_MAX_RUN_HOURS));
+                Duration maxRunHours =
+                    Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.SCHEDULED_REQUEST_MAX_RUN_HOURS));
                 timeoutTime = creationTime.plus(maxRunHours);
             }
 
