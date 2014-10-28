@@ -3,12 +3,6 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<script type="text/javascript">
-    function toggleEmailNotificaionField() {
-        yukon.ui.util.toggleEmailNotificationAddressField(
-                'input[name =\'sendEmail\']', 'input[name =\'emailAddress\']');
-    }
-</script>
 <c:forEach items="${validationErrors}" var="error">
     <div class="error stacked">${error}</div>
 </c:forEach>
@@ -25,14 +19,14 @@
                 <dt:date name="moveOutDate" value="${currentDate}"/>
             </tags:nameValue2>
 
-            <c:if test="${isSMTPConfigured}">
-                <tags:nameValue2 nameKey=".sendEmailNotification">
-                    <label><input type="checkbox" name="sendEmail" onclick="toggleEmailNotificaionField();">
+            <c:if test="${!isSmtpConfigured}">
+                <tags:nameValue2 nameKey="yukon.common.email.send">
+                    <label><input type="checkbox" name="sendEmail" data-toggle="email-address">
                         <i:inline key="yukon.web.modules.amr.moveOut.sendemailNotification" /></label>
                 </tags:nameValue2>
 
-                <tags:nameValue2 nameKey=".emailNotification">
-                    <input name="emailAddress" type="text" disabled="disabled" value="${email}">
+                <tags:nameValue2 nameKey="yukon.common.email.address">
+                    <input name="emailAddress" type="text" disabled="disabled" value="${email}" data-toggle-group="email-address">
                 </tags:nameValue2>
             </c:if>
         </tags:nameValueContainer2>

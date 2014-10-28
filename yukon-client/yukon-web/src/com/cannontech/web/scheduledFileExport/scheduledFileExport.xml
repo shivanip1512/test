@@ -124,7 +124,7 @@
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
                             <property name="field" value="sendEmail" />
-                            <property name="displayName" value="Send Email Notification" />
+                            <property name="displayName" value="Send Email" />
                             <property name="type">
                                 <bean class="com.cannontech.web.input.type.BooleanType" />
                             </property>
@@ -280,7 +280,7 @@
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
                             <property name="field" value="sendEmail" />
-                            <property name="displayName" value="Send Email Notification" />
+                            <property name="displayName" value="Send Email" />
                             <property name="type">
                                 <bean class="com.cannontech.web.input.type.BooleanType" />
                             </property>
@@ -401,7 +401,7 @@
                         </bean>
                         <bean class="com.cannontech.web.input.InputBase">
                             <property name="field" value="sendEmail"/>
-                            <property name="displayName" value="Send Email Notification"/>
+                            <property name="displayName" value="Send Email"/>
                             <property name="type">
                                 <bean class="com.cannontech.web.input.type.BooleanType"/>
                             </property>
@@ -536,7 +536,7 @@
                         </bean>
                            <bean class="com.cannontech.web.input.InputBase">
                             <property name="field" value="sendEmail"/>
-                            <property name="displayName" value="Send Email Notification"/>
+                            <property name="displayName" value="Send Email"/>
                             <property name="type">
                                 <bean class="com.cannontech.web.input.type.BooleanType"/>
                             </property>

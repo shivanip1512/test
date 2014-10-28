@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.mail.MessagingException;
 
-import com.cannontech.user.YukonUserContext;
-
 public class MockEmailService implements EmailService {
     private List<EmailMessage> sentMessages = new ArrayList<EmailMessage>();
     
@@ -19,13 +17,4 @@ public class MockEmailService implements EmailService {
         sentMessages.add(message);
     }
 
-    @Override
-    public String getUserEmail(YukonUserContext userContext) {
-        return null;
-    }
-
-    @Override
-    public boolean isSmtpConfigured() {
-        return false;
-    }
 }

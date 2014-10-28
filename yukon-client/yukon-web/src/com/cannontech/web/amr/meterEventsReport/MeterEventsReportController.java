@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -54,6 +55,7 @@ import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -69,7 +71,8 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.tools.email.EmailService;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meterEventsReport.model.MeterEventsFilter;
 import com.cannontech.web.amr.meterEventsReport.model.ScheduledFileExport;
@@ -96,11 +99,13 @@ import com.google.common.collect.Sets;
 @CheckRoleProperty(YukonRoleProperty.METER_EVENTS)
 public class MeterEventsReportController {
     
+    @Autowired private ContactDao contactDao;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DeviceCollectionService collectionService;
     @Autowired private DeviceGroupCollectionHelper collectionHelper;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private JobManager jobManager;
     @Autowired private MeterEventLookupService meterEventLookupService;
     @Autowired private ObjectFormattingService objectFormatingService;
@@ -109,7 +114,6 @@ public class MeterEventsReportController {
     @Autowired private ScheduledFileExportService exportService;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private EmailService emailService;
     
     private ScheduledFileExportValidator exportValidator = 
             new ScheduledFileExportValidator(MeterEventsReportController.class);
@@ -161,7 +165,7 @@ public class MeterEventsReportController {
             exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
             exportData.setSendEmail(task.isSendEmail());
         } else {
-            exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
+            exportData.setNotificationEmailAddresses(contactDao.getUserEmail(userContext.getYukonUser()));
         }
         CronExpressionTagState cronExpressionTagState = 
                 cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
@@ -201,7 +205,9 @@ public class MeterEventsReportController {
         model.addAttribute("fromInstant", fromInstant);
         model.addAttribute("toInstant", toInstant);
         model.addAttribute("jobId", jobId);
-        model.addAttribute("isSMTPConfigured",emailService.isSmtpConfigured());
+        boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
+        model.addAttribute("isSmtpConfigured", isSmtpConfigured);
+       
     }
     
     private void setupNewHomeModelMap(ModelMap model, DeviceCollection collection, YukonUserContext userContext) {
@@ -348,13 +354,14 @@ public class MeterEventsReportController {
     public String scheduledMeterEventsDialog(HttpServletRequest request, ModelMap model, DeviceCollection collection) {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request); 
         ScheduledFileExportData exportData = new ScheduledFileExportData();
-        exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
+        exportData.setNotificationEmailAddresses(contactDao.getUserEmail(userContext.getYukonUser()));
         model.addAttribute("exportData", exportData);
         model.addAttribute("cronExpressionTagState", new CronExpressionTagState());
         model.addAttribute("deviceCollection", collection);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
         model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
-        model.addAttribute("isSMTPConfigured",emailService.isSmtpConfigured());
+        boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
+        model.addAttribute("isSmtpConfigured", isSmtpConfigured);
         return "meterEventsReport/scheduledMeterEventsDialog.jsp";
     }
 

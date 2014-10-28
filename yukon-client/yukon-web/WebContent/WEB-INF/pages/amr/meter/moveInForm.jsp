@@ -7,13 +7,6 @@
     <div class="error" style>${error}</div>
 </c:forEach>
 
-<script type="text/javascript">
-    function toggleEmailNotificaionField() {
-        yukon.ui.util.toggleEmailNotificationAddressField(
-                'input[name =\'sendEmail\']', 'input[name =\'emailAddress\']');
-    }
-</script>
-
 <form action="<cti:url value="/meter/moveInRequest?deviceId=${meter.deviceId}"/>" id="moveInForm" method="post">
     <cti:csrfToken/>
     <tags:boxContainer2 nameKey="moveInForm" hideEnabled="false">
@@ -30,14 +23,14 @@
                 <dt:date name="moveInDate" value="${currentDate}" />
             </tags:nameValue2>
             
-            <c:if test="${isSMTPConfigured}">
-                <tags:nameValue2 nameKey=".sendEmailNotification">
-                    <label><input type="checkbox" name="sendEmail" onclick="toggleEmailNotificaionField();">
+            <c:if test="${!isSmtpConfigured}">
+                <tags:nameValue2 nameKey="yukon.common.email.send">
+                    <label><input type="checkbox" name="sendEmail" data-toggle="email-address">
                         <i:inline key="yukon.web.modules.amr.moveIn.sendEmailNotification" /></label>
                 </tags:nameValue2>
     
-                <tags:nameValue2 nameKey=".emailNotification">
-                    <input name="emailAddress" type="text" disabled="disabled" value="${email}" />
+                <tags:nameValue2 nameKey="yukon.common.email.address">
+                    <input name="emailAddress" type="text" disabled="disabled" value="${email}" data-toggle-group="email-address"/>
                 </tags:nameValue2>
             </c:if>
         </tags:nameValueContainer2>

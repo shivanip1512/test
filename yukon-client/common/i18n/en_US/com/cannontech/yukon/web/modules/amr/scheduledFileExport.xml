@@ -20,9 +20,7 @@
     <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.exportFileName">Export File Name</entry>
     <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.appendDateToFileName">Append Date to File Name</entry>
     <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.scheduleCronString">Schedule</entry>
-    <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.notificationEmailAddresses">Notification Email Addresses</entry>
-    <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.sendEmailNotification">Send Email Notification</entry>
-
+    
     <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.appendTimestampToFileName">Append Timestamp to File Name</entry>
     <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.includeExportCopy">Include Exported File Copy</entry>
     <entry key="yukon.web.modules.tools.scheduledFileExport.inputs.timestampPatternField">Timestamp Pattern</entry>

@@ -11,6 +11,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -34,13 +35,15 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.scheduledFileExport.BillingFileExportGenerationParameters;
 import com.cannontech.common.scheduledFileExport.ScheduledExportType;
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
-import com.cannontech.tools.email.EmailService;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
@@ -56,9 +59,10 @@ import com.google.common.collect.Maps;
 @CheckRole(YukonRole.APPLICATION_BILLING)
 public class ScheduledBillingFileExportController {
 
+    @Autowired private ContactDao contactDao;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private DeviceGroupService deviceGroupService;
-    @Autowired private EmailService emailService;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
     @Autowired private ScheduledFileExportHelper exportHelper;
@@ -103,12 +107,12 @@ public class ScheduledBillingFileExportController {
                 exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
                 exportData.setSendEmail(task.isSendEmail());
             } else {
-                exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
+                exportData.setNotificationEmailAddresses(contactDao.getUserEmail(userContext.getYukonUser()));
             }
             cronExpressionTagState = cronExpressionTagService.parse(job.getCronString(), job.getUserContext());
             model.addAttribute("jobId", jobId);
         } else {
-            exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
+            exportData.setNotificationEmailAddresses(contactDao.getUserEmail(userContext.getYukonUser()));
         }
 
         model.addAttribute("exportData", exportData);
@@ -126,7 +130,8 @@ public class ScheduledBillingFileExportController {
 
         String formatName = FileFormatTypes.getFormatType(fileFormat);
         model.addAttribute("formatName", formatName);
-        model.addAttribute("isSMTPConfigured",emailService.isSmtpConfigured());
+        boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
+        model.addAttribute("isSmtpConfigured", isSmtpConfigured);
         
         return "_schedule.jsp";
     }

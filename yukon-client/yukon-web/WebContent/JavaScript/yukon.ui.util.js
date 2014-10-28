@@ -435,21 +435,7 @@ yukon.ui.util = (function () {
             compositeRgb = hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
             compositeRgb = compositeRgb.toLowerCase();
             return '#' + compositeRgb;
-        },
-        
-        /** 
-         * This method toggles between enabling and disabling the email notifcation address filed
-         * @param {Object} checkBoxId - Instance of the checkbox selected.
-         * @param {Object} changeItemId - Instance of the email notification address input field.
-         */
-        toggleEmailNotificationAddressField : function (checkBoxId,changeItemId) {
-            if ($(checkBoxId).is(":checked")) {
-                $(changeItemId).prop('disabled', false);
-            } else {
-                $(changeItemId).prop('disabled', true);
-            }
         }
-        
     };
     
     return mod;
@@ -481,10 +467,14 @@ yukon.tag.scheduledFileExportInputs = (function () {
         }
     },
     
-    _toggleEmailNotificationAddressField = function(){
-        yukon.ui.util.toggleEmailNotificationAddressField("#sendEmail", "#emailNotificationAddress");
+     _toggleEmailNotificationAddressField = function(){
+        if ($("#sendEmail").is(":checked")) {
+            $("#emailNotificationAddress").prop('disabled', false);
+        } else {
+            $("#emailNotificationAddress").prop('disabled', true);
+        }
     },
-
+    
     _toggleTimestampPatternField = function() {
         _toggleField("#appendDateToFileName", "#timestampPatternField");
     },

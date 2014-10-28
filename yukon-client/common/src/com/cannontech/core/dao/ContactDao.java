@@ -158,5 +158,12 @@ public interface ContactDao {
     public int getAllContactCount();
     
     public void callbackWithAllContacts(SimpleCallback<LiteContact> simpleCallback);
+    
+    /**
+     * Get the default email address of the logged in user. 
+     * @param userContext - Logged in user. 
+     * @return email address - Logged in users email address.
+     */
+    String getUserEmail(LiteYukonUser  user);
 
 }

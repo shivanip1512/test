@@ -7,12 +7,6 @@
 
 <cti:standardPage module="tools" page="bulk.sendCommand">
 
-<script type="text/javascript">
-    function toggleEmailNotificaionField() {
-        yukon.ui.util.toggleEmailNotificationAddressField(
-                'input[name =\'sendEmail\']', 'input[name =\'emailAddress\']');
-    }
-</script>
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.sendCommand" deviceCollection="${deviceCollection}">
   
     <%-- ERROR MSG --%>
@@ -33,16 +27,16 @@
             <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
                 selectedCommandString="${param.commandString}" selectedSelectValue="${param.commandSelectValue}"/>
             <br><br>
-            <c:if test="${isSMTPConfigured}">            
-            	<cti:msg var="sendEmailAddressLabel" key="yukon.common.device.commander.sendEmailNotification"/>
-	            <div>${sendEmailAddressLabel}
-                	<input type="checkbox" name="sendEmail" onclick="toggleEmailNotificaionField();">
+            <c:if test="${!isSmtpConfigured}">            
+            	<cti:msg var="sendEmailAddressLabel" key="yukon.common.email.send"/>
+	            <div>${sendEmailAddressLabel} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 
+                	<input type="checkbox" name="sendEmail" data-toggle="email-address">
 	            </div>
     	        <br>          
         	    <%-- EMAIL --%>
-            	<cti:msg var="emailAddressLabel" key="yukon.common.device.commander.emailNotificationAddr"/>
+            	<cti:msg var="emailAddressLabel" key="yukon.common.email.address"/>
 	            <div>${emailAddressLabel} :
-    	        	<input type="text" name="emailAddress" value="${email}" size="40" disabled="disabled">
+    	        	<input type="text" name="emailAddress" value="${email}" size="40" disabled="disabled" data-toggle-group="email-address">
     	        </div>
 	            <br><br>
 			</c:if>

@@ -36,12 +36,6 @@ function validateGroupIsSelected(btn, alertText) {
     yukon.ui.busy('.js-group-commander');
     $('#groupCommanderForm').submit();
 }
-
-function toggleEmailNotificaionField() {
-
-    yukon.ui.util.toggleEmailNotificationAddressField(
-            'input[name =\'sendEmail\']', 'input[name =\'emailAddress\']');
-}
 </script>
 
 <%-- ERROR MSG --%>
@@ -79,17 +73,17 @@ function toggleEmailNotificaionField() {
         selectedCommandString="${param.commandString}" selectedSelectValue="${param.commandSelectValue}"/>
 
     <br><br>
-      <c:if test="${isSMTPConfigured}">
-        <cti:msg var="sendEmailAddressLabel" key="yukon.common.device.commander.sendEmailNotification" />
+      <c:if test="${!isSmtpConfigured}">
+        <cti:msg var="sendEmailAddressLabel" key="yukon.common.email.send" />
         <div>
-            ${sendEmailAddressLabel} <input type="checkbox" name="sendEmail" onclick="toggleEmailNotificaionField();">
+            ${sendEmailAddressLabel} &nbsp;&nbsp;&nbsp; : <input type="checkbox" name="sendEmail" data-toggle="email-address">
         </div>
         <br>
         
         <%-- EMAIL --%>
         <div class="stacked">
             <div>
-                <i:inline key="yukon.web.deviceGroups.commander.emailLabel" />  <input type="text" name="emailAddress"  size="40" disabled="disabled" value="${email}">
+                <i:inline key="yukon.common.email.address" /> : <input type="text" name="emailAddress"  size="40" disabled="disabled" value="${email}" data-toggle-group="email-address">
             </div>
            
         </div>

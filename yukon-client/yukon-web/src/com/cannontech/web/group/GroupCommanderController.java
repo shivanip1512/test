@@ -52,16 +52,17 @@ import com.cannontech.common.util.ResultResultExpiredException;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.SimpleReportOutputter;
 import com.cannontech.simplereport.SimpleYukonReportDefinition;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailAttachmentMessage;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
@@ -77,10 +78,12 @@ public class GroupCommanderController {
     private Logger log = YukonLogManager.getLogger(GroupCommanderController.class);
 
     @Autowired private CommandDao commandDao;
+    @Autowired private ContactDao contactDao;
     @Autowired private AlertService alertService;
     @Autowired private EmailService emailService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private GroupCommandExecutor groupCommandExecutor;
     @Autowired private SimpleReportOutputter simpleReportOutputter;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
@@ -116,28 +119,26 @@ public class GroupCommanderController {
     }
 
     @RequestMapping("collectionProcessing")
-    public void collectionProcessing(HttpServletRequest request, DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model)
-    throws ServletException {
-        
-        List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, user);
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        model.addAttribute("commands", commands);
-        
-        model.addAttribute("deviceCollection", deviceCollection);
-        model.addAttribute("email", emailService.getUserEmail(userContext));
-        model.addAttribute("isSMTPConfigured", emailService.isSmtpConfigured());
-        
-    }
-    
-    @RequestMapping("groupProcessing")
-    public void groupProcessing(HttpServletRequest request, LiteYukonUser user, ModelMap model)
+    public void collectionProcessing(DeviceCollection deviceCollection, YukonUserContext userContext, ModelMap model)
             throws ServletException {
 
-        List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, user);
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, userContext.getYukonUser());
         model.addAttribute("commands", commands);
-        model.addAttribute("email", emailService.getUserEmail(userContext));
-        model.addAttribute("isSMTPConfigured",emailService.isSmtpConfigured());
+        model.addAttribute("deviceCollection", deviceCollection);
+        model.addAttribute("email", contactDao.getUserEmail(userContext.getYukonUser()));
+        boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
+        model.addAttribute("isSmtpConfigured", isSmtpConfigured);
+
+    }
+
+    @RequestMapping("groupProcessing")
+    public void groupProcessing(YukonUserContext userContext, ModelMap model) throws ServletException {
+
+        List<LiteCommand> commands = commandDao.filterCommandsForUser(meterCommands, userContext.getYukonUser());
+        model.addAttribute("commands", commands);
+        model.addAttribute("email", contactDao.getUserEmail(userContext.getYukonUser()));
+        boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
+        model.addAttribute("isSmtpConfigured", isSmtpConfigured);
     }
     
     @RequestMapping(value="executeGroupCommand", method=RequestMethod.POST)

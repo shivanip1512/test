@@ -82,12 +82,12 @@
         <tags:cronExpressionData id="scheduleCronString" state="${cronExpressionTagState}" allowTypeChange="false" />
     </tags:nameValue2>
 
-    <c:if test="${isSMTPConfigured}">
-        <tags:nameValue2 nameKey=".sendEmailNotification" excludeColon="true">
+    <c:if test="${!isSmtpConfigured}">
+        <tags:nameValue2 nameKey="yukon.common.email.send">
             <form:checkbox path="sendEmail" id="sendEmail"/>
         </tags:nameValue2>
     
-        <tags:nameValue2 nameKey=".notificationEmailAddresses">
+        <tags:nameValue2 nameKey="yukon.common.email.address">
             <tags:input id="emailNotificationAddress" path="notificationEmailAddresses" disabled="true"/>
         </tags:nameValue2>
     </c:if>

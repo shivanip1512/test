@@ -645,5 +645,19 @@ public final class ContactDaoImpl implements ContactDao {
         }
         return sql;
     }
+    
+    @Override
+    public String getUserEmail(LiteYukonUser user) {
+        LiteContact contact = yukonUserDao.getLiteContact(user.getUserID());
+        String email = "";
+        if (contact != null) {
+            String[] allEmailAddresses = getAllEmailAddresses(contact.getContactID());
+            if (allEmailAddresses.length > 0) {
+                email = allEmailAddresses[0];
+            }
+        }
+        return email;
+    }
+
 
 }

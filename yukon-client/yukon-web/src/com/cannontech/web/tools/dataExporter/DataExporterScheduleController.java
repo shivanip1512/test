@@ -7,6 +7,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
@@ -44,7 +46,8 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.tools.email.EmailService;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
@@ -68,12 +71,13 @@ public class DataExporterScheduleController {
     
     @Autowired private ArchiveValuesExportFormatDao archiveValuesExportFormatDao;
     @Autowired private AttributeService attributeService;
+    @Autowired private ContactDao contactDao;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DataRangeValidator dataRangeValidator;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private DeviceCollectionService deviceCollectionService;
-    @Autowired private EmailService emailService;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
@@ -119,7 +123,7 @@ public class DataExporterScheduleController {
                 exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
                 exportData.setSendEmail(task.isSendEmail());
             } else {
-                exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
+                exportData.setNotificationEmailAddresses(contactDao.getUserEmail(userContext.getYukonUser()));
             }
         } else {
             //create new schedule
@@ -142,7 +146,7 @@ public class DataExporterScheduleController {
             dataRange = archivedValuesExporter.getScheduleDataRange();
             exportData = new ScheduledFileExportData();
             cronTagState = new CronExpressionTagState();
-            exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
+            exportData.setNotificationEmailAddresses(contactDao.getUserEmail(userContext.getYukonUser()));
         }
 
         model.addAttribute("exportFormat", format);
@@ -153,7 +157,8 @@ public class DataExporterScheduleController {
         model.addAttribute("cronExpressionTagState", cronTagState);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
         model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
-        model.addAttribute("isSMTPConfigured",emailService.isSmtpConfigured());
+        boolean isSmtpConfigured = StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
+        model.addAttribute("isSmtpConfigured", isSmtpConfigured);
        
         return "data-exporter/schedule.jsp";
     }

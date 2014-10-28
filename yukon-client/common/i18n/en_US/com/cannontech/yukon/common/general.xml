@@ -59,6 +59,8 @@
 <entry key="yukon.common.distance.MILES">mi.</entry>
 <entry key="yukon.common.distance.NAUTICAL_MILES">n.m.</entry>
 <entry key="yukon.common.email">Email</entry>
+<entry key="yukon.common.email.address">Email Address</entry>
+<entry key="yukon.common.email.send">Send Email</entry>
 <entry key="yukon.common.enable">Enable</entry>
 <entry key="yukon.common.enabled">Enabled</entry>
 <entry key="yukon.common.expandAll">Expand All</entry>

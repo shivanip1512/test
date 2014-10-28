@@ -61,6 +61,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -76,10 +77,8 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakCustomerInfoService;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
@@ -113,6 +112,7 @@ import com.google.common.collect.Sets;
 @RequestMapping("/waterLeakReport/*")
 public class WaterLeakReportController {
     
+    @Autowired private ContactDao contactDao;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
@@ -134,7 +134,6 @@ public class WaterLeakReportController {
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private DeviceCollectionService deviceCollectionService;
-    @Autowired private EmailService emailService;
     
     private ScheduledFileExportValidator scheduledFileExportValidator;
     private final static String baseKey = "yukon.web.modules.amr.waterLeakReport.report";
@@ -239,10 +238,9 @@ public class WaterLeakReportController {
     
     /** Get schedule popup */
     @RequestMapping(value="schedule", method = RequestMethod.GET)
-    public String schedule(HttpServletRequest request, ModelMap model, Integer jobId) {
+    public String schedule(YukonUserContext userContext, ModelMap model, Integer jobId) {
         CronExpressionTagState cronTagState = new CronExpressionTagState();
         ScheduledFileExportData exportData = new ScheduledFileExportData();
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         if (jobId != null) {
             // populate schedule from job data
@@ -268,17 +266,18 @@ public class WaterLeakReportController {
                 exportData.setNotificationEmailAddresses(task.getNotificationEmailAddresses());
                 exportData.setSendEmail(task.isSendEmail());
             } else {
-                exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
+                exportData.setNotificationEmailAddresses(contactDao.getUserEmail(userContext.getYukonUser()));
             }
         } else {
-            exportData.setNotificationEmailAddresses(emailService.getUserEmail(userContext));
+            exportData.setNotificationEmailAddresses(contactDao.getUserEmail(userContext.getYukonUser()));
         }
         
         model.addAttribute("cronExpressionTagState", cronTagState);
         model.addAttribute("fileExportData", exportData);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
         model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
-        model.addAttribute("isSMTPConfigured",emailService.isSmtpConfigured());
+        boolean isSmtpConfigured = org.apache.commons.lang3.StringUtils.isBlank(globalSettingDao.getString(GlobalSettingType.SMTP_HOST));
+        model.addAttribute("isSmtpConfigured", isSmtpConfigured);
         
         return "waterLeakReport/schedule.jsp";
     }
