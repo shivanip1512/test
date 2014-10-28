@@ -459,9 +459,9 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     public synchronized int getParentAreaId(int childId) throws NotFoundException {
         int id;
         SubStation station;
-        
+        /*The Parent ID of Area is always Zero(Area is always an orphan)*/
         if (isArea(childId)) {
-            return childId;
+            return getArea(childId).getParentID();
         } else if (isSubstation(childId)) {
             station = getSubstation(childId);
         } else if (isSubBus(childId)) {
@@ -674,6 +674,8 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
             handleDeleteArea (id);
         } else if (isSpecialArea(id)) {
             handleDeleteSpecialArea(id);
+        } else if(isSubstation(id)){
+            handleDeletedSubstation(id);
         }
     }
     
