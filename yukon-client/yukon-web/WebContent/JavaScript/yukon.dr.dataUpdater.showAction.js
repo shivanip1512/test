@@ -20,21 +20,10 @@ yukon.dr.dataUpdater.showAction = (function () {
         }
         return menu;
     },
-    // Updates and returns a control area 'menu' for enableDisable actions
-    _updateMenuForEnableDisableActions = function (menu,controlAreaState) {
-    	menu['enable-control-area'].state = 'off';
-        menu['enable-control-area'].title = controlAreaState.noEnableDisableMsg;
-        menu['disable-control-area'].state = 'off';
-        menu['disable-control-area'].title = controlAreaState.noEnableDisableMsg;
-        menu['enable-programs'].state = 'off';
-        menu['enable-programs'].title = controlAreaState.noEnableDisableMsg;
-        menu['disable-programs'].state = 'off';
-        menu['disable-programs'].title = controlAreaState.noEnableDisableMsg;
-        return menu;
-    }, 
+
     mod = {
         // handles enabling and disabling control area menu items
-        updateControlAreaMenu: function (paoId,isGearChangeEnabled,enableDisableProgramsAllowed) {
+        updateControlAreaMenu: function (paoId, isGearChangeEnabled, enableDisableProgramsAllowed) {
             return function(data) {
                 var controlAreaState = JSON.parse(data.state);
                 var menu = _getDefaultMenuForActions(['start', 'stop', 'change-triggers',
@@ -53,15 +42,22 @@ yukon.dr.dataUpdater.showAction = (function () {
                     }
                 } else {
                     // if the control area is partially active we leave both 'start' and 'stop' actions enabled
+                	if (!isGearChangeEnabled) {
+                		menu['change-gears'].state = 'off';
+                        menu['change-gears'].title = controlAreaState.noChangeGearsMsg;
+                      
+                	}
+                	if (!enableDisableProgramsAllowed) {
+                		menu['enable-control-area'].state = 'off';
+                        menu['enable-control-area'].title = controlAreaState.noEnableDisableMsg;
+                        menu['disable-control-area'].state = 'off';
+                        menu['disable-control-area'].title = controlAreaState.noEnableDisableMsg;
+                        menu['enable-programs'].state = 'off';
+                        menu['enable-programs'].title = controlAreaState.noEnableDisableMsg;
+                        menu['disable-programs'].state = 'off';
+                        menu['disable-programs'].title = controlAreaState.noEnableDisableMsg;
+                	}  
                     if (controlAreaState.fullyActive) {
-                    	if (!isGearChangeEnabled) {
-                    		menu['change-gears'].state = 'off';
-                            menu['change-gears'].title = controlAreaState.noChangeGearsMsg;
-                          
-                    	}
-                    	if (!enableDisableProgramsAllowed) {
-                    		menu=_updateMenuForEnableDisableActions(menu,controlAreaState);
-                    	}   
                         menu['start'].state = 'off';
                         menu['start'].title = controlAreaState.fullyActiveMsg;
                     } else if(controlAreaState.inactive) {
@@ -69,22 +65,6 @@ yukon.dr.dataUpdater.showAction = (function () {
                         menu['stop'].title = controlAreaState.inactiveMsg;
                         menu['change-gears'].state = 'off';
                         menu['change-gears'].title = controlAreaState.inactiveMsg;
-                        if (!isGearChangeEnabled) {
-                    		menu['change-gears'].state = 'off';
-                            menu['change-gears'].title = controlAreaState.noChangeGearsMsg;
-                          
-                    	}
-                        if (!enableDisableProgramsAllowed) {
-                        	menu=_updateMenuForEnableDisableActions(menu,controlAreaState);
-                    	}   
-                    } else {
-                    	if (!isGearChangeEnabled) {
-                    		menu['change-gears'].state = 'off';
-                            menu['change-gears'].title = controlAreaState.noChangeGearsMsg;
-                    	}
-                    	if (!enableDisableProgramsAllowed) {
-                    		menu=_updateMenuForEnableDisableActions(menu,controlAreaState);
-                    	}   
                     }
                     if (controlAreaState.disabled) {
                         menu['disable-control-area'].state = 'disable-off';
@@ -98,7 +78,7 @@ yukon.dr.dataUpdater.showAction = (function () {
         },
 
         // DONE
-         updateProgramMenu: function (paoId,isGearChangeEnabled,enableDisableProgramsAllowed) {
+         updateProgramMenu: function (paoId, isGearChangeEnabled, enableDisableProgramsAllowed) {
             return function(data) {
                 var programState = JSON.parse(data.state);
                 
