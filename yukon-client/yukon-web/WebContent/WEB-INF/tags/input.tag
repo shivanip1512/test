@@ -6,6 +6,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
+<%@ attribute name="toggleGroup" description="Used to setup a toggle group driven by a checkbox." %>
 <%@ attribute name="autocomplete" type="java.lang.Boolean"%>
 <%@ attribute name="disabled" %>
 <%@ attribute name="id" %>
@@ -36,20 +37,34 @@
 
 <c:choose>
     <c:when test="${password}">
-        <form:password path="${path}" id="${pageScope.id}" disabled="${pageScope.disabled}" 
-            readonly="${pageScope.readonly}" size="${pageScope.size}" 
-            maxlength="${pageScope.maxlength}" autocomplete="${pageScope.autocomplete}" 
-            cssClass="${pageScope.inputClass}" onkeyup="${pageScope.onkeyup}" 
-            onchange="${pageScope.onchange}" onblur="${pageScope.onblur}"
-            tabindex="${pageScope.tabindex}"/>
+        <form:password path="${path}"
+            id="${pageScope.id}"
+            disabled="${pageScope.disabled}" 
+            readonly="${pageScope.readonly}"
+            size="${pageScope.size}" 
+            maxlength="${pageScope.maxlength}"
+            autocomplete="${pageScope.autocomplete}" 
+            cssClass="${pageScope.inputClass}"
+            onkeyup="${pageScope.onkeyup}" 
+            onchange="${pageScope.onchange}"
+            onblur="${pageScope.onblur}"
+            tabindex="${pageScope.tabindex}"
+            data-toggle-group="${pageScope.toggleGroup}"/>
     </c:when>
     <c:otherwise>
-        <form:input path="${path}" id="${pageScope.id}" disabled="${pageScope.disabled}" 
-            readonly="${pageScope.readonly}" size="${pageScope.size}" 
-            maxlength="${pageScope.maxlength}" autocomplete="${pageScope.autocomplete}" 
-            cssClass="${pageScope.inputClass}" onkeyup="${pageScope.onkeyup}" 
-            onchange="${pageScope.onchange}" onblur="${pageScope.onblur}"
-            tabindex="${pageScope.tabindex}"/>
+        <form:input path="${path}"
+            id="${pageScope.id}"
+            disabled="${pageScope.disabled}" 
+            readonly="${pageScope.readonly}"
+            size="${pageScope.size}" 
+            maxlength="${pageScope.maxlength}"
+            autocomplete="${pageScope.autocomplete}" 
+            cssClass="${pageScope.inputClass}"
+            onkeyup="${pageScope.onkeyup}" 
+            onchange="${pageScope.onchange}"
+            onblur="${pageScope.onblur}"
+            tabindex="${pageScope.tabindex}"
+            data-toggle-group="${pageScope.toggleGroup}"/>
     </c:otherwise>
 </c:choose>
 
