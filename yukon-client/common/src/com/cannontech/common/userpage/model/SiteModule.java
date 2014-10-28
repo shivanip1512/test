@@ -11,6 +11,7 @@ import com.google.common.collect.ImmutableMap.Builder;
  * here...just ones with searchable pages and ones that are in the site map.
  */
 public enum SiteModule implements DatabaseRepresentationSource {
+    
     AMI("amr", SiteMapCategory.AMI),
     DEV("dev", SiteMapCategory.DEVELOPMENT),
     DR("dr", SiteMapCategory.DR),
@@ -20,6 +21,8 @@ public enum SiteModule implements DatabaseRepresentationSource {
     ADMIN("adminSetup", SiteMapCategory.ADMIN),
     SUPPORT("support", SiteMapCategory.SUPPORT),
     USER("user", SiteMapCategory.ADMIN),
+    CCURT("commercialcurtailment", SiteMapCategory.CCURT),
+    CCURT_USER("commercialcurtailment_user", SiteMapCategory.CCURT),
     ;
 
     private final String name;

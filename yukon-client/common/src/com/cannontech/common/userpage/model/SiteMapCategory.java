@@ -18,6 +18,7 @@ public enum SiteMapCategory implements DisplayableEnum {
     ADMIN,
     SUPPORT,
     DEVELOPMENT,
+    CCURT,
     ;
 
     @Override

@@ -123,7 +123,7 @@
             </bean>
         </constructor-arg>
     </bean>
-    
+
     <bean class="com.cannontech.common.util.ExecutorDelegate">
         <qualifier value="gatewayCache"/>
         <constructor-arg>
@@ -227,6 +227,8 @@
                 <value>classpath:com/cannontech/yukon/web/modules/amr/billing</value>
                 <value>classpath:com/cannontech/yukon/web/modules/dev/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/dr/demandResponse</value>
+                <value>classpath:com/cannontech/yukon/web/modules/commercialcurtailment/root</value>
+                <value>classpath:com/cannontech/yukon/web/modules/commercialcurtailment_user/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/capcontrol/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/capcontrol/ivvc</value>
                 <value>classpath:com/cannontech/yukon/web/modules/stars/survey</value>

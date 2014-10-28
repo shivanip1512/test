@@ -685,7 +685,7 @@
     <navigation-rule>
         <navigation-case>
             <from-outcome>programSelect</from-outcome>
-            <to-view-id>/cc/programSelect.jsp</to-view-id>
+            <to-view-id>/cc/ciSetup.jsp</to-view-id>
             <redirect/>
         </navigation-case>
     </navigation-rule>

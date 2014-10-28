@@ -416,7 +416,7 @@
           </page>
         </pages>
       </page>
-      <page name="commander.select" type="BASIC">
+      <page name="commander.select" type="BASIC" >
         <link>/commander/select</link>
         <pages>
           <page name="commander.command" type="DETAIL_CHILD">
@@ -462,6 +462,44 @@
     <skin name="STANDARD" />
     <search bean="drSearchProducer" />
     <pages>
+      <page name="cc.home" type="BASIC">
+        <pages>
+            <page name="cc.init" type="BASIC">
+                <link>/dr/cc/init</link>
+            </page>
+            <page name="cc.history" type="BASIC">
+                <link>/dr/cc/history</link>
+                <pages>
+                    <page name="cc.detail" type="BASIC"></page>
+                </pages>
+            </page>
+            <page name="cc.programList" type="BASIC">
+                <link>/dr/cc/programList</link>
+                <pages>
+                    <page name="cc.programDetail" type="BASIC"></page>
+                    <page name="cc.programCreate" type="BASIC">
+                        <pages>
+                            <page name="cc.programDetail" type="BASIC"></page>
+                        </pages>
+                    </page>
+                </pages>
+                
+            </page>
+            <page name="cc.groupList" type="BASIC">
+                <link>/dr/cc/groupList</link>
+                <pages>
+                    <page name="cc.groupDetail" type="BASIC"></page>
+                </pages>
+            </page>
+            <page name="cc.customerList" type="BASIC">
+                <link>/dr/cc/customerList</link>
+                <pages>
+                    <page name="cc.customerDetail" type="BASIC"></page>
+                </pages>
+                
+            </page>
+        </pages>
+      </page>
       <page name="home" type="BASIC">
         <link>/dr/home</link>
         <pages>
@@ -622,12 +660,19 @@
     <skin name="STANDARD" />
     <css file="/cc/base.css" />
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css" />
+    <pages>
+        <page name="home" type="BASIC">
+        </page>
+    </pages>
   </module>
 
   <module name="commercialcurtailment_user">
     <skin name="STANDARD" />
     <css file="/cc/base.css" />
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css" />
+    <pages>
+      <page name="programEvents" type="BASIC"/>
+    </pages>
   </module>
 
   <module name="reporting">

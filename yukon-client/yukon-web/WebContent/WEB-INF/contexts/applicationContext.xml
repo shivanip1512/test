@@ -1822,4 +1822,43 @@
     
     <bean class="com.cannontech.web.stars.gateway.GatewayControllerHelper"/>
     
+    <bean class="com.cannontech.web.cc.EventListBean"/>
+    <bean id="detailNotificationBean" class="com.cannontech.web.cc.methods.DetailNotificationBean">
+    </bean>
+    <bean id="detailAccountingBean" class="com.cannontech.web.cc.methods.DetailAccountingBean">
+    </bean>
+    <bean id="detailEconomicBean" class="com.cannontech.web.cc.methods.DetailEconomicBean">
+    </bean>
+    <bean id="userDetailEconomicBean" class="com.cannontech.web.cc.methods.UserDetailEconomicBean">
+    </bean>
+    <bean class="com.cannontech.web.cc.EventDetailHelper">
+        <property name="eventDetailLookup">
+            <map>
+                <entry key="notification">
+                    <ref bean="detailNotificationBean"/>
+                </entry>
+                <entry key="economic">
+                    <ref bean="detailEconomicBean"/>
+                </entry>
+                <entry key="accounting">
+                    <ref bean="detailAccountingBean"/>
+                </entry>
+            </map>
+        </property>
+        <property name="userEventDetailLookup">
+            <map>
+                <entry key="notification">
+                    <ref bean="detailNotificationBean"/>
+                </entry>
+                <entry key="economic">
+                    <ref bean="userDetailEconomicBean"/>
+                </entry>
+                <entry key="accounting">
+                    <ref bean="detailAccountingBean"/>
+                </entry>
+
+            </map>
+        </property>
+    </bean>
+    
 </beans>

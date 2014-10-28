@@ -10,9 +10,14 @@
 
 <h:form>
 <f:verbatim><cti:csrfToken/></f:verbatim>
-<t:dataTable id="programList" value="#{rProgramList.programList}" var="thisProgram" 
-   styleClass="horizBorders programSelectionTable">
-  <t:column styleClass="programName"><h:outputText value="#{thisProgram.programType.name}"/></t:column>
+<t:dataTable id="programList"
+             value="#{rProgramList.programList}"
+             var="thisProgram" 
+             renderedIfEmpty="true"
+             styleClass="horizBorders programSelectionTable jsf-dn">
+  <t:column styleClass="programName">
+    <h:outputText value="#{thisProgram.programType.name}"/>
+  </t:column>
   <t:column>
   <h:outputText value="#{thisProgram.name}"/>
   </t:column>
@@ -31,17 +36,17 @@
 </t:dataTable>
 
 
-<h3>Current Events</h3>
+<h3 class="empty-list">Current Events</h3>
 <t:aliasBean alias="#{eventListModel}" value="#{rEventOverview.currentEventListModel}">
   <jsp:include page="include/operatorEventList.jsp"/>
 </t:aliasBean>
 
-<h3>Pending Events</h3>
+<h3 class="empty-list">Pending Events</h3>
 <t:aliasBean alias="#{eventListModel}" value="#{rEventOverview.pendingEventListModel}">
   <jsp:include page="include/operatorEventList.jsp"/>
 </t:aliasBean>
 
-<h3>Recent Events</h3>
+<h3 class="empty-list">Recent Events</h3>
 <t:aliasBean alias="#{eventListModel}" value="#{rEventOverview.recentEventListModel}">
   <jsp:include page="include/operatorEventList.jsp"/>
 </t:aliasBean>
