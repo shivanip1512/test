@@ -78,14 +78,19 @@ string SimulatorLogger::formatIOBytes(const bytes &buf)
 {
     std::ostringstream bytes;
 
-    bytes::const_iterator buf_itr = buf.begin();
+    string result(buf.size() * 3, ' ');
 
-    while( buf_itr != buf.end() )
+    string::iterator itr = result.begin();
+
+    for each( const unsigned char &byte in buf )
     {
-        bytes << setfill('0') << setw(2) << hex << static_cast<int>(*buf_itr++) << " ";
+        *(itr++) = toAsciiHex(byte / 16);
+        *(itr++) = toAsciiHex(byte % 16);
+
+        itr++;
     }
 
-    return bytes.str();
+    return result;
 }
 
 string SimulatorLogger::breadcrumbPrefix()

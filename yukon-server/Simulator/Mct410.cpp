@@ -12,6 +12,8 @@
 #include "RandomConsumptionBehavior.h"
 #include "InvalidUsageReadingBehavior.h"
 
+#include <boost/assign/list_of.hpp>
+
 using namespace std;
 
 namespace Cti {
@@ -70,6 +72,16 @@ Mct410Sim::Mct410Sim(int address) :
 
         // Default the Load Profile Interval to 15 minutes.
         _memory.writeValueToMemoryMap(MM_LoadProfileInterval, 0x0f);
+
+        unsigned long lastFreezeSeconds = CtiTime(CtiDate() - 365).seconds();  //  last freeze 1 year ago
+
+        const bytes lastFreezeBytes = boost::assign::list_of
+                (lastFreezeSeconds >> 24)
+                (lastFreezeSeconds >> 16)
+                (lastFreezeSeconds >> 8)
+                (lastFreezeSeconds);
+
+        _memory.writeDataToMemoryMap(MM_LastFreezeTimestamp, lastFreezeBytes);
     }
 }
 
