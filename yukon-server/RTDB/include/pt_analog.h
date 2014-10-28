@@ -8,7 +8,6 @@
 #include "tbl_pt_analog.h"
 #include "tbl_pt_control.h"
 #include "logger.h"
-#include "string_utility.h"
 
 #include "boost/optional.hpp"
 

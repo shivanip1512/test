@@ -7,7 +7,6 @@
 
 #include "connection_server.h"
 #include "ctibase.h"
-#include "string_utility.h"
 
 class IM_EX_CTISVR CtiConnectionManager : public CtiServerConnection
 {

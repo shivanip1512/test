@@ -116,10 +116,9 @@ applist.obj:	precompiled.h applist.h con_mgr.h connection_server.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h dsm2err.h words.h optional.h macro_offset.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h connection_listener.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h connection_listener.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h
 exe_pcreq.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
 		collectable.h loggable.h pil_conmgr.h con_mgr.h \
 		connection_server.h connection.h msg_multi.h msg_pdata.h \
@@ -132,24 +131,24 @@ exe_pcreq.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h connection_listener.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		pilserver.h server_b.h smartmap.h msg_pcrequest.h \
-		mgr_device.h rtdb.h hashkey.h hash_functions.h dev_base.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
-		tbl_paoexclusion.h config_device.h rte_base.h dbmemobject.h \
-		tbl_pao_lite.h tbl_rtcomm.h resolvers.h db_entry_defines.h \
-		desolvers.h msg_signal.h tbl_static_paoinfo.h encryption.h \
-		tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h slctdev.h mgr_point.h mgr_route.h \
-		repeaterrole.h mgr_config.h devicetypes.h amq_constants.h \
-		mgr_rfn_request.h prot_e2eDataTransfer.h dev_rfn.h \
-		rfn_identifier.h cmd_rfn.h cmd_device.h dev_single.h \
-		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h xfer.h \
-		exceptions.h rfn_asid.h rfn_e2e_messenger.h \
-		RfnE2eDataIndicationMsg.h RfnE2eMsg.h RfnE2eDataConfirmMsg.h \
-		RfnE2eDataRequestMsg.h exe_pcreq.h executor.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		connection_listener.h ctibase.h streamSocketConnection.h \
+		socket_helper.h win_helper.h pilserver.h server_b.h \
+		smartmap.h msg_pcrequest.h mgr_device.h rtdb.h hashkey.h \
+		hash_functions.h dev_base.h cmdparse.h ctitokenizer.h \
+		parsevalue.h dev_exclusion.h tbl_paoexclusion.h \
+		config_device.h rte_base.h dbmemobject.h tbl_pao_lite.h \
+		tbl_rtcomm.h resolvers.h db_entry_defines.h desolvers.h \
+		msg_signal.h tbl_static_paoinfo.h encryption.h tbl_base.h \
+		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
+		slctdev.h mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
+		devicetypes.h amq_constants.h mgr_rfn_request.h \
+		prot_e2eDataTransfer.h dev_rfn.h rfn_identifier.h cmd_rfn.h \
+		cmd_device.h dev_single.h msg_pcreturn.h tbl_dv_scandata.h \
+		tbl_dv_wnd.h xfer.h exceptions.h rfn_asid.h \
+		rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h RfnE2eMsg.h \
+		RfnE2eDataConfirmMsg.h RfnE2eDataRequestMsg.h exe_pcreq.h \
+		executor.h
 mgr_rfn_request.obj:	precompiled.h mgr_rfn_request.h dlldefs.h \
 		prot_e2eDataTransfer.h dev_rfn.h rfn_identifier.h \
 		streamBuffer.h loggable.h cmd_rfn.h cmd_device.h dev_single.h \
@@ -166,7 +165,7 @@ mgr_rfn_request.obj:	precompiled.h mgr_rfn_request.h dlldefs.h \
 		rte_base.h dbmemobject.h ctibase.h streamSocketConnection.h \
 		socket_helper.h win_helper.h message.h collectable.h \
 		tbl_pao_lite.h tbl_rtcomm.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h msg_signal.h string_utility.h \
+		db_entry_defines.h desolvers.h msg_signal.h \
 		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
@@ -193,7 +192,7 @@ pilserver.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		rte_base.h dbmemobject.h ctibase.h streamSocketConnection.h \
 		socket_helper.h win_helper.h message.h collectable.h \
 		tbl_pao_lite.h tbl_rtcomm.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h msg_signal.h string_utility.h \
+		db_entry_defines.h desolvers.h msg_signal.h \
 		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		dev_grp.h cparms.h configkey.h configval.h \
@@ -235,11 +234,10 @@ pil_conmgr.obj:	precompiled.h collectable.h pil_conmgr.h message.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h connection_listener.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		pil_exefct.h executorfactory.h executor.h exe_cmd.h exe_reg.h \
-		msg_cmd.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		connection_listener.h ctibase.h streamSocketConnection.h \
+		socket_helper.h win_helper.h pil_exefct.h executorfactory.h \
+		executor.h exe_cmd.h exe_reg.h msg_cmd.h
 pil_exefct.obj:	precompiled.h executorfactory.h collectable.h \
 		message.h ctitime.h dlldefs.h ctidbgmem.h loggable.h \
 		executor.h yukon.h types.h exe_cmd.h exe_reg.h pil_exefct.h \
@@ -255,12 +253,12 @@ test_pilserver.obj:	pilserver.h dsm2.h streamConnection.h yukon.h \
 		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h rwutil.h database_connection.h \
 		dbaccess.h dllbase.h database_reader.h row_reader.h \
-		boost_time.h configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		connection_listener.h ctibase.h streamSocketConnection.h \
-		socket_helper.h win_helper.h smartmap.h msg_pcrequest.h \
-		mgr_device.h rtdb.h hashkey.h hash_functions.h dev_base.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
+		boost_time.h configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h connection_listener.h \
+		ctibase.h streamSocketConnection.h socket_helper.h \
+		win_helper.h smartmap.h msg_pcrequest.h mgr_device.h rtdb.h \
+		hashkey.h hash_functions.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h \
 		tbl_paoexclusion.h config_device.h rte_base.h dbmemobject.h \
 		tbl_pao_lite.h tbl_rtcomm.h resolvers.h db_entry_defines.h \
 		desolvers.h msg_signal.h tbl_static_paoinfo.h encryption.h \

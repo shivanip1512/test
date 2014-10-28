@@ -100,14 +100,14 @@ id_sgdll.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 mgr_device_scannable.obj:	precompiled.h mgr_device_scannable.h \
 		mgr_device.h dlldefs.h rtdb.h hashkey.h hash_functions.h \
 		utility.h ctitime.h queues.h cticalls.h yukon.h types.h \
-		ctidbgmem.h os2_2w32.h constants.h numstr.h string_utility.h \
-		dllbase.h dsm2.h streamConnection.h netports.h timing_util.h \
-		immutable.h atomic.h critical_section.h guard.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h dev_base.h cmdparse.h ctitokenizer.h \
-		parsevalue.h dev_exclusion.h tbl_paoexclusion.h row_reader.h \
-		rwutil.h database_connection.h dbaccess.h database_reader.h \
+		ctidbgmem.h os2_2w32.h constants.h numstr.h dllbase.h dsm2.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		atomic.h critical_section.h guard.h logger.h streamBuffer.h \
+		loggable.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
+		dev_exclusion.h tbl_paoexclusion.h row_reader.h rwutil.h \
+		database_connection.h dbaccess.h database_reader.h \
 		boost_time.h config_device.h rte_base.h dbmemobject.h \
 		ctibase.h streamSocketConnection.h socket_helper.h \
 		win_helper.h message.h collectable.h tbl_pao_lite.h \
@@ -143,8 +143,7 @@ scanmain.obj:	precompiled.h ctitime.h dlldefs.h scansvc.h cservice.h \
 		thread_monitor.h smartmap.h readers_writer_lock.h cparms.h \
 		rwutil.h database_connection.h dbaccess.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h queue.h \
-		string_utility.h thread.h thread_register_data.h \
-		connection_base.h
+		thread.h thread_register_data.h connection_base.h
 scanner.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -154,9 +153,9 @@ scanner.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h porter.h devicetypes.h scanner.h master.h \
 		dlldev.h scanglob.h rtdb.h hashkey.h hash_functions.h \
-		string_utility.h mgr_device_scannable.h mgr_device.h \
-		dev_base.h cmdparse.h ctitokenizer.h parsevalue.h \
-		dev_exclusion.h tbl_paoexclusion.h row_reader.h rwutil.h \
+		mgr_device_scannable.h mgr_device.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h \
+		tbl_paoexclusion.h row_reader.h rwutil.h \
 		database_connection.h database_reader.h boost_time.h \
 		config_device.h rte_base.h dbmemobject.h ctibase.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \

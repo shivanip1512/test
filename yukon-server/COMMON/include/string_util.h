@@ -37,6 +37,8 @@ trim( std::basic_string<size_type>& str )
 
 namespace Cti {
 
+IM_EX_CTIBASE char toAsciiHex(char nibble);
+
 class IM_EX_CTIBASE StringFormatter
 {
     enum AlignOptions

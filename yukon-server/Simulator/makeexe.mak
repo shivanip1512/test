@@ -258,7 +258,7 @@ mct410.obj:	precompiled.h Mct410.h EmetconWords.h types.h ctitime.h \
 		rte_base.h dbmemobject.h ctibase.h streamSocketConnection.h \
 		socket_helper.h win_helper.h message.h collectable.h \
 		tbl_pao_lite.h tbl_rtcomm.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h msg_signal.h string_utility.h \
+		db_entry_defines.h desolvers.h msg_signal.h \
 		tbl_static_paoinfo.h pointdefs.h encryption.h tbl_base.h \
 		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \

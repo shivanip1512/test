@@ -10,7 +10,6 @@
 #include "dlldefs.h"
 #include "logger.h"
 #include "utility.h"
-#include "string_utility.h"
 
 #include <boost/thread/condition.hpp>
 #include <boost/thread/mutex.hpp>
@@ -252,7 +251,7 @@ public:
                     pval = (getCollection().begin())->dataPointer;
                     getCollection().erase(getCollection().begin());
                 }
-                
+
                 // make sure the interrupt flag is set to false
                 _interruptBlockingRead = false;
             }

@@ -204,8 +204,8 @@ connection.obj:	precompiled.h collectable.h connection.h dlldefs.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h amq_util.h millisecond_timer.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		amq_util.h millisecond_timer.h
 connection_base.obj:	precompiled.h mutex.h dlldefs.h guard.h utility.h \
 		ctitime.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
 		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
@@ -222,8 +222,8 @@ connection_client.obj:	precompiled.h connection_client.h connection.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h amq_constants.h amq_util.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		amq_constants.h amq_util.h
 connection_listener.obj:	precompiled.h connection_listener.h dlldefs.h \
 		critical_section.h connection.h message.h ctitime.h \
 		ctidbgmem.h collectable.h loggable.h msg_multi.h msg_pdata.h \
@@ -235,9 +235,8 @@ connection_listener.obj:	precompiled.h connection_listener.h dlldefs.h \
 		constants.h numstr.h logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h dsm2err.h words.h optional.h \
 		macro_offset.h database_reader.h row_reader.h boost_time.h \
-		configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		amq_constants.h amq_util.h
+		configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h amq_constants.h amq_util.h
 connection_server.obj:	precompiled.h connection_server.h connection.h \
 		dlldefs.h message.h ctitime.h ctidbgmem.h collectable.h \
 		loggable.h msg_multi.h msg_pdata.h yukon.h types.h \
@@ -249,9 +248,8 @@ connection_server.obj:	precompiled.h connection_server.h connection.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h connection_listener.h amq_constants.h \
-		amq_util.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		connection_listener.h amq_constants.h amq_util.h
 controlhistoryassociationresponse.obj:	precompiled.h \
 		ControlHistoryAssociationResponse.h dlldefs.h
 dispatchconnection.obj:	precompiled.h DispatchConnection.h \
@@ -266,8 +264,8 @@ dispatchconnection.obj:	precompiled.h DispatchConnection.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h MessageListener.h msg_cmd.h amq_constants.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		MessageListener.h msg_cmd.h amq_constants.h
 dispatchpointdatarequest.obj:	precompiled.h DispatchPointDataRequest.h \
 		yukon.h types.h ctidbgmem.h MessageListener.h message.h \
 		ctitime.h dlldefs.h collectable.h loggable.h \
@@ -281,8 +279,8 @@ dispatchpointdatarequest.obj:	precompiled.h DispatchPointDataRequest.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h PointDataRequest.h msg_signal.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		PointDataRequest.h msg_signal.h
 dll_msg.obj:	precompiled.h module_util.h dlldefs.h amq_constants.h \
 		amq_connection.h thread.h mutex.h guard.h utility.h ctitime.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
@@ -493,9 +491,8 @@ pointdatarequestfactory.obj:	precompiled.h PointDataRequestFactory.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h dsm2err.h words.h optional.h macro_offset.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h MessageListener.h \
-		DispatchPointDataRequest.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h MessageListener.h DispatchPointDataRequest.h
 porterresponsemessage.obj:	precompiled.h PorterResponseMessage.h \
 		dlldefs.h msg_pcreturn.h msg_multi.h collectable.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h pointdefs.h \
@@ -547,9 +544,8 @@ server_client_serialization_test.obj:	precompiled.h logManager.h \
 		test_serialization_helper.h connection_server.h connection.h \
 		queue.h cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h connection_listener.h \
-		std_helper.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h connection_listener.h std_helper.h
 test_message.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		collectable.h loggable.h queue.h cparms.h rwutil.h yukon.h \
 		types.h database_connection.h dbaccess.h dllbase.h dsm2.h \
@@ -559,7 +555,7 @@ test_message.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h
+		configval.h
 test_multi_msg.obj:	msg_multi.h collectable.h dlldefs.h msg_pdata.h \
 		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
 		message.h ctitime.h loggable.h
@@ -575,9 +571,9 @@ test_pointdatarequest.obj:	PointDataRequestFactory.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h dsm2err.h words.h optional.h macro_offset.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h MessageListener.h \
-		DispatchPointdataRequest.h amq_constants.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h MessageListener.h DispatchPointdataRequest.h \
+		amq_constants.h
 test_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		collectable.h loggable.h msg_cmd.h msg_dbchg.h yukon.h \
 		types.h msg_lmcontrolhistory.h pointdefs.h msg_multi.h \
@@ -594,8 +590,8 @@ test_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		test_serialization_helper.h connection_server.h connection.h \
 		queue.h cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h connection_listener.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h connection_listener.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

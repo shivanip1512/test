@@ -66,6 +66,16 @@ void align_center(std::basic_string<CharT>& str, unsigned width, CharT fill, boo
 
 } // namespace anonymous
 
+char toAsciiHex(char nibble)
+{
+    if( nibble >= 0x0a )
+    {
+        return nibble - 0x0a + 'a';
+    }
+
+    return nibble + '0';
+}
+
 /// StringFormatter ///
 
 StringFormatter::StringFormatter()
@@ -371,7 +381,7 @@ void FormattedTable::resize(unsigned rows, unsigned columns)
     {
         // resize the table by columns
         _table.resize(rows);
-        
+
         // resize horizontal borders (new borders are disable by default)
         _horizontalBorders.resize(rows+1, 0);
     }

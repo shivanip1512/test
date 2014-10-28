@@ -182,9 +182,8 @@ test_mc_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		test_serialization.h test_serialization_helper.h \
 		connection_server.h connection.h queue.h cparms.h rwutil.h \
 		database_connection.h dbaccess.h database_reader.h \
-		boost_time.h configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		connection_listener.h
+		boost_time.h configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h connection_listener.h
 test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
 		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
@@ -192,9 +191,9 @@ test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
 		critical_section.h atomic.h mc_sched.h row_reader.h \
 		dbmemobject.h tbl_pao.h tbl_mcsched.h mutex.h guard.h \
 		tbl_mcsimpsched.h message.h collectable.h mgr_mcsched.h \
-		rtdb.h hashkey.h hash_functions.h string_utility.h dllbase.h \
-		dsm2.h streamConnection.h netports.h timing_util.h \
-		immutable.h dsm2err.h words.h optional.h macro_offset.h \
-		mgr_holiday.h ctidate.h
+		rtdb.h hashkey.h hash_functions.h dllbase.h dsm2.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		dsm2err.h words.h optional.h macro_offset.h mgr_holiday.h \
+		ctidate.h
 #ENDUPDATE#
 

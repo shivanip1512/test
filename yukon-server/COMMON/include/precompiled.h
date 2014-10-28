@@ -7,9 +7,7 @@
  */
 #pragma once
 
-#if !defined(_WIN32_WINNT)
-#define _WIN32_WINNT 0x0500  //  Windows XP, Server 2003.  No service packs.
-#endif
+#define _WIN32_WINNT 0x0501  //  Windows XP, Server 2003.  No service packs.
 
 #if !defined (NOMINMAX)
 #define NOMINMAX

@@ -11,7 +11,6 @@
 
 #include "con_mgr.h"
 #include "pil_conmgr.h"
-#include "string_utility.h"
 
 #include "connection_listener.h"
 

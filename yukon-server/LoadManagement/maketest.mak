@@ -178,11 +178,10 @@ test_lmobjects.obj:	devicetypes.h lmutility.h CtiTime.h dlldefs.h \
 		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h test_reader.h lmgroupecobee.h \
-		GroupControlInterface.h ecobeeControlInterface.h \
-		ecobeeCycleGear.h lmprogramdirect.h lmprogramdirectgear.h \
-		tbl_lmprogramhistory.h smartgearbase.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		test_reader.h lmgroupecobee.h GroupControlInterface.h \
+		ecobeeControlInterface.h ecobeeCycleGear.h lmprogramdirect.h \
+		lmprogramdirectgear.h tbl_lmprogramhistory.h smartgearbase.h
 test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
 		os2_2w32.h constants.h numstr.h lmprogrambase.h dbmemobject.h \
@@ -196,8 +195,8 @@ test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramdirectgear.h \
 		lmcontrolarea.h connection.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h tbl_lmprogramhistory.h \
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h tbl_lmprogramhistory.h \
 		lmprogramcontrolwindow.h lmutility.h lmconstraint.h \
 		lmmessage.h ConstraintViolation.h executor.h msg_server_req.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
@@ -215,10 +214,10 @@ test_lmthermostatgear.obj:	lmutility.h CtiTime.h dlldefs.h ctidate.h \
 		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h test_reader.h lmProgramThermostatGear.h \
-		lmprogramdirectgear.h lmGroupExpresscom.h \
-		BeatThePeakControlInterface.h BeatThePeakAlertLevel.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		test_reader.h lmProgramThermostatGear.h lmprogramdirectgear.h \
+		lmGroupExpresscom.h BeatThePeakControlInterface.h \
+		BeatThePeakAlertLevel.h
 test_lm_constraintviolations.obj:	ConstraintViolation.h ctitime.h \
 		dlldefs.h collectable.h ctidate.h
 #ENDUPDATE#

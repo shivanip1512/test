@@ -175,13 +175,13 @@ clistener.obj:	precompiled.h clistener.h connection_server.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h dsm2err.h words.h optional.h macro_offset.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h connection_listener.h \
-		lmmessage.h lmcontrolarea.h dbmemobject.h lmprogrambase.h \
-		lmgroupbase.h msg_pcrequest.h msg_cmd.h \
-		lmcontrolareatrigger.h ctidate.h lmprogramdirect.h \
-		lmprogramdirectgear.h tbl_lmprogramhistory.h \
-		ConstraintViolation.h lmcontrolareastore.h lmid.h ctibase.h \
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h connection_listener.h lmmessage.h \
+		lmcontrolarea.h dbmemobject.h lmprogrambase.h lmgroupbase.h \
+		msg_pcrequest.h msg_cmd.h lmcontrolareatrigger.h ctidate.h \
+		lmprogramdirect.h lmprogramdirectgear.h \
+		tbl_lmprogramhistory.h ConstraintViolation.h \
+		lmcontrolareastore.h lmid.h ctibase.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
 		executor.h msg_server_req.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h amq_constants.h
@@ -209,9 +209,8 @@ ecobeecyclegear.obj:	precompiled.h GroupControlInterface.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramdirectgear.h \
 		lmcontrolarea.h connection.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h tbl_lmprogramhistory.h \
-		smartgearbase.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h tbl_lmprogramhistory.h smartgearbase.h
 executor.obj:	precompiled.h msg_server_req.h dlldefs.h message.h \
 		ctitime.h ctidbgmem.h collectable.h loggable.h \
 		msg_server_resp.h msg_signal.h yukon.h types.h executor.h \
@@ -225,9 +224,9 @@ executor.obj:	precompiled.h msg_server_req.h dlldefs.h message.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
-		msg_cmd.h lmcontrolareatrigger.h ctidate.h lmprogramdirect.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		lmprogrambase.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
+		lmcontrolareatrigger.h ctidate.h lmprogramdirect.h \
 		lmprogramdirectgear.h tbl_lmprogramhistory.h \
 		ConstraintViolation.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h clistener.h \
@@ -254,9 +253,9 @@ lmcicustomerbase.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_connection.h database_reader.h \
-		boost_time.h configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		msg_cmd.h lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
+		boost_time.h configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h msg_cmd.h \
+		lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
 		lmprogrambase.h lmgroupbase.h lmcontrolareatrigger.h \
 		ctidate.h executor.h msg_server_req.h lmmessage.h \
 		lmprogramdirect.h lmprogramdirectgear.h \
@@ -278,10 +277,10 @@ lmconstraint.obj:	precompiled.h lmconstraint.h lmprogramdirect.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramdirectgear.h \
 		lmcontrolarea.h connection.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h tbl_lmprogramhistory.h \
-		lmutility.h lmmessage.h ConstraintViolation.h \
-		lmprogramcontrolwindow.h lmid.h mgr_season.h mgr_holiday.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h tbl_lmprogramhistory.h lmutility.h \
+		lmmessage.h ConstraintViolation.h lmprogramcontrolwindow.h \
+		lmid.h mgr_season.h mgr_holiday.h
 lmcontrolarea.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -294,14 +293,13 @@ lmcontrolarea.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h rwutil.h database_connection.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h lmprogrambase.h \
-		lmgroupbase.h msg_pcrequest.h msg_cmd.h \
-		lmcontrolareatrigger.h ctidate.h lmid.h lmprogramdirect.h \
-		lmprogramdirectgear.h tbl_lmprogramhistory.h \
-		lmprogramcontrolwindow.h devicetypes.h loadmanager.h \
-		connection_client.h lmcontrolareastore.h executor.h \
-		msg_server_req.h lmmessage.h ConstraintViolation.h \
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
+		msg_cmd.h lmcontrolareatrigger.h ctidate.h lmid.h \
+		lmprogramdirect.h lmprogramdirectgear.h \
+		tbl_lmprogramhistory.h lmprogramcontrolwindow.h devicetypes.h \
+		loadmanager.h connection_client.h lmcontrolareastore.h \
+		executor.h msg_server_req.h lmmessage.h ConstraintViolation.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
 		ctibase.h streamSocketConnection.h socket_helper.h \
 		win_helper.h resolvers.h db_entry_defines.h lmconstraint.h \
@@ -319,9 +317,9 @@ lmcontrolareastore.obj:	precompiled.h mgr_holiday.h ctidate.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
-		msg_cmd.h lmcontrolareatrigger.h lmid.h lmcurtailcustomer.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		lmprogrambase.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
+		lmcontrolareatrigger.h lmid.h lmcurtailcustomer.h \
 		lmcicustomerbase.h lmenergyexchangecustomer.h \
 		lmenergyexchangecustomerreply.h \
 		lmenergyexchangehourlycustomer.h \
@@ -357,9 +355,9 @@ lmcontrolareatrigger.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		msg_cmd.h ctidate.h loadmanager.h connection_client.h \
 		connection.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h lmcontrolareastore.h lmcontrolarea.h \
-		executor.h msg_server_req.h lmmessage.h lmprogramdirect.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		lmcontrolareastore.h lmcontrolarea.h executor.h \
+		msg_server_req.h lmmessage.h lmprogramdirect.h \
 		lmprogramdirectgear.h tbl_lmprogramhistory.h \
 		ConstraintViolation.h lmprogramcurtailment.h \
 		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
@@ -378,12 +376,11 @@ lmcurtailcustomer.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h msg_cmd.h \
-		lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
-		lmprogrambase.h lmgroupbase.h lmcontrolareatrigger.h \
-		ctidate.h executor.h msg_server_req.h lmmessage.h \
-		lmprogramdirect.h lmprogramdirectgear.h \
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h msg_cmd.h lmcontrolareastore.h \
+		lmcontrolarea.h dbmemobject.h lmprogrambase.h lmgroupbase.h \
+		lmcontrolareatrigger.h ctidate.h executor.h msg_server_req.h \
+		lmmessage.h lmprogramdirect.h lmprogramdirectgear.h \
 		tbl_lmprogramhistory.h ConstraintViolation.h \
 		lmprogramcurtailment.h ctibase.h streamSocketConnection.h \
 		socket_helper.h win_helper.h resolvers.h db_entry_defines.h \
@@ -402,9 +399,9 @@ lmenergyexchangecustomer.obj:	precompiled.h dbaccess.h dllbase.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_connection.h database_reader.h \
-		boost_time.h configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		msg_cmd.h lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
+		boost_time.h configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h msg_cmd.h \
+		lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
 		lmprogrambase.h lmgroupbase.h lmcontrolareatrigger.h \
 		ctidate.h executor.h msg_server_req.h lmmessage.h \
 		lmprogramdirect.h lmprogramdirectgear.h \
@@ -425,9 +422,9 @@ lmenergyexchangecustomerreply.obj:	precompiled.h dbaccess.h dllbase.h \
 		message.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_connection.h database_reader.h boost_time.h \
-		configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		msg_cmd.h lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
+		configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h msg_cmd.h \
+		lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
 		lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
 		lmcontrolareatrigger.h ctidate.h executor.h msg_server_req.h \
 		lmmessage.h lmprogramdirect.h lmprogramdirectgear.h \
@@ -448,9 +445,9 @@ lmenergyexchangehourlycustomer.obj:	precompiled.h dbaccess.h dllbase.h \
 		connection.h message.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_connection.h database_reader.h boost_time.h \
-		configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		msg_cmd.h lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
+		configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h msg_cmd.h \
+		lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
 		lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
 		lmcontrolareatrigger.h ctidate.h executor.h msg_server_req.h \
 		lmmessage.h lmprogramdirect.h lmprogramdirectgear.h \
@@ -471,9 +468,9 @@ lmenergyexchangehourlyoffer.obj:	precompiled.h dbaccess.h dllbase.h \
 		connection.h message.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_connection.h database_reader.h boost_time.h \
-		configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		msg_cmd.h lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
+		configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h msg_cmd.h \
+		lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
 		lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
 		lmcontrolareatrigger.h ctidate.h executor.h msg_server_req.h \
 		lmmessage.h lmprogramdirect.h lmprogramdirectgear.h \
@@ -507,9 +504,9 @@ lmenergyexchangeofferrevision.obj:	precompiled.h dbaccess.h dllbase.h \
 		message.h msg_multi.h msg_pdata.h pointdefs.h pointtypes.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_connection.h database_reader.h boost_time.h \
-		configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		msg_cmd.h lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
+		configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h msg_cmd.h \
+		lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
 		lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
 		lmcontrolareatrigger.h ctidate.h executor.h msg_server_req.h \
 		lmmessage.h lmprogramdirect.h lmprogramdirectgear.h \
@@ -548,16 +545,16 @@ lmgroupbase.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h lmcontrolareastore.h \
-		lmcontrolarea.h lmprogrambase.h lmcontrolareatrigger.h \
-		ctidate.h executor.h msg_server_req.h lmmessage.h \
-		lmprogramdirect.h lmprogramdirectgear.h \
-		tbl_lmprogramhistory.h ConstraintViolation.h \
-		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h resolvers.h db_entry_defines.h database_writer.h \
-		row_writer.h database_util.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h lmcontrolareastore.h lmcontrolarea.h \
+		lmprogrambase.h lmcontrolareatrigger.h ctidate.h executor.h \
+		msg_server_req.h lmmessage.h lmprogramdirect.h \
+		lmprogramdirectgear.h tbl_lmprogramhistory.h \
+		ConstraintViolation.h lmprogramcurtailment.h \
+		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h \
+		resolvers.h db_entry_defines.h database_writer.h row_writer.h \
+		database_util.h
 lmgroupdigisep.obj:	precompiled.h lmgroupdigisep.h lmgroupbase.h \
 		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		yukon.h types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
@@ -597,15 +594,14 @@ lmgroupemetcon.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h lmcontrolareastore.h \
-		lmcontrolarea.h lmprogrambase.h lmcontrolareatrigger.h \
-		ctidate.h executor.h msg_server_req.h lmmessage.h \
-		lmprogramdirect.h lmprogramdirectgear.h \
-		tbl_lmprogramhistory.h ConstraintViolation.h \
-		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h lmcontrolareastore.h lmcontrolarea.h \
+		lmprogrambase.h lmcontrolareatrigger.h ctidate.h executor.h \
+		msg_server_req.h lmmessage.h lmprogramdirect.h \
+		lmprogramdirectgear.h tbl_lmprogramhistory.h \
+		ConstraintViolation.h lmprogramcurtailment.h \
+		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h
 lmgroupexpresscom.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -620,11 +616,11 @@ lmgroupexpresscom.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		loadmanager.h connection_client.h connection.h msg_multi.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h rwutil.h database_reader.h boost_time.h \
-		configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		lmcontrolareastore.h lmcontrolarea.h lmprogrambase.h \
-		lmcontrolareatrigger.h ctidate.h executor.h msg_server_req.h \
-		lmmessage.h lmprogramdirect.h lmprogramdirectgear.h \
+		configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h lmcontrolareastore.h \
+		lmcontrolarea.h lmprogrambase.h lmcontrolareatrigger.h \
+		ctidate.h executor.h msg_server_req.h lmmessage.h \
+		lmprogramdirect.h lmprogramdirectgear.h \
 		tbl_lmprogramhistory.h ConstraintViolation.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
 		ctibase.h streamSocketConnection.h socket_helper.h \
@@ -653,15 +649,14 @@ lmgroupmacro.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h lmcontrolareastore.h \
-		lmcontrolarea.h lmprogrambase.h lmcontrolareatrigger.h \
-		ctidate.h executor.h msg_server_req.h lmmessage.h \
-		lmprogramdirect.h lmprogramdirectgear.h \
-		tbl_lmprogramhistory.h ConstraintViolation.h \
-		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h lmcontrolareastore.h lmcontrolarea.h \
+		lmprogrambase.h lmcontrolareatrigger.h ctidate.h executor.h \
+		msg_server_req.h lmmessage.h lmprogramdirect.h \
+		lmprogramdirectgear.h tbl_lmprogramhistory.h \
+		ConstraintViolation.h lmprogramcurtailment.h \
+		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h
 lmgroupmct.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -675,11 +670,11 @@ lmgroupmct.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		loadmanager.h connection_client.h connection.h msg_multi.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h rwutil.h database_reader.h boost_time.h \
-		configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		lmcontrolareastore.h lmcontrolarea.h lmprogrambase.h \
-		lmcontrolareatrigger.h ctidate.h executor.h msg_server_req.h \
-		lmmessage.h lmprogramdirect.h lmprogramdirectgear.h \
+		configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h lmcontrolareastore.h \
+		lmcontrolarea.h lmprogrambase.h lmcontrolareatrigger.h \
+		ctidate.h executor.h msg_server_req.h lmmessage.h \
+		lmprogramdirect.h lmprogramdirectgear.h \
 		tbl_lmprogramhistory.h ConstraintViolation.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
 		ctibase.h streamSocketConnection.h socket_helper.h \
@@ -697,15 +692,14 @@ lmgrouppoint.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h lmcontrolareastore.h \
-		lmcontrolarea.h lmprogrambase.h lmcontrolareatrigger.h \
-		ctidate.h executor.h msg_server_req.h lmmessage.h \
-		lmprogramdirect.h lmprogramdirectgear.h \
-		tbl_lmprogramhistory.h ConstraintViolation.h \
-		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h lmcontrolareastore.h lmcontrolarea.h \
+		lmprogrambase.h lmcontrolareatrigger.h ctidate.h executor.h \
+		msg_server_req.h lmmessage.h lmprogramdirect.h \
+		lmprogramdirectgear.h tbl_lmprogramhistory.h \
+		ConstraintViolation.h lmprogramcurtailment.h \
+		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h
 lmgroupripple.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -719,15 +713,14 @@ lmgroupripple.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h lmcontrolareastore.h \
-		lmcontrolarea.h lmprogrambase.h lmcontrolareatrigger.h \
-		ctidate.h executor.h msg_server_req.h lmmessage.h \
-		lmprogramdirect.h lmprogramdirectgear.h \
-		tbl_lmprogramhistory.h ConstraintViolation.h \
-		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h lmcontrolareastore.h lmcontrolarea.h \
+		lmprogrambase.h lmcontrolareatrigger.h ctidate.h executor.h \
+		msg_server_req.h lmmessage.h lmprogramdirect.h \
+		lmprogramdirectgear.h tbl_lmprogramhistory.h \
+		ConstraintViolation.h lmprogramcurtailment.h \
+		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h
 lmgroupsa105.obj:	precompiled.h lmgroupsa105.h lmgroupbase.h \
 		boostutil.h utility.h ctitime.h dlldefs.h queues.h cticalls.h \
 		yukon.h types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
@@ -781,15 +774,14 @@ lmgroupversacom.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h lmcontrolareastore.h \
-		lmcontrolarea.h lmprogrambase.h lmcontrolareatrigger.h \
-		ctidate.h executor.h msg_server_req.h lmmessage.h \
-		lmprogramdirect.h lmprogramdirectgear.h \
-		tbl_lmprogramhistory.h ConstraintViolation.h \
-		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h lmcontrolareastore.h lmcontrolarea.h \
+		lmprogrambase.h lmcontrolareatrigger.h ctidate.h executor.h \
+		msg_server_req.h lmmessage.h lmprogramdirect.h \
+		lmprogramdirectgear.h tbl_lmprogramhistory.h \
+		ConstraintViolation.h lmprogramcurtailment.h \
+		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h
 lmmessage.obj:	precompiled.h lmmessage.h ctitime.h dlldefs.h message.h \
 		ctidbgmem.h collectable.h loggable.h lmcontrolarea.h \
 		dbmemobject.h connection.h msg_multi.h msg_pdata.h yukon.h \
@@ -801,10 +793,9 @@ lmmessage.obj:	precompiled.h lmmessage.h ctitime.h dlldefs.h message.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h dsm2err.h words.h optional.h macro_offset.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h lmprogrambase.h \
-		lmgroupbase.h msg_pcrequest.h msg_cmd.h \
-		lmcontrolareatrigger.h ctidate.h lmprogramdirect.h \
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
+		msg_cmd.h lmcontrolareatrigger.h ctidate.h lmprogramdirect.h \
 		lmprogramdirectgear.h tbl_lmprogramhistory.h \
 		ConstraintViolation.h lmid.h
 lmprogrambase.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
@@ -821,16 +812,16 @@ lmprogrambase.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramcontrolwindow.h \
 		loadmanager.h connection_client.h connection.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h rwutil.h database_reader.h \
-		boost_time.h configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		lmcontrolareastore.h lmcontrolarea.h executor.h \
-		msg_server_req.h lmmessage.h lmprogramdirect.h \
-		lmprogramdirectgear.h tbl_lmprogramhistory.h \
-		ConstraintViolation.h lmprogramcurtailment.h \
-		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		resolvers.h db_entry_defines.h mgr_holiday.h mgr_season.h \
-		lmutility.h database_writer.h row_writer.h database_util.h
+		boost_time.h configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h lmcontrolareastore.h \
+		lmcontrolarea.h executor.h msg_server_req.h lmmessage.h \
+		lmprogramdirect.h lmprogramdirectgear.h \
+		tbl_lmprogramhistory.h ConstraintViolation.h \
+		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
+		ctibase.h streamSocketConnection.h socket_helper.h \
+		win_helper.h resolvers.h db_entry_defines.h mgr_holiday.h \
+		mgr_season.h lmutility.h database_writer.h row_writer.h \
+		database_util.h
 lmprogrambeatthepeakgear.obj:	precompiled.h lmprogrambeatthepeakgear.h \
 		lmprogramdirect.h boostutil.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
@@ -845,10 +836,9 @@ lmprogrambeatthepeakgear.obj:	precompiled.h lmprogrambeatthepeakgear.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramdirectgear.h \
 		lmcontrolarea.h connection.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h tbl_lmprogramhistory.h \
-		smartgearbase.h BeatThePeakAlertLevel.h \
-		BeatThePeakControlInterface.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h tbl_lmprogramhistory.h smartgearbase.h \
+		BeatThePeakAlertLevel.h BeatThePeakControlInterface.h
 lmprogramcontrolwindow.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -861,9 +851,9 @@ lmprogramcontrolwindow.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		loadmanager.h connection_client.h connection.h message.h \
 		msg_multi.h msg_pdata.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_connection.h database_reader.h \
-		boost_time.h configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		msg_cmd.h lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
+		boost_time.h configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h msg_cmd.h \
+		lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
 		lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
 		lmcontrolareatrigger.h executor.h msg_server_req.h \
 		lmmessage.h lmprogramdirect.h lmprogramdirectgear.h \
@@ -885,15 +875,14 @@ lmprogramcurtailment.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		lmcontrolareatrigger.h ctidate.h loadmanager.h \
 		connection_client.h connection.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h rwutil.h database_reader.h boost_time.h \
-		configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		lmcontrolareastore.h lmcontrolarea.h executor.h \
-		msg_server_req.h lmmessage.h lmprogramdirect.h \
-		lmprogramdirectgear.h tbl_lmprogramhistory.h \
-		ConstraintViolation.h lmprogramcurtailment.h \
-		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		msg_notif_email.h database_writer.h row_writer.h \
+		configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h lmcontrolareastore.h \
+		lmcontrolarea.h executor.h msg_server_req.h lmmessage.h \
+		lmprogramdirect.h lmprogramdirectgear.h \
+		tbl_lmprogramhistory.h ConstraintViolation.h \
+		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
+		ctibase.h streamSocketConnection.h socket_helper.h \
+		win_helper.h msg_notif_email.h database_writer.h row_writer.h \
 		database_util.h
 lmprogramdirect.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
@@ -909,9 +898,9 @@ lmprogramdirect.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramdirectgear.h \
 		lmcontrolarea.h connection.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h tbl_lmprogramhistory.h \
-		lmgrouppoint.h devicetypes.h lmid.h desolvers.h loadmanager.h \
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h tbl_lmprogramhistory.h lmgrouppoint.h \
+		devicetypes.h lmid.h desolvers.h loadmanager.h \
 		connection_client.h lmcontrolareastore.h executor.h \
 		msg_server_req.h lmmessage.h ConstraintViolation.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
@@ -935,14 +924,13 @@ lmprogramdirectgear.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		lmcontrolareatrigger.h ctidate.h loadmanager.h \
 		connection_client.h connection.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h rwutil.h database_reader.h boost_time.h \
-		configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		lmcontrolareastore.h lmcontrolarea.h executor.h \
-		msg_server_req.h lmmessage.h lmprogramdirect.h \
-		tbl_lmprogramhistory.h ConstraintViolation.h \
-		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h
+		configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h lmcontrolareastore.h \
+		lmcontrolarea.h executor.h msg_server_req.h lmmessage.h \
+		lmprogramdirect.h tbl_lmprogramhistory.h \
+		ConstraintViolation.h lmprogramcurtailment.h \
+		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h
 lmprogramenergyexchange.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -957,17 +945,17 @@ lmprogramenergyexchange.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		lmcontrolareatrigger.h ctidate.h loadmanager.h \
 		connection_client.h connection.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h rwutil.h database_reader.h boost_time.h \
-		configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		lmcontrolareastore.h lmcontrolarea.h executor.h \
-		msg_server_req.h lmmessage.h lmprogramdirect.h \
-		lmprogramdirectgear.h tbl_lmprogramhistory.h \
-		ConstraintViolation.h lmprogramcurtailment.h \
-		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		lmprogramenergyexchange.h lmenergyexchangeoffer.h \
-		lmenergyexchangeofferrevision.h lmenergyexchangehourlyoffer.h \
-		lmenergyexchangecustomer.h lmenergyexchangecustomerreply.h \
+		configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h lmcontrolareastore.h \
+		lmcontrolarea.h executor.h msg_server_req.h lmmessage.h \
+		lmprogramdirect.h lmprogramdirectgear.h \
+		tbl_lmprogramhistory.h ConstraintViolation.h \
+		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
+		ctibase.h streamSocketConnection.h socket_helper.h \
+		win_helper.h lmprogramenergyexchange.h \
+		lmenergyexchangeoffer.h lmenergyexchangeofferrevision.h \
+		lmenergyexchangehourlyoffer.h lmenergyexchangecustomer.h \
+		lmenergyexchangecustomerreply.h \
 		lmenergyexchangehourlycustomer.h msg_notif_email.h
 lmprogramthermostatgear.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
@@ -984,14 +972,13 @@ lmprogramthermostatgear.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		lmcontrolareatrigger.h ctidate.h loadmanager.h \
 		connection_client.h connection.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h rwutil.h database_reader.h boost_time.h \
-		configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		lmcontrolareastore.h lmcontrolarea.h executor.h \
-		msg_server_req.h lmmessage.h lmprogramdirect.h \
-		tbl_lmprogramhistory.h ConstraintViolation.h \
-		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h
+		configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h lmcontrolareastore.h \
+		lmcontrolarea.h executor.h msg_server_req.h lmmessage.h \
+		lmprogramdirect.h tbl_lmprogramhistory.h \
+		ConstraintViolation.h lmprogramcurtailment.h \
+		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h
 lmservice.obj:	precompiled.h lmservice.h cservice.h dlldefs.h \
 		loadmanager.h dbaccess.h dllbase.h dsm2.h streamConnection.h \
 		yukon.h types.h ctidbgmem.h netports.h timing_util.h \
@@ -1003,9 +990,9 @@ lmservice.obj:	precompiled.h lmservice.h cservice.h dlldefs.h \
 		message.h collectable.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_connection.h database_reader.h row_reader.h \
-		boost_time.h configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		msg_cmd.h lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
+		boost_time.h configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h msg_cmd.h \
+		lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
 		lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
 		lmcontrolareatrigger.h ctidate.h lmid.h executor.h \
 		msg_server_req.h lmmessage.h lmprogramdirect.h \
@@ -1030,8 +1017,8 @@ lmutility.obj:	precompiled.h timeperiod.h dlldefs.h lmutility.h \
 		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h lmprogramcontrolwindow.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		lmprogramcontrolwindow.h
 lm_group_serialization.obj:	precompiled.h lm_group_serialization.h \
 		lmgroupbase.h boostutil.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
@@ -1064,11 +1051,11 @@ lm_message_serialization.obj:	precompiled.h lm_program_serialization.h \
 		lmprogramdirect.h lmprogramdirectgear.h lmcontrolarea.h \
 		connection.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h tbl_lmprogramhistory.h \
-		lmprogramenergyexchange.h lmenergyexchangeoffer.h \
-		lmenergyexchangeofferrevision.h lmenergyexchangehourlyoffer.h \
-		lmenergyexchangecustomer.h lmenergyexchangecustomerreply.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		tbl_lmprogramhistory.h lmprogramenergyexchange.h \
+		lmenergyexchangeoffer.h lmenergyexchangeofferrevision.h \
+		lmenergyexchangehourlyoffer.h lmenergyexchangecustomer.h \
+		lmenergyexchangecustomerreply.h \
 		lmenergyexchangehourlycustomer.h lm_message_serialization.h \
 		lmmessage.h ConstraintViolation.h
 lm_program_serialization.obj:	precompiled.h lm_group_serialization.h \
@@ -1094,11 +1081,11 @@ lm_program_serialization.obj:	precompiled.h lm_group_serialization.h \
 		lmprogramdirectgear.h lmcontrolarea.h connection.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h tbl_lmprogramhistory.h \
-		lmprogramenergyexchange.h lmenergyexchangeoffer.h \
-		lmenergyexchangeofferrevision.h lmenergyexchangehourlyoffer.h \
-		lmenergyexchangecustomer.h lmenergyexchangecustomerreply.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		tbl_lmprogramhistory.h lmprogramenergyexchange.h \
+		lmenergyexchangeoffer.h lmenergyexchangeofferrevision.h \
+		lmenergyexchangehourlyoffer.h lmenergyexchangecustomer.h \
+		lmenergyexchangecustomerreply.h \
 		lmenergyexchangehourlycustomer.h
 lm_server_client_serialization_test.obj:	precompiled.h message.h \
 		ctitime.h dlldefs.h ctidbgmem.h collectable.h loggable.h \
@@ -1116,9 +1103,9 @@ lm_server_client_serialization_test.obj:	precompiled.h message.h \
 		msg_trace.h connection_server.h connection.h queue.h cparms.h \
 		rwutil.h database_connection.h dbaccess.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h connection_listener.h lmmessage.h \
-		lmcontrolarea.h dbmemobject.h lmprogrambase.h lmgroupbase.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		connection_listener.h lmmessage.h lmcontrolarea.h \
+		dbmemobject.h lmprogrambase.h lmgroupbase.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramdirect.h \
 		lmprogramdirectgear.h tbl_lmprogramhistory.h \
 		ConstraintViolation.h lmprogramcontrolwindow.h \
@@ -1146,20 +1133,19 @@ loadmanager.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h rwutil.h database_connection.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h msg_signal.h msg_cmd.h \
-		msg_pcrequest.h msg_pcreturn.h msg_dbchg.h loadmanager.h \
-		connection_client.h lmcontrolareastore.h lmcontrolarea.h \
-		dbmemobject.h lmprogrambase.h lmgroupbase.h \
-		lmcontrolareatrigger.h ctidate.h lmid.h executor.h \
-		msg_server_req.h lmmessage.h lmprogramdirect.h \
-		lmprogramdirectgear.h tbl_lmprogramhistory.h \
-		ConstraintViolation.h lmprogramcurtailment.h \
-		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		resolvers.h db_entry_defines.h devicetypes.h clistener.h \
-		connection_server.h connection_listener.h debug_timer.h \
-		amq_constants.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h msg_signal.h msg_cmd.h msg_pcrequest.h \
+		msg_pcreturn.h msg_dbchg.h loadmanager.h connection_client.h \
+		lmcontrolareastore.h lmcontrolarea.h dbmemobject.h \
+		lmprogrambase.h lmgroupbase.h lmcontrolareatrigger.h \
+		ctidate.h lmid.h executor.h msg_server_req.h lmmessage.h \
+		lmprogramdirect.h lmprogramdirectgear.h \
+		tbl_lmprogramhistory.h ConstraintViolation.h \
+		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
+		ctibase.h streamSocketConnection.h socket_helper.h \
+		win_helper.h resolvers.h db_entry_defines.h devicetypes.h \
+		clistener.h connection_server.h connection_listener.h \
+		debug_timer.h amq_constants.h
 main.obj:	precompiled.h lmcontrolareastore.h lmcontrolarea.h \
 		dbmemobject.h connection.h dlldefs.h message.h ctitime.h \
 		ctidbgmem.h collectable.h loggable.h msg_multi.h msg_pdata.h \
@@ -1172,11 +1158,11 @@ main.obj:	precompiled.h lmcontrolareastore.h lmcontrolarea.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h lmprogrambase.h lmgroupbase.h msg_pcrequest.h \
-		msg_cmd.h lmcontrolareatrigger.h ctidate.h lmid.h \
-		loadmanager.h connection_client.h executor.h msg_server_req.h \
-		lmmessage.h lmprogramdirect.h lmprogramdirectgear.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		lmprogrambase.h lmgroupbase.h msg_pcrequest.h msg_cmd.h \
+		lmcontrolareatrigger.h ctidate.h lmid.h loadmanager.h \
+		connection_client.h executor.h msg_server_req.h lmmessage.h \
+		lmprogramdirect.h lmprogramdirectgear.h \
 		tbl_lmprogramhistory.h ConstraintViolation.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
 		ctibase.h streamSocketConnection.h socket_helper.h \
@@ -1198,9 +1184,9 @@ sepcyclegear.obj:	precompiled.h sepcyclegear.h lmprogramdirect.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramdirectgear.h \
 		lmcontrolarea.h connection.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h tbl_lmprogramhistory.h \
-		smartgearbase.h GroupControlInterface.h SepControlInterface.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h tbl_lmprogramhistory.h smartgearbase.h \
+		GroupControlInterface.h SepControlInterface.h
 septempoffsetgear.obj:	precompiled.h septempoffsetgear.h \
 		lmprogramdirect.h boostutil.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
@@ -1215,8 +1201,8 @@ septempoffsetgear.obj:	precompiled.h septempoffsetgear.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramdirectgear.h \
 		lmcontrolarea.h connection.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h tbl_lmprogramhistory.h \
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h tbl_lmprogramhistory.h \
 		lmprogramthermostatgear.h smartgearbase.h \
 		GroupControlInterface.h SepControlInterface.h ctistring.h
 test_lmobjects.obj:	devicetypes.h lmutility.h CtiTime.h dlldefs.h \
@@ -1233,11 +1219,10 @@ test_lmobjects.obj:	devicetypes.h lmutility.h CtiTime.h dlldefs.h \
 		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h test_reader.h lmgroupecobee.h \
-		GroupControlInterface.h ecobeeControlInterface.h \
-		ecobeeCycleGear.h lmprogramdirect.h lmprogramdirectgear.h \
-		tbl_lmprogramhistory.h smartgearbase.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		test_reader.h lmgroupecobee.h GroupControlInterface.h \
+		ecobeeControlInterface.h ecobeeCycleGear.h lmprogramdirect.h \
+		lmprogramdirectgear.h tbl_lmprogramhistory.h smartgearbase.h
 test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
 		os2_2w32.h constants.h numstr.h lmprogrambase.h dbmemobject.h \
@@ -1251,8 +1236,8 @@ test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramdirectgear.h \
 		lmcontrolarea.h connection.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h tbl_lmprogramhistory.h \
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h tbl_lmprogramhistory.h \
 		lmprogramcontrolwindow.h lmutility.h lmconstraint.h \
 		lmmessage.h ConstraintViolation.h executor.h msg_server_req.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
@@ -1270,10 +1255,10 @@ test_lmthermostatgear.obj:	lmutility.h CtiTime.h dlldefs.h ctidate.h \
 		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
 		database_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h test_reader.h lmProgramThermostatGear.h \
-		lmprogramdirectgear.h lmGroupExpresscom.h \
-		BeatThePeakControlInterface.h BeatThePeakAlertLevel.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		test_reader.h lmProgramThermostatGear.h lmprogramdirectgear.h \
+		lmGroupExpresscom.h BeatThePeakControlInterface.h \
+		BeatThePeakAlertLevel.h
 test_lm_constraintviolations.obj:	ConstraintViolation.h ctitime.h \
 		dlldefs.h collectable.h ctidate.h
 #ENDUPDATE#

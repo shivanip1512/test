@@ -5,7 +5,6 @@
 #include "tbl_direct.h"
 #include "porter.h"  //  for RESULT and ENCODED
 
-#include "string_utility.h"
 
 class CtiDeviceRemote : public CtiDeviceSingle
 {

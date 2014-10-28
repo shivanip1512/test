@@ -195,26 +195,26 @@ clean:
 calc.obj:	precompiled.h calc.h ctiqueues.h calccomponent.h ctitime.h \
 		dlldefs.h ctidate.h pointstore.h hashkey.h hash_functions.h \
 		rtdb.h utility.h queues.h cticalls.h yukon.h types.h \
-		ctidbgmem.h os2_2w32.h constants.h numstr.h string_utility.h \
-		dllbase.h dsm2.h streamConnection.h netports.h timing_util.h \
-		immutable.h atomic.h critical_section.h guard.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h pointdefs.h regression.h tbl_pt_limit.h \
-		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h row_reader.h
+		ctidbgmem.h os2_2w32.h constants.h numstr.h dllbase.h dsm2.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		atomic.h critical_section.h guard.h logger.h streamBuffer.h \
+		loggable.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		pointdefs.h regression.h tbl_pt_limit.h dbmemobject.h \
+		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
+		desolvers.h row_reader.h
 calccomponent.obj:	precompiled.h calccomponent.h ctitime.h dlldefs.h \
 		ctidate.h pointstore.h hashkey.h hash_functions.h rtdb.h \
 		utility.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
-		os2_2w32.h constants.h numstr.h string_utility.h dllbase.h \
-		dsm2.h streamConnection.h netports.h timing_util.h \
-		immutable.h atomic.h critical_section.h guard.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h pointdefs.h regression.h tbl_pt_limit.h \
-		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h row_reader.h calc.h \
-		ctiqueues.h database_connection.h database_reader.h
+		os2_2w32.h constants.h numstr.h dllbase.h dsm2.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		atomic.h critical_section.h guard.h logger.h streamBuffer.h \
+		loggable.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		pointdefs.h regression.h tbl_pt_limit.h dbmemobject.h \
+		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
+		desolvers.h row_reader.h calc.h ctiqueues.h \
+		database_connection.h database_reader.h
 calclogicsvc.obj:	precompiled.h id_calc.h module_util.h dlldefs.h \
 		dbaccess.h dllbase.h dsm2.h streamConnection.h yukon.h \
 		types.h ctidbgmem.h netports.h timing_util.h immutable.h \
@@ -228,13 +228,12 @@ calclogicsvc.obj:	precompiled.h id_calc.h module_util.h dlldefs.h \
 		rwutil.h database_connection.h database_reader.h row_reader.h \
 		boost_time.h configkey.h configval.h ThreadStatusKeeper.h \
 		thread_register_data.h thread_monitor.h smartmap.h \
-		readers_writer_lock.h queue.h string_utility.h thread.h \
-		calclogicsvc.h connection_client.h connection.h \
-		connection_base.h worker_thread.h cservice.h calcthread.h \
-		hashkey.h hash_functions.h calc.h ctiqueues.h calccomponent.h \
-		ctidate.h pointstore.h rtdb.h regression.h tbl_pt_limit.h \
-		dbmemobject.h resolvers.h db_entry_defines.h desolvers.h \
-		amq_constants.h
+		readers_writer_lock.h queue.h thread.h calclogicsvc.h \
+		connection_client.h connection.h connection_base.h \
+		worker_thread.h cservice.h calcthread.h hashkey.h \
+		hash_functions.h calc.h ctiqueues.h calccomponent.h ctidate.h \
+		pointstore.h rtdb.h regression.h tbl_pt_limit.h dbmemobject.h \
+		resolvers.h db_entry_defines.h desolvers.h amq_constants.h
 calcthread.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -248,9 +247,9 @@ calcthread.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		rwutil.h database_connection.h database_reader.h row_reader.h \
 		boost_time.h configkey.h configval.h mgr_holiday.h ctidate.h \
 		ThreadStatusKeeper.h thread_register_data.h thread_monitor.h \
-		smartmap.h readers_writer_lock.h queue.h string_utility.h \
-		thread.h calcthread.h hashkey.h hash_functions.h calc.h \
-		ctiqueues.h calccomponent.h pointstore.h rtdb.h regression.h \
+		smartmap.h readers_writer_lock.h queue.h thread.h \
+		calcthread.h hashkey.h hash_functions.h calc.h ctiqueues.h \
+		calccomponent.h pointstore.h rtdb.h regression.h \
 		tbl_pt_limit.h dbmemobject.h resolvers.h db_entry_defines.h \
 		desolvers.h database_writer.h row_writer.h database_util.h
 calc_logic.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
@@ -261,19 +260,18 @@ calc_logic.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h CServiceConfig.h rtdb.h hashkey.h \
-		hash_functions.h string_utility.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		cparms.h rwutil.h database_connection.h database_reader.h \
-		row_reader.h boost_time.h configkey.h configval.h \
-		calclogicsvc.h connection_client.h connection.h message.h \
-		collectable.h msg_multi.h msg_pdata.h pointdefs.h \
-		pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		cservice.h calcthread.h calc.h ctiqueues.h calccomponent.h \
-		ctidate.h pointstore.h regression.h tbl_pt_limit.h \
-		dbmemobject.h resolvers.h db_entry_defines.h desolvers.h \
-		thread_monitor.h smartmap.h thread.h thread_register_data.h \
-		msg_dbchg.h logManager.h module_util.h
+		hash_functions.h ctibase.h streamSocketConnection.h \
+		socket_helper.h win_helper.h cparms.h rwutil.h \
+		database_connection.h database_reader.h row_reader.h \
+		boost_time.h configkey.h configval.h calclogicsvc.h \
+		connection_client.h connection.h message.h collectable.h \
+		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
+		msg_reg.h queue.h readers_writer_lock.h connection_base.h \
+		worker_thread.h cservice.h calcthread.h calc.h ctiqueues.h \
+		calccomponent.h ctidate.h pointstore.h regression.h \
+		tbl_pt_limit.h dbmemobject.h resolvers.h db_entry_defines.h \
+		desolvers.h thread_monitor.h smartmap.h thread.h \
+		thread_register_data.h msg_dbchg.h logManager.h module_util.h
 log.obj:	precompiled.h connection_client.h connection.h dlldefs.h \
 		message.h ctitime.h ctidbgmem.h collectable.h loggable.h \
 		msg_multi.h msg_pdata.h yukon.h types.h pointdefs.h \
@@ -285,8 +283,8 @@ log.obj:	precompiled.h connection_client.h connection.h dlldefs.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h amq_constants.h msg_cmd.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		amq_constants.h msg_cmd.h
 lurk.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h types.h \
 		ctidbgmem.h database_connection.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
@@ -298,8 +296,8 @@ lurk.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h types.h \
 		configkey.h configval.h message.h collectable.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h amq_constants.h msg_cmd.h msg_dbchg.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		amq_constants.h msg_cmd.h msg_dbchg.h
 newval.obj:	precompiled.h queue.h cparms.h dlldefs.h rwutil.h yukon.h \
 		types.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h streamConnection.h netports.h timing_util.h \
@@ -308,11 +306,11 @@ newval.obj:	precompiled.h queue.h cparms.h dlldefs.h rwutil.h yukon.h \
 		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
 		optional.h macro_offset.h database_reader.h row_reader.h \
-		boost_time.h configkey.h configval.h string_utility.h \
-		message.h collectable.h msg_cmd.h msg_reg.h msg_pcreturn.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		connection_client.h connection.h readers_writer_lock.h \
-		connection_base.h worker_thread.h amq_constants.h
+		boost_time.h configkey.h configval.h message.h collectable.h \
+		msg_cmd.h msg_reg.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h connection_client.h \
+		connection.h readers_writer_lock.h connection_base.h \
+		worker_thread.h amq_constants.h
 newvalrng.obj:	precompiled.h queue.h cparms.h dlldefs.h rwutil.h \
 		yukon.h types.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h streamConnection.h netports.h timing_util.h \
@@ -321,33 +319,32 @@ newvalrng.obj:	precompiled.h queue.h cparms.h dlldefs.h rwutil.h \
 		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
 		optional.h macro_offset.h database_reader.h row_reader.h \
-		boost_time.h configkey.h configval.h string_utility.h \
-		message.h collectable.h msg_cmd.h msg_reg.h msg_pcreturn.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		connection_client.h connection.h readers_writer_lock.h \
-		connection_base.h worker_thread.h amq_constants.h
+		boost_time.h configkey.h configval.h message.h collectable.h \
+		msg_cmd.h msg_reg.h msg_pcreturn.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h connection_client.h \
+		connection.h readers_writer_lock.h connection_base.h \
+		worker_thread.h amq_constants.h
 pointstore.obj:	precompiled.h pointstore.h hashkey.h hash_functions.h \
 		dlldefs.h rtdb.h utility.h ctitime.h queues.h cticalls.h \
 		yukon.h types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		string_utility.h dllbase.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h logger.h streamBuffer.h loggable.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h pointdefs.h \
-		regression.h tbl_pt_limit.h dbmemobject.h dbaccess.h \
-		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
-		row_reader.h ctidate.h
-test_calc.obj:	calc.h ctiqueues.h calccomponent.h ctitime.h dlldefs.h \
-		ctidate.h pointstore.h hashkey.h hash_functions.h rtdb.h \
-		utility.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
-		os2_2w32.h constants.h numstr.h string_utility.h dllbase.h \
-		dsm2.h streamConnection.h netports.h timing_util.h \
+		dllbase.h dsm2.h streamConnection.h netports.h timing_util.h \
 		immutable.h atomic.h critical_section.h guard.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h pointdefs.h regression.h tbl_pt_limit.h \
 		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h row_reader.h
+		db_entry_defines.h desolvers.h row_reader.h ctidate.h
+test_calc.obj:	calc.h ctiqueues.h calccomponent.h ctitime.h dlldefs.h \
+		ctidate.h pointstore.h hashkey.h hash_functions.h rtdb.h \
+		utility.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
+		os2_2w32.h constants.h numstr.h dllbase.h dsm2.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		atomic.h critical_section.h guard.h logger.h streamBuffer.h \
+		loggable.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		pointdefs.h regression.h tbl_pt_limit.h dbmemobject.h \
+		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
+		desolvers.h row_reader.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

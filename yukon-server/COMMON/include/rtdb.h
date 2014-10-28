@@ -21,7 +21,6 @@
 #include "dlldefs.h"
 #include "hashkey.h"
 #include "utility.h"
-#include "string_utility.h"
 
 /*
  *  These are the Configuration Parameters for the Port Real Time Database

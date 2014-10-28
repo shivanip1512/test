@@ -106,12 +106,12 @@ test_pilserver.obj:	pilserver.h dsm2.h streamConnection.h yukon.h \
 		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
 		msg_reg.h queue.h cparms.h rwutil.h database_connection.h \
 		dbaccess.h dllbase.h database_reader.h row_reader.h \
-		boost_time.h configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		connection_listener.h ctibase.h streamSocketConnection.h \
-		socket_helper.h win_helper.h smartmap.h msg_pcrequest.h \
-		mgr_device.h rtdb.h hashkey.h hash_functions.h dev_base.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
+		boost_time.h configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h connection_listener.h \
+		ctibase.h streamSocketConnection.h socket_helper.h \
+		win_helper.h smartmap.h msg_pcrequest.h mgr_device.h rtdb.h \
+		hashkey.h hash_functions.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h \
 		tbl_paoexclusion.h config_device.h rte_base.h dbmemobject.h \
 		tbl_pao_lite.h tbl_rtcomm.h resolvers.h db_entry_defines.h \
 		desolvers.h msg_signal.h tbl_static_paoinfo.h encryption.h \

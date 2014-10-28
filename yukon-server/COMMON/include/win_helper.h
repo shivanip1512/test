@@ -33,4 +33,6 @@ inline std::string getSystemErrorMessage(const DWORD errorCode)
     return result;
 }
 
+IM_EX_CTIBASE __int64 getPrivateBytes();
+
 } // namespace Cti

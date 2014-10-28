@@ -476,9 +476,9 @@ ion_datastream.obj:	precompiled.h ctidbgmem.h guard.h utility.h \
 		ion_value_variable_fixedarray_element.h \
 		ion_value_fixed_char.h ion_value_variable_boolean.h \
 		ion_value_fixed_float.h ion_value_fixed_intsigned.h \
-		ion_value_fixed_intunsigned.h string_utility.h \
-		ion_value_struct.h ion_value_structarray.h \
-		ion_value_struct_types.h ion_value_fixed_time.h
+		ion_value_fixed_intunsigned.h ion_value_struct.h \
+		ion_value_structarray.h ion_value_struct_types.h \
+		ion_value_fixed_time.h
 ion_net_application.obj:	precompiled.h guard.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
 		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
@@ -516,7 +516,7 @@ ion_value.obj:	precompiled.h ctidbgmem.h guard.h utility.h ctitime.h \
 		ion_value_fixed_time.h ion_value_variable_fixedarray.h \
 		ion_value_variable.h ion_value_fixed_char.h \
 		ion_value_variable_boolean.h ion_value_fixed_float.h \
-		ion_value_fixed_intsigned.h string_utility.h
+		ion_value_fixed_intsigned.h
 ion_value_fixed.obj:	precompiled.h ctidbgmem.h guard.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h yukon.h types.h \
 		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
@@ -572,7 +572,7 @@ ion_value_struct.obj:	precompiled.h ctidbgmem.h logger.h dlldefs.h \
 		ion_value_fixed_time.h ion_value_variable_fixedarray.h \
 		ion_value_variable.h ion_value_fixed_char.h \
 		ion_value_variable_boolean.h ion_value_fixed_float.h \
-		ion_value_fixed_intsigned.h string_utility.h
+		ion_value_fixed_intsigned.h
 ion_value_structarray.obj:	precompiled.h ctidbgmem.h logger.h \
 		dlldefs.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
@@ -585,7 +585,7 @@ ion_value_structarray.obj:	precompiled.h ctidbgmem.h logger.h \
 		ion_value_fixed_time.h ion_value_variable_fixedarray.h \
 		ion_value_variable.h ion_value_fixed_char.h \
 		ion_value_variable_boolean.h ion_value_fixed_float.h \
-		ion_value_fixed_intsigned.h string_utility.h
+		ion_value_fixed_intsigned.h
 ion_value_struct_types.obj:	precompiled.h ion_value_struct_types.h \
 		ion_value_struct.h ion_value.h dlldefs.h ion_serializable.h \
 		numstr.h ion_value_fixed_intunsigned.h ion_value_fixed.h \
@@ -593,7 +593,7 @@ ion_value_struct_types.obj:	precompiled.h ion_value_struct_types.h \
 		ion_value_fixed_time.h ion_value_variable_fixedarray.h \
 		ion_value_variable.h ion_value_fixed_char.h \
 		ion_value_variable_boolean.h ion_value_fixed_float.h \
-		ion_value_fixed_intsigned.h string_utility.h
+		ion_value_fixed_intsigned.h
 ion_value_variable.obj:	precompiled.h ctidbgmem.h guard.h utility.h \
 		ctitime.h dlldefs.h queues.h cticalls.h yukon.h types.h \
 		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
@@ -605,7 +605,7 @@ ion_value_variable.obj:	precompiled.h ctidbgmem.h guard.h utility.h \
 		ion_value_variable_program.h ion_value_variable_fixedarray.h \
 		ion_value_fixed_char.h ion_value_fixed.h \
 		ion_value_fixed_float.h ion_value_fixed_intsigned.h \
-		ion_value_fixed_intunsigned.h string_utility.h
+		ion_value_fixed_intunsigned.h
 ion_value_variable_boolean.obj:	precompiled.h ctidbgmem.h logger.h \
 		dlldefs.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
@@ -625,8 +625,7 @@ ion_value_variable_fixedarray.obj:	precompiled.h logger.h dlldefs.h \
 		ion_value_variable_fixedarray_element.h \
 		ion_value_fixed_char.h ion_value_fixed.h \
 		ion_value_variable_boolean.h ion_value_fixed_float.h \
-		ion_value_fixed_intsigned.h ion_value_fixed_intunsigned.h \
-		string_utility.h
+		ion_value_fixed_intsigned.h ion_value_fixed_intunsigned.h
 ion_value_variable_program.obj:	precompiled.h ctidbgmem.h logger.h \
 		dlldefs.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
@@ -803,10 +802,10 @@ prot_ion.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
 		ion_value_variable_fixedarray_element.h \
 		ion_value_fixed_char.h ion_value_variable_boolean.h \
 		ion_value_fixed_float.h ion_value_fixed_intsigned.h \
-		ion_value_fixed_intunsigned.h string_utility.h \
-		ion_value_struct.h ion_value_structarray.h \
-		ion_value_struct_types.h ion_value_fixed_time.h \
-		ion_net_application.h ion_net_network.h ion_net_datalink.h \
+		ion_value_fixed_intunsigned.h ion_value_struct.h \
+		ion_value_structarray.h ion_value_struct_types.h \
+		ion_value_fixed_time.h ion_net_application.h \
+		ion_net_network.h ion_net_datalink.h \
 		ion_value_variable_program.h
 prot_klondike.obj:	precompiled.h yukon.h types.h ctidbgmem.h logger.h \
 		dlldefs.h streamBuffer.h loggable.h string_util.h \

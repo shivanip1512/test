@@ -109,11 +109,11 @@ test_gen_reply.obj:	trx_711.h trx_info.h logger.h dlldefs.h \
 		critical_section.h atomic.h porter.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
 		guard.h mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		devicetypes.h string_utility.h portdecl.h rte_base.h \
-		dbmemobject.h cmdparse.h ctitokenizer.h parsevalue.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h dllbase.h message.h collectable.h tbl_pao_lite.h \
-		row_reader.h tbl_rtcomm.h dbaccess.h resolvers.h pointtypes.h \
+		devicetypes.h portdecl.h rte_base.h dbmemobject.h cmdparse.h \
+		ctitokenizer.h parsevalue.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h \
+		dllbase.h message.h collectable.h tbl_pao_lite.h row_reader.h \
+		tbl_rtcomm.h dbaccess.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h msg_signal.h \
 		tbl_static_paoinfo.h pointdefs.h database_connection.h \
 		rwutil.h database_reader.h boost_time.h encryption.h \

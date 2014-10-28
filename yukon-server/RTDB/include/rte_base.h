@@ -10,7 +10,6 @@
 #include "tbl_rtcomm.h"
 #include "msg_signal.h"
 #include "yukon.h"
-#include "string_utility.h"
 #include "tbl_static_paoinfo.h"
 #include "encryption.h"
 #include "loggable.h"

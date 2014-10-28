@@ -123,13 +123,13 @@ $(BIN)\test*.exe
 test_calc.obj:	calc.h ctiqueues.h calccomponent.h ctitime.h dlldefs.h \
 		ctidate.h pointstore.h hashkey.h hash_functions.h rtdb.h \
 		utility.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
-		os2_2w32.h constants.h numstr.h string_utility.h dllbase.h \
-		dsm2.h streamConnection.h netports.h timing_util.h \
-		immutable.h atomic.h critical_section.h guard.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h pointdefs.h regression.h tbl_pt_limit.h \
-		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h row_reader.h
+		os2_2w32.h constants.h numstr.h dllbase.h dsm2.h \
+		streamConnection.h netports.h timing_util.h immutable.h \
+		atomic.h critical_section.h guard.h logger.h streamBuffer.h \
+		loggable.h string_util.h exception_helper.h boostutil.h \
+		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		pointdefs.h regression.h tbl_pt_limit.h dbmemobject.h \
+		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
+		desolvers.h row_reader.h
 #ENDUPDATE#
 

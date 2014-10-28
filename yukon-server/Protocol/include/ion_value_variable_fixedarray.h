@@ -8,7 +8,6 @@
 #include "ion_value_fixed_float.h"
 #include "ion_value_fixed_intsigned.h"
 #include "ion_value_fixed_intunsigned.h"
-#include "string_utility.h"
 
 
 template < class T > class CtiIONFixedArrayTemplate;

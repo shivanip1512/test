@@ -5,7 +5,6 @@
 #include "thread.h"
 #include "logger.h"
 #include "port_base.h"
-#include "string_utility.h"
 
 
 class IM_EX_PORTGLOB CtiPortShare : public CtiThread

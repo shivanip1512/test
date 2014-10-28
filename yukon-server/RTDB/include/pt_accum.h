@@ -8,7 +8,6 @@
 #include "pt_numeric.h"
 #include "tbl_pt_accum.h"
 #include "tbl_pt_accumhistory.h"
-#include "string_utility.h"
 
 class IM_EX_PNTDB CtiPointAccumulator : public CtiPointNumeric
 {

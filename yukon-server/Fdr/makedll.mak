@@ -584,7 +584,7 @@ fdracs.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h \
 		fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
+		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h socket_helper.h win_helper.h \
@@ -604,9 +604,9 @@ fdracsmulti.obj:	precompiled.h ctidate.h dlldefs.h ctitime.h cparms.h \
 		mgr_fdrpoint.h smartmap.h readers_writer_lock.h fdrpoint.h \
 		fdrdestination.h fdr.h fdrsocketinterface.h fdrinterface.h \
 		msg_dbchg.h connection_client.h connection.h queue.h \
-		string_utility.h connection_base.h worker_thread.h \
-		fdrdebuglevel.h socket_helper.h win_helper.h fdrscadahelper.h \
-		fdracsmulti.h fdrscadaserver.h fdrsocketserver.h \
+		connection_base.h worker_thread.h fdrdebuglevel.h \
+		socket_helper.h win_helper.h fdrscadahelper.h fdracsmulti.h \
+		fdrscadaserver.h fdrsocketserver.h \
 		fdrclientserverconnection.h serverconnection.h std_helper.h
 fdrasciiimportbase.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h rwutil.h yukon.h types.h ctidbgmem.h \
@@ -620,10 +620,10 @@ fdrasciiimportbase.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		configkey.h configval.h msg_multi.h collectable.h msg_pdata.h \
 		pointdefs.h pointtypes.h message.h fdrasciiimportbase.h \
 		fdrinterface.h msg_dbchg.h connection_client.h connection.h \
-		msg_ptreg.h msg_reg.h queue.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
-		fdrdebuglevel.h fdrpointlist.h msg_cmd.h
+		msg_ptreg.h msg_reg.h queue.h readers_writer_lock.h \
+		connection_base.h worker_thread.h mgr_fdrpoint.h smartmap.h \
+		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h msg_cmd.h
 fdrbepc.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		rwutil.h yukon.h types.h ctidbgmem.h database_connection.h \
 		dbaccess.h dllbase.h dsm2.h streamConnection.h netports.h \
@@ -636,10 +636,10 @@ fdrbepc.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		collectable.h pointtypes.h fdrtextfilebase.h fdrinterface.h \
 		msg_dbchg.h connection_client.h connection.h msg_multi.h \
 		msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h queue.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
-		TextFileInterfaceParts.h fdrbepc.h ctitokenizer.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h TextFileInterfaceParts.h \
+		fdrbepc.h ctitokenizer.h
 fdrclientconnection.obj:	precompiled.h logger.h dlldefs.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
@@ -652,11 +652,11 @@ fdrclientconnection.obj:	precompiled.h logger.h dlldefs.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
-		msg_cmd.h fdrsocketlayer.h fdrsocketconnection.h \
-		socket_helper.h win_helper.h fdrclientconnection.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h msg_cmd.h fdrsocketlayer.h \
+		fdrsocketconnection.h socket_helper.h win_helper.h \
+		fdrclientconnection.h
 fdrclientserverconnection.obj:	precompiled.h logger.h dlldefs.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
@@ -669,15 +669,15 @@ fdrclientserverconnection.obj:	precompiled.h logger.h dlldefs.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
-		msg_cmd.h fdrscadaserver.h fdrsocketserver.h \
-		fdrclientserverconnection.h serverconnection.h \
-		socket_helper.h win_helper.h prot_dnp.h prot_base.h xfer.h \
-		packet_finder.h dnp_application.h dnp_objects.h \
-		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
-		dnp_configuration.h dnp_object_binaryoutput.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h msg_cmd.h fdrscadaserver.h \
+		fdrsocketserver.h fdrclientserverconnection.h \
+		serverconnection.h socket_helper.h win_helper.h prot_dnp.h \
+		prot_base.h xfer.h packet_finder.h dnp_application.h \
+		dnp_objects.h dnp_transport.h dnp_datalink.h \
+		dnp_datalink_packet.h dnp_configuration.h \
+		dnp_object_binaryoutput.h
 fdrcygnet.obj:	precompiled.h ctitime.h dlldefs.h cparms.h rwutil.h \
 		yukon.h types.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h streamConnection.h netports.h timing_util.h \
@@ -689,7 +689,7 @@ fdrcygnet.obj:	precompiled.h ctitime.h dlldefs.h cparms.h rwutil.h \
 		configkey.h configval.h msg_multi.h collectable.h msg_pdata.h \
 		pointdefs.h pointtypes.h message.h msg_ptreg.h msg_cmd.h \
 		msg_reg.h msg_signal.h fdrcygnet.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
+		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h
@@ -719,12 +719,11 @@ fdrdnphelper.obj:	precompiled.h msg_cmd.h message.h ctitime.h \
 		serverconnection.h fdrinterface.h msg_dbchg.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h string_utility.h connection_base.h \
-		worker_thread.h socket_helper.h win_helper.h \
-		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
-		dnp_object_time.h prot_dnp.h packet_finder.h \
-		dnp_application.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_configuration.h \
+		configval.h connection_base.h worker_thread.h socket_helper.h \
+		win_helper.h dnp_object_analoginput.h dnp_objects.h \
+		prot_base.h xfer.h dnp_object_time.h prot_dnp.h \
+		packet_finder.h dnp_application.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h
 fdrdnpslave.obj:	precompiled.h ctidate.h dlldefs.h ctitime.h \
 		ctistring.h cparms.h rwutil.h yukon.h types.h ctidbgmem.h \
@@ -740,15 +739,14 @@ fdrdnpslave.obj:	precompiled.h ctidate.h dlldefs.h ctitime.h \
 		msg_reg.h msg_signal.h fdrpointlist.h mgr_fdrpoint.h \
 		smartmap.h readers_writer_lock.h fdrpoint.h fdrdestination.h \
 		fdr.h fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
-		connection_base.h worker_thread.h fdrdebuglevel.h \
-		socket_helper.h win_helper.h fdrscadaserver.h \
-		fdrsocketserver.h fdrclientserverconnection.h \
-		serverconnection.h fdrdnphelper.h fdrdnpslave.h \
-		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
-		dnp_object_time.h prot_dnp.h packet_finder.h \
-		dnp_application.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_configuration.h \
+		connection_client.h connection.h queue.h connection_base.h \
+		worker_thread.h fdrdebuglevel.h socket_helper.h win_helper.h \
+		fdrscadaserver.h fdrsocketserver.h \
+		fdrclientserverconnection.h serverconnection.h fdrdnphelper.h \
+		fdrdnpslave.h dnp_object_analoginput.h dnp_objects.h \
+		prot_base.h xfer.h dnp_object_time.h prot_dnp.h \
+		packet_finder.h dnp_application.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h dnp_object_binaryinput.h \
 		dnp_object_counter.h std_helper.h
 fdrdsm2filein.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
@@ -763,7 +761,7 @@ fdrdsm2filein.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		configkey.h configval.h msg_cmd.h message.h collectable.h \
 		pointtypes.h fdrtextfilebase.h fdrinterface.h msg_dbchg.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_ptreg.h msg_reg.h queue.h string_utility.h \
+		pointdefs.h msg_ptreg.h msg_reg.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h TextFileInterfaceParts.h \
@@ -781,10 +779,9 @@ fdrdsm2import.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		pointdefs.h pointtypes.h message.h msg_ptreg.h msg_cmd.h \
 		msg_reg.h msg_signal.h fdrdsm2import.h fdrasciiimportbase.h \
 		fdrinterface.h msg_dbchg.h connection_client.h connection.h \
-		queue.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h mgr_fdrpoint.h smartmap.h \
-		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h
+		queue.h readers_writer_lock.h connection_base.h \
+		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
+		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h
 fdrftpinterface.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h rwutil.h yukon.h types.h ctidbgmem.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
@@ -797,10 +794,10 @@ fdrftpinterface.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		configkey.h configval.h msg_multi.h collectable.h msg_pdata.h \
 		pointdefs.h pointtypes.h message.h fdrftpinterface.h \
 		fdrinterface.h msg_dbchg.h connection_client.h connection.h \
-		msg_ptreg.h msg_reg.h queue.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
-		fdrdebuglevel.h fdrpointlist.h msg_cmd.h
+		msg_ptreg.h msg_reg.h queue.h readers_writer_lock.h \
+		connection_base.h worker_thread.h mgr_fdrpoint.h smartmap.h \
+		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h msg_cmd.h
 fdrinet.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
 		constants.h numstr.h cparms.h rwutil.h database_connection.h \
@@ -813,7 +810,7 @@ fdrinet.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h \
 		fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
+		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h socket_helper.h win_helper.h \
@@ -832,10 +829,9 @@ fdrinterface.obj:	precompiled.h row_reader.h ctitime.h dlldefs.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h message.h \
 		msg_ptreg.h msg_cmd.h msg_dbchg.h msg_signal.h fdrinterface.h \
 		connection_client.h connection.h msg_reg.h queue.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
-		amq_constants.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h amq_constants.h
 fdrio.obj:	precompiled.h fdrio.h
 fdriosocket.obj:	precompiled.h fdriosocket.h ctitime.h dlldefs.h \
 		fdrio.h
@@ -853,10 +849,10 @@ fdrlivedata.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		hash_functions.h resolvers.h db_entry_defines.h fdr.h \
 		fdrdebuglevel.h livedatatypes.h fdrlivedata.h fdrinterface.h \
 		msg_dbchg.h connection_client.h connection.h queue.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdrpointlist.h fdrsimplebase.h \
-		fdrasciiimportbase.h livedata_rtp_api.h RTP_APIW.H RTP.H
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h \
+		fdrpointlist.h fdrsimplebase.h fdrasciiimportbase.h \
+		livedata_rtp_api.h RTP_APIW.H RTP.H
 fdrlodestarimport.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h rwutil.h yukon.h types.h ctidbgmem.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
@@ -870,11 +866,11 @@ fdrlodestarimport.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		msg_signal.h pointtypes.h fdrtextfilebase.h fdrinterface.h \
 		msg_dbchg.h connection_client.h connection.h msg_multi.h \
 		msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h queue.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
-		TextFileInterfaceParts.h fdrlodestarimport.h \
-		fdrlodestarinfo.h rtdb.h hashkey.h hash_functions.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h TextFileInterfaceParts.h \
+		fdrlodestarimport.h fdrlodestarinfo.h rtdb.h hashkey.h \
+		hash_functions.h
 fdrlodestarimport_enh.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h rwutil.h yukon.h types.h ctidbgmem.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
@@ -887,7 +883,7 @@ fdrlodestarimport_enh.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		configkey.h configval.h msg_cmd.h message.h collectable.h \
 		pointtypes.h fdrtextfilebase.h fdrinterface.h msg_dbchg.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_ptreg.h msg_reg.h queue.h string_utility.h \
+		pointdefs.h msg_ptreg.h msg_reg.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h TextFileInterfaceParts.h \
@@ -905,7 +901,7 @@ fdrlodestarimport_std.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		configkey.h configval.h msg_cmd.h message.h collectable.h \
 		pointtypes.h fdrtextfilebase.h fdrinterface.h msg_dbchg.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_ptreg.h msg_reg.h queue.h string_utility.h \
+		pointdefs.h msg_ptreg.h msg_reg.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h TextFileInterfaceParts.h \
@@ -926,7 +922,7 @@ fdrpibase.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h hashkey.h \
 		hash_functions.h resolvers.h db_entry_defines.h ctistring.h \
 		fdr.h fdrdebuglevel.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
+		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h \
 		fdrpointlist.h fdrpipoll.h fdrpibase.h fdrsimplebase.h \
@@ -943,10 +939,10 @@ fdrpinotify.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h dsm2err.h words.h optional.h macro_offset.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h mgr_fdrpoint.h smartmap.h \
-		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h msg_cmd.h fdrsimplebase.h fdrasciiimportbase.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
+		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
+		msg_cmd.h fdrsimplebase.h fdrasciiimportbase.h
 fdrpipoll.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
 		constants.h numstr.h fdrpipoll.h fdrpibase.h fdrinterface.h \
@@ -959,10 +955,10 @@ fdrpipoll.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
-		msg_cmd.h fdrsimplebase.h fdrasciiimportbase.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h msg_cmd.h fdrsimplebase.h \
+		fdrasciiimportbase.h
 fdrpoint.obj:	precompiled.h ctitime.h dlldefs.h fdrpoint.h \
 		pointtypes.h fdrdestination.h fdr.h pointdefs.h rwutil.h \
 		yukon.h types.h ctidbgmem.h database_connection.h dbaccess.h \
@@ -1015,7 +1011,7 @@ fdrrccs.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h \
 		fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
+		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h socket_helper.h win_helper.h \
@@ -1033,7 +1029,7 @@ fdrrdex.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h \
 		fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
+		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h socket_helper.h win_helper.h \
@@ -1056,12 +1052,12 @@ fdrscadahelper.obj:	precompiled.h msg_cmd.h message.h ctitime.h \
 		serverconnection.h fdrinterface.h msg_dbchg.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h string_utility.h connection_base.h \
-		worker_thread.h socket_helper.h win_helper.h fdrdnpslave.h \
-		fdrdnphelper.h dnp_object_analoginput.h dnp_objects.h \
-		prot_base.h xfer.h dnp_object_time.h prot_dnp.h \
-		packet_finder.h dnp_application.h dnp_transport.h \
-		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
+		configval.h connection_base.h worker_thread.h socket_helper.h \
+		win_helper.h fdrdnpslave.h fdrdnphelper.h \
+		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
+		dnp_object_time.h prot_dnp.h packet_finder.h \
+		dnp_application.h dnp_transport.h dnp_datalink.h \
+		dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h fdrvalmetmulti.h
 fdrscadaserver.obj:	precompiled.h fdrscadaserver.h dlldefs.h \
 		fdrsocketserver.h queues.h cticalls.h yukon.h types.h \
@@ -1076,11 +1072,10 @@ fdrscadaserver.obj:	precompiled.h fdrscadaserver.h dlldefs.h \
 		atomic.h critical_section.h guard.h utility.h numstr.h \
 		logger.h exception_helper.h boostutil.h dsm2err.h words.h \
 		optional.h macro_offset.h database_reader.h row_reader.h \
-		boost_time.h configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
-		fdrdebuglevel.h fdrpointlist.h msg_cmd.h socket_helper.h \
-		win_helper.h
+		boost_time.h configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h mgr_fdrpoint.h smartmap.h \
+		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h msg_cmd.h socket_helper.h win_helper.h
 fdrserverconnection.obj:	precompiled.h logger.h dlldefs.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
@@ -1093,11 +1088,11 @@ fdrserverconnection.obj:	precompiled.h logger.h dlldefs.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
-		msg_cmd.h fdrsocketlayer.h fdrsocketconnection.h \
-		socket_helper.h win_helper.h fdrserverconnection.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h msg_cmd.h fdrsocketlayer.h \
+		fdrsocketconnection.h socket_helper.h win_helper.h \
+		fdrserverconnection.h
 fdrservice.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h \
 		types.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h streamConnection.h netports.h timing_util.h \
@@ -1108,11 +1103,10 @@ fdrservice.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h \
 		optional.h macro_offset.h database_reader.h row_reader.h \
 		boost_time.h configkey.h configval.h fdrservice.h cservice.h \
 		thread_monitor.h smartmap.h readers_writer_lock.h queue.h \
-		string_utility.h thread.h thread_register_data.h \
-		connection_client.h connection.h message.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h connection_base.h worker_thread.h msg_cmd.h \
-		amq_constants.h
+		thread.h thread_register_data.h connection_client.h \
+		connection.h message.h collectable.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
+		connection_base.h worker_thread.h msg_cmd.h amq_constants.h
 fdrsimplebase.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h rwutil.h yukon.h types.h ctidbgmem.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
@@ -1127,10 +1121,9 @@ fdrsimplebase.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		msg_reg.h msg_signal.h hashkey.h hash_functions.h resolvers.h \
 		db_entry_defines.h fdr.h fdrdebuglevel.h fdrinterface.h \
 		msg_dbchg.h connection_client.h connection.h queue.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdrpointlist.h fdrsimplebase.h \
-		fdrasciiimportbase.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h \
+		fdrpointlist.h fdrsimplebase.h fdrasciiimportbase.h
 fdrsinglesocket.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h rwutil.h yukon.h types.h ctidbgmem.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
@@ -1144,11 +1137,11 @@ fdrsinglesocket.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		pointdefs.h pointtypes.h message.h msg_ptreg.h msg_cmd.h \
 		msg_reg.h msg_signal.h fdrsocketinterface.h fdrinterface.h \
 		msg_dbchg.h connection_client.h connection.h queue.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
-		socket_helper.h win_helper.h fdrsocketlayer.h \
-		fdrsocketconnection.h fdrserverconnection.h fdrsinglesocket.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h socket_helper.h win_helper.h \
+		fdrsocketlayer.h fdrsocketconnection.h fdrserverconnection.h \
+		fdrsinglesocket.h
 fdrsocketconnection.obj:	precompiled.h logger.h dlldefs.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
@@ -1172,8 +1165,8 @@ fdrsocketinterface.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		fdrinterface.h message.h collectable.h msg_dbchg.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h string_utility.h connection_base.h \
-		worker_thread.h fdrdebuglevel.h msg_cmd.h
+		configval.h connection_base.h worker_thread.h fdrdebuglevel.h \
+		msg_cmd.h
 fdrsocketlayer.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
 		utility.h ctitime.h queues.h cticalls.h yukon.h types.h \
@@ -1186,10 +1179,10 @@ fdrsocketlayer.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h netports.h immutable.h dsm2err.h words.h \
 		optional.h macro_offset.h database_reader.h row_reader.h \
-		boost_time.h configkey.h configval.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
-		fdrdebuglevel.h fdrpointlist.h msg_cmd.h fdrsocketinterface.h \
+		boost_time.h configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h mgr_fdrpoint.h smartmap.h \
+		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h msg_cmd.h fdrsocketinterface.h \
 		fdrclientconnection.h fdrsocketlayer.h fdrsocketconnection.h \
 		fdrserverconnection.h
 fdrsocketserver.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h \
@@ -1204,7 +1197,7 @@ fdrsocketserver.obj:	precompiled.h cparms.h dlldefs.h rwutil.h yukon.h \
 		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h \
 		fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
+		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h socket_helper.h win_helper.h \
@@ -1223,7 +1216,7 @@ fdrstec.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h fdrstec.h \
 		fdrftpinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
+		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h
@@ -1240,7 +1233,7 @@ fdrtelegyr.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h hashkey.h \
 		hash_functions.h resolvers.h db_entry_defines.h fdr.h \
 		fdrdebuglevel.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
+		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h \
 		fdrpointlist.h fdrtelegyr.h fdrasciiimportbase.h \
@@ -1257,7 +1250,7 @@ fdrtextexport.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		configkey.h configval.h msg_cmd.h message.h collectable.h \
 		pointtypes.h fdrtextfilebase.h fdrinterface.h msg_dbchg.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_ptreg.h msg_reg.h queue.h string_utility.h \
+		pointdefs.h msg_ptreg.h msg_reg.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h TextFileInterfaceParts.h \
@@ -1274,11 +1267,10 @@ fdrtextfilebase.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		configkey.h configval.h msg_multi.h collectable.h msg_pdata.h \
 		pointdefs.h pointtypes.h message.h fdrtextfilebase.h \
 		fdrinterface.h msg_dbchg.h connection_client.h connection.h \
-		msg_ptreg.h msg_reg.h queue.h string_utility.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
-		fdrdebuglevel.h fdrpointlist.h msg_cmd.h \
-		TextFileInterfaceParts.h
+		msg_ptreg.h msg_reg.h queue.h readers_writer_lock.h \
+		connection_base.h worker_thread.h mgr_fdrpoint.h smartmap.h \
+		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
+		fdrpointlist.h msg_cmd.h TextFileInterfaceParts.h
 fdrtextimport.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		ctistring.h cparms.h rwutil.h yukon.h types.h ctidbgmem.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
@@ -1291,7 +1283,7 @@ fdrtextimport.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		configkey.h configval.h msg_cmd.h message.h collectable.h \
 		pointtypes.h fdrtextfilebase.h fdrinterface.h msg_dbchg.h \
 		connection_client.h connection.h msg_multi.h msg_pdata.h \
-		pointdefs.h msg_ptreg.h msg_reg.h queue.h string_utility.h \
+		pointdefs.h msg_ptreg.h msg_reg.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h TextFileInterfaceParts.h \
@@ -1308,7 +1300,7 @@ fdrtristate.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h fdrtristate.h \
 		fdrftpinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
+		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h
@@ -1324,10 +1316,10 @@ fdrtristatesub.obj:	precompiled.h dllbase.h dsm2.h streamConnection.h \
 		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h mgr_fdrpoint.h smartmap.h \
-		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h msg_cmd.h ctidate.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
+		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
+		msg_cmd.h ctidate.h
 fdrvalmet.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
 		constants.h numstr.h cparms.h rwutil.h database_connection.h \
@@ -1340,7 +1332,7 @@ fdrvalmet.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h \
 		fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
+		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h socket_helper.h win_helper.h \
@@ -1358,7 +1350,7 @@ fdrvalmetmulti.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		configval.h msg_multi.h collectable.h msg_pdata.h pointdefs.h \
 		pointtypes.h message.h msg_ptreg.h msg_cmd.h msg_reg.h \
 		msg_signal.h fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
+		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h socket_helper.h win_helper.h \
@@ -1389,10 +1381,10 @@ fdrwabash.obj:	precompiled.h dllbase.h dsm2.h streamConnection.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h rwutil.h database_connection.h dbaccess.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h mgr_fdrpoint.h smartmap.h \
-		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h msg_cmd.h
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
+		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
+		msg_cmd.h
 fdrxa21lm.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		rwutil.h yukon.h types.h ctidbgmem.h database_connection.h \
 		dbaccess.h dllbase.h dsm2.h streamConnection.h netports.h \
@@ -1405,7 +1397,7 @@ fdrxa21lm.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
 		msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h \
 		fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h string_utility.h \
+		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		fdrdebuglevel.h fdrpointlist.h socket_helper.h win_helper.h \
@@ -1473,13 +1465,12 @@ test_fdrdnpslave.obj:	fdrdnpslave.h dlldefs.h queues.h cticalls.h \
 		fdrclientserverconnection.h serverconnection.h fdrinterface.h \
 		message.h collectable.h msg_dbchg.h connection_client.h \
 		connection.h msg_multi.h msg_pdata.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h string_utility.h \
-		connection_base.h worker_thread.h fdrdebuglevel.h msg_cmd.h \
-		socket_helper.h win_helper.h fdrdnphelper.h \
-		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
-		dnp_object_time.h prot_dnp.h packet_finder.h \
-		dnp_application.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_configuration.h \
+		queue.h cparms.h configkey.h configval.h connection_base.h \
+		worker_thread.h fdrdebuglevel.h msg_cmd.h socket_helper.h \
+		win_helper.h fdrdnphelper.h dnp_object_analoginput.h \
+		dnp_objects.h prot_base.h xfer.h dnp_object_time.h prot_dnp.h \
+		packet_finder.h dnp_application.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h boost_test_helpers.h \
 		millisecond_timer.h
 test_fdrtelegyr.obj:	fdrtelegyr.h dlldefs.h fdrinterface.h message.h \
@@ -1493,10 +1484,10 @@ test_fdrtelegyr.obj:	fdrtelegyr.h dlldefs.h fdrinterface.h message.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h dsm2err.h words.h optional.h macro_offset.h \
 		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h string_utility.h readers_writer_lock.h \
-		connection_base.h worker_thread.h mgr_fdrpoint.h smartmap.h \
-		fdrpoint.h fdrdestination.h fdr.h fdrdebuglevel.h \
-		fdrpointlist.h msg_cmd.h fdrasciiimportbase.h telegyrgroup.h \
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
+		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
+		msg_cmd.h fdrasciiimportbase.h telegyrgroup.h \
 		telegyrcontrolcenter.h rtdb.h hashkey.h hash_functions.h
 test_fdrtextimport.obj:	fdrtextimport.h dlldefs.h fdrtextfilebase.h \
 		fdrinterface.h message.h ctitime.h ctidbgmem.h collectable.h \
@@ -1510,10 +1501,10 @@ test_fdrtextimport.obj:	fdrtextimport.h dlldefs.h fdrtextfilebase.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
-		msg_cmd.h TextFileInterfaceParts.h ctistring.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h msg_cmd.h \
+		TextFileInterfaceParts.h ctistring.h
 test_fdrtristatesub.obj:	fdrTriStateSub.h dlldefs.h fdrftpinterface.h \
 		fdrinterface.h message.h ctitime.h ctidbgmem.h collectable.h \
 		loggable.h msg_dbchg.h yukon.h types.h connection_client.h \
@@ -1526,10 +1517,9 @@ test_fdrtristatesub.obj:	fdrTriStateSub.h dlldefs.h fdrftpinterface.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		dsm2err.h words.h optional.h macro_offset.h database_reader.h \
 		row_reader.h boost_time.h configkey.h configval.h \
-		string_utility.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdr.h fdrdebuglevel.h fdrpointlist.h \
-		msg_cmd.h ctidate.h
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
+		fdrdebuglevel.h fdrpointlist.h msg_cmd.h ctidate.h
 textfileinterfaceparts.obj:	precompiled.h cparms.h dlldefs.h rwutil.h \
 		yukon.h types.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h streamConnection.h netports.h timing_util.h \

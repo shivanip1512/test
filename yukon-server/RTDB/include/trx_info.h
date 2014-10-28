@@ -10,7 +10,6 @@
 #include "queues.h"
 #include "critical_section.h"
 #include "porter.h"
-#include "string_utility.h"
 
 
 class CtiTransmitterInfo : private boost::noncopyable

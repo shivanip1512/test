@@ -2,7 +2,6 @@
 
 #include "ion_value.h"
 #include "ion_value_struct_types.h"
-#include "string_utility.h"
 
 class CtiIONStructArray : public CtiIONValue
 {
