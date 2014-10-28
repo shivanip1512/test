@@ -8,7 +8,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ attribute name="assetId" required="true" type="java.lang.Integer" %>
-<%@ attribute name="assetAvailabilitySummary" required="true" type="com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary" %>
+<%@ attribute name="assetAvailabilitySummary" required="true" type="com.cannontech.dr.assetavailability.AssetAvailabilitySummary" %>
 <%@ attribute name="pieJSONData" required="true" type="java.util.Map" %>
 <%@ attribute name="showDetails" required="true" type="java.lang.Boolean" %>
 <%@ attribute name="showDownload" type="java.lang.Boolean" %>

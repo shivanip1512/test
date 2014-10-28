@@ -41,6 +41,7 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
+import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.filter.AuthorizedFilter;
 import com.cannontech.dr.program.filter.ForScenarioFilter;
@@ -133,32 +134,29 @@ public class ScenarioController extends DemandResponseControllerBase {
 
     @RequestMapping("/scenario/assetDetails")
     public String assetDetails(@DefaultItemsPerPage(25) PagingParameters paging,
-                               @DefaultSort(dir=Direction.asc, sort="SERIAL_NUM") SortingParameters sorting,
-                               int assetId, 
-                               ModelMap model, 
-                               YukonUserContext userContext) throws IOException {
-        
+            @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting, int assetId,
+            ModelMap model, YukonUserContext userContext) throws IOException {
+
         rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
         DisplayablePao scenario = scenarioService.getScenario(assetId);
 
-        List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, null);
-        AssetDetailsColumn sortBy = AssetDetailsColumn.valueOf(sorting.getSort());
-        sortAssetDetails(resultsList, sortBy, sorting.getDirection() == Direction.desc, userContext);
-        
-        SearchResults<AssetAvailabilityDetails> result = 
-                SearchResults.pageBasedForWholeList(paging, resultsList);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, null, paging, sorting);
 
         model = getAssetAvailabilityInfo(scenario, model, userContext);
-        
+
+        SearchResults<AssetAvailabilityDetails> result =
+            SearchResults.pageBasedForSublist(resultsList, paging, Integer.parseInt(model.get("assetTotal").toString()));
+
         model.addAttribute("assetId", assetId);
         model.addAttribute("scenarioId", assetId);
         model.addAttribute("scenario", scenario);
         model.addAttribute("type", "scenario");
         model.addAttribute("result", result);
-        
+        model.addAttribute("assetTotal", model.get("assetTotal"));
+
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         addAssetColumns(model, accessor, sorting);
-        
+
         return "dr/assetDetails.jsp";
     }
 
@@ -173,29 +171,27 @@ public class ScenarioController extends DemandResponseControllerBase {
      * Used for paging and filtering operations.
      */
     @RequestMapping("/scenario/page")
-    public String page(ModelMap model, 
-                       YukonUserContext userContext,
-                       int assetId,
-                       @DefaultItemsPerPage(25) PagingParameters paging,
-                       @DefaultSort(dir=Direction.asc, sort="SERIAL_NUM") SortingParameters sorting,
-                       @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters) throws IOException {
+    public String page(ModelMap model, YukonUserContext userContext, int assetId,
+            @DefaultItemsPerPage(25) PagingParameters paging,
+            @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
+            @RequestParam(value = "filter[]", required = false) AssetAvailabilityCombinedStatus[] filters,
+            @RequestParam(value = "assetTotal", required = false) String assetTotal) {
 
         DisplayablePao scenario = scenarioService.getScenario(assetId);
-        List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, filters);
-        AssetDetailsColumn sortBy = AssetDetailsColumn.valueOf(sorting.getSort());
-        sortAssetDetails(resultsList, sortBy, sorting.getDirection() == Direction.desc, userContext);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, filters, paging, sorting);
 
-        SearchResults<AssetAvailabilityDetails> result = 
-                SearchResults.pageBasedForWholeList(paging, resultsList);
-        
+        SearchResults<AssetAvailabilityDetails> result =
+            SearchResults.pageBasedForSublist(resultsList, paging, Integer.valueOf(assetTotal));
+
         model.addAttribute("result", result);
         model.addAttribute("type", "scenario");
         model.addAttribute("assetId", assetId);
         model.addAttribute("colorMap", colorMap);
-        
+        model.addAttribute("assetTotal", assetTotal);
+
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         addAssetColumns(model, accessor, sorting);
-        
+
         return "dr/assetTable.jsp";
     }
 

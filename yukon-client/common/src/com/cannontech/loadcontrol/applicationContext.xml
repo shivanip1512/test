@@ -79,6 +79,7 @@
     <bean id="drLoadGroupShowAction" class="com.cannontech.dr.loadgroup.model.LoadGroupShowActionField"/>
 
     <bean class="com.cannontech.dr.assetavailability.service.impl.AssetAvailabilityServiceImpl"/>
+    <bean class="com.cannontech.dr.assetavailability.dao.impl.AssetAvailabilityDaoImpl"/>
     <bean class="com.cannontech.dr.assetavailability.dao.impl.DRGroupDeviceMappingDaoImpl"/>
     <bean class="com.cannontech.dr.assetavailability.dao.impl.DynamicLcrCommunicationsDaoImpl"/>
     <bean class="com.cannontech.dr.estimatedload.service.impl.EstimatedLoadServiceImpl"/>

@@ -44,6 +44,7 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
+import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityPingService;
 import com.cannontech.dr.loadgroup.filter.LoadGroupsForMacroLoadGroupFilter;
 import com.cannontech.dr.loadgroup.service.LoadGroupService;
@@ -156,32 +157,29 @@ public class LoadGroupController extends DemandResponseControllerBase {
     
     @RequestMapping("/loadGroup/assetDetails")
     public String assetDetails(@DefaultItemsPerPage(25) PagingParameters paging,
-                               @DefaultSort(dir=Direction.asc, sort="SERIAL_NUM") SortingParameters sorting,
-                               int assetId, 
-                               ModelMap model, 
-                               YukonUserContext userContext) throws IOException {
-        
+            @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting, int assetId,
+            ModelMap model, YukonUserContext userContext) {
+
         rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(assetId);
 
-        List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, null);
-        AssetDetailsColumn sortBy = AssetDetailsColumn.valueOf(sorting.getSort());
-        sortAssetDetails(resultsList, sortBy, sorting.getDirection() == Direction.desc, userContext);
-        
-        SearchResults<AssetAvailabilityDetails> result = 
-                SearchResults.pageBasedForWholeList(paging, resultsList);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, null, paging, sorting);
 
         model = getAssetAvailabilityInfo(loadGroup, model, userContext);
-        
+
+        SearchResults<AssetAvailabilityDetails> result =
+            SearchResults.pageBasedForSublist(resultsList, paging, Integer.parseInt(model.get("assetTotal").toString()));
+
         model.addAttribute("assetId", assetId);
         model.addAttribute("loadGroupId", assetId);
         model.addAttribute("loadGroup", loadGroup);
         model.addAttribute("type", "loadGroup");
         model.addAttribute("result", result);
-        
+        model.addAttribute("assetTotal", model.get("assetTotal"));
+
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         addAssetColumns(model, accessor, sorting);
-        
+
         return "dr/assetDetails.jsp";
     }
 
@@ -193,29 +191,27 @@ public class LoadGroupController extends DemandResponseControllerBase {
     }
 
     @RequestMapping("/loadGroup/page")
-    public String page(ModelMap model, 
-                       YukonUserContext userContext,
-                       String assetId,
-                       @DefaultItemsPerPage(25) PagingParameters paging,
-                       @DefaultSort(dir=Direction.asc, sort="SERIAL_NUM") SortingParameters sorting,
-                       @RequestParam(value="filter[]", required=false) AssetAvailabilityCombinedStatus[] filters) {
+    public String page(ModelMap model, YukonUserContext userContext, String assetId,
+            @DefaultItemsPerPage(25) PagingParameters paging,
+            @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
+            @RequestParam(value = "filter[]", required = false) AssetAvailabilityCombinedStatus[] filters,
+            @RequestParam(value = "assetTotal", required = false) String assetTotal) {
 
         DisplayablePao loadGroup = loadGroupService.getLoadGroup(Integer.parseInt(assetId));
-        List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, filters);
-        AssetDetailsColumn sortBy = AssetDetailsColumn.valueOf(sorting.getSort());
-        sortAssetDetails(resultsList, sortBy, sorting.getDirection() == Direction.desc, userContext);
+        List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, filters, paging, sorting);
 
-        SearchResults<AssetAvailabilityDetails> result = 
-                SearchResults.pageBasedForWholeList(paging, resultsList);
-        
+        SearchResults<AssetAvailabilityDetails> result =
+            SearchResults.pageBasedForSublist(resultsList, paging, Integer.valueOf(assetTotal));
+
         model.addAttribute("result", result);
         model.addAttribute("type", "loadGroup");
         model.addAttribute("assetId", assetId);
         model.addAttribute("colorMap", colorMap);
-        
+        model.addAttribute("assetTotal", assetTotal);
+
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         addAssetColumns(model, accessor, sorting);
-        
+
         return "dr/assetTable.jsp";
     }
 

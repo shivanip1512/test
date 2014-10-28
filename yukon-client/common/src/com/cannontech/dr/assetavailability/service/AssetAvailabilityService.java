@@ -1,14 +1,19 @@
 package com.cannontech.dr.assetavailability.service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
+import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
+import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
+import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
-import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
 
 /**
  * Service for calculating the asset availability of DR devices and aggregate groups (load groups,
@@ -32,12 +37,7 @@ public interface AssetAvailabilityService {
      * DR grouping.
      * @throws IllegalArgumentException if the specified paoIdentifier is not a DR grouping.
      */
-    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier);
-    
-    /**
-     * Gets a simple asset availability summary of all inventory in all specified load groups.
-     */
-    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Iterable<Integer> loadGroupIds);
+    public AssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier);
     
     /**
      * Gets an asset availability summary of all appliances attached to inventory in any of the specified load groups.
@@ -60,11 +60,11 @@ public interface AssetAvailabilityService {
     public Map<Integer, SimpleAssetAvailability> getAssetAvailability(Iterable<Integer> inventoryIds);
     
     /**
-     * @return A map of inventoryId to AssetAvailability for all inventory in the specified DR
-     * grouping.
-     * @throws IllegalArgumentException if the specified paoIdentifier is not a DR grouping.
+     * @return List of AssetAvailabilityDetails
      */
-    public Map<Integer, SimpleAssetAvailability> getAssetAvailability(PaoIdentifier paoIdentifier);
+    public List<AssetAvailabilityDetails>  getAssetAvailability(PaoIdentifier paoIdentifier,PagingParameters paging,
+                                                                AssetAvailabilityCombinedStatus[] filters,
+                                                                SortingParameters sortBy);
     
     /**
      * Returns every device in the specified load group, program, scenario or control area whose asset

@@ -5,7 +5,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
+import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.chart.model.FlotPieDatas;
@@ -19,7 +19,7 @@ public class AssetAvailabilityChartServiceImpl implements AssetAvailabilityChart
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
-    public Map<String, Object> getJsonPieData(SimpleAssetAvailabilitySummary aaSummary, YukonUserContext userContext) {
+    public Map<String, Object> getJsonPieData(AssetAvailabilitySummary aaSummary, YukonUserContext userContext) {
 
         MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(userContext);
         String runningStr = msa.getMessage("yukon.web.modules.operator.hardware.assetAvailability.active");

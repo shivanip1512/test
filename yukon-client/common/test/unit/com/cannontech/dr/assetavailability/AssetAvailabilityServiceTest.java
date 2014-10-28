@@ -15,29 +15,7 @@ import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.google.common.collect.Sets;
 
 public class AssetAvailabilityServiceTest {
-    @Test
-    public void getAssetAvailability_ByDrGroupPaoIdentifier() {
-        Instant now = getNow();
-        
-        //All the data this method asserts against is set up here
-        AssetAvailabilityService assetAvailabilityService = buildServiceWithOneInEachState(false, now);
-        
-        PaoIdentifier paoIdentifier = new PaoIdentifier(107, PaoType.LM_CONTROL_AREA); //107 = area containing all inventory
-        Map<Integer, SimpleAssetAvailability> aaMap = assetAvailabilityService.getAssetAvailability(paoIdentifier);
-        
-        Set<Integer> expectedInventoryIds = Sets.newHashSet(1, 2, 3, 4, 5, 6, 7, 8);
-        Assert.assertTrue("Inventory id map mismatch.", aaMap.keySet().equals(expectedInventoryIds));
-        
-        testSimpleAssetAvailability_OneWay(aaMap.get(1), now);
-        testSimpleAssetAvailability_OneWay_OptedOut(aaMap.get(2), now);
-        testSimpleAssetAvailability_TwoWay_Active(aaMap.get(3), now);
-        testSimpleAssetAvailability_TwoWay_Inactive(aaMap.get(4), now);
-        testSimpleAssetAvailability_TwoWay_Unavailable(aaMap.get(5), now);
-        testSimpleAssetAvailability_TwoWay_Active_OptedOut(aaMap.get(6), now);
-        testSimpleAssetAvailability_TwoWay_Inactive_OptedOut(aaMap.get(7), now);
-        testSimpleAssetAvailability_TwoWay_Unavailable_OptedOut(aaMap.get(8), now);
-    }
-    
+   
     @Test
     public void getAssetAvailability_ByInventoryIds() {
         Instant now = getNow();
@@ -97,23 +75,13 @@ public class AssetAvailabilityServiceTest {
     }
     
     @Test
-    public void getAssetAvailabilityFromLoadGroups() {
-        AssetAvailabilityService assetAvailabilityService = buildServiceWithOneInEachState();
-        
-        Set<Integer> loadGroupIds = Sets.newHashSet(100, 101);
-        SimpleAssetAvailabilitySummary aaSummary = assetAvailabilityService.getAssetAvailabilityFromLoadGroups(loadGroupIds);
-        
-        testSimpleAssetAvailabilitySummary(aaSummary);
-    }
-    
-    @Test
     public void getAssetAvailabilityFromDrGroup() {
         PaoIdentifier drPaoIdentifier = new PaoIdentifier(107, PaoType.LM_CONTROL_AREA); //107 = area containing all inventory
         
         //All the data this method asserts against is set up here
         AssetAvailabilityService assetAvailabilityService = buildServiceWithOneInEachState();
         
-        SimpleAssetAvailabilitySummary aaSummary = assetAvailabilityService.getAssetAvailabilityFromDrGroup(drPaoIdentifier);
+        AssetAvailabilitySummary aaSummary = assetAvailabilityService.getAssetAvailabilityFromDrGroup(drPaoIdentifier);
         
         testSimpleAssetAvailabilitySummary(aaSummary);
     }
@@ -150,36 +118,19 @@ public class AssetAvailabilityServiceTest {
         Assert.assertEquals("Incorrect number of unavailable appliances", 2, applianceSummary.getUnavailableSize(true)); //include opted-out
     }
     
-    private void testSimpleAssetAvailabilitySummary(SimpleAssetAvailabilitySummary aaSummary) {
-        //All inventory
-        Set<Integer> expectedAllInventory = Sets.newHashSet(1, 2, 3, 4, 5, 6, 7, 8);
-        Assert.assertTrue("One or more inventory ids missing.", aaSummary.getAll().equals(expectedAllInventory));
+    private void testSimpleAssetAvailabilitySummary(AssetAvailabilitySummary aaSummary) {
         
         //Opted-out inventory
-        Set<Integer> expectedOptedOut = Sets.newHashSet(2, 6, 7, 8);
-        Assert.assertTrue("Opted-out inventory ids mismatch.", aaSummary.getOptedOut().equals(expectedOptedOut));
-        Assert.assertEquals("Incorrect number of opted-out inventory.", 4, aaSummary.getOptedOutSize());
+        Assert.assertEquals("Incorrect number of opted-out inventory.", 4, aaSummary.getOptedOutSize().intValue());
         
         //Active inventory
-        Set<Integer> expectedActive = Sets.newHashSet(1, 3); //2 and 6 are active, but opted-out
-        Assert.assertTrue("Active inventory ids mismatch: " + aaSummary.getActive(), aaSummary.getActive().equals(expectedActive));
-        Assert.assertEquals("Incorrect number of active inventory.", 2, aaSummary.getActiveSize()); //exclude opted-out
-        Assert.assertEquals("Incorrect number of active inventory.", 2, aaSummary.getActiveSize(false)); //exclude opted-out
-        Assert.assertEquals("Incorrect number of active inventory.", 4, aaSummary.getActiveSize(true)); //include opted-out
+        Assert.assertEquals("Incorrect number of active inventory.", 2, aaSummary.getActiveSize().intValue()); //exclude opted-out
         
         //Inactive inventory
-        Set<Integer> expectedInactive = Sets.newHashSet(4); //7 is inactive, but opted out
-        Assert.assertTrue("Inactive inventory ids mismatch.", aaSummary.getInactive().equals(expectedInactive));
-        Assert.assertEquals("Incorrect number of incactive inventory", 1, aaSummary.getInactiveSize()); //exclude opted-out
-        Assert.assertEquals("Incorrect number of active inventory.", 1, aaSummary.getInactiveSize(false)); //exclude opted-out
-        Assert.assertEquals("Incorrect number of active inventory.", 2, aaSummary.getInactiveSize(true)); //include opted-out
+        Assert.assertEquals("Incorrect number of incactive inventory", 1, aaSummary.getInactiveSize().intValue()); //exclude opted-out
         
         //Unavailable inventory
-        Set<Integer> expectedUnavailable = Sets.newHashSet(5); //8 is unavailable, but opted out
-        Assert.assertTrue("Unavailable inventory ids mismatch.", aaSummary.getUnavailable().equals(expectedUnavailable));
-        Assert.assertEquals("Incorrect number of unavailable inventory", 1, aaSummary.getUnavailableSize()); //exclude opted-out
-        Assert.assertEquals("Incorrect number of unavailable inventory", 1, aaSummary.getUnavailableSize(false)); //exclude opted-out
-        Assert.assertEquals("Incorrect number of unavailable inventory", 2, aaSummary.getUnavailableSize(true)); //include opted-out
+        Assert.assertEquals("Incorrect number of unavailable inventory", 1, aaSummary.getUnavailableSize().intValue()); //exclude opted-out
     }
     
     //Test inventory 1 - one-way

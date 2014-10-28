@@ -15,6 +15,9 @@ yukon.dr.assetDetails = (function() {
     /** @type {string} - Asset Id. */
     _assetId = "",
     
+    /** @type {string} - Asset Total. */
+    _assetTotal = "",
+    
     /** @type {string} - Number of items to be shown per page */
     _itemsPerPage = "",
     
@@ -42,7 +45,8 @@ yukon.dr.assetDetails = (function() {
         $(event.currentTarget).toggleClass('on');
         var data = {
             'assetId' : _assetId,
-            'filter' : _getFilter()
+            'filter' : _getFilter(),
+            'assetTotal':_assetTotal
         };
         if ("" != _itemsPerPage) {
             data.itemsPerPage = _itemsPerPage;
@@ -89,6 +93,7 @@ yukon.dr.assetDetails = (function() {
             }
 
             _assetId = $("#assetId").val();
+            _assetTotal = $("#assetTotal").val();
             _itemsPerPage = $("#itemsPerPage").val();
             _aaDiv = $('.js-asset-availability');
 

@@ -2,27 +2,36 @@ package com.cannontech.dr.assetavailability.service.impl;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.ApplianceWithRuntime;
+import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
+import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.AssetAvailabilityStatus;
-import com.cannontech.dr.assetavailability.DeviceCommunicationTimes;
+import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.DeviceRelayApplianceCategories;
 import com.cannontech.dr.assetavailability.InventoryRelayAppliances;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
-import com.cannontech.dr.assetavailability.SimpleAssetAvailabilitySummary;
+import com.cannontech.dr.assetavailability.dao.AssetAvailabilityDao;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
@@ -47,6 +56,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     private final DRGroupDeviceMappingDao drGroupDeviceMappingDao;
     private final GlobalSettingDao globalSettingDao;
     private final DynamicLcrCommunicationsDao lcrCommunicationsDao;
+    @Autowired private AssetAvailabilityDao assetAvailabilityDao;
     
     @Autowired
     public AssetAvailabilityServiceImpl(OptOutEventDao optOutEventDao,
@@ -64,12 +74,30 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     }
     
     @Override
-    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier) {
-        log.debug("Calculating asset availability summary for " + drPaoIdentifier.getPaoType() + " " 
-                + drPaoIdentifier.getPaoId());
+    public AssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier) {
+        log.debug("Calculating asset availability summary for " + drPaoIdentifier.getPaoType() + " "
+            + drPaoIdentifier.getPaoId());
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+
+        Instant now = Instant.now();
+        String currentTime = formatter.print(now);
+
+        DateTime communicatingWindowEnd = now.minus(getCommunicationWindowDuration()).toDateTime();
+        String communicatingWindowEndFormatted = formatter.print(communicatingWindowEnd);
+
+        DateTime runtimeWindowEnd = now.minus(getRuntimeWindowDuration()).toDateTime();
+        String runtimeWindowEndFormatted = formatter.print(runtimeWindowEnd);
         Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(drPaoIdentifier);
-        return getAssetAvailabilityFromLoadGroups(loadGroupIds);
+        AssetAvailabilitySummary assetAvailabilitySummary =
+            assetAvailabilityDao.getAssetAvailabilitySummary(loadGroupIds, communicatingWindowEndFormatted,
+                runtimeWindowEndFormatted, currentTime);
+
+        return assetAvailabilitySummary;
     }
+    
+    
+    
     
     @Override
     public ApplianceAssetAvailabilitySummary getApplianceAssetAvailability(PaoIdentifier drPaoIdentifier) {
@@ -172,78 +200,6 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     }
     
     @Override
-    public SimpleAssetAvailabilitySummary getAssetAvailabilityFromLoadGroups(Iterable<Integer> loadGroupIds) {
-        log.debug("Calculating asset availability summary for load groups");
-        if(log.isTraceEnabled()) {
-            log.trace("Load group ids: " + Joiner.on(", ").join(loadGroupIds));
-        }
-        //Get all inventory & associated paos
-        log.debug("Asset availability: getInventoryAndDeviceIdsForLoadGroups");
-        Map<Integer, Integer> inventoryAndDevices = drGroupDeviceMappingDao.getInventoryAndDeviceIdsForLoadGroups(loadGroupIds);
-        log.debug("Asset availability: getInventoryAndDeviceIdsForLoadGroups complete.");
-        Set<Integer> inventoryIds = Sets.newHashSet(inventoryAndDevices.keySet());
-        SimpleAssetAvailabilitySummary aaSummary = new SimpleAssetAvailabilitySummary(inventoryIds);
-        
-        //Get opted out
-        Set<Integer> optedOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(loadGroupIds);
-        aaSummary.addOptedOut(optedOutInventory);
-        
-        //1-way inventory are always considered communicating and running
-        Set<Integer> oneWayInventory = getOneWayInventory(inventoryAndDevices);
-        aaSummary.addCommunicating(oneWayInventory);
-        aaSummary.addRunning(oneWayInventory);
-        
-        //remove 1-way inventory from inventoryAndDevices map
-        Predicate<Integer> notOneWay = Predicates.not(Predicates.in(oneWayInventory));
-        inventoryAndDevices = Maps.filterKeys(inventoryAndDevices, notOneWay);
-        
-        //If all devices are one-way, we don't need to check any points for running/communicating
-        if(inventoryAndDevices.isEmpty()) {
-            return aaSummary;
-        }
-        
-        //Get last communication and runtimes for 2-way devices
-        log.debug("Asset availability: calculating communicating/running");
-        Set<Integer> twoWayDevices = Sets.newHashSet(inventoryAndDevices.values());
-        Map<Integer, DeviceCommunicationTimes> allTimes = lcrCommunicationsDao.findTimes(twoWayDevices);
-        
-        //Get communications and runtime windows
-        Instant now = Instant.now();
-        Instant communicatingWindowEnd = now.minus(getCommunicationWindowDuration());
-        Instant runtimeWindowEnd = now.minus(getRuntimeWindowDuration());
-        
-        //Determine if devices are in communications or runtime windows
-        Set<Integer> communicatedDevices = new HashSet<>();
-        Set<Integer> runningDevices = new HashSet<>();
-        for(Map.Entry<Integer, DeviceCommunicationTimes> entry : allTimes.entrySet()) {
-            DeviceCommunicationTimes times = entry.getValue();
-            if(times != null) {
-                Instant lastCommunicationTime = times.getLastCommunicationTime();
-                Instant lastNonZeroRuntime = times.getLastNonZeroRuntime();
-                if (lastCommunicationTime != null && lastCommunicationTime.isAfter(communicatingWindowEnd)) {
-                    communicatedDevices.add(entry.getKey());
-                }
-                if (lastNonZeroRuntime != null && lastNonZeroRuntime.isAfter(runtimeWindowEnd)) {
-                    runningDevices.add(entry.getKey());
-                }
-            }
-        }
-        
-        Map<Integer, Integer> devicesAndInventory = HashBiMap.create(inventoryAndDevices).inverse();
-        
-        //Add communicating inventory
-        Set<Integer> communicatedInventory = getInventoryFromDevices(communicatedDevices, devicesAndInventory);
-        aaSummary.addCommunicating(communicatedInventory);
-        
-        //Add running inventory
-        Set<Integer> runningInventory = getInventoryFromDevices(runningDevices, devicesAndInventory);
-        aaSummary.addRunning(runningInventory);
-        
-        log.debug("Done calculating asset availability summary for load groups");
-        return aaSummary;
-    }
-    
-    @Override
     public SimpleAssetAvailability getAssetAvailability(int inventoryId) {
         log.debug("Calculating simple asset availability for inventory " + inventoryId);
         Map<Integer, SimpleAssetAvailability> singleValueMap = getAssetAvailability(Sets.newHashSet(inventoryId));
@@ -297,14 +253,33 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     }
     
     @Override
-    public Map<Integer, SimpleAssetAvailability> getAssetAvailability(PaoIdentifier paoIdentifier) {
-        log.debug("Calculating simple asset availability for " + paoIdentifier.getPaoType() + " " 
-                + paoIdentifier.getPaoId());
+    public List<AssetAvailabilityDetails> getAssetAvailability(PaoIdentifier paoIdentifier, PagingParameters paging,
+            AssetAvailabilityCombinedStatus[] filters, SortingParameters sortBy) {
+        log.debug("Calculating asset availability for " + paoIdentifier.getPaoType() + " " + paoIdentifier.getPaoId());
         Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(paoIdentifier);
-        Set<Integer> inventoryIds = drGroupDeviceMappingDao.getInventoryAndDeviceIdsForLoadGroups(loadGroupIds).keySet();
-        return getAssetAvailability(inventoryIds);
+
+        String sortingOrder = (sortBy == null) ? "SERIAL_NUM" : sortBy.getSort();
+        String sortingDirection = ((sortBy == null) ? (Direction.asc).name() : sortBy.getDirection().toString());
+
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+
+        Instant now = Instant.now();
+        String currentTime = formatter.print(now);
+
+        DateTime communicatingWindowEnd = now.minus(getCommunicationWindowDuration()).toDateTime();
+        String communicatingWindowEndFormatted = formatter.print(communicatingWindowEnd);
+
+        DateTime runtimeWindowEnd = now.minus(getRuntimeWindowDuration()).toDateTime();
+        String runtimeWindowEndFormatted = formatter.print(runtimeWindowEnd);
+
+        String filterString = convertFilterListToString(filters);
+
+        List<AssetAvailabilityDetails> assetAvailabilityDetails =
+            assetAvailabilityDao.getAssetAvailabilityDetails(loadGroupIds, paging, filterString, sortingOrder,
+                sortingDirection, communicatingWindowEndFormatted, runtimeWindowEndFormatted, currentTime);
+        return assetAvailabilityDetails;
     }
-    
+
     /**
      * From the supplied sets and maps, this method determines the asset availability of each inventory and returns a
      * map of inventoryId to SimpleAssetAvailability of that inventory.
@@ -429,6 +404,20 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             applianceIds.addAll(inventoryToApplianceMultimap.get(inventoryId));
         }
         return applianceIds;
+    }
+    
+    private String convertFilterListToString(AssetAvailabilityCombinedStatus[] filters) {
+        final StringBuilder filterCriteria = new StringBuilder();
+        if (null != filters) {
+            for (final AssetAvailabilityCombinedStatus status : filters) {
+                if (filterCriteria.length() > 0) {
+                    filterCriteria.append(',');
+                }
+                filterCriteria.append("'").append(status).append("'");
+            }
+            return filterCriteria.toString();
+        }
+        return null;
     }
     
     /**
