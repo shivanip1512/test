@@ -314,11 +314,12 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             if (!isComplete) {
                 isComplete = true;
                 if (isCanceled) {
-                    log.debug("Execution id=" + execution.getId() + " on "
-                        + creationTime.toDateTime().toString(pattern) + " is canceled by the user.");
+                    if (log.isDebugEnabled()) {
+                        log.debug("Execution id=" + execution.getId() + " on "
+                            + creationTime.toDateTime().toString(pattern) + " is canceled by the user.");
+                    }
                     execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.CANCELLED);
                 } else {
-                    execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.COMPLETE);
                     if (log.isDebugEnabled()) {
                         log.debug("Execution id=" + execution.getId() + " callback created on "
                             + creationTime.toDateTime().toString(pattern) + " completed at "
@@ -332,6 +333,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
                                 + creationTime.toDateTime().toString(pattern) + " completed successfully.");
                         }
                     }
+                    execution.setCommandRequestExecutionStatus(CommandRequestExecutionStatus.COMPLETE);
                 }
                 execution.setStopTime(new Date());
                 commandRequestExecutionDao.saveOrUpdate(execution);
@@ -420,9 +422,11 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
                         callback.checkTimeout();
                         if (callback.isComplete) {
                             iterator.remove();
-                            log.debug("Callback created on "
-                                + callback.creationTime.toDateTime().toString(RetryCallback.pattern)
-                                + " is removed from retryCallbacksAwaitingCompletion list");
+                            if (log.isDebugEnabled()) {
+                                log.debug("Callback created on "
+                                    + callback.creationTime.toDateTime().toString(RetryCallback.pattern)
+                                    + " is removed from retryCallbacksAwaitingCompletion list");
+                            }
                         }
                     }
                 } catch (Exception e) {
