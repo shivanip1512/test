@@ -461,7 +461,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         SubStation station;
         /*The Parent ID of Area is always Zero(Area is always an orphan)*/
         if (isArea(childId)) {
-            return getArea(childId).getParentID();
+            return childId;
         } else if (isSubstation(childId)) {
             station = getSubstation(childId);
         } else if (isSubBus(childId)) {
