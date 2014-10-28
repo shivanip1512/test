@@ -254,8 +254,8 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             allDevices.addAll(supportedDevicesByCommand);
         }
         
+        RetryCallback retryCallback = new RetryCallback(allDevices, execution, retryParameters.getStopRetryAfterDate(), callback);
         if (!commandRequests.isEmpty()) {
-            RetryCallback retryCallback = new RetryCallback(allDevices, execution, retryParameters.getStopRetryAfterDate(), callback);
             execution.setRequestCount(commandRequests.size());
             commandRequestExecutionDao.saveOrUpdate(execution);
             CommandRequestRetryExecutor<CommandRequestDevice> retryExecutor =
@@ -266,7 +266,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
             retryExecutor.execute(commandRequests);
         } else {
             executionObjects = new CommandRequestExecutionObjects<CommandRequestDevice>(null, null, execution);
-            callback.complete();
+            retryCallback.complete();
         }
                 
         return executionObjects;
