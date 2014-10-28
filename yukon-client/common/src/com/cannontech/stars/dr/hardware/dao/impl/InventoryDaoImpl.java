@@ -27,9 +27,8 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.InventoryIdentifierMapper;
 import com.cannontech.common.inventory.LmHardwareInventoryIdentifierMapper;
 import com.cannontech.common.inventory.YukonInventory;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.PaoUtils;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -960,9 +959,9 @@ public class InventoryDaoImpl implements InventoryDao {
     }
 
     @Override
-    public List<LiteLmHardware> getLiteLmHardwareByPaos(final List<PaoIdentifier> paos) {
+    public List<LiteLmHardware> getLiteLmHardwareByPaos(final List<? extends YukonPao> paos) {
 
-        final List<Integer> paoIds = Lists.transform(paos, PaoUtils.getPaoIdFunction());
+        final List<Integer> paoIds = Lists.transform(paos, YukonPao.TO_PAO_ID);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override

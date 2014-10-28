@@ -28,7 +28,7 @@
                         <dt:dateTime path="to" value="${settings.to}"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
-                <div class="page-action-area"><cti:button type="submit" nameKey="runAudit" classes="primary action"/></div>
+                <div class="page-action-area"><cti:button type="submit" nameKey="runAudit" classes="primary action" busy="true"/></div>
             </form:form>
         </tags:sectionContainer2>
     </div>

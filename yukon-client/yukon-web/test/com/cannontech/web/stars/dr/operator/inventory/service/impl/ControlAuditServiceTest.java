@@ -1,6 +1,12 @@
 package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyBoolean;
+import static org.easymock.EasyMock.anyInt;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.getCurrentArguments;
+import static org.easymock.EasyMock.replay;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -139,6 +145,21 @@ public class ControlAuditServiceTest {
                     deviceIds.put(deviceId, deviceId);
                 }
                 return deviceIds;
+            }
+        }).anyTimes();
+        inventoryDao.getLiteLmHardwareByPaos(anyObject(List.class));
+        expectLastCall().andAnswer(new IAnswer<List<LiteLmHardware> >() {
+            @Override
+            public List<LiteLmHardware> answer() throws Throwable {
+                List<LiteLmHardware> lmHardwares = new ArrayList<>();
+                for (Integer deviceId : allPaos.keySet()) {
+                    LiteLmHardware hardware = new LiteLmHardware();
+                    HardwareType type = HardwareType.getForPaoType(allPaos.get(deviceId).getPaoType()).get(0);
+                    hardware.setIdentifier(new InventoryIdentifier(deviceId, type));
+                    hardware.setDeviceId(deviceId);
+                    lmHardwares.add(hardware);
+                }
+                return lmHardwares;
             }
         }).anyTimes();
 

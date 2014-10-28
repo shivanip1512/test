@@ -8,7 +8,7 @@ import java.util.Set;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.YukonInventory;
-import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
@@ -181,7 +181,7 @@ public interface InventoryDao {
 
     public LiteLmHardware getLiteLmHardwareByInventory(YukonInventory inventory);
 
-    public List<LiteLmHardware> getLiteLmHardwareByPaos(List<PaoIdentifier> paos);
+    public List<LiteLmHardware> getLiteLmHardwareByPaos(List<? extends YukonPao> paos);
 
     public List<InventoryIdentifier> getYukonInventoryForDeviceIds(List<Integer> deviceIds);
     

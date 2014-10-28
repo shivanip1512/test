@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.inventory.YukonInventory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -30,8 +31,8 @@ import com.cannontech.web.stars.dr.operator.inventory.model.AuditSettings;
 import com.cannontech.web.stars.dr.operator.inventory.model.ControlAuditResult;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.stars.dr.operator.inventory.service.ControlAuditService;
-import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -50,35 +51,25 @@ public class ControlAuditServiceImpl implements ControlAuditService {
     private final BuiltInAttribute r2 = BuiltInAttribute.RELAY_2_SHED_TIME_DATA_LOG;
     private final BuiltInAttribute r3 = BuiltInAttribute.RELAY_3_SHED_TIME_DATA_LOG;
     private static String baseKey = "yukon.web.modules.operator.controlAudit";
-    private static Function<InventoryIdentifier, Integer> toInventoryId = new Function<InventoryIdentifier, Integer>() {
-        @Override
-        public Integer apply(InventoryIdentifier input) {
-            return input.getInventoryId();
-        }
-    };
-    private static Function<PaoIdentifier, Integer> toPaoId = new Function<PaoIdentifier, Integer>() {
-        @Override
-        public Integer apply(PaoIdentifier input) {
-            return input.getPaoId();
-        }
-    };
 
     @Override
     public ControlAuditResult runAudit(AuditSettings settings) {
-        Map<PaoIdentifier, InventoryIdentifier> inventoryByPao = new HashMap<>();
 
         ListMultimap<BuiltInAttribute, YukonPao> paosByAttribute = ArrayListMultimap.create();
+        Map<YukonPao, InventoryIdentifier> inventoryByPao = new HashMap<>();
 
-        AuditDataBuilder auditDataBuidler = new AuditDataBuilder();
+        AuditDataBuilder auditDataBuilder = new AuditDataBuilder();
 
         List<InventoryIdentifier> inventoryCollection = settings.getCollection().getList();
         for (List<InventoryIdentifier> inventorySublist : Lists.partition(inventoryCollection, 1000)) {
-            Map<Integer, Integer> deviceIdsByInventoryId =
-                inventoryDao.getDeviceIds(Iterables.transform(inventorySublist, toInventoryId));
+            Iterable<Integer> inventoryIds = Iterables.transform(inventorySublist, YukonInventory.TO_INVENTORY_ID);
+            Map<Integer, Integer> deviceIdsByInventoryId = inventoryDao.getDeviceIds(inventoryIds);
+
             List<PaoIdentifier> paos = paoDao.getPaoIdentifiersForPaoIds(deviceIdsByInventoryId.values());
-            Map<Integer, PaoIdentifier> paosById = Maps.uniqueIndex(paos, toPaoId);
+            Map<Integer, PaoIdentifier> paosById = Maps.uniqueIndex(paos, YukonPao.TO_PAO_ID);
 
             paosByAttribute.clear();
+            inventoryByPao.clear();
             for (InventoryIdentifier inventory : inventorySublist) {
                 int deviceId = deviceIdsByInventoryId.get(inventory.getInventoryId());
                 boolean isSupported = true;
@@ -86,7 +77,7 @@ public class ControlAuditServiceImpl implements ControlAuditService {
                     isSupported = false;
                 } else {
                     YukonPao pao = paosById.get(deviceId);
-                    inventoryByPao.put(pao.getPaoIdentifier(), inventory);
+                    inventoryByPao.put(pao, inventory);
 
                     // Devices that support relay shed time will always at least support relay #1 shed time.
                     if (!doesPaoSupport(pao, r1)) {
@@ -105,24 +96,29 @@ public class ControlAuditServiceImpl implements ControlAuditService {
                     AuditRow row = new AuditRow();
                     LiteLmHardware hardware = inventoryDao.getLiteLmHardwareByInventory(inventory);
                     row.setHardware(hardware);
-                    auditDataBuidler.addUnsupported(inventory, row);
+                    auditDataBuilder.addUnsupported(inventory, row);
                 }
             }
 
             ListMultimap<PaoIdentifier, PointValueQualityHolder> allPointData =
                 getPointData(settings.getFrom().toDate(), settings.getTo().toDate(), paosByAttribute);
 
+            List<LiteLmHardware> liteLmHardwareByPaos = inventoryDao.getLiteLmHardwareByPaos(paosByAttribute.get(r1));
+
+            ImmutableMap<YukonInventory, LiteLmHardware> inventoryByIdentifier =
+                Maps.uniqueIndex(liteLmHardwareByPaos, LiteLmHardware.TO_INVENTORY);
+
             for (YukonPao yukonPao : paosByAttribute.get(r1)) {
                 PaoIdentifier pao = yukonPao.getPaoIdentifier();
 
                 AuditRow row = new AuditRow();
                 InventoryIdentifier inventory = inventoryByPao.get(pao);
-                row.setHardware(inventoryDao.getLiteLmHardwareByInventory(inventory));
+                row.setHardware(inventoryByIdentifier.get(inventory));
 
                 List<PointValueQualityHolder> pvl = allPointData.get(pao);
 
                 if (pvl.isEmpty()) {
-                    auditDataBuidler.addUnknown(inventory, row);
+                    auditDataBuilder.addUnknown(inventory, row);
                 } else {
                     long durationMinutes = 0;
                     for (PointValueQualityHolder pv : pvl) {
@@ -131,9 +127,9 @@ public class ControlAuditServiceImpl implements ControlAuditService {
                     Duration d = Duration.standardMinutes(durationMinutes); // Duration of shed time
                     row.setControl(d);
                     if (d.isLongerThan(Duration.standardMinutes(1))) {
-                        auditDataBuidler.addControlled(inventory, row);
+                        auditDataBuilder.addControlled(inventory, row);
                     } else {
-                        auditDataBuidler.addUncontrolled(inventory, row);
+                        auditDataBuilder.addUncontrolled(inventory, row);
                     }
                 }
             }
@@ -145,20 +141,20 @@ public class ControlAuditServiceImpl implements ControlAuditService {
         MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(settings.getContext());
 
         String description = messageSourceAccessor.getMessage(baseKey + ".controlledCollectionDescription");
-        result.setControlled(memoryCollectionProducer.createCollection(auditDataBuidler.controlledInventory.iterator(), description));
-        result.setControlledRows(auditDataBuidler.controlledAuditRows);
+        result.setControlled(memoryCollectionProducer.createCollection(auditDataBuilder.controlledInventory.iterator(), description));
+        result.setControlledRows(auditDataBuilder.controlledAuditRows);
 
         description = messageSourceAccessor.getMessage(baseKey + ".uncontrolledCollectionDescription");
-        result.setUncontrolled(memoryCollectionProducer.createCollection(auditDataBuidler.uncontrolledInventory.iterator(), description));
-        result.setUncontrolledRows(auditDataBuidler.uncontrolledAuditRows);
+        result.setUncontrolled(memoryCollectionProducer.createCollection(auditDataBuilder.uncontrolledInventory.iterator(), description));
+        result.setUncontrolledRows(auditDataBuilder.uncontrolledAuditRows);
 
         description = messageSourceAccessor.getMessage(baseKey + ".unknownCollectionDescription");
-        result.setUnknown(memoryCollectionProducer.createCollection(auditDataBuidler.unknownInventory.iterator(), description));
-        result.setUnknownRows(auditDataBuidler.unknownAuditRows);
+        result.setUnknown(memoryCollectionProducer.createCollection(auditDataBuilder.unknownInventory.iterator(), description));
+        result.setUnknownRows(auditDataBuilder.unknownAuditRows);
 
         description = messageSourceAccessor.getMessage(baseKey + ".unsupportedCollectionDescription");
-        result.setUnsupported(memoryCollectionProducer.createCollection(auditDataBuidler.unsupporedInventory.iterator(), description));
-        result.setUnsupportedRows(auditDataBuidler.unsupporedAuditRows);
+        result.setUnsupported(memoryCollectionProducer.createCollection(auditDataBuilder.unsupporedInventory.iterator(), description));
+        result.setUnsupportedRows(auditDataBuilder.unsupporedAuditRows);
 
         return result;
     }

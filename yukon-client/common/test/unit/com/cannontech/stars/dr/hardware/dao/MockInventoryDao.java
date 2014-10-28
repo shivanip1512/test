@@ -8,7 +8,7 @@ import java.util.Set;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.inventory.YukonInventory;
-import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.common.util.Pair;
@@ -196,7 +196,7 @@ public class MockInventoryDao implements InventoryDao {
     }
 
     @Override
-    public List<LiteLmHardware> getLiteLmHardwareByPaos(List<PaoIdentifier> paos) {
+    public List<LiteLmHardware> getLiteLmHardwareByPaos(List<? extends YukonPao> paos) {
         throw new MethodNotImplementedException();
     }
 
