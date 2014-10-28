@@ -18,6 +18,9 @@
 <%@ attribute name="readonly" %>
 <%@ attribute name="size" %>
 <%@ attribute name="tabindex" %>
+<%@ attribute name="password" type="java.lang.Boolean" description="If true, a password field is used. Default: false." %>
+
+<cti:default var="password" value="${false}"/>
 
 <spring:bind path="${path}">
 
@@ -31,12 +34,25 @@
     <c:set var="inputClass" value="error ${pageScope.inputClass}"/>
 </c:if>
 
-<form:input path="${path}" id="${pageScope.id}" disabled="${pageScope.disabled}" 
-    readonly="${pageScope.readonly}" size="${pageScope.size}" 
-    maxlength="${pageScope.maxlength}" autocomplete="${pageScope.autocomplete}" 
-    cssClass="${pageScope.inputClass}" onkeyup="${pageScope.onkeyup}" 
-    onchange="${pageScope.onchange}" onblur="${pageScope.onblur}"
-    tabindex="${pageScope.tabindex}"/>
+<c:choose>
+    <c:when test="${password}">
+        <form:password path="${path}" id="${pageScope.id}" disabled="${pageScope.disabled}" 
+            readonly="${pageScope.readonly}" size="${pageScope.size}" 
+            maxlength="${pageScope.maxlength}" autocomplete="${pageScope.autocomplete}" 
+            cssClass="${pageScope.inputClass}" onkeyup="${pageScope.onkeyup}" 
+            onchange="${pageScope.onchange}" onblur="${pageScope.onblur}"
+            tabindex="${pageScope.tabindex}"/>
+    </c:when>
+    <c:otherwise>
+        <form:input path="${path}" id="${pageScope.id}" disabled="${pageScope.disabled}" 
+            readonly="${pageScope.readonly}" size="${pageScope.size}" 
+            maxlength="${pageScope.maxlength}" autocomplete="${pageScope.autocomplete}" 
+            cssClass="${pageScope.inputClass}" onkeyup="${pageScope.onkeyup}" 
+            onchange="${pageScope.onchange}" onblur="${pageScope.onblur}"
+            tabindex="${pageScope.tabindex}"/>
+    </c:otherwise>
+</c:choose>
+
 <c:if test="${status.error}"><br><form:errors path="${path}" cssClass="error"/></c:if>
 
 </cti:displayForPageEditModes>

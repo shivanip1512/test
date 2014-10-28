@@ -35,6 +35,12 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
         
         Double latitude = settings.getLatitude();
         Double longitude = settings.getLongitude();
+        
+        validateLocation(latitude, longitude, errors);
+    }
+    
+    public static void validateLocation(Double latitude, Double longitude, Errors errors) {
+        
         if (latitude != null || longitude != null) {
             if (latitude != null) {
                 if (latitude > 90 || latitude < -90) {
@@ -51,6 +57,7 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
                 YukonValidationUtils.rejectValues(errors, baseKey + "longitude.required", "longitude");
             }
         }
+        
     }
     
 }

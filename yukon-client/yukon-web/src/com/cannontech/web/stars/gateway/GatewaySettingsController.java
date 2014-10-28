@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.GatewaySettings;
@@ -32,12 +32,15 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.gateway.model.GatewaySettingsValidator;
+import com.cannontech.web.stars.gateway.model.Location;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -49,6 +52,7 @@ public class GatewaySettingsController {
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
     
     @Autowired private ServerDatabaseCache cache;
+    @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private GatewaySettingsValidator validator;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
@@ -117,11 +121,10 @@ public class GatewaySettingsController {
     public String editDialog(ModelMap model, @PathVariable int id) {
         
         model.addAttribute("mode", PageEditMode.EDIT);
-        LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
         
         try {
             
-            RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(pao.getPaoIdentifier());
+            RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
             
             GatewaySettings settings = new GatewaySettings();
             settings.setId(id);
@@ -148,6 +151,7 @@ public class GatewaySettingsController {
     public String update(ModelMap model,
             YukonUserContext userContext,
             HttpServletResponse resp,
+            FlashScope flash,
             @PathVariable int id,
             @ModelAttribute("settings") GatewaySettings settings,
             BindingResult result) throws JsonGenerationException, JsonMappingException, IOException {
@@ -164,13 +168,12 @@ public class GatewaySettingsController {
         
         try {
             
-            LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
-            
-            RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(pao.getPaoIdentifier());
+            RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
             
             gateway.setName(settings.getName());
             if (settings.getLatitude() != null) {
-                gateway.setLocation(PaoLocation.of(settings.getLatitude(), settings.getLongitude()));
+                gateway.setLocation(PaoLocation.of(gateway.getPaoIdentifier(), settings.getLatitude(), 
+                        settings.getLongitude()));
             }
             
             RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
@@ -192,6 +195,7 @@ public class GatewaySettingsController {
             json.put("success", true);
             resp.setContentType("application/json");
             JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.update.successful", settings.getName()));
             
             return null;
             
@@ -211,19 +215,48 @@ public class GatewaySettingsController {
         }
     }
     
-    /** Test the connection, return result as json. */
-    @RequestMapping("/gateways/test-connection")
-    public @ResponseBody Map<String, Object> testConnection(String ip, String username, String password) {
+    /** Set Location popup. */
+    @RequestMapping("/gateways/{id}/location/options")
+    public String location(ModelMap model, @PathVariable int id) {
         
-        Map<String, Object> json = new HashMap<>();
-        try {
-            boolean success = rfnGatewayService.testConnection(ip, username, password);
-            json.put("success", success);
-        } catch (NetworkManagerCommunicationException e) {
-            json.put("success", false);
+        Location location = new Location();
+        location.setPaoId(id);
+        
+        PaoLocation paoLocation = paoLocationDao.getLocation(id);
+        if (paoLocation != null) {
+            location.setLatitude(paoLocation.getLatitude());
+            location.setLongitude(paoLocation.getLongitude());
         }
         
-        return json;
+        model.addAttribute("location", location);
+        
+        return "gateways/location.jsp";
+    }
+    
+    /** Set Location. */ 
+    @RequestMapping("/gateways/{id}/location")
+    public String location(HttpServletResponse resp, ModelMap model, FlashScope flash,
+            @PathVariable int id, @ModelAttribute Location location, BindingResult result) 
+                    throws JsonGenerationException, JsonMappingException, IOException {
+        
+        GatewaySettingsValidator.validateLocation(location.getLatitude(), location.getLongitude(), result);
+        
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            return "gateways/location.jsp";
+        }
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
+        paoLocationDao.save(PaoLocation.of(pao.getPaoIdentifier(), location.getLatitude(), location.getLongitude()));
+        
+        // Success
+        model.clear();
+        Map<String, Object> json = new HashMap<>();
+        json.put("success", true);
+        resp.setContentType("application/json");
+        JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.location.update.successful"));
+        
+        return null;
     }
     
     /** Collect data popup. */

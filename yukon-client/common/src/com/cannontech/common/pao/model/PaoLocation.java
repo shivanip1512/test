@@ -54,9 +54,10 @@ public class PaoLocation implements YukonPao {
         return dist;
     }
     
-    public static PaoLocation of(double latitude, double longitude) {
+    public static PaoLocation of(PaoIdentifier id, double latitude, double longitude) {
         
         PaoLocation location = new PaoLocation();
+        location.setPaoIdentifier(id);
         location.setLatitude(latitude);
         location.setLongitude(longitude);
         

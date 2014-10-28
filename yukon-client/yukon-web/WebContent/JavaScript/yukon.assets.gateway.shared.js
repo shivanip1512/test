@@ -28,9 +28,8 @@ yukon.assets.gateway.shared = (function () {
             /** User clicked the connect option, send connect request. */
             $(document).on('click', '.js-gw-connect', function (ev) {
                 
-                var trigger = $(this).closest('.dropdown-menu').data('trigger'), 
-                    id = trigger.data('id'),
-                    name = trigger.data('name');
+                var id = $(this).data('id'),
+                    name = $(this).data('name');
                 
                 yukon.ui.alertPending(_text['connect.pending'].replace('{0}', name));
                 
@@ -47,9 +46,8 @@ yukon.assets.gateway.shared = (function () {
             /** User clicked the disconnect option, send disconnect request. */
             $(document).on('click', '.js-gw-disconnect', function (ev) {
                 
-                var trigger = $(this).closest('.dropdown-menu').data('trigger'), 
-                    id = trigger.data('id'),
-                    name = trigger.data('name');
+                var id = $(this).data('id'),
+                    name = $(this).data('name');
                 
                 yukon.ui.alertPending(_text['disconnect.pending'].replace('{0}', name));
                 $.ajax({ url: yukon.url('/stars/gateways/' + id + '/disconnect') })
@@ -66,13 +64,14 @@ yukon.assets.gateway.shared = (function () {
             $(document).on('click', '.js-gw-collect-data', function (ev) {
                 
                 var popup = $('#gateway-collect-data-popup'),
-                    trigger = $(this).closest('.dropdown-menu').data('trigger');
+                    name = $(this).data('name'),
+                    target = ev.currentTarget;
                 
                 popup.load(yukon.url('/stars/gateways/collect-data/options'), function () {
                     popup.dialog({
-                        title: _text['collect.data.title'].replace('{0}', trigger.data('name')),
+                        title: _text['collect.data.title'].replace('{0}', name),
                         width: 550,
-                        buttons: yukon.ui.buttons({ event: 'yukon:assets:gateway:collect:data', target: trigger })
+                        buttons: yukon.ui.buttons({ event: 'yukon:assets:gateway:collect:data', target: target })
                     });
                 });
             });
@@ -107,37 +106,6 @@ yukon.assets.gateway.shared = (function () {
             /** User input happened in create or edit popup, adjust 'test connection' buttons. */
             $(document).on('input', '.js-gateway-edit-ip, .js-gateway-edit-username', function (ev) {
                 mod.adjustTestConnectionButtons();
-            });
-            
-            /** Test a connection for username and password. */
-            $(document).on('click', '.js-conn-test-btn', function (ev) {
-                
-                var btn = $(this),
-                    row = btn.closest('tr'),
-                    ip = $('#gateway-settings-form .js-gateway-edit-ip').val(),
-                    username = row.find('.js-gateway-edit-username').val(),
-                    password = row.find('.js-gateway-edit-password').val();
-                
-                yukon.ui.busy(btn);
-                $('.js-test-results').removeClass('success error').text('');
-                
-                $.ajax({
-                    url: yukon.url('/stars/gateways/test-connection'),
-                    data: {
-                        ip: ip,
-                        username: username,
-                        password: password
-                    }
-                }).done(function (result) {
-                    if (result.success) {
-                        $('.js-test-results').addClass('success').text(_text['login.successful']);
-                    } else {
-                        $('.js-test-results').addClass('error').text(_text['login.failed']);
-                    }
-                }).always(function () {
-                    yukon.ui.unbusy(btn);
-                });
-                
             });
             
             _initialized = true;

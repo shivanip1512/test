@@ -44,15 +44,15 @@ public class GatewayListController {
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
     private static final String json = MediaType.APPLICATION_JSON_VALUE;
     
-    @Autowired private ServerDatabaseCache cache;
-    @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private GatewayControllerHelper helper;
     @Autowired private RfnGatewayCertificateUpdateService certificateUpdateService;
+    @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     @RequestMapping(value = {"/gateways", "/gateways/"}, method = RequestMethod.GET)
     public String gateways(ModelMap model, FlashScope flashScope, YukonUserContext userContext) {
         
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         Collections.sort(gateways);
         model.addAttribute("gateways", gateways);
@@ -60,23 +60,7 @@ public class GatewayListController {
         List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
         model.addAttribute("certUpdates", certUpdates);
         
-        Map<String, String> text = new HashMap<>();
-        text.put("connect.pending", accessor.getMessage(baseKey + "connect.pending"));
-        text.put("connect.success", accessor.getMessage(baseKey + "connect.success"));
-        text.put("connect.failure", accessor.getMessage(baseKey + "connect.failure"));
-        text.put("login.successful", accessor.getMessage(baseKey + "login.successful"));
-        text.put("login.failed", accessor.getMessage(baseKey + "login.failed"));
-        text.put("disconnect.pending", accessor.getMessage(baseKey + "disconnect.pending"));
-        text.put("disconnect.success", accessor.getMessage(baseKey + "disconnect.success"));
-        text.put("disconnect.failure", accessor.getMessage(baseKey + "disconnect.failure"));
-        text.put("collect.data.pending", accessor.getMessage(baseKey + "collect.data.pending"));
-        text.put("collect.data.success", accessor.getMessage(baseKey + "collect.data.success"));
-        text.put("collect.data.failure", accessor.getMessage(baseKey + "collect.data.failure"));
-        text.put("collect.data.title", accessor.getMessage(baseKey + "collect.data.title"));
-        text.put("cert.update.more", accessor.getMessage(baseKey + "cert.update.more"));
-        text.put("cert.update.label", accessor.getMessage(baseKey + "cert.update.label"));
-        text.put("complete", accessor.getMessage("yukon.common.complete"));
-        model.addAttribute("text", text);
+        helper.addText(model, userContext);
         
         return "gateways/list.jsp";
     }

@@ -85,12 +85,14 @@
                             </span>
                         </td>
                         <td class="action-column">
-                            <cm:dropdown data-name="${fn:escapeXml(gateway.name)}" 
-                                    data-id="${gateway.paoIdentifier.paoId}">
-                                <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>
-                                <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"/>
+                            <cm:dropdown>
+                                <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"
+                                    data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
+                                <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"
+                                    data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
                                 <li class="divider"></li>
                                 <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" 
+                                    data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"
                                     classes="js-gw-collect-data"/>
                             </cm:dropdown>
                         </td>

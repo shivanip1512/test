@@ -166,7 +166,7 @@ public class RfnGatewayServiceTest {
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "cache", cache);
-        RfnGateway rfnGateway = service.getGatewayByPaoId(gatewayPaoId);
+        RfnGateway rfnGateway = service.getGatewayByPaoId(gatewayPaoId.getPaoId());
         Assert.assertEquals("PaoIdentifier does not match", gatewayPaoId, rfnGateway.getPaoIdentifier());
         Assert.assertEquals("RfnIdentifier does not match", gatewayRfnId, rfnGateway.getRfnIdentifier());
         Assert.assertEquals("PaoLocation does not match", paoLocation, rfnGateway.getLocation());
@@ -181,7 +181,7 @@ public class RfnGatewayServiceTest {
         
         service = new RfnGatewayServiceImpl(null, null, null, null, null);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
-        service.getGatewayByPaoId(gatewayPaoId);
+        service.getGatewayByPaoId(gatewayPaoId.getPaoId());
     }
     
     @Test(expected=NetworkManagerCommunicationException.class)
@@ -206,7 +206,7 @@ public class RfnGatewayServiceTest {
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "cache", cache);
-        service.getGatewayByPaoId(gatewayPaoId);
+        service.getGatewayByPaoId(gatewayPaoId.getPaoId());
     }
     
     @Test(expected=NetworkManagerCommunicationException.class)

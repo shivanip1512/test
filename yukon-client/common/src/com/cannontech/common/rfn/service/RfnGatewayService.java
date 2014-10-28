@@ -27,7 +27,7 @@ public interface RfnGatewayService {
      * Retrieves all gateways that have paos in the Yukon database. If the gateway data is not
      * cached, it will be set as null in the RfnGateway, and the cache will be updated in a separate thread.
      */
-    public Set<RfnGateway> getAllGateways();
+    Set<RfnGateway> getAllGateways();
     
     /**
      * Retrieves the specified gateway. If the gateway data is not cached, a request will be sent to
@@ -37,7 +37,7 @@ public interface RfnGatewayService {
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon
      *             and Network Manager.
      */
-    public RfnGateway getGatewayByPaoId(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
+    RfnGateway getGatewayByPaoId(int paoId) throws NetworkManagerCommunicationException;
     
     /**
      * Creates a new gateway in Yukon and Network Manager.
@@ -46,7 +46,7 @@ public interface RfnGatewayService {
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      * @throws GatewayUpdateException if gateway creation failed in Network Manager.
      */
-    public RfnDevice createGateway(GatewaySettings settings) 
+    RfnDevice createGateway(GatewaySettings settings) 
             throws NetworkManagerCommunicationException, GatewayUpdateException;
     
     /**
@@ -59,7 +59,7 @@ public interface RfnGatewayService {
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon
      *             and Network Manager.
      */
-    public boolean updateGateway(RfnGateway gateway) throws NetworkManagerCommunicationException;
+    boolean updateGateway(RfnGateway gateway) throws NetworkManagerCommunicationException;
     
     /**
      * Delete the gateway. This will attempt to delete the gateway in Network Manager as well as Yukon.
@@ -68,7 +68,7 @@ public interface RfnGatewayService {
      * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean deleteGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
+    boolean deleteGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
     
     /**
      * Test the gateway's connection to Network Manager.
@@ -77,14 +77,7 @@ public interface RfnGatewayService {
      * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean testConnection(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
-    
-    /**
-     * Test a gateway connection, without requiring the gateway to already exist in Yukon.
-     * @return true if the connection succeeded, false if the connection failed.
-     * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
-     */
-    boolean testConnection(String ipAddress, String username, String password) 
+    boolean testConnection(int deviceId, String ipAddress, String username, String password) 
             throws NetworkManagerCommunicationException;
     
     /**
@@ -94,7 +87,7 @@ public interface RfnGatewayService {
      * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean connectGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
+    boolean connectGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
     
     /**
      * Initiates a gateway "disconnect" action in Network Manager.
@@ -103,7 +96,7 @@ public interface RfnGatewayService {
      * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean disconnectGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
+    boolean disconnectGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
     
     /**
      * Initiates gateway data collection in Network Manager.
@@ -112,7 +105,7 @@ public interface RfnGatewayService {
      * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean collectData(PaoIdentifier paoIdentifier, DataType... types) throws NetworkManagerCommunicationException;
+    boolean collectData(PaoIdentifier paoIdentifier, DataType... types) throws NetworkManagerCommunicationException;
     
     /**
      * Sets the data collection schedule for the specified gateway.
@@ -121,7 +114,7 @@ public interface RfnGatewayService {
      * @throws NotFoundException if a gateway with the specified identifier does not exist.
      * @throws NetworkManagerCommunicationException if there is a communication error between Yukon and Network Manager.
      */
-    public boolean setCollectionSchedule(PaoIdentifier paoIdentifier, String cronExpression) 
+    boolean setCollectionSchedule(PaoIdentifier paoIdentifier, String cronExpression) 
             throws NetworkManagerCommunicationException;
     
     /**
@@ -145,4 +138,5 @@ public interface RfnGatewayService {
      * Get a map of paoId to gateway for all gateways.
      */
     Map<Integer, RfnGateway> getAllGatewaysByPaoId();
+    
 }

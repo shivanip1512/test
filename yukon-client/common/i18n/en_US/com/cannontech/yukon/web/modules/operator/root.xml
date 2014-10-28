@@ -20,6 +20,7 @@
     <!-- Gateway Details -->
     <entry key="yukon.web.modules.operator.gateways.detail.pageName">Gateway</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.update.successful">Gateway {0} updated successfully.</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.info.title">Info</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.comms.title">Communication</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.location.title">Location</entry>
@@ -37,6 +38,8 @@
     <entry key="yukon.web.modules.operator.gateways.detail.completeness">Completeness</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.delete.confirm.title">Delete Gateway</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.delete.confirm.message">Are you sure you want to delete this gateway?</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.location.set">Set Gateway Location</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.location.update.successful">Location updated Successfully.</entry>
     
     <!-- Gateway Common Words -->
     <entry key="yukon.web.modules.operator.gateways.cert">Certificate</entry>
@@ -55,6 +58,7 @@
     <entry key="yukon.web.modules.operator.gateways.connect.failure">{0}: connect request failed.</entry>
     <entry key="yukon.web.modules.operator.gateways.login.successful">Login successful.</entry>
     <entry key="yukon.web.modules.operator.gateways.login.failed">Login failed.</entry>
+    <entry key="yukon.web.modules.operator.gateways.login.failed.timeout">Login failed: timeout.</entry>
     <entry key="yukon.web.modules.operator.gateways.disconnect.pending">{0}: disconnect request pending...</entry>
     <entry key="yukon.web.modules.operator.gateways.disconnect.success">{0}: disconnect request successful.</entry>
     <entry key="yukon.web.modules.operator.gateways.disconnect.failure">{0}: disconnect request failed.</entry>

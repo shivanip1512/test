@@ -22,15 +22,18 @@
 }
 </style>
 
-<c:if test="${not empty gateway.location}"><cti:toJson id="gateway-geojson" object="${gateway.location}"/></c:if>
+<c:if test="${not empty geojson}"><cti:toJson id="gateway-geojson" object="${geojson}"/></c:if>
 
 <d:confirm on="#gateway-delete" nameKey="delete.confirm"/>
 
 <div id="page-actions" class="dn">
-    <cm:dropdownOption icon="icon-table-row-insert" key=".collectData"/>
+    <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" classes="js-gw-collect-data"
+        data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
     <li class="divider"></li>
-    <cm:dropdownOption icon="icon-connect" key=".connect"/>
-    <cm:dropdownOption icon="icon-disconnect" key=".disconnect"/>
+    <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"
+        data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
+    <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"
+        data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
     <li class="divider"></li>
     <cm:dropdownOption icon="icon-pencil" key="components.button.edit.label" data-popup="#gateway-edit-popup"/>
     <cm:dropdownOption icon="icon-cross" key="components.button.delete.label" id="gateway-delete"
@@ -38,11 +41,18 @@
 </div>
 
 <div id="gateway-edit-popup" data-dialog class="dn" data-title="<cti:msg2 key=".edit.title"/>"
-    data-url="${gateway.paoIdentifier.paoId}/edit" 
+    data-url="${gateway.paoIdentifier.paoId}/edit"
+    data-id="${gateway.paoIdentifier.paoId}"
     data-width="565" 
     data-event="yukon:assets:gateway:save" 
     data-load-event="yukon:assets:gateway:edit:load" 
     data-ok-text="<cti:msg2 key="components.button.save.label"/>"></div>
+    
+<div id="gateway-collect-data-popup" class="dn"></div>
+<div id="gateway-location-popup" class="dn" data-dialog 
+        data-event="yukon:assets:gateway:location:save"
+        data-title="<cti:msg2 key=".location.set"/>"
+        data-url="<cti:url value="/stars/gateways/${gateway.paoIdentifier.paoId}/location/options"/>"></div>
 
 <div class="column-12-12 clearfix">
 
@@ -85,9 +95,10 @@
     
     <div class="column two nogutter">
         <tags:sectionContainer2 nameKey="location" styleClass="stacked">
-            <div class="empty-list form-control${not empty gateway.location ? 'dn' : ''}">
+            <div class="empty-list form-control ${not empty gateway.location ? 'dn' : ''}">
                 <i:inline key=".location.none"/>
-                <cti:button icon="icon-map-sat" nameKey="location.set" classes="fr M0"/>
+                <cti:button icon="icon-map-sat" nameKey="location.set" classes="fr M0" 
+                    data-popup="#gateway-location-popup"/>
             </div>
             <div id="gateway-location-container" class="${empty gateway.location ? 'dn' : ''}">
                 <div id="gateway-location" class="map" data-has-location="${not empty gateway.location}"></div>

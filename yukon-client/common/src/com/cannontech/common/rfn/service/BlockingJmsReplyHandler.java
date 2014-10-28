@@ -3,9 +3,12 @@ package com.cannontech.common.rfn.service;
 import java.io.Serializable;
 import java.util.concurrent.ExecutionException;
 
+import com.cannontech.common.rfn.model.TimeoutExecutionException;
 import com.cannontech.common.util.jms.JmsReplyHandler;
+import com.cannontech.message.util.TimeoutException;
 
 public class BlockingJmsReplyHandler<T extends Serializable> implements JmsReplyHandler<T> {
+    
     private T reply;
     private boolean timeoutExceeded;
     private Exception exception;
@@ -19,7 +22,7 @@ public class BlockingJmsReplyHandler<T extends Serializable> implements JmsReply
     @Override
     public synchronized void complete() {
         isComplete = true;
-        //notify any thread waiting for completion
+        // Notify any thread waiting for completion
         notifyAll();
     }
     
@@ -45,7 +48,8 @@ public class BlockingJmsReplyHandler<T extends Serializable> implements JmsReply
     
     /**
      * A blocking request for response data.
-     * @throws ExecutionException if the request timed out, or if an error occurred.
+     * @throws ExecutionException if an error occurred.
+     * @throws TimeoutException if the request timed out.
      */
     public synchronized T waitForCompletion() throws ExecutionException {
         //wait for completion
@@ -53,7 +57,7 @@ public class BlockingJmsReplyHandler<T extends Serializable> implements JmsReply
             try {
                 wait(100);
             } catch (InterruptedException e) {
-                //can be safely ignored
+                // Can be safely ignored
             }
         }
         
@@ -65,13 +69,8 @@ public class BlockingJmsReplyHandler<T extends Serializable> implements JmsReply
             throw new TimeoutExecutionException();
         }
         
-        //shouldn't be able to get here
+        // Shouldn't be able to get here
         return null;
     }
     
-    private static class TimeoutExecutionException extends ExecutionException {
-        public TimeoutExecutionException() {
-            super("Timed out waiting for GatewayDataResponse.");
-        }
-    }
 }

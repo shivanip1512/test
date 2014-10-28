@@ -114,11 +114,11 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public RfnGateway getGatewayByPaoId(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
+    public RfnGateway getGatewayByPaoId(int paoId) throws NetworkManagerCommunicationException {
         // Get base RfnDevice
-        RfnDevice gwDevice = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
+        RfnDevice gwDevice = rfnDeviceDao.getDeviceForId(paoId);
         // Get RfnGatewayData from cache
-        RfnGatewayData gatewayData = dataCache.get(paoIdentifier);
+        RfnGatewayData gatewayData = dataCache.get(gwDevice.getPaoIdentifier());
         RfnGateway rfnGateway = new RfnGateway(gwDevice.getName(), gwDevice.getPaoIdentifier(),
                                                gwDevice.getRfnIdentifier(),
                                                gatewayData);
@@ -234,20 +234,23 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         // Determine if change is local Yukon DB change (i.e. name) or remote Network Manager change.
         PaoIdentifier paoIdentifier = gateway.getPaoIdentifier();
-        RfnGateway existingGateway = getGatewayByPaoId(paoIdentifier);
+        RfnGateway existingGateway = getGatewayByPaoId(paoIdentifier.getPaoId());
         RfnGatewayData existingGatewayData = existingGateway.getData();
         RfnGatewayData newGatewayData = gateway.getData();
         GatewaySaveData editData = new GatewaySaveData();
         boolean sendGatewayEditRequest = false;
-        if (newGatewayData.getIpAddress() != null && !newGatewayData.getIpAddress().equals(existingGatewayData.getIpAddress())) {
+        if (newGatewayData.getIpAddress() != null 
+                && !newGatewayData.getIpAddress().equals(existingGatewayData.getIpAddress())) {
             editData.setIpAddress(newGatewayData.getIpAddress());
             sendGatewayEditRequest = true;
         }
-        if (newGatewayData.getAdmin() != null && !newGatewayData.getAdmin().equals(existingGatewayData.getAdmin())) {
+        if (newGatewayData.getAdmin() != null 
+                && !newGatewayData.getAdmin().equals(existingGatewayData.getAdmin())) {
             editData.setAdmin(newGatewayData.getAdmin());
             sendGatewayEditRequest = true;
         }
-        if (newGatewayData.getSuperAdmin() != null && !newGatewayData.getSuperAdmin().equals(existingGatewayData.getSuperAdmin())) {
+        if (newGatewayData.getSuperAdmin() != null 
+                && !newGatewayData.getSuperAdmin().equals(existingGatewayData.getSuperAdmin())) {
             editData.setSuperAdmin(newGatewayData.getSuperAdmin());
             sendGatewayEditRequest = true;
         }
@@ -259,7 +262,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             request.setData(editData);
             
             log.debug("Sending gateway edit request: " + request);
-            BlockingJmsReplyHandler<GatewayUpdateResponse> replyHandler = new BlockingJmsReplyHandler<>(GatewayUpdateResponse.class);
+            BlockingJmsReplyHandler<GatewayUpdateResponse> replyHandler = 
+                    new BlockingJmsReplyHandler<>(GatewayUpdateResponse.class);
             updateRequestTemplate.send(request, replyHandler);
             
             // Wait for the response
@@ -325,24 +329,12 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         }
     }
     
-    @Override
-    public boolean testConnection(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
-        
-        RfnDevice gateway = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
-        RfnGatewayData gatewayData = dataCache.get(paoIdentifier);
-        
-        // Build request
-        GatewayConnectionTestRequest request = new GatewayConnectionTestRequest();
-        request.setRfnIdentifier(gateway.getRfnIdentifier());
-        request.setIpAddress(gatewayData.getIpAddress());
-        request.setAuthentication(gatewayData.getAdmin()); // Defaulting to test admin
-        
-        return sendConnectionRequest(request);
-    }
     
     @Override
-    public boolean testConnection(String ipAddress, String username, String password) 
+    public boolean testConnection(int deviceId, String ipAddress, String username, String password) 
             throws NetworkManagerCommunicationException {
+        
+        RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
         
         Authentication auth = new Authentication();
         auth.setUsername(username);
@@ -350,23 +342,24 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         
         // Build request
         GatewayConnectionTestRequest request = new GatewayConnectionTestRequest();
-        request.setRfnIdentifier(null); // Request is not for an existing gateway
+        request.setRfnIdentifier(device.getRfnIdentifier());
         request.setIpAddress(ipAddress);
         request.setAuthentication(auth);
         
         return sendConnectionRequest(request);
     }
     
-    private boolean sendConnectionRequest(GatewayConnectionTestRequest request) throws NetworkManagerCommunicationException {
+    private boolean sendConnectionRequest(GatewayConnectionTestRequest request) 
+            throws NetworkManagerCommunicationException {
         
         BlockingJmsReplyHandler<GatewayConnectionTestResponse> replyHandler = 
                 new BlockingJmsReplyHandler<>(GatewayConnectionTestResponse.class);
                 
-        //Send request
+        // Send request
         log.debug("Sending connection request: " + request);
         connectionTestRequestTemplate.send(request, replyHandler);
         
-        //Parse response
+        // Parse response
         try {
             GatewayConnectionTestResponse response = replyHandler.waitForCompletion();
             return response.getResult() == GatewayConnectionTestResult.SUCCESSFUL;
@@ -400,7 +393,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public boolean collectData(PaoIdentifier paoIdentifier, DataType... types) throws NetworkManagerCommunicationException {
+    public boolean collectData(PaoIdentifier paoIdentifier, DataType... types) 
+            throws NetworkManagerCommunicationException {
         
         RfnDevice gateway = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         GatewayCollectionRequest request = new GatewayCollectionRequest();

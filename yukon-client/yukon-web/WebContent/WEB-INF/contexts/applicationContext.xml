@@ -800,13 +800,13 @@
                     <ref local="tdcBackingService"/>
                 </entry>
                 <entry key="DISCONNECT">
-                    <ref local="disconnectBackingService" />
+                    <ref local="disconnectBackingService"/>
                 </entry>
                 <entry key="ECOBEE_READ">
                     <ref local="ecobeeReadBackingService"/>
                 </entry>
                 <entry key="DEMAND_RESET">
-                    <ref local="demandResetBackingService" />
+                    <ref local="demandResetBackingService"/>
                 </entry>
             </map>
         </property>
@@ -1810,13 +1810,16 @@
     <bean class="com.cannontech.web.dr.loadcontrol.FormulaBeanValidator"/>
     <bean class="com.cannontech.web.stars.dr.operator.validator.WorkOrderValidator"/>
     
-    <bean id="gatewayDataTopicListener" class="com.cannontech.web.stars.gateway.listener.GatewayDataTopicListener" />
+    <bean id="gatewayDataTopicListener" class="com.cannontech.web.stars.gateway.listener.GatewayDataTopicListener"/>
     <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
-        <property name="destinationName" value="yukon.qr.obj.common.rfn.GatewayDataTopic" />
+        <property name="destinationName" value="yukon.qr.obj.common.rfn.GatewayDataTopic"/>
         <property name="pubSubDomain" value="true"/>
         <property name="concurrentConsumers" value="1"/>
-        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="connectionFactory" ref="connectionFactory"/>
         <property name="taskExecutor" ref="globalTaskExecutor"/>
         <property name="messageListener" ref="gatewayDataTopicListener"/>
     </bean>
+    
+    <bean class="com.cannontech.web.stars.gateway.GatewayControllerHelper"/>
+    
 </beans>

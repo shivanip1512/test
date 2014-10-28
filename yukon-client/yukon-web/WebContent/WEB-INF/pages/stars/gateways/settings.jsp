@@ -49,8 +49,8 @@
             <spring:bind path="admin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                 <c:set var="clazz" value="${clazz} ${mode == 'CREATE' ? 'right' : 'middle'}"/>
-                <form:input path="admin.password" cssClass="js-gateway-edit-password M0 ${clazz}" 
-                    placeholder="${phPassword}" tabindex="4"/>
+                <form:password path="admin.password" cssClass="js-gateway-edit-password M0 ${clazz}" 
+                    placeholder="${phPassword}" tabindex="4" showPassword="true"/>
                 <c:if test="${mode == 'EDIT'}">
                     <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
                         disabled="true" nameKey="testConnection" tabindex="5"/>
@@ -74,8 +74,8 @@
             <spring:bind path="superAdmin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                 <c:set var="clazz" value="${clazz} ${mode == 'CREATE' ? 'right' : 'middle'}"/>
-                <form:input path="superAdmin.password" cssClass="js-gateway-edit-password M0 ${clazz}" 
-                    placeholder="${phPassword}" tabindex="7"/>
+                <form:password  path="superAdmin.password" cssClass="js-gateway-edit-password M0 ${clazz}" 
+                    placeholder="${phPassword}" tabindex="7" showPassword="true"/>
                 <c:if test="${mode == 'EDIT'}">
                     <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
                         disabled="true" nameKey="testConnection" tabindex="8"/>

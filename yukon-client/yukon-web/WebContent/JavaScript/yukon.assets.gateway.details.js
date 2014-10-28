@@ -13,6 +13,8 @@ yukon.assets.gateway.details = (function () {
     var
     _initialized = false,
     
+    _text,
+    
     /** @type {ol.Map} - The openlayers map object. */
     _map = {},
     
@@ -71,8 +73,10 @@ yukon.assets.gateway.details = (function () {
  
             if (_initialized) return;
             
+            _text = yukon.fromJson('#gateway-text');
+            
             /** Initialize map if we have a location. */
-            if ($('#gateway-location').data('hasLocation') === 'true') {
+            if ($('#gateway-location').data('hasLocation') === true) {
                 
                 /** Setup the openlayers map. */
                 _map = new ol.Map({
@@ -126,24 +130,25 @@ yukon.assets.gateway.details = (function () {
             /** Save button clicked on edit popup. */
             $(document).on('yukon:assets:gateway:save', function (ev) {
                 
-                var btns = $('#gateway-create-popup').closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                var popup = $('#gateway-edit-popup'),
+                    btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
                     primary = btns.find('.js-primary-action'),
                     secondary = btns.find('.js-secondary-action');
                 
                 yukon.ui.busy(primary);
                 secondary.prop('disabled', true);
                 
-                $('#gateway-create-popup').find('.user-message').remove();
+                popup.find('.user-message').remove();
                 
                 $('#gateway-settings-form').ajaxSubmit({
                     type: 'post',
                     success: function (result, status, xhr, $form) {
                         
-                        $('#gateway-edit-popup').dialog('close');
+                        popup.dialog('close');
                         window.location.href = window.location.href;
                     },
                     error: function (xhr, status, error, $form) {
-                        $('#gateway-edit-popup').html(xhr.responseText);
+                        popup.html(xhr.responseText);
                         yukon.assets.gateway.shared.adjustTestConnectionButtons();
                     },
                     complete: function () {
@@ -151,6 +156,70 @@ yukon.assets.gateway.details = (function () {
                         secondary.prop('disabled', false);
                     }
                 });
+            });
+            
+            /** Test a connection for username and password. */
+            $(document).on('click', '.js-conn-test-btn', function (ev) {
+                
+                var btn = $(this),
+                    row = btn.closest('tr'),
+                    ip = $('#gateway-settings-form .js-gateway-edit-ip').val(),
+                    username = row.find('.js-gateway-edit-username').val(),
+                    password = row.find('.js-gateway-edit-password').val();
+                
+                yukon.ui.busy(btn);
+                $('.js-test-results').removeClass('success error').text('');
+                
+                $.ajax({
+                    url: yukon.url('/stars/gateways/test-connection'),
+                    data: {
+                        ip: ip,
+                        username: username,
+                        password: password,
+                        id: $('#gateway-edit-popup').data('id')
+                    }
+                }).done(function (result) {
+                    if (result.success) {
+                        $('.js-test-results').addClass('success').text(_text['login.successful']);
+                    } else {
+                        if (result.message) {
+                            $('.js-test-results').addClass('error').text(result.message);
+                        } else {
+                            $('.js-test-results').addClass('error').text(_text['login.failed']);
+                        }
+                    }
+                }).always(function () {
+                    yukon.ui.unbusy(btn);
+                });
+                
+            });
+            
+            $(document).on('yukon:assets:gateway:location:save', function (ev) {
+                
+                var popup = $('#gateway-location-popup'),
+                    btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                    primary = btns.find('.js-primary-action'),
+                    secondary = btns.find('.js-secondary-action');
+            
+                yukon.ui.busy(primary);
+                secondary.prop('disabled', true);
+                
+                popup.find('.user-message').remove();
+                
+                $('#gateway-location-form').ajaxSubmit({
+                    success: function (result, status, xhr, $form) {
+                        popup.dialog('close');
+                        window.location.href = window.location.href;
+                    },
+                    error: function (xhr, status, error, $form) {
+                        popup.html(xhr.responseText);
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
+                        secondary.prop('disabled', false);
+                    }
+                });
+                
             });
             
             _initialized = true;
