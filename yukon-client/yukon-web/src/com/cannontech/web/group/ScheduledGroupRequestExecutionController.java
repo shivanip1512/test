@@ -59,136 +59,136 @@ import com.cannontech.web.util.AttributeSelectorHelperService;
 @Controller
 public class ScheduledGroupRequestExecutionController {
 
+    @Autowired private AttributeSelectorHelperService attributeSelectorHelperService;
+    @Autowired private AttributeService attributeService;
     @Autowired private CommandDao commandDao;
-    @Autowired private ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService;
-    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private PaoCommandAuthorizationService paoCommandAuthorizationService;
-	private JobManager jobManager;
-	private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
-	@Autowired private CronExpressionTagService cronExpressionTagService;
-	@Autowired private AttributeSelectorHelperService attributeSelectorHelperService;
-	@Autowired private AttributeService attributeService;
-	@Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
-	@Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
-	@Autowired private ToolsEventLogService toolsEventLogService;
-	
-	private List<LiteCommand> meterCommands;
-	
-	@RequestMapping("home")
-	public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-		
-		ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/home.jsp");
-		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-		
-		// pass-through
-		String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg", null);
-		String requestType = ServletRequestUtils.getStringParameter(request, "requestType", null);
-		Set<? extends Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
-		String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue", null);
-		String commandString = ServletRequestUtils.getStringParameter(request, "commandString", null);
-		String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName", null);
-		String cronExpression = ServletRequestUtils.getStringParameter(request, "cronExpression", null);
-		boolean retryCheckbox = ServletRequestUtils.getBooleanParameter(request, "retryCheckbox", false);
-		String queuedRetryCount = ServletRequestUtils.getStringParameter(request, "queuedRetryCount", null);
-		String nonQueuedRetryCount = ServletRequestUtils.getStringParameter(request, "nonQueuedRetryCount", null);
-		String maxTotalRunTimeHours = ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
-		if(maxTotalRunTimeHours != null && maxTotalRunTimeHours.equals("0")) {
-		    maxTotalRunTimeHours = null;
-		}
-		String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName", null);
-		PageEditMode pageEditMode = PageEditMode.CREATE;
-		
-		// edit existing job
-		int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);
-		boolean editMode = false;
-		if (editJobId > 0) {
-			editMode = true;
-		}
-		
-		// set the parameters to those of the current job if they are not already present in the request (which may exist due to error pass-through)
-		ScheduledRepeatingJob existingJob = null;
-		if (editMode) {
-			
-			existingJob = jobManager.getRepeatingJob(editJobId);
-			ScheduledGroupRequestExecutionTask existingTask = new ScheduledGroupRequestExecutionTask();
-			InputRoot inputRoot = scheduledGroupRequestExecutionJobDefinition.getInputs();
-	        InputUtil.applyProperties(inputRoot, existingTask, existingJob.getJobProperties());
-	        
-			if (requestType == null) {
-				requestType = existingTask.getCommandRequestExecutionType().name();
-			}
-			if (selectedAttributes.size() == 0 && existingTask.getAttributes() != null) {
-			    selectedAttributes = existingTask.getAttributes();
-			}
-			if (commandString == null && existingTask.getCommand() != null) {
-				
-				commandString = existingTask.getCommand();
-				
-				// attempt to select the command to default the drop down to (commandSelectValue)
-				int maxDifferenceIndex = 0;
-				for (LiteCommand liteCommand : meterCommands) {
-					
-					String thisCommand = liteCommand.getCommand();
-					int indexOfDifference = StringUtils.indexOfDifference(commandString, thisCommand);
-					if (indexOfDifference == -1 || (indexOfDifference > maxDifferenceIndex && maxDifferenceIndex != -1)) {
-						maxDifferenceIndex = indexOfDifference;
-						commandSelectValue = liteCommand.getCommand();
-					}
-				}
-			}
-			if (scheduleName == null) {
-				scheduleName = existingTask.getName();
-			}
-			if (cronExpression == null) {
-				cronExpression = existingJob.getCronString();
-			}
-			if (queuedRetryCount == null 
-					&& existingTask.getTurnOffQueuingAfterRetryCount() != null
-					&& existingTask.getTurnOffQueuingAfterRetryCount() > 0) {
-				queuedRetryCount = String.valueOf(existingTask.getTurnOffQueuingAfterRetryCount());
-			}
-			if (nonQueuedRetryCount == null 
-					&& existingTask.getTurnOffQueuingAfterRetryCount() != null
-					&& (existingTask.getRetryCount() - existingTask.getTurnOffQueuingAfterRetryCount()) > 0) {
-				nonQueuedRetryCount = String.valueOf(existingTask.getRetryCount() - existingTask.getTurnOffQueuingAfterRetryCount());
-			}
-			if (maxTotalRunTimeHours == null && existingTask.getStopRetryAfterHoursCount() != null && existingTask.getStopRetryAfterHoursCount() > 0) {
-				maxTotalRunTimeHours = String.valueOf(existingTask.getStopRetryAfterHoursCount());
-			}
-			if (!StringUtils.isBlank(queuedRetryCount) || !StringUtils.isBlank(nonQueuedRetryCount) || !StringUtils.isBlank(maxTotalRunTimeHours)) {
-			    retryCheckbox = true;
-			}
-			if (deviceGroupName == null) {
-			    DeviceGroup existingDeviceGroup = existingTask.getDeviceGroup();
-			    if (existingDeviceGroup != null) {
-			        deviceGroupName = existingTask.getDeviceGroup().getFullName();
-			    }
-			}
-		}
-		
-		mav.addObject("editJobId", editJobId);
-		if (editMode) {
-		    pageEditMode = PageEditMode.EDIT;
-		    mav.addObject("disabled", existingJob.isDisabled());
-		    mav.addObject("status", scheduledGroupRequestExecutionDao.getStatusByJobId(existingJob.getId()));
-		}
-		mav.addObject("mode", pageEditMode);
-		mav.addObject("errorMsg", errorMsg);
-		mav.addObject("requestType", requestType);
-		mav.addObject("selectedAttributes", selectedAttributes);
-		mav.addObject("commandSelectValue", commandSelectValue);
-		mav.addObject("commandString", commandString);
-		mav.addObject("scheduleName", scheduleName);
-		mav.addObject("cronExpression", cronExpression);
-		mav.addObject("retryCheckbox", retryCheckbox);
-		mav.addObject("queuedRetryCount", queuedRetryCount);
-		mav.addObject("nonQueuedRetryCount", nonQueuedRetryCount);
-		mav.addObject("maxTotalRunTimeHours", maxTotalRunTimeHours);
-		mav.addObject("deviceGroupName", deviceGroupName);
-		
-		// attributes
-		Set<Attribute> allReadableAttributes = attributeService.getReadableAttributes();
-		Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService.
+    @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private ScheduledGroupRequestExecutionDao scheduledGroupRequestExecutionDao;
+    @Autowired private ScheduledGroupRequestExecutionService scheduledGroupRequestExecutionService;
+    @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
+    @Autowired private ToolsEventLogService toolsEventLogService;
+
+    private List<LiteCommand> meterCommands;
+    private JobManager jobManager;
+    private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
+
+    @RequestMapping("home")
+    public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+
+        ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/home.jsp");
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+
+        // pass-through
+        String errorMsg = ServletRequestUtils.getStringParameter(request, "errorMsg", null);
+        String requestType = ServletRequestUtils.getStringParameter(request, "requestType", null);
+        Set<? extends Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
+        String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue", null);
+        String commandString = ServletRequestUtils.getStringParameter(request, "commandString", null);
+        String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName", null);
+        String cronExpression = ServletRequestUtils.getStringParameter(request, "cronExpression", null);
+        boolean retryCheckbox = ServletRequestUtils.getBooleanParameter(request, "retryCheckbox", false);
+        String queuedRetryCount = ServletRequestUtils.getStringParameter(request, "queuedRetryCount", null);
+        String nonQueuedRetryCount = ServletRequestUtils.getStringParameter(request, "nonQueuedRetryCount", null);
+        String maxTotalRunTimeHours = ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
+        if(maxTotalRunTimeHours != null && maxTotalRunTimeHours.equals("0")) {
+            maxTotalRunTimeHours = null;
+        }
+        String deviceGroupName = ServletRequestUtils.getStringParameter(request, "deviceGroupName", null);
+        PageEditMode pageEditMode = PageEditMode.CREATE;
+
+        // edit existing job
+        int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);
+        boolean editMode = false;
+        if (editJobId > 0) {
+            editMode = true;
+        }
+
+        // set the parameters to those of the current job if they are not already present in the request (which may exist due to error pass-through)
+        ScheduledRepeatingJob existingJob = null;
+        if (editMode) {
+
+            existingJob = jobManager.getRepeatingJob(editJobId);
+            ScheduledGroupRequestExecutionTask existingTask = new ScheduledGroupRequestExecutionTask();
+            InputRoot inputRoot = scheduledGroupRequestExecutionJobDefinition.getInputs();
+            InputUtil.applyProperties(inputRoot, existingTask, existingJob.getJobProperties());
+
+            if (requestType == null) {
+                requestType = existingTask.getCommandRequestExecutionType().name();
+            }
+            if (selectedAttributes.size() == 0 && existingTask.getAttributes() != null) {
+                selectedAttributes = existingTask.getAttributes();
+            }
+            if (commandString == null && existingTask.getCommand() != null) {
+
+                commandString = existingTask.getCommand();
+
+                // attempt to select the command to default the drop down to (commandSelectValue)
+                int maxDifferenceIndex = 0;
+                for (LiteCommand liteCommand : meterCommands) {
+
+                    String thisCommand = liteCommand.getCommand();
+                    int indexOfDifference = StringUtils.indexOfDifference(commandString, thisCommand);
+                    if (indexOfDifference == -1 || (indexOfDifference > maxDifferenceIndex && maxDifferenceIndex != -1)) {
+                        maxDifferenceIndex = indexOfDifference;
+                        commandSelectValue = liteCommand.getCommand();
+                    }
+                }
+            }
+            if (scheduleName == null) {
+                scheduleName = existingTask.getName();
+            }
+            if (cronExpression == null) {
+                cronExpression = existingJob.getCronString();
+            }
+            if (queuedRetryCount == null
+                    && existingTask.getTurnOffQueuingAfterRetryCount() != null
+                    && existingTask.getTurnOffQueuingAfterRetryCount() > 0) {
+                queuedRetryCount = String.valueOf(existingTask.getTurnOffQueuingAfterRetryCount());
+            }
+            if (nonQueuedRetryCount == null
+                    && existingTask.getTurnOffQueuingAfterRetryCount() != null
+                    && (existingTask.getRetryCount() - existingTask.getTurnOffQueuingAfterRetryCount()) > 0) {
+                nonQueuedRetryCount = String.valueOf(existingTask.getRetryCount() - existingTask.getTurnOffQueuingAfterRetryCount());
+            }
+            if (maxTotalRunTimeHours == null && existingTask.getStopRetryAfterHoursCount() != null && existingTask.getStopRetryAfterHoursCount() > 0) {
+                maxTotalRunTimeHours = String.valueOf(existingTask.getStopRetryAfterHoursCount());
+            }
+            if (!StringUtils.isBlank(queuedRetryCount) || !StringUtils.isBlank(nonQueuedRetryCount) || !StringUtils.isBlank(maxTotalRunTimeHours)) {
+                retryCheckbox = true;
+            }
+            if (deviceGroupName == null) {
+                DeviceGroup existingDeviceGroup = existingTask.getDeviceGroup();
+                if (existingDeviceGroup != null) {
+                    deviceGroupName = existingTask.getDeviceGroup().getFullName();
+                }
+            }
+        }
+
+        mav.addObject("editJobId", editJobId);
+        if (editMode) {
+            pageEditMode = PageEditMode.EDIT;
+            mav.addObject("disabled", existingJob.isDisabled());
+            mav.addObject("status", scheduledGroupRequestExecutionDao.getStatusByJobId(existingJob.getId()));
+        }
+        mav.addObject("mode", pageEditMode);
+        mav.addObject("errorMsg", errorMsg);
+        mav.addObject("requestType", requestType);
+        mav.addObject("selectedAttributes", selectedAttributes);
+        mav.addObject("commandSelectValue", commandSelectValue);
+        mav.addObject("commandString", commandString);
+        mav.addObject("scheduleName", scheduleName);
+        mav.addObject("cronExpression", cronExpression);
+        mav.addObject("retryCheckbox", retryCheckbox);
+        mav.addObject("queuedRetryCount", queuedRetryCount);
+        mav.addObject("nonQueuedRetryCount", nonQueuedRetryCount);
+        mav.addObject("maxTotalRunTimeHours", maxTotalRunTimeHours);
+        mav.addObject("deviceGroupName", deviceGroupName);
+
+        // attributes
+        Set<Attribute> allReadableAttributes = attributeService.getReadableAttributes();
+        Map<AttributeGroup, List<BuiltInAttribute>> allGroupedReadableAttributes = attributeService.
                 getGroupedAttributeMapFromCollection(allReadableAttributes, userContext);
 		mav.addObject("allGroupedReadableAttributes", allGroupedReadableAttributes);
 		
@@ -343,85 +343,87 @@ public class ScheduledGroupRequestExecutionController {
                 return makeErrorMav(retryErrorReason, requestType, scheduleName, cronExpression, makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString, deviceGroupName,
                                     retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr, editJobId);
             }
-		}
-        
-		// bridge UI parameters with actual retry back end
-        // calculate retryCount, stopRetryAfterHoursCount, and turnOffQueuingAfterRetryCount 
-		// in terms of queuedRetryCount, maxTotalRunTimeHours, and nonQueuedRetryCount
-		queuedRetryCount = queuedRetryCount == null ? 0 : queuedRetryCount;
-		nonQueuedRetryCount = nonQueuedRetryCount == null ? 0 : nonQueuedRetryCount;
-		
-		int retryCount = queuedRetryCount + nonQueuedRetryCount;
-		Integer stopRetryAfterHoursCount = maxTotalRunTimeHours;
-		Integer turnOffQueuingAfterRetryCount = queuedRetryCount;
-		
-		// schedule / edit
-		if (requestType.equals(DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ)) {
-			
-			return scheduleAttributeRead(request, scheduleName, cronExpression, deviceGroupName, editJobId, retryCheckbox, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
-		
-		} else if (requestType.equals(DeviceRequestType.SCHEDULED_GROUP_COMMAND)) {
-		
-			return scheduleCommand(request, scheduleName, cronExpression, deviceGroupName, editJobId, retryCheckbox, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
-		
-		} else {
-			throw new IllegalArgumentException("Unsupported requestType: " + requestType);
-		}
-	}
-	
-	// SCHEDULE ATTRIBUTE READ
-	private ModelAndView scheduleAttributeRead(HttpServletRequest request, String scheduleName, String cronExpression, String deviceGroupName, int editJobId, 
-	                                           boolean retryCheckbox, int retryCount, Integer stopRetryAfterHoursCount, Integer turnOffQueuingAfterRetryCount) throws ServletException {
-	
-		ModelAndView mav = new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/detail");
-		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        
-		// attribute
-		Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
-		if (selectedAttributes.size() == 0) {
-			return makeErrorMav("No Attribute(s) Selected", DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, scheduleName, cronExpression, null, null, null, deviceGroupName,
-			                    retryCheckbox, retryCount == 0 ? "" : String.valueOf(retryCount), stopRetryAfterHoursCount == null ? "" : stopRetryAfterHoursCount.toString(), 
-			                    turnOffQueuingAfterRetryCount == null ? "" : turnOffQueuingAfterRetryCount.toString(), editJobId);
-		}
-		
-		// schedule / re-schedule
-		YukonJob job = null;
-		RetryStrategy retryStrategy = new RetryStrategy(retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
-		
-		if (editJobId <= 0) {
-			job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, selectedAttributes, DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
+        }
+
+        // bridge UI parameters with actual retry back end
+        // calculate retryCount, stopRetryAfterHoursCount, and turnOffQueuingAfterRetryCount
+        // in terms of queuedRetryCount, maxTotalRunTimeHours, and nonQueuedRetryCount
+        queuedRetryCount = queuedRetryCount == null ? 0 : queuedRetryCount;
+        nonQueuedRetryCount = nonQueuedRetryCount == null ? 0 : nonQueuedRetryCount;
+
+        int retryCount = queuedRetryCount + nonQueuedRetryCount;
+        Integer stopRetryAfterHoursCount = maxTotalRunTimeHours;
+        Integer turnOffQueuingAfterRetryCount = queuedRetryCount;
+
+        // schedule / edit
+        if (requestType.equals(DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ)) {
+
+            return scheduleAttributeRead(request, scheduleName, cronExpression, deviceGroupName, editJobId, retryCheckbox, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
+
+        } else if (requestType.equals(DeviceRequestType.SCHEDULED_GROUP_COMMAND)) {
+
+            return scheduleCommand(request, scheduleName, cronExpression, deviceGroupName, editJobId, retryCheckbox, retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
+
+        } else {
+            throw new IllegalArgumentException("Unsupported requestType: " + requestType);
+        }
+    }
+
+    // SCHEDULE ATTRIBUTE READ
+    private ModelAndView scheduleAttributeRead(HttpServletRequest request, String scheduleName, String cronExpression, String deviceGroupName, int editJobId,
+            boolean retryCheckbox, int retryCount, Integer stopRetryAfterHoursCount, Integer turnOffQueuingAfterRetryCount) throws ServletException {
+
+        ModelAndView mav = new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/detail");
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+
+        // attribute
+        Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
+        if (selectedAttributes.size() == 0) {
+            return makeErrorMav("No Attribute(s) Selected", DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, scheduleName, cronExpression, null, null, null, deviceGroupName,
+                retryCheckbox, retryCount == 0 ? "" : String.valueOf(retryCount), stopRetryAfterHoursCount == null ? "" : stopRetryAfterHoursCount.toString(),
+                    turnOffQueuingAfterRetryCount == null ? "" : turnOffQueuingAfterRetryCount.toString(), editJobId);
+        }
+
+        // schedule / re-schedule
+        YukonJob job = null;
+        RetryStrategy retryStrategy = new RetryStrategy(retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
+
+        String cronDescription = cronExpressionTagService.getDescription(cronExpression, userContext);
+
+        if (editJobId <= 0) {
+            job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, selectedAttributes, DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
             toolsEventLogService.groupRequestByAttributeScheduleCreated(userContext.getYukonUser(), scheduleName,
-                cronExpression);
-		} else {
-		    boolean isDisabled = scheduledRepeatingJobDao.getById(editJobId).isDisabled();
-		    job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, selectedAttributes, DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
+                cronDescription);
+        } else {
+            boolean isDisabled = scheduledRepeatingJobDao.getById(editJobId).isDisabled();
+            job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, selectedAttributes, DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ, cronExpression, userContext, retryStrategy);
             toolsEventLogService.groupRequestByAttributeScheduleUpdated(userContext.getYukonUser(), scheduleName,
-                cronExpression);
-		    if(isDisabled) {
-		        jobManager.disableJob(job);
-		    }
-		}
-		
-		mav.addObject("jobId", job.getId());
-		return mav;
-	}
-	
-	// SCHEDULE COMMAND
-	private ModelAndView scheduleCommand(HttpServletRequest request, String scheduleName, String cronExpression, String deviceGroupName, int editJobId, 
-	                                     boolean retryCheckbox, int retryCount, Integer stopRetryAfterHoursCount, Integer turnOffQueuingAfterRetryCount) throws ServletException {
-	
-		ModelAndView mav = new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/detail");
-		YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-		
-		String errorReason = null;
-		
-		// validate command string
-		String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
-		String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
-		if (StringUtils.isBlank(commandString)) {
-		    errorReason = "No Command Selected.";
-		} else if (StringUtils.isBlank(commandString)) {
-		    errorReason = "You must enter a valid command.";
+                cronDescription);
+            if(isDisabled) {
+                jobManager.disableJob(job);
+            }
+        }
+
+        mav.addObject("jobId", job.getId());
+        return mav;
+    }
+
+    // SCHEDULE COMMAND
+    private ModelAndView scheduleCommand(HttpServletRequest request, String scheduleName, String cronExpression, String deviceGroupName, int editJobId,
+            boolean retryCheckbox, int retryCount, Integer stopRetryAfterHoursCount, Integer turnOffQueuingAfterRetryCount) throws ServletException {
+
+        ModelAndView mav = new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/detail");
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+
+        String errorReason = null;
+
+        // validate command string
+        String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
+        String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
+        if (StringUtils.isBlank(commandString)) {
+            errorReason = "No Command Selected.";
+        } else if (StringUtils.isBlank(commandString)) {
+            errorReason = "You must enter a valid command.";
         } else if (rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, userContext.getYukonUser())) {
         	// check that it is authorized
             if (!paoCommandAuthorizationService.isAuthorized(userContext.getYukonUser(), commandString)) {
@@ -452,14 +454,16 @@ public class ScheduledGroupRequestExecutionController {
         // schedule /  re-schedule
         YukonJob job = null;
         RetryStrategy retryStrategy = new RetryStrategy(retryCount, stopRetryAfterHoursCount, turnOffQueuingAfterRetryCount);
-        
+
+        String cronDescription = cronExpressionTagService.getDescription(cronExpression, userContext);
+
         if (editJobId <= 0) {
-        	job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, commandString, DeviceRequestType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
-        	toolsEventLogService.groupRequestByCommandScheduleCreated(userContext.getYukonUser(), scheduleName, cronExpression);
+            job = scheduledGroupRequestExecutionService.schedule(scheduleName, deviceGroupName, commandString, DeviceRequestType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
+            toolsEventLogService.groupRequestByCommandScheduleCreated(userContext.getYukonUser(), scheduleName, cronDescription);
         } else {
             boolean isDisabled = scheduledRepeatingJobDao.getById(editJobId).isDisabled();
             job = scheduledGroupRequestExecutionService.scheduleReplacement(editJobId, scheduleName, deviceGroupName, commandString, DeviceRequestType.SCHEDULED_GROUP_COMMAND, cronExpression, userContext, retryStrategy);
-            toolsEventLogService.groupRequestByCommandScheduleUpdated(userContext.getYukonUser(), scheduleName, cronExpression);
+            toolsEventLogService.groupRequestByCommandScheduleUpdated(userContext.getYukonUser(), scheduleName, cronDescription);
             if(isDisabled) {
                 jobManager.disableJob(job);
             }

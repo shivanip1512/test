@@ -58,12 +58,12 @@ public class ScheduledBillingFileExportController {
 
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private EmailService emailService;
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
-    @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private ScheduledFileExportHelper exportHelper;
-    @Autowired private EmailService emailService;
     @Autowired private ToolsEventLogService toolsEventLogService;
+    @Autowired private YukonUserContextMessageSourceResolver resolver;
 
     private static final int MAX_GROUPS_DISPLAYED = 2;
     private ScheduledFileExportValidator scheduledFileExportValidator;
@@ -161,17 +161,19 @@ public class ScheduledBillingFileExportController {
 
         MessageSourceResolvable msgObj = null;
 
+        String scheduledCronDescription = cronExpressionTagService.getDescription(exportData.getScheduleCronString(), userContext);
+
         if (jobId == null) {
             //new schedule
             scheduledFileExportService.scheduleFileExport(exportData, userContext, request);
             toolsEventLogService.billingFormatCreated(userContext.getYukonUser(), exportData.getScheduleName(),
-                exportData.getExportFileName(), exportData.getScheduleCronString());
+                exportData.getExportFileName(), scheduledCronDescription);
             msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobCreated", exportData.getScheduleName());
         } else {
             //edit schedule
             scheduledFileExportService.updateFileExport(exportData, userContext, request, jobId);
             toolsEventLogService.billingFormatUpdated(userContext.getYukonUser(), exportData.getScheduleName(),
-                exportData.getExportFileName(), exportData.getScheduleCronString());
+                exportData.getExportFileName(), scheduledCronDescription);
             msgObj = new YukonMessageSourceResolvable("yukon.web.modules.amr.billing.jobs.jobUpdated", exportData.getScheduleName());
         }
         

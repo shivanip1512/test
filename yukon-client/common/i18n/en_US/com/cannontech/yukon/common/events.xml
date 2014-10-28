@@ -12,6 +12,7 @@
     <entry key="yukon.common.events.commandScheduleId">Command Schedule Id</entry>
     <entry key="yukon.common.events.contactName">Contact Name</entry>
     <entry key="yukon.common.events.controlAreaName">Control Area Name</entry>
+    <entry key="yukon.common.events.cron">Run Frequency</entry>
     <entry key="yukon.common.events.deviceLabel">Device Label</entry>
     <entry key="yukon.common.events.deviceGroup">Device Group</entry>
     <entry key="yukon.common.events.deviceName">Device Name</entry>
@@ -39,6 +40,7 @@
     <entry key="yukon.common.events.mspMethod">Method</entry>
     <entry key="yukon.common.events.mspTransactionId">Transaction Id</entry>
     <entry key="yukon.common.events.mspVendor">Vendor</entry>
+    <entry key="yukon.common.events.name">Name</entry>
     <entry key="yukon.common.events.notAttemptedRequests">Not Attempted Requests</entry>
     <entry key="yukon.common.events.paoId">Pao Id</entry>
     <entry key="yukon.common.events.paoName">Pao Name</entry>
@@ -58,6 +60,7 @@
     <entry key="yukon.common.events.serialNumber">Serial Number</entry>
     <entry key="yukon.common.events.shedDuration">Shed Duration</entry>
     <entry key="yukon.common.events.startDate">Start Date</entry>
+    <entry key="yukon.common.events.state">Enabled/Disabled</entry>
     <entry key="yukon.common.events.substationName">Substation Name</entry>
     <entry key="yukon.common.events.successRequests">Success Requests</entry>
     <entry key="yukon.common.events.syncIssueType">Sync Type</entry>
@@ -423,20 +426,24 @@
     <entry key="yukon.common.events.system.tools.dataExport.dataExportFormatCreated">Data export format {2} created by {1}.</entry>
     <entry key="yukon.common.events.system.tools.dataExport.dataExportFormatUpdated">Data export format {2} updated by {1}.</entry>
     <entry key="yukon.common.events.system.tools.dataExport.dataExportFormatDeleted">Data export format {2} deleted by {1}.</entry>
-    <entry key="yukon.common.events.system.tools.dataExport.dataExportFormatCopyAttempted">Data export format {name1} copy attempted by {username2}.</entry>
+    <entry key="yukon.common.events.system.tools.dataExport.dataExportFormatCopyAttempted">Data export format {2} copy attempted by {1}.</entry>
     <entry key="yukon.common.events.system.tools.dataExport.dataExportScheduleCreated">Data export schedule {2} created for format {3} with scheduled run {4} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dataExport.dataExportScheduleCreated.3">Data Export Format</entry>
     <entry key="yukon.common.events.system.tools.dataExport.dataExportScheduleUpdated">Data export schedule {2} updated for format {3} with scheduled run {4} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.dataExport.dataExportScheduleUpdated.3">Data Export Format</entry>
     <entry key="yukon.common.events.system.tools.dataExport.dataExportScheduleDeleted">Data export schedule {2} deleted by {1}.</entry>
-    <entry key="yukon.common.events.system.tools.macsScript.macsScriptStarted">MACS script {2} manually scheduled to start at {11} and stop at {12} by {1}.</entry>
-    <entry key="yukon.common.events.system.tools.macsScript.macsScriptStopped">MACS script {2} manually scheduled to stop at {11} by {1}.</entry>
-    <entry key="yukon.common.events.system.tools.macsScript.macsScriptEnabled">MACS script {2} {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.macsScripts.macsScriptStarted">MACS script {2} manually scheduled to start at {11} and stop at {12} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.macsScripts.macsScriptStopped">MACS script {2} manually scheduled to stop at {11} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.macsScripts.macsScriptEnabled">MACS script {2} {3} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.groupRead.groupRequestByAttributeScheduleCreated">Scheduled group read {2} created with scheduled run {3} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.groupRead.groupRequestByCommandScheduleCreated">Scheduled group command {2} created with scheduled run {3} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.groupRead.groupRequestByAttributeScheduleUpdated">Scheduled group read {2} updated with scheduled run {3} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.groupRead.groupRequestByCommandScheduleUpdated">Scheduled group command {2} updated with scheduled run {3} by {1}.</entry>
     <entry key="yukon.common.events.system.tools.groupRead.groupRequestScheduleDeleted">Scheduled group request {2} deleted by {1}.</entry>
     <entry key="yukon.common.events.system.tools.billing.billingFormatCreated">Billing export schedule {2} created for format {3} with scheduled run {4} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.billing.billingFormatCreated.3">Billing Format</entry>
     <entry key="yukon.common.events.system.tools.billing.billingFormatUpdated">Billing export schedule {2} updated for format {3} with scheduled run {4} by {1}.</entry>
+    <entry key="yukon.common.events.system.tools.billing.billingFormatUpdated.3">Billing Format</entry>
     <entry key="yukon.common.events.system.tools.billing.billingFormatDeleted">Billing export schedule {2} deleted by {1}.</entry>
        
     <!--  System Administration -->

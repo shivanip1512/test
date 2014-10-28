@@ -91,8 +91,9 @@ public class DataExporterFormatController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ToolsEventLogService toolsEventLogService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+
     @RequestMapping(value = "/data-exporter/format/{id}", method = RequestMethod.GET)
     public String view(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
         

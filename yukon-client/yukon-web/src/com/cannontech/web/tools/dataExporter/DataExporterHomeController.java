@@ -83,8 +83,8 @@ public class DataExporterHomeController {
     @Autowired private JobManager jobManager;
     @Autowired private ObjectFormattingService objectFormattingService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ToolsEventLogService toolsEventLogService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     public static String baseKey = "yukon.web.modules.tools.bulk.archivedValueExporter.";
     

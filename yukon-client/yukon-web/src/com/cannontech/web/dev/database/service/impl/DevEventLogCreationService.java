@@ -34,6 +34,7 @@ import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.events.loggers.RfnDeviceEventLogService;
 import com.cannontech.common.events.loggers.StarsEventLogService;
 import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.events.loggers.ToolsEventLogService;
 import com.cannontech.common.events.loggers.ValidationEventLogService;
 import com.cannontech.common.events.loggers.VeeReviewEventLogService;
 import com.cannontech.common.events.loggers.ZigbeeEventLogService;
@@ -71,6 +72,7 @@ public class DevEventLogCreationService {
     @Autowired private RfnDeviceEventLogService rfnDeviceEventLogService;
     @Autowired private StarsEventLogService starsEventLogService;
     @Autowired private SystemEventLogService systemEventLogService;
+    @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private ValidationEventLogService validationEventLogService;
     @Autowired private VeeReviewEventLogService veeReviewEventLogService;
     @Autowired private ZigbeeEventLogService zigbeeEventLogService;
@@ -684,6 +686,48 @@ public class DevEventLogCreationService {
                 systemEventLogService.usernameChanged(user, oldUsername, newUsername);
             }
         });
+        executables.put(LogType.TOOLS, new DevEventLogExecutable() {
+            @Override
+            public void execute(DevEventLog devEventLog) {
+
+                Instant startIns = Instant.now().minus(Duration.standardHours(5));
+                Instant stopIns = Instant.now();
+                Date startDate = startIns.toDate();
+                Date endDate = stopIns.toDate();
+
+                LiteYukonUser user = new LiteYukonUser(0, devEventLog.getUsername());
+                String name = "Monthly Billing";
+                String formatName = "Standard Billing";
+                String cron = "Custom, 0 0 1/3 ? * *";
+                toolsEventLogService.billingFormatCreated(user, name, formatName, cron);
+                toolsEventLogService.billingFormatDeleted(user, formatName);
+                toolsEventLogService.billingFormatUpdated(user, name, formatName, cron);
+
+                formatName = "Data Export";
+                toolsEventLogService.dataExportFormatCopyAttempted(user, formatName);
+                toolsEventLogService.dataExportFormatCreated(user, formatName);
+                toolsEventLogService.dataExportFormatDeleted(user, formatName);
+                toolsEventLogService.dataExportFormatUpdated(user, formatName);
+
+                name = "Daily Scheduled Export";
+                toolsEventLogService.dataExportScheduleCreated(user, name, formatName, cron);
+                toolsEventLogService.dataExportScheduleDeleted(user, formatName);
+                toolsEventLogService.dataExportScheduleUpdated(user, name, formatName, cron);
+
+                toolsEventLogService.groupRequestByAttributeScheduleCreated(user, name, cron);
+                toolsEventLogService.groupRequestByAttributeScheduleUpdated(user, name, cron);
+                toolsEventLogService.groupRequestByCommandScheduleCreated(user, name, cron);
+                toolsEventLogService.groupRequestByCommandScheduleUpdated(user, name, cron);
+                toolsEventLogService.groupRequestScheduleDeleted(user, name);
+
+                name = "Meter Read Cycle 1";
+                String state = "Enabled";
+                toolsEventLogService.macsScriptEnabled(user, name, state);
+                toolsEventLogService.macsScriptStarted(user, name, startDate, endDate);
+                toolsEventLogService.macsScriptStopped(user, name, endDate);
+
+            }
+        });
         executables.put(LogType.VALIDATION, new DevEventLogExecutable() {
             @Override
             public void execute(DevEventLog devEventLog) {
@@ -811,6 +855,7 @@ public class DevEventLogCreationService {
         RFN_DEVICE(RfnDeviceEventLogService.class, 3),
         STARS(StarsEventLogService.class, 26),
         SYSTEM(SystemEventLogService.class, 15),
+        TOOLS(ToolsEventLogService.class, 18),
         VALIDATION(ValidationEventLogService.class, 7),
         VEE_REVIEW(VeeReviewEventLogService.class, 3),
         ZIGBEE(ZigbeeEventLogService.class, 12),
