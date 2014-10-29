@@ -13,14 +13,26 @@ yukon.support.logs = (function () {
     
     var
     _initialized = false,
+    
+    /**@type {number} -  task Id*/
     _repeatingTaskId = 0,
+    
+    /**@type {number} -  file size*/
     _fileLength = 0,
     
+    /** 
+     * Sets the number of lines displayed.
+     * @param {number} num - No. of lines.
+     */
     _setNumberOfLines = function (num) {
         $('#numLines').val((isNaN(num) || num <= 10) ? 10 : num);
         _removeExtraLines(true);
     },
     
+    /** 
+     * Remove the extra lines and reload.
+     * @param {boolean} reload - If true, reload the logs.
+     */
     _removeExtraLines = function (reload) {
         
         var numLogsCurrent = $('.logLine').size(),
@@ -35,6 +47,7 @@ yukon.support.logs = (function () {
         }
     },
     
+    /** Update the logs after specific interval. */
     _update = function () {
         
         var requestData = {

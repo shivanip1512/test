@@ -1,13 +1,14 @@
-/**
- * Singleton that manages the data view feature (TDC)
- * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
- */
-
 yukon.namespace('yukon.tdc');
 
+/**
+ * Module that manages the data view feature (TDC)
+ * @module   yukon.tdc
+ * @requires JQUERY
+ * @requires JQUERY UI
+ */
 yukon.tdc = (function () {
+    
+    /** Plays the alarm audio. */
     var _playAudio = function () {
         try {
             $('#alarm-audio')[0].play();
@@ -16,6 +17,8 @@ yukon.tdc = (function () {
             // probably caused by no audio service started or audio driver installed.
         }
     },
+    
+    /** Pause the alarm audio. */
     _pauseAudio = function () {
         try {
             $('#alarm-audio')[0].pause();
@@ -28,6 +31,10 @@ yukon.tdc = (function () {
         
     tdcMod = {
         
+        /** 
+         * Toggle the playing and pausing of alarms.
+         * @param {Object} alarm - alarm 
+         */
         toggleAlarm : function (alarms) {
             if($('#alarm-audio')[0].mute == null || $('#alarm-audio')[0].mute == false){
                 if (alarms.value == 'MULT_ALARMS') {

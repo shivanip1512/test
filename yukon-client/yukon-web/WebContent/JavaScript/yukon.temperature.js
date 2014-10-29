@@ -14,7 +14,10 @@ Temperature = function(args) {
     this.decimalPlaces = {'F': 0, 'C': 1};
     
     this.init(args);
-    
+   
+    /** Return the Fahrenheit temperature.
+     *  @returns {number} degrees - temperature in Fahrenheit.
+     */
     this.getF = function() {
         switch(this.unit) {
         case 'F':
@@ -27,6 +30,9 @@ Temperature = function(args) {
         }
     };
     
+    /** Return the Celsius temperature.
+     *  @returns {number} degrees - temperature in Celsius.
+     */
     this.getC = function() {
         switch(this.unit) {
         case 'F':
@@ -43,6 +49,9 @@ Temperature = function(args) {
         return this.resolution[this.unit];
     };
     
+    /** Set the Fahrenheit temperature.
+     *  @param {number} degreesFahrenheit - temperature in Fahrenheit/Celsius.
+     */
     this.setF = function (degreesFahrenheit) {
         switch(this.unit) {
         case 'F':
@@ -56,6 +65,9 @@ Temperature = function(args) {
         }
     };
     
+    /** Set the Celsius temperature.
+     *  @param {number} degreesCelsius - temperature in Celsius/Fahrenheit.
+     */
     this.setC = function(degreesCelsius) {
         switch(this.unit) {
         case 'F':
@@ -69,6 +81,9 @@ Temperature = function(args) {
         }
     };
     
+    /** Return the rounded Fahrenheit temperature.
+     *  @returns {number} degrees - temperature in Fahrenheit.
+    */
     this._getResolvedFahrenheitTemp = function() {
         var raw = this.getF();
         var alias = 1.0 / this.resolution['F'];
@@ -76,6 +91,9 @@ Temperature = function(args) {
         return Math.round(raw * alias) / alias;
     };
     
+    /** Return the rounded Celsius temperature.
+     *  @returns {number} degrees - temperature in Celsius.
+    */
     this._getResolvedCelsiusTemp = function() {
         var raw = this.getC();
         var alias = 1.0 / this.resolution['C'];
@@ -83,6 +101,9 @@ Temperature = function(args) {
         return Math.round(raw * alias) / alias;
     };
     
+    /** Return the rounded Celsius/Fahrenheit temperature.
+     *  @returns {number} degrees - temperature in Celsius/Fahrenheit.
+     */
     this.getResolvedTemp = function() {
         switch(this.unit) {
         case 'F':
@@ -94,6 +115,10 @@ Temperature = function(args) {
         }
     };
     
+    /** Return the sanitized Celsius/Fahrenheit temperature.
+     *  @param {char} toUnit - Unit of temperature.
+     *  @returns {number} degrees - temperature in Celsius/Fahrenheit.
+     */
     this.sanitizedValue = function(toUnit) {
         switch(toUnit) {
         case 'F':
@@ -105,6 +130,10 @@ Temperature = function(args) {
         }
     };
     
+    /** Return the sanitized Celsius/Fahrenheit temperature.
+     *  @param  {char} toUnit - Unit of temperature.
+     *  @returns {number} degrees - temperature in Celsius/Fahrenheit.
+    */
     this.sanitizedString = function(toUnit) {
         if (typeof(toUnit) == 'undefined') {
             toUnit = this.unit;
@@ -112,6 +141,11 @@ Temperature = function(args) {
         return this.sanitizedValue(toUnit).toFixed(this.decimalPlaces[toUnit]);
     };
     
+    /** Convert to Fahrenheit temperature.
+     *  @param {Object} [args] - Contains options for temperature conversion.
+     *  @param {number} [args.resolution] - resolution.
+     *  @param {number} [args.decimalPlaces] - decimal places for conversion.
+    */
     this.toFahrenheit = function(args) {
         if (typeof(args) == 'undefined') {
             args = {};
@@ -127,6 +161,11 @@ Temperature = function(args) {
         this.init(opts);
     };
     
+    /** Convert to Celsius temperature.
+     *  @param {Object} [args] - Contains options for temperature conversion.
+     *  @param {number} [args.resolution] - resolution.
+     *  @param {number} [args.decimalPlaces] - decimal places for conversion.
+    */
     this.toCelsius = function(args) {
         if (typeof(args) == 'undefined') {
             args = {};
@@ -142,6 +181,9 @@ Temperature = function(args) {
         this.init(opts);
     };
     
+    /** Convert the temperature to given unit.
+     *  @param {char} unit - Unit in which we have to convert the temperature.
+    */
     this.toUnit = function(unit) {
         switch (unit) {
         case 'F':
@@ -155,14 +197,17 @@ Temperature = function(args) {
         }
     };
     
+    /** Sanitize the temperature.*/
     this.print = function() {
     	return this.sanitizedString() + " " + this.unit;
     };
     
+    /** Step up the temperature.*/
     this.stepUp = function() {
         this.degrees += this.resolution[this.unit];
     };
     
+    /** Step down the temperature.*/
     this.stepDown = function() {
         this.degrees -= this.resolution[this.unit];
     };

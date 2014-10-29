@@ -1,19 +1,34 @@
-/**
- * Singleton that manages survey editing
- * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
- */
-
 yukon.namespace('yukon.surveys.edit');
 
+/**
+ * Module that manages survey editing
+ * @module   yukon.surveys.edit
+ * @requires JQUERY
+ * @requires JQUERY UI
+ */
 yukon.surveys.edit = (function () {
 
-    var _moveUpIcon,
+    var 
+        /** @type {Object} - Instance of move up Icon. */
+        _moveUpIcon,
+        
+        /** @type {Object} - Instance of move down Icon. */
         _moveDownIcon,
+        
+        /** @type {Object} - Instance of delete answer Icon. */
         _deleteAnswerIcon,
+        
+        /** @type {Object} - Instance of disabled move up Icon. */
         _moveUpDisabledIcon,
+        
+        /** @type {Object} - Instance of disabled move down Icon. */
         _moveDownDisabledIcon,
+        
+        /** 
+         * Returns the index of the row.
+         * @param {number} rowIdNum - row Id.
+         * @returns {number} index - index of row.
+         */
         _indexOfRow = function (rowIdNum) {
             var index;
             for (index = 0; index < mod.addAnswer.rowIdNums.length; index += 1) {
@@ -23,6 +38,7 @@ yukon.surveys.edit = (function () {
             }
         },
 
+        /** Open the survey question dialog. */
         _initQuestionDialog = function() {
             var infoHolder = $('[data-answer-keys]'),
                 answerKeys = infoHolder.data('answerKeys'),
@@ -45,6 +61,10 @@ yukon.surveys.edit = (function () {
             $('#question-popup').dialog({width: 600, buttons: yukon.ui.buttons({ event: 'yukon.survey.question.save' }) });
         },
 
+        /** 
+         * Disable the move Up button.
+         * @param {number} rowIdNum - row Id.
+         */
         _disableMoveUp = function (rowIdNum) {
             var oldMoveIcon = $('#moveUpIcon' + rowIdNum)[0],
                 disabledIcon = _moveUpDisabledIcon.cloneNode(true);
@@ -52,13 +72,21 @@ yukon.surveys.edit = (function () {
             oldMoveIcon.parentNode.replaceChild(disabledIcon, oldMoveIcon);
         },
 
+        /** 
+         * Disable the move Down button.
+         * @param {number} rowIdNum - row Id.
+         */
         _disableMoveDown = function (rowIdNum) {
             var oldMoveIcon = $('#moveDownIcon' + rowIdNum)[0],
                 disabledIcon = _moveDownDisabledIcon.cloneNode(true);
             disabledIcon.id = 'moveDownIcon' + rowIdNum;
             oldMoveIcon.parentNode.replaceChild(disabledIcon, oldMoveIcon);
         },
-
+        
+        /** 
+         * Enable the move Up button.
+         * @param {number} rowIdNum - row Id.
+         */
         _enableMoveUp = function (rowIdNum) {
             var oldMoveIcon = $('#moveUpIcon' + rowIdNum)[0],
                 enabledIcon = _moveUpIcon.cloneNode(true);
@@ -66,6 +94,10 @@ yukon.surveys.edit = (function () {
             oldMoveIcon.parentNode.replaceChild(enabledIcon, oldMoveIcon);
         },
 
+        /** 
+         * Enable the move down button.
+         * @param {number} rowIdNum - row Id.
+         */
         _enableMoveDown = function (rowIdNum) {
             var oldMoveIcon = $('#moveDownIcon' + rowIdNum)[0],
                 enabledIcon = _moveDownIcon.cloneNode(true);
@@ -75,6 +107,10 @@ yukon.surveys.edit = (function () {
             }
         },
 
+        /** 
+         * Delete the survey answer.
+         * @param {Object} event - jquery event object.
+         */
         _deleteAnswer = function (event) {
             var rowIdNum = $(event.target).closest('tr').data('rowIdNum'),
                 row = $('#answerRow' + rowIdNum)[0];
@@ -92,6 +128,10 @@ yukon.surveys.edit = (function () {
             mod.addAnswer.rowIdNums.splice(_indexOfRow(rowIdNum), 1);
         },
 
+        /** 
+         * Move the answer up in table.
+         * @param {Object} event - jquery event object.
+         */
         _moveAnswerUp = function (event) {
             var rowIdNum = $(event.target).closest('tr').data('rowIdNum'),
                 index = _indexOfRow(rowIdNum),
@@ -118,6 +158,10 @@ yukon.surveys.edit = (function () {
             }
         },
 
+        /** 
+         * Move the answer down in the table.
+         * @param {Object} event - jquery event object.
+         */
         _moveAnswerDown = function (event) {
             var rowIdNum = $(event.target).closest('tr').data('rowIdNum'),
                 index = _indexOfRow(rowIdNum),
@@ -143,6 +187,7 @@ yukon.surveys.edit = (function () {
             }
         },
 
+        /** Handles question change event. */
         _questionTypeChanged = function () {
             var questionType = $('#questionType').val();
             $('.additionalInfo').hide();

@@ -1,17 +1,15 @@
+yukon.namespace('yukon.themes');
 
 /**
- * Singleton that manages the Yukon theming feature
- * 
- * @requires jQuery 1.8.3+
- * @requires jQuery UI 1.9.2+
+ * Module that manages the Yukon theming feature
+ * @module   yukon.themes
+ * @requires JQUERY
+ * @requires JQUERY_UI
  * @requires JQUERY_UI_WIDGET
  * @requires JQUERY_IFRAME_TRANSPORT
  * @requires JQUERY_FILE_UPLOAD
  * @requires JQUERY_SPECTRUM
  */
-
-yukon.namespace('yukon.themes');
-
 yukon.themes = (function () {
     
     var initialized = false,
