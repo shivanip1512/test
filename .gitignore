@@ -96,5 +96,6 @@ yukon-server/Message/vc90.pdb
 yukon-server/Simulator/*.idb
 yukon-server/Simulator/*.obj
 yukon-server/Simulator/*.pdb
+yukon-server/SimulatorMemoryMaps
 yukon-server/bin
 yukon-server/lib
