@@ -119,7 +119,7 @@ std::string createIdSqlClause(const id_set &paoids, const std::string &table, co
         return std::string();
     }
 
-    std::ostringstream sql;
+    Cti::StreamBuffer sql;
 
     sql << table << "." << column;
 
@@ -132,12 +132,21 @@ std::string createIdSqlClause(const id_set &paoids, const std::string &table, co
     {
         sql << " IN (";
 
-        std::copy(paoids.begin(), paoids.end(), csv_output_iterator<long, std::ostringstream>(sql));
+        std::copy(paoids.begin(), paoids.end(), csv_output_iterator<long, Cti::StreamBuffer>(sql));
 
         sql << ")";
     }
 
-    return sql.str();
+    return sql.extractToString();
+}
+
+std::string createIdSqlClause(const long id, const std::string &table, const std::string &column)
+{
+    Cti::StreamBuffer sql;
+
+    sql << table << "." << column << " = " << id;
+
+    return sql.extractToString();
 }
 
 /**

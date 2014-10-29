@@ -145,24 +145,10 @@ void DynamicPaoInfoManager::loadInfoIfNecessary(const long paoId)
 
 void DynamicPaoInfoManager::loadInfo(const long paoId)
 {
-    Database::id_set paoIds;
-
-    paoIds.insert(paoId);
-
-    loadInfo(paoIds);
-}
-
-void DynamicPaoInfoManager::loadInfo(const Database::id_set &paoids)
-{
     readers_writer_lock_t::writer_lock_guard_t guard(mux);
 
-    Database::id_set paoidsToLoad;
-
-    boost::range::set_difference(paoids, loadedPaos, std::inserter(paoidsToLoad, paoidsToLoad.begin()));
-
-    // There is a possibility of having no PAOs to load if 2 threads try to load the same IDs,
-    // lets allow the first one to continue and log
-    if( paoidsToLoad.empty() )
+    // There is a possibility that this PAO was loaded if 2 threads tried to load the same ID, don't do the work twice
+    if( loadedPaos.count(paoId) )
     {
         return;
     }
@@ -188,7 +174,7 @@ void DynamicPaoInfoManager::loadInfo(const Database::id_set &paoids)
         return;
     }
 
-    sql += " WHERE owner = ? AND " + Database::createIdSqlClause(paoidsToLoad, "DPI", "paobjectid");
+    sql += " WHERE owner = ? AND " + Database::createIdSqlClause(paoId, "DPI", "paobjectid");
 
     rdr.setCommandText(sql);
     rdr << *ownerString;
@@ -253,7 +239,7 @@ void DynamicPaoInfoManager::loadInfo(const Database::id_set &paoids)
             }
         }
 
-        loadedPaos.insert(paoids.begin(), paoids.end());
+        loadedPaos.insert(paoId);
     }
     else
     {

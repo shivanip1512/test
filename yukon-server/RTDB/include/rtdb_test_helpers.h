@@ -50,9 +50,9 @@ public:
 
 struct test_DynamicPaoInfoManager : DynamicPaoInfoManager
 {
-    virtual void loadInfo(const Database::id_set &paoIds)
+    virtual void loadInfo(const long id)
     {
-        loadedPaos.insert(paoIds.begin(), paoIds.end());
+        loadedPaos.insert(id);
     }
 };
 

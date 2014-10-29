@@ -76,8 +76,7 @@ protected:
 
     DynamicPaoInfoManager();
 
-    void loadInfo(const long paoId);
-    virtual void loadInfo(const Database::id_set &paoIds);
+    virtual void loadInfo(const long paoId);
 
     Database::id_set loadedPaos;
 

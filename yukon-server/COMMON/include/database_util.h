@@ -107,7 +107,8 @@ IM_EX_CTIBASE void executeWriter( DatabaseWriter &writer, const char* file, cons
  * "table.column = x" or
  * "table.column in ()"
  */
-std::string IM_EX_CTIBASE createIdSqlClause(const id_set &paoids, const std::string &table, const std::string &column);
+std::string IM_EX_CTIBASE createIdSqlClause(const id_set &ids, const std::string &table, const std::string &column);
+std::string IM_EX_CTIBASE createIdSqlClause(const long id, const std::string &table, const std::string &column);
 
 /**
  * Execute an Upsert operation
@@ -115,9 +116,9 @@ std::string IM_EX_CTIBASE createIdSqlClause(const id_set &paoids, const std::str
  */
 IM_EX_CTIBASE void executeUpsert(
         DatabaseConnection &conn,
-        const boost::function<void (DatabaseWriter &)> &initInserter, 
+        const boost::function<void (DatabaseWriter &)> &initInserter,
         const boost::function<void (DatabaseWriter &)> &initUpdater,
-        const TryInsertFirst::Options tryInsertFirst, 
+        const TryInsertFirst::Options tryInsertFirst,
         const char* file, const int line, const LogDebug::Options logDebug );
 
 } // namespace Database
