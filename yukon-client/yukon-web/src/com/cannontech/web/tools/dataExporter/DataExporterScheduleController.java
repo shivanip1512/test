@@ -24,7 +24,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
-import com.cannontech.core.dao.ContactDao;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRangeType;
@@ -40,12 +39,12 @@ import com.cannontech.common.scheduledFileExport.ArchivedDataExportFileGeneratio
 import com.cannontech.common.scheduledFileExport.ScheduledFileExportData;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.service.JobManager;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
@@ -87,7 +86,7 @@ public class DataExporterScheduleController {
     private ScheduledFileExportValidator scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
     
     @RequestMapping("/data-exporter/scheduleReport")
-    public String scheduleReport(ModelMap model, FlashScope flashScope, HttpServletRequest request, Integer jobId,
+    public String scheduleReport(ModelMap model, FlashScope flashScope, HttpServletRequest request, YukonUserContext userContext, Integer jobId,
             @ModelAttribute ArchivedValuesExporter archivedValuesExporter, BindingResult bindingResult) 
             throws ServletRequestBindingException {
         
@@ -97,7 +96,6 @@ public class DataExporterScheduleController {
         DataRange dataRange;
         ScheduledFileExportData exportData;
         CronExpressionTagState cronTagState;
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         if(jobId != null) {
             //edit existing schedule

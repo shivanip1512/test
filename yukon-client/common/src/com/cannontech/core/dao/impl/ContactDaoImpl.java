@@ -57,7 +57,7 @@ public final class ContactDaoImpl implements ContactDao {
     @Autowired private AddressDao addressDao;
     @Autowired private CustomerDao customerDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
-    @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private YukonUserDao userDao;
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
@@ -336,7 +336,7 @@ public final class ContactDaoImpl implements ContactDao {
         LiteContact contact = getContact(contactId);
         
         if (contact != null) {
-            return yukonUserDao.getLiteYukonUser(contact.getLoginID());
+            return userDao.getLiteYukonUser(contact.getLoginID());
         }
         
         return null;
@@ -648,7 +648,7 @@ public final class ContactDaoImpl implements ContactDao {
     
     @Override
     public String getUserEmail(LiteYukonUser user) {
-        LiteContact contact = yukonUserDao.getLiteContact(user.getUserID());
+        LiteContact contact = userDao.getLiteContact(user.getUserID());
         String email = "";
         if (contact != null) {
             String[] allEmailAddresses = getAllEmailAddresses(contact.getContactID());

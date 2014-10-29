@@ -467,14 +467,6 @@ yukon.tag.scheduledFileExportInputs = (function () {
         }
     },
     
-     _toggleEmailNotificationAddressField = function(){
-        if ($("#sendEmail").is(":checked")) {
-            $("#emailNotificationAddress").prop('disabled', false);
-        } else {
-            $("#emailNotificationAddress").prop('disabled', true);
-        }
-    },
-    
     _toggleTimestampPatternField = function() {
         _toggleField("#appendDateToFileName", "#timestampPatternField");
     },
@@ -510,7 +502,6 @@ yukon.tag.scheduledFileExportInputs = (function () {
         _toggleTimestampPatternField();
         _toggleFileExtensionField();
         _toggleExportPathField();
-        _toggleEmailNotificationAddressField();
         _sameAsNameClicked();
     },
 
@@ -526,7 +517,6 @@ yukon.tag.scheduledFileExportInputs = (function () {
             $(document).on('keyup', "#scheduleName", _nameChanged);
             $(document).on('change', "#scheduleName", _nameChanged);
             $(document).on('click', "#sameAsSchedName", _sameAsNameClicked);
-            $(document).on('click', "#sendEmail", _toggleEmailNotificationAddressField);
             _intializeAllFields();
         }
     };

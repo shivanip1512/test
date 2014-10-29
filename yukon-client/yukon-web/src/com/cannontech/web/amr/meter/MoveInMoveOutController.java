@@ -34,11 +34,9 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
@@ -56,11 +54,10 @@ public class MoveInMoveOutController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @RequestMapping("moveIn")
-    public String moveIn(HttpServletRequest request, ModelMap model) throws ServletRequestBindingException {
+    public String moveIn(HttpServletRequest request, LiteYukonUser liteYukonUser, ModelMap model) throws ServletRequestBindingException {
         PlcMeter meter = getMeter(request);
         SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
-        LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
-
+       
         // Adds the group to the mav object
         model.addAttribute("meter", meter);
         model.addAttribute("deviceId", meter.getDeviceId());
@@ -77,12 +74,11 @@ public class MoveInMoveOutController {
     }
 
     @RequestMapping("moveInRequest")
-    public String moveInRequest(HttpServletRequest request, ModelMap model) throws Exception {
+    public String moveInRequest(HttpServletRequest request, YukonUserContext userContext, ModelMap model) throws Exception {
 
         PlcMeter meter = getMeter(request);
         SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
-        LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
-
+        
         // Adds the group to the mav object
         model.addAttribute("meter", meter);
         model.addAttribute("deviceId", meter.getDeviceId());
@@ -90,12 +86,12 @@ public class MoveInMoveOutController {
         model.addAttribute("currentDate", new Date());
 
         // readable?
-        boolean readable = moveInMoveOutService.isAuthorized(liteYukonUser, meter);
+        boolean readable = moveInMoveOutService.isAuthorized(userContext.getYukonUser(), meter);
         model.addAttribute("readable", readable);
 
         // Getting all the needed form values
         PlcMeter prevMeter = getMeter(request);
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+       
 
         String deviceName = ServletRequestUtils.getStringParameter(request, "deviceName");
         String meterNumber = ServletRequestUtils.getStringParameter(request, "meterNumber");
@@ -169,11 +165,10 @@ public class MoveInMoveOutController {
     }
 
     @RequestMapping("moveOut")
-    public String moveOut(HttpServletRequest request, ModelMap model) throws ServletRequestBindingException {
+    public String moveOut(HttpServletRequest request, LiteYukonUser liteYukonUser, ModelMap model) throws ServletRequestBindingException {
 
         PlcMeter meter = getMeter(request);
         SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
-        LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
         
         // Adds the group to the mav object
         model.addAttribute("meter", meter);
@@ -191,12 +186,11 @@ public class MoveInMoveOutController {
     }
 
     @RequestMapping("moveOutRequest")
-    public String moveOutRequest(HttpServletRequest request, ModelMap model) throws ServletRequestBindingException {
+    public String moveOutRequest(HttpServletRequest request, YukonUserContext userContext, ModelMap model) throws ServletRequestBindingException {
 
         PlcMeter meter = getMeter(request);
         SimpleDevice device = deviceDao.getYukonDevice(meter.getDeviceId());
-        LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
-
+        
         // Adds the group to the mav object
         model.addAttribute("meter", meter);
         model.addAttribute("deviceId", meter.getDeviceId());
@@ -204,13 +198,12 @@ public class MoveInMoveOutController {
         model.addAttribute("currentDate", new Date());
 
         // readable?
-        boolean readable = moveInMoveOutService.isAuthorized(liteYukonUser, meter);
+        boolean readable = moveInMoveOutService.isAuthorized(userContext.getYukonUser(), meter);
         model.addAttribute("readable", readable);
 
         // Getting all the needed form values
         PlcMeter prevMeter = getMeter(request);
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-
+        
         String emailAddress = ServletRequestUtils.getStringParameter(request, "emailAddress");
         String moveOutDateStr = ServletRequestUtils.getStringParameter(request, "moveOutDate");
 

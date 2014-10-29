@@ -70,7 +70,6 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
@@ -351,8 +350,7 @@ public class MeterEventsReportController {
     }
 
     @RequestMapping("scheduledMeterEventsDialog")
-    public String scheduledMeterEventsDialog(HttpServletRequest request, ModelMap model, DeviceCollection collection) {
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request); 
+    public String scheduledMeterEventsDialog(YukonUserContext userContext, ModelMap model, DeviceCollection collection) {
         ScheduledFileExportData exportData = new ScheduledFileExportData();
         exportData.setNotificationEmailAddresses(contactDao.getUserEmail(userContext.getYukonUser()));
         model.addAttribute("exportData", exportData);

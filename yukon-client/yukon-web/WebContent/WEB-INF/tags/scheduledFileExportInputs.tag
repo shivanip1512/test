@@ -84,11 +84,11 @@
 
     <c:if test="${!isSmtpConfigured}">
         <tags:nameValue2 nameKey="yukon.common.email.send">
-            <form:checkbox path="sendEmail" id="sendEmail"/>
+            <form:checkbox path="sendEmail" id="sendEmail" data-toggle="email-address" />
         </tags:nameValue2>
     
         <tags:nameValue2 nameKey="yukon.common.email.address">
-            <tags:input id="emailNotificationAddress" path="notificationEmailAddresses" disabled="true"/>
+            <tags:input id="emailNotificationAddress" path="notificationEmailAddresses" disabled="true" toggleGroup="email-address" />
         </tags:nameValue2>
     </c:if>
 </cti:msgScope>
