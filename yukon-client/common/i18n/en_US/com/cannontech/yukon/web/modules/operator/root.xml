@@ -30,7 +30,6 @@
     <entry key="yukon.web.modules.operator.gateways.detail.dataCollection.title">Data Collection</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.testConnection.label">Test Connection</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.dataCompleteness">Data Completeness</entry>
-    <entry key="yukon.web.modules.operator.gateways.detail.collectionSchedule">Collection Schedule</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.sequencing">Sequencing</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.dataType">Data Type</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.sequenceStart">Sequence Start</entry>
@@ -40,6 +39,8 @@
     <entry key="yukon.web.modules.operator.gateways.detail.delete.confirm.message">Are you sure you want to delete this gateway?</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.location.set">Set Gateway Location</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.location.update.successful">Location updated Successfully.</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.schedule">Collection Schedule</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.schedule.update.successful">Collection schedule updated Successfully.</entry>
     
     <!-- Gateway Common Words -->
     <entry key="yukon.web.modules.operator.gateways.cert">Certificate</entry>

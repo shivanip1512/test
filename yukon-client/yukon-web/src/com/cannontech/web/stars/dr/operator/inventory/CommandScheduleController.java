@@ -40,44 +40,48 @@ import com.cannontech.web.stars.dr.operator.inventory.model.CommandScheduleWrapp
 public class CommandScheduleController {
     
     @Autowired private CommandScheduleDao commandScheduleDao;
-    @Autowired private CronExpressionTagService cronExpressionTagService;
+    @Autowired private CronExpressionTagService cronService;
     @Autowired private CommandScheduleValidator validator;
-    @Autowired private CommandScheduleEventLogService commandScheduleEventLogService;
+    @Autowired private CommandScheduleEventLogService logService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    
+    private static final String baseKey = "yukon.web.modules.operator.commandSchedule.";
     
     /* Command Schedule Edit/Creation page */
     @RequestMapping(value = "/operator/inventory/commandSchedule", method = RequestMethod.GET)
     public String commandSchedule(ModelMap modelMap, YukonUserContext userContext, Integer scheduleId) {
+        
         CommandScheduleWrapper schedule = new CommandScheduleWrapper();
         CommandSchedule commandSchedule = new CommandSchedule();
         if (scheduleId > 0) {
             commandSchedule = commandScheduleDao.getById(scheduleId);
             modelMap.addAttribute("mode", PageEditMode.EDIT);
-            String cronDescription = cronExpressionTagService.getDescription(commandSchedule.getStartTimeCronString(), userContext);
+            String cronDescription = cronService.getDescription(commandSchedule.getStartTimeCronString(), userContext);
             modelMap.addAttribute("displayName", cronDescription);
         } else {
             modelMap.addAttribute("mode", PageEditMode.CREATE);
             MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String displayName = messageSourceAccessor.getMessage("yukon.web.modules.operator.commandSchedule.createSchedule");
+            String displayName = messageSourceAccessor.getMessage(baseKey + "createSchedule");
             modelMap.addAttribute("displayName", displayName);
         }
         
         schedule.setCommandSchedule(commandSchedule);
         
-        CronExpressionTagState cronExpressionTagState = cronExpressionTagService.parse(commandSchedule.getStartTimeCronString(), userContext);
-        modelMap.addAttribute("cronExpressionTagState", cronExpressionTagState);
+        CronExpressionTagState cron = cronService.parse(commandSchedule.getStartTimeCronString(), userContext);
+        modelMap.addAttribute("cronExpressionTagState", cron);
         modelMap.addAttribute("schedule", schedule);
         
         return "operator/inventory/commandSchedule.jsp";
     }
-
-    @RequestMapping(value = "/operator/inventory/updateSchedule", method = RequestMethod.POST, params={"!delete","!cancel"})
+    
+    @RequestMapping(value="/operator/inventory/updateSchedule", method=RequestMethod.POST, params={"!delete","!cancel"})
     public String updateSchedule(@ModelAttribute("schedule") CommandScheduleWrapper schedule, BindingResult bindingResult,
                                  ModelMap modelMap, 
                                  YukonUserContext userContext,
                                  HttpServletRequest request,
                                  FlashScope flashScope,
-                                 String formUniqueId) throws ServletRequestBindingException, IllegalArgumentException, ParseException {
+                                 String formUniqueId) 
+    throws ServletRequestBindingException, IllegalArgumentException, ParseException {
         
         validator.validate(schedule, bindingResult);
         
@@ -88,10 +92,11 @@ public class CommandScheduleController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             
-            CronExpressionTagState cronExpressionTagState = cronExpressionTagService.parse(schedule.getCommandSchedule().getStartTimeCronString(), userContext);
-            modelMap.addAttribute("cronExpressionTagState", cronExpressionTagState);
+            String cron = schedule.getCommandSchedule().getStartTimeCronString();
+            CronExpressionTagState cronState = cronService.parse(cron, userContext);
+            modelMap.addAttribute("cronExpressionTagState", cronState);
             modelMap.addAttribute("schedule", schedule);
-            if(schedule.getCommandSchedule().getCommandScheduleId() > 0) {
+            if (schedule.getCommandSchedule().getCommandScheduleId() > 0) {
                 modelMap.addAttribute("mode", PageEditMode.EDIT);
             } else {
                 modelMap.addAttribute("mode", PageEditMode.CREATE);
@@ -102,7 +107,7 @@ public class CommandScheduleController {
         
         /* Set Cron */
         String cronExpression = null;
-        cronExpression = cronExpressionTagService.build(formUniqueId, request, userContext);
+        cronExpression = cronService.build(formUniqueId, request, userContext);
         schedule.getCommandSchedule().setStartTimeCronString(cronExpression);
         
         /* Set Duration and Delay */
@@ -117,12 +122,12 @@ public class CommandScheduleController {
         commandScheduleDao.save(schedule.getCommandSchedule());
         
         if (scheduleId > 0) {
-            commandScheduleEventLogService.scheduleCreated(userContext.getYukonUser(), schedule.getCommandSchedule().getCommandScheduleId());
+            logService.scheduleCreated(userContext.getYukonUser(), schedule.getCommandSchedule().getCommandScheduleId());
         } else {
-            commandScheduleEventLogService.scheduleUpdated(userContext.getYukonUser(), scheduleId);
+            logService.scheduleUpdated(userContext.getYukonUser(), scheduleId);
         }
         
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.commandSchedule.created"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "created"));
         
         return "redirect:home";
     }
@@ -133,7 +138,7 @@ public class CommandScheduleController {
         
         commandScheduleDao.delete(schedule.getCommandSchedule().getCommandScheduleId());
         
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.operator.commandSchedule.deleted"));
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + "deleted"));
         
         return "redirect:home";
     }
@@ -142,8 +147,9 @@ public class CommandScheduleController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         if (binder.getTarget() != null) {
-            MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver("yukon.web.modules.operator.commandSchedule.");
+            MessageCodesResolver msgCodesResolver = new YukonMessageCodeResolver(baseKey + "");
             binder.setMessageCodesResolver(msgCodesResolver);
         }
     }
+    
 }

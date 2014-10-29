@@ -26,14 +26,14 @@ import com.cannontech.common.rfn.message.gateway.LastCommStatus;
 import com.cannontech.common.rfn.message.gateway.Radio;
 import com.cannontech.common.rfn.message.gateway.RadioType;
 import com.cannontech.common.rfn.message.gateway.SequenceBlock;
-import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 
 public class RfnGatewayDataCacheTest {
     
     @Test
-    public void test_get_withCachedValue() throws NetworkManagerCommunicationException {
+    public void test_get_withCachedValue() throws NmCommunicationException {
         RfnGatewayDataCache cache = new RfnGatewayDataCacheImpl(null, null, null, null);
         
         //create data
@@ -51,7 +51,7 @@ public class RfnGatewayDataCacheTest {
     }
     
     @Test
-    public void test_get_withUncachedValue() throws NetworkManagerCommunicationException {
+    public void test_get_withUncachedValue() throws NmCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
         RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao, null);
@@ -72,8 +72,8 @@ public class RfnGatewayDataCacheTest {
         Assert.assertEquals("Cache is reloading value unnecessarily.", 1, sendCount);
     }
     
-    @Test(expected=NetworkManagerCommunicationException.class)
-    public void test_get_jmsExceptionWithUncachedValue() throws NetworkManagerCommunicationException {
+    @Test(expected=NmCommunicationException.class)
+    public void test_get_jmsExceptionWithUncachedValue() throws NmCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
         RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao, null);
@@ -86,8 +86,8 @@ public class RfnGatewayDataCacheTest {
         cache.get(paoIdentifier); //NetworkManagerCommunicationException thrown here
     }
     
-    @Test(expected=NetworkManagerCommunicationException.class)
-    public void test_get_timeoutWithUncachedValue() throws NetworkManagerCommunicationException {
+    @Test(expected=NmCommunicationException.class)
+    public void test_get_timeoutWithUncachedValue() throws NmCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
         RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao, null);
@@ -100,8 +100,8 @@ public class RfnGatewayDataCacheTest {
         cache.get(paoIdentifier); //NetworkManagerCommunicationException thrown here
     }
     
-    @Test(expected=NetworkManagerCommunicationException.class)
-    public void test_remove() throws NetworkManagerCommunicationException {
+    @Test(expected=NmCommunicationException.class)
+    public void test_remove() throws NmCommunicationException {
         //setup
         RfnDeviceDao fakeRfnDeviceDao = new FakeRfnDeviceDao();
         RfnGatewayDataCacheImpl cache = new RfnGatewayDataCacheImpl(null, null, fakeRfnDeviceDao, null);

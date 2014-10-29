@@ -20,7 +20,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayDataRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
-import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
@@ -61,11 +61,11 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     }
     
     @Override
-    public RfnGatewayData get(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
+    public RfnGatewayData get(PaoIdentifier paoIdentifier) throws NmCommunicationException {
         try {
             return cache.get(paoIdentifier);
         } catch (ExecutionException e) {
-            throw new NetworkManagerCommunicationException("Failed to retrieve gateway data from Network Manager.", e);
+            throw new NmCommunicationException("Failed to retrieve gateway data from Network Manager.", e);
         }
     }
     
@@ -92,11 +92,11 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
     }
     
     @Override
-    public Collection<RfnGatewayData> getAll(Iterable<? extends PaoIdentifier> paoIdentifiers) throws NetworkManagerCommunicationException {
+    public Collection<RfnGatewayData> getAll(Iterable<? extends PaoIdentifier> paoIdentifiers) throws NmCommunicationException {
         try {
             return cache.getAll(paoIdentifiers).values();
         } catch (ExecutionException e) {
-            throw new NetworkManagerCommunicationException("Failed to retrieve gateway data from Network Manager.", e);
+            throw new NmCommunicationException("Failed to retrieve gateway data from Network Manager.", e);
         }
     }
     

@@ -41,7 +41,7 @@ import com.cannontech.common.rfn.message.gateway.GatewayUpdateResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
-import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
@@ -114,7 +114,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public RfnGateway getGatewayByPaoId(int paoId) throws NetworkManagerCommunicationException {
+    public RfnGateway getGatewayByPaoId(int paoId) throws NmCommunicationException {
         // Get base RfnDevice
         RfnDevice gwDevice = rfnDeviceDao.getDeviceForId(paoId);
         // Get RfnGatewayData from cache
@@ -172,7 +172,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Override
     public RfnDevice createGateway(GatewaySettings settings) 
-            throws NetworkManagerCommunicationException, GatewayUpdateException {
+            throws NmCommunicationException, GatewayUpdateException {
         
         // Send the request
         GatewayCreateRequest request = buildGatewayCreateRequest(settings);
@@ -186,7 +186,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             response = replyHandler.waitForCompletion();
             log.debug("Gateway creation response: " + response);
         } catch (ExecutionException e) {
-            throw new NetworkManagerCommunicationException("Gateway creation failed due to a communication error " +
+            throw new NmCommunicationException("Gateway creation failed due to a communication error " +
                     "with Network Manager.", e);
         }
         
@@ -230,7 +230,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public boolean updateGateway(RfnGateway gateway) throws NetworkManagerCommunicationException {
+    public boolean updateGateway(RfnGateway gateway) throws NmCommunicationException {
         
         // Determine if change is local Yukon DB change (i.e. name) or remote Network Manager change.
         PaoIdentifier paoIdentifier = gateway.getPaoIdentifier();
@@ -272,7 +272,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                 response = replyHandler.waitForCompletion();
                 log.debug("Gateway edit response: " + response);
             } catch (ExecutionException e) {
-                throw new NetworkManagerCommunicationException("Gateway edit failed due to a communication error " +
+                throw new NmCommunicationException("Gateway edit failed due to a communication error " +
                         "with Network Manager.", e);
             }
             
@@ -301,7 +301,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
 
     @Override
-    public boolean deleteGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
+    public boolean deleteGateway(PaoIdentifier paoIdentifier) throws NmCommunicationException {
         
         RfnDevice gateway = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         GatewayDeleteRequest request = new GatewayDeleteRequest();
@@ -324,7 +324,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                 return false;
             }
         } catch (ExecutionException e) {
-            throw new NetworkManagerCommunicationException("Gateway delete failed due to a communication error with " +
+            throw new NmCommunicationException("Gateway delete failed due to a communication error with " +
                     "Network Manager.", e);
         }
     }
@@ -332,7 +332,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Override
     public boolean testConnection(int deviceId, String ipAddress, String username, String password) 
-            throws NetworkManagerCommunicationException {
+            throws NmCommunicationException {
         
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
         
@@ -350,7 +350,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     private boolean sendConnectionRequest(GatewayConnectionTestRequest request) 
-            throws NetworkManagerCommunicationException {
+            throws NmCommunicationException {
         
         BlockingJmsReplyHandler<GatewayConnectionTestResponse> replyHandler = 
                 new BlockingJmsReplyHandler<>(GatewayConnectionTestResponse.class);
@@ -364,23 +364,23 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             GatewayConnectionTestResponse response = replyHandler.waitForCompletion();
             return response.getResult() == GatewayConnectionTestResult.SUCCESSFUL;
         } catch (ExecutionException e) {
-            throw new NetworkManagerCommunicationException("Gateway connection test failed due to a communication " +
+            throw new NmCommunicationException("Gateway connection test failed due to a communication " +
                     "error with Network Manager.", e);
         }
     }
     
     @Override
-    public boolean connectGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
+    public boolean connectGateway(PaoIdentifier paoIdentifier) throws NmCommunicationException {
         return performGatewayConnectionAction(paoIdentifier, ConnectionStatus.CONNECTED);
     }
 
     @Override
-    public boolean disconnectGateway(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
+    public boolean disconnectGateway(PaoIdentifier paoIdentifier) throws NmCommunicationException {
         return performGatewayConnectionAction(paoIdentifier, ConnectionStatus.DISCONNECTED);
     }
     
     private boolean performGatewayConnectionAction(PaoIdentifier paoIdentifier, ConnectionStatus action)
-            throws NetworkManagerCommunicationException {
+            throws NmCommunicationException {
         
         RfnDevice gateway = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         
@@ -394,7 +394,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Override
     public boolean collectData(PaoIdentifier paoIdentifier, DataType... types) 
-            throws NetworkManagerCommunicationException {
+            throws NmCommunicationException {
         
         RfnDevice gateway = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         GatewayCollectionRequest request = new GatewayCollectionRequest();
@@ -406,7 +406,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
 
     @Override
     public boolean setCollectionSchedule(PaoIdentifier paoIdentifier, String cronExpression)
-            throws NetworkManagerCommunicationException {
+            throws NmCommunicationException {
         
         RfnDevice gateway = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         
@@ -418,7 +418,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
 
     @Override
-    public boolean deleteCollectionSchedule(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException {
+    public boolean deleteCollectionSchedule(PaoIdentifier paoIdentifier) throws NmCommunicationException {
         
         RfnDevice gateway = rfnDeviceDao.getDeviceForId(paoIdentifier.getPaoId());
         
@@ -429,7 +429,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     private boolean sendActionRequest(Serializable request, String logActionString) 
-            throws NetworkManagerCommunicationException {
+            throws NmCommunicationException {
         
         //Send request
         BlockingJmsReplyHandler<GatewayActionResponse> replyHandler = 
@@ -441,7 +441,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             GatewayActionResponse response = replyHandler.waitForCompletion();
             return response.getResult() == GatewayActionResult.SUCCESSFUL;
         } catch (ExecutionException e) {
-            throw new NetworkManagerCommunicationException("Gateway " + logActionString + " failed due to a " +
+            throw new NmCommunicationException("Gateway " + logActionString + " failed due to a " +
                     "communication error with Network Manager.", e);
         }
     }

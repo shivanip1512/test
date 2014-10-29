@@ -134,7 +134,7 @@
             </div>
             <div class="column two nogutter">
                 <tags:nameValueContainer2 tableClass="with-form-controls">
-                    <tags:nameValue2 nameKey=".collectionSchedule" valueClass="full-width">
+                    <tags:nameValue2 nameKey=".schedule" valueClass="full-width">
                         <cti:formatCron value="0 0 */1 * * ? *"/>
                         <cti:button nameKey="edit" icon="icon-pencil" classes="fr"/>
                     </tags:nameValue2>

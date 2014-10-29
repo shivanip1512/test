@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.TimeoutExecutionException;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -45,7 +45,7 @@ public class GatewayDetailController {
     
     @RequestMapping("/gateways/{id}")
     public String detail(ModelMap model, YukonUserContext userContext, @PathVariable int id) 
-            throws NetworkManagerCommunicationException {
+            throws NmCommunicationException {
         
         //TODO: handle network manager communication exception gracefully
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
@@ -62,7 +62,7 @@ public class GatewayDetailController {
     
     @RequestMapping(value="/gateways/{id}", method=RequestMethod.DELETE)
     public String delete(FlashScope flash, ModelMap model, @PathVariable int id) 
-            throws NetworkManagerCommunicationException {
+            throws NmCommunicationException {
         
         LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
@@ -78,7 +78,7 @@ public class GatewayDetailController {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.failure", pao.getPaoName()));
                 model.addAttribute("gateway", gateway);
             }
-        } catch (NetworkManagerCommunicationException e) {
+        } catch (NmCommunicationException e) {
             log.error("Could not delete gateway " + pao.getPaoName(), e);
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.failure", pao.getPaoName()));
             model.addAttribute("gateway", gateway);
@@ -98,7 +98,7 @@ public class GatewayDetailController {
         try {
             boolean success = rfnGatewayService.testConnection(id, ip, username, password);
             json.put("success", success);
-        } catch (NetworkManagerCommunicationException e) {
+        } catch (NmCommunicationException e) {
             json.put("success", false);
             if (e.getCause() instanceof TimeoutExecutionException) {
                 json.put("message", accessor.getMessage(baseKey + "login.failed.timeout"));

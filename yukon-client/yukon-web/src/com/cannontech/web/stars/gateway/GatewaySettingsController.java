@@ -1,9 +1,11 @@
 package com.cannontech.web.stars.gateway;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
@@ -12,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +27,7 @@ import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
-import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
@@ -37,6 +40,9 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.amr.util.cronExpressionTag.CronException;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
+import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.gateway.model.GatewaySettingsValidator;
@@ -52,6 +58,7 @@ public class GatewaySettingsController {
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
     
     @Autowired private ServerDatabaseCache cache;
+    @Autowired private CronExpressionTagService cronService;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private GatewaySettingsValidator validator;
     @Autowired private RfnGatewayService rfnGatewayService;
@@ -100,12 +107,12 @@ public class GatewaySettingsController {
             JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
             return null;
             
-        } catch (NetworkManagerCommunicationException|GatewayUpdateException e) {
+        } catch (NmCommunicationException|GatewayUpdateException e) {
             
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.CREATE);
             String errorMsg;
-            if (e instanceof NetworkManagerCommunicationException) {
+            if (e instanceof NmCommunicationException) {
                 errorMsg = accessor.getMessage(baseKey + "error.comm");
             } else {
                 errorMsg = accessor.getMessage(baseKey + "create.error");
@@ -139,7 +146,7 @@ public class GatewaySettingsController {
             
             model.addAttribute("settings", settings);
             
-        } catch (NetworkManagerCommunicationException e) {
+        } catch (NmCommunicationException e) {
             // TODO 
         }
         
@@ -199,12 +206,12 @@ public class GatewaySettingsController {
             
             return null;
             
-        } catch (NetworkManagerCommunicationException e) {
+        } catch (NmCommunicationException e) {
             
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.EDIT);
             String errorMsg;
-            if (e instanceof NetworkManagerCommunicationException) {
+            if (e instanceof NmCommunicationException) {
                 errorMsg = accessor.getMessage(baseKey + "error.comm");
             } else {
                 errorMsg = accessor.getMessage(baseKey + "create.error");
@@ -215,7 +222,60 @@ public class GatewaySettingsController {
         }
     }
     
-    /** Set Location popup. */
+    /** Set schedule popup. 
+     * @throws NmCommunicationException */
+    @RequestMapping("/gateways/{id}/schedule/options")
+    public String schedule(ModelMap model, YukonUserContext userContext, @PathVariable int id) 
+            throws NmCommunicationException {
+        
+        RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
+        String schedule = gateway.getData().getCollectionSchedule();
+        CronExpressionTagState state = cronService.parse(schedule, userContext);
+        model.addAttribute("state", state);
+        model.addAttribute("id", id);
+        
+        return "gateways/schedule.jsp";
+    }
+    
+    /** Set schedule. */ 
+    @RequestMapping("/gateways/{id}/schedule")
+    public String schedule(HttpServletResponse resp, HttpServletRequest req, ModelMap model, FlashScope flash,
+            YukonUserContext userContext, @PathVariable int id, String uid) 
+    throws JsonGenerationException, JsonMappingException, IOException {
+        
+        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        
+        try {
+            String cron = cronService.build(uid, req, userContext);
+            LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
+            rfnGatewayService.setCollectionSchedule(pao.getPaoIdentifier(), cron);
+            
+            // Success
+            model.clear();
+            Map<String, Object> json = new HashMap<>();
+            json.put("success", true);
+            resp.setContentType("application/json");
+            JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.schedule.update.successful"));
+            
+            return null;
+            
+        } catch (CronException | NmCommunicationException e) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("id", id);
+            model.addAttribute("state", new CronExpressionTagState());
+            
+            if (e instanceof CronException) {
+                model.addAttribute("errorMsg", accessor.getMessage("yukon.common.invalidCron"));
+            } else {
+                model.addAttribute("errorMsg", accessor.getMessage(baseKey + "error.comm"));
+            }
+            
+            return "gateways/schedule.jsp";
+        }
+    }
+    
+    /** Set location popup. */
     @RequestMapping("/gateways/{id}/location/options")
     public String location(ModelMap model, @PathVariable int id) {
         
@@ -233,7 +293,7 @@ public class GatewaySettingsController {
         return "gateways/location.jsp";
     }
     
-    /** Set Location. */ 
+    /** Set location. */ 
     @RequestMapping("/gateways/{id}/location")
     public String location(HttpServletResponse resp, ModelMap model, FlashScope flash,
             @PathVariable int id, @ModelAttribute Location location, BindingResult result) 

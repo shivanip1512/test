@@ -17,13 +17,14 @@
         <cti:uniqueIdentifier var="formUniqueId" prefix="attrFormUniqueId_" />
         <input type="hidden" name="formUniqueId" value="${formUniqueId}">
         
-        <tags:nameValueContainer2>
+        <tags:nameValueContainer2 tableClass="with-form-controls">
+            
             <tags:nameValue2 nameKey=".runSchedule">
                 <tags:cronExpressionData id="${formUniqueId}" state="${cronExpressionTagState}"/>
             </tags:nameValue2>
-
+            
             <tags:nameValue2 nameKey=".duration">
-                <span><i:inline key=".hours"/></span>
+                <span><i:inline key=".hours"/></span>&nbsp;
                 <spring:bind path="runPeriodHours">
                     <%-- VIEW MODE --%>
                     <cti:displayForPageEditModes modes="VIEW">
@@ -35,11 +36,11 @@
                         <c:if test="${status.error}">
                             <c:set var="inputClass" value="error"/>
                         </c:if>
-                        <form:input path="runPeriodHours" size="3" cssClass="${inputClass}"/>
+                        <form:input path="runPeriodHours" size="3" cssClass="${inputClass}"/>&nbsp;&nbsp;
                     </cti:displayForPageEditModes>
                 </spring:bind>
                 
-                <span><i:inline key=".minutes"/></span>
+                <span><i:inline key=".minutes"/></span>&nbsp;
                 <spring:bind path="runPeriodMinutes">
                     <%-- VIEW MODE --%>
                     <cti:displayForPageEditModes modes="VIEW">
@@ -54,22 +55,17 @@
                         <form:input path="runPeriodMinutes" size="3" cssClass="${inputClass}"/>
                     </cti:displayForPageEditModes>
                 </spring:bind>
-                
-                
                 <div><form:errors path="runPeriodHours" cssClass="error"/></div>
                 <div><form:errors path="runPeriodMinutes" cssClass="error"/></div>
-                <br>
-
             </tags:nameValue2>
-
+            
             <tags:nameValue2 nameKey=".delayPeriod">
-                <span><i:inline key=".seconds"/></span><tags:input path="delayPeriodSeconds" size="2"/>
+                <span><i:inline key=".seconds"/></span>&nbsp;&nbsp;<tags:input path="delayPeriodSeconds" size="2"/>
             </tags:nameValue2>
+            
         </tags:nameValueContainer2>
         
-        <br>
-        
-        <div>
+        <div class="page-action-area">
             <cti:button nameKey="save" type="submit" classes="primary action" busy="true"/>
             <cti:displayForPageEditModes modes="EDIT">
                 <cti:button nameKey="delete" name="delete" type="submit" id="delete_confirm" classes="delete"/>

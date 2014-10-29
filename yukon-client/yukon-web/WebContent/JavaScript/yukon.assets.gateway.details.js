@@ -194,6 +194,7 @@ yukon.assets.gateway.details = (function () {
                 
             });
             
+            /** Save button clicked on location popup, save the location. */
             $(document).on('yukon:assets:gateway:location:save', function (ev) {
                 
                 var popup = $('#gateway-location-popup'),
@@ -207,6 +208,35 @@ yukon.assets.gateway.details = (function () {
                 popup.find('.user-message').remove();
                 
                 $('#gateway-location-form').ajaxSubmit({
+                    success: function (result, status, xhr, $form) {
+                        popup.dialog('close');
+                        window.location.href = window.location.href;
+                    },
+                    error: function (xhr, status, error, $form) {
+                        popup.html(xhr.responseText);
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
+                        secondary.prop('disabled', false);
+                    }
+                });
+                
+            });
+
+            /** Save button clicked on schedule popup, save the schedule. */
+            $(document).on('yukon:assets:gateway:schedule:save', function (ev) {
+                
+                var popup = $('#gateway-schedule-popup'),
+                    btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                    primary = btns.find('.js-primary-action'),
+                    secondary = btns.find('.js-secondary-action');
+            
+                yukon.ui.busy(primary);
+                secondary.prop('disabled', true);
+                
+                popup.find('.user-message').remove();
+                
+                $('#gateway-schedule-form').ajaxSubmit({
                     success: function (result, status, xhr, $form) {
                         popup.dialog('close');
                         window.location.href = window.location.href;

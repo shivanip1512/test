@@ -3,7 +3,7 @@ package com.cannontech.common.rfn.service;
 import java.util.Collection;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.google.common.cache.LoadingCache;
 
@@ -18,9 +18,9 @@ public interface RfnGatewayDataCache {
     /**
      * Gets RfnGatewayData for a single id. If no data is present for that id, execution blocks while the cache requests
      * an update from Network Manager.
-     * @throws NetworkManagerCommunicationException if an error occurs retrieving data from Network Manager.
+     * @throws NmCommunicationException if an error occurs retrieving data from Network Manager.
      */
-    public RfnGatewayData get(PaoIdentifier paoIdentifier) throws NetworkManagerCommunicationException;
+    public RfnGatewayData get(PaoIdentifier paoIdentifier) throws NmCommunicationException;
     
     /**
      * Gets RfnGatewayData for a single id. This is a non-blocking call - if no data is present for that id, returns 
@@ -30,10 +30,10 @@ public interface RfnGatewayDataCache {
     
     /**
      * Gets all RfnGatewayData for the specified ids.
-     * @throws NetworkManagerCommunicationException if an error occurs retrieving data from Network Manager.
+     * @throws NmCommunicationException if an error occurs retrieving data from Network Manager.
      */
     public Collection<RfnGatewayData> getAll(Iterable<? extends PaoIdentifier> paoIdentifiers) 
-            throws NetworkManagerCommunicationException;
+            throws NmCommunicationException;
     
     /**
      * Put an RfnGatewayData value into the cache.

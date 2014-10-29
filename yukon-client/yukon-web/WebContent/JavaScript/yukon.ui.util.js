@@ -378,12 +378,12 @@ yukon.ui.util = (function () {
         
         cronExpFreqChange : function (id, sel) {
             var selectedFreqVal = sel.options[sel.selectedIndex].value,
-                cronTime = $('#' + id + '_cronExpTimeDiv'),
-                cronDaily = $('#' + id + '_cronExpDailyDiv'),
-                cronWeekly = $('#' + id + '_cronExpWeeklyDiv'),
-                cronMonthly = $('#' + id + '_cronExpMonthlyDiv'),
-                cronOneTime = $('#' + id + '_cronExpOneTimeDiv'),
-                cronCustom = $('#' + id + '_cronExpCustomDiv'),
+                cronTime = $('#' + id + '-cron-exp-time'),
+                cronDaily = $('#' + id + '-cron-exp-daily'),
+                cronWeekly = $('#' + id + '-cron-exp-weekly'),
+                cronMonthly = $('#' + id + '-cron-exp-monthly'),
+                cronOneTime = $('#' + id + '-cron-exp-one-time'),
+                cronCustom = $('#' + id + '-cron-exp-custom'),
                 cronFuncs = [cronTime, cronDaily, cronWeekly, cronMonthly, cronOneTime, cronCustom],
                 plan = [],
                 cfi;

@@ -48,13 +48,11 @@
             </spring:bind>
             <spring:bind path="admin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                <c:set var="clazz" value="${clazz} ${mode == 'CREATE' ? 'right' : 'middle'}"/>
-                <form:password path="admin.password" cssClass="js-gateway-edit-password M0 ${clazz}" 
+                <form:password path="admin.password" cssClass="js-gateway-edit-password M0 right ${clazz}" 
                     placeholder="${phPassword}" tabindex="4" showPassword="true"/>
-                <c:if test="${mode == 'EDIT'}">
-                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
-                        disabled="true" nameKey="testConnection" tabindex="5"/>
-                </c:if>
+<%-- Add back when NM test connection works. --%>
+<%--                 <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn"  --%>
+<%--                     disabled="true" nameKey="testConnection" tabindex="5"/> --%>
             </spring:bind>
             
             <spring:bind path="admin.username">
@@ -73,13 +71,11 @@
             </spring:bind>
             <spring:bind path="superAdmin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                <c:set var="clazz" value="${clazz} ${mode == 'CREATE' ? 'right' : 'middle'}"/>
-                <form:password  path="superAdmin.password" cssClass="js-gateway-edit-password M0 ${clazz}" 
+                <form:password  path="superAdmin.password" cssClass="js-gateway-edit-password M0 right ${clazz}" 
                     placeholder="${phPassword}" tabindex="7" showPassword="true"/>
-                <c:if test="${mode == 'EDIT'}">
-                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
-                        disabled="true" nameKey="testConnection" tabindex="8"/>
-                </c:if>
+<%-- Add back when NM test connection works. --%>
+<%--                 <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn"  --%>
+<%--                     disabled="true" nameKey="testConnection" tabindex="8"/> --%>
             </spring:bind>
             <spring:bind path="superAdmin.username">
                 <c:if test="${status.error}"><form:errors path="superAdmin.username" cssClass="error" element="div"/></c:if>

@@ -508,9 +508,9 @@ yukon.ami.billing = (function() {
                         field = form.find('[name='+ err.field +'_CRONEXP_FREQ]');
                         var opt = field.find(':selected');
                         if (opt.val() === 'WEEKLY') {
-                        	form.find('#scheduleCronString_cronExpWeeklyDiv input').addClass('error');
+                        	form.find('#scheduleCronString-cron-exp-weekly input').addClass('error');
                         } else if (opt.val() === 'CUSTOM') {
-                        	form.find('#scheduleCronString_cronExpCustomDiv input').addClass('error');
+                        	form.find('#scheduleCronString-cron-exp-custom input').addClass('error');
                         }
                     } else {
                         field = form.find('[name='+ err.field +']');

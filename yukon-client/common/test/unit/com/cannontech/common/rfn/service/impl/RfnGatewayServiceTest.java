@@ -30,7 +30,7 @@ import com.cannontech.common.rfn.message.gateway.GatewayUpdateResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
-import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
@@ -100,7 +100,7 @@ public class RfnGatewayServiceTest {
     }
     
     @Test
-    public void test_getAllGateways() throws NetworkManagerCommunicationException {
+    public void test_getAllGateways() throws NmCommunicationException {
         // Setup 2 gateway RfnDevices.
         List<RfnDevice> rfnDevices = new ArrayList<RfnDevice>();
         rfnDevices.add(createRfnDevice(gatewayPaoId, gatewayRfnId));
@@ -138,7 +138,7 @@ public class RfnGatewayServiceTest {
     }
     
     @Test
-    public void test_getGatewayByPaoId() throws NetworkManagerCommunicationException {
+    public void test_getGatewayByPaoId() throws NmCommunicationException {
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         // Expecting a call to retrieve an RfnDevice from rfnDeviceDao.
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId())).andReturn(createRfnDevice(gatewayPaoId, gatewayRfnId));
@@ -173,7 +173,7 @@ public class RfnGatewayServiceTest {
     }
     
     @Test(expected=NotFoundException.class)
-    public void test_getGatewayByPaoId_NotFoundException() throws NetworkManagerCommunicationException {
+    public void test_getGatewayByPaoId_NotFoundException() throws NmCommunicationException {
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         // Expecting a call to retrieve an RfnDevice from rfnDeviceDao.
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId())).andThrow(new NotFoundException("Unknown rfn device Id " + gatewayPaoId.getPaoId()));
@@ -184,8 +184,8 @@ public class RfnGatewayServiceTest {
         service.getGatewayByPaoId(gatewayPaoId.getPaoId());
     }
     
-    @Test(expected=NetworkManagerCommunicationException.class)
-    public void test_getGatewayByPaoId_communicationError() throws NetworkManagerCommunicationException {
+    @Test(expected=NmCommunicationException.class)
+    public void test_getGatewayByPaoId_communicationError() throws NmCommunicationException {
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         // Expecting a call to retrieve an RfnDevice from rfnDeviceDao (return value not used in this test).
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId())).andReturn(createRfnDevice(gatewayPaoId, gatewayRfnId));
@@ -200,7 +200,7 @@ public class RfnGatewayServiceTest {
         
         RfnGatewayDataCache gatewayDataCache = EasyMock.createStrictMock(RfnGatewayDataCache.class);
         // Expecting a call to retrieve gateway data for this pao ID, throw exception to simulate communication error.
-        EasyMock.expect(gatewayDataCache.get(gatewayPaoId)).andThrow(new NetworkManagerCommunicationException("Communication Error"));
+        EasyMock.expect(gatewayDataCache.get(gatewayPaoId)).andThrow(new NmCommunicationException("Communication Error"));
         EasyMock.replay(gatewayDataCache);
         
         service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
@@ -209,8 +209,8 @@ public class RfnGatewayServiceTest {
         service.getGatewayByPaoId(gatewayPaoId.getPaoId());
     }
     
-    @Test(expected=NetworkManagerCommunicationException.class)
-    public void test_createGateway_communicationError() throws NetworkManagerCommunicationException, GatewayUpdateException {
+    @Test(expected=NmCommunicationException.class)
+    public void test_createGateway_communicationError() throws NmCommunicationException, GatewayUpdateException {
         //dependencies can be null, because they're not called in this test scenario
         service = new RfnGatewayServiceImpl(null, null, null, null, null);
         
@@ -221,8 +221,8 @@ public class RfnGatewayServiceTest {
         service.createGateway(settings);
     }
     
-    @Test(expected=NetworkManagerCommunicationException.class)
-    public void test_createGateway_timeoutError() throws NetworkManagerCommunicationException, GatewayUpdateException {
+    @Test(expected=NmCommunicationException.class)
+    public void test_createGateway_timeoutError() throws NmCommunicationException, GatewayUpdateException {
         //dependencies can be null, because they're not called in this test scenario
         service = new RfnGatewayServiceImpl(null, null, null, null, null);
         
@@ -234,7 +234,7 @@ public class RfnGatewayServiceTest {
     }
     
     @Test(expected=GatewayUpdateException.class)
-    public void test_createGateway_failedResponse() throws NetworkManagerCommunicationException, GatewayUpdateException {
+    public void test_createGateway_failedResponse() throws NmCommunicationException, GatewayUpdateException {
         //dependencies can be null, because they're not called in this test scenario
         service = new RfnGatewayServiceImpl(null, null, null, null, null);
         
@@ -247,7 +247,7 @@ public class RfnGatewayServiceTest {
     }
     
     @Test
-    public void test_createGateway_successResponse() throws NetworkManagerCommunicationException, GatewayUpdateException {
+    public void test_createGateway_successResponse() throws NmCommunicationException, GatewayUpdateException {
         RfnDeviceCreationService rfnDeviceCreationService = EasyMock.createStrictMock(RfnDeviceCreationService.class);
         EasyMock.expect(rfnDeviceCreationService.createGateway(gatewayName, gatewayRfnId))
                 .andReturn(new RfnDevice(gatewayName, gatewayPaoId, gatewayRfnId));
@@ -279,7 +279,7 @@ public class RfnGatewayServiceTest {
     }
     
     @Test
-    public void test_updateGateway_updateLocalSuccess() throws NetworkManagerCommunicationException {
+    public void test_updateGateway_updateLocalSuccess() throws NmCommunicationException {
         RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         // Expecting a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
@@ -328,7 +328,7 @@ public class RfnGatewayServiceTest {
     }
     
     @Test
-    public void test_updateGateway_successResponse() throws NetworkManagerCommunicationException {
+    public void test_updateGateway_successResponse() throws NmCommunicationException {
         RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         // Expecting a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
@@ -389,7 +389,7 @@ public class RfnGatewayServiceTest {
     }
     
     @Test
-    public void test_updateGateway_failedResponse() throws NetworkManagerCommunicationException {
+    public void test_updateGateway_failedResponse() throws NmCommunicationException {
         RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         // Expecting a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
@@ -447,8 +447,8 @@ public class RfnGatewayServiceTest {
         Assert.assertFalse("Unexpected gateway update", service.updateGateway(rfnGateway));
     }
     
-    @Test(expected=NetworkManagerCommunicationException.class)
-    public void test_updateGateway_NetworkManagerCommunicationException() throws NetworkManagerCommunicationException {
+    @Test(expected=NmCommunicationException.class)
+    public void test_updateGateway_NetworkManagerCommunicationException() throws NmCommunicationException {
         RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         // Expecting a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
@@ -506,7 +506,7 @@ public class RfnGatewayServiceTest {
     }
     
     @Test
-    public void test_deleteGateway_successResponse() throws NetworkManagerCommunicationException {
+    public void test_deleteGateway_successResponse() throws NmCommunicationException {
         RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         // Expecting a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
@@ -537,7 +537,7 @@ public class RfnGatewayServiceTest {
     }
     
     @Test
-    public void test_deleteGateway_failedResponse() throws NetworkManagerCommunicationException {
+    public void test_deleteGateway_failedResponse() throws NmCommunicationException {
         RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         // Expecting a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).
@@ -564,8 +564,8 @@ public class RfnGatewayServiceTest {
         Assert.assertFalse("Gateway unexpectedly deleted", service.deleteGateway(gatewayPaoId));
     }
     
-    @Test(expected=NetworkManagerCommunicationException.class)
-    public void test_deleteGateway_NetworkManagerCommunicationException() throws NetworkManagerCommunicationException {
+    @Test(expected=NmCommunicationException.class)
+    public void test_deleteGateway_NetworkManagerCommunicationException() throws NmCommunicationException {
         RfnDevice gwDevice = createRfnDevice(gatewayPaoId, gatewayRfnId);
         RfnDeviceDao rfnDeviceDao = EasyMock.createStrictMock(RfnDeviceDao.class);
         // Expecting a call to retrieve an RfnDevice from rfnDeviceDao (to get RfnIdentifier).

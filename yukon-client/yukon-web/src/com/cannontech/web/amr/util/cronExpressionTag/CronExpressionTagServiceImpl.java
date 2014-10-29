@@ -29,28 +29,31 @@ public class CronExpressionTagServiceImpl implements CronExpressionTagService {
     @Autowired private List<CronTagStyleHandler> handlers;
     
     @Override
-    public String build(String id, HttpServletRequest request, YukonUserContext userContext) 
-            throws ServletRequestBindingException, IllegalArgumentException, ParseException {
+    public String build(String id, HttpServletRequest request, YukonUserContext userContext) throws CronException {
         
-        String freqStr = ServletRequestUtils.getRequiredStringParameter(request, id + "_" + CRONEXP_FREQ);
+        String freqStr;
+        try {
+            freqStr = ServletRequestUtils.getRequiredStringParameter(request, id + "_" + CRONEXP_FREQ);
+        } catch (ServletRequestBindingException e) {
+            throw new CronException(CronExceptionType.REQUEST_BINDING);
+        }
         
         CronTagStyleType type;
         try {
             type = CronTagStyleType.valueOf(freqStr);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(CRONEXP_FREQ + " of " + freqStr + " is not supported.");
+            throw new CronException(CronExceptionType.REQUEST_BINDING);
         }
         
         CronTagStyleHandler handler = handlerMap.get(type);
-        
-        String expression =  handler.build(id, request, userContext);
+        String expression = handler.build(id, request, userContext);
         validateExpression(expression);
         
         return expression;
     }
     
     @Override
-    public CronExpressionTagState parse(String cronExpression, YukonUserContext userContext) throws IllegalArgumentException {
+    public CronExpressionTagState parse(String cronExpression, YukonUserContext userContext) throws CronException {
         
         // blank expression => default state
         CronExpressionTagState state = new CronExpressionTagState();
@@ -83,7 +86,7 @@ public class CronExpressionTagServiceImpl implements CronExpressionTagService {
     }
     
     @Override
-    public String getDescription(String cronExpression, YukonUserContext userContext) throws IllegalArgumentException {
+    public String getDescription(String cronExpression, YukonUserContext userContext) throws CronException {
         
         CronExpressionTagState cronExpressionTagState = parse(cronExpression, userContext);
         CronTagStyleType cronTagStyleType = cronExpressionTagState.getCronTagStyleType();
@@ -92,21 +95,21 @@ public class CronExpressionTagServiceImpl implements CronExpressionTagService {
         return cronTagStyleHandler.generateDescription(cronExpressionTagState, userContext);
     }
     
-    private void validateExpression(String cronExpression) throws IllegalArgumentException {
+    private void validateExpression(String cronExpression) throws CronException {
         
         try {
             new CronExpression(cronExpression);
         } catch (ParseException e) {
-            throw new IllegalArgumentException("Invalid cron expression: " + cronExpression);
+            throw new CronException(CronExceptionType.PARSING);
         }
     }
     
-    private String[] getParts(String cronExpression) throws IllegalArgumentException {
+    private String[] getParts(String cronExpression) throws CronException {
         
         // must have at lest parts 1-6 to be valid
         String[] parts = StringUtils.split(cronExpression, " ");
         if (parts.length < 6) {
-            throw new IllegalArgumentException("Incomplete expression.");
+            throw new CronException(CronExceptionType.PARSING);
         }
         
         // add optional year part
@@ -122,7 +125,7 @@ public class CronExpressionTagServiceImpl implements CronExpressionTagService {
     
     @PostConstruct
     public void init() {
-
+        
         Collections.sort(this.handlers);
         
         handlerMap = Maps.uniqueIndex(this.handlers, new Function<CronTagStyleHandler, CronTagStyleType>() {

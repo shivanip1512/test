@@ -48,6 +48,7 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.util.cronExpressionTag.CronException;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.amr.util.cronExpressionTag.CronTagStyleType;
@@ -183,7 +184,7 @@ public class DataExporterScheduleController {
         try {
             String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
             exportData.setScheduleCronString(scheduleCronString);
-        } catch (ServletRequestBindingException | IllegalArgumentException | ParseException e) {
+        } catch (CronException e) {
             bindingResult.rejectValue("scheduleCronString", "yukon.common.invalidCron");
         }
 

@@ -22,7 +22,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.CertificateUpdate;
-import com.cannontech.common.rfn.model.NetworkManagerCommunicationException;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
@@ -87,7 +87,7 @@ public class GatewayListController {
         try {
             boolean success = rfnGatewayService.connectGateway(gateway.getPaoIdentifier());
             json.put("success", success);
-        } catch (NetworkManagerCommunicationException e) {
+        } catch (NmCommunicationException e) {
             String errorMsg = accessor.getMessage(baseKey + "error.comm");
             json.put("success", false);
             json.put("message", errorMsg);
@@ -106,7 +106,7 @@ public class GatewayListController {
         try {
             boolean success = rfnGatewayService.disconnectGateway(gateway.getPaoIdentifier());
             json.put("success", success);
-        } catch (NetworkManagerCommunicationException e) {
+        } catch (NmCommunicationException e) {
             String errorMsg = accessor.getMessage(baseKey + "error.comm");
             json.put("success", false);
             json.put("message", errorMsg);
@@ -126,7 +126,7 @@ public class GatewayListController {
         try {
             boolean success = rfnGatewayService.collectData(gateway.getPaoIdentifier(), types);
             json.put("success", success);
-        } catch (NetworkManagerCommunicationException e) {
+        } catch (NmCommunicationException e) {
             String errorMsg = accessor.getMessage(baseKey + "error.comm");
             json.put("success", false);
             json.put("message", errorMsg);

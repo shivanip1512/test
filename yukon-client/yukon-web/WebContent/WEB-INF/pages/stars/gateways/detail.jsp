@@ -41,18 +41,28 @@
 </div>
 
 <div id="gateway-edit-popup" data-dialog class="dn" data-title="<cti:msg2 key=".edit.title"/>"
-    data-url="${gateway.paoIdentifier.paoId}/edit"
-    data-id="${gateway.paoIdentifier.paoId}"
-    data-width="565" 
-    data-event="yukon:assets:gateway:save" 
-    data-load-event="yukon:assets:gateway:edit:load" 
-    data-ok-text="<cti:msg2 key="components.button.save.label"/>"></div>
+        data-url="${gateway.paoIdentifier.paoId}/edit"
+        data-id="${gateway.paoIdentifier.paoId}"
+        data-width="565" 
+        data-event="yukon:assets:gateway:save" 
+        data-load-event="yukon:assets:gateway:edit:load" 
+        data-ok-text="<cti:msg2 key="components.button.save.label"/>"></div>
     
 <div id="gateway-collect-data-popup" class="dn"></div>
+
+<cti:url var="locationUrl" value="/stars/gateways/${gateway.paoIdentifier.paoId}/location/options"/>
 <div id="gateway-location-popup" class="dn" data-dialog 
         data-event="yukon:assets:gateway:location:save"
         data-title="<cti:msg2 key=".location.set"/>"
-        data-url="<cti:url value="/stars/gateways/${gateway.paoIdentifier.paoId}/location/options"/>"></div>
+        data-url="${locationUrl}"></div>
+
+<cti:url var="scheduleUrl" value="/stars/gateways/${gateway.paoIdentifier.paoId}/schedule/options"/>
+<div id="gateway-schedule-popup" data-dialog class="dn" 
+        data-title="<cti:msg2 key=".schedule"/>"
+        data-event="yukon:assets:gateway:schedule:save"
+        data-ok-text="<cti:msg2 key="components.button.save.label"/>"
+        data-width="460" data-height="264"
+        data-url="${scheduleUrl}"></div>
 
 <div class="column-12-12 clearfix">
 
@@ -174,9 +184,10 @@
                         (<cti:formatDate type="DATEHM" value="${gateway.data.lastCommStatusTimestamp}"/>)
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
-                <div class="action-area">
-                    <cti:button nameKey="testConnection" busy="true" icon="icon-server-connect"/>
-                </div>
+<%-- Add back when NM test connection works. --%>
+<%--                 <div class="action-area"> --%>
+<%--                     <cti:button nameKey="testConnection" busy="true" icon="icon-server-connect"/> --%>
+<%--                 </div> --%>
             </div>
         </div>
     </tags:sectionContainer2>
@@ -204,9 +215,9 @@
             </div>
             <div class="column two nogutter">
                 <tags:nameValueContainer2 tableClass="with-form-controls">
-                    <tags:nameValue2 nameKey=".collectionSchedule" valueClass="full-width">
+                    <tags:nameValue2 nameKey=".schedule" valueClass="full-width">
                         <cti:formatCron value="${gateway.data.collectionSchedule}"/>
-                        <cti:button nameKey="edit" icon="icon-pencil" classes="fr"/>
+                        <cti:button nameKey="edit" icon="icon-pencil" classes="fr" data-popup="#gateway-schedule-popup"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>
