@@ -140,7 +140,7 @@
     <entry key="yukon.common.setting.subcategory.MULTISPEAK">Multispeak</entry>
     <entry key="yukon.common.setting.subcategory.MULTISPEAK.description">Vendor info, device mapping, billing groups</entry>
     <entry key="yukon.common.setting.subcategory.VOICE">Voice</entry>
-    <entry key="yukon.common.setting.subcategory.VOICE.description">Voice server call prefix, call repsonse time</entry>
+    <entry key="yukon.common.setting.subcategory.VOICE.description">Voice server call prefix, call response time</entry>
     <entry key="yukon.common.setting.subcategory.OPEN_ADR">OpenADR</entry>
     <entry key="yukon.common.setting.subcategory.OPEN_ADR.description">OpenADR connection settings</entry>
     <entry key="yukon.common.setting.subcategory.GRAPHING">Graphing</entry>
