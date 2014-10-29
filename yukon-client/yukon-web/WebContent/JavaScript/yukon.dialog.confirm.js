@@ -1,7 +1,10 @@
+yukon.namespace('yukon.dialogConfirm');
+
 /** 
- * Singleton to manage confirming an action with a special dialog
- * 
- * @requires jQueryUI 1.8.16+
+ * Module to manage confirming an action with a special dialog
+ * @module yukon.dialogConfirm
+ * @requires JQUERY 
+ * @requires JQUERY UI
  *      
  * abstract:
  *      Manages the display and event handling of the confirmation dialog box
@@ -14,13 +17,17 @@
  *          * registering a new confirmation object
  *          * closing the dialog
  */
-
-yukon.namespace('yukon.dialogConfirm');
 yukon.dialogConfirm = (function () {
     
     var _initialized = false,
+
+        /** @type {Object} - reference of current dialog */
         _current_dialog = null,
+        
+        /** @type {string} -  used for triggering ok event*/
         _ok_event = 'yukon.dialog.confirm.ok',
+        
+        /** @type {string} - used for triggering cancel event */
         _cancel_event = 'yukon.dialog.confirm.cancel',
 
         _init = function () {
@@ -30,6 +37,10 @@ yukon.dialogConfirm = (function () {
             }
         },
 
+        /** 
+         * Display the dialog and registering the event handler.
+         * @param {Object} event - jquery event object.
+         */
         _show_window = function (event) {
             //cache the jQuery object
             var element = $(this),
@@ -113,7 +124,8 @@ yukon.dialogConfirm = (function () {
                 });
             }
         },
-
+        
+        /** Close the dialog. */
         _close_dialog = function() {
             if (_current_dialog) {
                 _current_dialog.dialog('destroy');
@@ -199,25 +211,23 @@ yukon.dialogConfirm = (function () {
         return false;
         },
 
-    /*
-     * Close the current dialog and perform the cancel action.  By default this 
-     * will trigger a 'yukon.dialog.confirm.cancel' event on the #yukon_dialog_confirm element
-     */
+        /**
+         * Close the current dialog and perform the cancel action.  By default this 
+         * will trigger a 'yukon.dialog.confirm.cancel' event on the #yukon_dialog_confirm element
+         */
         cancel : function () {
         return _default._cancel_action;
         },
 
-    /*
-     * Return the current dialog if exists, null otherwise
-     */
+        /** Return the current dialog if exists, null otherwise. */
         current_dialog : function () {
        return _current_dialog; 
         },
         
-    /*
-     * Close the current dialog and perform the ok action.  By default this 
-     * will trigger a 'yukon.dialog.confirm.ok' event on the #yukon_dialog_confirm element
-     */
+        /**
+         * Close the current dialog and perform the ok action.  By default this 
+         * will trigger a 'yukon.dialog.confirm.ok' event on the #yukon_dialog_confirm element
+         */
         ok : function () {
         return _default._ok_action;
         }

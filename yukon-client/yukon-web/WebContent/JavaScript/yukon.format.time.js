@@ -1,5 +1,10 @@
 yukon.namespace('yukon.timeFormatter');
 
+/**
+ * Module handles the time formatting. Generates a time in the format hh:mm AM (12:30 PM) for the input which is 
+ * the number of minutes from midnight.
+ * @module yukon.timeFormatter
+ */
 yukon.timeFormatter = (function () {
     var mod;
 

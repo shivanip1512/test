@@ -1,16 +1,26 @@
-/**
- * Manager for date time and dateTime pickers. We use:
- *  - https://github.com/trentrichardson/jQuery-Timepicker-Addon
- *  - http://keith-wood.name/datetimeEntry.html
- */
 yukon.namespace('yukon.ui.dateTimePickers');
 
+/**
+ * Manages date time and dateTime pickers. We use:
+ *  - https://github.com/trentrichardson/jQuery-Timepicker-Addon
+ *  - http://keith-wood.name/datetimeEntry.html
+ *  @module   yukon.ui.dateTimePickers
+ *  @requires JQUERY
+ *  @requires JQUERYUI
+ */
 yukon.ui.dateTimePickers = function () {
     
     var _initialized = false,
         cachedcfgDtArgs,
         cachedcfgTpArgs,
-
+        
+        
+        /**
+         * Inserts the Time Zone full and short values
+         * @param {Object} self - The $ object of the input field
+         * @param {string} self.data('timeZoneShort') - The timeZoneShort value
+         * @param {string} self.data('timeZoneFull') - The timeZoneFull value
+         */
         _insertTimezone = function (self) {
             var tzShort = self.data('timeZoneShort');
             //there are some implementations of LocalDate out there, ugh...
@@ -18,7 +28,11 @@ yukon.ui.dateTimePickers = function () {
                 self.after('<div class="timezone_container" title="' + self.data('timeZoneFull') + '">' + tzShort + '</div>');
             }
         },
-
+        
+        /**
+         * Function to show the picker if input is enabled
+         * @param {Object} input - input element.
+         */
         _onBeforeShow = function (input) {
             $('#ui-datepicker-div').addClass($(input).data('class'));
             
@@ -26,6 +40,14 @@ yukon.ui.dateTimePickers = function () {
             return !$(input).prop('disabled');
         },
 
+
+
+        /**
+         * Function to get arguments of datetimepicker plugin
+         * @param {Object} self - The $ object of the input field
+         * @param {string} self.data('maxDate') - The max date value
+         * @param {string} self.data('minDate') - The min date value 
+         */
         _getPickerArgs = function (self) {
             var args = {
                 beforeShow: _onBeforeShow,
@@ -47,7 +69,7 @@ yukon.ui.dateTimePickers = function () {
         /**
          * Gets the step hour for the datetimepicker and timepicker plugins. Defaults to 1.
          * @param {Object} self The $ object of the input field
-         * @param {String} self.data('stepHour') The step hour value
+         * @param {string} self.data('stepHour') The step hour value
          */
         _getStepHour = function (self) {
             return _parseIntSafe(self.data('stepHour'));
@@ -56,7 +78,7 @@ yukon.ui.dateTimePickers = function () {
         /**
          * Gets the step minute for the datetimepicker and timepicker plugins. Defaults to 1.
          * @param {Object} self The $ object of the input field
-         * @param {String} self.data('stepMinute') The step minute value
+         * @param {string} self.data('stepMinute') The step minute value
          */
         _getStepMinute = function (self) {
             return _parseIntSafe(self.data('stepMinute'));

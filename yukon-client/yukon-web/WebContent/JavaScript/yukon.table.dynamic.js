@@ -1,5 +1,7 @@
 /**
  * Find the correct instance of DynamicTable for a given element and call the given method on it.
+ * @param {Object} event - jquery event object.
+ * @param {string} method - calling method.
  */
 function callOnDynamicTable (event, method) {
     var wrapperDiv = $(event.target).closest('.dynamicTableWrapper')[0],
@@ -37,9 +39,10 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         this.nextRowId = nextRowId;
         this.addItemParameters = addItemParameters;
     },
+    
     /**
      * Private method to get all visible rows.  Does not include undo rows.
-     */
+    */
     getVisibleRows = function () {
         var retVal = [];
         everyRow.call(this, function (row, undoRow) {
@@ -51,7 +54,9 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     },
 
     /**
-     * Private method to force height of undo row and matching regular row to be the same height.
+     * Method to force height of undo row and matching regular row to be the same height.
+     * @param {Object} row - row element.
+     * @param {Object} undoRow - undoRow element
      */
     matchRowAndUndoRowHeights = function (row, undoRow) {
         var rowHeight = $(row).height(),
@@ -64,8 +69,9 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     },
 
     /**
-     * Call action for every row/undo row combination.  The "action" function will be passed
+     * Call action for every row/undo row combination. The "action" function will be passed
      * both the row and the undo rows as parameters.
+     * @param {string} action - function name that will be invoked.
      */
     everyRow = function(action) {
         var rows = this.table.rows,
@@ -87,7 +93,10 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         }
     },
 
-    // Private methods to enable/disable move up and move down buttons.
+    /**
+     * Method to disable move up buttons.
+     * @param {Object} tableRow - tableRow instance
+     */
     disableMoveUp = function (tableRow) {
         var disabledMoveUpBtn = $(tableRow).find('.disabledMoveUpBtn');
         if (disabledMoveUpBtn[0]) {
@@ -96,6 +105,10 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         }
     },
 
+    /**
+     * Method to enable move up buttons.
+     * @param {Object} tableRow- tableRow instance.
+     */
     enableMoveUp = function (tableRow) {
         var disabledMoveUpBtn = $(tableRow).find('.disabledMoveUpBtn');
         if (disabledMoveUpBtn[0]) {
@@ -104,6 +117,10 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         }
     },
 
+    /**
+     * Method to disable move down buttons.
+     * @param {Object} tableRow- tableRow instance.
+     */
     disableMoveDown = function (tableRow) {
         var disabledMoveDownBtn = $(tableRow).find('.disabledMoveDownBtn');
         if (disabledMoveDownBtn[0]) {
@@ -111,7 +128,11 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
             $(tableRow).find('.moveDownBtn').hide();
         }
     },
-
+    
+    /**
+     * Method to enable move down buttons.
+     * @param {Object} tableRow- tableRow parameter
+     */
     enableMoveDown = function (tableRow) {
         var disabledMoveDownBtn = $(tableRow).find('.disabledMoveDownBtn');
         if ('undefined' !== typeof disabledMoveDownBtn && disabledMoveDownBtn[0]) {
@@ -119,6 +140,13 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
             $(tableRow).find('.moveDownBtn').show();
         }
     },
+    
+    /**
+     * Method is calling another method to undo row and matching regular row to be the same height and 
+     * also hide removed item (row)
+     * @param {Object} row - row element.
+     * @param {Object} undoRow - undoRow element.
+     */
     initRow = function(row, undoRow) {
         matchRowAndUndoRowHeights(row, undoRow);
         if ($(row).find('.isDeletionField').val() == 'true') {
@@ -155,6 +183,8 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
 
     /**
      * The tag calls this method to add a new blank row to the table.
+     * @param {Object} event - jquery event object.
+     * @param {Object} extraArgs - request parameters
      */
     dynamicProto.addItem = function(event, extraArgs) {
         var parameters,
@@ -248,6 +278,10 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         doRequest(0);
     };
 
+    /**
+     * Method to add item message
+     * @param {boolean} doUnblock - unblock flag.
+     */
     dynamicProto.addItemSuccess = function (doUnblock) {
         var wrapperDiv = document.getElementById(this.tableId + '_wrapper'),
             tempRequestDiv = wrapperDiv.getElementsByClassName('tempRequest'),
@@ -283,6 +317,11 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         }
     };
 
+
+    /**
+     * Method to move up the item (row)
+     * @param {Object} event - jquery event object.
+     */
     dynamicProto.moveItemUp = function (event) {
         var thisRow = $(event.target).closest('tr'),
             previousRow = thisRow.prev().prev();
@@ -294,6 +333,10 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         this.swapRows(previousRow[0], thisRow[0]);
     };
 
+    /**
+     * Method to move down the item (row)
+     * @param {Object} event - jquery event object.
+     */
     dynamicProto.moveItemDown = function(event) {
         var thisRow = $(event.target).closest('tr'),
             nextRow = thisRow.next().next();
@@ -303,6 +346,11 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
         this.swapRows(thisRow[0], nextRow[0]);
     };
 
+
+    /**
+     * Method to remove the item (row)
+     * @param {Object} event - jquery event object.
+     */
     dynamicProto.removeItem = function(event) {
         var row = $(event.target).closest('tr'),
             isDeletionInput;
@@ -314,6 +362,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     /**
      * Private method used to hide a row removed either by clicking "delete" or when coming back
      * to the page as a result of validation errors.
+     * @param {Object} row- row instance.
      */
     dynamicProto.hideRemovedItem = function (row) {
         var undoRow = $(row).next(),
@@ -346,6 +395,7 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
      * Private method used by other methods to help keep correct move buttons visible.  (For
      * example, ensure that on the first row the move up button is disabled.)  If the row being
      * updated turns out to be the first or last row, the adjacent row will also be updated.
+     * @param {Object} aroundRow - row instance.
      */
     dynamicProto.updateMoveButtonVisibility = function (aroundRow) {
         var visibleRows = getVisibleRows.call(this);
@@ -372,6 +422,8 @@ yukon.protoDynamicTable = function (tableId, nextRowId, addItemParameters) {
     /**
      * Private method to swap the given rows in the table, moving undo rows along with the rows
      * themselves.
+     * @param {Object} firstRow - first row instance.
+     * @param {Object} secondRow - second row instance.
      */
     dynamicProto.swapRows = function (firstRow, secondRow) {
         var temp,

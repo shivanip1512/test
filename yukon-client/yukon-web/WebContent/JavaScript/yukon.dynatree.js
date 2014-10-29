@@ -1,9 +1,9 @@
 yukon.namespace('yukon.dynatree');
 
 /**
- * Singleton that provides some extra functionality (search and expand/collapse toggles) to the jquery dynatree plugin.
+ * Module that provides some extra functionality (search and expand/collapse toggles) to the jquery dynatree plugin.
  * 
- * @module yukon.dynatree
+ * @module   yukon.dynatree
  * @requires JQUERY
  * @requires jquery.dynatree.js
  */
@@ -13,8 +13,14 @@ yukon.dynatree = (function () {
     
     var
     _initialized = false,
-    _timeout = null,
     
+    /** @type {number} - The setTimeout Id for checking user input */
+    _timeout = null,
+
+    /** 
+     * Returns the search results based on user input.
+     * @param {Object} input - input element
+     */
     _search = function (input) {
         var
         hits = [],
@@ -77,6 +83,11 @@ yukon.dynatree = (function () {
             _initialized = true;
         },
         
+
+        /** 
+         * Set the href value of selected node.
+         * @param {Object} node - dyna tree node element.
+         */
         redirectOnActivate: function (node) {
             if (node.data && node.data.href) {
                 window.location = node.data.href;

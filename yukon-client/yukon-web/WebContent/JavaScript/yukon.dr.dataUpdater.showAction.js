@@ -1,6 +1,17 @@
 yukon.namespace('yukon.dr.dataUpdater.showAction');
 
+/**
+ * Module that provides functionality for updating dr action menus
+ * @module yukon.dr.dataUpdater.showAction
+ * @requires JQUERY
+ */
 yukon.dr.dataUpdater.showAction = (function () {
+
+    /**
+     * Method to hide the menu action and also set the title.
+     * @param {Array.<Object>}  menu - Array of actions.
+     * @param {number} paoId - paoId
+     */
     var 
     _updateMenu = function(paoId, menu) {
         var actionsEl = $('[data-pao-id='+paoId+']');
@@ -11,7 +22,10 @@ yukon.dr.dataUpdater.showAction = (function () {
         }
     },
 
-    // creates and returns a 'menu' defaulting every action to 'on'
+    /**
+     * Method to create and returns a 'menu' defaulting every action to 'on'.
+     * @param {Array.<Object>}  menu - Array of actions.
+     */
     _getDefaultMenuForActions = function(actions) {
         var menu = {};
         var numActions = actions.length;
@@ -22,7 +36,13 @@ yukon.dr.dataUpdater.showAction = (function () {
     },
 
     mod = {
-        // handles enabling and disabling control area menu items
+
+        /**
+          * Method to handle enabling and disabling control area menu items.
+          * @param {number} paoId - paoId
+          * @param {boolean} isGearChangeEnabled - Parameter will enable/disable the gear based on role assigned to user.
+          * @param {boolean} enableDisableProgramsAllowed - Parameter will enable/disable the program based on role assigned to user.
+        */
         updateControlAreaMenu: function (paoId, isGearChangeEnabled, enableDisableProgramsAllowed) {
             return function(data) {
                 var controlAreaState = JSON.parse(data.state);
@@ -77,7 +97,14 @@ yukon.dr.dataUpdater.showAction = (function () {
             };
         },
 
-        // DONE
+
+
+        /**
+         * Method to handle enabling and disabling program menu items.
+         * @param {number} paoId - paoId
+         * @param {boolean} isGearChangeEnabled - Parameter will enable/disable the gear based on role assigned to user.
+         * @param {boolean} enableDisableProgramsAllowed - Parameter will enable/disable the program based on role assigned to user.
+         */
          updateProgramMenu: function (paoId, isGearChangeEnabled, enableDisableProgramsAllowed) {
             return function(data) {
                 var programState = JSON.parse(data.state);
