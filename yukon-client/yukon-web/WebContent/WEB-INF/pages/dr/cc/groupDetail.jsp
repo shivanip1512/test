@@ -7,14 +7,20 @@
 
 <cti:standardPage module="dr" page="cc.groupDetail">
 <cti:msgScope paths="yukon.web.modules.commercialcurtailment.ccurtSetup">
+<cti:includeScript link="/JavaScript/yukon.curtailment.js"/>
+
+<form id="group" name="group" data-group-id="${group.id}" method="POST" action="<cti:url value="/dr/cc/groupSave/${group.id}"/>">
+<cti:csrfToken/>
 
 <div class="column-12-12">
     <h3><i:inline key=".groupDetail"/></h3>
-    <h3><i:inline key=".groupName"/>&nbsp;${group.name}</h3>
+    <h3><i:inline key=".groupName"/>
+        <input id="group-name" type="text" name="groupName" value="${group.name}" data-group-id="${group.id}"/>
+    </h3>
     <div class="column one">
         <h3><i:inline key=".groupCustomers"/></h3>
         <div>
-            <table class="compact-results-table">
+            <table class="compact-results-table" id="assigned-customers">
                 <thead>
                     <tr>
                     </tr>
@@ -25,19 +31,19 @@
                     <tr>
                         <td>${assignedCustomer.customer.companyName}&nbsp;</td>
                         <td>
-                            <input type="checkbox" ${assignedCustomer.notifMap.sendEmails ? "checked" : ""} />&nbsp;
+                            <input type="checkbox" name="emails" <c:if test="${assignedCustomer.notifMap.sendEmails}">checked</c:if> />&nbsp;
                             <i:inline key=".groupEmails"/>
                         </td>
                         <td>
-                            <input type="checkbox" ${assignedCustomer.notifMap.sendOutboundCalls ? "checked" : ""} />&nbsp;
+                            <input type="checkbox" name="voice" <c:if test="${assignedCustomer.notifMap.sendOutboundCalls}">checked</c:if> />&nbsp;
                             <i:inline key=".groupVoice"/>
                         </td>
                         <td>
-                            <input type="checkbox" ${assignedCustomer.notifMap.sendSms ? "checked" : ""} />&nbsp;
+                            <input type="checkbox" name="sms" <c:if test="${assignedCustomer.notifMap.sendSms}">checked</c:if> />&nbsp;
                             <i:inline key=".groupSms"/>
                         </td>
                         <td>
-                            <cti:button renderMode="buttonImage" icon="icon-delete"/>
+                            <cti:button renderMode="buttonImage" icon="icon-delete" data-customer-id="${assignedCustomer.customer.id}"/>
                         </td>
                     </tr>
                 </c:forEach>
@@ -47,7 +53,7 @@
     </div>
     <div class="column two nogutter">
         <h3><i:inline key=".groupAvailableCustomers"/></h3>
-        <table class="compact-results-table">
+        <table class="compact-results-table" id="unassigned-customers">
             <thead>
                 <tr>
                 </tr>
@@ -57,12 +63,18 @@
             <c:forEach var="availableCustomer" items="${availableCustomers}">
                 <tr>
                     <td>${availableCustomer.customer.companyName}&nbsp;</td>
-                    <td><cti:button renderMode="buttonImage" icon="icon-add"/></td>
+                    <td><cti:button renderMode="buttonImage" icon="icon-add" data-customer-id="${availableCustomer.customer.id}"/></td>
                 </tr>
             </c:forEach>
             </tbody>
         </table>
     </div>
+    <cti:url value="/dr/cc/groupSave/${group.id}" var="saveUrl"/>
+    <cti:button nameKey="save" classes="action primary" type="submit" id="group-save" href="${saveUrl}"/>
+    <cti:url value="/dr/cc/groupList" var="cancelUrl"/>
+    <cti:button nameKey="cancel" href="${cancelUrl}"/>
+ 
 </div>
+</form>
 </cti:msgScope>
 </cti:standardPage>

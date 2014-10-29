@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -129,8 +130,13 @@ public class CcHomeController {
     private ArrayList<Group> unassignedGroups;
     private List<LiteNotificationGroup> assignedNotificationGroups;
     private List<LiteNotificationGroup> unassignedNotificationGroups;
-    private boolean programDeletable;
- 
+    private boolean programDeletable; // TODO: determine if this is needed
+    private DataModel groupCustomerModel = new ListDataModel();
+    private DataModel customerModel = new ListDataModel();
+    private List<GroupCustomerNotif> assignedGroupCustomerList;
+    private List<GroupCustomerNotif> unassignedGroupCustomerList;
+    private Group currentGroup = null;
+
     @RequestMapping("/cc/home")
     public String home (ModelMap model, YukonUserContext userContext) {
 
@@ -186,6 +192,8 @@ public class CcHomeController {
         
         Program program = lookupProgramById(id, userContext);
         CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
+        // TODO: this is the initialization of the wizard invoked by the "Start" link.
+        // See how the legacy app looks and works.
         //List<? extends BaseEvent> eventList = strategy.getEventsForProgram(program);
         
         return "dr/cc/init.jsp";
@@ -326,15 +334,49 @@ public class CcHomeController {
             @PathVariable int groupId) {
         
         Group group = groupService.getGroup(groupId);
-        group.getEnergyCompanyId();
+        group.getEnergyCompanyId(); // TODO: remove
         model.addAttribute("group", group);
-        List<GroupCustomerNotif> groupCustomerList = groupService.getAssignedCustomers(group);
-        List<GroupCustomerNotif> availableCustomerList = groupService.getUnassignedCustomers(group, false);
-        model.addAttribute("assignedCustomers", groupCustomerList);
-        model.addAttribute("availableCustomers", availableCustomerList);
+        assignedGroupCustomerList = groupService.getAssignedCustomers(group);
+        groupCustomerModel.setWrappedData(assignedGroupCustomerList);
+        unassignedGroupCustomerList = groupService.getUnassignedCustomers(group, false);
+        customerModel.setWrappedData(unassignedGroupCustomerList);
+        model.addAttribute("assignedCustomers", assignedGroupCustomerList);
+        model.addAttribute("availableCustomers", unassignedGroupCustomerList);
         return "dr/cc/groupDetail.jsp";
     }
     
+    @RequestMapping("/cc/groupCreate")
+    public String groupCreate (ModelMap model,
+            YukonUserContext userContext) {
+        
+        currentGroup = groupService.createNewGroup(userContext.getYukonUser());
+        assignedGroupCustomerList = new ArrayList<GroupCustomerNotif>();
+        groupCustomerModel.setWrappedData(assignedGroupCustomerList);
+        unassignedGroupCustomerList = groupService.getUnassignedCustomers(currentGroup, true);
+        Collections.sort(unassignedGroupCustomerList, new CustomerListComparator());
+        customerModel.setWrappedData(unassignedGroupCustomerList);
+        model.addAttribute("group", currentGroup);
+        model.addAttribute("assignedCustomers", assignedGroupCustomerList);
+        model.addAttribute("availableCustomers", unassignedGroupCustomerList);
+        return "dr/cc/groupDetail.jsp";
+    }
+
+    @RequestMapping("/cc/groupSave/{groupId}")
+    public String groupSave (ModelMap model,
+            YukonUserContext userContext,
+            @PathVariable int groupId,
+            String[] emails,
+            String[] voice,
+            String[] sms) {
+        
+        // TODO: implement saving of notification types (emails, voice, sms)
+        // See API for assignedGroupCustomerList.get(0).getNotifMap();
+        // the following actually works correctly
+        Group group = groupService.getGroup(groupId);
+        groupService.saveGroup(group, assignedGroupCustomerList);
+        return "redirect:/dr/cc/groupList";
+    }
+
     @RequestMapping("/cc/programList")
     public String programList (ModelMap model,
             YukonUserContext userContext) {
@@ -437,15 +479,12 @@ public class CcHomeController {
         }
         program.setProgramType(newProgramType);
         Set<LiteNotificationGroup> assignedNotifGroupsSet = new HashSet<LiteNotificationGroup>(assignedNotificationGroups);
-        CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
         programService.saveProgram(program, programParameters, assignedGroups, assignedNotifGroupsSet);
-        //ArrayList<Group> unassignedGroups = Collections.emptyList();
         return "redirect:/dr/cc/programDetail/" + program.getId();
     }
 
     @RequestMapping("/cc/programSave/{programId}")
     public String programSave (ModelMap model,
-            HttpServletRequest request,
             YukonUserContext userContext,
             @PathVariable int programId,
             String programName,
@@ -514,20 +553,6 @@ public class CcHomeController {
             @PathVariable int programId,
             @PathVariable int groupId) {
 
-//        Program program = programService.getProgram(programId);
-//        List<AvailableProgramGroup> availableProgramGroups = 
-//            programService.getAvailableProgramGroups(program);
-//        assignedGroups = new ArrayList<Group>(availableProgramGroups.size());
-//        for (AvailableProgramGroup apg : availableProgramGroups) {
-//            assignedGroups.add(apg.getGroup());
-//        }
-//        Set<Group> allGroups = programService.getUnassignedGroups(program);
-//        unassignedGroups = new ArrayList<Group>(allGroups);
-//        DataModel unassignedGroupModel = new ListDataModel();
-//        unassignedGroupModel.setWrappedData(unassignedGroups);
-//        Group toAdd = (Group) unassignedGroupModel.getRowData();
-//        unassignedGroups.remove(toAdd);
-//        assignedGroups.add(toAdd);
         Group toAdd = getGroupById(unassignedGroupModel, groupId);
         unassignedGroups.remove(toAdd);
         assignedGroups.add(toAdd);
@@ -570,6 +595,42 @@ public class CcHomeController {
         return null;
     }
 
+    @RequestMapping(value="/cc/group/{groupId}/assignCustomer/{customerId}", method=RequestMethod.POST)
+    @ResponseBody
+    public String assignCustomer (LiteYukonUser user,
+            @PathVariable int groupId,
+            @PathVariable int customerId) {
+
+        GroupCustomerNotif customerNotif = getCustomerNotifById(customerModel, customerId);
+        unassignedGroupCustomerList.remove(customerNotif);
+        assignedGroupCustomerList.add(customerNotif);
+        return null;
+    }
+    
+    @RequestMapping(value="/cc/group/{groupId}/unassignCustomer/{customerId}", method=RequestMethod.POST)
+    @ResponseBody
+    public String unassignCustomer (LiteYukonUser user,
+            @PathVariable int groupId,
+            @PathVariable int customerId) {
+
+        GroupCustomerNotif customerNotif = getCustomerNotifById(groupCustomerModel, customerId);
+        assignedGroupCustomerList.remove(customerNotif);
+        unassignedGroupCustomerList.add(customerNotif);
+        return null;
+    }
+    
+    private GroupCustomerNotif getCustomerNotifById(DataModel listModel, int customerId) {
+        GroupCustomerNotif customerNotif;
+        for (int i = 0; i < listModel.getRowCount(); i += 1) {
+            listModel.setRowIndex(i);
+            customerNotif = (GroupCustomerNotif) listModel.getRowData();
+            if (customerNotif.getCustomer().getId() == customerId) {
+                return customerNotif;
+            }
+        }
+        return null;
+    }
+    
     @RequestMapping("/cc/program/{programId}/event/{eventId}/detail")
     public String detail (ModelMap model,
             YukonUserContext userContext,
@@ -809,6 +870,13 @@ public class CcHomeController {
         return null;
     }
     
+    public final class CustomerListComparator implements Comparator<GroupCustomerNotif> {
+        public int compare(GroupCustomerNotif o1, GroupCustomerNotif o2) {
+            return o1.getCustomer().compareTo(o2.getCustomer());
+        }
+    }
+
+    // TODO: determine if this will ever be needed
     private BaseEvent lookupEventById(Program program, int id) {
         CICurtailmentStrategy strategy = strategyFactory.getStrategy(program);
         List<? extends BaseEvent> eventList = strategy.getEventsForProgram(program);

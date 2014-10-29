@@ -18,7 +18,9 @@
             </c:forEach>
             </ul>
         </div>
+    </div>
+    <cti:url value="/dr/cc/groupCreate" var="createUrl"/>
+    <div><cti:button nameKey="create" href="${createUrl}"/></div>
 </div>
-
 </cti:msgScope>
 </cti:standardPage>

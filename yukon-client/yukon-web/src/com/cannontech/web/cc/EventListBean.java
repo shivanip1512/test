@@ -3,16 +3,11 @@ package com.cannontech.web.cc;
 import java.util.Collections;
 import java.util.List;
 
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
-import javax.faces.model.ListDataModel;
-
 import com.cannontech.cc.model.BaseEvent;
 import com.cannontech.cc.model.Program;
 import com.cannontech.cc.service.CICurtailmentStrategy;
 import com.cannontech.cc.service.ProgramService;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.cc.methods.BaseDetailBean;
 
 public class EventListBean {
     private Program program;

@@ -102,6 +102,26 @@ yukon.curtailment = (function () {
             }).fail(function (jqXHR, textStatus, errorThrown) {
                 debug.log('endpoint: ' + opts.urlEndpoint + ' for groupId ' + groupId + ' failed: ' + textStatus);
             });
+        },
+        
+        _customerMove = function (opts) {
+            var groupId = $('#group-name').data('groupId'),
+            customerId = $(opts.target).data(opts.data),
+            rowToMove = $(opts.target).closest('tr'),
+            moveTarget = $(opts.moveTarget),
+            unassigning = opts.urlEndpoint.indexOf('/un') === 0 ? true : false;
+            $.ajax({
+                url: yukon.url(opts.baseUrl + groupId + opts.urlEndpoint + customerId),
+                type: 'post'
+            }).done(function (jqXHR, textStatus, errorThrown) {
+                var icon = rowToMove.find('i');
+                debug.log('endpoint: ' + opts.urlEndpoint + ' for customerId ' + customerId + ' successfully processed');
+                rowToMove.appendTo(moveTarget);
+                icon.removeClass(unassigning ? 'icon-delete' : 'icon-add');
+                icon.addClass(unassigning ? 'icon-add' : 'icon-delete');
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                debug.log('endpoint: ' + opts.urlEndpoint + ' for customerId ' + customerId + ' failed: ' + textStatus);
+            });
         };
 
     mod = {
@@ -151,6 +171,7 @@ yukon.curtailment = (function () {
                     newDoc.close();
                 });
             });
+            // TODO: _groupMove and _customerMove should be coalesced into the same function
             $(function () {
                 $(document).on('click', '#assigned-groups', function (ev) {
                     var button = $(ev.target).closest('button');
@@ -171,6 +192,18 @@ yukon.curtailment = (function () {
                     var button = $(ev.target).closest('button');
                     debug.log('moving unassigned notification group to assigned');
                     _groupMove({target: button, baseUrl: '/dr/cc/program/', urlEndpoint: '/assignNotificationGroup/', data: 'notifGroup', moveTarget: '#assigned-notification-groups tbody'});
+                });
+            });
+            $(function () {
+                $(document).on('click', '#assigned-customers', function (ev) {
+                    var button = $(ev.target).closest('button');
+                    debug.log('moving assigned customer to unassigned');
+                    _customerMove({target: button, baseUrl: '/dr/cc/group/', urlEndpoint: '/unassignCustomer/', data: 'customerId', moveTarget: '#unassigned-customers tbody'});
+                });
+                $(document).on('click', '#unassigned-customers', function (ev) {
+                    var button = $(ev.target).closest('button');
+                    debug.log('moving unassigned customer to assigned');
+                    _customerMove({target: button, baseUrl: '/dr/cc/group/', urlEndpoint: '/assignCustomer/', data: 'customerId', moveTarget: '#assigned-customers tbody'});
                 });
             });
         }
