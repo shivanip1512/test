@@ -46,14 +46,14 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         boolean isOracle = checkOracleDatabase();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select *");
-        sql.append("from (");
-        sql.append("select (ROW_NUMBER() OVER (ORDER BY");
+        sql.append("SELECT *");
+        sql.append("FROM (");
+        sql.append("SELECT (ROW_NUMBER() OVER (ORDER BY");
         if (("serial_num").equals(sortingOrder)) {
             if (isOracle) {
                 sql.append("CAST");
                 sql.append(sortingOrder);
-                sql.append("as int)");
+                sql.append("AS int)");
             } else {
                 sql.append("CONVERT(int,");
                 sql.append(sortingOrder);
@@ -64,59 +64,58 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         }
         sql.append(" ");
         sql.append(sortingDirection);
-        sql.append(")) AS rowNumber, appliances,deviceId,inventoryId,serial_num,type,last_comm,last_run,availability");
-        sql.append("from ");
-        sql.append("(select distinct ");
-        sql.append("(select Description");
-        sql.append("from ApplianceCategory");
-        sql.append("where appliancecategoryid=appbase.ApplianceCategoryID) as appliances,");
-        sql.append("inv.deviceid as deviceId,lmbase.InventoryID as inventoryId, lmbase.ManufacturerSerialNumber as serial_num,");
-        sql.append("(select yukonDefinitionId");
-        sql.append("from YukonListEntry");
-        sql.append("where EntryID=lmbase.LMHardwareTypeID) as type,");
-        sql.append("LastCommunication as last_comm, LastNonZeroRuntime as last_run,");
-        sql.append("(select case when inv.deviceid=0 then 'ACTIVE' else");
-        sql.append("(select case when lmbase.inventoryid in");
-        sql.append("(select distinct ib.InventoryId");
-        sql.append("from InventoryBase ib ");
-        sql.append("join OptOutEvent ooe on ooe.InventoryId = ib.InventoryId where ooe.StartDate").lt(currentTime);
-        sql.append("and");
-        sql.append("ooe.StopDate").gt(currentTime);
-        sql.append("and ooe.EventState = 'START_OPT_OUT_SENT') then 'OPTED_OUT' ");
-        sql.append(" else case when LastNonZeroRuntime").gt(runtimeWindowEnd);
-        sql.append("then 'ACTIVE'");
-        sql.append(" else case when LastCommunication").gt(communicatingWindowEnd);
-        sql.append("then 'INACTIVE' ");
-        sql.append("else 'UNAVAILABLE' end end end");
+        sql.append(")) AS RowNumber, Appliances,DeviceId,InventoryId,serial_num,Type,last_comm,last_run,Availability");
+        sql.append("FROM ");
+        sql.append("(SELECT DISTINCT ");
+        sql.append("(SELECT Description");
+        sql.append("FROM ApplianceCategory");
+        sql.append("WHERE ApplianceCategoryId=appbase.ApplianceCategoryID) AS appliances,");
+        sql.append("inv.DeviceId AS deviceid,lmbase.InventoryID AS inventoryid, lmbase.ManufacturerSerialNumber AS serial_num,");
+        sql.append("(SELECT YukonDefinitionId");
+        sql.append("FROM YukonListEntry");
+        sql.append("WHERE EntryID=lmbase.LMHardwareTypeID) AS type,");
+        sql.append("LastCommunication AS last_comm, LastNonZeroRuntime AS last_run,");
+        sql.append("(SELECT CASE WHEN inv.DeviceId=0 THEN 'ACTIVE' ELSE");
+        sql.append("(SELECT CASE WHEN lmbase.InventoryId IN");
+        sql.append("(SELECT DISTINCT ib.InventoryId");
+        sql.append("FROM InventoryBase ib ");
+        sql.append(  "JOIN OptOutEvent ooe ON ooe.InventoryId = ib.InventoryId WHERE ooe.StartDate").lt(currentTime);
+        sql.append(  "AND ooe.StopDate").gt(currentTime);;
+        sql.append(  "AND ooe.EventState = 'START_OPT_OUT_SENT') THEN 'OPTED_OUT' ");
+        sql.append("ELSE CASE WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
+        sql.append("THEN 'ACTIVE'");
+        sql.append("ELSE CASE WHEN LastCommunication").gt(communicatingWindowEnd);
+        sql.append("THEN 'INACTIVE' ");
+        sql.append("ELSE 'UNAVAILABLE' END END END");
         if (isOracle) {
-            sql.append("from dual");
+            sql.append("FROM Dual");
         }
-        sql.append(")end");
+        sql.append(")END");
         if (isOracle) {
-            sql.append("from dual");
+            sql.append("FROM Dual");
         }
-        sql.append(")  as availability");
-        sql.append("from LMHardwareBase lmbase , ApplianceBase appbase,LMHardwareConfiguration hdconf,InventoryBase inv");
-        sql.append("left outer join DynamicLcrCommunications dynlcr on (inv.DeviceID=dynlcr.DeviceId)");
-        sql.append("where inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID");
-        sql.append("and hdconf.ApplianceID=appbase.ApplianceID");
-        sql.append("and lmbase.InventoryID in (select distinct inventoryid from LMHardwareConfiguration");
-        sql.append("where AddressingGroupID").in(loadGroupIds);
+        sql.append(")  AS availability");
+        sql.append("FROM LMHardwareBase lmbase , ApplianceBase appbase,LMHardwareConfiguration hdconf,InventoryBase inv");
+        sql.append(  "LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
+        sql.append("WHERE inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID");
+        sql.append(  "AND hdconf.ApplianceID=appbase.ApplianceID");
+        sql.append(  "AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
+        sql.append("WHERE AddressingGroupID").in(loadGroupIds);
         sql.append(")) innertable)outertable");
         if (null != pagingParameters || null != filterCriteria) {
-            sql.append(" where ");
+            sql.append(" WHERE ");
         }
         if (null != pagingParameters) {
-            sql.append(" rowNumber between");
+            sql.append(" RowNumber BETWEEN");
             sql.append(pagingParameters.getOneBasedStartIndex());
-            sql.append(" and ");
+            sql.append(  " AND ");
             sql.append(pagingParameters.getOneBasedEndIndex());
         }
         if (null != pagingParameters && null != filterCriteria) {
-            sql.append(" and ");
+            sql.append(  " AND ");
         }
         if (null != filterCriteria) {
-            sql.append(" availability in ( ");
+            sql.append(" Availability IN ( ");
             sql.append(filterCriteria);
             sql.append(")");
         }
@@ -153,32 +152,32 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         boolean isOracle = checkOracleDatabase();
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select availability, count(availability) as count");
-        sql.append("from (select distinct lmbase.ManufacturerSerialNumber as serial_num,");
-        sql.append("(select case when inv.deviceid=0 then 'ACTIVE'");
-        sql.append("else (select case when lmbase.inventoryid in ");
-        sql.append("(select distinct ib.InventoryId from InventoryBase ib ");
-        sql.append("join OptOutEvent ooe on ooe.InventoryId = ib.InventoryId where ooe.StartDate").lt(currentTime);
-        sql.append("and ooe.StopDate").gt(currentTime);
-        sql.append("and ooe.EventState = 'START_OPT_OUT_SENT') then 'OPTED_OUT' ");
-        sql.append("else case when LastNonZeroRuntime").gt(runtimeWindowEnd);
-        sql.append("then 'ACTIVE' else case when LastCommunication").gt(communicatingWindowEnd);
-        sql.append("then 'INACTIVE' else 'UNAVAILABLE' end end end");
+        sql.append("SELECT Availability, COUNT(Availability) AS count");
+        sql.append("FROM (SELECT DISTINCT lmbase.ManufacturerSerialNumber as serial_num,");
+        sql.append("(SELECT CASE WHEN inv.DeviceId=0 THEN 'ACTIVE'");
+        sql.append("ELSE (SELECT CASE WHEN lmbase.InventoryId IN ");
+        sql.append("(SELECT DISTINCT ib.InventoryId FROM InventoryBase ib ");
+        sql.append(  "JOIN OptOutEvent ooe ON ooe.InventoryId = ib.InventoryId WHERE ooe.StartDate").lt(currentTime);
+        sql.append(  "AND ooe.StopDate").gt(currentTime);
+        sql.append(  "AND ooe.EventState = 'START_OPT_OUT_SENT') THEN 'OPTED_OUT' ");
+        sql.append("ELSE CASE WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
+        sql.append("THEN 'ACTIVE' ELSE CASE WHEN LastCommunication").gt(communicatingWindowEnd);
+        sql.append("THEN 'INACTIVE' ELSE 'UNAVAILABLE' END END END");
         if (isOracle) {
-            sql.append("from dual");
+            sql.append("FROM Dual");
         }
-        sql.append(")end");
+        sql.append(")END");
         if (isOracle) {
-            sql.append("from dual");
+            sql.append("From Dual");
         }
-        sql.append(")  as availability");
-        sql.append("from LMHardwareBase lmbase , ApplianceBase appbase,LMHardwareConfiguration hdconf,InventoryBase inv");
-        sql.append("left outer join DynamicLcrCommunications dynlcr on (inv.DeviceID=dynlcr.DeviceId) ");
-        sql.append("where inv.InventoryID=lmbase.InventoryID and lmbase.InventoryID=hdconf.InventoryID ");
-        sql.append("and hdconf.ApplianceID=appbase.ApplianceID");
-        sql.append("and lmbase.InventoryID in (select distinct inventoryid from LMHardwareConfiguration");
-        sql.append("where AddressingGroupID").in(loadGroupIds);
-        sql.append(") ) outertable group by availability");
+        sql.append(")  AS availability");
+        sql.append("FROM LMHardwareBase lmbase, ApplianceBase appbase,LMHardwareConfiguration hdconf,InventoryBase inv");
+        sql.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceId=dynlcr.DeviceId) ");
+        sql.append("WHERE inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID ");
+        sql.append(  "AND hdconf.ApplianceID=appbase.ApplianceID");
+        sql.append(  "AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
+        sql.append("WHERE AddressingGroupID").in(loadGroupIds);
+        sql.append(") ) outertable GROUP BY availability");
 
         final AssetAvailabilitySummary assetAvailabilitySummary = new AssetAvailabilitySummary();
 

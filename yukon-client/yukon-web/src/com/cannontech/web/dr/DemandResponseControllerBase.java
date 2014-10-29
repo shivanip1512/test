@@ -160,7 +160,7 @@ public abstract class DemandResponseControllerBase {
             dataRow[2] = (details.getLastComm() == null) ? "" : details.getLastComm().toString();
             dataRow[3] = (details.getLastRun() == null) ? "" : details.getLastRun().toString();
             dataRow[4] = details.getAppliances();
-            dataRow[5] = msa.getMessage(details.getAvailability().name());
+            dataRow[5] = msa.getMessage(details.getAvailability());
             dataRows.add(dataRow);
         }
             
