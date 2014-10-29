@@ -1,7 +1,10 @@
 package com.cannontech.web.updater.capcontrol;
 
+import java.util.Map;
+
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.UpdaterHelper;
+import com.cannontech.cbc.util.UpdaterHelper.UpdaterDataType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.capcontrol.streamable.SubBus;
@@ -21,6 +24,11 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
         return state;
     }
     
+    @Override
+    protected Map<String, Object> getStateFlags(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        return (Map<String, Object>)  updaterHelper.getSubBusValueAt(latestValue, UpdaterDataType.STATE_FLAGS, context);
+    }
+
     @Override
     protected String getTargetPeakLead(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
         String value = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_TARGET_COLUMN_PEAKLEAD, context);
@@ -58,9 +66,8 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
     }
     
     @Override
-    protected String getWarningFlag(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
-        String value = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_WARNING_IMAGE, context);
-        return value;
+    protected boolean getWarningFlag(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        return (boolean) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_WARNING_FLAG, context);
     }
     
     @Override
@@ -139,26 +146,13 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
     }
     
     @Override
-    protected String getVerificationFlag(SubBus latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
-        String value = latestValue.getVerificationFlag().toString();
-        return value;
+    protected boolean getVerificationFlag(SubBus latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        return latestValue.getVerificationFlag();
     }
     
     @Override
-    protected String getDualBus(SubBus latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
-        MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
-        
-        String ret = accessor.getMessage("yukon.web.modules.capcontrol.dualBusDisabled");
-        
-        if (latestValue.getDualBusEnabled()) {        	
-        	if (latestValue.getPrimaryBusFlag()) {
-	            ret = accessor.getMessage("yukon.web.modules.capcontrol.dualBusPrimary");
-	        } else if (latestValue.getSwitchOverStatus()) {
-	            ret = accessor.getMessage("yukon.web.modules.capcontrol.dualBusAlternate");
-	        }
-        }
-        
-        return ret;
+    protected boolean getDualBus(SubBus latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        return latestValue.getDualBusEnabled() && (latestValue.getPrimaryBusFlag() || latestValue.getSwitchOverStatus()) ;
     }
     
     @Override

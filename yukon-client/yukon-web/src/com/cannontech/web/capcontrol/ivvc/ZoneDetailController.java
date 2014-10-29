@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
@@ -42,6 +43,7 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.commands.CapControlCommandExecutor;
 import com.cannontech.cbc.commands.CommandResultCallback;
+import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
@@ -57,8 +59,6 @@ import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
-import com.cannontech.common.model.Phase;
-import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.capcontrol.model.CapControlServerResponse;
 import com.cannontech.message.capcontrol.model.CommandType;
@@ -259,9 +259,9 @@ public class ZoneDetailController {
                     @Override
                     public void recievedResponse(CapControlServerResponse message) {
                         if (!message.isSuccess()) {
-                            this.errorMessage = message.getResponse();
+                            errorMessage = message.getResponse();
                         }
-                        this.response = message;
+                        response = message;
                     }
                     @Override
                     public String getErrorMessage() {
@@ -309,9 +309,6 @@ public class ZoneDetailController {
         
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         model.addAttribute("hasEditingRole", hasEditingRole);
-        
-        boolean hasControlRole = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
-        model.addAttribute("hasControlRole", hasControlRole);
         
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         AbstractZone zoneDto = zoneDtoHelper.getAbstractZoneFromZoneId(zoneId, user);
@@ -410,9 +407,9 @@ public class ZoneDetailController {
     }
 
     @RequestMapping("recentEvents")
-    public @ResponseBody Map<String, Object> recentEvents(int zoneId, 
-            int subBusId, 
-            String mostRecent, 
+    public @ResponseBody Map<String, Object> recentEvents(int zoneId,
+            int subBusId,
+            String mostRecent,
             YukonUserContext userContext) {
         
         DateTime dt = new DateTime(mostRecent).toDateTime(userContext.getJodaTimeZone());
@@ -421,7 +418,7 @@ public class ZoneDetailController {
         DateTime nextTime = new DateTime();
         List<CcEvent> events = zoneService.getLatestEvents(zoneId, subBusId, rowLimit, dt.toInstant(), nextTime.toInstant());
 
-        List<Map<String,String>> datas = new ArrayList<>();
+        List<Map<String,String>> eventsJson = new ArrayList<>();
         for (CcEvent event : events) {
             String formattedTime = dateFormattingService.format(event.getDateTime(), DateFormatEnum.BOTH, userContext);
 
@@ -429,10 +426,11 @@ public class ZoneDetailController {
             eventJson.put("deviceName", event.getDeviceName());
             eventJson.put("description", event.getText());
             eventJson.put("formattedTime", formattedTime);
-            datas.add(eventJson);
+            eventsJson.add(eventJson);
         }
         Map<String, Object> result = new HashMap<>();
-        result.put( nextTime.toString(), datas);
+        result.put("timestamp", nextTime.toString());
+        result.put("events", eventsJson);
 
         return result;
     }

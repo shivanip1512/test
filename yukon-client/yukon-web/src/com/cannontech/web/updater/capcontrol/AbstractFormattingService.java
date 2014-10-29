@@ -1,10 +1,15 @@
 package com.cannontech.web.updater.capcontrol;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.UpdaterHelper;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.user.YukonUserContext;
+import com.fasterxml.jackson.core.JsonProcessingException;
 
 public abstract class AbstractFormattingService<E extends StreamableCapObject> implements CapControlFormattingService<E> {
     
@@ -191,6 +196,12 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
                 break;
             }
             
+            case STATE_FLAGS : {
+                Map<String, Object> response = getStateFlags(latestValue, updaterHelper, context);
+                value = jsonPayloadFrom(latestValue, response);
+                break; 
+            }
+
             case TARGET : {
                 value = getTarget(latestValue, updaterHelper, context);
                 break;
@@ -213,7 +224,8 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
             }
             
             case WARNING_FLAG : {
-                value = getWarningFlag(latestValue, updaterHelper, context);
+                boolean response = getWarningFlag(latestValue, updaterHelper, context);
+                value = jsonPayloadFrom(latestValue, response);
                 break; 
             }
             
@@ -228,7 +240,8 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
             }
             
             case VERIFICATION_FLAG : {
-                value = getVerificationFlag(latestValue, updaterHelper, context);
+                boolean response = getVerificationFlag(latestValue, updaterHelper, context);
+                value = jsonPayloadFrom(latestValue, response);
                 break;
             }
             
@@ -243,7 +256,8 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
             }
             
             case DUALBUS : {
-                value = getDualBus(latestValue, updaterHelper, context);
+                boolean response = getDualBus(latestValue, updaterHelper, context);
+                value = jsonPayloadFrom(latestValue, response);
                 break;
             }
             
@@ -258,7 +272,20 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
         return value;
     }
 
-    protected String getDualBus(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+    private static String jsonPayloadFrom(StreamableCapObject latestValue, Object value) {
+        Map<String, Object> data = new HashMap<>();
+        data.put("paoId", latestValue.getCcId());
+        data.put("value", value);
+
+        try {
+            return JsonUtils.toJson(data);
+        } catch (JsonProcessingException e) {
+            //Writing this simple object to JSON should not throw an exception.
+            throw new RuntimeException(e);
+        }
+    }
+
+    protected boolean getDualBus(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
         throw new UnsupportedOperationException("Not supported at this level");
     }
     
@@ -410,6 +437,10 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
         throw new UnsupportedOperationException("Not supported at this level");
     }
     
+    protected Map<String, Object> getStateFlags(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        throw new UnsupportedOperationException("Not supported at this level"); 
+    }
+
     protected String getTargetPeakLead(E latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
         throw new UnsupportedOperationException("Not supported at this level"); 
     }
@@ -430,7 +461,7 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
         throw new UnsupportedOperationException("Not supported at this level");
     }
     
-    protected String getWarningFlag(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+    protected boolean getWarningFlag(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
         throw new UnsupportedOperationException("Not supported at this level");
     }
     
@@ -442,7 +473,7 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
         throw new UnsupportedOperationException("Not supported at this level");
     }
     
-    protected String getVerificationFlag(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+    protected boolean getVerificationFlag(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
         throw new UnsupportedOperationException("Not supported at this level");
     }
     

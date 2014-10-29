@@ -12,7 +12,6 @@
     <cti:includeScript link="/JavaScript/yukon.table.dynamic.js"/>
     
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
-    <cti:includeCss link="/WebConfig/yukon/styles/da/ivvc.css"/>
     
     <cti:url var="zoneCreatorUrl" value="/capcontrol/ivvc/wizard/zoneCreationWizard">
         <cti:param name="subBusId" value="${subBusId}"/>
@@ -108,7 +107,7 @@
                                     </c:choose>
                                 </td>
                                 <td class="lastOperation">
-                                    <capTags:regulatorThreePhaseTapIndicator zone="${zone}" type="VOLTAGE_REGULATOR" phaseMap="${phaseMap}"/>
+                                    <capTags:regulatorThreePhaseTapIndicator zone="${zone}" phaseMap="${phaseMap}"/>
                                 </td>
                             </tr>
                         </cti:navigableHierarchy>
@@ -140,14 +139,13 @@
                         <%-- State --%>
                         <td class="wsnw">
                             <c:if test="${hasSubBusControl}"><a id="subbusState_${subBusId}" href="javascript:void(0);" class="subtle-link"></c:if>
-                            <c:if test="${!hasSubBusControl}"><span id="subbusState_${subBusId}"></c:if>
-                                <span id="subbusState_box_${subBusId}" class="box state-box">&nbsp;</span>
+                            <c:if test="${!hasSubBusControl}"><span></c:if>
+                                <span class="box state-box js-state" data-pao-id="${subBusId}">&nbsp;</span>
+                                <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBBUS/${subBusId}/STATE_FLAGS"/>
                                 <cti:capControlValue paoId="${subBusId}" type="SUBBUS" format="STATE"/>
                             <c:if test="${hasSubBusControl}"></a></c:if>
                             <c:if test="${!hasSubBusControl}"></span></c:if>
                             <capTags:warningImg paoId="${subBusId}" type="SUBBUS"/>
-                            <cti:dataUpdaterCallback function="updateStateColorGenerator('subbusState_box_${subBusId}')"
-                                initialize="true" value="SUBBUS/${subBusId}/STATE"/>
                         </td>
                     </tr>
                     <tr>

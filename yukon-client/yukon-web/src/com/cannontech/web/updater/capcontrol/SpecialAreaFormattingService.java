@@ -1,10 +1,12 @@
 package com.cannontech.web.updater.capcontrol;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
@@ -31,6 +33,17 @@ public class SpecialAreaFormattingService extends AbstractAreaFormatingService<S
     }
 
     @Override
+    protected Map<String, Object> getStateFlags(final SpecialArea latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+
+        Map<String, Object> flags = new HashMap<>();
+
+        flags.put("enabled", !latestValue.getDisableFlag());
+        flags.put("ovuvDisabled", latestValue.getOvUvDisabledFlag());
+
+        return flags;
+    }
+
+    @Override
     protected String getPFactor(final SpecialArea latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);
         int paoId = latestValue.getCcId();
@@ -41,9 +54,8 @@ public class SpecialAreaFormattingService extends AbstractAreaFormatingService<S
     }
     
     @Override
-    protected String getWarningFlag(final SpecialArea latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
-        Boolean flag = latestValue.getVoltReductionFlag();
-        return flag.toString();
+    protected boolean getWarningFlag(final SpecialArea latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        return latestValue.getVoltReductionFlag();
     }
     
     @Override

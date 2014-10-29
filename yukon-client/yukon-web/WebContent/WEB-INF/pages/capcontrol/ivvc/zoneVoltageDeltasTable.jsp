@@ -26,11 +26,7 @@
             <tfoot></tfoot>
             <tbody>
                 <c:forEach var="pointDelta" items="${pointDeltas}" varStatus="status">
-                    <tr>
-                        <td class="dn bankAndPointIds">
-                            <input class="pointDeltaBankId" type="hidden" value="${pointDelta.bankId}"/>
-                            <input class="pointDeltaPointId" type="hidden" value="${pointDelta.pointId}"/>
-                        </td>
+                    <tr data-bank-id="${pointDelta.bankId}" data-point-id="${pointDelta.pointId}">
                         <td>${fn:escapeXml(pointDelta.cbcName)}</td>
                         <td>${fn:escapeXml(pointDelta.bankName)}</td>
                         <td>${fn:escapeXml(pointDelta.affectedDeviceName)}</td>
@@ -38,7 +34,7 @@
                         <td>${fn:escapeXml(pointDelta.preOpValue)}</td>
                         <c:choose>
                             <c:when test="${hasEditingRole}">
-                                <td><label class="staticDeltaLabel"><input type="checkbox" class="editableStaticDelta"
+                                <td><label><input type="checkbox" class="js-static-delta"
                                     <c:choose>
                                         <c:when test="${pointDelta.staticDelta}">
                                             checked="checked"
@@ -47,15 +43,14 @@
                                 </td>
                                 <td class="editable">
                                     <cti:msg2 var="deltaTitle" key=".deltas.deltaTitle" />
-                                    <div class="viewDelta anchorUnderlineHover" title="${deltaTitle}">
-                                        <input type="hidden" value="${pointDelta.delta}"/>
+                                    <div class="js-view-delta anchorUnderlineHover" title="${deltaTitle}">
                                         ${fn:escapeXml(pointDelta.deltaRounded)}
                                     </div>
-                                    <div class="editDelta" style="display: none;">
+                                    <div class="js-edit-delta dn">
                                         <input type="text" style="margin-right: 5px; width: 30px;"
                                             name="editDeltaInput"
                                             value="${fn:escapeXml(pointDelta.delta)}">
-                                        <a href="javascript:void(0);" class="cancelEdit"><i:inline key="yukon.common.cancel"/></a>
+                                        <a href="javascript:void(0);" class="js-cancel-edit"><i:inline key="yukon.common.cancel"/></a>
                                     </div>
                                 </td>
                             </c:when>

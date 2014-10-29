@@ -1,7 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
@@ -9,10 +8,10 @@
 	<strong>
 		<c:choose>
 			<c:when test="${zoneDetailUrl != null}">
-				<a href="${zoneDetailUrl}"><spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody></a>
+                <a href="${zoneDetailUrl}">${fn:escapeXml(zoneName)}</a>
 			</c:when>
 			<c:otherwise>
-				<spring:escapeBody htmlEscape="true">${zoneName}</spring:escapeBody>
+                ${fn:escapeXml(zoneName)}
 			</c:otherwise>
 		</c:choose>
 	</strong>
@@ -20,7 +19,7 @@
 	<table class="compact-results-table zoneVoltagePoints">
         <thead>
 		<tr>
-			<th></th>
+            <th>&nbsp;</th>
 			<th><i:inline key=".table.header.phase"/></th>
 			<th title="<cti:msg2 key=".table.header.lowerLimitTitle"/>">
 				<i:inline key=".table.header.lowerLimitSmall"/>
@@ -46,17 +45,18 @@
 			</c:if>
 			<tr>
 				<td>
-					<span class="gutter"><strong>Device: </strong></span>
-					<spring:escapeBody htmlEscape="true">${voltagePoint.paoName}</spring:escapeBody>
-					<br>
-					<span class="gutter"><strong>Point: </strong></span>
-					<cti:url value="/editor/pointBase.jsf" var="pointLink">
-					   <cti:param name="parentId" value="${voltagePoint.parentPaoIdentifier.paoId}"/>
-					   <cti:param name="itemid" value="${voltagePoint.pointId}"/>
-					</cti:url>
-					<a href="${pointLink}">
-					   <spring:escapeBody htmlEscape="true">${voltagePoint.pointName}</spring:escapeBody>
-					</a>
+                    <div>
+                        <strong><i:inline key="yukon.common.device"/></strong>&nbsp;
+                        ${fn:escapeXml(voltagePoint.paoName)}
+                    </div>
+                    <div>
+                        <strong><i:inline key="yukon.common.point"/></strong>&nbsp;
+                        <cti:url value="/editor/pointBase.jsf" var="pointLink">
+                            <cti:param name="parentId" value="${voltagePoint.parentPaoIdentifier.paoId}"/>
+                            <cti:param name="itemid" value="${voltagePoint.pointId}"/>
+                        </cti:url>
+                        <a href="${pointLink}">${fn:escapeXml(voltagePoint.pointName)}</a>
+                    </div>
 				</td>
 				<td><i:inline key="yukon.common.phase.phase${voltagePoint.phase}"/></td>
 				<td title="<cti:msg2 key=".table.header.lowerLimitTitle"/>" class="${overrideStrategyClass}">

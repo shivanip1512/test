@@ -44,12 +44,12 @@
                     </td>
                     <td>
                         <c:if test="${hasAreaControl}"><a id="areaState_${thisAreaId}" href="javascript:void(0);" class="subtle-link"></c:if>
-                        <c:if test="${!hasAreaControl}"><span id="areaState_${thisAreaId}"></c:if>
-                            <span id="areaState_box_${thisAreaId}" class="box state-box">&nbsp;</span>
+                        <c:if test="${!hasAreaControl}"><span></c:if>
+                            <span class="box state-box js-state" data-pao-id="${thisAreaId}">&nbsp;</span>
+                            <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="${areaType.updaterType}/${thisAreaId}/STATE_FLAGS"/>
                             <cti:capControlValue paoId="${thisAreaId}" type="${areaType.updaterType}" format="STATE" />
                         <c:if test="${hasAreaControl}"></a></c:if>
                         <c:if test="${!hasAreaControl}"></span></c:if>
-                        <cti:dataUpdaterCallback function="updateStateColorGenerator('areaState_box_${thisAreaId}')" initialize="true" value="${areaType.updaterType}/${thisAreaId}/STATE"/>
                     </td>
                     <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${areaType.updaterType}" format="KVARS_AVAILABLE"/></td>
                     <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${areaType.updaterType}" format="KVARS_UNAVAILABLE"/></td>

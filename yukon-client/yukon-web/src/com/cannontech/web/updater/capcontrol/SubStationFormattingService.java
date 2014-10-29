@@ -2,10 +2,12 @@ package com.cannontech.web.updater.capcontrol;
 
 import java.text.NumberFormat;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.util.UpdaterHelper;
 import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.cbc.util.UpdaterHelper;
+import com.cannontech.cbc.util.UpdaterHelper.UpdaterDataType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
@@ -25,6 +27,11 @@ public class SubStationFormattingService extends AbstractAreaFormatingService<Su
         String state = (String) updaterHelper.getSubstationValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_CURRENT_STATE_COLUMN, context);
         return state;
     }
+
+    @Override
+    protected Map<String,Object> getStateFlags(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        return (Map<String,Object>) updaterHelper.getSubstationValueAt(latestValue, UpdaterDataType.STATE_FLAGS, context);
+    }
     
     @Override
     protected String getSpecialAreaEnabledMsg(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
@@ -39,8 +46,8 @@ public class SubStationFormattingService extends AbstractAreaFormatingService<Su
     }
     
     @Override
-    protected String getWarningFlag(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
-        return (String)updaterHelper.getSubstationValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_VOLT_REDUCTION, context);
+    protected boolean getWarningFlag(final SubStation latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        return (boolean) updaterHelper.getSubstationValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_VOLT_REDUCTION, context);
     }
     
     @Override

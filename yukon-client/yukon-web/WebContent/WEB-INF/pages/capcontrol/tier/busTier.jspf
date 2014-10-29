@@ -74,14 +74,12 @@
                 <%-- State --%>
                 <td class="wsnw">
                     <c:if test="${hasSubBusControl}"><a id="subbusState_${subbusId}" class="subtle-link" href="javascript:void(0);"></c:if>
-                    <c:if test="${not hasSubBusControl}"><span id="subbusState_${subbusId}" href="javascript:void(0);"></c:if>
-                        <span id="subbusState_box_${subbusId}" class="box state-box">
-                            &nbsp;
-                        </span>
+                    <c:if test="${not hasSubBusControl}"><span></c:if>
+                        <span class="box state-box js-state" data-pao-id="${subbusId}">&nbsp;</span>
+                        <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBBUS/${subbusId}/STATE_FLAGS"/>
                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="STATE" styleClass="vat"/>
                     <c:if test="${hasSubBusControl}"></a></c:if>
                     <c:if test="${not hasSubBusControl}"></span></c:if>
-                    <cti:dataUpdaterCallback function="updateStateColorGenerator('subbusState_box_${subbusId}')" initialize="true" value="SUBBUS/${subbusId}/STATE"/>
                 </td>
 
                 <%-- Target --%>

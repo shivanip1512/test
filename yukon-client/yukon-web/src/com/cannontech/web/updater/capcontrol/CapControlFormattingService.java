@@ -7,6 +7,7 @@ public interface CapControlFormattingService<E> {
     public enum Format {
         NAME,
         STATE,
+        STATE_FLAGS,
         CHILD_COUNT,
         KVARS_AVAILABLE,
         KVARS_UNAVAILABLE,

@@ -3,17 +3,11 @@
 
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-<input type="hidden" id="warning_${paoId}" value='<cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG"/>'>
-
-<span id="warning_${paoId}_green">
-    <cti:icon icon="icon-blank"/>
-</span>
-
-<span class="js-tooltip" id="warningPopup_${paoId}" style="display: none;">
+<span class="dn js-tooltip">
     <cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG_MESSAGE"/> 
 </span>
-<span id="warning_${paoId}_yellow" style="display: none;" class="js-has-tooltip">
+<span class="dn js-warning-image js-has-tooltip" data-pao-id="${paoId}">
     <cti:icon icon="icon-error"/>
 </span>
 
-<cti:dataUpdaterCallback function="updateCapBankWarningImage('warning_${paoId}')" initialize="true" value="${type}/${paoId}/WARNING_FLAG"/>
+<cti:dataUpdaterCallback function="yukon.da.updaters.warningIcon" initialize="true" value="${type}/${paoId}/WARNING_FLAG"/>

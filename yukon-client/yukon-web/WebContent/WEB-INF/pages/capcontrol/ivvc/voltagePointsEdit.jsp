@@ -8,7 +8,6 @@
 
 <cti:standardPage module="capcontrol" page="ivvc.voltagePoints">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
-    <cti:includeCss link="/WebConfig/yukon/styles/da/ivvc.css" />
     
     <script>
         $(document).ready(function() {

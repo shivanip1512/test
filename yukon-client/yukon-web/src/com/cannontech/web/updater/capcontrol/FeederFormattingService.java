@@ -1,20 +1,17 @@
 package com.cannontech.web.updater.capcontrol;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import com.cannontech.cbc.util.UpdaterHelper;
+import com.cannontech.cbc.util.UpdaterHelper.UpdaterDataType;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.user.YukonUserContext;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class FeederFormattingService extends AbstractFormattingService<Feeder> {
 
     @Override
-    protected String getWarningFlag(final Feeder latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
-        String value = (String) updaterHelper.getFeederValueAt(latestValue, UpdaterHelper.UpdaterDataType.FDR_WARNING_IMAGE, context);
-        return value;
+    protected boolean getWarningFlag(final Feeder latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        return (boolean) updaterHelper.getFeederValueAt(latestValue, UpdaterHelper.UpdaterDataType.FDR_WARNING_FLAG, context);
     }
     
     @Override
@@ -29,6 +26,11 @@ public class FeederFormattingService extends AbstractFormattingService<Feeder> {
         return value;    
     }
     
+    @Override
+    protected  Map<String, Object> getStateFlags(final Feeder latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        return (Map<String, Object>) updaterHelper.getFeederValueAt(latestValue, UpdaterDataType.STATE_FLAGS, context);
+    }
+
     @Override
     protected String getTargetPeakLead(final Feeder latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
         String value = (String) updaterHelper.getFeederValueAt(latestValue, UpdaterHelper.UpdaterDataType.FDR_TARGET_COLUMN_PEAKLEAD, context);
@@ -135,19 +137,8 @@ public class FeederFormattingService extends AbstractFormattingService<Feeder> {
     }
 
     @Override
-    protected String getDualBus(final Feeder latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
-
-        Map<String,Object> data = new HashMap<String,Object>();
-
-        data.put("paoId", latestValue.getCcId());
+    protected boolean getDualBus(final Feeder latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
         //This is how we determine if a feeder is moved (by dual bus) in CapControlWebUtilsServiceImpl.createViewableFeeder
-        data.put("dualBus", latestValue.getOriginalParentId() > 0);
-
-        try {
-            return new ObjectMapper().writeValueAsString(data);
-        } catch (JsonProcessingException e) {
-            //Writing this simple object to JSON should not throw an exception.
-            throw new RuntimeException(e);
-        }
+        return latestValue.getOriginalParentId() > 0;
     }
 }

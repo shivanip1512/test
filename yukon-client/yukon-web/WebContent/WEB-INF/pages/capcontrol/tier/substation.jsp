@@ -101,14 +101,12 @@ $(function() {
                     <tags:nameValueContainer2 tableClass="name-collapse">
                         <tags:nameValue2 nameKey=".state" rowClass="wsnw">
                                 <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" class="subtle-link" href="javascript:void(0);"></c:if>
-                                <c:if test="${not hasSubstationControl}"><span id="substationState_${substationId}"></c:if>
-                                    <span id="substationState_box_${substationId}" class="box state-box">
-                                        &nbsp;
-                                    </span>
+                                <c:if test="${not hasSubstationControl}"><span></c:if>
+                                    <span class="box state-box js-state" data-pao-id="${substationId}">&nbsp;</span>
+                                    <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBSTATION/${substationId}/STATE_FLAGS"/>
                                     <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE"/>
                                 <c:if test="${hasSubstationControl}"></a></c:if>
                                 <c:if test="${not hasSubstationControl}"></span></c:if>
-                                <cti:dataUpdaterCallback function="updateStateColorGenerator('substationState_box_${substationId}')" initialize="true" value="SUBSTATION/${substationId}/STATE"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".mapLocationId">
                             <span>${substation.mapLocationId}</span>

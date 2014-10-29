@@ -214,11 +214,6 @@
     <entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.updateFailure">Update Failure</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.editPoints">Edit Points</entry>
 	<entry key="yukon.web.modules.capcontrol.ivvc.voltagePoints.editStrategy">Edit Strategy</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.graph.updatingPaused">Graph updating paused</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.graph.resumingIn">Resuming live updates in</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.graph.resumingInPeriod">seconds</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.graph.resumeNow">resume now</entry>
-	<entry key="yukon.web.modules.capcontrol.ivvc.graph.pauseSeconds">10</entry>
     
     <!-- Last Operation Widget Tooltips -->
     <entry key="yukon.web.modules.capcontrol.ivvc.lastOperation.tooltip.raiseTap.notRecent.notWarning">Tap Up</entry>

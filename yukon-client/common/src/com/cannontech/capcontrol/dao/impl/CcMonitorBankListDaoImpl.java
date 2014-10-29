@@ -1,15 +1,19 @@
 package com.cannontech.capcontrol.dao.impl;
 
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.StrategyLimitsHolder;
 import com.cannontech.capcontrol.model.VoltageLimitedDeviceInfo;
+import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -22,8 +26,6 @@ import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.common.model.Phase;
-import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -101,6 +103,15 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         sql.append(")");
         
         List<VoltageLimitedDeviceInfo> deviceInfoList = yukonJdbcTemplate.query(sql, deviceInfoRowMapper);
+
+        Collections.sort(deviceInfoList, new Comparator<VoltageLimitedDeviceInfo>(){
+
+            @Override
+            public int compare(VoltageLimitedDeviceInfo o1, VoltageLimitedDeviceInfo o2) {
+                return o1.getPhase().compareTo(o2.getPhase());
+            }
+        });
+
         return deviceInfoList;
     }
     

@@ -16,9 +16,8 @@ public class CapBankFormattingService extends AbstractFormattingService<CapBankD
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @Override
-    protected String getWarningFlag(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
-        String color = (String) updaterHelper.getCapBankValueAt(latestValue, UpdaterDataType.CB_WARNING_IMAGE_COLOR, context);
-        return color;
+    protected boolean getWarningFlag(CapBankDevice latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        return (boolean) updaterHelper.getCapBankValueAt(latestValue, UpdaterDataType.CB_WARNING_FLAG, context);
     }
 
     @Override

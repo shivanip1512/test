@@ -3,6 +3,8 @@ package com.cannontech.cbc.util;
 import java.awt.Color;
 import java.text.NumberFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 
@@ -56,7 +58,7 @@ public class UpdaterHelper {
         CB_DAILY_TOTAL_OP_COLUMN,
         CB_SHORT_TIME_STAMP_COLUMN,
         CB_STATUS_POPUP,
-        CB_WARNING_IMAGE_COLOR,
+        CB_WARNING_FLAG,
         CB_LOCAL_REMOTE_TEXT,
         CB_WARNING_POPUP,
         CB_DAILY_MAX_TOTAL_OP_COLUMN,
@@ -87,7 +89,7 @@ public class UpdaterHelper {
         FDR_SHORT_TIME_STAMP_COLUMN,
         FDR_TARGET_POPUP,
         FDR_VAR_LOAD_POPUP,
-        FDR_WARNING_IMAGE,
+        FDR_WARNING_FLAG,
         FDR_WARNING_POPUP,
         FDR_ONELINE_WATTS_VOLTS_COLUMN,
         FDR_ONELINE_THREE_PHASE_COLUMN,
@@ -103,6 +105,7 @@ public class UpdaterHelper {
         SUB_AREA_NAME_COLUMN,
         SUB_NAME_COLUMN,
         SUB_CURRENT_STATE_COLUMN,
+        STATE_FLAGS,
         SUB_TARGET_COLUMN,
         SUB_VAR_LOAD_COLUMN,
         SUB_WATTS_COLUMN,
@@ -128,7 +131,7 @@ public class UpdaterHelper {
         SUB_SHORT_TIME_STAMP_COLUMN,
         SUB_TARGET_POPUP,
         SUB_VAR_LOAD_POPUP,
-        SUB_WARNING_IMAGE,
+        SUB_WARNING_FLAG,
         SUB_WARNING_POPUP,
         SUB_ONELINE_THREE_PHASE_COLUMN,
         SUB_TARGET_COLUMN_PEAKLEAD,
@@ -286,15 +289,8 @@ public class UpdaterHelper {
             return controllerName;
         }
 
-        case CB_WARNING_IMAGE_COLOR:{
-            String color = "Green";
-            if (capBank.getMaxDailyOperationHitFlag() || capBank.getOvuvSituationFlag()) {
-                color = "Yellow";
-            } else {
-                color = "Green";
-            }
-            
-            return color;
+        case CB_WARNING_FLAG:{
+            return capBank.getMaxDailyOperationHitFlag() || capBank.getOvuvSituationFlag();
         }
             
         case CB_LOCAL_REMOTE_TEXT:{
@@ -462,6 +458,16 @@ public class UpdaterHelper {
             return state;
         }
 
+        case STATE_FLAGS: {
+            Map<String, Object> flags = new HashMap<>();
+
+            flags.put("enabled", !substation.getCcDisableFlag());
+            flags.put("pending", substation.getRecentlyControlledFlag());
+            flags.put("ovuvDisabled", substation.getOvuvDisableFlag());
+
+            return flags;
+        }
+
         case SUB_POWER_FACTOR_COLUMN: {
             String pf =  getPowerFactorText(substation.getPowerFactorValue() , true, context.getYukonUser(), accessor);     
             String estPf = getPowerFactorText(substation.getEstimatedPFValue(), true, context.getYukonUser(), accessor);
@@ -489,11 +495,8 @@ public class UpdaterHelper {
         case SUB_VOLT_REDUCTION: {
             Boolean flag = substation.getVoltReductionFlag();
             Boolean childFlag = substation.getChildVoltReductionFlag();
-            if (flag || childFlag) {
-                return "true";
-            } else {
-                return "false";
-            }
+
+            return flag || childFlag;
         }
 
         default: return null;
@@ -501,7 +504,7 @@ public class UpdaterHelper {
         
     }
 
-    public String getAreaValueAt(Area area, UpdaterDataType dataType, YukonUserContext context) {
+    public Object getAreaValueAt(Area area, UpdaterDataType dataType, YukonUserContext context) {
         if (area == null) return "";
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 
@@ -517,11 +520,7 @@ public class UpdaterHelper {
             Boolean flag = area.getVoltReductionFlag();
             Boolean childFlag = area.getChildVoltReductionFlag();
             
-            if (flag || childFlag) {
-                return "true";
-            } else {
-                return "false";
-            }
+            return flag || childFlag;
         }
 
         default: return null;
@@ -573,6 +572,18 @@ public class UpdaterHelper {
             return state;
         }
         
+        case STATE_FLAGS: {
+            Map<String, Object> flags = new HashMap<>();
+
+            flags.put("enabled", !subBus.getCcDisableFlag());
+            flags.put("pending", subBus.getRecentlyControlledFlag());
+            flags.put("altBus", subBus.getDualBusEnabled() && subBus.getSwitchOverStatus());
+            flags.put("primaryBus", subBus.getPrimaryBusFlag());
+            flags.put("ovuvDisabled", subBus.getPrimaryBusFlag());
+
+            return flags;
+        }
+
         case SUB_TARGET_COLUMN_PEAKLEAD: {
             return CommonUtils.formatDecimalPlaces(subBus.getPeakLead(), 0);
         }
@@ -768,12 +779,8 @@ public class UpdaterHelper {
             return warningMessage;
         }
 
-        case SUB_WARNING_IMAGE:{
-            if (subBus.getLikeDayControlFlag() || subBus.getVoltReductionFlag()) {
-                return "true";
-            } else {
-                return "false";
-            }
+        case SUB_WARNING_FLAG:{
+            return subBus.getLikeDayControlFlag() || subBus.getVoltReductionFlag();
         }
 
         default:
@@ -826,6 +833,18 @@ public class UpdaterHelper {
             return state;
         }
         
+        case STATE_FLAGS: {
+
+            Map<String, Object> flags = new HashMap<>();
+
+            flags.put("enabled", !feeder.getCcDisableFlag());
+            flags.put("pending", feeder.getRecentlyControlledFlag());
+            flags.put("waive", feeder.getWaiveControlFlag());
+            flags.put("ovuvDisabled", feeder.getOvUvDisabledFlag());
+
+            return flags;
+        }
+
         case FDR_TARGET_COLUMN_PEAKLEAD: {
             return CommonUtils.formatDecimalPlaces(feeder.getPeakLead(), 0);
         }
@@ -1030,12 +1049,8 @@ public class UpdaterHelper {
             return accessor.getMessage(keyPrefix + "likeDay");
         }
 
-        case FDR_WARNING_IMAGE:{
-            if (feeder.getLikeDayControlFlag()) {
-                return "true";
-            } else {
-                return "false";
-            }
+        case FDR_WARNING_FLAG:{
+           return feeder.getLikeDayControlFlag();
         }
         
         case FDR_ONELINE_THREE_PHASE_COLUMN: {

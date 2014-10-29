@@ -44,7 +44,7 @@
                 <td>
                     <capTags:warningImg paoId="${feederId}" type="FEEDER"/>
                     <cti:icon icon="icon-bullet-orange" classes="thin" data-dual-bus-feeder="${feederId}" />
-                    <cti:dataUpdaterCallback function="feederDualBus" initialize="true" value="FEEDER/${feederId}/DUALBUS"/>
+                    <cti:dataUpdaterCallback function="yukon.da.updaters.feederDualBus" initialize="true" value="FEEDER/${feederId}/DUALBUS"/>
                 </td>
                 <%-- Name --%>
                 <td class="wsnw">
@@ -61,11 +61,10 @@
                         <a id="feederState_${feederId}"  class="subtle-link" href="javascript:void(0);">
                     </c:if>
                     <c:if test="${not hasFeederControl}">
-                        <span id="feederState_${feederId}">
+                        <span>
                     </c:if>
-                        <span id="feederState_box_${feederId}" class="box state-box">
-                            &nbsp;
-                        </span>
+                        <span class="box state-box js-state" data-pao-id="${feederId}">&nbsp;</span>
+                        <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="FEEDER/${feederId}/STATE_FLAGS"/>
 
                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="STATE"/>
 
@@ -76,7 +75,6 @@
                         </span>
                     </c:if>
 
-                    <cti:dataUpdaterCallback function="updateStateColorGenerator('feederState_box_${feederId}')" initialize="true" value="FEEDER/${feederId}/STATE"/>
                 </td>
 
                 <%-- Target --%>
