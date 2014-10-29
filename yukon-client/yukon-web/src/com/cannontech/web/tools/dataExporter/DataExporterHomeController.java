@@ -205,8 +205,6 @@ public class DataExporterHomeController {
         List<SimpleDevice> deviceList = archivedValuesExporter.getDeviceCollection().getDeviceList();
         DataRange dataRange = archivedValuesExporter.getRunDataRange();
         ExportFormat format = archiveValuesExportFormatDao.getByFormatId(archivedValuesExporter.getFormatId());
-        List<String> report = exportReportGeneratorService.generateReport(deviceList, format, dataRange, userContext,
-            archivedValuesExporter.getAttributesArray());
         
         SimpleDateFormat fileNameDateFormat = new SimpleDateFormat("MMddyyyy");
         String fileNameDateFormatString = fileNameDateFormat.format(Instant.now().toDate());
@@ -218,11 +216,8 @@ public class DataExporterHomeController {
         
         OutputStream outputStream = response.getOutputStream();
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
-        for (String row : report) {
-            writer.write(row);
-            writer.newLine();
-        }
-        writer.close();
+        exportReportGeneratorService.generateReport(deviceList, format, dataRange, userContext,
+            archivedValuesExporter.getAttributesArray(), writer);
         
         return null;
     }

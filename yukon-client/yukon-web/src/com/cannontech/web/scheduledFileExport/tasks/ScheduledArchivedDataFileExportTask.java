@@ -55,7 +55,6 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		
 		//Get the report data
 		Attribute[] attributesArray = attributes.toArray(new Attribute[attributes.size()]);
-		List<String> report = exportReportGeneratorService.generateReport(meters, format, dataRange, getUserContext(), attributesArray);
 		
 		//If using SINCE_LAST_CHANGE_ID, update last id for this job
 		if(dataRange.getDataRangeType() == DataRangeType.SINCE_LAST_CHANGE_ID) {
@@ -67,10 +66,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		try (
 			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(archiveFile)));
 		){
-			for(String row : report) {
-				writer.write(row);
-				writer.newLine();
-			}
+		    exportReportGeneratorService.generateReport(meters, format, dataRange, getUserContext(), attributesArray, writer);
 		} catch(IOException e) {
 			throw new FileCreationException("Unable to generate Scheduled Archived Data file due to I/O errors.", e);
 		}

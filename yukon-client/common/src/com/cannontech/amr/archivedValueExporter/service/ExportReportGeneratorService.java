@@ -1,5 +1,7 @@
 package com.cannontech.amr.archivedValueExporter.service;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
 import java.util.List;
 
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
@@ -12,14 +14,11 @@ import com.cannontech.user.YukonUserContext;
 public interface ExportReportGeneratorService {
 
     /**
-     * Generates report.
-     * If stop date is null the preview  will be generated. 
+     * Streams report to writer as its generated. New lines are defined by the system property
+     * line.separator, and not necessarily a single newline ('\n') character.
      */
-    public List<String> generateReport(List<? extends YukonPao> meters, ExportFormat format, DataRange dataRange,
-        YukonUserContext userContext, Attribute[] attributes);
-    
-    /**
-     * Generates preview.
-     */
-    public Preview generatePreview(ExportFormat format, YukonUserContext userContext);
+    void generateReport(List<? extends YukonPao> meters, ExportFormat format, DataRange dataRange,
+        YukonUserContext userContext, Attribute[] attributes, BufferedWriter writer) throws IOException;
+
+    Preview generatePreview(ExportFormat format, YukonUserContext userContext);
 }

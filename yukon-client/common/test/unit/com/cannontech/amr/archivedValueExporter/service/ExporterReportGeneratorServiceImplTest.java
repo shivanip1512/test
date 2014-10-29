@@ -9,6 +9,10 @@ import static com.cannontech.common.pao.attribute.model.BuiltInAttribute.*;
 import static com.cannontech.common.point.PointQuality.*;
 import static com.cannontech.database.data.point.PointType.*;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -274,7 +278,7 @@ public class ExporterReportGeneratorServiceImplTest {
     }
 
     @Test
-    public void generateFixedFormat_Test() {
+    public void generateFixedFormat_Test() throws IOException {
         List<YukonMeter> meters = new ArrayList<>();
         meters.add(meterDao.getForMeterNumber("Meter Number 1"));
         meters.add(meterDao.getForMeterNumber("Meter Number 2"));
@@ -282,9 +286,9 @@ public class ExporterReportGeneratorServiceImplTest {
         DataRange dataRange = new DataRange();
         dataRange.setDataRangeType(DataRangeType.END_DATE);
         dataRange.setEndDate(dateTimeFormatter.parseLocalDate("07/16/2012"));
-        
-        List<String> previewReportRows = exporterReportGeneratorService.generateReport(meters, basicFixedFormatExport,
-            dataRange, userContextOne, new Attribute[] {});
+        CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
+        exporterReportGeneratorService.generateReport(meters, basicFixedFormatExport, dataRange, userContextOne, new Attribute[] {}, writer);
+        List<String> previewReportRows = writer.getList();
 
         Assert.assertEquals("Device Name, Meter Number, Earliest Usage Value, Earliest Timestamp, Max Peak Demand Value, Plain Text", previewReportRows.get(0));
         Assert.assertEquals("MCT410FL 1,Meter Number 1,600,07/12/2012,25,Plain Text", previewReportRows.get(1));
@@ -293,7 +297,7 @@ public class ExporterReportGeneratorServiceImplTest {
     }
 
     @Test
-    public void generateDyanamicFormat_noAttributes_Test() {
+    public void generateDyanamicFormat_noAttributes_Test() throws IOException {
         List<YukonMeter> meters = new ArrayList<>();
         meters.add(meterDao.getForMeterNumber("Meter Number 1"));
         meters.add(meterDao.getForMeterNumber("Meter Number 2"));
@@ -305,15 +309,17 @@ public class ExporterReportGeneratorServiceImplTest {
         localDateRange.setEndDate(dateTimeFormatter.parseLocalDate("07/18/2012"));
         dataRange.setLocalDateRange(localDateRange);
         
-        List<String> previewReportRows = exporterReportGeneratorService.generateReport(meters,
-            basicDyanamicFormatExport, dataRange, userContextOne, new Attribute[] {});
+        CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
+        exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne,
+            new Attribute[] {}, writer);
+        List<String> previewReportRows = writer.getList();
 
         Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
         Assert.assertEquals("End File", previewReportRows.get(1));
     }
     
     @Test
-    public void generateDyanamicFormatByDateRange_Test() {
+    public void generateDyanamicFormatByDateRange_Test() throws IOException {
         List<YukonPao> meters = new ArrayList<>();
         meters.add(meterDao.getForMeterNumber("Meter Number 1"));
         meters.add(meterDao.getForMeterNumber("Meter Number 2"));
@@ -325,9 +331,10 @@ public class ExporterReportGeneratorServiceImplTest {
         localDateRange.setEndDate(dateTimeFormatter.parseLocalDate("07/18/2012"));
         dataRange.setLocalDateRange(localDateRange);
         
-        List<String> previewReportRows =
-                exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange,
-                    userContextOne, new Attribute[] { USAGE, DEMAND });
+        CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
+        exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne,
+            new Attribute[] { USAGE, DEMAND }, writer);
+        List<String> previewReportRows = writer.getList();
 
         Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
         Assert.assertEquals("MCT410FL 1,Route A,Usage,661,07/15/2012,Plain Text", previewReportRows.get(1));
@@ -347,7 +354,7 @@ public class ExporterReportGeneratorServiceImplTest {
 
     
     @Test
-    public void generateDyanamicFormatByChangeId_Test() {
+    public void generateDyanamicFormatByChangeId_Test() throws IOException {
         List<YukonMeter> meters = new ArrayList<>();
         meters.add(meterDao.getForMeterNumber("Meter Number 1"));
         meters.add(meterDao.getForMeterNumber("Meter Number 2"));
@@ -359,8 +366,10 @@ public class ExporterReportGeneratorServiceImplTest {
         changeIdRange.setLastChangeId(12);
         dataRange.setChangeIdRange(changeIdRange);
         
-        List<String> previewReportRows = exporterReportGeneratorService.generateReport(meters,
-            basicDyanamicFormatExport, dataRange, userContextOne, new Attribute[] { USAGE, DEMAND });
+        CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
+        exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne,
+            new Attribute[] { USAGE, DEMAND }, writer);
+        List<String> previewReportRows = writer.getList();
 
         Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
         Assert.assertEquals("MCT410FL 1,Route A,Demand,20,07/12/2012,Plain Text", previewReportRows.get(1));
@@ -379,7 +388,7 @@ public class ExporterReportGeneratorServiceImplTest {
     }
 
     @Test
-    public void generateDyanamicFormatByDaysPrevious_Test() {
+    public void generateDyanamicFormatByDaysPrevious_Test() throws IOException {
         List<YukonMeter> meters = new ArrayList<>();
         meters.add(meterDao.getForMeterNumber("Meter Number 1"));
         
@@ -387,8 +396,10 @@ public class ExporterReportGeneratorServiceImplTest {
         dataRange.setDataRangeType(DataRangeType.DAYS_PREVIOUS);
         dataRange.setDaysPrevious(36500);  // This isn't the greatest way to test it, but it should at least do some rough testing for 100 years.
         
-        List<String> previewReportRows = exporterReportGeneratorService.generateReport(meters,
-            basicDyanamicFormatExport, dataRange, userContextOne, new Attribute[] { USAGE, DEMAND });
+        CustomListWriter writer = new CustomListWriter(new ByteArrayOutputStream());
+        exporterReportGeneratorService.generateReport(meters, basicDyanamicFormatExport, dataRange, userContextOne,
+            new Attribute[] { USAGE, DEMAND }, writer);
+        List<String> previewReportRows = writer.getList();
 
         Assert.assertEquals("Device Name, Meter Route, Attribute Name, Point Value, Point Timestamp, Plain Text", previewReportRows.get(0));
         Assert.assertEquals("MCT410FL 1,Route A,Usage,600,07/12/2012,Plain Text", previewReportRows.get(1));
@@ -471,5 +482,21 @@ public class ExporterReportGeneratorServiceImplTest {
         exportField.setRoundingMode(HALF_UP);
         
         return exportField;
+    }
+    
+    private class CustomListWriter extends BufferedWriter {
+        private ByteArrayOutputStream stream;
+        public CustomListWriter(ByteArrayOutputStream stream) {
+            super(new OutputStreamWriter(stream));
+            this.stream = stream;
+        }
+        public List<String> getList() {
+            try {
+                super.flush();
+            } catch (IOException e) {
+                Assert.fail("CustomListWriter writer threw unexpected exception. " + e.getMessage());
+            }
+            return Lists.newArrayList(stream.toString().split(java.lang.System.lineSeparator()));
+        }
     }
 }

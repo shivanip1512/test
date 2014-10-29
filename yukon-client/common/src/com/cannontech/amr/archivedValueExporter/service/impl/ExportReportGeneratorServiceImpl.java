@@ -1,6 +1,9 @@
 package com.cannontech.amr.archivedValueExporter.service.impl;
 
-import java.util.ArrayList;
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,6 +65,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
 
 public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorService {
     
@@ -113,30 +117,37 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     
     @Override
     public Preview generatePreview(ExportFormat format, YukonUserContext userContext) {
-        
         Preview preview = new Preview();
         preview.setHeader(format.getHeader());
         preview.setFooter(format.getFooter());
 
-        Map<? extends YukonPao, PaoData> previewData = getPreviewData(userContext);
-
-        if (format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE) {
-            Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> fieldIdToAttributeData = getFixedPreviewAttributeData(format, previewData);
-            generateFixedBody(preview.getBody(), previewData.keySet(), previewData, format, fieldIdToAttributeData, userContext);
-        } else {
-            ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData = getDynamicPreviewAttributeData(format, previewData);
-            generateDynamicBody(preview.getBody(), previewData.keySet(), previewData, format, userContext, BuiltInAttribute.USAGE, attributeData);
+        try (
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
+        ) {
+            Map<? extends YukonPao, PaoData> previewData = getPreviewData(userContext);
+            if (format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE) {
+                Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> fieldIdToAttributeData = getFixedPreviewAttributeData(format, previewData);
+                generateFixedBody(previewData.keySet(), previewData, format, fieldIdToAttributeData, userContext, writer);
+            } else {
+                ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData = getDynamicPreviewAttributeData(format, previewData);
+                generateDynamicBody(previewData.keySet(), previewData, format, userContext, BuiltInAttribute.USAGE, attributeData, writer);
+            }
+            writer.flush();
+            preview.setBody(Lists.newArrayList(output.toString().split(System.lineSeparator())));
+        } catch (IOException e) {
+            throw new IllegalStateException("ByteArrayOutputStream shouldn't ever throw IOException", e);
         }
-        
+
         return preview;
     }
 
     @Override
-    public List<String> generateReport(List<? extends YukonPao> paos, 
+    public void generateReport(List<? extends YukonPao> paos, 
             ExportFormat format, 
             DataRange dataRange,
             YukonUserContext userContext, 
-            Attribute[] attributes) {
+            Attribute[] attributes, BufferedWriter writer) throws IOException {
         
         Set<OptionalField> requestedFields = new HashSet<>();
         boolean needsName = false;
@@ -154,9 +165,9 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             paoDataByPao = paoSelectionService.lookupPaoData(paos, requestedFields);
         }
 
-        List<String> reportResults = new ArrayList<>();
         if (StringUtils.isNotEmpty(format.getHeader())) {
-            reportResults.add(format.getHeader());
+            writer.write(format.getHeader());
+            writer.newLine();
         }
         
         TimeZoneFormat tzFormat = format.getDateTimeZoneFormat();
@@ -178,7 +189,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                     }
                 }
 
-                generateFixedBody(reportResults, paos, paoDataByPao, format, endDateAttributeData, userContext);
+                generateFixedBody(paos, paoDataByPao, format, endDateAttributeData, userContext, writer);
                 break;
 
             case DATE_RANGE:
@@ -186,8 +197,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> dateRangeAttributeData =
                             getDynamicAttributeData(paos, attribute, dateRange, null, format);
-                    generateDynamicBody(reportResults, paos, paoDataByPao, format, userContext, attribute,
-                        dateRangeAttributeData);
+                    generateDynamicBody(paos, paoDataByPao, format, userContext, attribute,
+                        dateRangeAttributeData, writer);
                 }
 
                 break;
@@ -199,8 +210,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> previousDaysAttributeData = 
                             getDynamicAttributeData(paos, attribute, previousDaysDateRange, null, format);
-                    generateDynamicBody(reportResults, paos, paoDataByPao, format, userContext, attribute,
-                        previousDaysAttributeData);
+                    generateDynamicBody(paos, paoDataByPao, format, userContext, attribute,
+                        previousDaysAttributeData, writer);
                 }
 
                 break;
@@ -212,8 +223,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 for (Attribute attribute : attributes) {
                     ListMultimap<PaoIdentifier, PointValueQualityHolder> sinceLastChangeIdAttributeData =
                             getDynamicAttributeData(paos, attribute, null, changeIdRange, format);
-                    generateDynamicBody(reportResults, paos, paoDataByPao, format, userContext, attribute,
-                        sinceLastChangeIdAttributeData);
+                    generateDynamicBody(paos, paoDataByPao, format, userContext, attribute,
+                        sinceLastChangeIdAttributeData, writer);
                 }
                 
                 break;
@@ -221,12 +232,11 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 throw new IllegalArgumentException(dataRange.getDataRangeType()+" is not currently supported by the export report generator.");
         }
         
-        // Add Footer
         if (StringUtils.isNotEmpty(format.getFooter())) {
-            reportResults.add(format.getFooter());
+            writer.write(format.getFooter());
+            writer.newLine();
         }
-
-        return reportResults;
+        writer.flush();
     }
 
     /**
@@ -251,13 +261,14 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     
     /**
      * Builds and returns a list of strings each representing one row of data for the report.
+     * @throws IOException 
      */
-    private void generateFixedBody(List<String> reportRows, 
+    private void generateFixedBody( 
             Iterable<? extends YukonPao> paos,
             Map<? extends YukonPao, PaoData> paoDataByPao, 
             ExportFormat format, 
             Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData, 
-            YukonUserContext userContext) {
+            YukonUserContext userContext, BufferedWriter writer) throws IOException {
 
         for (YukonPao pao : paos) {
             PaoData data = null;
@@ -266,22 +277,24 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             }
             String dataRow = getDataRow(format, pao, data, userContext, attributeData);
             if (!dataRow.equals(SKIP_RECORD)) {
-                reportRows.add(dataRow);
+                writer.write(dataRow);
+                writer.newLine();
             }
         }
     }
 
     /**
      * Builds and returns a list of strings each representing one row of data for the report.
+     * @throws IOException 
      */
-    private void generateDynamicBody(List<String> reportRows, 
+    private void generateDynamicBody(
             Iterable<? extends YukonPao> paos,
             Map<? extends YukonPao, PaoData> paoDataByPao, 
             ExportFormat format, 
             YukonUserContext userContext,
             Attribute attribute, 
             ListMultimap<PaoIdentifier, 
-            PointValueQualityHolder> attributeData) {
+            PointValueQualityHolder> attributeData, BufferedWriter writer) throws IOException {
         
         for (YukonPao pao : paos) {
             List<PointValueQualityHolder> pointData = attributeData.get(pao.getPaoIdentifier());
@@ -294,7 +307,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 String reportRow = generateReportRow(format, pao, attribute, data,
                         pointValueQualityHolder, userContext);
                 if (!reportRow.equals(SKIP_RECORD)) {
-                    reportRows.add(reportRow);
+                    writer.write(reportRow);
+                    writer.newLine();
                 }
             }
         }
