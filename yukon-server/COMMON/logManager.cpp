@@ -204,8 +204,8 @@ Indents getIndentFor(const LogFormats format)
     switch( format )
     {
         default:
-        LogFormat_General:  return Indent_SingleTab;
-        LogFormat_CommLog:  return Indent_None;
+        case LogFormat_General:  return Indent_SingleTab;
+        case LogFormat_CommLog:  return Indent_None;
     }
 }
 
