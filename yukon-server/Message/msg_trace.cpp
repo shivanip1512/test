@@ -62,11 +62,7 @@ INT CtiTraceMsg::getAttributes() const
 {
     return _attributes;
 }
-string CtiTraceMsg::getTrace() const
-{
-    return _trace;
-}
-string& CtiTraceMsg::getTrace()
+const string &CtiTraceMsg::getTrace() const
 {
     return _trace;
 }

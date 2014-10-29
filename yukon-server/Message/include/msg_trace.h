@@ -28,8 +28,7 @@ public:
     CtiTraceMsg& operator=(const CtiTraceMsg& aRef);
 
     INT getAttributes() const;
-    std::string getTrace() const;
-    std::string& getTrace();
+    const std::string& getTrace() const;
 
     CtiTraceMsg& setAttributes(const INT& attr);
     CtiTraceMsg& setTrace(const std::string& str);

@@ -1647,18 +1647,22 @@ void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool co
                 Sleep(100);
                 coutTryGuard.tryAcquire();
             }
-            std::list< CtiMessage* >::iterator itr = traceList.begin();
-            while ( itr != traceList.end() )
+            for each( const CtiMessage *msg in traceList )
             {
-                CtiTraceMsg *pTrace = (CtiTraceMsg*)*itr;
-                SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)pTrace->getAttributes());
-                cout << pTrace->getTrace();
-
-                if(pTrace->isEnd())
+                if( msg )
                 {
-                    cout << endl;
+                    const CtiTraceMsg &traceMsg = static_cast<const CtiTraceMsg &>(*msg);
+                    const std::string &text = traceMsg.getTrace();
+
+                    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)traceMsg.getAttributes());
+                    DWORD bytesWritten;
+                    WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), text.data(), text.length(), &bytesWritten, NULL);
+
+                    if( traceMsg.isEnd() )
+                    {
+                        WriteConsole(GetStdHandle(STD_OUTPUT_HANDLE), "\n", 1, &bytesWritten, NULL);
+                    }
                 }
-                ++itr;
             }
 
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
