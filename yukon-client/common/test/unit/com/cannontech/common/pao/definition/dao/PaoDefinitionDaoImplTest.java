@@ -1,10 +1,6 @@
 package com.cannontech.common.pao.definition.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -633,6 +629,11 @@ public class PaoDefinitionDaoImplTest {
                 return new LiteUnitMeasure(1, uomName, 0, uomName);
             }
             throw new IllegalArgumentException("Unit of measure doesn't exist: " + uomName);
+        }
+
+        @Override
+        public LiteUnitMeasure getLiteUnitMeasureByPaoIdAndPointOffset(int paoId, int pointOffset) {
+            return null;
         }
         
     }

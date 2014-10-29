@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
@@ -46,19 +47,21 @@ import com.cannontech.amr.rfn.dao.MockRfnDeviceDaoImpl;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.MockAttributeServiceImpl;
 import com.cannontech.common.pao.definition.model.PaoData;
 import com.cannontech.common.pao.definition.model.PaoData.OptionalField;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.service.PaoSelectionService;
 import com.cannontech.common.pao.service.impl.MockPaoSelectionServiceImpl;
 import com.cannontech.common.util.TimeZoneFormat;
 import com.cannontech.core.dao.MockRawPointHistoryDaoImpl;
 import com.cannontech.core.dao.MockUnitMeasureDaoImpl;
 import com.cannontech.core.dao.RawPointHistoryDao;
-import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolverMock;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.YukonUserContext;
@@ -67,11 +70,9 @@ import com.google.common.collect.Lists;
 public class ExporterReportGeneratorServiceImplTest {
     
     private PaoSelectionService paoSelectionService = new MockPaoSelectionServiceImpl();
-    private AttributeService attributeService = new MockAttributeServiceImpl();
     private MeterDao meterDao = new MockMeterDaoImpl();
     private RfnDeviceDao rfnDeviceDao = new MockRfnDeviceDaoImpl();
     private RawPointHistoryDao rawPointHistoryDao = new MockRawPointHistoryDaoImpl();
-    private UnitMeasureDao unitMeasureDao = new MockUnitMeasureDaoImpl();
     private TimeZoneFormat tzFormat = TimeZoneFormat.LOCAL;
     
     StaticMessageSource messageSource = new StaticMessageSource();
@@ -90,12 +91,27 @@ public class ExporterReportGeneratorServiceImplTest {
     
     ExportReportGeneratorServiceImpl exporterReportGeneratorService = new ExportReportGeneratorServiceImpl(); 
     {
-        ReflectionTestUtils.setField(exporterReportGeneratorService, "attributeService", attributeService);
+        ReflectionTestUtils.setField(exporterReportGeneratorService, "attributeService", new MockAttributeServiceImpl() {
+            @Override
+            public PaoPointIdentifier getPaoPointIdentifierForAttribute(YukonPao pao, Attribute attribute) {
+                for (YukonMeter meter : MockMeterDaoImpl.getMeters()) {
+                    if (meter.getPaoIdentifier().equals(pao.getPaoIdentifier())) {
+                        return new PaoPointIdentifier(meter.getPaoIdentifier(), new PointIdentifier(PointType.Analog, 0));
+                    }
+                }
+                throw new NotImplementedException();
+            }
+        });
         ReflectionTestUtils.setField(exporterReportGeneratorService, "paoSelectionService", paoSelectionService);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "messageSourceResolver", messageSourceResolver);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "rawPointHistoryDao", rawPointHistoryDao);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "rfnDeviceDao", rfnDeviceDao);
-        ReflectionTestUtils.setField(exporterReportGeneratorService, "unitMeasureDao", unitMeasureDao);
+        ReflectionTestUtils.setField(exporterReportGeneratorService, "unitMeasureDao", new MockUnitMeasureDaoImpl() {
+            @Override
+            public LiteUnitMeasure getLiteUnitMeasureByPaoIdAndPointOffset(int paoId, int pointOffset) {
+                return kWH;
+            }
+        });
     }
 
     private final static DateTimeZone centralTimeZone = DateTimeZone.forOffsetHoursMinutes(5, 0);

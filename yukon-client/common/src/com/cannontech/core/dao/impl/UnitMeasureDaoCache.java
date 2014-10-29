@@ -35,6 +35,7 @@ public class UnitMeasureDaoCache implements UnitMeasureDao {
         this.delegate = delegate;
     }
 
+    @Override
     public LiteUnitMeasure getLiteUnitMeasure(int uomid) {
         LiteUnitMeasure measure = byIdCache.get(uomid);
         if (measure == null) {
@@ -44,16 +45,19 @@ public class UnitMeasureDaoCache implements UnitMeasureDao {
         return measure;
     }
 
+    @Override
     public LiteUnitMeasure getLiteUnitMeasure(String uomName) {
         String uomNameToLower = uomName.toLowerCase();
         LiteUnitMeasure measure = byNameCache.get(uomNameToLower);
         return measure;
     }
 
+    @Override
     public LiteUnitMeasure getLiteUnitMeasureByPointID(int pointID) {
         return delegate.getLiteUnitMeasureByPointID(pointID);
     }
 
+    @Override
     public List<LiteUnitMeasure> getLiteUnitMeasures() {
         return delegate.getLiteUnitMeasures();
     }
@@ -71,5 +75,10 @@ public class UnitMeasureDaoCache implements UnitMeasureDao {
             byNameCache.put(toLowerLongName, liteUnitMeasure);
             byIdCache.put(liteUnitMeasure.getUomID(), liteUnitMeasure);
         }
+    }
+
+    @Override
+    public LiteUnitMeasure getLiteUnitMeasureByPaoIdAndPointOffset(int paoId, int pointOffset) {
+        return delegate.getLiteUnitMeasureByPaoIdAndPointOffset(paoId, pointOffset);
     }
 }

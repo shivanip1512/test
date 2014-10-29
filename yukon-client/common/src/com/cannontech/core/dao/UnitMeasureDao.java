@@ -36,4 +36,6 @@ public interface UnitMeasureDao {
      */
     public LiteUnitMeasure getLiteUnitMeasure(String uomName);
 
+    LiteUnitMeasure getLiteUnitMeasureByPaoIdAndPointOffset(int paoId, int pointOffset);
+
 }

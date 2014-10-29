@@ -1,8 +1,6 @@
 package com.cannontech.amr.meter.dao;
 
-import static com.cannontech.common.pao.PaoType.MCT410FL;
-import static com.cannontech.common.pao.PaoType.MCT410IL;
-import static com.cannontech.common.pao.PaoType.RFN410FL;
+import static com.cannontech.common.pao.PaoType.*;
 
 import java.util.List;
 import java.util.Map;
@@ -48,7 +46,7 @@ public class MockMeterDaoImpl extends MeterDaoImpl {
                                                             1,
                                                             "");
     
-    private List<YukonMeter> meters = Lists.newArrayList(METER_MCT410FL, METER_MCT410IL, METER_RFN410FL, NULL_VALUED_METER);
+    private static List<YukonMeter> meters = Lists.newArrayList(METER_MCT410FL, METER_MCT410IL, METER_RFN410FL, NULL_VALUED_METER);
     private Map<String, YukonMeter> meterNumberToMeter;
     {
         meterNumberToMeter =
@@ -63,5 +61,9 @@ public class MockMeterDaoImpl extends MeterDaoImpl {
     @Override
     public YukonMeter getForMeterNumber(String meterNumber) {
         return meterNumberToMeter.get(meterNumber);
+    }
+    
+    public static List<YukonMeter> getMeters() {
+        return meters;
     }
 }

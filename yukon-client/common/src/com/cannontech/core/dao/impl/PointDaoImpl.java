@@ -275,7 +275,12 @@ public class PointDaoImpl implements PointDao {
 
     @Override
     public String getPointName(int pointId) {
-        return getLitePoint(pointId).getPointName();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PointName");
+        sql.append("FROM Point");
+        sql.append("WHERE PointId").eq(pointId);
+
+        return jdbcTemplate.queryForString(sql);
     }
 
     @Override

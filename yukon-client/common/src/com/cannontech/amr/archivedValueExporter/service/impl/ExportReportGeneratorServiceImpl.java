@@ -44,6 +44,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.model.PaoData;
 import com.cannontech.common.pao.definition.model.PaoData.OptionalField;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.service.PaoSelectionService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.Range;
@@ -55,7 +56,6 @@ import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.PointData;
@@ -143,7 +143,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     }
 
     @Override
-    public void generateReport(List<? extends YukonPao> paos, 
+    public void generateReport(List<? extends YukonPao> allPaos, 
             ExportFormat format, 
             DataRange dataRange,
             YukonUserContext userContext, 
@@ -160,78 +160,78 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                 requestedFields.add(optionalField);
             }
         }
-        Map<? extends YukonPao, PaoData> paoDataByPao = null;
-        if (needsName || requestedFields.size() > 0) {
-            paoDataByPao = paoSelectionService.lookupPaoData(paos, requestedFields);
-        }
-
         if (StringUtils.isNotEmpty(format.getHeader())) {
             writer.write(format.getHeader());
             writer.newLine();
         }
-        
-        TimeZoneFormat tzFormat = format.getDateTimeZoneFormat();
-        DateTimeZone reportTZ = getReportTZ(tzFormat, userContext);
 
-        switch (dataRange.getDataRangeType()) {
-            case END_DATE:
-                Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> endDateAttributeData = new HashMap<>();
-                DateTime endOfDay = dataRange.getEndDate().plusDays(1).toDateTimeAtStartOfDay(reportTZ);
-                
-                for (ExportField field : format.getFields()) {
-                    if (field.getField().getType() == FieldType.ATTRIBUTE) {
-                        DateTime startDate = getStartDate(field.getField().getAttribute(), endOfDay);
-                        Range<Instant> dateRange = Range.exclusiveInclusive(startDate.toInstant(), endOfDay.toInstant());
-                        ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData =
-                                getFixedAttributeData(paos, field.getField().getAttribute(), dateRange, format);
-                        
-                        endDateAttributeData.put(field.getFieldId(), attributeData);
+        for (List<? extends YukonPao> paosSublist : Lists.partition(allPaos, 250)) {
+            Map<? extends YukonPao, PaoData> paoDataByPao = null;
+            if (needsName || requestedFields.size() > 0) {
+                paoDataByPao = paoSelectionService.lookupPaoData(paosSublist, requestedFields);
+            }
+
+            switch (dataRange.getDataRangeType()) {
+                case END_DATE:
+                    TimeZoneFormat tzFormat = format.getDateTimeZoneFormat();
+                    DateTimeZone reportTZ = getReportTZ(tzFormat, userContext);
+                    Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> endDateAttributeData = new HashMap<>();
+                    DateTime endOfDay = dataRange.getEndDate().plusDays(1).toDateTimeAtStartOfDay(reportTZ);
+                    
+                    for (ExportField field : format.getFields()) {
+                        if (field.getField().getType() == FieldType.ATTRIBUTE) {
+                            DateTime startDate = getStartDate(field.getField().getAttribute(), endOfDay);
+                            Range<Instant> dateRange = Range.exclusiveInclusive(startDate.toInstant(), endOfDay.toInstant());
+                            ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData =
+                                    getFixedAttributeData(paosSublist, field.getField().getAttribute(), dateRange, format);
+                            
+                            endDateAttributeData.put(field.getFieldId(), attributeData);
+                        }
                     }
-                }
 
-                generateFixedBody(paos, paoDataByPao, format, endDateAttributeData, userContext, writer);
-                break;
+                    generateFixedBody(paosSublist, paoDataByPao, format, endDateAttributeData, userContext, writer);
+                    break;
 
-            case DATE_RANGE:
-                Range<Instant> dateRange = dataRange.getLocalDateRange().getInstantDateRange(userContext);
-                for (Attribute attribute : attributes) {
-                    ListMultimap<PaoIdentifier, PointValueQualityHolder> dateRangeAttributeData =
-                            getDynamicAttributeData(paos, attribute, dateRange, null, format);
-                    generateDynamicBody(paos, paoDataByPao, format, userContext, attribute,
-                        dateRangeAttributeData, writer);
-                }
+                case DATE_RANGE:
+                    Range<Instant> dateRange = dataRange.getLocalDateRange().getInstantDateRange(userContext);
+                    for (Attribute attribute : attributes) {
+                        ListMultimap<PaoIdentifier, PointValueQualityHolder> dateRangeAttributeData =
+                                getDynamicAttributeData(paosSublist, attribute, dateRange, null, format);
+                        generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute,
+                            dateRangeAttributeData, writer);
+                    }
 
-                break;
-            case DAYS_PREVIOUS:
-                Instant now = Instant.now();
-                Instant start = now.minus(Duration.standardDays(dataRange.getDaysPrevious()));
-                Range<Instant> previousDaysDateRange = Range.exclusiveInclusive(start, now);
+                    break;
+                case DAYS_PREVIOUS:
+                    Instant now = Instant.now();
+                    Instant start = now.minus(Duration.standardDays(dataRange.getDaysPrevious()));
+                    Range<Instant> previousDaysDateRange = Range.exclusiveInclusive(start, now);
 
-                for (Attribute attribute : attributes) {
-                    ListMultimap<PaoIdentifier, PointValueQualityHolder> previousDaysAttributeData = 
-                            getDynamicAttributeData(paos, attribute, previousDaysDateRange, null, format);
-                    generateDynamicBody(paos, paoDataByPao, format, userContext, attribute,
-                        previousDaysAttributeData, writer);
-                }
+                    for (Attribute attribute : attributes) {
+                        ListMultimap<PaoIdentifier, PointValueQualityHolder> previousDaysAttributeData = 
+                                getDynamicAttributeData(paosSublist, attribute, previousDaysDateRange, null, format);
+                        generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute,
+                            previousDaysAttributeData, writer);
+                    }
 
-                break;
-            case SINCE_LAST_CHANGE_ID:
-                long firstChangeId = dataRange.getChangeIdRange().getFirstChangeId();
-                long lastChangeId = dataRange.getChangeIdRange().getLastChangeId();
-                Range<Long> changeIdRange = Range.exclusiveInclusive(firstChangeId, lastChangeId);
+                    break;
+                case SINCE_LAST_CHANGE_ID:
+                    long firstChangeId = dataRange.getChangeIdRange().getFirstChangeId();
+                    long lastChangeId = dataRange.getChangeIdRange().getLastChangeId();
+                    Range<Long> changeIdRange = Range.exclusiveInclusive(firstChangeId, lastChangeId);
 
-                for (Attribute attribute : attributes) {
-                    ListMultimap<PaoIdentifier, PointValueQualityHolder> sinceLastChangeIdAttributeData =
-                            getDynamicAttributeData(paos, attribute, null, changeIdRange, format);
-                    generateDynamicBody(paos, paoDataByPao, format, userContext, attribute,
-                        sinceLastChangeIdAttributeData, writer);
-                }
-                
-                break;
-            default:
-                throw new IllegalArgumentException(dataRange.getDataRangeType()+" is not currently supported by the export report generator.");
+                    for (Attribute attribute : attributes) {
+                        ListMultimap<PaoIdentifier, PointValueQualityHolder> sinceLastChangeIdAttributeData =
+                                getDynamicAttributeData(paosSublist, attribute, null, changeIdRange, format);
+                        generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute,
+                            sinceLastChangeIdAttributeData, writer);
+                    }
+
+                    break;
+                default:
+                    throw new IllegalArgumentException(dataRange.getDataRangeType()+" is not currently supported by the export report generator.");
+            }
         }
-        
         if (StringUtils.isNotEmpty(format.getFooter())) {
             writer.write(format.getFooter());
             writer.newLine();
@@ -379,7 +379,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             case UNIT_OF_MEASURE:
                 return getUOMValue(pao, attribute, userContext);
             case POINT_NAME:
-                return getPointName(exportField, pointValueQualityHolder);
+                return pointValueQualityHolder == null ? "" : pointDao.getPointName(pointValueQualityHolder.getId());
             case POINT_VALUE:
                 return getPointValue(exportField, pointValueQualityHolder);
             case POINT_TIMESTAMP:
@@ -593,17 +593,6 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * Gets the value. Returns "" if the value was not found.
      */
-    private String getPointName(ExportField field, PointValueQualityHolder pointValueQualityHolder) {
-        if (pointValueQualityHolder == null) {
-            return "";
-        }
-
-        return pointDao.getPointName(pointValueQualityHolder.getId());
-    }
-
-    /**
-     * Gets the value. Returns "" if the value was not found.
-     */
     private String getPointValue(ExportField field, PointValueQualityHolder pointValueQualityHolder) {
         if (pointValueQualityHolder == null) {
             return "";
@@ -642,11 +631,12 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         try {
             if (pao.getPaoIdentifier().getPaoId() == fakePaoId) {
                 return getDefaultUOMValue(userContext);
-            } else {
-                LitePoint point = attributeService.getPointForAttribute(pao, attribute);
-                LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(point.getUofmID());
-                return unitMeasure.getUnitMeasureName();
             }
+            PaoPointIdentifier paoPointIdent = attributeService.getPaoPointIdentifierForAttribute(pao, attribute);
+            int paoId = pao.getPaoIdentifier().getPaoId();
+            int pointOffset = paoPointIdent.getPointIdentifier().getOffset();
+            LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasureByPaoIdAndPointOffset(paoId, pointOffset);
+            return unitMeasure == null ? "" : unitMeasure.getUnitMeasureName();
         } catch (IllegalUseOfAttribute e) {
             // missing value
         }

@@ -57,6 +57,22 @@ public class UnitMeasureDaoImpl implements UnitMeasureDao {
     }
 
     @Override
+    public LiteUnitMeasure getLiteUnitMeasureByPaoIdAndPointOffset(int paoId, int pointOffset) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT um.CalcType, um.Formula, um.LongName, um.UOMID, um.UOMName FROM point p ");
+            sql.append("JOIN pointunit pu ON p.pointid = pu.POINTID");
+            sql.append("JOIN unitmeasure um ON um.uomid = pu.uomid");
+            sql.append("WHERE paobjectid").eq(paoId);
+            sql.append("AND pointoffset").eq_k(pointOffset);
+            
+            return jdbcTemplate.queryForObject(sql, liteUnitMeasureRowMapper);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
     public LiteUnitMeasure getLiteUnitMeasure(int uomid)  {        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT UoMId, UoMName, CalcType, LongName");
