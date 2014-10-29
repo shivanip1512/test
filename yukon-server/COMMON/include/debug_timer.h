@@ -18,7 +18,6 @@ private:
     bool  _print;
     float _timeout;
 
-    static std::string formatSystemTime (const SYSTEMTIME &time);
     static double calculateDuration(const SYSTEMTIME &begin, const SYSTEMTIME &end);
 
 public:

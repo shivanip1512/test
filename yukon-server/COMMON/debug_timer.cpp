@@ -11,25 +11,6 @@ using namespace std;
 namespace Cti {
 namespace Timing {
 
-string DebugTimer::formatSystemTime(const SYSTEMTIME &systime)
-{
-    ostringstream formatted;
-
-    formatted.fill('0');
-
-    formatted << setw(2) << systime.wMonth << "/";
-    formatted << setw(2) << systime.wDay   << "/";
-    formatted << setw(2) << systime.wYear  << " ";
-
-    formatted << setw(2) << systime.wHour   << ":";
-    formatted << setw(2) << systime.wMinute << ":";
-    formatted << setw(2) << systime.wSecond << ".";
-    formatted << setw(3) << systime.wMilliseconds;
-
-    return formatted.str();
-}
-
-
 //  forced into a union to allow memory mapping without 64-bit pointer misalignment
 union filetime_converter
 {
@@ -64,7 +45,7 @@ DebugTimer::DebugTimer(const string &action, bool print, double timeout) :
 
     if( _print )
     {
-        CTILOG_DEBUG(dout, formatSystemTime(_start) << " " << _action << " / start");
+        CTILOG_DEBUG(dout, _action << " / start");
     }
 }
 
@@ -79,7 +60,7 @@ DebugTimer::~DebugTimer()
 
     if( _print || duration >= _timeout )
     {
-        CTILOG_DEBUG(dout, formatSystemTime(end) << " " << _action << " / complete, took " << setprecision(3) << duration << " seconds");
+        CTILOG_DEBUG(dout, _action << " / complete, took " << setprecision(3) << duration << " seconds");
     }
 }
 

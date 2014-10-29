@@ -2,6 +2,8 @@
 
 #include "dlldefs.h"
 
+#include <windows.h>
+
 namespace Cti {
 
 struct compileinfo_t

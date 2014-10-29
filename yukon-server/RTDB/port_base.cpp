@@ -34,10 +34,12 @@ YukonError_t CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, Cti
             {
                 {
                     CtiTraceMsg trace;
+                    SYSTEMTIME stm;
+                    GetLocalTime(&stm);
 
                     //  set bright yellow for the time message
                     trace.setBrightYellow();
-                    trace.setTrace( CtiTime().asString().c_str() );
+                    trace.setTrace( Cti::formatSystemTime(stm) );
                     trace.setEnd(false);
                     traceList.push_back(trace.replicateMessage());
 

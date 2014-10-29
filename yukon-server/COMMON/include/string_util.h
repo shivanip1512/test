@@ -7,6 +7,8 @@
 #include "dlldefs.h"
 #include "streamBuffer.h"
 
+#include <wtypes.h>
+
 /*
  * A few functions to trim your c++ strings
  */
@@ -37,7 +39,9 @@ trim( std::basic_string<size_type>& str )
 
 namespace Cti {
 
+IM_EX_CTIBASE char toAscii   (char dec);
 IM_EX_CTIBASE char toAsciiHex(char nibble);
+IM_EX_CTIBASE std::string formatSystemTime(SYSTEMTIME systime);
 
 class IM_EX_CTIBASE StringFormatter
 {

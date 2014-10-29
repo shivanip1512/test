@@ -66,6 +66,11 @@ void align_center(std::basic_string<CharT>& str, unsigned width, CharT fill, boo
 
 } // namespace anonymous
 
+char toAscii(char dec)
+{
+    return dec + '0';
+}
+
 char toAsciiHex(char nibble)
 {
     if( nibble >= 0x0a )
@@ -73,7 +78,44 @@ char toAsciiHex(char nibble)
         return nibble - 0x0a + 'a';
     }
 
-    return nibble + '0';
+    return toAscii(nibble);
+}
+
+void reversePutDigits(std::string::iterator &itr, const int digits, int value)
+{
+    for( int i = 0; i < digits; ++i )
+    {
+        *(--itr) = toAscii(value % 10);
+        value /= 10;
+    }
+}
+
+std::string formatSystemTime(SYSTEMTIME systime)
+{
+    std::string timeStr(10 + //  mm/dd/YYYY
+                         1 + //  space
+                        12,  //  hh:mm:ss.SSS
+                        ' ');
+
+    std::string::iterator itr = timeStr.end();
+
+    reversePutDigits(itr, 3, systime.wMilliseconds);
+    *(--itr) = '.';
+    reversePutDigits(itr, 2, systime.wSecond);
+    *(--itr) = ':';
+    reversePutDigits(itr, 2, systime.wMinute);
+    *(--itr) = ':';
+    reversePutDigits(itr, 2, systime.wHour);
+
+    *(--itr) = ' ';
+
+    reversePutDigits(itr, 4, systime.wYear);
+    *(--itr) = '/';
+    reversePutDigits(itr, 2, systime.wDay);
+    *(--itr) = '/';
+    reversePutDigits(itr, 2, systime.wMonth);
+
+    return timeStr;
 }
 
 /// StringFormatter ///

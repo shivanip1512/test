@@ -25,6 +25,7 @@ test_ctidate.obj \
 test_ctistring.obj \
 test_ctitime.obj \
 test_date_utility.obj \
+test_database_util.obj \
 test_desolvers.obj \
 test_encryption.obj \
 test_error.obj \
@@ -42,6 +43,7 @@ test_utility.obj \
 test_words.obj \
 test_atomic.obj \
 test_string_formatter.obj \
+test_string_util.obj \
 
 SQLAPILIB=$(SQLAPI)\lib\$(SQLAPI_LIB).lib
 
