@@ -13,14 +13,15 @@ public class CommandWrapper implements SetCoveringSolver.HasWeight<PointIdentifi
     public CommandWrapper(CommandDefinition commandDefinition) {
         this.commandDefinition = commandDefinition;
     }
+    
+    @Override
     public Set<PointIdentifier> getAffected() {
         return commandDefinition.getAffectedPointList();
     }
 
+    @Override
     public float getWeight() {
-        // according to Matt, this is a good estimate
-        // but, there will be lots of ties
-        return commandDefinition.getCommandStringList().size();
+        return commandDefinition.getAffectedPointList().size();
     }
     
     public CommandDefinition getCommandDefinition() {
