@@ -49,13 +49,13 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sql.append("SELECT *");
         sql.append("FROM (");
         sql.append("SELECT (ROW_NUMBER() OVER (ORDER BY");
-        if (("serial_num").equals(sortingOrder)) {
+        if (("SERIAL_NUM").equals(sortingOrder)) {
             if (isOracle) {
-                sql.append("CAST");
+                sql.append("CAST(");
                 sql.append(sortingOrder);
-                sql.append("AS int)");
-            } else {
-                sql.append("CONVERT(int,");
+                sql.append("AS INT)");
+            } else {    
+                sql.append("CONVERT(INT,");
                 sql.append(sortingOrder);
                 sql.append(")");
             }

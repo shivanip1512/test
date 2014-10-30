@@ -33,9 +33,11 @@ import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
 public interface AssetAvailabilityService {
     
     /**
-     * Gets a simple asset availability summary of all inventory in all load groups in the specified
+     * Gets a asset availability summary of all inventory in all load groups in the specified
      * DR grouping.
-     * @throws IllegalArgumentException if the specified paoIdentifier is not a DR grouping.
+     * 
+     * @param drPaoIdentifier - pao identifier.
+     * @return AssetAvailabilitySummary which has count based on status.
      */
     public AssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier);
     
@@ -60,12 +62,18 @@ public interface AssetAvailabilityService {
     public Map<Integer, SimpleAssetAvailability> getAssetAvailability(Iterable<Integer> inventoryIds);
     
     /**
-     * @return List of AssetAvailabilityDetails
+     * Gets the details of assets for a program/load group/control area/scenario based on filters and paging
+     * provided.
+     * 
+     * @param paoIdentifier - pao identifier.
+     * @param paging - paging details.
+     * @param filters - List of selected filters.
+     * @param sortBy - sorting order.
+     * @return List of AssetAvailabilityDetails.
      */
-    public List<AssetAvailabilityDetails>  getAssetAvailability(PaoIdentifier paoIdentifier,PagingParameters paging,
-                                                                AssetAvailabilityCombinedStatus[] filters,
-                                                                SortingParameters sortBy);
-    
+    public List<AssetAvailabilityDetails> getAssetAvailability(PaoIdentifier paoIdentifier, PagingParameters paging,
+            AssetAvailabilityCombinedStatus[] filters, SortingParameters sortBy);
+
     /**
      * Returns every device in the specified load group, program, scenario or control area whose asset
      * availability status is "unavailable".

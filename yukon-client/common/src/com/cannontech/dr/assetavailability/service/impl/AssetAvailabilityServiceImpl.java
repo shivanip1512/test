@@ -81,8 +81,6 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 
         Instant now = Instant.now();
-        String currentTime = formatter.print(now);
-
         DateTime communicatingWindowEnd = now.minus(getCommunicationWindowDuration()).toDateTime();
         String communicatingWindowEndFormatted = formatter.print(communicatingWindowEnd);
 
@@ -91,7 +89,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(drPaoIdentifier);
         AssetAvailabilitySummary assetAvailabilitySummary =
             assetAvailabilityDao.getAssetAvailabilitySummary(loadGroupIds, communicatingWindowEndFormatted,
-                runtimeWindowEndFormatted, currentTime);
+                runtimeWindowEndFormatted, formatter.print(now));
 
         return assetAvailabilitySummary;
     }
@@ -264,8 +262,6 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
 
         Instant now = Instant.now();
-        String currentTime = formatter.print(now);
-
         DateTime communicatingWindowEnd = now.minus(getCommunicationWindowDuration()).toDateTime();
         String communicatingWindowEndFormatted = formatter.print(communicatingWindowEnd);
 
@@ -276,7 +272,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
 
         List<AssetAvailabilityDetails> assetAvailabilityDetails =
             assetAvailabilityDao.getAssetAvailabilityDetails(loadGroupIds, paging, filterString, sortingOrder,
-                sortingDirection, communicatingWindowEndFormatted, runtimeWindowEndFormatted, currentTime);
+                sortingDirection, communicatingWindowEndFormatted, runtimeWindowEndFormatted, formatter.print(now));
         return assetAvailabilityDetails;
     }
 

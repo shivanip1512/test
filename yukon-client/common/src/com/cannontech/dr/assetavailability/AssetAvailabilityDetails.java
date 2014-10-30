@@ -4,6 +4,9 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.inventory.HardwareType;
 
+/**
+ * Contains asset availability details for a single inventory.
+ */
 public class AssetAvailabilityDetails {
 
     private String serialNumber;

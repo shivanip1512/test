@@ -11,15 +11,30 @@ import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
  */
 public interface AssetAvailabilityDao {
     /**
-     * Returns A list of AssetAvailabilityDetails objects.
+     * Creates AssetAvailabilityDetails list which have the details of assets
+     * 
+     * @param loadGroupIds -- list of load group ids.
+     * @param pagingParameters -- paging details.
+     * @param filters -- filter details.
+     * @param sortingOrder --order for sorting.
+     * @param sortingDirection - direction for sorting.
+     * @param communicatingWindowEnd -- communicating window end time.
+     * @param runtimeWindowEnd -- runtime window end time
+     * @param currentTime -- current Time.
+     * @return List of AssetAvailabilityDetails which have the details of assets.
      */
     List<AssetAvailabilityDetails> getAssetAvailabilityDetails(Iterable<Integer> loadGroupIds,
             PagingParameters pagingParameters, String filters, String sortingOrder, String sortingDirection,
             String communicatingWindowEnd, String runtimeWindowEnd, String currentTime);
 
     /**
-     * Returns A list of AssetAvailabilitySummary objects which have count of
-     * assets based on status.
+     * Creates an AssetAvailabilitySummary which has count of assets based on status
+     * 
+     * @param loadGroupIds -- list of load group ids.
+     * @param communicatingWindowEnd -- communicating window end time.
+     * @param runtimeWindowEnd -- runtime window end time.
+     * @param currentTime -- current Time.
+     * @return AssetAvailabilitySummary that has assets count.
      */
     AssetAvailabilitySummary getAssetAvailabilitySummary(Iterable<Integer> loadGroupIds, String communicatingWindowEnd,
             String runtimeWindowEnd, String currentTime);
