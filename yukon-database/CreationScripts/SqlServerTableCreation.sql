@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/29/2014 10:52:14 AM                        */
+/* Created on:     10/30/2014 3:41:42 PM                        */
 /*==============================================================*/
 
 
@@ -9467,6 +9467,8 @@ INSERT INTO YukonListEntry VALUES (2022, 1005, 0, 'Digi Gateway', 1317);
 INSERT INTO YukonListEntry VALUES (2023, 1005, 0, 'UtilityPRO G2', 1318); 
 INSERT INTO YukonListEntry VALUES (2024, 1005, 0, 'UtilityPRO G3', 1319); 
 INSERT INTO YukonListEntry VALUES (2025, 1005, 0, 'ecobee Smart Si', 1329);
+INSERT INTO YukonListEntry VALUES (2026, 1005, 0, 'ecobee3', 1330);
+INSERT INTO YukonListEntry VALUES (2027, 1005, 0, 'ecobee Smart', 1331);
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);

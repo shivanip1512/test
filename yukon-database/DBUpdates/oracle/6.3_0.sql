@@ -35,6 +35,11 @@ WHERE POINTOFFSET = 1
 DELETE FROM GlobalSetting WHERE Name = 'SMTP_HOST' AND Value = '127.0.0.1';
 /* End YUK-13806 */
 
+/* Start YUK-13758 */
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry), 1005, 0, 'ecobee3', 1330);
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry), 1005, 0, 'ecobee Smart', 1331);
+/* End YUK-13758 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
