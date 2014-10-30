@@ -634,7 +634,7 @@ public class PaoDefinitionDaoImplTest {
         }
 
         @Override
-        public Table<Integer, PointIdentifier, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos) {
+        public Table<Integer, PointIdentifier, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPoint(List<? extends YukonPao> paos) {
             return null;
         }
         

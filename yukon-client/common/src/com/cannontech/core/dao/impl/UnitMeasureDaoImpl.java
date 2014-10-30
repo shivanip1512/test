@@ -75,7 +75,7 @@ public class UnitMeasureDaoImpl implements UnitMeasureDao {
     }
 
     @Override
-    public Table<Integer, PointIdentifier, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos) {
+    public Table<Integer, PointIdentifier, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPoint(List<? extends YukonPao> paos) {
         final HashBasedTable<Integer, PointIdentifier, LiteUnitMeasure> table = HashBasedTable.create();
         SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
             @Override

@@ -38,8 +38,8 @@ public interface UnitMeasureDao {
     LiteUnitMeasure getLiteUnitMeasure(String uomName);
 
     /**
-     * Returns a mapping of paoId and pointOffset to a LiteUnitMeasure for all paos in list
+     * Returns a mapping of paoId and point to a LiteUnitMeasure for all paos in list
      */
-    Table<Integer, PointIdentifier, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos);
+    Table<Integer, PointIdentifier, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPoint(List<? extends YukonPao> paos);
 
 }

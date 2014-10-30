@@ -184,7 +184,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             }
             Table<Integer, PointIdentifier, LiteUnitMeasure> unitMeasureLookupTable = null;
             if (needsUoM) {
-                unitMeasureLookupTable = unitMeasureDao.getLiteUnitMeasureByPaoIdAndPointOffset(paosSublist);
+                unitMeasureLookupTable = unitMeasureDao.getLiteUnitMeasureByPaoIdAndPoint(paosSublist);
             }
 
             switch (dataRange.getDataRangeType()) {

@@ -81,7 +81,7 @@ public class UnitMeasureDaoCache implements UnitMeasureDao {
     }
 
     @Override
-    public Table<Integer, PointIdentifier, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos) {
-        return delegate.getLiteUnitMeasureByPaoIdAndPointOffset(paos);
+    public Table<Integer, PointIdentifier, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPoint(List<? extends YukonPao> paos) {
+        return delegate.getLiteUnitMeasureByPaoIdAndPoint(paos);
     }
 }
