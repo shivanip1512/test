@@ -72,6 +72,7 @@ IM_EX_CTIBASE extern unsigned char  gMCT400SeriesSPID;
 IM_EX_CTIBASE extern short          gSimulatePorts;
 IM_EX_CTIBASE extern std::set<long> gSimulatedPorts;
 IM_EX_CTIBASE extern std::set<long> gScanForceDevices;
+IM_EX_CTIBASE extern unsigned long  gMemoryReportIntervalSeconds;
 
 IM_EX_CTIBASE void         InitYukonBaseGlobals(void);
 IM_EX_CTIBASE INT          getDebugLevel(void);

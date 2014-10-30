@@ -61,6 +61,7 @@ IM_EX_CTIBASE unsigned char gMCT400SeriesSPID = 0xFF;
 IM_EX_CTIBASE short         gSimulatePorts = 0;
 IM_EX_CTIBASE set<long>     gSimulatedPorts;
 IM_EX_CTIBASE set<long>     gScanForceDevices;
+IM_EX_CTIBASE unsigned long gMemoryReportIntervalSeconds;
 
 set<long> ForeignCCUPorts;
 
@@ -170,6 +171,8 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_PASSWORD   failed : " << endl;
     }
+
+    gMemoryReportIntervalSeconds = gConfigParms.getValueAsULong("MEMORY_REPORT_INTERVAL_SECONDS", 900);
 
     if( !(str = gConfigParms.getValueAsString("VERSACOM_TYPE_FOUR_CONTROL")).empty() && (!stricmp("TRUE", str.c_str())))
     {

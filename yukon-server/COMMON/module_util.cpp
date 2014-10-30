@@ -84,4 +84,29 @@ HANDLE createExclusiveEvent(bool manualReset,
     return hExclusion;
 }
 
+CtiTime nextMemoryReportTime;
+
+bool isTimeToReportMemory(const CtiTime Now)
+{
+    if( nextMemoryReportTime < Now )
+    {
+        nextMemoryReportTime = nextScheduledTimeAlignedOnRate(Now, gMemoryReportIntervalSeconds);
+
+        return true;
+    }
+
+    return false;
+}
+
+std::string reportPrivateBytes(const compileinfo_t &info)
+{
+    Cti::StreamBuffer buf;
+
+    __int64 privateBytes = getPrivateBytes();
+
+    buf << info.project << " memory use: " << CtiNumStr(privateBytes / 1048576.0, 1) << " MB (" << commaFormatted(privateBytes) << ")";
+
+    return buf.extractToString();
+}
+
 } // namespace Cti

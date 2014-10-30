@@ -118,6 +118,25 @@ std::string formatSystemTime(SYSTEMTIME systime)
     return timeStr;
 }
 
+std::string commaFormatted(__int64 value)
+{
+    std::string plain = boost::lexical_cast<std::string>(value);
+    size_t digits = plain.size();
+    std::string formatted;
+    formatted.reserve(digits * 4 / 3);
+
+    for each( const char digit in plain )
+    {
+        formatted += digit;
+        if( ! (--digits % 3) && digits )
+        {
+            formatted += ',';
+        }
+    }
+
+    return formatted;
+}
+
 /// StringFormatter ///
 
 StringFormatter::StringFormatter()

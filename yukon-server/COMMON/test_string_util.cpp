@@ -19,6 +19,30 @@ BOOST_AUTO_TEST_CASE(test_formatSystemTime)
     BOOST_CHECK_EQUAL(Cti::formatSystemTime(stm), "12/25/2014 12:34:56.789");
 }
 
+BOOST_AUTO_TEST_CASE(test_commaFormatted)
+{
+    using Cti::commaFormatted;
+
+    //  ignoring negative numbers for now
+    BOOST_CHECK_EQUAL(  "0", commaFormatted(0));
+    BOOST_CHECK_EQUAL(  "1", commaFormatted(1));
+    BOOST_CHECK_EQUAL(  "9", commaFormatted(9));
+    BOOST_CHECK_EQUAL( "99", commaFormatted(99));
+    BOOST_CHECK_EQUAL("999", commaFormatted(999));
+    BOOST_CHECK_EQUAL(  "1,000", commaFormatted(1000));
+    BOOST_CHECK_EQUAL(  "9,999", commaFormatted(9999));
+    BOOST_CHECK_EQUAL( "99,999", commaFormatted(99999));
+    BOOST_CHECK_EQUAL("999,999", commaFormatted(999999));
+    BOOST_CHECK_EQUAL(  "1,000,000", commaFormatted(1000000));
+    BOOST_CHECK_EQUAL(  "9,999,999", commaFormatted(9999999));
+    BOOST_CHECK_EQUAL( "99,999,999", commaFormatted(99999999));
+    BOOST_CHECK_EQUAL("999,999,999", commaFormatted(999999999));
+    BOOST_CHECK_EQUAL(  "1,000,000,000", commaFormatted(1000000000));
+    BOOST_CHECK_EQUAL(  "9,999,999,999", commaFormatted(9999999999));
+    BOOST_CHECK_EQUAL( "99,999,999,999", commaFormatted(99999999999));
+    BOOST_CHECK_EQUAL("999,999,999,999", commaFormatted(999999999999));
+}
+
 BOOST_AUTO_TEST_CASE(test_toAsciiHex)
 {
     using Cti::toAsciiHex;

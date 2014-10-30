@@ -11,7 +11,7 @@ __int64 getPrivateBytes()
 {
     PROCESS_MEMORY_COUNTERS_EX memoryCounters;
 
-    if( GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&memoryCounters), sizeof(memoryCounters)) )
+    if( ! GetProcessMemoryInfo(GetCurrentProcess(), reinterpret_cast<PPROCESS_MEMORY_COUNTERS>(&memoryCounters), sizeof(memoryCounters)) )
     {
         const DWORD error = GetLastError();
 

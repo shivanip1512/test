@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dlldefs.h"
+#include "ctitime.h"
 
 #include <windows.h>
 
@@ -23,6 +24,10 @@ IM_EX_CTIBASE HANDLE createExclusiveEvent(const char *eventName);
 IM_EX_CTIBASE HANDLE createExclusiveEvent(bool manualReset,
                                           bool initialState,
                                           const char *eventName);
+
+IM_EX_CTIBASE bool isTimeToReportMemory(const CtiTime Now);
+
+IM_EX_CTIBASE std::string reportPrivateBytes(const compileinfo_t &info);
 
 } // namespace Cti
 
