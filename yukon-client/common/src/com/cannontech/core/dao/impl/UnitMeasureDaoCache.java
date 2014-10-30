@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.google.common.collect.Table;
@@ -80,7 +81,7 @@ public class UnitMeasureDaoCache implements UnitMeasureDao {
     }
 
     @Override
-    public     Table<Integer, Integer, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos) {
+    public Table<Integer, PointIdentifier, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos) {
         return delegate.getLiteUnitMeasureByPaoIdAndPointOffset(paos);
     }
 }

@@ -192,8 +192,9 @@ public class ExporterReportGeneratorServiceImplTest {
 
         // Unit of Measure Test 
         YukonMeter meter = meterDao.getForMeterNumber("Meter Number 1");
-        Table<Integer, Integer, LiteUnitMeasure>  unitMeasureLookup = HashBasedTable.create();
-        unitMeasureLookup.put(meter.getPaoIdentifier().getPaoId(), 0, new LiteUnitMeasure(0, "kWH", 1, "kWH"));
+        Table<Integer, PointIdentifier, LiteUnitMeasure>  unitMeasureLookup = HashBasedTable.create();
+        unitMeasureLookup.put(meter.getPaoIdentifier().getPaoId(), new PointIdentifier(PointType.Analog, 0),
+            new LiteUnitMeasure(0, "kWH", 1, "kWH"));
         ExportField exportFieldUnitOfMeasure = getExportField(0, FieldType.UNIT_OF_MEASURE, earliestUsageAttribute, AttributeField.UNIT_OF_MEASURE, null);
         String unitOfMeasureValue = exporterReportGeneratorService.getValue(exportFieldUnitOfMeasure, meter, null, USAGE, pointValueQualityHolder, userContextOne, tzFormat, unitMeasureLookup);
         

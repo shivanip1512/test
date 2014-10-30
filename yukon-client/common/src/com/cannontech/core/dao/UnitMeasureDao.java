@@ -3,6 +3,7 @@ package com.cannontech.core.dao;
 import java.util.List;
 
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
 import com.google.common.collect.Table;
 
@@ -39,6 +40,6 @@ public interface UnitMeasureDao {
     /**
      * Returns a mapping of paoId and pointOffset to a LiteUnitMeasure for all paos in list
      */
-    Table<Integer, Integer, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos);
+    Table<Integer, PointIdentifier, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos);
 
 }

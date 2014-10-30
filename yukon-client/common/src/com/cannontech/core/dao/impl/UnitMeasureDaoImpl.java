@@ -11,6 +11,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -74,13 +75,13 @@ public class UnitMeasureDaoImpl implements UnitMeasureDao {
     }
 
     @Override
-    public Table<Integer, Integer, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos) {
-        final HashBasedTable<Integer, Integer, LiteUnitMeasure> table = HashBasedTable.create();
+    public Table<Integer, PointIdentifier, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos) {
+        final HashBasedTable<Integer, PointIdentifier, LiteUnitMeasure> table = HashBasedTable.create();
         SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT PointOffset, PAObjectID, um.CalcType, um.Formula, um.LongName, um.UomId, um.UomName");
+                sql.append("SELECT PAObjectID, PointType, PointOffset, um.CalcType, um.Formula, um.LongName, um.UomId, um.UomName");
                 sql.append("FROM Point p");
                 sql.append("JOIN PointUnit pu ON p.pointid = pu.pointid");
                 sql.append("JOIN UnitMeasure um ON um.uomid = pu.uomid");
@@ -94,8 +95,8 @@ public class UnitMeasureDaoImpl implements UnitMeasureDao {
             public void processRow(YukonResultSet rs) throws SQLException {
                 LiteUnitMeasure unitMeasure = liteUnitMeasureRowMapper.mapRow(rs.getResultSet(), 0);
                 int paoId = rs.getInt("PAObjectID");
-                int pointOffset = rs.getInt("PointOffset");
-                table.put(paoId, pointOffset, unitMeasure);
+                PointIdentifier PointIdentifier = rs.getPointIdentifier("PointType", "PointOffset");
+                table.put(paoId, PointIdentifier, unitMeasure);
             }
         });
         return table;
