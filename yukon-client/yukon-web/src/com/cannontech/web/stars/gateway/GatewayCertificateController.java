@@ -81,19 +81,14 @@ public class GatewayCertificateController {
     
     @RequestMapping(value="/gateways/cert-update", method=RequestMethod.POST)
     public String certUpdate(HttpServletResponse resp, ModelMap model, YukonUserContext userContext, 
-            @RequestParam("file") MultipartFile file, List<Integer> gateways) {
+            @RequestParam("file") MultipartFile file, Integer[] gateways) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         
         if (!file.isEmpty()) {
             try {
-                String certificateId;
-                if (gateways.size() == 0) {
-                    certificateId = certificateUpdateService.sendUpdateAll(file);
-                } else {
-                    Set<RfnGateway> rfnGateways = rfnGatewayService.getGatewaysByPaoIds(gateways);
-                    certificateId = certificateUpdateService.sendUpdate(rfnGateways, file);
-                }
+                Set<RfnGateway> rfnGateways = rfnGatewayService.getGatewaysByPaoIds(Lists.newArrayList(gateways));
+                String certificateId = certificateUpdateService.sendUpdate(rfnGateways, file);
                 
                 // Success
                 model.clear();

@@ -5,6 +5,10 @@ import java.util.Map;
 
 import org.joda.time.Instant;
 
+/**
+ * Class used internally to track gateway certificate updates. For display, CertificateUpdate is used.
+ * @see CertificateUpdate
+ */
 public class GatewayCertificateUpdateInfo {
     private final int updateId;
     private final String certificateId;

@@ -131,7 +131,7 @@ public class RfnGatewayServiceTest {
         EasyMock.expect(gatewayDataCache.getIfPresent(paoIdentifier)).andReturn(createEmptyRfnGatewayData(gateway2RfnId));
         EasyMock.replay(gatewayDataCache);
 
-        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
+        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, null, null, null);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "cache", cache);
         Assert.assertEquals("Expecting 2 gateways", 2, service.getAllGateways().size());
@@ -163,7 +163,7 @@ public class RfnGatewayServiceTest {
         EasyMock.expect(gatewayDataCache.get(gatewayPaoId)).andReturn(createEmptyRfnGatewayData(gatewayRfnId));
         EasyMock.replay(gatewayDataCache);
         
-        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
+        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, null, null, null);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "cache", cache);
         RfnGateway rfnGateway = service.getGatewayByPaoId(gatewayPaoId.getPaoId());
@@ -179,7 +179,7 @@ public class RfnGatewayServiceTest {
         EasyMock.expect(rfnDeviceDao.getDeviceForId(gatewayPaoId.getPaoId())).andThrow(new NotFoundException("Unknown rfn device Id " + gatewayPaoId.getPaoId()));
         EasyMock.replay(rfnDeviceDao);
         
-        service = new RfnGatewayServiceImpl(null, null, null, null, null);
+        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         service.getGatewayByPaoId(gatewayPaoId.getPaoId());
     }
@@ -203,7 +203,7 @@ public class RfnGatewayServiceTest {
         EasyMock.expect(gatewayDataCache.get(gatewayPaoId)).andThrow(new NmCommunicationException("Communication Error"));
         EasyMock.replay(gatewayDataCache);
         
-        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
+        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, null, null, null);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "cache", cache);
         service.getGatewayByPaoId(gatewayPaoId.getPaoId());
@@ -212,7 +212,7 @@ public class RfnGatewayServiceTest {
     @Test(expected=NmCommunicationException.class)
     public void test_createGateway_communicationError() throws NmCommunicationException, GatewayUpdateException {
         //dependencies can be null, because they're not called in this test scenario
-        service = new RfnGatewayServiceImpl(null, null, null, null, null);
+        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null);
         
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
         fakeTemplate.setMode(Mode.EXCEPTION);
@@ -224,7 +224,7 @@ public class RfnGatewayServiceTest {
     @Test(expected=NmCommunicationException.class)
     public void test_createGateway_timeoutError() throws NmCommunicationException, GatewayUpdateException {
         //dependencies can be null, because they're not called in this test scenario
-        service = new RfnGatewayServiceImpl(null, null, null, null, null);
+        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null);
         
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
         fakeTemplate.setMode(Mode.EXCEPTION);
@@ -236,7 +236,7 @@ public class RfnGatewayServiceTest {
     @Test(expected=GatewayUpdateException.class)
     public void test_createGateway_failedResponse() throws NmCommunicationException, GatewayUpdateException {
         //dependencies can be null, because they're not called in this test scenario
-        service = new RfnGatewayServiceImpl(null, null, null, null, null);
+        service = new RfnGatewayServiceImpl(null, null, null, null, null, null, null, null);
         
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
         fakeTemplate.setGatewayUpdateResult(GatewayUpdateResult.FAILED);
@@ -269,7 +269,8 @@ public class RfnGatewayServiceTest {
         
         //connectionFactory and configurationSource can be null - they are only used by the RequestReplyTemplate,
         //which is replaced by the FakeUpdateRequestReplyTemplate in this test
-        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, rfnDeviceCreationService, paoLocationDao);
+        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, rfnDeviceCreationService, paoLocationDao, 
+                                            null, null, null);
         
         FakeUpdateRequestReplyTemplate fakeTemplate = new FakeUpdateRequestReplyTemplate();
         fakeTemplate.setMode(Mode.REPLY);
@@ -315,7 +316,7 @@ public class RfnGatewayServiceTest {
         EasyMock.expectLastCall();
         EasyMock.replay(deviceDao);
         
-        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
+        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, null, null, null);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "deviceDao", deviceDao);
         ReflectionTestUtils.setField(service, "cache", cache);
@@ -367,7 +368,7 @@ public class RfnGatewayServiceTest {
         EasyMock.expectLastCall();
         EasyMock.replay(deviceDao);
         
-        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
+        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, null, null, null);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "deviceDao", deviceDao);
         ReflectionTestUtils.setField(service, "cache", cache);
@@ -420,7 +421,7 @@ public class RfnGatewayServiceTest {
         // Expect no changes
         EasyMock.replay(deviceDao);
         
-        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
+        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, null, null, null);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "deviceDao", deviceDao);
         ReflectionTestUtils.setField(service, "cache", cache);
@@ -479,7 +480,7 @@ public class RfnGatewayServiceTest {
         // Expect no changes
         EasyMock.replay(deviceDao);
         
-        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao);
+        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, paoLocationDao, null, null, null);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "deviceDao", deviceDao);
         ReflectionTestUtils.setField(service, "cache", cache);
@@ -525,7 +526,7 @@ public class RfnGatewayServiceTest {
         EasyMock.expectLastCall();
         EasyMock.replay(gatewayDataCache);
         
-        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, null);
+        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, null, null, null, null);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "deviceDao", deviceDao);
         
@@ -552,7 +553,7 @@ public class RfnGatewayServiceTest {
         // Expecting no calls (no gateways removed from cache).
         EasyMock.replay(gatewayDataCache);
         
-        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, null);
+        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, null, null, null, null);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "deviceDao", deviceDao);
         
@@ -580,7 +581,7 @@ public class RfnGatewayServiceTest {
         // Expecting no calls (no gateways removed from cache).
         EasyMock.replay(gatewayDataCache);
         
-        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, null);
+        service = new RfnGatewayServiceImpl(gatewayDataCache, null, null, null, null, null, null, null);
         ReflectionTestUtils.setField(service, "rfnDeviceDao", rfnDeviceDao);
         ReflectionTestUtils.setField(service, "deviceDao", deviceDao);
         

@@ -19,6 +19,7 @@ import com.cannontech.core.dao.NotFoundException;
  * the gateway data is stored in Network Manager and only cached by Yukon.
  * 
  * @see {@link GatewayArchiveRequestListener} Handles incoming <code>GatewayArchiveRequest</code>s.
+ * @see {@link GatewayDataRequestListener} Handles incoming <code>GatewayDataResponse</code>s
  * @see {@link RfnDeviceCreationService#createGateway(RfnIdentifier)} Used to create new gateways.
  */
 public interface RfnGatewayService {
@@ -40,7 +41,19 @@ public interface RfnGatewayService {
     RfnGateway getGatewayByPaoId(int paoId) throws NmCommunicationException;
     
     /**
-     * Creates a new gateway in Yukon and Network Manager.
+     * Gets all RfnGateways with the specified paoids. If any ids are invalid, they will be ignored. If the gateway
+     * data is not cached, it will be set as null in the RfnGateway, and the cache will be updated in a separate thread.
+     */
+    Set<RfnGateway> getGatewaysByPaoIds(Iterable<Integer> paoIds);
+    
+    /**
+     * Get a map of paoId to gateway for all gateways. If the gateway data is not cached, it will be set as null in the
+     * RfnGateway, and the cache will be updated in a separate thread.
+     */
+    Map<Integer, RfnGateway> getAllGatewaysByPaoId();
+    
+    /**
+     * Creates a new gateway in Yukon and Network Manager. This is a blocking operation.
      * 
      * @return The {@link RfnDevice} of the newly created gateway.
      * @throws NmCommunicationException if there is a communication error between Yukon and Network Manager.
@@ -128,15 +141,5 @@ public interface RfnGatewayService {
     
     /** Clears gateway data cache, mostly for testing/debugging */
     void clearCache();
-    
-    /**
-     * Gets all RfnGateways with the specified paoids. If any ids are invalid, they will be ignored.
-     */
-    Set<RfnGateway> getGatewaysByPaoIds(Iterable<Integer> paoIds);
-    
-    /**
-     * Get a map of paoId to gateway for all gateways.
-     */
-    Map<Integer, RfnGateway> getAllGatewaysByPaoId();
     
 }

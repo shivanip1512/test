@@ -65,17 +65,17 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private static final String gatewayUpdateRequestQueue = "yukon.qr.obj.common.rfn.GatewayUpdateRequest";
     private static final String gatewayActionRequestQueue = "yukon.qr.obj.common.rfn.GatewayActionRequest";
     
-    @Autowired private RfnDeviceDao rfnDeviceDao;
-    @Autowired private DeviceDao deviceDao;
-    @Autowired private IDatabaseCache cache;
-    
+    // Autowired in constructor
+    private RfnDeviceDao rfnDeviceDao;
+    private DeviceDao deviceDao;
+    private IDatabaseCache serverDatabaseCache;
     private RfnGatewayDataCache dataCache;
     private ConnectionFactory connectionFactory;
     private ConfigurationSource configurationSource;
     private RfnDeviceCreationService rfnDeviceCreationService;
     private PaoLocationDao paoLocationDao;
     
-    //Created in post-construct
+    // Created in post-construct
     private RequestReplyTemplate<GatewayUpdateResponse> updateRequestTemplate;
     private RequestReplyTemplate<GatewayActionResponse> actionRequestTemplate;
     private RequestReplyTemplate<GatewayConnectionTestResponse> connectionTestRequestTemplate;
@@ -85,13 +85,19 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
                                  ConnectionFactory connectionFactory, 
                                  ConfigurationSource configurationSource, 
                                  RfnDeviceCreationService rfnDeviceCreationService, 
-                                 PaoLocationDao paoLocationDao) {
+                                 PaoLocationDao paoLocationDao,
+                                 RfnDeviceDao rfnDeviceDao,
+                                 DeviceDao deviceDao,
+                                 IDatabaseCache serverDatabaseCache) {
         
         this.dataCache = dataCache;
         this.connectionFactory = connectionFactory;
         this.configurationSource = configurationSource;
         this.rfnDeviceCreationService = rfnDeviceCreationService;
         this.paoLocationDao = paoLocationDao;
+        this.rfnDeviceDao = rfnDeviceDao;
+        this.deviceDao = deviceDao;
+        this.serverDatabaseCache = serverDatabaseCache;
     }
     
     @PostConstruct
@@ -115,16 +121,17 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Override
     public RfnGateway getGatewayByPaoId(int paoId) throws NmCommunicationException {
+        
         // Get base RfnDevice
         RfnDevice gwDevice = rfnDeviceDao.getDeviceForId(paoId);
+        
         // Get RfnGatewayData from cache
         RfnGatewayData gatewayData = dataCache.get(gwDevice.getPaoIdentifier());
         RfnGateway rfnGateway = new RfnGateway(gwDevice.getName(), gwDevice.getPaoIdentifier(),
-                                               gwDevice.getRfnIdentifier(),
-                                               gatewayData);
+                                               gwDevice.getRfnIdentifier(), gatewayData);
+        
         // Get PaoLocation from PaoLocationDao
-        PaoLocation gatewayLoc =
-            paoLocationDao.getLocation(gwDevice.getPaoIdentifier().getPaoId());
+        PaoLocation gatewayLoc = paoLocationDao.getLocation(gwDevice.getPaoIdentifier().getPaoId());
         if (gatewayLoc != null) {
             rfnGateway.setLocation(gatewayLoc);
         }
@@ -155,8 +162,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         Set<RfnGateway> rfnGateways = new HashSet<RfnGateway>();
         for (RfnDevice gatewayDevice : gatewayDevices) {
             // Get PAO name
-            String name = cache.getAllPaosMap().get(gatewayDevice.getPaoIdentifier().getPaoId()).getPaoName();
-            // Get available RfnGatewayData from cache via non-blocking call
+            String name = serverDatabaseCache.getAllPaosMap().get(gatewayDevice.getPaoIdentifier().getPaoId()).getPaoName();
+            // Get available RfnGatewayData from cache via non-blocking call. May be null.
             RfnGatewayData gatewayData = dataCache.getIfPresent(gatewayDevice.getPaoIdentifier());
             RfnGateway rfnGateway = new RfnGateway(name, gatewayDevice.getPaoIdentifier(), 
                                                    gatewayDevice.getRfnIdentifier(), gatewayData);
@@ -171,8 +178,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public RfnDevice createGateway(GatewaySettings settings) 
-            throws NmCommunicationException, GatewayUpdateException {
+    public RfnDevice createGateway(GatewaySettings settings) throws NmCommunicationException, GatewayUpdateException {
         
         // Send the request
         GatewayCreateRequest request = buildGatewayCreateRequest(settings);

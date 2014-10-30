@@ -204,7 +204,7 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
     @Override 
     public List<RfnDevice> getDevicesByPaoIds(Iterable<Integer> paoIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
         sql.append("from YukonPaObject ypo");
         sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
         sql.append("where PaObjectId").in(paoIds);

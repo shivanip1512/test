@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,10 +76,10 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
     @Override
     public void updateEntry(int updateId, int gatewayId, GatewayCertificateUpdateStatus status) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("update GatewayCertificateUpdateEntry");
+        sql.append("UPDATE GatewayCertificateUpdateEntry");
         sql.set("UpdateStatus", status);
-        sql.append("where UpdateId").eq(updateId);
-        sql.append("and gatewayId").eq(gatewayId);
+        sql.append("WHERE UpdateId").eq(updateId);
+        sql.append("AND gatewayId").eq(gatewayId);
         
         jdbcTemplate.update(sql);
     }
@@ -95,27 +96,30 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
     
     private void setStatusOnStartedEntries(int updateId, GatewayCertificateUpdateStatus status) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("update GatewayCertificateUpdateEntry");
+        sql.append("UPDATE GatewayCertificateUpdateEntry");
         sql.set("UpdateStatus", status);
-        sql.append("where UpdateId").eq(updateId);
-        sql.append("and UpdateStatus").eq_k(GatewayCertificateUpdateStatus.STARTED);
+        sql.append("WHERE UpdateId").eq(updateId);
+        sql.append("AND UpdateStatus").eq_k(GatewayCertificateUpdateStatus.STARTED);
         
         jdbcTemplate.update(sql);
     }
     
     @Override
+    @Transactional
     public GatewayCertificateUpdateInfo getUpdateInfo(int updateId) {
+        timeoutIncompleteEntries();
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select UpdateId, CertificateId, SendDate, FileName"); 
-        sql.append("from GatewayCertificateUpdate");
-        sql.append("where UpdateId").eq(updateId);
+        sql.append("SELECT UpdateId, CertificateId, SendDate, FileName"); 
+        sql.append("FROM GatewayCertificateUpdate");
+        sql.append("WHERE UpdateId").eq(updateId);
         
         GatewayCertificateUpdateInfo info = jdbcTemplate.queryForObject(sql, new UpdateRowMapper());
         
         sql = new SqlStatementBuilder();
-        sql.append("select GatewayId, UpdateStatus");
-        sql.append("from GatewayCertificateUpdateEntry");
-        sql.append("where UpdateId").eq(updateId);
+        sql.append("SELECT GatewayId, UpdateStatus");
+        sql.append("FROM GatewayCertificateUpdateEntry");
+        sql.append("WHERE UpdateId").eq(updateId);
         
         UpdateEntryRowCallbackHandler handler = new UpdateEntryRowCallbackHandler(info);
         jdbcTemplate.query(sql, handler);
@@ -124,14 +128,17 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
     }
 
     @Override
+    @Transactional
     public List<GatewayCertificateUpdateInfo> getAllUpdateInfo() {
+        timeoutIncompleteEntries();
+        
         final Map<Integer, GatewayCertificateUpdateInfo> updateMap = new HashMap<>();
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select updates.UpdateId, CertificateId, SendDate, FileName, GatewayId, UpdateStatus");
-        sql.append("from GatewayCertificateUpdateEntry entries");
-        sql.append("join GatewayCertificateUpdate updates on updates.UpdateId = entries.UpdateId");
-        sql.append("order by SendDate desc");
+        sql.append("SELECT updates.UpdateId, CertificateId, SendDate, FileName, GatewayId, UpdateStatus");
+        sql.append("FROM GatewayCertificateUpdateEntry entries");
+        sql.append("JOIN GatewayCertificateUpdate updates ON updates.UpdateId = entries.UpdateId");
+        sql.append("ORDER BY SendDate DESC");
         
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
@@ -155,17 +162,40 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
     }
     
     @Override
+    @Transactional
     public int getLatestUpdateForCertificate(String certificateId) {
+        timeoutIncompleteEntries();
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select UpdateId");
-        sql.append("from GatewayCertificateUpdate");
-        sql.append("where SendDate = (");
-        sql.append("  select MAX(SendDate)");
-        sql.append("  from GatewayCertificateUpdate");
-        sql.append("  where CertificateId").eq(certificateId);
+        sql.append("SELECT UpdateId");
+        sql.append("FROM GatewayCertificateUpdate");
+        sql.append("WHERE SendDate = (");
+        sql.append("  SELECT MAX(SendDate)");
+        sql.append("  FROM GatewayCertificateUpdate");
+        sql.append("  WHERE CertificateId").eq(certificateId);
         sql.append(")");
         
         return jdbcTemplate.queryForInt(sql);
+    }
+    
+    /**
+     * Sets the status to TIMEOUT on all entries older than 1 hour.
+     */
+    private void timeoutIncompleteEntries() {
+        Instant oneHourPrevious = Instant.now().minus(Duration.standardHours(1));
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE GatewayCertificateUpdateEntry");
+        sql.set("UpdateStatus", GatewayCertificateUpdateStatus.TIMEOUT);
+        sql.append("WHERE UpdateStatus").eq(GatewayCertificateUpdateStatus.STARTED);
+        sql.append("OR UpdateStatus").eq(GatewayCertificateUpdateStatus.REQUEST_ACCEPTED);
+        sql.append("AND UpdateId IN (");
+        sql.append(  "SELECT UpdateId");
+        sql.append(  "FROM GatewayCertificateUpdate");
+        sql.append(  "WHERE SendDate").lt(oneHourPrevious);
+        sql.append(")");
+        
+        jdbcTemplate.update(sql);
     }
     
     private class UpdateRowMapper implements YukonRowMapper<GatewayCertificateUpdateInfo> {

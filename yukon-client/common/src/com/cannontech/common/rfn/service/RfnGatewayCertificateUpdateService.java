@@ -16,6 +16,7 @@ public interface RfnGatewayCertificateUpdateService {
      * 
      * @param rfnGateways gateways to update.
      * @param certificatePackage the file containing the gateway certificate.
+     * @return The certificate id (parsed from the certificate file package)
      * @throws IOException If there is an error reading the specified certificate file.
      * @throws GatewayCertificateException If there is an error parsing the specified certificate file.
      */
@@ -26,7 +27,7 @@ public interface RfnGatewayCertificateUpdateService {
      * Send certificate update package to all RF gateways known to Network Manager.
      * 
      * @param certificatePackage the file containing the gateway certificate upgrade.
-     * @return 
+     * @return The certificate id (parsed from the certificate file package)
      * @throws IOException If there is an error reading the specified certificate file.
      * @throws GatewayCertificateException If there is an error parsing the specified certificate file.
      */
@@ -35,7 +36,7 @@ public interface RfnGatewayCertificateUpdateService {
     /**
      * Reads the upgradeId from a given gateway upgrade package file and returns it.
      * @param certificatePackage gateway certificate upgrade package file.
-     * @return upgradeId
+     * @return The certificate id (parsed from the certificate file package)
      * @throws GatewayCertificateException if the format of the gateway certificate package file is invalid or the
      * upgradeId cannot be found.
      */

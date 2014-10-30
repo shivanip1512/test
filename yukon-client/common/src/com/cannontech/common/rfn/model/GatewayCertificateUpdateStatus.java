@@ -3,7 +3,7 @@ package com.cannontech.common.rfn.model;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponseType;
 
 /**
- * This is a Yukon-centric distilation of possible responses from RfnGatewayUpgradeRequestAckType and
+ * This is a Yukon-centric distillation of possible responses from RfnGatewayUpgradeRequestAckType and
  * RfnGatewayUpgradeResponseType.
  */
 public enum GatewayCertificateUpdateStatus {

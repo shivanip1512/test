@@ -52,17 +52,14 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
 
     @PostConstruct
     public void initialize() {
-        qrTemplate =
-            new RequestReplyTemplateImpl<RfnGatewayUpgradeRequestAck>(configName,
-                                                                    configurationSource,
-                                                                    connectionFactory,
-                                                                    queueName,
-                                                                    false);
+        qrTemplate = new RequestReplyTemplateImpl<RfnGatewayUpgradeRequestAck>(configName, configurationSource,
+                                                                               connectionFactory, queueName, false);
     }
 
     @Override
     public String sendUpdate(Set<RfnGateway> rfnGateways, MultipartFile upgradePackage) 
             throws IOException, GatewayCertificateException {
+        
         // Read upgrade package into byte[].
         byte[] upgradeData = null;
         try (InputStream fis = upgradePackage.getInputStream()) {
@@ -78,7 +75,8 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
             throw e;
         }
         
-        final int updateDbId = certificateUpdateDao.createUpdate(upgradeId, upgradePackage.getName());
+        // Use the id from the certificate file to record this certificate update in the database
+        final int updateDbId = certificateUpdateDao.createUpdate(upgradeId, upgradePackage.getOriginalFilename());
         
         Set<RfnIdentifier> rfnIdentifiers = new HashSet<>();
         Set<Integer> paoIds = new HashSet<>();
@@ -89,6 +87,7 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
             }
         }
         
+        // Add database entries for each gateway being sent the certificate update
         certificateUpdateDao.createEntries(updateDbId, GatewayCertificateUpdateStatus.STARTED, paoIds);
         
         RfnGatewayUpgradeRequest request = new RfnGatewayUpgradeRequest();
@@ -130,7 +129,7 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
             };
         qrTemplate.send(request, handler);
         
-        //This is the certificate identifier
+        //This is the certificate's internal identifier
         return upgradeId;
     }
     
@@ -258,10 +257,11 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
     @Override
     public List<CertificateUpdate> getAllCertificateUpdates() {
         
+        List<GatewayCertificateUpdateInfo> allUpdateInfo = certificateUpdateDao.getAllUpdateInfo();
         Map<Integer, RfnGateway> gateways = gatewayService.getAllGatewaysByPaoId();
         List<CertificateUpdate> updates = new ArrayList<>();
         
-        for (GatewayCertificateUpdateInfo info : certificateUpdateDao.getAllUpdateInfo()) {
+        for (GatewayCertificateUpdateInfo info : allUpdateInfo) {
             CertificateUpdate certificateUpdate = new CertificateUpdate();
             certificateUpdate.setFileName(info.getFileName());
             certificateUpdate.setTimestamp(info.getSendDate());
@@ -289,7 +289,6 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
         return updates;
     }
     
-    //TODO: clean up inefficient calls
     private void logGatewayUpgradeStatusFromAck(int updateId, RfnGatewayUpgradeRequestAck message) {
         for (RfnIdentifier rfnId : message.getBeingUpgradedRfnIdentifiers()) {
             int paoId = rfnDeviceLookupService.getDevice(rfnId).getPaoIdentifier().getPaoId();

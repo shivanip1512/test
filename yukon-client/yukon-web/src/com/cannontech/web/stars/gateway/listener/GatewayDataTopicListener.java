@@ -24,7 +24,9 @@ import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.core.dao.NotFoundException;
 
 /**
- * This listener receives gateway data messages from service manager and caches them in the web server.
+ * This listener receives gateway data messages and gateway certificate update responses from service manager.
+ * Gateway data messages are cached in RfnGatewayDataCache.
+ * Gateway upgrade responses are used to update the database on the state of the gateway certificate update.
  */
 public class GatewayDataTopicListener implements MessageListener {
     
@@ -76,7 +78,5 @@ public class GatewayDataTopicListener implements MessageListener {
         GatewayCertificateUpdateStatus status = GatewayCertificateUpdateStatus.of(responseType);
         
         certificateUpdateDao.updateEntry(updateId, paoId, status);
-        
-        //TODO: ack to NM?
     }
 }
