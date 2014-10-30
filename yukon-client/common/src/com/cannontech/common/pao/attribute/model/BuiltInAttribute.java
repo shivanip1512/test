@@ -340,6 +340,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     private static Set<BuiltInAttribute> statusAttributes;
     private static Set<BuiltInAttribute> relayAttributes;
     private static Set<BuiltInAttribute> blinkAndOutageCounts;
+    private static Set<BuiltInAttribute> estimatedLoadAttributes;
 
     private static Map<AttributeGroup, Set<BuiltInAttribute>> groupedRfnEventAttributes;
     private static Set<BuiltInAttribute> rfnHardwareAttributes;
@@ -583,6 +584,12 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
                 RELAY_4_RUN_TIME_DATA_LOG,
                 RELAY_4_SHED_TIME_DATA_LOG);
 
+        estimatedLoadAttributes = ImmutableSet.of(
+                CONNECTED_LOAD,
+                DIVERSIFIED_LOAD,
+                MAX_LOAD_REDUCTION,
+                AVAILABLE_LOAD_REDUCTION);
+
         // This map defines how attributes are grouped in drop downs and list selectors.
         // Used in conjunction with the selectNameValue or attributeSelector tag and groupItems="true".
         ImmutableMap.Builder<AttributeGroup, Set<BuiltInAttribute>> groupedDataAttributesBuilder =
@@ -598,6 +605,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         groupedDataAttributesBuilder.put(AttributeGroup.STATUS, statusAttributes);
         groupedDataAttributesBuilder.put(AttributeGroup.USAGE, accumulatorAttributes);
         groupedDataAttributesBuilder.put(AttributeGroup.VOLTAGE, voltageAttributes);
+        groupedDataAttributesBuilder.put(AttributeGroup.ESTIMATED_LOAD, estimatedLoadAttributes);
 
         groupedDataAttributes = groupedDataAttributesBuilder.build();
     }
@@ -859,6 +867,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         allGroupedBuilder.put(AttributeGroup.RELAY, relayAttributes);
         allGroupedBuilder.put(AttributeGroup.STATUS, statusAttributes);
         allGroupedBuilder.put(AttributeGroup.USAGE, accumulatorAttributes);
+        allGroupedBuilder.put(AttributeGroup.ESTIMATED_LOAD, estimatedLoadAttributes);
 
         allGroupedBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, rfnHardwareAttributes);
         allGroupedBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, rfnSoftwareAttributes);

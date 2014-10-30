@@ -14,6 +14,7 @@ public enum AttributeGroup implements DisplayableEnum {
     STATUS,
     USAGE,
     VOLTAGE,
+    ESTIMATED_LOAD,
     
     //RFN event attribute groups
     RFN_CURRENT_EVENT,
