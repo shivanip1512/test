@@ -267,7 +267,7 @@ struct ClientErrors
         SubRouteIsMacro,
         ControlInhibitedOnDevice,
         ControlInhibitedOnPoint,
-        z_227,
+        RequestTimeout,
         RequestExpired,
         z_229,
         z_230,
