@@ -338,22 +338,6 @@ static void applyGenerateScannerDataRows(const long key, CtiDeviceSPtr Device, v
 
 INT ScannerMainFunction (INT argc, CHAR **argv)
 {
-    DWORD dwWait;
-
-    /* Misc. definitions */
-    UINT invcnt = 0;
-
-    CtiTime      NextScan[MAX_SCAN_TYPE];
-    CtiTime      TimeNow;
-
-    /* Define for the porter interface */
-    list< OUTMESS* >         outList;         // Nice little collection of OUTMESS's
-
-    HANDLE hScanArray[] = {
-        hScannerSyncs[S_QUIT_EVENT],
-        hScannerSyncs[S_SCAN_EVENT]
-    };
-
     Cti::identifyProject(CompileInfo);
 
     Cti::DynamicPaoInfoManager::setOwner(Cti::Application_Scanner);
@@ -406,6 +390,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     VanGoghConnection.setName("Scanner to Dispatch");
     VanGoghConnection.start();
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, rwThreadId(), TRUE));
+
+    CtiTime NextScan[MAX_SCAN_TYPE];
 
     do
     {
@@ -485,12 +471,26 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
     Cti::Timing::MillisecondTimer loop_timer;
 
+    HANDLE hScanArray[] = {
+        hScannerSyncs[S_QUIT_EVENT],
+        hScannerSyncs[S_SCAN_EVENT]
+    };
+
+    CtiTime TimeNow;
+
+    list< OUTMESS* > outList;
+
     acquireMutex(__LINE__);
 
     /* Everything is ready so go into the scan loop */
     for(;!ScannerQuit;)
     {
         loop_timer.reset();
+
+        if( Cti::isTimeToReportMemory(TimeNow) )
+        {
+            CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+        }
 
         if(pointID!=0)
         {
@@ -540,7 +540,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 CTILOG_INFO(dout, logmsg)
             }
 
-            dwWait = WaitForMultipleObjects(2, hScanArray, FALSE, waitSeconds * 1000L);
+            DWORD dwWait = WaitForMultipleObjects(2, hScanArray, FALSE, waitSeconds * 1000L);
 
             switch(dwWait)
             {
@@ -599,7 +599,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         if( ! PorterNexus.isValid() && ! ScannerQuit )
         {
             TimeNow = TimeNow.now();
-            invcnt = TimeNow.second() - TimeNow.second() % 30;
+            int invcnt = TimeNow.second() - TimeNow.second() % 30;
 
             while( ! PorterNexus.isValid() && ! ScannerQuit )
             {
@@ -625,7 +625,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
                 }
 
                 // Check for the quit event every interation...
-                dwWait = WaitForMultipleObjects(2, hScanArray, FALSE, 1000);
+                DWORD dwWait = WaitForMultipleObjects(2, hScanArray, FALSE, 1000);
                 switch(dwWait)
                 {
                 case WAIT_OBJECT_0: // This is a quit request

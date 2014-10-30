@@ -1,63 +1,7 @@
-/*-----------------------------------------------------------------------------*
-*
-* FILE NAME: fdrservice.cpp
-*
-* DATE: 11/08/2000
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.8.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:47 $
-*
-* AUTHOR: Ben Wallace
-*
-* PURPOSE: FDR NT Service Module
-*
-* DESCRIPTION: Inplements the needed functions for the NT Service Controller.
-*
-*
-*
-* Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 using std::string;
 using std::endl;
-
-/*
-
-From: winsvc.h
-
-//
-// Service State -- for CurrentState
-//
-#define SERVICE_STOPPED                0x00000001
-#define SERVICE_START_PENDING          0x00000002
-#define SERVICE_STOP_PENDING           0x00000003
-#define SERVICE_RUNNING                0x00000004
-#define SERVICE_CONTINUE_PENDING       0x00000005
-#define SERVICE_PAUSE_PENDING          0x00000006
-#define SERVICE_PAUSED                 0x00000007
-
-//
-// Controls Accepted  (Bit Mask)
-//
-#define SERVICE_ACCEPT_STOP            0x00000001
-#define SERVICE_ACCEPT_PAUSE_CONTINUE  0x00000002
-#define SERVICE_ACCEPT_SHUTDOWN        0x00000004
-#define SERVICE_ACCEPT_PARAMCHANGE     0x00000008
-#define SERVICE_ACCEPT_NETBINDCHANGE   0x00000010
-
-*/
-
-/** include files **/
-#include <crtdbg.h>
-
-#include <iostream>
-
-#include <conio.h>
-
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include <rw/thr/thrfunc.h>
 #include <rw/thr/mutex.h>
@@ -70,6 +14,13 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "connection_client.h"
 #include "msg_cmd.h"
 #include "amq_constants.h"
+#include "module_util.h"
+
+#include <iostream>
+#include <crtdbg.h>
+#include <conio.h>
+
+using namespace std;
 
 CtiClientConnection FdrVanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
 
@@ -181,7 +132,6 @@ void CtiFDRService::Init( )
         Boost_char_tokenizer::iterator tok_iter = next.begin();
 
         string       myInterfaceName;
-        string       tempString;
 
         // parse the interfaces
         //while (!(myInterfaceName=*tok_iter++).empty())
@@ -315,6 +265,11 @@ void CtiFDRService::Run( )
 
         do
         {
+            if( Cti::isTimeToReportMemory(CtiTime::now()) )
+            {
+                CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+            }
+
             if(pointID!=0)
             {
                 CtiThreadMonitor::State next;

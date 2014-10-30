@@ -1,9 +1,5 @@
 #include "precompiled.h"
 
-#include <map>
-#include <set>
-#include <queue>
-
 #include "dbaccess.h"
 #include "connection.h"
 #include "message.h"
@@ -30,13 +26,17 @@
 #include "devicetypes.h"
 #include "lmprogramdirect.h"
 #include "clistener.h"
-#include <time.h>
 #include "utility.h"
 #include "debug_timer.h"
+#include "module_util.h"
+#include "amq_constants.h"
 
 #include <rw/thr/thrfunc.h>
 
-#include "amq_constants.h"
+#include <time.h>
+#include <map>
+#include <set>
+#include <queue>
 
 using namespace std;
 
@@ -200,19 +200,15 @@ void CtiLoadManager::controlLoop()
 
         CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
         {
-            //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
             registerForPoints(*store->getControlAreas(CtiTime()));
             store->setReregisterForPoints(false);
         }
 
-
         CtiTime currentDateTime;
-        vector<CtiLMControlArea*> controlAreaChanges;
-        CtiMultiMsg* multiDispatchMsg = CTIDBG_new CtiMultiMsg();
-        CtiMultiMsg* multiPilMsg = CTIDBG_new CtiMultiMsg();
-        CtiMultiMsg* multiNotifMsg = CTIDBG_new CtiMultiMsg();
+        CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
+        CtiMultiMsg* multiPilMsg      = new CtiMultiMsg();
+        CtiMultiMsg* multiNotifMsg    = new CtiMultiMsg();
 
-        CtiMessage* msg = NULL;
         CtiLMExecutorFactory executorFactory;
 
         //remember when the last control area messages were sent
@@ -231,7 +227,7 @@ void CtiLoadManager::controlLoop()
             long main_wait = control_loop_delay;
             bool received_message = false;
             Sleep(250);
-            while( (msg = CtiLMClientListener::getInstance().getQueue(main_wait)) != NULL )
+            while( CtiMessage *msg = CtiLMClientListener::getInstance().getQueue(main_wait) )
             {
                 CtiLMExecutor* executor = executorFactory.createExecutor(msg);
                 try
@@ -249,11 +245,14 @@ void CtiLoadManager::controlLoop()
             }
 
             {
-                //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-
                 CtiTime prevDateTime = currentDateTime;
                 currentDateTime = CtiTime();
                 LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
+
+                if( Cti::isTimeToReportMemory(currentDateTime) )
+                {
+                    CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+                }
 
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {

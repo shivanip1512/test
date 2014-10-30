@@ -70,7 +70,7 @@ IMPLEMENT_SERVICE(CtiCalcLogicService, CALCLOGIC)
 
 CtiCalcLogicService::CtiCalcLogicService(LPCTSTR szName, LPCTSTR szDisplay, DWORD dwType ) :
 CService( szName, szDisplay, dwType ), _ok(TRUE), _restart(false), _update(false), _dispatchPingedFailed(YUKONEOT),
-_dispatchConnectionBad(false), _lastDispatchMessageTime(CtiTime::now()), _threadsStarted(false)
+_dispatchConnectionBad(false), _threadsStarted(false)
 {
     m_pThis = this;
 }
@@ -139,7 +139,6 @@ void CtiCalcLogicService::OnStop( )
 
 void CtiCalcLogicService::Run( )
 {
-    CtiMultiMsg *msgMulti;
     time_t   timeNow;
 
     int conncnt= 0;
@@ -392,16 +391,23 @@ void CtiCalcLogicService::Run( )
             {
                 try
                 {
+                    const CtiTime Now;
+
+                    if( Cti::isTimeToReportMemory(Now) )
+                    {
+                        CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+                    }
+
                     if(pointID!= 0)
                     {
                         CtiThreadMonitor::State next;
 
                         if((next = ThreadMonitor.getState()) != previous ||
-                           CtiTime::now() > NextThreadMonitorReportTime)
+                           Now > NextThreadMonitorReportTime)
                         {
                             // Any time the state changes or every (StandardMonitorTime / 2) seconds, update the point
                             previous = next;
-                            NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2 );
+                            NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate( Now, CtiThreadMonitor::StandardMonitorTime / 2 );
 
                             dispatchConnection->WriteConnQue( new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
                         }

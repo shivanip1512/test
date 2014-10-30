@@ -14,6 +14,7 @@
 #include "dllvg.h"
 #include "stdexcepthdlr.h"
 #include "logger.h"
+#include "module_util.h"
 
 using namespace std;
 
@@ -43,6 +44,11 @@ int DispatchMainFunction(int argc, char **argv)
 
         while( !bGCtrlC )
         {
+            if( Cti::isTimeToReportMemory(CtiTime::now()) )
+            {
+                CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+            }
+
             Sleep(3000);
         }
 

@@ -37,6 +37,7 @@
 #include "ccclientconn.h"
 #include "ccclientlistener.h"
 #include "millisecond_timer.h"
+#include "module_util.h"
 
 #include <rw/thr/thrfunc.h>
 
@@ -454,7 +455,6 @@ void CtiCapController::controlLoop()
         CtiPAOScheduleManager* scheduleMgr = CtiPAOScheduleManager::getInstance();
         scheduleMgr->start();
 
-        CtiTime currentDateTime;
         CtiTime registerTimeElapsed;
         CtiCCSubstation_set stationChanges;
         CtiCCArea_set areaChanges;
@@ -463,12 +463,10 @@ void CtiCapController::controlLoop()
         CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
         long lastThreadPulse = 0;
         CtiDate lastDailyResetDate;     // == CtiDate::now()
-        bool waitToBroadCastEverything = false;
-        bool startUpSendStats = true;
 
         ThreadStatusKeeper threadStatus("CapControl controlLoop");
 
-        CtiTime fifteenMinCheck = nextScheduledTimeAlignedOnRate( currentDateTime,  900);
+        CtiTime fifteenMinCheck = nextScheduledTimeAlignedOnRate( CtiTime(),  900);
 
         long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::CapControl);
         CtiTime NextThreadMonitorReportTime;
@@ -476,37 +474,40 @@ void CtiCapController::controlLoop()
 
         while(true)
         {
-            bool received_message = false;
             {
+                const CtiTime Now;
+                unsigned long secondsFrom1970 = Now.seconds();
 
-                currentDateTime = CtiTime();
-                unsigned long secondsFrom1901 = currentDateTime.seconds();
-
+                if( Cti::isTimeToReportMemory(Now) )
+                {
+                    CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+                }
 
                 CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
                 CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
                 CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
                 EventLogEntries ccEvents;
+
                 try
                 {
 
                     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-                    if( currentDateTime.seconds() > fifteenMinCheck.seconds() && secondsFrom1901 != lastThreadPulse)
+                    if( Now > fifteenMinCheck && secondsFrom1970 != lastThreadPulse)
                     {//every  fifteen minutes tell the user if the control thread is still alive
                         CTILOG_INFO(dout, "Controller refreshing CPARMS");
                         refreshGlobalCParms();
                         CTILOG_INFO(dout, "Controller thread pulse");
-                        lastThreadPulse = secondsFrom1901;
-                        fifteenMinCheck = nextScheduledTimeAlignedOnRate( currentDateTime,  900);
+                        lastThreadPulse = secondsFrom1970;
+                        fifteenMinCheck = nextScheduledTimeAlignedOnRate( Now,  900);
                         store->verifySubBusAndFeedersStates();
                     }
 
-                    if ( currentDateTime.date() != lastDailyResetDate )
+                    if ( Now.date() != lastDailyResetDate )
                     {
                         store->resetDailyOperations();
 
-                        lastDailyResetDate = currentDateTime;
+                        lastDailyResetDate = Now;
                     }
                 }
                 catch(...)
@@ -527,19 +528,19 @@ void CtiCapController::controlLoop()
                 {
                     RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-                    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1901, true);
-                    CtiCCSubstation_vec& ccSubstations = *store->getCCSubstations(secondsFrom1901);
-                    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(secondsFrom1901);
+                    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1970, true);
+                    CtiCCSubstation_vec& ccSubstations = *store->getCCSubstations(secondsFrom1970);
+                    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(secondsFrom1970);
 
 
-                    if( (secondsFrom1901%60) == 0 && secondsFrom1901 != lastThreadPulse )
+                    if( Now.second() == 0 && secondsFrom1970 != lastThreadPulse )
                     {
                         for(long i=0;i<ccSubstationBuses.size();i++)
                         {
                             CtiCCSubstationBusPtr currentSubstationBus = ccSubstationBuses[i];
                             CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
 
-                            bool peakFlag = currentSubstationBus->isPeakTime(currentDateTime);
+                            bool peakFlag = currentSubstationBus->isPeakTime(Now);
                             for(long j=0;j<ccFeeders.size();j++)
                             {
                                 CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j];
@@ -547,7 +548,7 @@ void CtiCapController::controlLoop()
                                     !(ciStringEqual(currentFeeder->getStrategy()->getStrategyName(), ControlStrategy::NoControlUnit)) &&
                                     (currentFeeder->getStrategy()->getPeakStartTime() > 0 && currentFeeder->getStrategy()->getPeakStopTime() > 0 ))
                                 {
-                                    currentFeeder->isPeakTime(currentDateTime);
+                                    currentFeeder->isPeakTime(Now);
                                 }
                                 else
                                 {
@@ -598,30 +599,30 @@ void CtiCapController::controlLoop()
                             {
                                 currentSubstationBus->performDataOldAndFallBackNecessaryCheck();
 
-                                if (currentSubstationBus->isMultiVoltBusAnalysisNeeded(currentDateTime))
+                                if (currentSubstationBus->isMultiVoltBusAnalysisNeeded(Now))
                                 {
                                     if (currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder)
                                     {
-                                        currentSubstationBus->analyzeMultiVoltBus1(currentDateTime, pointChanges, ccEvents, pilMessages);
+                                        currentSubstationBus->analyzeMultiVoltBus1(Now, pointChanges, ccEvents, pilMessages);
                                     }
                                     else
                                     {
-                                        currentSubstationBus->analyzeMultiVoltBus(currentDateTime, pointChanges, ccEvents, pilMessages);
+                                        currentSubstationBus->analyzeMultiVoltBus(Now, pointChanges, ccEvents, pilMessages);
                                     }
                                 }
-                                else if (currentSubstationBus->isBusAnalysisNeeded(currentDateTime))
+                                else if (currentSubstationBus->isBusAnalysisNeeded(Now))
                                 {
                                     if (currentSubstationBus->getRecentlyControlledFlag() || currentSubstationBus->getWaitToFinishRegularControlFlag())
                                     {
                                         try
                                         {
                                             if (currentSubstationBus->isAlreadyControlled() ||
-                                                currentSubstationBus->isPastMaxConfirmTime(currentDateTime))
+                                                currentSubstationBus->isPastMaxConfirmTime(Now))
                                             {
                                                 if ((currentSubstationBus->getStrategy()->getControlSendRetries() > 0 ||
                                                      currentSubstationBus->getLastFeederControlledSendRetries() > 0) &&
                                                     !currentSubstationBus->isAlreadyControlled() &&
-                                                     currentSubstationBus->checkForAndPerformSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages))
+                                                     currentSubstationBus->checkForAndPerformSendRetry(Now, pointChanges, ccEvents, pilMessages))
                                                 {
                                                     currentSubstationBus->setBusUpdatedFlag(true);
                                                 }
@@ -633,7 +634,7 @@ void CtiCapController::controlLoop()
                                             }
                                             else if (currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder)
                                             {
-                                                checkBusForNeededControl(currentArea,currentStation, currentSubstationBus, currentDateTime,pointChanges, ccEvents, pilMessages);
+                                                checkBusForNeededControl(currentArea,currentStation, currentSubstationBus, Now,pointChanges, ccEvents, pilMessages);
                                             }
                                         }
                                         catch(...)
@@ -643,18 +644,18 @@ void CtiCapController::controlLoop()
                                     }
                                     else if (currentSubstationBus->getVerificationFlag()) //verification Flag set!!!
                                     {
-                                        analyzeVerificationBus(currentSubstationBus, currentDateTime, pointChanges, ccEvents, pilMessages, capMessages);
+                                        analyzeVerificationBus(currentSubstationBus, Now, pointChanges, ccEvents, pilMessages, capMessages);
                                     }
-                                    else if (currentSubstationBus->isVarCheckNeeded(currentDateTime))
+                                    else if (currentSubstationBus->isVarCheckNeeded(Now))
                                     {//not recently controlled and var check needed
-                                        checkBusForNeededControl(currentArea,currentStation, currentSubstationBus, currentDateTime,pointChanges, ccEvents, pilMessages);
+                                        checkBusForNeededControl(currentArea,currentStation, currentSubstationBus, Now,pointChanges, ccEvents, pilMessages);
                                     }
 
                                     try
                                     {
                                         //so we don't do this over and over we need to clear out
                                         currentSubstationBus->clearOutNewPointReceivedFlags();
-                                        if( currentSubstationBus->isVarCheckNeeded(currentDateTime) &&
+                                        if( currentSubstationBus->isVarCheckNeeded(Now) &&
                                             currentSubstationBus->getStrategy()->getControlInterval() > 0 )
                                         {
                                             currentSubstationBus->figureNextCheckTime();
@@ -826,7 +827,6 @@ void CtiCapController::controlLoop()
                 {
                     CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
-
             }
 
             try

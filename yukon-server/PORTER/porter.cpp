@@ -705,11 +705,10 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 {
     /* Misc Definitions */
     INT    i, j;
-    int WorkReportFrequencyInSeconds;
-    time_t last_flush = 0;
-    CtiTime lastWorkReportTime;
+    int WorkReportIntervalInSeconds;
+    CtiTime nextWorkReportTime, nextFlush;
 
-    /* New stuff for YUKON kbd handling */
+    /* stuff for kbd handling */
     INPUT_RECORD      inRecord;
     HANDLE            hStdIn = GetStdHandle(STD_INPUT_HANDLE);
     DWORD             Count;
@@ -858,10 +857,10 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     _sysMsgThread.start();
 
-    if( (WorkReportFrequencyInSeconds = gConfigParms.getValueAsULong("PORTER_WORK_COUNT_TIME", 60)) <= 0 )
+    if( (WorkReportIntervalInSeconds = gConfigParms.getValueAsULong("PORTER_WORK_COUNT_TIME", 60)) <= 0 )
     {
         //This is a failure case
-        WorkReportFrequencyInSeconds = 60;
+        WorkReportIntervalInSeconds = 60;
     }
 
     if(gLogPorts)
@@ -947,16 +946,23 @@ INT PorterMainFunction (INT argc, CHAR **argv)
             }
         }
 
-        if( last_flush + 60 <= ::time(0) )
+        const CtiTime Now;
+
+        if( nextFlush < Now )
         {
-            last_flush = ::time(0);
+            nextFlush = Now + 60;
             writeDynamicPaoInfo();
             PorterPointManager.processExpired();
         }
 
-        if( lastWorkReportTime.seconds() < (lastWorkReportTime.now().seconds()) )
+        if( Cti::isTimeToReportMemory(Now) )
         {
-            lastWorkReportTime = nextScheduledTimeAlignedOnRate(lastWorkReportTime.now(), WorkReportFrequencyInSeconds);
+            CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
+        }
+
+        if( nextWorkReportTime < Now )
+        {
+            nextWorkReportTime = nextScheduledTimeAlignedOnRate(Now, WorkReportIntervalInSeconds);
             reportOnWorkObjects();
         }
 

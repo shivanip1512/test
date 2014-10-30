@@ -60,7 +60,6 @@ mc_fileint.obj \
 mc_msg.obj \
 mc_sched.obj \
 mc_scheduler.obj \
-mc_server.obj \
 mc_script.obj \
 mgr_mcsched.obj \
 tbl_mcsched.obj \

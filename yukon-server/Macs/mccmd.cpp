@@ -57,7 +57,10 @@ using std::vector;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
 
+/* The global debug level stored here, defined in mc.h */
+unsigned gMacsDebugLevel  = 0x00000000;
 unsigned gMccmdDebugLevel = 0x00000000;
+
 bool gDoNotSendCancel = false;
 bool gIgnoreQueueCount = false;
 bool gUseOldStyleMissed = false;
