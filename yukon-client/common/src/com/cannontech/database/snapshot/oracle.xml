@@ -23745,6 +23745,15 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CSTRES_YKLST9</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>MAINHEATINGSYSTEMID</i__columnName>
+            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
+            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>0</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
             <i__foreignKeyName>FK_CSTRES_YKLST8</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>RESIDENCETYPEID</i__columnName>
@@ -23766,15 +23775,6 @@
             <i__foreignKeyName>FK_CSTRES_YKLST6</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DECADEBUILTID</i__columnName>
-            <i__foreignColumnName>ENTRYID</i__foreignColumnName>
-            <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>0</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CUSTOMER_REF_CSTRE_YUKONLIS</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>MAINFUELTYPEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -23826,9 +23826,9 @@
             <i__deleteRule>0</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CSTRES_YKLST9</i__foreignKeyName>
+            <i__foreignKeyName>FK_CUSTOMER_REF_CSTRE_YUKONLIS</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>MAINHEATINGSYSTEMID</i__columnName>
+            <i__columnName>MAINFUELTYPEID</i__columnName>
             <i__foreignColumnName>ENTRYID</i__foreignColumnName>
             <i__foreignTableName>YUKONLISTENTRY</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
