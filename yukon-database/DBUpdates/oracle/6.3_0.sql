@@ -17,7 +17,7 @@ SET    CommandRequestExecType = 'METER_CONNECT_DISCONNECT_WIDGET'
 WHERE  CommandRequestExecType = 'CONTROL_CONNECT_DISCONNECT_COMAMND';
 /* End YUK-13354 */
 
-/* Start YUK-13746 */
+/* Start YUK-13801 */
 UPDATE POINT
 SET POINTOFFSET = 3
 WHERE POINTOFFSET = 2 
@@ -29,7 +29,7 @@ SET POINTOFFSET = 2
 WHERE POINTOFFSET = 1 
   AND PointType = 'Analog'
   AND PAObjectID IN (SELECT PAObjectID FROM YukonPAObject WHERE PAOClass = 'LOADMANAGEMENT');
-/* End YUK-13746 */
+/* End YUK-13801 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
