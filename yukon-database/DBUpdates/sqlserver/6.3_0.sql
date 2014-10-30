@@ -31,6 +31,10 @@ WHERE POINTOFFSET = 1
   AND PAObjectID IN (SELECT PAObjectID FROM YukonPAObject WHERE PAOClass = 'LOADMANAGEMENT');
 /* End YUK-13801 */
 
+/* Start YUK-13806 */
+DELETE FROM GlobalSetting WHERE Name = 'SMTP_HOST' AND Value = '127.0.0.1';
+/* End YUK-13806 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
