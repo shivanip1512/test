@@ -40,7 +40,7 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
     private static final Logger log = YukonLogManager.getLogger(RfnGatewayCertificateUpdateServiceImpl.class);
 
     private final static String configName = "RFN_GATEWAY_UPGRADE_REQUEST";
-    private final static String queueName = "yukon.qr.obj.rfn.GatewayUpgradeRequest";
+    private final static String queueName = "yukon.qr.obj.common.rfn.GatewayUpgradeRequest";
 
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private ConfigurationSource configurationSource;
