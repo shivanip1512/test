@@ -120,8 +120,9 @@ public interface AttributeService {
      * 
      * @param pao - Pao to create point for
      * @param attribute - Attribute the point will represent
+     * @return A boolean that is true if the point was created and false if it was not created or already existed.
      */
-    void createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
+    boolean createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute;
 
     /**
      * This method will determine if the point identified by the PaoPointIdentifier is an

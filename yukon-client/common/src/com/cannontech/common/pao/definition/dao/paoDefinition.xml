@@ -10185,6 +10185,20 @@
                 <decimalplaces value="1" />
             </point>
         </points>
+        <attributes>
+            <attribute name="CONNECTED_LOAD">
+                <basicLookup point="Connected Load" />
+            </attribute>
+            <attribute name="DIVERSIFIED_LOAD">
+                <basicLookup point="Diversified Load" />
+            </attribute>
+            <attribute name="MAX_LOAD_REDUCTION">
+                <basicLookup point="Max Load Reduction" />
+            </attribute>
+            <attribute name="AVAILABLE_LOAD_REDUCTION">
+                <basicLookup point="Available Load Reduction" />
+            </attribute>
+        </attributes>
         <tags>
             <tag name="LM_PROGRAM" />
         </tags>
@@ -10257,6 +10271,20 @@
                 <decimalplaces value="1" />
             </point>
         </points>
+        <attributes>
+            <attribute name="CONNECTED_LOAD">
+                <basicLookup point="Connected Load" />
+            </attribute>
+            <attribute name="DIVERSIFIED_LOAD">
+                <basicLookup point="Diversified Load" />
+            </attribute>
+            <attribute name="MAX_LOAD_REDUCTION">
+                <basicLookup point="Max Load Reduction" />
+            </attribute>
+            <attribute name="AVAILABLE_LOAD_REDUCTION">
+                <basicLookup point="Available Load Reduction" />
+            </attribute>
+        </attributes>
         <tags>
             <tag name="LM_SCENARIO" />
         </tags>
@@ -10311,6 +10339,20 @@
                 <decimalplaces value="1" />
             </point>
         </points>
+        <attributes>
+            <attribute name="CONNECTED_LOAD">
+                <basicLookup point="Connected Load" />
+            </attribute>
+            <attribute name="DIVERSIFIED_LOAD">
+                <basicLookup point="Diversified Load" />
+            </attribute>
+            <attribute name="MAX_LOAD_REDUCTION">
+                <basicLookup point="Max Load Reduction" />
+            </attribute>
+            <attribute name="AVAILABLE_LOAD_REDUCTION">
+                <basicLookup point="Available Load Reduction" />
+            </attribute>
+        </attributes>
         <tags>
             <tag name="LM_CONTROL_AREA" />
         </tags>

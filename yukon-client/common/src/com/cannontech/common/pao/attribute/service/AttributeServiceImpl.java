@@ -273,7 +273,7 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public void createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
+    public boolean createPointForAttribute(YukonPao pao, Attribute attribute) throws IllegalUseOfAttribute {
         boolean pointExists = this.pointExistsForAttribute(pao, attribute);
         if (!pointExists) {
             PaoPointTemplate paoPointTemplate = getPaoPointTemplateForAttribute(pao, attribute);
@@ -282,12 +282,14 @@ public class AttributeServiceImpl implements AttributeService {
                     paoPointTemplate.getPointTemplate());
             try {
                 dbPersistentDao.performDBChange(point, TransactionType.INSERT);
+                return true;
             } catch (PersistenceException e) {
                 // TODO this should throw a different exception
                 throw new DataAccessException("Could not create point for pao: " + pao, e) {
                 };
             }
         }
+        return false;
     }
 
     @Override

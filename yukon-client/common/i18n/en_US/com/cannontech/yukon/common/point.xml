@@ -18,7 +18,7 @@
          com.cannontech.common.util.FormattingTemplateProcessor
          java.text.SimpleDateFormat
 -->
-    <entry key="yukon.common.point.pointFormatting.unavailablePlaceholder">loading...</entry>
+    <entry key="yukon.common.point.pointformatting.unavailableplaceholder">loading...</entry>
     <entry key="yukon.common.point.pointFormatting.formats.FULL">{default} {status||{unit}} {time|BOTH} {shortQuality}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.SHORT">{default} {status||{unit}} {shortQuality}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.SHORTDATE">{default} {status||{unit}} {time|DATE} {shortQuality}</entry>
@@ -317,5 +317,12 @@
     <entry key="yukon.common.attribute.builtInAttribute.OUTDOOR_TEMPERATURE">Outdoor Temperature</entry>
     <entry key="yukon.common.attribute.builtInAttribute.COOL_SET_TEMPERATURE">Cool Set Temperature</entry>
     <entry key="yukon.common.attribute.builtInAttribute.HEAT_SET_TEMPERATURE">Heat Set Temperature</entry>
+
+    <entry key="yukon.common.attribute.builtInAttribute.CONNECTED_LOAD">Connected Load</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DIVERSIFIED_LOAD">Diversified Load</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.MAX_LOAD_REDUCTION">Max Load Reduction</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.AVAILABLE_LOAD_REDUCTION">Available Load Reduction</entry>
+    
+    
     <!-- BuiltInAttribute see note above about changing values -->
 </properties>

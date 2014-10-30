@@ -310,6 +310,12 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     NEUTRAL_CURRENT_SENSOR("Neutral Current Sensor"),
     SERIAL_NUMBER("Serial Number"),
     UDP_PORT("UDP Port"),
+    
+    // Estimated load
+    CONNECTED_LOAD("Connected Load"),
+    DIVERSIFIED_LOAD("Diversified Load"),
+    MAX_LOAD_REDUCTION("Max Load Reduction"),
+    AVAILABLE_LOAD_REDUCTION("Available Load Reduction"),
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
