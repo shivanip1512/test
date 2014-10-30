@@ -199,7 +199,7 @@
             <div class="column one">
                 <tags:nameValueContainer2 tableClass="with-form-controls">
                     <tags:nameValue2 nameKey=".dataCompleteness">
-                        <div class="dib vatb progress">
+                        <div class="progress dib vatb">
                             <c:set var="clazz" value="progress-bar-success"/>
                             <c:if test="${gateway.totalCompletionLevelWarning}">
                                 <c:set var="clazz" value="progress-bar-warning"/>
@@ -223,52 +223,8 @@
             </div>
         </div>
         <h3><i:inline key=".sequencing"/></h3>
-        <div class="scroll-lg">
-            <table class="compact-results-table dashed">
-                <thead>
-                    <tr>
-                        <th><i:inline key=".dataType"/></th>
-                        <th><i:inline key=".sequenceStart"/></th>
-                        <th><i:inline key=".sequenceEnd"/></th>
-                        <th><i:inline key=".completeness"/></th>
-                    </tr>
-                </thead>
-                <tfoot></tfoot>
-                <tbody>
-                    <c:forEach var="sequence" items="${gateway.data.sequences}">
-                        <c:forEach var="block" items="${sequence.blocks}" varStatus="status">
-                            <tr>
-                                <c:if test="${status.first}">
-                                    <td><i:inline key=".sequenceType.${sequence.type}"/></td>
-                                </c:if>
-                                <c:if test="${not status.first}">
-                                    <td></td>
-                                </c:if>
-                                <td>${block.start}</td>
-                                <td>${block.end}</td>
-                                <c:if test="${status.first}">
-                                    <td>
-                                        <div class="dib progress">
-                                            <c:set var="clazz" value="progress-bar-success"/>
-                                            <c:if test="${sequence.completionPercentage < 90 and sequence.completionPercentage >= 75}">
-                                                <c:set var="clazz" value="progress-bar-warning"/>
-                                            </c:if>
-                                            <c:if test="${sequence.completionPercentage <= 75}">
-                                                <c:set var="clazz" value="progress-bar-danger"/>
-                                            </c:if>
-                                            <div class="progress-bar ${clazz}" style="width: ${sequence.completionPercentage}%"></div>
-                                        </div>&nbsp;
-                                        <fmt:formatNumber pattern="###.##%" value="${sequence.completionPercentage / 100}"/>
-                                    </td>
-                                </c:if>
-                                <c:if test="${not status.first}">
-                                    <td></td>
-                                </c:if>
-                            </tr>
-                        </c:forEach>
-                    </c:forEach>
-                </tbody>
-            </table>
+        <div id="gw-sequence-table" class="scroll-lg">
+            <%@ include file="sequences.jsp" %>
         </div>
     </tags:sectionContainer2>
 </div>

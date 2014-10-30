@@ -15,6 +15,9 @@ yukon.assets.gateway.details = (function () {
     
     _text,
     
+    /** @type {Number} - The gateway pao id. */
+    _gateway,
+    
     /** @type {ol.Map} - The openlayers map object. */
     _map = {},
     
@@ -65,15 +68,26 @@ yukon.assets.gateway.details = (function () {
         _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
         _map.getView().setZoom(13);
     },
- 
+    
+    _updateSequences = function () {
+        $.ajax({
+            url: yukon.url('/stars/gateways/' + _gateway + '/sequences')
+        }).done(function (table) {
+            $('#gw-sequence-table').html(table);
+        }).always(function () {
+            setTimeout(_updateSequences, 4000);
+        });
+    },
+    
     mod = {
- 
+        
         /** Initialize this module. */
         init: function () {
- 
+            
             if (_initialized) return;
             
             _text = yukon.fromJson('#gateway-text');
+            _gateway = $('#gateway-edit-popup').data('id');
             
             /** Initialize map if we have a location. */
             if ($('#gateway-location').data('hasLocation') === true) {
@@ -251,6 +265,8 @@ yukon.assets.gateway.details = (function () {
                 });
                 
             });
+            
+            _updateSequences();
             
             _initialized = true;
         },

@@ -87,6 +87,16 @@ public class GatewayDetailController {
         return "gateways/detail.jsp";
     }
     
+    @RequestMapping("/gateways/{id}/sequences")
+    public String sequences(ModelMap model, YukonUserContext userContext, @PathVariable int id) 
+            throws NmCommunicationException {
+        
+        RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
+        model.addAttribute("gateway", gateway);
+        
+        return "gateways/sequences.jsp";
+    }
+    
     /** Test the connection, return result as json. */
     @RequestMapping("/gateways/test-connection")
     public @ResponseBody Map<String, Object> testConnection(YukonUserContext userContext, 
