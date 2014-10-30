@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/30/2014 3:42:15 PM                        */
+/* Created on:     10/30/2014 5:06:40 PM                        */
 /*==============================================================*/
 
 
@@ -5147,6 +5147,28 @@ create table GRAPHDEFINITION  (
 
 alter table GRAPHDEFINITION
    add constraint AK_GRNMUQ_GRAPHDEF unique (NAME);
+
+/*==============================================================*/
+/* Table: GatewayCertificateUpdate                              */
+/*==============================================================*/
+create table GatewayCertificateUpdate  (
+   UpdateId             NUMBER                          not null,
+   CertificateId        VARCHAR2(100)                   not null,
+   SendDate             DATE                            not null,
+   FileName             VARCHAR2(100)                   not null,
+   constraint PK_GatewayCertificateUpdate primary key (UpdateId)
+);
+
+/*==============================================================*/
+/* Table: GatewayCertificateUpdateEntry                         */
+/*==============================================================*/
+create table GatewayCertificateUpdateEntry  (
+   EntryId              NUMBER                          not null,
+   UpdateId             NUMBER                          not null,
+   GatewayId            NUMBER                          not null,
+   UpdateStatus         VARCHAR2(40)                    not null,
+   constraint PK_GatewayCertificateUpdEntry primary key (EntryId)
+);
 
 /*==============================================================*/
 /* Table: GenericMacro                                          */
@@ -11405,6 +11427,16 @@ alter table GRAPHDATASERIES
 alter table GRAPHDATASERIES
    add constraint GrphDSeris_ptID foreign key (POINTID)
       references POINT (POINTID);
+
+alter table GatewayCertificateUpdateEntry
+   add constraint FK_GatewayCUEnt_GatewayCertUpd foreign key (UpdateId)
+      references GatewayCertificateUpdate (UpdateId)
+      on delete cascade;
+
+alter table GatewayCertificateUpdateEntry
+   add constraint FK_GatewayCertUpdateEnt_Device foreign key (GatewayId)
+      references DEVICE (DEVICEID)
+      on delete cascade;
 
 alter table GraphCustomerList
    add constraint FK_GRAPHCUS_REFGRPHCU_GRAPHDEF foreign key (GraphDefinitionID)

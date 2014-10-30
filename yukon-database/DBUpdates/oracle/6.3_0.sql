@@ -40,6 +40,34 @@ INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry), 
 INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry), 1005, 0, 'ecobee Smart', 1331);
 /* End YUK-13758 */
 
+/* Start YUK-13552 */
+CREATE TABLE GatewayCertificateUpdate (
+    UpdateId        NUMBER          NOT NULL,
+    CertificateId   VARCHAR2(100)   NOT NULL,
+    SendDate        DATE            NOT NULL,
+    FileName        VARCHAR2(100)   NOT NULL,
+    CONSTRAINT PK_GatewayCertificateUpdate PRIMARY KEY (UpdateId)
+);
+
+CREATE TABLE GatewayCertificateUpdateEntry (
+    EntryId         NUMBER          NOT NULL,
+    UpdateId        NUMBER          NOT NULL,
+    GatewayId       NUMBER          NOT NULL,
+    UpdateStatus    VARCHAR2(40)    NOT NULL,
+    CONSTRAINT PK_GatewayCertificateUpdEntry PRIMARY KEY (EntryId)
+);
+
+ALTER TABLE GatewayCertificateUpdateEntry 
+    ADD CONSTRAINT FK_GatewayCUEnt_GatewayCertUpd FOREIGN KEY (UpdateId)
+        REFERENCES GatewayCertificateUpdate (UpdateId)
+            ON DELETE CASCADE;
+
+ALTER TABLE GatewayCertificateUpdateEntry
+    ADD CONSTRAINT FK_GatewayCertUpdateEnt_Device FOREIGN KEY (GatewayId)
+        REFERENCES Device (DeviceId)
+            ON DELETE CASCADE;
+/* End YUK-13552 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

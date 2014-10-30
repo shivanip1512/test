@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/30/2014 3:41:42 PM                        */
+/* Created on:     10/30/2014 5:10:32 PM                        */
 /*==============================================================*/
 
 
@@ -5425,6 +5425,30 @@ go
 
 alter table GRAPHDEFINITION
    add constraint AK_GRNMUQ_GRAPHDEF unique (NAME)
+go
+
+/*==============================================================*/
+/* Table: GatewayCertificateUpdate                              */
+/*==============================================================*/
+create table GatewayCertificateUpdate (
+   UpdateId             numeric              not null,
+   CertificateId        varchar(100)         not null,
+   SendDate             datetime             not null,
+   FileName             varchar(100)         not null,
+   constraint PK_GatewayCertificateUpdate primary key (UpdateId)
+)
+go
+
+/*==============================================================*/
+/* Table: GatewayCertificateUpdateEntry                         */
+/*==============================================================*/
+create table GatewayCertificateUpdateEntry (
+   EntryId              numeric              not null,
+   UpdateId             numeric              not null,
+   GatewayId            numeric              not null,
+   UpdateStatus         varchar(40)          not null,
+   constraint PK_GatewayCertificateUpdEntry primary key (EntryId)
+)
 go
 
 /*==============================================================*/
@@ -12297,6 +12321,18 @@ go
 alter table GRAPHDATASERIES
    add constraint GrphDSeris_ptID foreign key (POINTID)
       references POINT (POINTID)
+go
+
+alter table GatewayCertificateUpdateEntry
+   add constraint FK_GatewayCUEnt_GatewayCertUpd foreign key (UpdateId)
+      references GatewayCertificateUpdate (UpdateId)
+         on delete cascade
+go
+
+alter table GatewayCertificateUpdateEntry
+   add constraint FK_GatewayCertUpdateEnt_Device foreign key (GatewayId)
+      references DEVICE (DEVICEID)
+         on delete cascade
 go
 
 alter table GraphCustomerList
