@@ -19,6 +19,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.cannontech.common.config.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
@@ -39,6 +40,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.google.common.collect.Table;
 
 /**
  * Test class for PaoDefinitionDao
@@ -632,7 +634,7 @@ public class PaoDefinitionDaoImplTest {
         }
 
         @Override
-        public LiteUnitMeasure getLiteUnitMeasureByPaoIdAndPointOffset(int paoId, int pointOffset) {
+        public Table<Integer, Integer, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos) {
             return null;
         }
         

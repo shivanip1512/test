@@ -2,15 +2,16 @@ package com.cannontech.core.dao;
 
 import java.util.List;
 
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.google.common.collect.Table;
 
 public interface UnitMeasureDao {
 
     /**
      * Returns a list of all available lite unit measure objects
-     * @return
      */
-    public List<LiteUnitMeasure> getLiteUnitMeasures();
+    List<LiteUnitMeasure> getLiteUnitMeasures();
     
     /**
      * Returns the unit of measure information for a given point id.
@@ -19,7 +20,7 @@ public interface UnitMeasureDao {
      * @param pointID
      * @return LiteUnitMeasure or null if it doesn't exist
      */
-    public LiteUnitMeasure getLiteUnitMeasureByPointID(int pointID);
+    LiteUnitMeasure getLiteUnitMeasureByPointID(int pointID);
 
     /**
      * Insert the method's description here.
@@ -27,15 +28,17 @@ public interface UnitMeasureDao {
      * @return com.cannontech.database.data.lite.LitePoint
      * @param pointID int
      */
-    public LiteUnitMeasure getLiteUnitMeasure(int uomid);
+    LiteUnitMeasure getLiteUnitMeasure(int uomid);
     
     /**
      * Method to get a unit of measure by name
      * @param uomName - Name of unit of measure
-     * @return - A unit of measure
      */
-    public LiteUnitMeasure getLiteUnitMeasure(String uomName);
+    LiteUnitMeasure getLiteUnitMeasure(String uomName);
 
-    LiteUnitMeasure getLiteUnitMeasureByPaoIdAndPointOffset(int paoId, int pointOffset);
+    /**
+     * Returns a mapping of paoId and pointOffset to a LiteUnitMeasure for all paos in list
+     */
+    Table<Integer, Integer, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos);
 
 }

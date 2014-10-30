@@ -24,6 +24,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.archivedValueExporter.model.ArchivedValuesExportFormatType;
+import com.cannontech.amr.archivedValueExporter.model.AttributeField;
 import com.cannontech.amr.archivedValueExporter.model.ExportAttribute;
 import com.cannontech.amr.archivedValueExporter.model.ExportField;
 import com.cannontech.amr.archivedValueExporter.model.ExportFormat;
@@ -68,6 +69,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Table;
 
 public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorService {
     
@@ -131,10 +133,10 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             Map<? extends YukonPao, PaoData> previewData = getPreviewData(userContext);
             if (format.getFormatType() == ArchivedValuesExportFormatType.FIXED_ATTRIBUTE) {
                 Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> fieldIdToAttributeData = getFixedPreviewAttributeData(format, previewData);
-                generateFixedBody(previewData.keySet(), previewData, format, fieldIdToAttributeData, userContext, writer);
+                generateFixedBody(previewData.keySet(), previewData, format, fieldIdToAttributeData, userContext, null, writer);
             } else {
                 ListMultimap<PaoIdentifier, PointValueQualityHolder> attributeData = getDynamicPreviewAttributeData(format, previewData);
-                generateDynamicBody(previewData.keySet(), previewData, format, userContext, BuiltInAttribute.USAGE, attributeData, writer);
+                generateDynamicBody(previewData.keySet(), previewData, format, userContext, BuiltInAttribute.USAGE, attributeData, null, writer);
             }
             writer.flush();
             preview.setBody(Lists.newArrayList(output.toString().split(System.lineSeparator())));
@@ -154,9 +156,15 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         
         Set<OptionalField> requestedFields = new HashSet<>();
         boolean needsName = false;
+        boolean needsUoM = false;
         for (ExportField field : format.getFields()) {
             if (field.getField().getType() == FieldType.DEVICE_NAME) {
                 needsName = true;
+            }
+            if (field.getField().getType() == FieldType.UNIT_OF_MEASURE
+                || field.getField().getType() == FieldType.ATTRIBUTE
+                && field.getAttributeField() == AttributeField.UNIT_OF_MEASURE) {
+                needsUoM = true;
             }
             OptionalField optionalField = field.getField().getType().getPaoDataOptionalField();
             if (optionalField != null) {
@@ -172,6 +180,10 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             Map<? extends YukonPao, PaoData> paoDataByPao = null;
             if (needsName || requestedFields.size() > 0) {
                 paoDataByPao = paoSelectionService.lookupPaoData(paosSublist, requestedFields);
+            }
+            Table<Integer, Integer, LiteUnitMeasure> unitMeasureLookupTable = null;
+            if (needsUoM) {
+                unitMeasureLookupTable = unitMeasureDao.getLiteUnitMeasureByPaoIdAndPointOffset(paosSublist);
             }
 
             switch (dataRange.getDataRangeType()) {
@@ -192,7 +204,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                         }
                     }
 
-                    generateFixedBody(paosSublist, paoDataByPao, format, endDateAttributeData, userContext, writer);
+                    generateFixedBody(paosSublist, paoDataByPao, format, endDateAttributeData, userContext, unitMeasureLookupTable, writer);
                     break;
 
                 case DATE_RANGE:
@@ -201,7 +213,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                         ListMultimap<PaoIdentifier, PointValueQualityHolder> dateRangeAttributeData =
                                 getDynamicAttributeData(paosSublist, attribute, dateRange, null, format);
                         generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute,
-                            dateRangeAttributeData, writer);
+                            dateRangeAttributeData, unitMeasureLookupTable, writer);
                     }
 
                     break;
@@ -214,7 +226,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                         ListMultimap<PaoIdentifier, PointValueQualityHolder> previousDaysAttributeData = 
                                 getDynamicAttributeData(paosSublist, attribute, previousDaysDateRange, null, format);
                         generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute,
-                            previousDaysAttributeData, writer);
+                            previousDaysAttributeData, unitMeasureLookupTable, writer);
                     }
 
                     break;
@@ -227,7 +239,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                         ListMultimap<PaoIdentifier, PointValueQualityHolder> sinceLastChangeIdAttributeData =
                                 getDynamicAttributeData(paosSublist, attribute, null, changeIdRange, format);
                         generateDynamicBody(paosSublist, paoDataByPao, format, userContext, attribute,
-                            sinceLastChangeIdAttributeData, writer);
+                            sinceLastChangeIdAttributeData, unitMeasureLookupTable, writer);
                     }
 
                     break;
@@ -271,14 +283,14 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             Map<? extends YukonPao, PaoData> paoDataByPao, 
             ExportFormat format, 
             Map<Integer, ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData, 
-            YukonUserContext userContext, BufferedWriter writer) throws IOException {
+            YukonUserContext userContext, Table<Integer, Integer, LiteUnitMeasure> unitMeasureLookupTable, BufferedWriter writer) throws IOException {
 
         for (YukonPao pao : paos) {
             PaoData data = null;
             if(paoDataByPao != null){
                 data = paoDataByPao.get(pao);
             }
-            String dataRow = getDataRow(format, pao, data, userContext, attributeData);
+            String dataRow = getDataRow(format, pao, data, userContext, attributeData, unitMeasureLookupTable);
             if (!dataRow.equals(SKIP_RECORD)) {
                 writer.write(dataRow);
                 writer.newLine();
@@ -297,7 +309,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             YukonUserContext userContext,
             Attribute attribute, 
             ListMultimap<PaoIdentifier, 
-            PointValueQualityHolder> attributeData, BufferedWriter writer) throws IOException {
+            PointValueQualityHolder> attributeData, Table<Integer, Integer, LiteUnitMeasure> unitMeasureLookupTable, BufferedWriter writer) throws IOException {
         
         for (YukonPao pao : paos) {
             List<PointValueQualityHolder> pointData = attributeData.get(pao.getPaoIdentifier());
@@ -308,7 +320,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
                     data = paoDataByPao.get(pao);
                 }
                 String reportRow = generateReportRow(format, pao, attribute, data,
-                        pointValueQualityHolder, userContext);
+                        pointValueQualityHolder, userContext, unitMeasureLookupTable);
                 if (!reportRow.equals(SKIP_RECORD)) {
                     writer.write(reportRow);
                     writer.newLine();
@@ -325,14 +337,14 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             Attribute attribute, 
             PaoData paoData,
             PointValueQualityHolder pointValueQualityHolder, 
-            YukonUserContext userContext) {
+            YukonUserContext userContext, Table<Integer, Integer, LiteUnitMeasure> unitMeasureLookupTable) {
 
         StringBuilder reportRow = new StringBuilder();
         
         for (int i = 0; i < format.getFields().size(); i++) {
             ExportField field = format.getFields().get(i);
             String value = getValue(field, pao, paoData, attribute, pointValueQualityHolder, userContext,
-                format.getDateTimeZoneFormat());
+                format.getDateTimeZoneFormat(), unitMeasureLookupTable);
 
             if (StringUtils.isEmpty(value) && field.getField().getType() != FieldType.PLAIN_TEXT) {
                 switch (field.getMissingAttribute()) {
@@ -364,7 +376,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             Attribute attribute,
             PointValueQualityHolder pointValueQualityHolder, 
             YukonUserContext userContext, 
-            TimeZoneFormat tzFormat) {
+            TimeZoneFormat tzFormat, Table<Integer, Integer, LiteUnitMeasure> unitMeasureLookupTable) {
         
         switch (exportField.getField().getType()) {
             case METER_NUMBER:
@@ -380,7 +392,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             case ATTRIBUTE_NAME:
                 return getAttributeName(attribute, userContext);
             case UNIT_OF_MEASURE:
-                return getUOMValue(pao, attribute, userContext);
+                return getUOMValue(pao, attribute, userContext, unitMeasureLookupTable);
             case POINT_NAME:
                 return pointValueQualityHolder == null ? "" : getPointName(attribute, pao);
             case POINT_VALUE:
@@ -393,7 +405,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             case ATTRIBUTE:
                 switch (exportField.getAttributeField()) {
                     case UNIT_OF_MEASURE:
-                        return getUOMValue(pao, exportField.getField().getAttribute().getAttribute(), userContext);
+                        return getUOMValue(pao, exportField.getField().getAttribute().getAttribute(), userContext, unitMeasureLookupTable);
                     case VALUE:
                         return getPointValue(exportField, pointValueQualityHolder);
                     case TIMESTAMP:
@@ -511,7 +523,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             PaoData paoData, 
             YukonUserContext userContext,
             Map<Integer, 
-            ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData) {
+            ListMultimap<PaoIdentifier, PointValueQualityHolder>> attributeData,
+            Table<Integer, Integer, LiteUnitMeasure> unitMeasureLookupTable) {
 
         StringBuilder dataRow = new StringBuilder();
         
@@ -524,7 +537,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             }
 
             String value = getValue(field, pao, paoData, null, pointValueQualityHolder, userContext,
-                format.getDateTimeZoneFormat());
+                format.getDateTimeZoneFormat(), unitMeasureLookupTable);
 
             if (StringUtils.isEmpty(value) && field.getField().getType() != FieldType.PLAIN_TEXT) {
                 switch (field.getMissingAttribute()) {
@@ -636,7 +649,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     /**
      * Gets the UOM value. Returns "" if the value was not found. If the meter.getDeviceId() is -1, returns the preview value.
      */
-    private String getUOMValue(YukonPao pao, Attribute attribute, YukonUserContext userContext) {
+    private String getUOMValue(YukonPao pao, Attribute attribute, YukonUserContext userContext,
+            Table<Integer, Integer, LiteUnitMeasure> unitMeasureLookupTable) {
         try {
             if (pao.getPaoIdentifier().getPaoId() == fakePaoId) {
                 return getDefaultUOMValue(userContext);
@@ -644,9 +658,8 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
             PaoPointIdentifier paoPointIdent = attributeService.getPaoPointIdentifierForAttribute(pao, attribute);
             int paoId = pao.getPaoIdentifier().getPaoId();
             int pointOffset = paoPointIdent.getPointIdentifier().getOffset();
-            LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasureByPaoIdAndPointOffset(paoId, pointOffset);
-            return unitMeasure == null ? "" : unitMeasure.getUnitMeasureName();
-        } catch (IllegalUseOfAttribute e) {
+            return unitMeasureLookupTable.get(paoId, pointOffset).getUnitMeasureName();
+        } catch (IllegalUseOfAttribute | IllegalArgumentException e) {
             // missing value
         }
 

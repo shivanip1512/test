@@ -4,14 +4,25 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlFragmentGenerator;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Table;
 
 /**
  * Implementation of UnitMeasureDao
@@ -21,6 +32,12 @@ import com.cannontech.database.data.lite.LiteUnitMeasure;
 public class UnitMeasureDaoImpl implements UnitMeasureDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    private ChunkingSqlTemplate chunkingSqlTemplate;
+
+    @PostConstruct
+    public void init() {
+        chunkingSqlTemplate = new ChunkingSqlTemplate(jdbcTemplate);
+    }
     
     private static final ParameterizedRowMapper<LiteUnitMeasure> liteUnitMeasureRowMapper = 
         new ParameterizedRowMapper<LiteUnitMeasure>() {
@@ -57,19 +74,31 @@ public class UnitMeasureDaoImpl implements UnitMeasureDao {
     }
 
     @Override
-    public LiteUnitMeasure getLiteUnitMeasureByPaoIdAndPointOffset(int paoId, int pointOffset) {
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT um.CalcType, um.Formula, um.LongName, um.UOMID, um.UOMName FROM point p ");
-            sql.append("JOIN pointunit pu ON p.pointid = pu.POINTID");
-            sql.append("JOIN unitmeasure um ON um.uomid = pu.uomid");
-            sql.append("WHERE paobjectid").eq(paoId);
-            sql.append("AND pointoffset").eq_k(pointOffset);
-            
-            return jdbcTemplate.queryForObject(sql, liteUnitMeasureRowMapper);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
-        }
+    public Table<Integer, Integer, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos) {
+        final HashBasedTable<Integer, Integer, LiteUnitMeasure> table = HashBasedTable.create();
+        SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT PointOffset, PAObjectID, um.CalcType, um.Formula, um.LongName, um.UomId, um.UomName");
+                sql.append("FROM Point p");
+                sql.append("JOIN PointUnit pu ON p.pointid = pu.pointid");
+                sql.append("JOIN UnitMeasure um ON um.uomid = pu.uomid");
+                sql.append("WHERE PaObjectId").in(subList);
+                return sql;
+            }
+        };
+        Iterable<Integer> paoIds = Lists.transform(paos, YukonPao.TO_PAO_ID);
+        chunkingSqlTemplate.query(generator, paoIds, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                LiteUnitMeasure unitMeasure = liteUnitMeasureRowMapper.mapRow(rs.getResultSet(), 0);
+                int paoId = rs.getInt("PAObjectID");
+                int pointOffset = rs.getInt("PointOffset");
+                table.put(paoId, pointOffset, unitMeasure);
+            }
+        });
+        return table;
     }
 
     @Override

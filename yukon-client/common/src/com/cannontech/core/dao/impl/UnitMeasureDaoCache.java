@@ -6,8 +6,10 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.google.common.collect.Table;
 
 /**
  * This is the first caching dao I've written. I don't expect it to be the 
@@ -78,7 +80,7 @@ public class UnitMeasureDaoCache implements UnitMeasureDao {
     }
 
     @Override
-    public LiteUnitMeasure getLiteUnitMeasureByPaoIdAndPointOffset(int paoId, int pointOffset) {
-        return delegate.getLiteUnitMeasureByPaoIdAndPointOffset(paoId, pointOffset);
+    public     Table<Integer, Integer, LiteUnitMeasure> getLiteUnitMeasureByPaoIdAndPointOffset(List<? extends YukonPao> paos) {
+        return delegate.getLiteUnitMeasureByPaoIdAndPointOffset(paos);
     }
 }

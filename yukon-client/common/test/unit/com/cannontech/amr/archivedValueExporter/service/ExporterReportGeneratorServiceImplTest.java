@@ -65,7 +65,9 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolverMock;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Table;
 
 public class ExporterReportGeneratorServiceImplTest {
     
@@ -106,12 +108,7 @@ public class ExporterReportGeneratorServiceImplTest {
         ReflectionTestUtils.setField(exporterReportGeneratorService, "messageSourceResolver", messageSourceResolver);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "rawPointHistoryDao", rawPointHistoryDao);
         ReflectionTestUtils.setField(exporterReportGeneratorService, "rfnDeviceDao", rfnDeviceDao);
-        ReflectionTestUtils.setField(exporterReportGeneratorService, "unitMeasureDao", new MockUnitMeasureDaoImpl() {
-            @Override
-            public LiteUnitMeasure getLiteUnitMeasureByPaoIdAndPointOffset(int paoId, int pointOffset) {
-                return kWH;
-            }
-        });
+        ReflectionTestUtils.setField(exporterReportGeneratorService, "unitMeasureDao", new MockUnitMeasureDaoImpl());
     }
 
     private final static DateTimeZone centralTimeZone = DateTimeZone.forOffsetHoursMinutes(5, 0);
@@ -180,29 +177,31 @@ public class ExporterReportGeneratorServiceImplTest {
 
     @Test
     public void getValue_minUsageAttribute_Test() {
-
+        
         // Point Value Test
         ExportField exportFieldPointValue = getExportField(0, FieldType.POINT_VALUE, earliestUsageAttribute, AttributeField.VALUE, "#####");
-        String pointValue = exporterReportGeneratorService.getValue(exportFieldPointValue, null, null, null, pointValueQualityHolder, userContextOne, tzFormat);
+        String pointValue = exporterReportGeneratorService.getValue(exportFieldPointValue, null, null, null, pointValueQualityHolder, userContextOne, tzFormat, null);
         
         Assert.assertEquals(pointValue, "600");
 
         // Timestamp Test
         ExportField exportFieldTimestamp = getExportField(0, FieldType.POINT_TIMESTAMP, earliestUsageAttribute, AttributeField.TIMESTAMP, "MM/dd/yyyy");
-        String timestampValue = exporterReportGeneratorService.getValue(exportFieldTimestamp, null, null, null, pointValueQualityHolder, userContextOne, tzFormat);
+        String timestampValue = exporterReportGeneratorService.getValue(exportFieldTimestamp, null, null, null, pointValueQualityHolder, userContextOne, tzFormat, null);
         
         Assert.assertEquals(timestampValue, "07/12/2012");
 
         // Unit of Measure Test 
         YukonMeter meter = meterDao.getForMeterNumber("Meter Number 1");
+        Table<Integer, Integer, LiteUnitMeasure>  unitMeasureLookup = HashBasedTable.create();
+        unitMeasureLookup.put(meter.getPaoIdentifier().getPaoId(), 0, new LiteUnitMeasure(0, "kWH", 1, "kWH"));
         ExportField exportFieldUnitOfMeasure = getExportField(0, FieldType.UNIT_OF_MEASURE, earliestUsageAttribute, AttributeField.UNIT_OF_MEASURE, null);
-        String unitOfMeasureValue = exporterReportGeneratorService.getValue(exportFieldUnitOfMeasure, meter, null, USAGE, pointValueQualityHolder, userContextOne, tzFormat);
+        String unitOfMeasureValue = exporterReportGeneratorService.getValue(exportFieldUnitOfMeasure, meter, null, USAGE, pointValueQualityHolder, userContextOne, tzFormat, unitMeasureLookup);
         
         Assert.assertEquals(unitOfMeasureValue, "kWH");
         
         // Quality Test 
         ExportField exportFieldQuality= getExportField(0, FieldType.POINT_QUALITY, earliestUsageAttribute, AttributeField.QUALITY, null);
-        String qualityValue = exporterReportGeneratorService.getValue(exportFieldQuality, null, null, null, pointValueQualityHolder, userContextOne, tzFormat);
+        String qualityValue = exporterReportGeneratorService.getValue(exportFieldQuality, null, null, null, pointValueQualityHolder, userContextOne, tzFormat, null);
         
         Assert.assertEquals(qualityValue, "Manual");
     }
@@ -225,28 +224,28 @@ public class ExporterReportGeneratorServiceImplTest {
 
         // Point Value Test
         ExportField meterExportFieldMeterNumber = getExportField(0, METER_NUMBER);
-        String meterNumberValue = exporterReportGeneratorService.getValue(meterExportFieldMeterNumber, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat);
+        String meterNumberValue = exporterReportGeneratorService.getValue(meterExportFieldMeterNumber, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat, null);
 
         Assert.assertEquals(meterNumberValue, "Meter Number 1");
         
         ExportField meterExportFieldDeviceName = getExportField(0, DEVICE_NAME);
-        String deviceNameValue = exporterReportGeneratorService.getValue(meterExportFieldDeviceName, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat);
+        String deviceNameValue = exporterReportGeneratorService.getValue(meterExportFieldDeviceName, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat, null);
 
         Assert.assertEquals(deviceNameValue, "MCT410FL 1");
         
         ExportField meterExportFieldAddress = getExportField(0, ADDRESS);
-        String addressValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat);
+        String addressValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat, null);
 
         Assert.assertEquals(addressValue, "Address A");
 
         YukonMeter rfnMeter = meterDao.getForMeterNumber("Meter Number 3");
         PaoData rfnPaoData = makePaoDataFromMeter(rfnMeter);
-        String rfnSerialNumberValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, rfnMeter, rfnPaoData, null, pointValueQualityHolder, userContextOne, tzFormat);
+        String rfnSerialNumberValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, rfnMeter, rfnPaoData, null, pointValueQualityHolder, userContextOne, tzFormat,null);
 
         Assert.assertEquals("410987654", rfnSerialNumberValue);
         
         ExportField meterExportFieldRoute = getExportField(0, ROUTE);
-        String routeValue = exporterReportGeneratorService.getValue(meterExportFieldRoute, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat);
+        String routeValue = exporterReportGeneratorService.getValue(meterExportFieldRoute, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat, null);
 
         Assert.assertEquals(routeValue, "Route A");
     }
@@ -257,12 +256,12 @@ public class ExporterReportGeneratorServiceImplTest {
         PaoData paoData = makePaoDataFromMeter(meter);
         
         ExportField meterExportFieldAddress = getExportField(0, ADDRESS);
-        String addressValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat);
+        String addressValue = exporterReportGeneratorService.getValue(meterExportFieldAddress, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat, null);
 
         Assert.assertEquals("", addressValue);
         
         ExportField meterExportFieldRoute = getExportField(0, ROUTE);
-        String routeValue = exporterReportGeneratorService.getValue(meterExportFieldRoute, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat);
+        String routeValue = exporterReportGeneratorService.getValue(meterExportFieldRoute, meter, paoData, null, pointValueQualityHolder, userContextOne, tzFormat, null);
 
         Assert.assertEquals( "", routeValue);
     }
@@ -270,7 +269,7 @@ public class ExporterReportGeneratorServiceImplTest {
     @Test
     public void getValue_Plain_Test() {
         ExportField exportField = getExportField(0, PLAIN_TEXT, "This is plain text");
-        String plainTextValue = exporterReportGeneratorService.getValue(exportField, null, null, null, pointValueQualityHolder, userContextOne, tzFormat);
+        String plainTextValue = exporterReportGeneratorService.getValue(exportField, null, null, null, pointValueQualityHolder, userContextOne, tzFormat, null);
         
         Assert.assertEquals(plainTextValue, "This is plain text");
     }
