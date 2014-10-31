@@ -179,7 +179,7 @@ public class MapController {
         }
         
         // Throw unsupported devices in as hidden
-        Set<SimpleDevice> unsupported = Sets.difference(devices, PaoUtils.asSimpleDeviceSet(points.values()));
+        Set<SimpleDevice> unsupported = Sets.difference(devices, Sets.newHashSet(PaoUtils.asSimpleDeviceList(points.values())));
         for (SimpleDevice device : unsupported) {
             results.put(device.getDeviceId(), false);
         }
