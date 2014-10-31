@@ -9,6 +9,7 @@ import java.util.SortedMap;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
@@ -231,11 +232,11 @@ public interface AttributeService {
     List<Integer> getPointIds(Iterable<SimpleDevice> devices, BuiltInAttribute attribute);
 
     /**
-     * Returns a map of {@link SimpleDevice} to {@link LitePoint} for the point that maps
+     * Returns a map of {@link PaoIdentifier} to {@link LitePoint} for the point that maps
      * to the attribute and pao type for each device.
      * Ignores devices that do not support the attribute.
      */
-    BiMap<SimpleDevice, LitePoint> getPoints(Iterable<SimpleDevice> devices, BuiltInAttribute attribute);
+    BiMap<PaoIdentifier, LitePoint> getPoints(Iterable<? extends YukonPao> devices, BuiltInAttribute attribute);
 
     /**
      * This method returns a list of PaoMultiPointIdentifier objects for of the passed in PAO that has a point

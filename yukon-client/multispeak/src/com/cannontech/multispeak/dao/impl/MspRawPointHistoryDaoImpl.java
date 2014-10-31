@@ -1,13 +1,11 @@
 package com.cannontech.multispeak.dao.impl;
 
-import java.sql.SQLException;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.EnumSet;
-import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -16,25 +14,39 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.meter.dao.impl.MeterRowMapper;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
+import com.cannontech.core.authorization.support.Permission;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Clusivity;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.MeterReadProcessingService;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.MspBlockReturnList;
 import com.cannontech.multispeak.data.MspMeterReadReturnList;
+import com.cannontech.multispeak.data.MspScadaAnalogReturnList;
 import com.cannontech.multispeak.deploy.service.MeterRead;
-import com.cannontech.multispeak.deploy.service.QualityDescription;
 import com.cannontech.multispeak.deploy.service.ScadaAnalog;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -43,11 +55,16 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 {
 	private final Logger log = YukonLogManager.getLogger(MspRawPointHistoryDaoImpl.class);
 	
-	@Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-	@Autowired private RawPointHistoryDao rawPointHistoryDao;
-	@Autowired private MeterReadProcessingService meterReadProcessingService;
+    @Autowired private AttributeService attributeService;
+    @Autowired private MeterReadProcessingService meterReadProcessingService;
     @Autowired private MeterRowMapper meterRowMapper;
-    
+    @Autowired private PaoDao paoDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
+    @Autowired private PaoAuthorizationService paoAuthorizationService;
+    @Autowired private RawPointHistoryDao rawPointHistoryDao;
+    @Autowired private ScadaAnalogProcessingServiceImpl scadaAnalogProcessingServiceImpl;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+
 	@Override
 	public MspMeterReadReturnList retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, 
 	                                      Date endDate, String lastReceived, int maxRecords) {
@@ -279,45 +296,66 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
     }
 
     @Override
-    public List<ScadaAnalog> getAllSCADAAnalogData() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ypao.PAOName, t.PointName, t.PointOffset, rph.Value, rph.Timestamp");
-        sql.append("from RawPointHistory rph");
-        sql.append("join (");
-        sql.append("    select p.PointId, p.PAObjectID, p.PointName, p.PointOffset, max(rph.Timestamp) as MostRecent ");
-        sql.append("    from RawPointHistory rph");
-        sql.append("    join Point p on p.PointId = rph.PointId");
-        sql.append("    where p.PointId in (");
-        sql.append("        select PointId");
-        sql.append("        from Point");
-        sql.append("        where PointType = 'Analog'");
-        sql.append("          and PAObjectID in (select PAObjectID");
-        sql.append("                             from YukonPAObject");
-        sql.append("                             where Type IN ('LM SEP PROGRAM', 'LM DIRECT PROGRAM')))");
-        sql.append("    group by p.PointId, p.PAObjectID, p.PointName, p.PointOffset) t on (rph.PointId = t.PointId and rph.Timestamp = t.MostRecent)");
-        sql.append("join YukonPAObject ypao on ypao.PAObjectID = t.PAObjectID");
-        sql.append("order by PaoName, PointOffset");
-        
-        return yukonJdbcTemplate.query(sql, new YukonRowMapper<ScadaAnalog>() {
-            @Override
-            public ScadaAnalog mapRow(YukonResultSet rs) throws SQLException {
-                ScadaAnalog scadaAnalog = new ScadaAnalog();
+    public MspScadaAnalogReturnList retrieveLatestScadaAnalogs(LiteYukonUser user) {
 
-                // objectId identifier is limited to 52 characters by customer system, so take first 
-                // 50 characters of pao name plus '.#' where # is the point offset, 1-4.
-                String paoName = rs.getString("PAOName");
-                String objectId = (paoName.length() > 50 ? paoName.substring(0, 50) : paoName) + "."
-                        + rs.getInt("PointOffset");
-                String comments = rs.getString("PAOName") + " - " + rs.getString("PointName");
-                scadaAnalog.setObjectID(objectId);
-                scadaAnalog.setComments(comments);
-                scadaAnalog.setQuality(QualityDescription.Measured);  // Corresponds to PointQuality.NORMAL.
-                Calendar cal = new GregorianCalendar();
-                cal.setTime(rs.getDate("Timestamp"));
-                scadaAnalog.setTimeStamp(cal);
-                scadaAnalog.setValue(rs.getFloat("Value"));
-                return scadaAnalog;
+        List<LiteYukonPAObject> programs = getAuthorizedProgramsList(user);
+        
+        final Date timerStart = new Date();
+        
+        EnumMap<BuiltInAttribute, Map<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
+        int estimatedSize = 0;
+
+        BiMap<PaoIdentifier, LitePoint> deviceToPoint = HashBiMap.create();
+        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.CONNECTED_LOAD, 
+                                                                BuiltInAttribute.DIVERSIFIED_LOAD,
+                                                                BuiltInAttribute.MAX_LOAD_REDUCTION,
+                                                                BuiltInAttribute.AVAILABLE_LOAD_REDUCTION);
+        // load up results for each attribute
+        for (BuiltInAttribute attribute : attributesToLoad) {
+            Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(programs, attribute, false, null);
+            resultsPerAttribute.put(attribute, resultsForAttribute);
+            estimatedSize += resultsForAttribute.size();
+            deviceToPoint.putAll(attributeService.getPoints(programs, attribute));
+        }
+
+        List<ScadaAnalog> scadaAnalogs = Lists.newArrayListWithExpectedSize(estimatedSize);
+        
+        // loop over programs, results will be returned in whatever order getProgramList returns the programs in
+        for (LiteYukonPAObject program : programs) {
+            for (BuiltInAttribute attribute : attributesToLoad) {
+                
+                LitePoint litePoint = deviceToPoint.get(program.getPaoIdentifier());
+                PointValueQualityHolder pointValueQualityHolder = 
+                    resultsPerAttribute.get(attribute).remove(program.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check
+                
+                if (pointValueQualityHolder != null) {
+                    ScadaAnalog scadaAnalog = scadaAnalogProcessingServiceImpl.createScadaAnalog(program, litePoint, pointValueQualityHolder);
+                    scadaAnalogs.add(scadaAnalog);
+                }
             }
-        });
+        }
+
+        MspScadaAnalogReturnList mspScadaAnalogs = new MspScadaAnalogReturnList();
+        mspScadaAnalogs.setScadaAnalogs(scadaAnalogs);
+        mspScadaAnalogs.setReturnFields(scadaAnalogs, scadaAnalogs.size()+1);
+        
+        log.debug("Retrieved " + scadaAnalogs.size() + " Latest ScadaAnalogs. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        
+        return mspScadaAnalogs;
+    }
+
+    /**
+     * Returns alist of paObjects for PaoTag.LM_PROGRAM
+     * @return
+     */
+    private List<LiteYukonPAObject> getAuthorizedProgramsList(LiteYukonUser user) {
+        // TODO - should this method actually be getting only programs that this user has access to? PaoPermissions?
+        Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
+        List<LiteYukonPAObject> programs = Lists.newArrayList();
+        for (PaoType paoType : paoTypes) {
+            List<LiteYukonPAObject> toFilter = paoDao.getLiteYukonPAObjectByType(paoType);
+            programs.addAll(paoAuthorizationService.filterAuthorized(user, toFilter, Permission.LM_VISIBLE));
+        }
+        return programs;
     }
 }

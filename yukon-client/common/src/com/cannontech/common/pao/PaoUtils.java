@@ -16,6 +16,7 @@ import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
@@ -83,7 +84,17 @@ public class PaoUtils {
         buildSimpleDeviceList(builder, identifiers);
         return builder.build();
     }
-    
+
+    public static ImmutableSet<SimpleDevice> asSimpleDeviceSet(Iterable<? extends YukonPao> identifiers) {
+        com.google.common.collect.ImmutableSet.Builder<SimpleDevice> builder = ImmutableSet.builder();
+        for (YukonPao paoIdentifier : identifiers) {
+            Validate.isTrue(paoIdentifier.getPaoIdentifier().getPaoType().getPaoCategory() == PaoCategory.DEVICE,
+                "all identifiers must refer to a DEVICE");
+            builder.add(new SimpleDevice(paoIdentifier));
+        }
+        return builder.build();
+    }
+
     public static ImmutableList<Integer> asPaoIdList(Iterable<? extends YukonPao> paos) {
         Iterable<Integer> transformedList = Iterables.transform(paos, yukonPaoToPaoIdFunction);
         return ImmutableList.copyOf(transformedList);

@@ -36,6 +36,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -234,9 +235,9 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
     @Override
     public Set<SimpleDevice> getVerifiableDevices(Set<? extends YukonPao> paos){
         List<SimpleDevice> devices = PaoUtils.asSimpleDeviceListFromPaos(paos);
-        BiMap<SimpleDevice, LitePoint> deviceToPoint =
+        BiMap<PaoIdentifier, LitePoint> deviceToPoint =
             attributeService.getPoints(devices, BuiltInAttribute.RF_DEMAND_RESET_STATUS);
-        return deviceToPoint.keySet();
+        return PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet());
     }
 
     @Override
@@ -247,12 +248,12 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                 rfnDeviceDao.getRfnIdentifiersByPao(paos);
         final Map<SimpleDevice, SpecificDeviceErrorDescription> errors = Maps.newHashMap();
         final Map<RfnIdentifier, SimpleDevice> devicesByRfnMeterIdentifier = Maps.newHashMap();
-        List<SimpleDevice> devices = PaoUtils.asSimpleDeviceListFromPaos(paos);
-        BiMap<SimpleDevice, LitePoint> deviceToPoint =
-            attributeService.getPoints(devices, BuiltInAttribute.RF_DEMAND_RESET_STATUS);
+
+        BiMap<PaoIdentifier, LitePoint> deviceToPoint =
+            attributeService.getPoints(paos, BuiltInAttribute.RF_DEMAND_RESET_STATUS);
         
-        final Set<SimpleDevice> verifiableDevices = deviceToPoint.keySet();
-        Set<SimpleDevice> devicesWithoutPoint = Sets.difference(new HashSet<SimpleDevice>(devices), verifiableDevices);
+        final Set<SimpleDevice> verifiableDevices = PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet());
+        Set<SimpleDevice> devicesWithoutPoint = Sets.difference(PaoUtils.asSimpleDeviceSet(paos), verifiableDevices);
         
         if(log.isDebugEnabled() && !devicesWithoutPoint.isEmpty()){
             log.error("Can't Verify:" + devicesWithoutPoint + " \"RF Demand Reset Status\" point is missing.");
@@ -363,11 +364,10 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                                 LiteYukonUser user) {
 
         sendDemandReset(sendExecution, paos, callback, user);
-        List<SimpleDevice> devices = PaoUtils.asSimpleDeviceListFromPaos(paos);
-        BiMap<SimpleDevice, LitePoint> deviceToPoint =
-            attributeService.getPoints(devices, BuiltInAttribute.RF_DEMAND_RESET_STATUS);
+        BiMap<PaoIdentifier, LitePoint> deviceToPoint =
+            attributeService.getPoints(paos, BuiltInAttribute.RF_DEMAND_RESET_STATUS);
         
-        final Set<SimpleDevice> verifiableDevices = deviceToPoint.keySet();
+        final Set<SimpleDevice> verifiableDevices = PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet());
         
         if (!verifiableDevices.isEmpty()) {
             if (log.isDebugEnabled()) {

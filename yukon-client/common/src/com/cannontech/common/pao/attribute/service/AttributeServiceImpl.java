@@ -412,17 +412,17 @@ public class AttributeServiceImpl implements AttributeService {
     }
 
     @Override
-    public BiMap<SimpleDevice, LitePoint> getPoints(Iterable<SimpleDevice> devices, BuiltInAttribute attribute) {
+    public BiMap<PaoIdentifier, LitePoint> getPoints(Iterable<? extends YukonPao> devices, BuiltInAttribute attribute) {
         ChunkingSqlTemplate chunkyTemplate = new ChunkingSqlTemplate(jdbcTemplate);
 
         // get the points that match the attribute for these devices
-        final BiMap<SimpleDevice, LitePoint> points = HashBiMap.create();
+        final BiMap<PaoIdentifier, LitePoint> points = HashBiMap.create();
 
         // Look up point ids by pao type, sink into pointIds list
         // About 6x faster than using getPointForAttribute(device, attribute) for each device
-        ListMultimap<PaoType, SimpleDevice> typeToDevices = ArrayListMultimap.create();
-        for (SimpleDevice device : devices) {
-            typeToDevices.put(device.getDeviceType(), device);
+        ListMultimap<PaoType, YukonPao> typeToDevices = ArrayListMultimap.create();
+        for (YukonPao pao: devices) {
+            typeToDevices.put(pao.getPaoIdentifier().getPaoType(), pao);
         }
         for (PaoType type : typeToDevices.keySet()) {
 
@@ -447,7 +447,7 @@ public class AttributeServiceImpl implements AttributeService {
                         public void processRow(YukonResultSet rs) throws SQLException {
                             PaoIdentifier pao = rs.getPaoIdentifier("PAObjectId", "Type");
                             LitePoint litePoint = pointDao.createLitePoint(rs);
-                            points.put(new SimpleDevice(pao), litePoint);
+                            points.put(pao, litePoint);
                         }
                     });
             } catch (IllegalUseOfAttribute e) {

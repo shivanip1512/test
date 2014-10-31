@@ -70,6 +70,8 @@
          parent="blockProcessingService">
   </bean>
   
+  <bean class="com.cannontech.multispeak.dao.impl.ScadaAnalogProcessingServiceImpl"/>
+    
   <bean id="mspObjectDao" class="com.cannontech.multispeak.dao.impl.MspObjectDaoImpl">
   </bean>
 

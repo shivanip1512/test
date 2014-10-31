@@ -19,6 +19,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
@@ -134,7 +135,7 @@ public class MapController {
         Map<Integer, Group> groups = Maps.uniqueIndex(filter.getGroups(), Group.ID_FUNCTION);
         
         Set<SimpleDevice> devices = Sets.newHashSet(deviceCollection.getDeviceList());
-        BiMap<LitePoint, SimpleDevice> points = 
+        BiMap<LitePoint, PaoIdentifier> points = 
                 attributeService.getPoints(devices, filter.getAttribute()).inverse();
         
         Map<Integer, LitePoint> statusPoints = new HashMap<>();
@@ -156,9 +157,9 @@ public class MapController {
             Group group = groups.get(lp.getStateGroupID());
             LiteState state = stateDao.findLiteState(lp.getStateGroupID(), (int) pvqh.getValue());
             if (state.getStateRawState() == group.getState()) {
-                results.put(points.get(lp).getDeviceId(), true);
+                results.put(points.get(lp).getPaoId(), true);
             } else {
-                results.put(points.get(lp).getDeviceId(), false);
+                results.put(points.get(lp).getPaoId(), false);
             }
         }
         
@@ -170,9 +171,9 @@ public class MapController {
             Group group = groups.get(lp.getStateGroupID());
             LiteState state = pointService.getCurrentStateForNonStatusPoint(lp, signals.get(pointId));
             if (state.getStateRawState() == group.getState()) {
-                results.put(points.get(lp).getDeviceId(), true);
+                results.put(points.get(lp).getPaoId(), true);
             } else {
-                results.put(points.get(lp).getDeviceId(), false);
+                results.put(points.get(lp).getPaoId(), false);
             }
         }
         

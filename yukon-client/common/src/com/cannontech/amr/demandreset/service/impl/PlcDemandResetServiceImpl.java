@@ -29,6 +29,7 @@ import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -74,9 +75,9 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
     @Override
     public Set<SimpleDevice> getVerifiableDevices(Set<? extends YukonPao> paos){
         List<SimpleDevice> devices = PaoUtils.asSimpleDeviceListFromPaos(paos);
-        BiMap<SimpleDevice, LitePoint> deviceToPoint =
+        BiMap<PaoIdentifier, LitePoint> deviceToPoint =
             attributeService.getPoints(devices, BuiltInAttribute.IED_DEMAND_RESET_COUNT);
-        return deviceToPoint.keySet();
+        return PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet());
     }
     
     @Override
@@ -117,7 +118,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         callbacks.add(initiatedCallback);
 
         // Only devices that support the IED_DEMAND_RESET_COUNT attribute are able to be verified.
-        BiMap<SimpleDevice, LitePoint> deviceToPoint =
+        BiMap<PaoIdentifier, LitePoint> deviceToPoint =
             attributeService.getPoints(devices, BuiltInAttribute.IED_DEMAND_RESET_COUNT);
 
         Set<SimpleDevice> devicesWithoutPoint = Sets.difference(devices, deviceToPoint.keySet());
@@ -129,10 +130,12 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
             callback.cannotVerify(device, getError(DemandResetError.NO_POINT));
         }
 
+        Set<SimpleDevice> deviceToPointKeySet = PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet());
+        
         // send verification to devices that support IED_DEMAND_RESET_COUNT attribute
         if (!deviceToPoint.isEmpty()) {
             List<CommandRequestDevice> verificationCommands =
-                getCommandRequests(deviceToPoint.keySet(), LAST_RESET_TIME_COMMAND);
+                getCommandRequests(deviceToPointKeySet, LAST_RESET_TIME_COMMAND);
             VerificationCallback verificationCallback =
                 new VerificationCallback(callback, deviceToPoint, whenRequested);
 			commandRequestDeviceExecutor.createTemplateAndExecute(verificationExecution, verificationCallback,
@@ -197,11 +200,11 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         private final DemandResetCallback callback;
         Set<SimpleDevice> meters = new HashSet<>();
         DateTime whenRequested;
-        BiMap<SimpleDevice, LitePoint> deviceToPoint;
+        BiMap<PaoIdentifier, LitePoint> deviceToPoint;
         
-        VerificationCallback(DemandResetCallback callback, BiMap<SimpleDevice, LitePoint> deviceToPoint, DateTime whenRequested) {
+        VerificationCallback(DemandResetCallback callback, BiMap<PaoIdentifier, LitePoint> deviceToPoint, DateTime whenRequested) {
             this.callback = callback;
-            this.meters.addAll(deviceToPoint.keySet());
+            this.meters.addAll(PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet()));
             this.whenRequested = whenRequested;
             this.deviceToPoint = deviceToPoint;
         }

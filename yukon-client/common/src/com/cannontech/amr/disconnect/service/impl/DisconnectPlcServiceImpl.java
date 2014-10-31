@@ -23,6 +23,8 @@ import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.impl.CommandCallbackBase;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -99,10 +101,10 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
             this.callback = callback;
             this.meters = meters;
             this.command = command;
-            BiMap<SimpleDevice, LitePoint> deviceToPoint =
+            BiMap<PaoIdentifier, LitePoint> deviceToPoint =
                 attributeService.getPoints(meters, BuiltInAttribute.DISCONNECT_STATUS);
 
-            devicesWithoutPoint = Sets.difference(meters, deviceToPoint.keySet());
+            devicesWithoutPoint = Sets.difference(meters, PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet()));
         }
 
         /**
