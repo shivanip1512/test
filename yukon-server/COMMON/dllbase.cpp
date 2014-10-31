@@ -123,53 +123,83 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         char *eptr;
         DebugLevel = strtoul(str.c_str(), &eptr, 16);
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_DEBULEVEL found : " << str << endl;
+        if(DebugLevel & 0x0001)
+        {
+            CTILOG_TRACE(dout, "Configuration Parameter DB_DEBUGLEVEL found : " << str);
+        }
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_DEBULEVEL   failed : " << endl;
+        if(DebugLevel & 0x0001)
+        {
+            CTILOG_TRACE(dout, "Configuration Parameter DB_DEBUGLEVEL failed");
+        }
     }
 
     if(!(str = gConfigParms.getValueAsString("DB_TYPE")).empty() ||
        !(str = gConfigParms.getValueAsString("DB_RWDBDLL")).empty() )
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL/DB_TYPE found : " << str << endl;
+        if(DebugLevel & 0x0001)
+        {
+            CTILOG_TRACE(dout, "Configuration Parameter DB_RWDBDLL/DB_TYPE found : " << str);
+        }
 
         dbType = boost::algorithm::to_lower_copy(str);
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_RWDBDLL/DB_TYPE not found " << endl;
+        if(DebugLevel & 0x0001)
+        {
+            CTILOG_TRACE(dout, "Configuration Parameter DB_RWDBDLL/DB_TYPE not found");
+        }
     }
 
     if( !(str = gConfigParms.getValueAsString("DB_SQLSERVER")).empty() )
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_SQLSERVER found : " << str << endl;
+        if(DebugLevel & 0x0001)
+        {
+            CTILOG_TRACE(dout, "Configuration Parameter DB_SQLSERVER found : " << str);
+        }
         dbName = str;
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_SQLSERVER   failed : " << endl;
+        if(DebugLevel & 0x0001)
+        {
+            CTILOG_TRACE(dout, "Configuration Parameter DB_SQLSERVER failed");
+        }
     }
 
     if( !(str = gConfigParms.getValueAsString("DB_USERNAME")).empty() )
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_USERNAME  found : " << str << endl;
+        if(DebugLevel & 0x0001)
+        {
+            CTILOG_TRACE(dout, "Configuration Parameter DB_USERNAME  found : " << str);
+        }
         dbUser = str;
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_USERNAME   failed : " << endl;
+        if(DebugLevel & 0x0001)
+        {
+            CTILOG_TRACE(dout, "Configuration Parameter DB_USERNAME failed");
+        }
     }
 
     if( !(str = gConfigParms.getValueAsString("DB_PASSWORD")).empty() )
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_PASSWORD  found : " << str << endl;
+        if(DebugLevel & 0x0001)
+        {
+            CTILOG_TRACE(dout, "Configuration Parameter DB_PASSWORD  found : " << str);
+        }
         dbPassword = str;
     }
     else
     {
-        if(DebugLevel & 0x0001) cout << "Configuration Parameter DB_PASSWORD   failed : " << endl;
+        if(DebugLevel & 0x0001)
+        {
+            CTILOG_TRACE(dout, "Configuration Parameter DB_PASSWORD failed");
+        }
     }
 
     gMemoryReportIntervalSeconds = gConfigParms.getValueAsULong("MEMORY_REPORT_INTERVAL_SECONDS", 900);
@@ -178,34 +208,48 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         useVersacomTypeFourControl = TRUE;
     }
-    if(DebugLevel & 0x0001) cout << "Versacom Control Commands are " << ( useVersacomTypeFourControl ? "Type 4 : ": "Extended (NOT Type 4) : ") << endl;
+    if(DebugLevel & 0x0001)
+    {
+        CTILOG_TRACE(dout, "Versacom Control Commands are " << (useVersacomTypeFourControl ? "Type 4" : "Extended (NOT Type 4)"));
+    }
 
 
     if( !(str = gConfigParms.getValueAsString("PORTER_COALESCE_RIPPLE")).empty() && (!stricmp("TRUE", str.c_str())))
     {
         gCoalesceRippleBits = true;
     }
-    if(DebugLevel & 0x0001) cout << "Ripple Control Commands are " << ( gCoalesceRippleBits ? "coalesced ": "NOT coalesced ") << endl;
+    if(DebugLevel & 0x0001)
+    {
+        CTILOG_TRACE(dout, "Ripple Control Commands are " << (gCoalesceRippleBits ? "coalesced": "NOT coalesced"));
+    }
 
 
     if( !(str = gConfigParms.getValueAsString("YUKON_LOG_PORTS")).empty() && (!stricmp("TRUE", str.c_str())))
     {
         gLogPorts = true;
     }
-    if(DebugLevel & 0x0001) cout << "Ports will " << ( gLogPorts ? "log to file" : "NOT log to file") << endl;
+    if(DebugLevel & 0x0001)
+    {
+        CTILOG_TRACE(dout, "Ports will " << (gLogPorts ? "log to file" : "NOT log to file"));
+    }
 
     if( !(str = gConfigParms.getValueAsString("YUKON_DNP_VERBOSE")).empty() && (!stricmp("TRUE", str.c_str())))
     {
         gDNPVerbose = true;
     }
-    if(DebugLevel & 0x0001) cout << "DNP output is " << ( gDNPVerbose ? "verbose" : "quiet") << endl;
+    if(DebugLevel & 0x0001)
+    {
+        CTILOG_TRACE(dout, "DNP output is " << (gDNPVerbose ? "verbose" : "quiet"));
+    }
 
     if( !(str = gConfigParms.getValueAsString("YUKON_DNP_OFFLINE_IS_NONUPDATED")).empty() && (!stricmp("TRUE", str.c_str())))
     {
         gDNPOfflineNonUpdated = true;
     }
-    if(DebugLevel & 0x0001) cout << "DNP points interpret unset online flags as " << ( gDNPOfflineNonUpdated ? "non-updated" : "normal") << endl;
-
+    if(DebugLevel & 0x0001)
+    {
+        CTILOG_TRACE(dout, "DNP points interpret unset online flags as " << (gDNPOfflineNonUpdated ? "non-updated" : "normal"));
+    }
 
     //  this is the MCT 400 SPID
     if(!(str = gConfigParms.getValueAsString("YUKON_MCT400SERIESSPID")).empty())
@@ -222,12 +266,18 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     if( !(str = gConfigParms.getValueAsString("MODEM_CONNECTION_TIMEOUT")).empty() )
     {
         ModemConnectionTimeout = atoi(str.c_str());
-        if(DebugLevel & 0x0001) cout << "Modem Connection Timeout is set to " << str << " seconds" << endl;
+        if(DebugLevel & 0x0001)
+        {
+            CTILOG_TRACE(dout, "Modem Connection Timeout is set to " << str << " seconds");
+        }
     }
     else
     {
         ModemConnectionTimeout = 60;
-        if(DebugLevel & 0x0001) cout << "Modem Connection Timeout is set to 60 seconds" << endl;
+        if(DebugLevel & 0x0001)
+        {
+            CTILOG_TRACE(dout, "Modem Connection Timeout is set to 60 seconds");
+        }
     }
 
     {
@@ -243,7 +293,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
 
         if (DebugLevel & 0x0001)
         {
-            cout << "Yukon Log Directory: " << gLogDirectory << endl;
+            CTILOG_TRACE(dout, "Yukon Log Directory: " << gLogDirectory);
         }
     }
 
@@ -252,11 +302,11 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         if ( gLogRetention )
         {
-            cout << "Yukon Log Retention: " << gLogRetention << " days" << endl;
+            CTILOG_TRACE(dout, "Yukon Log Retention: " << gLogRetention << " days");
         }
         else
         {
-            cout << "Yukon Log Retention: forever" << endl;
+            CTILOG_TRACE(dout, "Yukon Log Retention: forever");
         }
     }
 
@@ -278,13 +328,19 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     {
         gDefaultCommFailCount = 10;
     }
-    if(DebugLevel & 0x0001) cout << " Default Yukon comm fail count is " << gDefaultCommFailCount << endl;
+    if(DebugLevel & 0x0001)
+    {
+        CTILOG_TRACE(dout, "Default Yukon comm fail count is " << gDefaultCommFailCount);
+    }
 
     if( !(str = gConfigParms.getValueAsString("YUKON_DEFAULT_PORT_COMM_FAIL_COUNT")).empty() )
     {
         gDefaultPortCommFailCount = atoi(str.c_str());
     }
-    if(DebugLevel & 0x0001) cout << " Default Yukon PORT comm fail count is " << gDefaultPortCommFailCount << endl;
+    if(DebugLevel & 0x0001)
+    {
+        CTILOG_TRACE(dout, "Default Yukon PORT comm fail count is " << gDefaultPortCommFailCount);
+    }
 
     if( !(str = gConfigParms.getValueAsString("YUKON_SCAN_FORCE")).empty() )
     {
@@ -352,25 +408,25 @@ DLLEXPORT void InitYukonBaseGlobals(void)
     }
     if(DebugLevel & 0x0001)
     {
-        cout << CtiTime() << " Ports " << (gSimulatePorts?("ARE"):("are NOT")) << " being simulated" << endl;
+        Cti::StreamBuffer sb;
+
+        sb << "Ports " << (gSimulatePorts?("ARE"):("are NOT")) << " being simulated\n";
 
         if( gSimulatePorts )
         {
-            if( gSimulatePorts > 0 )    cout << CtiTime() << " Simulated portids (" << gSimulatedPorts.size() << "): " << endl;
-            else                        cout << CtiTime() << " Excluded portids (" << gSimulatedPorts.size() << "): " << endl;
-
-            for( set<long>::const_iterator itr = gSimulatedPorts.begin(); itr != gSimulatedPorts.end(); itr++ )
+            if( gSimulatePorts > 0 )
             {
-                if( itr != gSimulatedPorts.begin() )
-                {
-                    cout << ", ";
-                }
-
-                cout << *itr;
+                sb << "Simulated portids (" << gSimulatedPorts.size() << "):\n";
+            }
+            else
+            {
+                sb << "Excluded portids (" << gSimulatedPorts.size() << "):\n";
             }
 
-            cout << endl;
+            std::copy(gSimulatedPorts.begin(), gSimulatedPorts.end(), csv_output_iterator<long, Cti::StreamBuffer>(sb));
         }
+
+        CTILOG_TRACE(dout, sb);
     }
 
     if( !(str = gConfigParms.getValueAsString("YUKON_FOREIGN_CCU_PORTS")).empty() )
