@@ -404,6 +404,20 @@
         </property>
     </bean>
     
+    <bean id="spSmartIndexMaintanenceJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <qualifier value="spSmartIndexMaintanence"/>
+        <property name="taskName">
+            <idref local="scheduledSpSmartIndexMaintenanceExecutionTask"/>
+        </property>
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list></list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
     <bean id="rfnPerformanceVerificationJobDefinition" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <qualifier value="rfnPerformanceVerification"/>
         <property name="taskName">
@@ -529,6 +543,12 @@
         scope="prototype">
     </bean>
     
+    <!-- Scheduled sp_SmartIndexMaintenance Execution Task -->
+    <bean id="scheduledSpSmartIndexMaintenanceExecutionTask"
+        class="com.cannontech.web.maintenance.tasks.ScheduledSmartIndexMaintenanceExecutionTask"
+        scope="prototype">
+    </bean>
+
     <bean id="rfnPerformanceVerificationTask" 
         class="com.cannontech.web.dr.RfnPerformanceVerificationTask" 
         scope="prototype"/>

@@ -75,7 +75,10 @@ public interface SystemEventLogService {
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
     public void systemLogWeatherDataUpdate(int weatherLocationsUpdated, @Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);
-    
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.maintenance")
+    public void smartIndexMaintenance(@Arg(ArgEnum.startDate) Instant start, @Arg(ArgEnum.endDate) Instant finish);
+
     /* System Admin */
     /* Configuration */
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")

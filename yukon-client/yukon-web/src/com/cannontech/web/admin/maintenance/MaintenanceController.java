@@ -33,6 +33,7 @@ import com.cannontech.web.loadcontrol.tasks.RepeatingEstimatedLoadTask;
 import com.cannontech.web.maintenance.tasks.RepeatingWeatherDataTask;
 import com.cannontech.web.maintenance.tasks.ScheduledRphDanglingEntriesDeletionExecutionTask;
 import com.cannontech.web.maintenance.tasks.ScheduledRphDuplicateDeletionExecutionTask;
+import com.cannontech.web.maintenance.tasks.ScheduledSmartIndexMaintenanceExecutionTask;
 import com.cannontech.web.maintenance.tasks.ScheduledSystemLogDanglingEntriesDeletionExecutionTask;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Iterables;
@@ -61,13 +62,16 @@ public class MaintenanceController {
         private YukonJobDefinition<RepeatingWeatherDataTask> weatherDataJobDef;
     @Autowired @Qualifier("exportHistoryDeletion")
         private YukonJobDefinition<RepeatingExportHistoryDeletionTask> exportHistoryJobDef;
-
+    @Autowired @Qualifier("spSmartIndexMaintanence")
+        private YukonJobDefinition<ScheduledSmartIndexMaintenanceExecutionTask> spSmartIndexMaintanenceJobDef;
+    
     private final static String RPH_DUPLICATE_CRON = "0 0 21 ? * *"; // every night at 9:00pm
     private final static String RPH_DANGLING_CRON = "0 15 21 ? * *"; // every night at 9:15pm
     private final static String SYSTEM_LOG_DANGLING_CRON = "0 30 21 ? * *"; // every night at 9:30pm
     private final static String ESTIMATED_LOAD_UPDATE_CRON = "0 0 * * * ? *"; //every hour
     private final static String WEATHER_DATA_UPDATE_CRON = "0 0/10 * * * ? *"; //every 10 minutes
     private final static String EXPORT_HISTORY_UPDATE_CRON = "0 45 21 ? * *"; // every night at 9:45pm
+    private final static String SP_SMART_INDEX_MAINT_UPDATE_CRON = "0 0 22 ? * SAT"; // every saturday at 10:00pm
     
     @RequestMapping("view")
     public String view(ModelMap model, YukonUserContext userContext) {
@@ -75,6 +79,7 @@ public class MaintenanceController {
         jobs.add(getJob(userContext, rphDuplicateJobDef, RPH_DUPLICATE_CRON));
         jobs.add(getJob(userContext, rphDanglingEntriesJobDef, RPH_DANGLING_CRON));
         jobs.add(getJob(userContext, systemLogDanglingEntriesJobDef, SYSTEM_LOG_DANGLING_CRON));
+        jobs.add(getJob(userContext, spSmartIndexMaintanenceJobDef, SP_SMART_INDEX_MAINT_UPDATE_CRON));
         jobs.add(getJob(userContext, weatherDataJobDef, WEATHER_DATA_UPDATE_CRON));
         jobs.add(getJob(userContext, exportHistoryJobDef, EXPORT_HISTORY_UPDATE_CRON));
         if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD, false)) {

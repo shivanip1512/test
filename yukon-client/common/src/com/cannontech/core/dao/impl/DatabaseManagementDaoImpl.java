@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -58,6 +58,13 @@ public class DatabaseManagementDaoImpl  implements DatabaseManagementDao {
         List<Long> pointIds = yukonTemplate.queryForLimitedResults(sql, new LongRowMapper(), ROWS_TO_DELETE);
         chunkyJdbcTemplate.update(new SystemLogDeleteSqlGenerator(),  pointIds);
         return  pointIds.size();
+    }
+    
+    @Override
+    public void executeSpSmartIndexMaintanence() throws DataAccessException {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("EXECUTE sp_SmartIndexMaintenance");
+        yukonTemplate.update(sql);
     }
     
     private class RphDeleteByChangeIdsSqlGenerator implements SqlFragmentGenerator<Long> {

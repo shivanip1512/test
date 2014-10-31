@@ -12,6 +12,7 @@
     <entry key="yukon.web.modules.adminSetup.maintenance.scheduledRphDanglingEntriesDeletionExecutionJobDefinition.title">Rph Dangling Entries Deletion</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.scheduledSystemLogDanglingEntriesDeletionExecutionJobDefinition.title">Log Dangling Entries Deletion</entry>
     <entry key="yukon.web.modules.adminSetup.maintenance.rfnPerformanceVerificationEmailJobDefinition.title">Rfn Performance Verification Email</entry>
+    <entry key="yukon.web.modules.adminSetup.maintenance.spSmartIndexMaintanenceJobDefinition.title">Smart DB Index Maintenance</entry>
     
     <!-- weather data update -->
     <entry key="yukon.web.modules.adminSetup.maintenance.repeatingEstimatedLoadTaskJobDefinition.title">Estimated Load Data Update</entry>
