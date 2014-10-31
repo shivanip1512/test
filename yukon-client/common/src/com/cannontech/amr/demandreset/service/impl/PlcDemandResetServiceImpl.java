@@ -74,9 +74,8 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
 
     @Override
     public Set<SimpleDevice> getVerifiableDevices(Set<? extends YukonPao> paos){
-        List<SimpleDevice> devices = PaoUtils.asSimpleDeviceListFromPaos(paos);
         BiMap<PaoIdentifier, LitePoint> deviceToPoint =
-            attributeService.getPoints(devices, BuiltInAttribute.IED_DEMAND_RESET_COUNT);
+            attributeService.getPoints(paos, BuiltInAttribute.IED_DEMAND_RESET_COUNT);
         return PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet());
     }
     
