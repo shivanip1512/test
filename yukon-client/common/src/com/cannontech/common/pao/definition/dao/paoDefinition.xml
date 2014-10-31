@@ -4412,6 +4412,7 @@
     </pao>
 
     <pao id="ECOBEE" abstract="true">
+        <displayGroup>Demand Response</displayGroup>
         <points>
             <!-- ANALOG POINTS -->
             <point type="Analog" offset="1">
@@ -4487,12 +4488,21 @@
         </tags>
     </pao>
    
-    <pao id="ECOBEE_SMART_SI" inherits="ECOBEE"/>
-    <pao id="ECOBEE_3" inherits="ECOBEE"/>
-    <pao id="ECOBEE_SMART" inherits="ECOBEE"/>
+    <pao id="ECOBEE_SMART_SI" inherits="ECOBEE">
+        <displayName>ecobee Smart Si</displayName>
+    </pao>
+    <pao id="ECOBEE_3" inherits="ECOBEE">
+        <displayName>ecobee3</displayName>
+    </pao>
+    <pao id="ECOBEE_SMART" inherits="ECOBEE">
+        <displayName>ecobee Smart</displayName>
+    </pao>
     
     <!-- RF Gateway -->
-    <pao id="RFN_GATEWAY">
+    <pao id="RFN_GATEWAY" creatable="false">
+    <!-- Creatable=false means it cannot be created in DBEditor, nor listed as a type in device configurations...to-date -->
+        <displayName>RFN Gateway</displayName>
+        <displayGroup>RFMESH</displayGroup>
         <points></points>
         <attributes></attributes>
         <tags>
@@ -10078,6 +10088,7 @@
         <changeGroup>lm</changeGroup>
     </pao>
     <pao id="LM_GROUP" abstract="true">
+        <displayGroup>Demand Response</displayGroup>
         <points>
             <point type="Status" offset="0">
                 <name>CONTROL STATUS</name>
@@ -10139,6 +10150,7 @@
 
     <!-- LM Programs -->
     <pao id="LM_PROGRAM_BASE" abstract="true">
+        <displayGroup>Demand Response</displayGroup>
         <points>
             <point type="Analog" offset="1">
                 <init>false</init>
@@ -10224,7 +10236,8 @@
 
     <!-- LM Scenario -->
     <pao id="LM_SCENARIO">
-        <displayName>LM_SCENARIO</displayName>
+        <displayName>LM SCENARIO</displayName>
+        <displayGroup>Demand Response</displayGroup>
         <points>
             <point type="Analog" offset="1">
                 <init>false</init>
@@ -10292,7 +10305,8 @@
 
     <!-- LM Control Area -->
     <pao id="LM_CONTROL_AREA">
-        <displayName>LM_CONTROL_AREA</displayName>
+        <displayName>LM CONTROL AREA</displayName>
+        <displayGroup>Demand Response</displayGroup>
         <points>
             <point type="Analog" offset="1">
                 <init>false</init>
@@ -10361,11 +10375,13 @@
     <!-- CapControl -->
     <pao id="CAP_CONTROL_AREA">
         <displayName>Area</displayName>
+        <displayGroup>Volt/Var</displayGroup>
         <changeGroup>cap</changeGroup>
     </pao>
 
     <pao id="CAP_CONTROL_SUBBUS">
         <displayName>Substation Bus</displayName>
+        <displayGroup>Volt/Var</displayGroup>
         <changeGroup>cap</changeGroup>
         <points>
             <point type="Analog" offset="1">
@@ -10401,16 +10417,19 @@
 
     <pao id="CAP_CONTROL_SPECIAL_AREA">
         <displayName>Special Area</displayName>
+        <displayGroup>Volt/Var</displayGroup>
         <changeGroup>cap</changeGroup>
     </pao>
 
     <pao id="CAP_CONTROL_SUBSTATION">
         <displayName>Substation</displayName>
+        <displayGroup>Volt/Var</displayGroup>
         <changeGroup>cap</changeGroup>
     </pao>
 
     <pao id="CAP_CONTROL_FEEDER">
         <displayName>Feeder</displayName>
+        <displayGroup>Volt/Var</displayGroup>
         <changeGroup>cap</changeGroup>
         <points>
             <point type="Analog" offset="1">
@@ -10446,6 +10465,7 @@
 
     <!-- CBCs -->
     <pao id="CBC_BASE" abstract="true">
+        <displayGroup>Volt/Var</displayGroup>
         <points>
             <point type="Status" offset="1">
                 <init>true</init>
@@ -11369,6 +11389,7 @@
 
     <pao id="CAPBANK">
         <displayName>CAP BANK</displayName>
+        <displayGroup>Volt/Var</displayGroup>
         <points>
             <point type="Status" offset="1">
                 <init>true</init>
@@ -11386,6 +11407,7 @@
     </pao>
 
     <pao id="VOLTAGE_REGULATOR" abstract="true">
+        <displayGroup>Volt/Var</displayGroup>
         <tags>
             <tag name="VOLTAGE_REGULATOR" />
         </tags>
@@ -11408,11 +11430,13 @@
     </pao>
 
     <pao id="SCRIPT" creatable="false">    <!-- creatable is false as these are created in TDC, not DBEditor -->
+        <displayName>Script</displayName>
         <tags>
             <tag name="LM_SCHEDULE" />
         </tags>
     </pao>
     <pao id="SIMPLE_SCHEDULE" creatable="false">    <!-- creatable is false as these are created in TDC, not DBEditor -->
+        <displayName>Simple</displayName>
         <tags>
             <tag name="LM_SCHEDULE" />
         </tags>
@@ -11420,6 +11444,7 @@
 
     <pao id="ZIGBEE_ENDPOINT">
         <displayName>ZigBee Endpoint</displayName>
+        <displayGroup>Demand Response</displayGroup>
         <points>
             <point type="Status" offset="2">
                 <init>true</init>
@@ -11445,6 +11470,7 @@
 
     <pao id="DIGIGATEWAY">
         <displayName>Digi Gateway</displayName>
+        <displayGroup>Demand Response</displayGroup>
         <points>
             <point type="Status" offset="2">
                 <init>true</init>
@@ -11506,7 +11532,9 @@
             <tag name="DB_EDITOR_INCOMPATIBLE" />
         </tags>
     </pao>
-    <pao id="RFN_1200" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, SUPPORTS_COMMANDER_REQUESTS_TAG">
+    <pao id="RFN_1200" creatable="false" inherits="OUTAGE_STATUS_BASE, RFN_EVENTS, SUPPORTS_OUTAGE_TAG, SUPPORTS_COMMANDER_REQUESTS_TAG">
+        <!-- Creatable=false means it cannot be created in DBEditor, nor listed as a type in device configurations...to-date -->
+        <displayName>RFN-1200</displayName>
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfn</changeGroup>
         <points>

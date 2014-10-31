@@ -47,7 +47,7 @@ public class DeviceDefinitionViewerController {
 	@Autowired private StateDao stateDao;
     @Autowired private AttributeService attributeService;
 
-	private static String[] DISPLAY_GROUP_ORDER = {"MCT", "Two Way LCR", "Signal Transmitters", "Electronic Meters", "RTU", "Virtual", "Grid Advisor", ""};
+	private static String[] DISPLAY_GROUP_ORDER = {"MCT", "RFMESH", "IPC", "Two Way LCR", "Demand Response", "Signal Transmitters", "Electronic Meters", "RTU", "Virtual", "Grid Advisor", "Volt/Var", ""};
 	
 	@RequestMapping("/deviceDefinition.xml")
     public String view(HttpServletRequest request, ModelMap model, YukonUserContext context) throws Exception {
