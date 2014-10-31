@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.log4j.Logger;
 import org.quartz.CronExpression;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.transaction.TransactionException;
 import org.springframework.transaction.TransactionStatus;
@@ -27,6 +28,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.TimeSource;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.dao.ScheduledOneTimeJobDao;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
@@ -55,7 +57,8 @@ public class JobManagerImpl implements JobManager {
     private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     private ScheduledExecutor scheduledExecutor;
     private TransactionTemplate transactionTemplate;
-
+    @Autowired private NextValueHelper nextValueHelper;
+    
     private ConcurrentMap<YukonJob, YukonTask> currentlyRunning =
             new ConcurrentHashMap<YukonJob, YukonTask>(10, .75f, 2);
     
@@ -222,7 +225,7 @@ public class JobManagerImpl implements JobManager {
         log.info("scheduling onetime job: jobDefinition=" + jobDefinition + ", task=" + task + ", time=" + time);
         ScheduledOneTimeJob oneTimeJob = new ScheduledOneTimeJob();
         scheduleJobCommon(oneTimeJob, jobDefinition, task, userContext);
-
+        oneTimeJob.setJobGroupId(oneTimeJob.getJobGroupId());
         oneTimeJob.setStartTime(time);
         scheduledOneTimeJobDao.save(oneTimeJob);
 
@@ -250,23 +253,27 @@ public class JobManagerImpl implements JobManager {
                                         Map<String, String> jobProperties) {
         YukonJob job = getJob(jobId);
         deleteJob(job);
-        YukonJob scheduledJob = scheduleJob(jobDefinition, task, cronExpression, userContext, jobProperties);
+        YukonJob scheduledJob =
+            scheduleJob(jobDefinition, task, cronExpression, userContext, jobProperties, job.getJobGroupId());
         return scheduledJob;
     }
     
     @Override
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task,
                                 String cronExpression, YukonUserContext userContext) {
-        return scheduleJob(jobDefinition, task, cronExpression, userContext, emptyPropertyMap);
+        return scheduleJob(jobDefinition, task, cronExpression, userContext, emptyPropertyMap,
+            nextValueHelper.getNextValue("Job"));
     }
 
     @Override
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression,
-        YukonUserContext userContext, Map<String, String> jobProperties) {
+            YukonUserContext userContext, Map<String, String> jobProperties, int jobGroupId) {
         log.info("scheduling repeating job: jobDefinition=" + jobDefinition + ", task=" + task + ", cronExpression="
             + cronExpression);
         ScheduledRepeatingJob repeatingJob = new ScheduledRepeatingJob();
         scheduleJobCommon(repeatingJob, jobDefinition, task, userContext);
+        
+        repeatingJob.setJobGroupId(jobGroupId);
         
         if (repeatingJob.getJobProperties().isEmpty()) {
             // Use what the caller gave us
@@ -343,8 +350,8 @@ public class JobManagerImpl implements JobManager {
                     if (removed != null) {
                         runnable.run();
                     } else {
-                        log.info("time came to run schedule and it wasn't in scheduledJobs, must have been removed: jobId="
-                            + jobId);
+                        log.info("time came to run schedule and it wasn't in scheduledJobs, must have been removed: " +
+                        		"jobId=" + jobId);
                     }
                 }
             };

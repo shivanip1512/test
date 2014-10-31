@@ -41,9 +41,9 @@ public class RepeatingExportHistoryDeletionTask extends YukonTaskBase {
             filesDeleted += deleteByAge(daysToKeep);
         }
         
-        //delete by quantity per initiator
+        //delete by quantity per Schedule
         if(filesToKeep > 0) {
-            log.info("Deleting files for any initiator with more than " + filesToKeep + ".");
+            log.info("Deleting files for any schedule with more than " + filesToKeep + ".");
             filesDeleted += deleteByQuantity(filesToKeep);
         }
         log.info("File export history cleanup complete. " + filesDeleted + " archived files were deleted.");
@@ -75,11 +75,11 @@ public class RepeatingExportHistoryDeletionTask extends YukonTaskBase {
     private int deleteByQuantity(int filesToKeep) {
         int filesDeleted = 0;
         //Only get entries that still have an archive file
-        Multimap<String, ExportHistoryEntry> entriesMap = fileExportHistoryDao.getEntriesWithArchiveByInitiator();
+        Multimap<String, ExportHistoryEntry> entriesMap = fileExportHistoryDao.getEntriesWithArchiveBySchedule();
         
-        for(String initiator : entriesMap.keySet()) {
-            //check if initiator has too many archived files
-            List<ExportHistoryEntry> entries = Lists.newArrayList(entriesMap.get(initiator));
+        for(String jobName : entriesMap.keySet()) {
+            //check if Schedule has too many archived files
+            List<ExportHistoryEntry> entries = Lists.newArrayList(entriesMap.get(jobName));
             int numberOverMax = entries.size() - filesToKeep;
             if(numberOverMax > 0) {
                 //keep deleting oldest file until no longer over the maximum
@@ -87,7 +87,7 @@ public class RepeatingExportHistoryDeletionTask extends YukonTaskBase {
                 for(int index = 0; numberOverMax > 0; index++, numberOverMax--) {
                     //delete file
                     ExportHistoryEntry entry = entries.get(index);
-                    log.debug("Attempting to delete file \"" + entry.getFileName() + "\" for initiator \"" + initiator);
+                    log.debug("Attempting to delete file \"" + entry.getFileName() + "\" for jobName \"" + jobName);
                     boolean deleted = fileExportHistoryService.deleteArchivedFile(entry.getId());
                     if(deleted) {
                         filesDeleted++;

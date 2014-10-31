@@ -38,6 +38,7 @@ final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
     @Override
     protected void mapRow(YukonResultSet rs, YukonJob job) throws SQLException {
         job.setId(rs.getInt("jobId"));
+        
         job.setBeanName(rs.getString("beanName"));
         YukonJobDefinition<? extends YukonTask> jobDefinition =
             beanDefinitionFactory.getJobDefinition(job.getBeanName());
@@ -45,6 +46,7 @@ final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
         JobDisabledStatus jobDisabledStatus = JobDisabledStatus.valueOf(rs.getString("disabled"));
         job.setDisabled(!jobDisabledStatus.equals(JobDisabledStatus.N));
         job.setDeleted(jobDisabledStatus.equals(JobDisabledStatus.D));
+        job.setJobGroupId(rs.getInt("jobGroupId"));
         
         Integer userId = rs.getNullableInt("userId");
         if (userId == null) {

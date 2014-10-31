@@ -9,9 +9,6 @@
 
 <cti:msgScope paths="yukon.web.modules.tools.scheduledFileExport.jobs">
 
-<cti:msg2 var="initiator" key="modules.support.fileExportHistory.types.${jobType}"/>
-<cti:msg2 var="scheduleAppender" key="modules.support.fileExportHistory.types.scheduleAppender"/>
-
 <tags:sectionContainer2 nameKey="scheduledJobs">
     <c:choose>
         <c:when test="${fn:length(jobs) == 0}">
@@ -30,8 +27,13 @@
                     <tbody>
                         <c:forEach var="job" items="${jobs}">
                             <cti:url var="historyUrl" value="/support/fileExportHistory/list">
-                                <cti:param name="initiator" value="${initiator} ${scheduleAppender} ${job.name}"/>
+                                <cti:param name="jobName" value="${job.name}"/>
                             </cti:url>
+                            <cti:url var="historyUrl" value="/support/fileExportHistory/list">
+                                    <cti:param name="jobName" value="${job.name}" />
+                                    <cti:param name="jobGroupId" value="${job.jobGroupId}"/>
+                                    <cti:param name="exportType" value="METER_EVENTS"/>
+                                </cti:url>
                             <cti:url var="editUrl" value="home">
                                 <cti:param name="jobId" value="${job.id}"/>
                             </cti:url>

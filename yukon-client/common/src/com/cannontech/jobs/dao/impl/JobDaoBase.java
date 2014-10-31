@@ -37,9 +37,10 @@ public abstract class JobDaoBase {
     private FieldMapper<YukonJob> jobFieldMapper = new FieldMapper<YukonJob>() {
         @Override
         public void extractValues(MapSqlParameterSource p, YukonJob job) {
-            String beanNaem = job.getBeanName();
-            p.addValue("beanName", beanNaem);
-            
+            String beanName = job.getBeanName();
+            p.addValue("beanName", beanName);
+            p.addValue("jobGroupId", job.getJobGroupId());
+               
             String disabled = String.valueOf(CtiUtilities.getBooleanCharacter(job.isDisabled()));
             if (job.isDeleted()) {
             	disabled = "D";

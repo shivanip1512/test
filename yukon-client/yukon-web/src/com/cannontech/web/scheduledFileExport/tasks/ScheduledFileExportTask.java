@@ -275,17 +275,20 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
     /**
      * Creates the History entry based on the Archive and Export file(s).
      */
-    protected ExportHistoryEntry createExportHistoryEntry(FileExportType type, File archiveFile, File exportFile) {
+    protected ExportHistoryEntry createExportHistoryEntry(FileExportType type, File archiveFile, File exportFile,
+            int jobGroupId) {
         ExportHistoryEntry historyEntry = null;
         try {
-            String initiator = getMessage(type.getFormatKey()) + " Schedule: " + name;
-            String expFileName = (exportFile == null) ? convertArchiveToExportFilename(archiveFile) : exportFile.getName();
-            historyEntry = fileExportHistoryService.addHistoryEntry(archiveFile, exportFile, expFileName, type, initiator);
-        } catch(IOException e) {
+            String scheduleName = name;
+            String expFileName =
+                (exportFile == null) ? convertArchiveToExportFilename(archiveFile) : exportFile.getName();
+            historyEntry = fileExportHistoryService.addHistoryEntry(archiveFile, exportFile, expFileName, type, 
+                                                scheduleName, jobGroupId);
+        } catch (IOException e) {
             log.error("Unable to create " + type + " export file history archive.", e);
         }
         log.debug("Scheduled " + type + " export \"" + name + "\" file added to File Export History");
-        
+
         return historyEntry;
     }
     

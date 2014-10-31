@@ -9,17 +9,18 @@ import com.cannontech.common.fileExportHistory.FileExportType;
 import com.google.common.collect.Multimap;
 
 public interface FileExportHistoryDao {
-    public int insertEntry(String originalFileName, String fileName, FileExportType type, String initiator,
-            String exportPath);
+    public int insertEntry(String originalFileName, String fileName, FileExportType type, String jobName,
+            String exportPath, Integer jobGroupId);
 
     public List<ExportHistoryEntry> getAllEntries();
 
     /**
-     * Retrieve a filtered subset of all entries. Name fragment or initiator fragment or both may be
+     * Retrieve a filtered subset of all entries. Name fragment or Schedule fragment or both may be
      * supplied - unneeded parameters can be passed as null. Returns values whose originalFileName
-     * contains nameFragment (if not null) and whose initiator contains initiatorFragment (if not null).
+     * contains nameFragment (if not null) and whose Schedule contains Schedule (if not null).
      */
-    public List<ExportHistoryEntry> getFilteredEntries(String nameFragment, String initiatorFragment);
+    public List<ExportHistoryEntry> getFilteredEntries(String nameFragment, String jobName, FileExportType jobType,
+            Integer jobGroupId);
 
     public ExportHistoryEntry getEntry(int entryId);
 
@@ -30,9 +31,9 @@ public interface FileExportHistoryDao {
     public boolean markArchiveDeleted(int entryId);
 
     /**
-     * Retrieves all entries that have an archive file, mapped by initiator string.
+     * Retrieves all entries that have an archive file, mapped by Schedule string.
      */
-    public Multimap<String, ExportHistoryEntry> getEntriesWithArchiveByInitiator();
+    public Multimap<String, ExportHistoryEntry> getEntriesWithArchiveBySchedule();
 
     /**
      * Retrieves all entries that have an archive file, mapped by creation date.

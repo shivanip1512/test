@@ -14,7 +14,6 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.RetryStrategy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
@@ -25,7 +24,6 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 	private JobManager jobManager;
     private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
     private DeviceGroupService deviceGroupService;
-    
     private Logger log = YukonLogManager.getLogger(ScheduledGroupRequestExecutionServiceImpl.class);
     
     // SCHEDULE - COMMAND
@@ -54,38 +52,62 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
         return doSchedule(name, groupName, null, attributes, type, cronExpression, userContext, retryStrategy);
     }
 	
-    // MAKE TASK, SCHEDULE TASK
-	private YukonJob doSchedule(String name, 
-	                          String groupName, 
-	                          String command, 
-	                          Set<? extends Attribute> attributes, 
-	                          DeviceRequestType type, 
-	                          String cronExpression, 
-	                          YukonUserContext userContext,
-	                          RetryStrategy retryStrategy) {
-	    
-	    int retryCount = retryStrategy.getRetryCount();
-	    Integer stopRetryAfterHoursCount = retryStrategy.getStopRetryAfterHoursCount();
-	    Integer turnOffQueuingAfterRetryCount = retryStrategy.getTurnOffQueuingAfterRetryCount();
+	// SCHEDULE JOB
+    private YukonJob doSchedule(String name, String groupName, String command, Set<? extends Attribute> attributes, 
+            DeviceRequestType type, String cronExpression, YukonUserContext userContext, RetryStrategy retryStrategy) {
 
-		ScheduledGroupRequestExecutionTask task = scheduledGroupRequestExecutionJobDefinition.createBean();
-		task.setName(name);
-    	task.setDeviceGroup(deviceGroupService.resolveGroupName(groupName));
-    	task.setAttributes(attributes);
-    	task.setCommand(command);
-    	task.setCommandRequestExecutionType(type);
-    	task.setRetryCount(retryCount);
-    	task.setStopRetryAfterHoursCount(stopRetryAfterHoursCount);
-    	task.setTurnOffQueuingAfterRetryCount(turnOffQueuingAfterRetryCount);
+        ScheduledGroupRequestExecutionTask task = buildTask(name, groupName, command, attributes, type, retryStrategy);
 
-    	YukonJob job =  jobManager.scheduleJob(scheduledGroupRequestExecutionJobDefinition, task, cronExpression, userContext);
-        
-    	log.info("Job scheduled. jobId=" + job.getId() + ", groupName=" + groupName + ", attributes=" + attributes + ", command=" + command + ", cronExpression=" + cronExpression + ", user=" + userContext.getYukonUser().getUsername() +
-    	         ", retryCount=" + retryCount + ", stopRetryAfterHoursCount=" + stopRetryAfterHoursCount + ", turnOffQueuingAfterRetryCount=" + turnOffQueuingAfterRetryCount + ".");
-    	
+        YukonJob job =
+            jobManager.scheduleJob(scheduledGroupRequestExecutionJobDefinition, task, cronExpression, userContext);
+
+        log.info("Job scheduled. jobId=" + job.getId() + ", groupName=" + groupName + ", attributes=" + attributes
+            + ", command=" + command + ", cronExpression=" + cronExpression + ", user="
+            + userContext.getYukonUser().getUsername() + ", retryCount=" + task.getRetryCount()
+            + ", stopRetryAfterHoursCount=" + task.getStopRetryAfterHoursCount() + ", turnOffQueuingAfterRetryCount="
+            + task.getTurnOffQueuingAfterRetryCount() + ".");
+
         return job;
-	}
-	
+    }
+
+    // ReSCHEDULE EXISITING JOB
+    private YukonJob doReplaceSchedule(String name, String groupName, String command, Set<? extends Attribute> attributes,
+            DeviceRequestType type, String cronExpression, YukonUserContext userContext, RetryStrategy retryStrategy, Integer existingJobId) {
+
+        ScheduledGroupRequestExecutionTask task = buildTask(name, groupName, command, attributes, type, retryStrategy);
+
+        YukonJob job =
+            jobManager.replaceScheduledJob(existingJobId, scheduledGroupRequestExecutionJobDefinition, task,
+                cronExpression, userContext);
+
+        log.info("Job scheduled. jobId=" + job.getId() + ", groupName=" + groupName + ", attributes=" + attributes
+            + ", command=" + command + ", cronExpression=" + cronExpression + ", user="
+            + userContext.getYukonUser().getUsername() + ", retryCount=" + task.getRetryCount()
+            + ", stopRetryAfterHoursCount=" + task.getStopRetryAfterHoursCount() + ", turnOffQueuingAfterRetryCount="
+            + task.getTurnOffQueuingAfterRetryCount() + ".");
+
+        return job;
+    }
+
+    // MAKE TASK
+    private ScheduledGroupRequestExecutionTask buildTask(String name, String groupName, String command,
+            Set<? extends Attribute> attributes, DeviceRequestType type, RetryStrategy retryStrategy) {
+
+        int retryCount = retryStrategy.getRetryCount();
+        Integer stopRetryAfterHoursCount = retryStrategy.getStopRetryAfterHoursCount();
+        Integer turnOffQueuingAfterRetryCount = retryStrategy.getTurnOffQueuingAfterRetryCount();
+
+        ScheduledGroupRequestExecutionTask task = scheduledGroupRequestExecutionJobDefinition.createBean();
+        task.setName(name);
+        task.setDeviceGroup(deviceGroupService.resolveGroupName(groupName));
+        task.setAttributes(attributes);
+        task.setCommand(command);
+        task.setCommandRequestExecutionType(type);
+        task.setRetryCount(retryCount);
+        task.setStopRetryAfterHoursCount(stopRetryAfterHoursCount);
+        task.setTurnOffQueuingAfterRetryCount(turnOffQueuingAfterRetryCount);
+        return task;
+    }
 	// SCHEDULE REPLACEMENT - COMMAND
 	@Override
     public YukonJob scheduleReplacement(int existingJobId, 
@@ -97,7 +119,8 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
                                         YukonUserContext userContext,
                                         RetryStrategy retryStrategy) {
         
-        return doScheduleReplacement(existingJobId, name, groupName, command, null, type, cronExpression, userContext, retryStrategy);
+        return doScheduleReplacement(existingJobId, name, groupName, command, null, type, cronExpression, userContext,
+            retryStrategy);
     }
 	
 	// SCHEDULE REPLACEMENT - ATTRIBUTE
@@ -111,7 +134,8 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
                                         YukonUserContext userContext,
                                         RetryStrategy retryStrategy) {
         
-        return doScheduleReplacement(existingJobId, name, groupName, null, attributes, type, cronExpression, userContext, retryStrategy);
+        return doScheduleReplacement(existingJobId, name, groupName, null, attributes, type, cronExpression,
+            userContext, retryStrategy);
     }
 	
 	private YukonJob doScheduleReplacement(int existingJobId, 
@@ -124,17 +148,17 @@ public class ScheduledGroupRequestExecutionServiceImpl implements ScheduledGroup
 	                                     YukonUserContext userContext,
 	                                     RetryStrategy retryStrategy) {
 	
-		// get current job, generate task
-		ScheduledRepeatingJob existingJob = (ScheduledRepeatingJob)jobManager.getJob(existingJobId);
-        	
-		// delete old job
-    	jobManager.deleteJob(existingJob);
-    	
     	// schedule new job
-    	YukonJob replacementJob = doSchedule(name, groupName, command, attributes, type, cronExpression, userContext, retryStrategy);
-    	log.info("Job replaced. old jobId=" + existingJob.getId() + " deleted, replacement jobId=" + replacementJob.getId() + ", name=" + name + ", groupName=" + groupName + ", attribute=" + attributes + ", command=" + command + ", cronExpression=" + cronExpression + ", user=" + userContext.getYukonUser().getUsername() + 
-    	         ", retryCount=" + retryStrategy.getRetryCount() + ", stopRetryAfterHoursCount=" + retryStrategy.getStopRetryAfterHoursCount() + ", turnOffQueuingAfterRetryCount=" + retryStrategy.getTurnOffQueuingAfterRetryCount() + ".");
-    	
+        YukonJob replacementJob =
+            doReplaceSchedule(name, groupName, command, attributes, type, cronExpression, userContext, retryStrategy,
+                existingJobId);
+        log.info("Job replaced. old jobId=" + existingJobId + " deleted, replacement jobId="
+            + replacementJob.getId() + ", name=" + name + ", groupName=" + groupName + ", attribute=" + attributes
+            + ", command=" + command + ", cronExpression=" + cronExpression + ", user="
+            + userContext.getYukonUser().getUsername() + ", retryCount=" + retryStrategy.getRetryCount()
+            + ", stopRetryAfterHoursCount=" + retryStrategy.getStopRetryAfterHoursCount()
+            + ", turnOffQueuingAfterRetryCount=" + retryStrategy.getTurnOffQueuingAfterRetryCount() + ".");
+
 		return replacementJob;
 	}
 	

@@ -99,7 +99,7 @@ public class JobManagerStub implements JobManager {
     @Override
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task,
                                 String cronExpression, YukonUserContext userContext,
-                                Map<String, String> jobProperties) {
+                                Map<String, String> jobProperties, int jobGroupId) {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
     

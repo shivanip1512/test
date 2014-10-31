@@ -17,6 +17,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
+import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.fileExportHistory.dao.FileExportHistoryDao;
 import com.cannontech.common.fileExportHistory.service.FileExportHistoryService;
 import com.cannontech.i18n.WebMessageSourceResolvable;
@@ -37,7 +38,8 @@ public class FileExportHistoryController {
     private final static String baseKey = "yukon.web.modules.support.fileExportHistory";
     
     @RequestMapping("list")
-    public String list(ModelMap model, FlashScope flashScope, String name, String initiator, Integer entryId) {
+    public String list(ModelMap model, FlashScope flashScope, String name, String jobName, Integer entryId,
+            FileExportType exportType, Integer jobGroupId) {
 
         List<ExportHistoryEntry> exports;
         if (entryId != null) {
@@ -45,17 +47,21 @@ public class FileExportHistoryController {
             exports = Lists.newArrayList(entry);
             
             WebMessageSourceResolvable resolvable = new WebMessageSourceResolvable(baseKey 
-                    + ".singleEntry", entry.getInitiator());
+                    + ".singleEntry", entry.getJobName());
             resolvable.setHtmlEscape(false);
             flashScope.setWarning(resolvable);
         } else {
-            exports = fileExportHistoryDao.getFilteredEntries(name, initiator);
+            exports = fileExportHistoryDao.getFilteredEntries(name, jobName, exportType, jobGroupId);
         }
         Collections.sort(exports);
         
         model.addAttribute("exports", exports);
         model.addAttribute("searchName", name);
-        model.addAttribute("searchInitiator", initiator);
+        model.addAttribute("searchJobName", jobName);
+        model.addAttribute("dataExportTypeList", FileExportType.values());
+        if(null != exportType) {
+        	model.addAttribute("searchExportType", exportType);
+        }        
         
         return "fileExportHistory/list.jsp";
     }

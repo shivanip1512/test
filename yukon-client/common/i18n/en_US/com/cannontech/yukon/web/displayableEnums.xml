@@ -202,7 +202,7 @@
     <entry key="yukon.common.setting.HISTORY_CLEANUP_DAYS_TO_KEEP">Export History Days To Keep</entry>
     <entry key="yukon.common.setting.HISTORY_CLEANUP_DAYS_TO_KEEP.description">The number of days to save archived export history files. Archived files older than this will be deleted. Select 0 to keep files forever. (Requires Export History Archive File Deletion Maintenance task to be enabled.)</entry>
     <entry key="yukon.common.setting.HISTORY_CLEANUP_FILES_TO_KEEP">Export History Files To Keep</entry>
-    <entry key="yukon.common.setting.HISTORY_CLEANUP_FILES_TO_KEEP.description">The maximum number of archived files to keep per export initiator. Any additional files for a given initiator will be deleted. Select 0 to keep all files. (Requires Export History Archive File Deletion Maintenance task to be enabled.)</entry>
+        <entry key="yukon.common.setting.HISTORY_CLEANUP_FILES_TO_KEEP.description">The maximum number of archived files to keep per export schedule. Any additional files for a given schedule will be deleted. Select 0 to keep all files. (Requires Export History Archive File Deletion Maintenance task to be enabled.)</entry>
     <entry key="yukon.common.setting.COOP_ID_CADP_ONLY">COOP ID CADP Only</entry>
     <entry key="yukon.common.setting.COOP_ID_CADP_ONLY.description">CADP format requires a coop id number.</entry>
     <entry key="yukon.common.setting.REMOVE_MULTIPLIER">Remove Multiplier</entry>

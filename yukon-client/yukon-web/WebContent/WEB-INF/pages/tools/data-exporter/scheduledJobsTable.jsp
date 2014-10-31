@@ -27,7 +27,9 @@
                                     <cti:param name="jobId" value="${job.id}"/>
                                 </cti:url>
                                 <cti:url var="historyUrl" value="/support/fileExportHistory/list">
-                                    <cti:param name="initiator" value="Data Export Schedule: ${job.name}" />
+                                    <cti:param name="jobName" value="${job.name}" />
+                                    <cti:param name="jobGroupId" value="${job.jobGroupId}"/>
+                                    <cti:param name="exportType" value="ARCHIVED_DATA_EXPORT"/>
                                 </cti:url>
                                 <cti:url var="deleteUrl" value="deleteJob">
                                     <cti:param name="jobId" value="${job.id}"/>

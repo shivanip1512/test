@@ -197,10 +197,11 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
         private int jobId;
         private String name;
         private String cronString;
+        private int jobGroupId;
 
         public ScheduledFileExportJobDataImpl(ScheduledRepeatingJob job) {
             jobId = job.getId();
-
+            jobGroupId = job.getJobGroupId();
             cronString = cronExpressionTagService.getDescription(job.getCronString(), job.getUserContext());
 
             ScheduledFileExportTask task = (ScheduledFileExportTask) jobManager.instantiateTask(job);
@@ -225,6 +226,11 @@ public class ScheduledFileExportServiceImpl implements ScheduledFileExportServic
         @Override
         public int compareTo(ScheduledFileExportJobData other) {
             return this.name.compareTo(other.getName());
+        }
+
+        @Override
+        public int getJobGroupId() {
+            return jobGroupId;
         }
     }
 }

@@ -62,8 +62,9 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
 		File exportFile = copyExportFile(archiveFile);
   		
   		// Create a new Export History entry
-  		ExportHistoryEntry historyEntry = createExportHistoryEntry(FileExportType.METER_EVENTS, archiveFile, exportFile);
-        
+        ExportHistoryEntry historyEntry = createExportHistoryEntry(FileExportType.METER_EVENTS, archiveFile, exportFile,
+                this.getJob().getJobGroupId());
+	  		  
   		//Send notification emails
         prepareAndSendNotificationEmails(historyEntry);
 	}

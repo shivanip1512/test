@@ -43,7 +43,8 @@ public class ScheduledBillingFileExportTask extends ScheduledFileExportTask impl
 		//Set up the File
 		String fileExtension = FileFormatTypes.getFileExtensionByFormatId(fileFormatId);
 		File archiveFile = createArchiveFile(now, fileExtension);
-		log.debug("Scheduled billing export \"" + name + "\" file name: " + archiveFile.getAbsolutePath() + archiveFile.getName());
+        log.debug("Scheduled billing export \"" + name + "\" file name: " + archiveFile.getAbsolutePath()
+            + archiveFile.getName());
 		
 		//Write out the billing file
 		try (OutputStream outputStream = new FileOutputStream(archiveFile)){
@@ -57,7 +58,8 @@ public class ScheduledBillingFileExportTask extends ScheduledFileExportTask impl
 		File exportFile = copyExportFile(archiveFile);
 		
 		// Create new File Export History entry
-		ExportHistoryEntry historyEntry = createExportHistoryEntry(FileExportType.BILLING, archiveFile, exportFile);
+        ExportHistoryEntry historyEntry = createExportHistoryEntry(FileExportType.BILLING,
+                                              archiveFile, exportFile, this.getJob().getJobGroupId());
 		
 		//Send notification emails
         prepareAndSendNotificationEmails(historyEntry);

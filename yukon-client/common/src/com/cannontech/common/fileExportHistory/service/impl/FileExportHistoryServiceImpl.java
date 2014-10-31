@@ -49,8 +49,8 @@ public class FileExportHistoryServiceImpl implements FileExportHistoryService {
 	}
 	
 	@Override
-	public ExportHistoryEntry addHistoryEntry(File archiveFile, File exportFile, String fileName, FileExportType type, String initiator) 
-	            throws FileNotFoundException, IOException {
+    public ExportHistoryEntry addHistoryEntry(File archiveFile, File exportFile, String fileName, FileExportType type,
+            String jobName, int jobGroupId) throws FileNotFoundException, IOException {
 	    if (!archiveFile.exists()) {
 	        throw new FileNotFoundException("Unable to locate archive file: " + archiveFile.getPath());
 	    }
@@ -60,7 +60,8 @@ public class FileExportHistoryServiceImpl implements FileExportHistoryService {
 	        filePathWithoutFileName = fullFilePath.substring(0, fullFilePath.lastIndexOf(File.separator));
 	    }
         
-        int entryId = fileExportHistoryDao.insertEntry(fileName, archiveFile.getName(), type, initiator, filePathWithoutFileName);
+        int entryId = fileExportHistoryDao.insertEntry(fileName, archiveFile.getName(), type, jobName, 
+                            filePathWithoutFileName, jobGroupId);
         return fileExportHistoryDao.getEntry(entryId);
 	    
 	}

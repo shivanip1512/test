@@ -75,8 +75,8 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		File exportFile = copyExportFile(archiveFile);
 		
 		// Create a new History entry record
-		ExportHistoryEntry historyEntry = createExportHistoryEntry(FileExportType.ARCHIVED_DATA_EXPORT, 
-		                                                          archiveFile, exportFile);
+	      ExportHistoryEntry historyEntry = createExportHistoryEntry(FileExportType.ARCHIVED_DATA_EXPORT, 
+              archiveFile, exportFile, this.getJob().getJobGroupId());
 
 		//Send notification emails
         prepareAndSendNotificationEmails(historyEntry);

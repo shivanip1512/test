@@ -116,6 +116,7 @@ public class DataExporterHomeController {
         model.addAttribute("fixedAttribute", ArchivedValuesExportFormatType.FIXED_ATTRIBUTE);
         model.addAttribute("dynamicAttribute", ArchivedValuesExportFormatType.DYNAMIC_ATTRIBUTE);
         model.addAttribute("preview", preview);
+        model.addAttribute("searchExportType", FileExportType.ARCHIVED_DATA_EXPORT);
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         

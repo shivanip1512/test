@@ -11,6 +11,7 @@ import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.fileExportHistory.dao.FileExportHistoryDao;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -26,37 +27,38 @@ public class FileExportHistoryDaoImpl implements FileExportHistoryDao {
     private FileExportHistoryRowMapper fileExportHistoryRowMapper = new FileExportHistoryRowMapper();
 
     @Override
-    public int insertEntry(String originalFileName, String fileName, FileExportType type, String initiator,
-            String exportPath) {
+    public int insertEntry(String originalFileName, String fileName, FileExportType type, String jobName,
+            String exportPath, Integer jobGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.insertInto("FileExportHistory");
         int entryId = nextValueHelper.getNextValue("FileExportHistory");
-
+        
+        sink.addValue("ArchiveFileExists", true);
         sink.addValue("EntryId", entryId);
-        sink.addValue("OriginalFileName", originalFileName);
-        sink.addValue("FileName", fileName);
-        sink.addValue("FileExportType", type);
-        sink.addValue("Initiator", initiator);
         sink.addValue("ExportDate", Instant.now());
         sink.addValue("ExportPath", exportPath);
-        sink.addValue("ArchiveFileExists", true);
-
+        sink.addValue("FileExportType", type);
+        sink.addValue("FileName", fileName);
+        sink.addValue("JobGroupId", jobGroupId);
+    	sink.addValue("JobName", jobName);
+        sink.addValue("OriginalFileName", originalFileName);
+        
         yukonJdbcTemplate.update(sql);
 
         return entryId;
     }
 
     @Override
-    public Multimap<String, ExportHistoryEntry> getEntriesWithArchiveByInitiator() {
+    public Multimap<String, ExportHistoryEntry> getEntriesWithArchiveBySchedule() {
         final Multimap<String, ExportHistoryEntry> entries = ArrayListMultimap.create();
         SqlStatementBuilder sql = getBaseSelectSql();
-        sql.append("WHERE ArchiveFileExists").eq(true);
+        sql.append("WHERE  ArchiveFileExists").eq(true);
 
         yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
                 ExportHistoryEntry entry = processEntry(rs);
-                entries.put(entry.getInitiator(), entry);
+                entries.put(entry.getJobName(), entry);
             }
         });
         return entries;
@@ -66,7 +68,7 @@ public class FileExportHistoryDaoImpl implements FileExportHistoryDao {
     public Multimap<Instant, ExportHistoryEntry> getEntriesWithArchiveByDate() {
         final Multimap<Instant, ExportHistoryEntry> entries = ArrayListMultimap.create();
         SqlStatementBuilder sql = getBaseSelectSql();
-        sql.append("WHERE ArchiveFileExists").eq(true);
+        sql.append("WHERE  ArchiveFileExists").eq(true);
 
         yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
@@ -83,7 +85,7 @@ public class FileExportHistoryDaoImpl implements FileExportHistoryDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.update("FileExportHistory");
         sink.addValue("ArchiveFileExists", false);
-        sql.append("WHERE EntryId").eq(entryId);
+        sql.append("WHERE  EntryId").eq(entryId);
 
         int rowsModified = yukonJdbcTemplate.update(sql);
         return rowsModified > 0;
@@ -98,27 +100,35 @@ public class FileExportHistoryDaoImpl implements FileExportHistoryDao {
     }
 
     @Override
-    public List<ExportHistoryEntry> getFilteredEntries(String nameFragment, String initiatorFragment) {
-        String clause2Start = "WHERE ";
-
+    public List<ExportHistoryEntry> getFilteredEntries(String nameFragment, String jobName, FileExportType jobType,
+            Integer jobGroupId) {
+        List<ExportHistoryEntry> entries = null;
+        String clause2Start = "WHERE  ";
         SqlStatementBuilder sql = getBaseSelectSql();
-
         if (StringUtils.isNotBlank(nameFragment)) {
-            sql.append("WHERE OriginalFileName").contains(nameFragment);
-            clause2Start = "AND ";
+            sql.append("WHERE  OriginalFileName").contains(nameFragment);
+            clause2Start = " AND ";
         }
-        if (StringUtils.isNotBlank(initiatorFragment)) {
-            sql.append(clause2Start).append("Initiator").contains(initiatorFragment);
+        if (null != jobType) {
+            sql.append(clause2Start).append("FileExportType").eq_k(jobType);
+            clause2Start = " AND ";
         }
+        // If Job Name is given as search criteria, jobGroupId is not matched
+        if (null != jobGroupId) {
+            sql.append(clause2Start).append("JobGroupId").eq_k(jobGroupId);
+            clause2Start = " AND ";
+        } else if (StringUtils.isNotBlank(jobName)) {
+            sql.append(clause2Start).append("JobName").contains(jobName);
+        }
+        entries = yukonJdbcTemplate.query(sql, fileExportHistoryRowMapper);
 
-        List<ExportHistoryEntry> entries = yukonJdbcTemplate.query(sql, fileExportHistoryRowMapper);
         return entries;
     }
-
+    
     @Override
     public ExportHistoryEntry getEntry(int entryId) {
         SqlStatementBuilder sql = getBaseSelectSql();
-        sql.append("WHERE EntryId").eq(entryId);
+        sql.append("WHERE  EntryId").eq(entryId);
 
         ExportHistoryEntry entry = yukonJdbcTemplate.queryForObject(sql, fileExportHistoryRowMapper);
         return entry;
@@ -126,22 +136,26 @@ public class FileExportHistoryDaoImpl implements FileExportHistoryDao {
 
     private SqlStatementBuilder getBaseSelectSql() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EntryId, OriginalFileName, FileName, FileExportType, Initiator, ExportDate, ExportPath, ArchiveFileExists");
+        sql.append("SELECT ArchiveFileExists, EntryId, ExportDate, ExportPath, FileExportType, FileName,"
+            + " JobGroupId, JobName, OriginalFileName");
+        
         sql.append("FROM FileExportHistory");
         return sql;
     }
 
     private static ExportHistoryEntry processEntry(YukonResultSet rs) throws SQLException {
+        boolean archiveFileExists = rs.getBoolean("ArchiveFileExists");
         int entryId = rs.getInt("EntryId");
-        String originalFileName = rs.getString("OriginalFileName");
-        String fileName = rs.getString("FileName");
-        FileExportType type = rs.getEnum("FileExportType", FileExportType.class);
-        String initiator = rs.getString("Initiator");
         Instant date = rs.getInstant("ExportDate");
         String exportPath = rs.getString("ExportPath");
-        boolean archiveFileExists = rs.getBoolean("ArchiveFileExists");
-        return new ExportHistoryEntry(entryId, originalFileName, fileName, type, initiator, date, exportPath,
-            archiveFileExists);
+        FileExportType type = rs.getEnum("FileExportType", FileExportType.class);
+        String fileName = rs.getString("FileName");
+        int jobGroupId = rs.getInt("JobGroupId");
+        String jobName = rs.getString("JobName");
+        String originalFileName = rs.getString("OriginalFileName");
+
+        return new ExportHistoryEntry(entryId, originalFileName, fileName, type, date, exportPath,
+            archiveFileExists, jobGroupId, jobName);
     }
 
     private class FileExportHistoryRowMapper implements YukonRowMapper<ExportHistoryEntry> {

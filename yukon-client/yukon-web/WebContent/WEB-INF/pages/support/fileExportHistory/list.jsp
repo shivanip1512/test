@@ -9,14 +9,28 @@
 <cti:standardPage module="support" page="fileExportHistory">
     
     <form action="list" class="clearfix stacked">
-        <label class="dib fl">
-            <span class="name"><i:inline key=".search.name"/>:&nbsp;</span>
-            <input type="text" name="name" value="${searchName}">
-        </label>
-        <label class="dib fl" style="margin-left: 15px;">
-            <span class="name"><i:inline key=".search.initiator"/>:&nbsp;</span>
-            <input type="text" name="initiator" value="${searchInitiator}" size="40">
-        </label>
+        <tags:nameValueContainer2 tableClass="striped">
+		    <tags:nameValue2 nameKey=".search.name">
+            	<input type="text" name="name" value="${searchName}">
+            </tags:nameValue2>
+		    <tags:nameValue2 nameKey=".search.jobName">
+            	<input type="text" name="jobName" value="${searchJobName}" size="40">
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".search.exportType">
+            	<select name="exportType">
+				    <c:forEach var="dataExportType" items="${dataExportTypeList}">
+				    	<c:choose>
+					    	<c:when test="${searchExportType.equals(dataExportType)}">
+								<option value="${dataExportType}" selected="selected"><cti:msg2 key="${dataExportType.formatKey}"/></option>
+							</c:when>
+							<c:otherwise>
+								<option value="${dataExportType}"><cti:msg2 key="${dataExportType.formatKey}"/></option>
+							</c:otherwise>
+						</c:choose>
+					</c:forEach>
+				</select>
+            </tags:nameValue2>
+		</tags:nameValueContainer2>
         <cti:button nameKey="search" type="submit" classes="action primary"/>
     </form>
     
@@ -31,7 +45,7 @@
                         <thead>
                             <th><i:inline key=".columns.name"/></th>
                             <th><i:inline key=".columns.type"/></th>
-                            <th><i:inline key=".columns.initiator"/></th>
+                            <th><i:inline key=".columns.jobName"/></th>
                             <th><i:inline key=".columns.date"/></th>
                             <th><i:inline key=".columns.exportPath"/></th>
                         </thead>
@@ -61,7 +75,7 @@
                                         
                                     </td>
                                     <td><cti:msg2 key="${exportHistoryEntry.type}"/></td>
-                                    <td>${exportHistoryEntry.initiator}</td>
+                                    <td>${exportHistoryEntry.jobName}</td>
                                     <td><cti:formatDate value="${exportHistoryEntry.date}" type="DATEHM"/></td>
                                     <td>
                                     <c:choose>

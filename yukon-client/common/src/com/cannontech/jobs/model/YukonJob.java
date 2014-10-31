@@ -16,6 +16,7 @@ public class YukonJob {
     private Map<String, String> jobProperties;
     private YukonJobDefinition<? extends YukonTask> jobDefinition;
     private YukonUserContext userContext;
+    private Integer jobGroupId;
 
     /*
      * This is unfortunate. A byproduct of the PacifiCorp changes. We currently have no way
@@ -100,6 +101,14 @@ public class YukonJob {
     public void setJobDefinition(YukonJobDefinition<? extends YukonTask> jobDefinition) {
         this.jobDefinition = jobDefinition;
     }
+    
+    public Integer getJobGroupId() {
+        return jobGroupId;
+    }
+    
+    public void setJobGroupId(Integer jobGroupId) {
+        this.jobGroupId = jobGroupId;
+    }
 
     @Override
     public int hashCode() {
@@ -128,6 +137,9 @@ public class YukonJob {
         } else if (!id.equals(other.id)) {
             return false;
         }
+        if (!jobGroupId.equals(other.jobGroupId)) {
+            return false;
+        }
         return true;
     }
 
@@ -140,6 +152,7 @@ public class YukonJob {
         tsc.append("userContext", userContext);
         tsc.append("jobProperties", jobProperties);
         tsc.append("isSystemUser", isSystemUser);
+        tsc.append("jobGroupId", jobGroupId);
         return tsc.toString();
     }
 }
