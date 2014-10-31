@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/30/2014 5:06:40 PM                        */
+/* Created on:     10/31/2014 4:25:53 PM                        */
 /*==============================================================*/
 
 
@@ -5099,6 +5099,7 @@ create table FileExportHistory  (
    ExportDate           DATE                            not null,
    ExportPath           VARCHAR2(300),
    ArchiveFileExists    CHAR(1)                         not null,
+   JobGroupId           INTEGER                         not null,
    constraint PK_FileExportHistory primary key (EntryId)
 );
 
@@ -5425,6 +5426,7 @@ create table JOB  (
    Locale               VARCHAR2(10),
    TimeZone             VARCHAR2(40),
    themeName            VARCHAR2(60),
+   JobGroupId           INTEGER                         not null,
    constraint PK_JOB primary key (JobID)
 );
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/30/2014 5:10:32 PM                        */
+/* Created on:     10/31/2014 4:16:44 PM                        */
 /*==============================================================*/
 
 
@@ -5373,6 +5373,7 @@ create table FileExportHistory (
    ExportDate           datetime             not null,
    ExportPath           varchar(300)         null,
    ArchiveFileExists    char(1)              not null,
+   JobGroupId           int                  not null,
    constraint PK_FileExportHistory primary key (EntryId)
 )
 go
@@ -5727,6 +5728,7 @@ create table JOB (
    Locale               varchar(10)          null,
    TimeZone             varchar(40)          null,
    themeName            varchar(60)          null,
+   JobGroupId           int                  not null,
    constraint PK_JOB primary key (JobID)
 )
 go
