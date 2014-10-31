@@ -10,8 +10,11 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 
 public class YsmJmxQueryService {
 
@@ -21,36 +24,44 @@ public class YsmJmxQueryService {
     private JMXServiceURL serviceUrl;
     private JMXConnector jmxConnector;
     
+    private @Autowired ConfigurationSource config;
+    
     public Object get(ObjectName name, String attribute) throws Exception {
-        try {
-            
-            MBeanServerConnection mbeanConn = jmxConnector.getMBeanServerConnection();
-            Object object = mbeanConn.getAttribute(name, attribute);
-            
-            return object;
-        } catch (Exception e) {
+        if (config.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE, false)) {
             try {
-                // Try to reconnect, maybe YSM was restarted.
-                jmxConnector = JMXConnectorFactory.connect(serviceUrl, null);
                 
                 MBeanServerConnection mbeanConn = jmxConnector.getMBeanServerConnection();
                 Object object = mbeanConn.getAttribute(name, attribute);
                 
                 return object;
-            } catch (Exception e2) {
-                log.error("Could not retrieve value.", e2);
-                throw e;
+            } catch (Exception e) {
+                try {
+                    // Try to reconnect, maybe YSM was restarted.
+                    jmxConnector = JMXConnectorFactory.connect(serviceUrl, null);
+                    
+                    MBeanServerConnection mbeanConn = jmxConnector.getMBeanServerConnection();
+                    Object object = mbeanConn.getAttribute(name, attribute);
+                    
+                    return object;
+                } catch (Exception e2) {
+                    log.error("Could not retrieve value.", e2);
+                    throw e;
+                }
             }
+        } else {
+            return null;
         }
     }
     
     @PostConstruct
     public void init() {
-        try {
-            serviceUrl = new JMXServiceURL(service);
-            jmxConnector = JMXConnectorFactory.connect(serviceUrl, null);
-        } catch (IOException e) {
-            log.error("Could not init jmx connection", e);
+        if (config.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE, false)) {
+            try {
+                serviceUrl = new JMXServiceURL(service);
+                jmxConnector = JMXConnectorFactory.connect(serviceUrl, null);
+            } catch (IOException e) {
+                log.error("Could not init jmx connection", e);
+            }
         }
     }
 }
