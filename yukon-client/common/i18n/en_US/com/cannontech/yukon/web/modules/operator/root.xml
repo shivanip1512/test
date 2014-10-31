@@ -114,7 +114,7 @@
     <entry key="yukon.web.modules.operator.gateways.connectionType.TCP_IP">TCP/IP</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionType.MODEM_PLUS_PPP">Modem Plus PPP</entry>
     <entry key="yukon.web.modules.operator.gateways.connectionType.MODEM_DIRECT">Modem Direct</entry>
-    <entry key="yukon.web.modules.operator.gateways.port">(port {0})</entry>
+    <entry key="yukon.web.modules.operator.gateways.port">Port: {0}</entry>
     <entry key="yukon.web.modules.operator.gateways.conflictType.RADIO">Radio</entry>
     <entry key="yukon.web.modules.operator.gateways.conflictType.APPLICATION">Application</entry>
     <entry key="yukon.web.modules.operator.gateways.conflictType.UPPER_STACK">Upper Stack</entry>

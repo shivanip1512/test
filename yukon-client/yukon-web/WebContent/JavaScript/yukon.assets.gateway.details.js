@@ -15,6 +15,11 @@ yukon.assets.gateway.details = (function () {
     
     _text,
     
+    /** {String} - The IANA timezone name. */
+    _tz = jstz.determine().name(),
+    
+    _timeFormat = 'MM/DD/YYYY hh:mm A',
+    
     /** @type {Number} - The gateway pao id. */
     _gateway,
     
@@ -76,6 +81,61 @@ yukon.assets.gateway.details = (function () {
             $('#gw-sequence-table').html(table);
         }).always(function () {
             setTimeout(_updateSequences, 4000);
+        });
+    },
+    
+    _update = function () {
+        $.ajax({
+            url: yukon.url('/stars/gateways/' + _gateway + '/data')
+        }).done(function (gw) {
+            
+            var info = $('#gw-info'), comm = $('#gw-comm'), collection = $('#gw-data-collection'), 
+                data = gw.data, radios = gw.data.radios, percent = data.collectionPercent.toFixed(2);
+            
+            console.log('schedule: ' + data.schedule);
+            
+            info.find('.js-gw-name').text(gw.name);
+            info.find('.js-gw-sn').text(gw.rfnId.sensorSerialNumber);
+            info.find('.js-gw-hw-version').text(data.hwVersion);
+            info.find('.js-gw-sw-version').text(data.swVersion);
+            info.find('.js-gw-us-version').text(data.usVersion);
+            info.find('.js-gw-radio-version').text(data.radioVersion);
+            info.find('.js-gw-release-version').text(data.releaseVersion);
+            info.find('.js-gw-version-conflicts').text(data.versionConflicts)
+            .toggleClass('empty-list', !data.versionConflict).toggleClass('error', data.versionConflict);
+            info.find('.js-gw-app-mode').text(data.appMode)
+            .toggleClass('error', !data.appModeNormal).toggleClass('success', data.appModeNormal);
+            comm.find('.js-gw-admin').text(data.admin);
+            comm.find('.js-gw-super-admin').text(data.superAdmin);
+            comm.find('.js-gw-conn-type').text(data.connType);
+            comm.find('.js-gw-ip').text(data.ip);
+            comm.find('.js-gw-port').text(_text['port'].replace('{0}', data.port));
+            comm.find('.js-gw-radios').empty();
+            radios.forEach(function (item, idx, arr) {
+                var radio = radios[idx],
+                    timestamp = moment(radio.timestamp).tz(_tz).format(_timeFormat),
+                    div = $('<div>').addClass('stacked').attr('title', timestamp);
+                div.append('<div>' + radio.type + '</div>');
+                div.append('<div>' + radio.mac + '</div>');
+                $('.js-gw-radios').append(div);
+            });
+            comm.find('.js-gw-conn-state').toggleClass('green', data.connected).toggleClass('red', !data.connected);
+            comm.find('.js-gw-conn-state-text').text(data.connectionStatusText);
+            comm.find('.js-gw-last-comm').text(data.lastCommText)
+            .toggleClass('green', data.lastComm == 'SUCCESSFUL')
+            .toggleClass('red', data.lastComm == 'FAILED')
+            .toggleClass('orange', data.lastComm == 'MISSED')
+            .toggleClass('subtle', data.lastComm == 'UNKNOWN');
+            comm.find('.js-gw-last-comm-time').text(moment(data.lastCommTimestamp).tz(_tz).format(_timeFormat));
+            collection.find('.js-gw-data-completeness .progress-bar').css({ width: data.collectionPercent + '%' })
+            .toggleClass('progress-bar-success', !data.collectionDanger && !data.collectionWarning)
+            .toggleClass('progress-bar-warning', data.collectionWarning)
+            .toggleClass('progress-bar-danger', data.collectionDanger);
+            if (percent == 100) percent = 100;
+            collection.find('.js-gw-data-completeness-percent').text(percent + '%');
+            collection.find('.js-gw-schedule').text(data.schedule);
+        }).always(function () {
+            setTimeout(_update, 4000);
         });
     },
     
@@ -253,7 +313,6 @@ yukon.assets.gateway.details = (function () {
                 $('#gateway-schedule-form').ajaxSubmit({
                     success: function (result, status, xhr, $form) {
                         popup.dialog('close');
-                        window.location.href = window.location.href;
                     },
                     error: function (xhr, status, error, $form) {
                         popup.html(xhr.responseText);
@@ -266,6 +325,7 @@ yukon.assets.gateway.details = (function () {
                 
             });
             
+            _update();
             _updateSequences();
             
             _initialized = true;

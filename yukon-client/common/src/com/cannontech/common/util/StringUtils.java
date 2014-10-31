@@ -4,6 +4,8 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 
@@ -216,4 +218,18 @@ public final class StringUtils {
         result = result.replaceAll(">", "&gt;");
         return result;
     }
+    
+    public static String colonizeMacAddress(String mac) {
+        
+        Pattern regex = Pattern.compile("(..)(..)(..)(..)(..)(..)");
+        Matcher m = regex.matcher(mac);
+        if (m.matches()) {
+            return String.format("%s:%s:%s:%s:%s:%s",
+                    m.group(1), m.group(2), m.group(3), m.group(4), m.group(5), m.group(6));
+        } else {
+            return mac;
+        }
+        
+    }
+    
 }

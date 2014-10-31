@@ -64,28 +64,29 @@
         data-width="460" data-height="264"
         data-url="${scheduleUrl}"></div>
 
+<c:set var="data" value="${gateway.data}"/>
 <div class="column-12-12 clearfix">
 
     <div class="column one">
-        <tags:sectionContainer2 nameKey="info" styleClass="stacked">
+        <tags:sectionContainer2 nameKey="info" styleClass="stacked" id="gw-info">
             <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".name">${fn:escapeXml(gateway.name)}</tags:nameValue2>
-                <tags:nameValue2 nameKey=".serialNumber">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</tags:nameValue2>
-                <tags:nameValue2 nameKey=".hardwareVersion">${gateway.data.hardwareVersion}</tags:nameValue2>
-                <tags:nameValue2 nameKey=".softwareVersion">${gateway.data.softwareVersion}</tags:nameValue2>
-                <tags:nameValue2 nameKey=".upperStackVersion">${gateway.data.upperStackVersion}</tags:nameValue2>
-                <tags:nameValue2 nameKey=".radioVersion">${gateway.data.radioVersion }</tags:nameValue2>
-                <tags:nameValue2 nameKey=".releaseVersion">${gateway.data.releaseVersion}</tags:nameValue2>
+                <tags:nameValue2 nameKey=".name" valueClass="js-gw-name">${fn:escapeXml(gateway.name)}</tags:nameValue2>
+                <tags:nameValue2 nameKey=".serialNumber" valueClass="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</tags:nameValue2>
+                <tags:nameValue2 nameKey=".hardwareVersion" valueClass="js-gw-hw-version">${data.hardwareVersion}</tags:nameValue2>
+                <tags:nameValue2 nameKey=".softwareVersion" valueClass="js-gw-sw-version">${data.softwareVersion}</tags:nameValue2>
+                <tags:nameValue2 nameKey=".upperStackVersion" valueClass="js-gw-us-version">${data.upperStackVersion}</tags:nameValue2>
+                <tags:nameValue2 nameKey=".radioVersion" valueClass="js-gw-radio-version">${data.radioVersion }</tags:nameValue2>
+                <tags:nameValue2 nameKey=".releaseVersion" valueClass="js-gw-release-version">${data.releaseVersion}</tags:nameValue2>
                 <tags:nameValue2 nameKey=".versionConflicts">
-                    <c:if test="${empty gateway.data.versionConflicts}">
-                        <span class="empty-list"><i:inline key="yukon.web.defaults.none"/></span>
+                    <c:if test="${empty data.versionConflicts}">
+                        <span class="empty-list js-gw-version-conflicts"><i:inline key="yukon.web.defaults.none"/></span>
                     </c:if>
-                    <c:if test="${not empty gateway.data.versionConflicts}">
-                        <div class="stacked">
-                            <c:forEach var="conflict" items="${gateway.data.versionConflicts}">
-                                <div><i:inline key=".conflictType.${conflict}"/></div>
+                    <c:if test="${not empty data.versionConflicts}">
+                        <span class="error js-gw-version-conflicts">
+                            <c:forEach var="conflict" items="${data.versionConflicts}">
+                                <i:inline key=".conflictType.${conflict}"/>,&nbsp;
                             </c:forEach>
-                        </div>
+                        </span>
                     </c:if>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".appMode">
@@ -93,7 +94,9 @@
                     <c:if test="${gateway.appModeNonNormal}">
                         <c:set var="clazz" value="error"/>
                     </c:if>
-                    <span class="${clazz}"><i:inline key=".appMode.${gateway.data.mode}"/></span>
+                    <span class="${clazz}" valueClass="js-gw-app-mode">
+                        <i:inline key=".appMode.${data.mode}"/>
+                    </span>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
@@ -126,48 +129,43 @@
 </div>
 
 <div class="stacked">
-    <tags:sectionContainer2 nameKey="comms" styleClass="stacked">
+    <tags:sectionContainer2 nameKey="comms" styleClass="stacked" id="gw-comm">
         <div class="column-12-12 clearfix">
             <div class="column one">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".admin">
-                        <c:if test="${empty gateway.data.admin}">
-                            <span class="empty-list"><i:inline key="yukon.web.defaults.none"/></span>
-                        </c:if>
-                        <c:if test="${not empty gateway.data.admin}">
-                            <span class="empty-list">${fn:escapeXml(gateway.data.admin.username)}</span>
-                        </c:if>
+                    <tags:nameValue2 nameKey=".admin" valueClass="js-gw-admin">
+                        <c:if test="${empty data.admin}"><i:inline key="yukon.web.defaults.none"/></c:if>
+                        <c:if test="${not empty data.admin}">${fn:escapeXml(data.admin.username)}</c:if>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".superAdmin">
-                        <c:if test="${empty gateway.data.superAdmin}">
-                            <span class="empty-list"><i:inline key="yukon.web.defaults.none"/></span>
-                        </c:if>
-                        <c:if test="${not empty gateway.data.superAdmin}">
-                            <span class="empty-list">${fn:escapeXml(gateway.data.superAdmin.username)}</span>
-                        </c:if>
+                    <tags:nameValue2 nameKey=".superAdmin" valueClass="js-gw-super-admin">
+                        <c:if test="${empty data.superAdmin}"><i:inline key="yukon.web.defaults.none"/></c:if>
+                        <c:if test="${not empty data.superAdmin}">${fn:escapeXml(data.superAdmin.username)}</c:if>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".connectionType">
-                        <i:inline key=".connectionType.${gateway.data.connectionType}"/>
+                    <tags:nameValue2 nameKey=".connectionType" valueClass="js-gw-conn-type">
+                        <i:inline key=".connectionType.${data.connectionType}"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".ipaddress">
-                        ${fn:escapeXml(gateway.data.ipAddress)} <i:inline key=".port" arguments="${gateway.data.port}"/>
+                        <span class="js-gw-ip">${fn:escapeXml(data.ipAddress)}</span>&nbsp;
+                        <span class="js-gw-port"><i:inline key=".port" arguments="${data.port}"/></span>
                     </tags:nameValue2>
-                    <tags:nameValue2 nameKey=".radios">
-                        <c:forEach var="radio" items="${gateway.data.radios}">
+                    <tags:nameValue2 nameKey=".radios" valueClass="js-gw-radios">
+                        <c:forEach var="radio" items="${data.radios}">
                             <div title="<cti:formatDate type="DATEHM" value="${radio.timestamp}"/>" class="stacked">
                                 <div><i:inline key=".radioType.${radio.type}"/></div>
                                 <div><i:inline key=".macAddress" arguments="${radio.macAddress}"/></div>
                             </div>
                         </c:forEach>
-                        </div>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>
             <div class="column two nogutter">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".connectionStatus">
-                        <span class="state-box green"></span>
-                        <i:inline key=".connectionStatus.${gateway.data.connectionStatus}"/>
+                        <c:set var="clazz" value="${data.connectionStatus == 'CONNECTED' ? 'green' : 'red'}"/>
+                        <span class="state-box ${clazz} js-gw-conn-state"></span>
+                        <span class="js-gw-conn-state-text">
+                            <i:inline key=".connectionStatus.${data.connectionStatus}"/>
+                        </span>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".lastComms">
                         <c:set var="clazz" value="green"/>
@@ -180,8 +178,11 @@
                         <c:if test="${gateway.lastCommUnknown}">
                             <c:set var="clazz" value="gray"/>
                         </c:if>
-                        <span class="${clazz}"><i:inline key=".lastCommStatus.${gateway.data.lastCommStatus}"/></span>
-                        (<cti:formatDate type="DATEHM" value="${gateway.data.lastCommStatusTimestamp}"/>)
+                        <span class="${clazz} js-gw-last-comm">
+                            <i:inline key=".lastCommStatus.${data.lastCommStatus}"/>
+                        </span>
+                        <cti:formatDate var="lastCommTime" type="DATEHM" value="${data.lastCommStatusTimestamp}"/>
+                        <span class="js-gw-last-comm-time subtle">${lastCommTime}</span>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
 <%-- Add back when NM test connection works. --%>
@@ -194,11 +195,11 @@
 </div>
 
 <div class="stacked">
-    <tags:sectionContainer2 nameKey="dataCollection">
+    <tags:sectionContainer2 nameKey="dataCollection" id="gw-data-collection">
         <div class="column-12-12 clearfix">
             <div class="column one">
                 <tags:nameValueContainer2 tableClass="with-form-controls">
-                    <tags:nameValue2 nameKey=".dataCompleteness">
+                    <tags:nameValue2 nameKey=".dataCompleteness" valueClass="js-gw-data-completeness">
                         <div class="progress dib vatb">
                             <c:set var="clazz" value="progress-bar-success"/>
                             <c:if test="${gateway.totalCompletionLevelWarning}">
@@ -209,14 +210,16 @@
                             </c:if>
                             <div class="progress-bar ${clazz}" style="width: ${gateway.totalCompletionPercentage}%"></div>
                         </div>&nbsp;
-                        <fmt:formatNumber pattern="###.##%" value="${gateway.totalCompletionPercentage / 100}"/>
+                        <span class="js-gw-data-completeness-percent">
+                            <fmt:formatNumber pattern="###.##%" value="${gateway.totalCompletionPercentage / 100}"/>
+                        </span>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>
             <div class="column two nogutter">
                 <tags:nameValueContainer2 tableClass="with-form-controls">
                     <tags:nameValue2 nameKey=".schedule" valueClass="full-width">
-                        <cti:formatCron value="${gateway.data.collectionSchedule}"/>
+                        <span class="js-gw-schedule"><cti:formatCron value="${data.collectionSchedule}"/></span>
                         <cti:button nameKey="edit" icon="icon-pencil" classes="fr" data-popup="#gateway-schedule-popup"/>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
@@ -229,11 +232,10 @@
     </tags:sectionContainer2>
 </div>
 
-<div id="gateway-templates" class="dn">
-    <cti:toJson object="${text}" id="gateway-text"/>
-</div>
+<div id="gateway-templates" class="dn"><cti:toJson object="${text}" id="gateway-text"/></div>
 
-<form id="delete-gw-form" action="<cti:url value="/stars/gateways/${gateway.paoIdentifier.paoId}"/>" method="post" class="dn">
+<cti:url var="deleteUrl" value="/stars/gateways/${gateway.paoIdentifier.paoId}"/>
+<form id="delete-gw-form" action="${deleteUrl}" method="post" class="dn">
     <input type="hidden" name="_method" value="delete">
 </form>
 
