@@ -92,8 +92,6 @@ yukon.assets.gateway.details = (function () {
             var info = $('#gw-info'), comm = $('#gw-comm'), collection = $('#gw-data-collection'), 
                 data = gw.data, radios = gw.data.radios, percent = data.collectionPercent.toFixed(2);
             
-            console.log('schedule: ' + data.schedule);
-            
             info.find('.js-gw-name').text(gw.name);
             info.find('.js-gw-sn').text(gw.rfnId.sensorSerialNumber);
             info.find('.js-gw-hw-version').text(data.hwVersion);
