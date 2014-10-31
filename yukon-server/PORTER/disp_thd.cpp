@@ -92,6 +92,12 @@ void DispatchMsgHandlerThread(void *Arg)
 
                         CTILOG_INFO(dout, "Porter has received a "<< dbchg->getCategory() <<" DBCHANGE message from Dispatch");
 
+                        if( dbchg->getCategory() != "DEVICE_GROUP_MEMBER" )
+                        {
+                            //  Porter ignores DEVICE_GROUP_MEMBER dbchanges
+                            dbchg.reset();
+                        }
+
                         break;
                     }
                 case MSG_COMMAND:
