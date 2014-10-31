@@ -83,7 +83,7 @@
                 <cti:param name="lastAction.max" value="${filter.lastAction.max}"/>
             </cti:url>
             <div data-url="${url}" data-static>
-                <table id="loadGroupList" class="compact-results-table has-actions">
+                <table class="compact-results-table has-actions">
                     <thead>
                         <tr>
                             <tags:sort column="${NAME}"/>
