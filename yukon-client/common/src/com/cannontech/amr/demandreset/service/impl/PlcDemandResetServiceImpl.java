@@ -121,7 +121,9 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         BiMap<PaoIdentifier, LitePoint> deviceToPoint =
             attributeService.getPoints(devices, BuiltInAttribute.IED_DEMAND_RESET_COUNT);
 
-        Set<SimpleDevice> devicesWithoutPoint = Sets.difference(devices, deviceToPoint.keySet());
+        Set<SimpleDevice> deviceToPointKeySet = PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet());
+        
+        Set<SimpleDevice> devicesWithoutPoint = Sets.difference(devices, deviceToPointKeySet);
         callbacks.add(initiatedCallback);
         if (log.isDebugEnabled() && !devicesWithoutPoint.isEmpty()) {
             log.error("Can't Verify:" + devicesWithoutPoint + " \"IED Demand Reset Count\" point is missing.");
@@ -130,8 +132,6 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
             callback.cannotVerify(device, getError(DemandResetError.NO_POINT));
         }
 
-        Set<SimpleDevice> deviceToPointKeySet = PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet());
-        
         // send verification to devices that support IED_DEMAND_RESET_COUNT attribute
         if (!deviceToPoint.isEmpty()) {
             List<CommandRequestDevice> verificationCommands =

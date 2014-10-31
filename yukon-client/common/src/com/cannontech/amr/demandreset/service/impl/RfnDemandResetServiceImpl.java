@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -234,9 +233,8 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
         
     @Override
     public Set<SimpleDevice> getVerifiableDevices(Set<? extends YukonPao> paos){
-        List<SimpleDevice> devices = PaoUtils.asSimpleDeviceListFromPaos(paos);
         BiMap<PaoIdentifier, LitePoint> deviceToPoint =
-            attributeService.getPoints(devices, BuiltInAttribute.RF_DEMAND_RESET_STATUS);
+            attributeService.getPoints(paos, BuiltInAttribute.RF_DEMAND_RESET_STATUS);
         return PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet());
     }
 
@@ -249,10 +247,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
         final Map<SimpleDevice, SpecificDeviceErrorDescription> errors = Maps.newHashMap();
         final Map<RfnIdentifier, SimpleDevice> devicesByRfnMeterIdentifier = Maps.newHashMap();
 
-        BiMap<PaoIdentifier, LitePoint> deviceToPoint =
-            attributeService.getPoints(paos, BuiltInAttribute.RF_DEMAND_RESET_STATUS);
-        
-        final Set<SimpleDevice> verifiableDevices = PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet());
+        final Set<SimpleDevice> verifiableDevices = getVerifiableDevices(paos);
         Set<SimpleDevice> devicesWithoutPoint = Sets.difference(PaoUtils.asSimpleDeviceSet(paos), verifiableDevices);
         
         if(log.isDebugEnabled() && !devicesWithoutPoint.isEmpty()){
