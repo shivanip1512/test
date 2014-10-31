@@ -84,7 +84,7 @@ public abstract class CronTagStyleHandlerBase implements CronTagStyleHandler {
             minute = ServletRequestUtils.getRequiredIntParameter(request, id + "_" + CRONEXP_MINUTE);
             amPmStr = ServletRequestUtils.getRequiredStringParameter(request, id + "_" + CRONEXP_AMPM);
         } catch (ServletRequestBindingException e) {
-            throw new CronException(CronExceptionType.REQUEST_BINDING);
+            throw new CronException(CronExceptionType.REQUEST_BINDING, e);
         }
         
         CronExprTagAmPmOptionEnum amPm = CronExprTagAmPmOptionEnum.valueOf(amPmStr);

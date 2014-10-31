@@ -44,9 +44,9 @@ public class OneTimeCronTagStyleHandler extends CronTagStyleHandlerBase {
             cal.setTime(date);
         } catch (ServletRequestBindingException | ParseException e) {
             if (e instanceof ServletRequestBindingException) {
-                throw new CronException(CronExceptionType.REQUEST_BINDING);
+                throw new CronException(CronExceptionType.REQUEST_BINDING, e);
             } else {
-                throw new CronException(CronExceptionType.PARSING);
+                throw new CronException(CronExceptionType.PARSING, e);
             }
         }
         

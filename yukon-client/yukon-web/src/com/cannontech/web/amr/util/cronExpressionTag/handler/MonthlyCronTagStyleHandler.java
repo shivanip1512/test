@@ -41,7 +41,7 @@ public class MonthlyCronTagStyleHandler extends CronTagStyleHandlerBase {
                     id + "_" + CRONEXP_MONTHLY_OPTION);
             monthlyOption = CronExprMonthlyOptionEnum.valueOf(monthlyOptionStr);
         } catch (ServletRequestBindingException e) {
-            throw new CronException(CronExceptionType.REQUEST_BINDING);
+            throw new CronException(CronExceptionType.REQUEST_BINDING, e);
         }
         
         if (monthlyOption.equals(CronExprMonthlyOptionEnum.ON_DAY)) {
@@ -50,7 +50,7 @@ public class MonthlyCronTagStyleHandler extends CronTagStyleHandlerBase {
                 monthlyOnDay = ServletRequestUtils.getRequiredIntParameter(request, 
                         id + "_" + CRONEXP_MONTHLY_OPTION_ON_DAY_X);
             } catch (ServletRequestBindingException e) {
-                throw new CronException(CronExceptionType.REQUEST_BINDING);
+                throw new CronException(CronExceptionType.REQUEST_BINDING, e);
             }
             parts[3] = String.valueOf(monthlyOnDay);
             

@@ -44,7 +44,7 @@ public class DailyCronTagStyleHandler extends CronTagStyleHandlerBase {
                     id + "_" + CRONEXP_DAILY_OPTION);
             dailyOption = CronExprTagDailyOptionEnum.valueOf(dailyOptionStr);
         } catch (ServletRequestBindingException e) {
-            throw new CronException(CronExceptionType.REQUEST_BINDING);
+            throw new CronException(CronExceptionType.REQUEST_BINDING, e);
         }
         
         if (dailyOption.equals(CronExprTagDailyOptionEnum.EVERYDAY)) {

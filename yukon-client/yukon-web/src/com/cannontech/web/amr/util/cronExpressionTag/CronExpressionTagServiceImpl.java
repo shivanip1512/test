@@ -35,14 +35,14 @@ public class CronExpressionTagServiceImpl implements CronExpressionTagService {
         try {
             freqStr = ServletRequestUtils.getRequiredStringParameter(request, id + "_" + CRONEXP_FREQ);
         } catch (ServletRequestBindingException e) {
-            throw new CronException(CronExceptionType.REQUEST_BINDING);
+            throw new CronException(CronExceptionType.REQUEST_BINDING, e);
         }
         
         CronTagStyleType type;
         try {
             type = CronTagStyleType.valueOf(freqStr);
         } catch (IllegalArgumentException e) {
-            throw new CronException(CronExceptionType.REQUEST_BINDING);
+            throw new CronException(CronExceptionType.REQUEST_BINDING, e);
         }
         
         CronTagStyleHandler handler = handlerMap.get(type);
@@ -100,7 +100,7 @@ public class CronExpressionTagServiceImpl implements CronExpressionTagService {
         try {
             new CronExpression(cronExpression);
         } catch (ParseException e) {
-            throw new CronException(CronExceptionType.PARSING);
+            throw new CronException(CronExceptionType.PARSING, e);
         }
     }
     

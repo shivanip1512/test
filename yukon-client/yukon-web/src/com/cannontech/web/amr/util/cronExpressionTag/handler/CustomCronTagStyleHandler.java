@@ -28,7 +28,7 @@ public class CustomCronTagStyleHandler extends CronTagStyleHandlerBase {
         try {
             return ServletRequestUtils.getRequiredStringParameter(request, id + "_" + CRONEXP_CUSTOM_EXPRESSION);
         } catch (ServletRequestBindingException e) {
-            throw new CronException(CronExceptionType.REQUEST_BINDING);
+            throw new CronException(CronExceptionType.REQUEST_BINDING, e);
         }
     }
     
@@ -40,7 +40,7 @@ public class CustomCronTagStyleHandler extends CronTagStyleHandlerBase {
             customExpression = ServletRequestUtils.getRequiredStringParameter(request, 
                     id + "_" + CRONEXP_CUSTOM_EXPRESSION);
         } catch (ServletRequestBindingException e) {
-            throw new CronException(CronExceptionType.REQUEST_BINDING);
+            throw new CronException(CronExceptionType.REQUEST_BINDING, e);
         }
         
         boolean isValid = CronExpression.isValidExpression(customExpression);
