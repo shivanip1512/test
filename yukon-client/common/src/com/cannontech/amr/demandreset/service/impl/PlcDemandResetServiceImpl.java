@@ -76,7 +76,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
     public Set<SimpleDevice> getVerifiableDevices(Set<? extends YukonPao> paos){
         BiMap<PaoIdentifier, LitePoint> deviceToPoint =
             attributeService.getPoints(paos, BuiltInAttribute.IED_DEMAND_RESET_COUNT);
-        return PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet());
+        return Sets.newHashSet(PaoUtils.asSimpleDeviceList(deviceToPoint.keySet()));
     }
     
     @Override
@@ -120,7 +120,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         BiMap<PaoIdentifier, LitePoint> deviceToPoint =
             attributeService.getPoints(devices, BuiltInAttribute.IED_DEMAND_RESET_COUNT);
 
-        Set<SimpleDevice> deviceToPointKeySet = PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet());
+        Set<SimpleDevice> deviceToPointKeySet = Sets.newHashSet(PaoUtils.asSimpleDeviceList(deviceToPoint.keySet()));
         
         Set<SimpleDevice> devicesWithoutPoint = Sets.difference(devices, deviceToPointKeySet);
         callbacks.add(initiatedCallback);
@@ -203,7 +203,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         
         VerificationCallback(DemandResetCallback callback, BiMap<PaoIdentifier, LitePoint> deviceToPoint, DateTime whenRequested) {
             this.callback = callback;
-            this.meters.addAll(PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet()));
+            this.meters.addAll(PaoUtils.asSimpleDeviceList(deviceToPoint.keySet()));
             this.whenRequested = whenRequested;
             this.deviceToPoint = deviceToPoint;
         }

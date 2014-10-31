@@ -104,7 +104,7 @@ public class DisconnectPlcServiceImpl implements DisconnectPlcService{
             BiMap<PaoIdentifier, LitePoint> deviceToPoint =
                 attributeService.getPoints(meters, BuiltInAttribute.DISCONNECT_STATUS);
 
-            devicesWithoutPoint = Sets.difference(meters, PaoUtils.asSimpleDeviceSet(deviceToPoint.keySet()));
+            devicesWithoutPoint = Sets.difference(meters, Sets.newHashSet(PaoUtils.asSimpleDeviceList(deviceToPoint.keySet())));
         }
 
         /**
