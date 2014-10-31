@@ -1,6 +1,8 @@
 package com.cannontech.web.stars.gateway;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.gateway.AppMode;
 import com.cannontech.common.rfn.message.gateway.ConflictType;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
+import com.cannontech.common.rfn.message.gateway.DataSequence;
 import com.cannontech.common.rfn.message.gateway.Radio;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
@@ -121,6 +124,19 @@ public class GatewayControllerHelper {
         }
         
         return gatewayJson;
+    }
+    
+    public void sortSequences(List<DataSequence> sequences, YukonUserContext userContext) {
+        
+        final MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+        Collections.sort(sequences, new Comparator<DataSequence>() {
+            @Override
+            public int compare(DataSequence o1, DataSequence o2) {
+                String type1 = accessor.getMessage(baseKey + "sequenceType." + o1.getType());
+                String type2 = accessor.getMessage(baseKey + "sequenceType." + o2.getType());
+                return type1.compareToIgnoreCase(type2);
+            }
+        });
     }
     
 }

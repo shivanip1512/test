@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.gateway;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.rfn.message.gateway.DataSequence;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.TimeoutExecutionException;
@@ -57,6 +59,12 @@ public class GatewayDetailController {
             model.addAttribute("geojson", geojson);
         }
         
+        if (gateway.getData() != null) {
+            List<DataSequence> sequences = Lists.newArrayList(gateway.getData().getSequences());
+            helper.sortSequences(sequences, userContext);
+            model.addAttribute("sequences", sequences);
+        }
+        
         return "gateways/detail.jsp";
     }
     
@@ -92,7 +100,9 @@ public class GatewayDetailController {
             throws NmCommunicationException {
         
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
-        model.addAttribute("gateway", gateway);
+        List<DataSequence> sequences = Lists.newArrayList(gateway.getData().getSequences());
+        helper.sortSequences(sequences, userContext);
+        model.addAttribute("sequences", sequences);
         
         return "gateways/sequences.jsp";
     }
