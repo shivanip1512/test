@@ -8,7 +8,7 @@ import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 
 /**
  * Message sent to Yukon on a temporary queue as a result of a {@link GatewayDataRequest}
- * or recieved unsolicited on the yukon.qr.obj.common.rfn.GatewayData queue as a result 
+ * or received unsolicited on the yukon.qr.obj.common.rfn.GatewayData queue as a result 
  * of data changing in NM. 
  */
 public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable {
