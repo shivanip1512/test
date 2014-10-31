@@ -20,6 +20,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
@@ -178,7 +179,7 @@ public class MapController {
         }
         
         // Throw unsupported devices in as hidden
-        Set<SimpleDevice> unsupported = Sets.difference(devices, points.values());
+        Set<SimpleDevice> unsupported = Sets.difference(devices, PaoUtils.asSimpleDeviceSet(points.values()));
         for (SimpleDevice device : unsupported) {
             results.put(device.getDeviceId(), false);
         }
