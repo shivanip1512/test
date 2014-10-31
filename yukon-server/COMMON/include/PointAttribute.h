@@ -462,6 +462,19 @@ public:
     static const Attribute  VoltagePhaseBOut;
     static const Attribute  VoltagePhaseCOut;
     static const Attribute  VoltagePhaseError;
+
+    static const Attribute  FirmwareVersion;
+    static const Attribute  IgnoredControlReason;
+    static const Attribute  IpAddress;
+    static const Attribute  LastControlReason;
+    static const Attribute  NeutralCurrentSensor;
+    static const Attribute  SerialNumber;
+    static const Attribute  UdpPort;
+
+    static const Attribute  ConnectedLoad;
+    static const Attribute  DiversifiedLoad;
+    static const Attribute  MaxLoadReduction;
+    static const Attribute  AvailableLoadReduction;
 };
 
 

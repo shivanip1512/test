@@ -418,4 +418,15 @@ const Attribute Attribute::VoltagePhaseAOut                                 = At
 const Attribute Attribute::VoltagePhaseBOut                                 = Attribute( "VOLTAGE_PHASE_B_OUT" );
 const Attribute Attribute::VoltagePhaseCOut                                 = Attribute( "VOLTAGE_PHASE_C_OUT" );
 const Attribute Attribute::VoltagePhaseError                                = Attribute( "VOLTAGE_PHASE_ERROR" );
+const Attribute Attribute::FirmwareVersion                                  = Attribute( "FIRMWARE_VERSION" );
+const Attribute Attribute::IgnoredControlReason                             = Attribute( "IGNORED_CONTROL_REASON" );
+const Attribute Attribute::IpAddress                                        = Attribute( "IP_ADDRESS" );
+const Attribute Attribute::LastControlReason                                = Attribute( "LAST_CONTROL_REASON" );
+const Attribute Attribute::NeutralCurrentSensor                             = Attribute( "NEUTRAL_CURRENT_SENSOR" );
+const Attribute Attribute::SerialNumber                                     = Attribute( "SERIAL_NUMBER" );
+const Attribute Attribute::UdpPort                                          = Attribute( "UDP_PORT" );
+const Attribute Attribute::ConnectedLoad                                    = Attribute( "CONNECTED_LOAD" );
+const Attribute Attribute::DiversifiedLoad                                  = Attribute( "DIVERSIFIED_LOAD" );
+const Attribute Attribute::MaxLoadReduction                                 = Attribute( "MAX_LOAD_REDUCTION" );
+const Attribute Attribute::AvailableLoadReduction                           = Attribute( "AVAILABLE_LOAD_REDUCTION" );
 
