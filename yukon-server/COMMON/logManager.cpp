@@ -2,11 +2,12 @@
 
 #include "logLayout.h"
 #include "logFileAppender.h"
+#include "truncatingConsoleAppender.h"
 #include "logManager.h"
 #include "ctistring.h"
+#include "cparms.h"
 
 #include "log4cxx/logmanager.h"
-#include "log4cxx/consoleappender.h"
 #include "log4cxx/asyncappender.h"
 #include "log4cxx/helpers/loglog.h"
 #include "log4cxx/helpers/transcoder.h"
@@ -42,7 +43,7 @@ FileInfo::FileInfo() :
     _logRetentionDays (0),
     _fileAppend       (true),
     _bufferedIO       (true),
-    _bufferSize       (1024 * 8)
+    _bufferSize       (1024 * 128)
 {}
 
 std::string FileInfo::logFileName(const CtiDate &date) const
@@ -179,15 +180,19 @@ void LogManager::start()
     }
 
     log4cxx::helpers::ObjectPtrT<log4cxx::AsyncAppender> asyncAppender(new log4cxx::AsyncAppender);
-
-    const log4cxx::AppenderPtr logFileAppender(new LogFileAppender(logLayout, _fileInfo));
-    asyncAppender->addAppender(logFileAppender);
+    asyncAppender->setBufferSize(gConfigParms.getValueAsULong("LOG_BUFFER_SIZE", 1024 * 1024));  //  default is 128, which was not sufficient for heavy logging
 
     if( _toStdout )
     {
-        const log4cxx::AppenderPtr consoleAppender(new log4cxx::ConsoleAppender(logLayout));
-        asyncAppender->addAppender(consoleAppender);
+        std::auto_ptr<TruncatingConsoleAppender> consoleAppender(new TruncatingConsoleAppender(logLayout));
+        consoleAppender->setInterval(Timing::Chrono::seconds(gConfigParms.getValueAsULong("LOG_CONSOLE_BURST_INTERVAL_SECONDS", 1)));
+        consoleAppender->setMaxBurstSize(gConfigParms.getValueAsULong("LOG_CONSOLE_BURST_SIZE", 120));
+
+        asyncAppender->addAppender(log4cxx::AppenderPtr(consoleAppender.release()));
     }
+
+    const log4cxx::AppenderPtr logFileAppender(new LogFileAppender(logLayout, _fileInfo));
+    asyncAppender->addAppender(logFileAppender);
 
     baseLogger->addAppender(asyncAppender);
 

@@ -69,6 +69,7 @@ ACTIVEMQ_DLL    = activemq-cpp.dll
 !ENDIF
 
 APR             = $(CPP_LIBRARIES)\apache\apr\1.4.6
+APR_LIB         = $(APR)\lib\libapr-1.lib
 APR_INCLUDE     = $(APR)\include
 
 APR_UTIL        = $(CPP_LIBRARIES)\apache\apr-util\1.5.1
@@ -84,7 +85,7 @@ THRIFT_LIB      = $(THRIFT)\lib\libthrift.lib
 CAJUN           = $(CPP_LIBRARIES)\cajun\2.0.2
 CAJUN_INCLUDE   = $(CAJUN)\include
 
-LOG4CXX         = $(CPP_LIBRARIES)\apache\log4cxx\0.10.0 
+LOG4CXX         = $(CPP_LIBRARIES)\apache\log4cxx\0.10.0
 LOG4CXX_INCLUDE = $(LOG4CXX)\include
 !IFDEF DEBUG
 LOG4CXX_LIB     = $(LOG4CXX)\lib\log4cxxd.lib

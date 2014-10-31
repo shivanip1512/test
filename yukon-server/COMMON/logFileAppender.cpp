@@ -19,6 +19,16 @@ namespace Logging {
 
 namespace {
 
+__int64 makeMicroseconds(const CtiTime &t)
+{
+    __int64 result = t.seconds();
+
+    result *= 1000;
+    result *= 1000;
+
+    return result;
+}
+
 log4cxx::LogString toLogStr(const std::string &str)
 {
     log4cxx::LogString logStr;
@@ -78,8 +88,12 @@ LogFileAppender::LogFileAppender(const log4cxx::LayoutPtr& layout, const FileInf
     :   log4cxx::WriterAppender(layout),
         _fileInfo(fileInfo),
         _maxFileSizeReached(false),
-        _lastRolloverFailed(false)
+        _lastRolloverFailed(false),
+        _nextFlush(0),
+        _flushInterval(5 * 1000 * 1000)  //  force a flush every 5 seconds
 {
+    _tomorrow = makeMicroseconds(CtiTime(_today + 1));
+
     log4cxx::helpers::Pool p;
     activateOptions(p);
     cleanupOldFiles();
@@ -89,7 +103,7 @@ void LogFileAppender::activateOptions(log4cxx::helpers::Pool& p)
 {
     log4cxx::helpers::synchronized sync(mutex);
 
-    const std::string fileName = _fileInfo.logFileName(_logDate);
+    const std::string fileName = _fileInfo.logFileName(_today);
 
     try
     {
@@ -197,13 +211,12 @@ void LogFileAppender::subAppend(
     log4cxx::LogString msg;
     layout->format(msg, event, p);
 
-    const unsigned long seconds = event->getTimeStamp() / (1000 * 1000);
-    const CtiDate today = CtiTime(seconds).date();
-
     {
         log4cxx::helpers::synchronized sync(mutex);
 
-        if( ! rollover(today, p) )
+        const __int64 timestamp = event->getTimeStamp();
+
+        if( ! rollover(timestamp, p) )
         {
             return; // rollover was attempted and failed
         }
@@ -223,24 +236,28 @@ void LogFileAppender::subAppend(
         if( _writer != NULL )
         {
             _writer->write(msg, p);
-            if( getImmediateFlush() )
+            if( getImmediateFlush() || timestamp > _nextFlush )
             {
                 _writer->flush(p);
+                _nextFlush = timestamp + _flushInterval;
             }
         }
     }
 }
 
-bool LogFileAppender::rollover(const CtiDate& today, log4cxx::helpers::Pool &p)
+bool LogFileAppender::rollover(const __int64 eventTimestamp, log4cxx::helpers::Pool &p)
 {
     log4cxx::helpers::synchronized sync(mutex);
 
-    if( today <= _logDate )
+    //  avoid creating a CtiDate every time we need to check an event timestamp
+    if( eventTimestamp < _tomorrow )
     {
         return true;
     }
 
-    const std::string fileName = _fileInfo.logFileName(today);
+    const CtiDate newDay;
+
+    const std::string fileName = _fileInfo.logFileName(newDay);
 
     for(int openRetry=0 ; ; )
     {
@@ -273,7 +290,8 @@ bool LogFileAppender::rollover(const CtiDate& today, log4cxx::helpers::Pool &p)
         Sleep(_fileInfo._openRetryMillis);
     }
 
-    _logDate            = today;
+    _today    = newDay;
+    _tomorrow = makeMicroseconds(CtiTime(_today + 1));
     _lastRolloverFailed = false;
     _maxFileSizeReached = false;
 
@@ -303,7 +321,7 @@ void LogFileAppender::cleanupOldFiles() const
 
     if( finderHandle != INVALID_HANDLE_VALUE )
     {
-        const CtiDate cutoffDate  = _logDate - _fileInfo._logRetentionDays;
+        const CtiDate cutoffDate  = _today - _fileInfo._logRetentionDays;
 
         do
         {

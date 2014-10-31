@@ -17,6 +17,7 @@ INCLPATHS+= \
 -I$(XERCES)\include \
 -I$(CAJUN_INCLUDE) \
 -I$(LOG4CXX_INCLUDE) \
+-I$(APR_INCLUDE) \
 
 .PATH.H = \
 .\include \
@@ -109,6 +110,7 @@ win_helper.obj \
 LOGGEROBJS=\
 logLayout.obj \
 logFileAppender.obj \
+truncatingConsoleAppender.obj \
 logManager.obj \
 logger.obj \
 
@@ -144,7 +146,7 @@ $(COMMON_FULLBUILD):
 ctibase.dll:    $(COMMON_FULLBUILD) $(BASEOBJS) $(LOGGEROBJS) Makefile $(OBJ)\ctibase.res
                 @build -nologo -f $(_InputFile) id
                 @%cd $(OBJ)
-                $(CC) $(BASEOBJS) $(LOGGEROBJS) id_ctibase.obj $(WINLIBS) $(SQLAPILIB) $(XERCESCLIB) $(OPENSSL_LIBS) $(DLLFLAGS) $(RWLIBS) $(BOOST_LIBS) $(DBGHELP_LIBS) $(LOG4CXX_LIB) /Fe..\$@ $(LINKFLAGS) ctibase.res
+                $(CC) $(BASEOBJS) $(LOGGEROBJS) id_ctibase.obj $(WINLIBS) $(SQLAPILIB) $(XERCESCLIB) $(OPENSSL_LIBS) $(DLLFLAGS) $(RWLIBS) $(BOOST_LIBS) $(DBGHELP_LIBS) $(LOG4CXX_LIB) $(APR_LIB) /Fe..\$@ $(LINKFLAGS) ctibase.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib

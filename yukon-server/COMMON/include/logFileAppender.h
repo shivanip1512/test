@@ -16,12 +16,15 @@ class IM_EX_CTIBASE LogFileAppender : public log4cxx::WriterAppender
     class CountingOutputStream; // forward declaration
 
     const FileInfo  _fileInfo;
-    CtiDate         _logDate;
+    CtiDate         _today;
+    __int64         _tomorrow;
     bool            _maxFileSizeReached;
     bool            _lastRolloverFailed;
     size_t          _fileSize;
 
     log4cxx::helpers::WriterPtr _writer;
+    __int64         _nextFlush;
+    __int64         _flushInterval;
 
     void activateOptions(
             log4cxx::helpers::Pool& p);
@@ -38,11 +41,11 @@ class IM_EX_CTIBASE LogFileAppender : public log4cxx::WriterAppender
             log4cxx::helpers::Pool &p) override;
 
     bool rollover(
-            const CtiDate& today,
+            const __int64 eventTimestamp,
             log4cxx::helpers::Pool &p);
 
     void cleanupOldFiles() const;
-    
+
 public:
 
     LogFileAppender(const log4cxx::LayoutPtr& layout,
