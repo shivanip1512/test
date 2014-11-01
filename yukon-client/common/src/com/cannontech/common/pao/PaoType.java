@@ -271,6 +271,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> repeaterTypes;
     private final static ImmutableSet<PaoType> routableTypes;
     private final static ImmutableSet<PaoType> ecobeeTypes;
+    private final static ImmutableSet<PaoType> transmitterTypes;
     
     public final static int INVALID = -1;
     
@@ -562,6 +563,20 @@ public enum PaoType implements DatabaseRepresentationSource {
         routableTypes = b.build();
         
         ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3, ECOBEE_SMART);
+        
+        b = ImmutableSet.builder();
+        b.addAll(ccuTypes);
+        b.addAll(lcuTypes);
+        b.addAll(tcuTypes);
+        b.addAll(repeaterTypes);
+        b.add(TAPTERMINAL);
+        b.add(RDS_TERMINAL);
+        b.add(RTC);
+        b.add(SERIES_5_LMI);
+        b.add(SNPP_TERMINAL);
+        b.add(TNPP_TERMINAL);
+        b.add(WCTP_TERMINAL);
+        transmitterTypes = b.build();
     }
     
     /**
@@ -801,6 +816,10 @@ public enum PaoType implements DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getEcobeeTypes() {
         return ecobeeTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getTransmitterTypes() {
+        return transmitterTypes;
     }
     
     /**

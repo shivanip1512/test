@@ -13,13 +13,24 @@ import com.cannontech.common.pao.model.PaoLocation;
 
 public interface PaoLocationService {
     
-    public enum FeaturePropertyType {
+    public enum Icon {
+        METER_ELECTRIC,
+        METER_WATER,
+        METER_GAS,
+        TRANSMITTER,
+        RELAY,
+        GENERIC_GREY,
+        GENERIC_RED,
+    }
+    
+    public enum FeatureProperty {
         
-        PAO_IDENTIFIER("paoIdentifier");
+        PAO_IDENTIFIER("paoIdentifier"),
+        ICON("icon");
         
         private final String keyName;
         
-        FeaturePropertyType(String keyName) {
+        FeatureProperty(String keyName) {
             this.keyName = keyName;
         }
         

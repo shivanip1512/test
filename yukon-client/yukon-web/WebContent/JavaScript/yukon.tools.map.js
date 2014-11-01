@@ -34,14 +34,16 @@ yukon.tools.map = (function() {
     
     /** @type {Object.<string, {ol.style.Style}>} - A cache of styles to avoid creating lots of objects using lots of memory. */
     _styles = { 
-        'electric': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-electric.png'), anchor: [0.5, 1.0] }) }),
-        'water': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-water.png'), anchor: [0.5, 1.0] }) }),
-        'gas': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-gas.png'), anchor: [0.5, 1.0] }) }),
-        'generic': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-generic.png'), anchor: [0.5, 1.0] }) })
+        'METER_ELECTRIC': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-elec.png'), anchor: [0.5, 1.0] }) }),
+        'METER_WATER': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-water.png'), anchor: [0.5, 1.0] }) }),
+        'METER_GAS': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-gas.png'), anchor: [0.5, 1.0] }) }),
+        'TRANSMITTER': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-transmitter.png'), anchor: [0.5, 1.0] }) }),
+        'GENERIC_GREY': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-generic.png'), anchor: [0.5, 1.0] }) }),
+        'GENERIC_RED': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker.png'), anchor: [0.5, 1.0] }) })
     },
     
     /** @type {Array.<{ol.Layer.Tile|ol.layer.Group}>} - Array of tile layers for our map. */
-    _tiles = [ 
+    _tiles = [
         new ol.layer.Tile({ name: 'mqosm', source: new ol.source.MapQuest({ layer: 'osm' }) }),
         new ol.layer.Tile({ name: 'mqsat', source: new ol.source.MapQuest({ layer: 'sat' }), visible: false }),
         new ol.layer.Group({
@@ -72,9 +74,10 @@ yukon.tools.map = (function() {
      */
     _createFeature = function(feature, src_projection) {
         var pao = feature.properties.paoIdentifier,
-            icon = new ol.Feature({pao: pao});
+            icon = new ol.Feature({pao: pao}),
+            style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
         
-        icon.setStyle(_styles['generic']);
+        icon.setStyle(style);
         if (src_projection === _destProjection) {
             icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
         } else {
