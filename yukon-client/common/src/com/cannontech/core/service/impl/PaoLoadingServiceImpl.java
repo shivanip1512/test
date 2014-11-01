@@ -38,6 +38,7 @@ import com.google.common.collect.Sets;
  *
  */
 public class PaoLoadingServiceImpl implements PaoLoadingService {
+    
     @Autowired private MeterDao meterDao;
     @Autowired private DeviceDao deviceDao;
     @Autowired private PaoDao paoDao;
@@ -62,11 +63,11 @@ public class PaoLoadingServiceImpl implements PaoLoadingService {
     
     @Override
     public Map<PaoIdentifier, DisplayablePao> getDisplayableDeviceLookup(Iterable<? extends YukonPao> paos) {
-    	return loadDevices(paos, displayablePaoloaders);
+        return loadDevices(paos, displayablePaoloaders);
     }
     
     @Override
-	public List<DisplayablePao> getDisplayableDevices(Iterable<? extends YukonPao> paos) {
+    public List<DisplayablePao> getDisplayableDevices(Iterable<? extends YukonPao> paos) {
         
         Map<PaoIdentifier, DisplayablePao> loadedDevices = loadDevices(paos, displayablePaoloaders);
         List<DisplayablePao> result = Lists.newArrayList(loadedDevices.values());
@@ -88,7 +89,7 @@ public class PaoLoadingServiceImpl implements PaoLoadingService {
     }
     
     public static <T> Map<PaoIdentifier, T> loadDevices(Iterable<? extends YukonPao> paos, Iterable<PaoLoader<T>> loaders) {
-
+        
         Set<PaoIdentifier> allIdentifiers = Sets.newHashSet();
         for (YukonPao pao : paos) {
             allIdentifiers.add(pao.getPaoIdentifier());
@@ -112,8 +113,9 @@ public class PaoLoadingServiceImpl implements PaoLoadingService {
     
     @Override
     public DisplayablePao getDisplayablePao(YukonPao pao) {
-
-    	List<DisplayablePao> displayableDevices = getDisplayableDevices(Collections.singletonList(pao));
-    	return displayableDevices.get(0);
+        
+        List<DisplayablePao> displayableDevices = getDisplayableDevices(Collections.singletonList(pao));
+        return displayableDevices.get(0);
     }
+    
 }
