@@ -2303,6 +2303,7 @@
             <parseSiPrefix/>
             <modifiers match="equal">
             </modifiers>
+            <baseUom>W</baseUom>
             <baseModifiers match="equal">
                 <modifier>Max</modifier>
                 <modifier>Quadrant 1</modifier>
