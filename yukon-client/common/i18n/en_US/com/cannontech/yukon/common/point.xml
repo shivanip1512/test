@@ -18,7 +18,7 @@
          com.cannontech.common.util.FormattingTemplateProcessor
          java.text.SimpleDateFormat
 -->
-    <entry key="yukon.common.point.pointformatting.unavailableplaceholder">loading...</entry>
+    <entry key="yukon.common.point.pointFormatting.unavailablePlaceholder">loading...</entry>
     <entry key="yukon.common.point.pointFormatting.formats.FULL">{default} {status||{unit}} {time|BOTH} {shortQuality}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.SHORT">{default} {status||{unit}} {shortQuality}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.SHORTDATE">{default} {status||{unit}} {time|DATE} {shortQuality}</entry>

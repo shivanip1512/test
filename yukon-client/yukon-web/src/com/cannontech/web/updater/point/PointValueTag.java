@@ -30,6 +30,7 @@ public class PointValueTag extends YukonTagSupport {
     
     @Override
     public void doTag() throws JspException, IOException {
+        
         if (!pointIdSet) {
             throw new JspException("pointId must be set");
         }
@@ -38,13 +39,13 @@ public class PointValueTag extends YukonTagSupport {
         
         String outputText;
         if (value.isUnavailable()) {
-        	if (unavailableValue != null) {
-        		outputText = unavailableValue;
-        	} else {
-        		outputText = getMessageSource().getMessage("yukon.common.point.pointFormatting.unavailablePlaceholder");
-        	}
+            if (unavailableValue != null) {
+                outputText = unavailableValue;
+            } else {
+                outputText = getMessageSource().getMessage("yukon.common.point.pointFormatting.unavailablePlaceholder");
+            }
         } else {
-        	outputText = value.getValue();
+            outputText = value.getValue();
         }
         
         JspWriter out = getJspContext().getOut();
@@ -64,7 +65,7 @@ public class PointValueTag extends YukonTagSupport {
             out.print("</span>");
         }
     }
-
+    
     public void setPointId(int pointId) {
         pointIdSet = true;
         this.pointId = pointId;
@@ -77,16 +78,16 @@ public class PointValueTag extends YukonTagSupport {
         this.format = format;
     }
 
-	public void setUnavailableValue(String unavailableValue) {
-		this.unavailableValue = unavailableValue;
-	}
+    public void setUnavailableValue(String unavailableValue) {
+        this.unavailableValue = unavailableValue;
+    }
 
-	public void setColorForStatus(boolean colorForStatus) {
+    public void setColorForStatus(boolean colorForStatus) {
         this.colorForStatus = colorForStatus;
     }
-	
-	public void setCssClass(String cssClass) {
+    
+    public void setCssClass(String cssClass) {
         this.cssClass = cssClass;
     }
-	
+    
 }
