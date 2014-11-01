@@ -21,7 +21,7 @@ public class PaoDetailUrlHelper {
     
     static {
         // note that ImmutableMap preserves the order of its entries
-
+        
         // Device urls
         Builder<PaoTag, Function<YukonPao, String>> urlBuilder = ImmutableMap.builder();
         Builder<PaoTag, String> pageNameBuilder = ImmutableMap.builder();
@@ -87,11 +87,16 @@ public class PaoDetailUrlHelper {
      * @return an absolute URL path
      */
     public String getUrlForPaoDetailPage(YukonPao pao) {
-        PaoType paoType = pao.getPaoIdentifier().getPaoType();
+        
+        PaoType type = pao.getPaoIdentifier().getPaoType();
+        
+        if (type == PaoType.RFN_GATEWAY) {
+            return "/stars/gateways/" + pao.getPaoIdentifier().getPaoId();
+        }
         
         // Check device url pattern map
         for (Map.Entry<PaoTag, Function<YukonPao, String>> entry : supportDeviceUrlPatterns.entrySet()) {
-            if (paoDefinitionDao.isTagSupported(paoType, entry.getKey())) {
+            if (paoDefinitionDao.isTagSupported(type, entry.getKey())) {
                 String url = entry.getValue().apply(pao);
                 return url;
             }
@@ -102,11 +107,12 @@ public class PaoDetailUrlHelper {
     }
 
     public String getPageNameForPaoDetailPage(YukonPao pao) {
-        PaoType paoType = pao.getPaoIdentifier().getPaoType();
-
+        
+        PaoType type = pao.getPaoIdentifier().getPaoType();
+        
         // Check device page name pattern map
         for (Map.Entry<PaoTag, String> entry : supportDevicePageNames.entrySet()) {
-            if (paoDefinitionDao.isTagSupported(paoType, entry.getKey())) {
+            if (paoDefinitionDao.isTagSupported(type, entry.getKey())) {
                 String pageName = entry.getValue();
                 return pageName;
             }
