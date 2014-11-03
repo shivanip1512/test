@@ -38,7 +38,7 @@
                     <x:messages id="messageList" showSummary="true" showDetail="true" styleClass="smallResults" errorClass="errorResults" layout="table"/>
 
 					<x:htmlTag value="fieldset" styleClass="fieldSet">
-					    <x:htmlTag value="legend"><x:outputText value="Object To Copy: #{cbcCopyForm.paoName}"/></x:htmlTag>
+					    <x:htmlTag value="legend"><x:outputText value="Object To Copy: #{cbcCopyForm.originalPaoName}"/></x:htmlTag>
 	                        <x:panelGrid columns="1" styleClass="gridLayout" columnClasses="gridCell">
                                 <x:panelGroup>
 									<x:outputText value="New Name" />	

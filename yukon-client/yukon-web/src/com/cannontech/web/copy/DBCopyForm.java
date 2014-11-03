@@ -30,6 +30,7 @@ public class DBCopyForm extends DBEditorForm {
     private DBPersistent origObject = null;
     private boolean copyPoints = false;
     private String paoName = "";
+    private String originalPaoName = "";
     private boolean showCopyPoints = true;
 
     public DBCopyForm() {
@@ -40,10 +41,11 @@ public class DBCopyForm extends DBEditorForm {
         origObject = CBCCopyUtils.getDBPersistentByID(id, type);
         if (CBCCopyUtils.isPoint(origObject)) {
             setPaoName(((PointBase) origObject).getPoint().getPointName());
+            setOriginalPaoName(((PointBase) origObject).getPoint().getPointName());
             showCopyPoints = false;
         } else
             setPaoName(((YukonPAObject) origObject).getPAOName());
-
+            setOriginalPaoName(((YukonPAObject) origObject).getPAOName());
     }
 
     @Override
@@ -206,6 +208,14 @@ public class DBCopyForm extends DBEditorForm {
 
     public boolean isShowCopyPoints() {
         return showCopyPoints;
+    }
+
+    public String getOriginalPaoName() {
+        return originalPaoName;
+    }
+
+    public void setOriginalPaoName(String originalPaoName) {
+        this.originalPaoName = originalPaoName;
     }
 
 }
