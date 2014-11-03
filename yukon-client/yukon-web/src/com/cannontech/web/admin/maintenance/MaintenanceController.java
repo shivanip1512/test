@@ -18,6 +18,7 @@ import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeletionTask;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
@@ -44,11 +45,12 @@ import com.google.common.collect.Lists;
 @CheckRoleProperty(YukonRoleProperty.ADMIN_SUPER_USER)
 public class MaintenanceController {
 
-    @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private JobManager jobManager;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-    @Autowired private ConfigurationSource configurationSource;
 
     @Autowired @Qualifier("rphDuplicateDeletion")
         private YukonJobDefinition<ScheduledRphDuplicateDeletionExecutionTask> rphDuplicateJobDef;
@@ -171,6 +173,7 @@ public class MaintenanceController {
         job.setCronString(cronString);
         job.setDisabled(true);
         job.setUserContext(userContext);
+        job.setJobGroupId(nextValueHelper.getNextValue("Job"));
         job.setJobDefinition(jobDefinition);
         job.setJobProperties(new HashMap<String,String>());
         scheduledRepeatingJobDao.save(job);

@@ -45,6 +45,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.assetavailability.dao.DRGroupDeviceMappingDao;
 import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
 import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyCategory;
@@ -83,25 +84,27 @@ public class EcobeeController {
     private static final String homeKey = "yukon.web.modules.dr.home.ecobee.configure.";
     private static final String fixIssueKey = "yukon.web.modules.dr.ecobee.details.issues.";
 
-    @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
-    @Autowired private EnergyCompanyDao ecDao;
-    
-    @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
+    @Autowired private DataDownloadService dataDownloadService;
+    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
-    @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
+    @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
+
+    @Autowired private EcobeeCommunicationService ecobeeCommunicationService;
+    @Autowired private EcobeeEventLogService ecobeeEventLogService;
+    @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
+    @Autowired private EcobeeReconciliationService ecobeeReconciliation;
+    @Autowired private EnergyCompanyDao ecDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private JobManager jobManager;
+    @Autowired private NextValueHelper nextValueHelper;
+    @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    
     @Autowired @Qualifier("ecobeeReconciliationReport")
         private YukonJobDefinition<EcobeeReconciliationReportTask> ecobeeReconciliationReportJobDef;
     @Autowired @Qualifier("ecobeePointUpdate")
         private YukonJobDefinition<EcobeePointUpdateTask> ecobeePointUpdateJobDef;
-    @Autowired private DateFormattingService dateFormattingService;
     @Autowired @Qualifier("ecobeeReads") RecentResultsCache<EcobeeReadResult> readResultsCache;
-    @Autowired private EcobeeReconciliationService ecobeeReconciliation;
-    @Autowired private DataDownloadService dataDownloadService;
-    @Autowired private DRGroupDeviceMappingDao drGroupDeviceMappingDao;
-    @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private EcobeeEventLogService ecobeeEventLogService;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     private static final Comparator<EcobeeReadResult> readResultStartDateComparator = new Comparator<EcobeeReadResult>() {
         @Override
@@ -124,6 +127,7 @@ public class EcobeeController {
             job.setCronString(defaultCron);
             job.setDisabled(true);
             job.setUserContext(null);
+            job.setJobGroupId(nextValueHelper.getNextValue("Job"));
             job.setJobDefinition(ecobeeReconciliationReportJobDef);
             job.setJobProperties(Collections.<String, String>emptyMap());
             scheduledRepeatingJobDao.save(job);
@@ -139,6 +143,7 @@ public class EcobeeController {
             job.setCronString(defaultCron);
             job.setDisabled(true);
             job.setUserContext(null);
+            job.setJobGroupId(nextValueHelper.getNextValue("Job"));
             job.setJobDefinition(ecobeePointUpdateJobDef);
             job.setJobProperties(Collections.<String, String>emptyMap());
             scheduledRepeatingJobDao.save(job);

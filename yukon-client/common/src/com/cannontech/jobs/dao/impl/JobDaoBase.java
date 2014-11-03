@@ -39,13 +39,8 @@ public abstract class JobDaoBase {
         public void extractValues(MapSqlParameterSource p, YukonJob job) {
             String beanName = job.getBeanName();
             p.addValue("beanName", beanName);
+            p.addValue("jobGroupId", job.getJobGroupId());
             
-            if (job.getJobGroupId() == null) {
-                p.addValue("jobGroupId", nextValueHelper.getNextValue("Job"));
-            } else {
-                p.addValue("jobGroupId", job.getJobGroupId());
-            }
-
             String disabled = String.valueOf(CtiUtilities.getBooleanCharacter(job.isDisabled()));
             if (job.isDeleted()) {
             	disabled = "D";
