@@ -225,6 +225,7 @@ public class JobManagerImpl implements JobManager {
         log.info("scheduling onetime job: jobDefinition=" + jobDefinition + ", task=" + task + ", time=" + time);
         ScheduledOneTimeJob oneTimeJob = new ScheduledOneTimeJob();
         scheduleJobCommon(oneTimeJob, jobDefinition, task, userContext);
+        oneTimeJob.setJobGroupId(nextValueHelper.getNextValue("Job"));
         oneTimeJob.setStartTime(time);
         scheduledOneTimeJobDao.save(oneTimeJob);
 
@@ -299,7 +300,6 @@ public class JobManagerImpl implements JobManager {
         job.setJobDefinition(jobDefinition);
         job.setBeanName(jobDefinition.getName());
         job.setJobProperties(properties);
-        job.setJobGroupId(nextValueHelper.getNextValue("Job"));
     }
 
     private void doScheduleScheduledJob(final ScheduledRepeatingJob job, Date lastTimeScheduled) {
