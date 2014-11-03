@@ -27,9 +27,9 @@ import com.cannontech.multispeak.service.MultispeakMeterService;
 
 public class OD_ServerImpl implements OD_ServerSoap_PortType
 {
-    public MultispeakEventLogService multispeakEventLogService;
-    public MultispeakMeterService multispeakMeterService;
-    public MultispeakFuncs multispeakFuncs;
+    @Autowired public MultispeakEventLogService multispeakEventLogService;
+    @Autowired public MultispeakMeterService multispeakMeterService;
+    @Autowired public MultispeakFuncs multispeakFuncs;
     
     private void init() throws RemoteException {
         multispeakFuncs.init();
@@ -170,16 +170,6 @@ public class OD_ServerImpl implements OD_ServerSoap_PortType
             ServiceLocation[] changedServiceLocations) throws RemoteException {
         init();
         return null;
-    }
-    
-    @Autowired
-    public void setMultispeakMeterService(
-			MultispeakMeterService multispeakMeterService) {
-		this.multispeakMeterService = multispeakMeterService;
-	}
-    @Autowired
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
     }
 
     @Override

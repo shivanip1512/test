@@ -5,6 +5,7 @@ import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
@@ -31,10 +32,11 @@ import com.cannontech.multispeak.service.MultispeakLMService;
 
 public class LM_ServerImpl implements LM_ServerSoap_PortType
 {
-    public MultispeakFuncs multispeakFuncs;
-    public MultispeakLMService multispeakLMService;
-    public MspObjectDao mspObjectDao;
-    public MspValidationService mspValidationService;
+    @Autowired public MultispeakFuncs multispeakFuncs;
+    @Autowired public MultispeakEventLogService multispeakEventLogService;
+    @Autowired public MultispeakLMService multispeakLMService;
+    @Autowired public MspObjectDao mspObjectDao;
+    @Autowired public MspValidationService mspValidationService;
     
     private LiteYukonUser init() throws RemoteException{
         multispeakFuncs.init();
@@ -106,7 +108,10 @@ public class LM_ServerImpl implements LM_ServerSoap_PortType
     public ErrorObject[] SCADAAnalogChangedNotification(
             ScadaAnalog[] scadaAnalogs) throws RemoteException {
         LiteYukonUser liteYukonUser = init();
-
+        
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("SCADAAnalogChangedNotification", vendor.getCompanyName());
+        
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         for (ScadaAnalog scadaAnalog : scadaAnalogs) {
         	ErrorObject errorObject = mspValidationService.isValidScadaAnalog(scadaAnalog);
@@ -214,7 +219,8 @@ public class LM_ServerImpl implements LM_ServerSoap_PortType
         LiteYukonUser liteYukonUser = init();
         
     	MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-    	
+        multispeakEventLogService.methodInvoked("initiateLoadManagementEvent", vendor.getCompanyName());
+
         ErrorObject errorObject = mspValidationService.isValidLoadManagementEvent(theLMEvent);
     	if (errorObject == null) {
     		MspLoadControl mspLoadControl = new MspLoadControl();
@@ -234,6 +240,7 @@ public class LM_ServerImpl implements LM_ServerSoap_PortType
         LiteYukonUser liteYukonUser = init();
         
     	MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        multispeakEventLogService.methodInvoked("initiateLoadManagementEvents", vendor.getCompanyName());
         
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         
@@ -273,24 +280,6 @@ public class LM_ServerImpl implements LM_ServerSoap_PortType
         return null;
     }
     
-    @Autowired
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-    @Autowired
-    public void setMultispeakLMService(MultispeakLMService multispeakLMService) {
-		this.multispeakLMService = multispeakLMService;
-	}
-    @Autowired
-    public void setMspObjectDao(MspObjectDao mspObjectDao) {
-		this.mspObjectDao = mspObjectDao;
-	}
-    @Autowired
-    public void setMspValidationService(
-			MspValidationService mspValidationService) {
-		this.mspValidationService = mspValidationService;
-	}
-
     @Override
     public String requestRegistrationID() throws RemoteException {
         init();
