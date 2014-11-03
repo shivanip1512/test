@@ -38,10 +38,10 @@
                                 <td>${job.cronString}</td>
                                 <td>
                                     <cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/>
-                                    <cti:msg2 var="initiator" key="yukon.web.modules.support.fileExportHistory.types.${jobType}"/>
-                                    <cti:msg2 var="scheduleAppender" key="yukon.web.modules.support.fileExportHistory.types.scheduleAppender"/>
                                     <cti:url var="historyUrl" value="/support/fileExportHistory/list">
-                                        <cti:param name="initiator" value="${initiator} ${scheduleAppender} ${job.name}"/>
+                                        <cti:param name="jobName" value="${job.name}"/>
+                                        <cti:param name="jobGroupId" value="${job.jobGroupId}"/>
+                                        <cti:param name="exportType" value="${jobType}"/>
                                     </cti:url>
                                     <cm:dropdown triggerClasses="fr">
                                         <cm:dropdownOption classes="js-edit-job" data-job-id="${job.id}" icon="icon-pencil" key="components.button.edit.label"/>
