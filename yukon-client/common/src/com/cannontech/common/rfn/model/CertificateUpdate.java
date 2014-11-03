@@ -85,9 +85,10 @@ public class CertificateUpdate {
         result = prime * result + ((successful == null) ? 0 : successful.hashCode());
         result = prime * result + ((timestamp == null) ? 0 : timestamp.hashCode());
         result = prime * result + ((updateId == null) ? 0 : updateId.hashCode());
+        result = prime * result + yukonUpdateId;
         return result;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)
@@ -127,14 +128,17 @@ public class CertificateUpdate {
                 return false;
         } else if (!updateId.equals(other.updateId))
             return false;
+        if (yukonUpdateId != other.yukonUpdateId)
+            return false;
         return true;
     }
     
     @Override
     public String toString() {
-        return String.format("CertificateUpdate [timestamp=%s, fileName=%s, updateId=%s, pending=%s, failed=%s, successful=%s]", timestamp, fileName, updateId, pending, failed, successful);
+        return String.format("CertificateUpdate [timestamp=%s, fileName=%s, updateId=%s, yukonUpdateId=%s, pending=%s, failed=%s, successful=%s]",
+                timestamp, fileName, updateId, yukonUpdateId, pending, failed, successful);
     }
-    
+
     public List<RfnDevice> getGateways() {
         List<RfnDevice> all = new ArrayList<>();
         all.addAll(successful);
