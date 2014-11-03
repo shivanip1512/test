@@ -154,7 +154,7 @@ $(function () {
                                 <tr>
                                 <td title="<cti:msg2 htmlEscape="true" key="${row.eventLog.messageSourceResolvable}"/>"><cti:formatDate type="FULL" value="${row.eventLog.dateTime}"/></td>
                                     <c:forEach items="${row.parameters}" var="parameter">
-                                        <td>${fn:escapeXml(parameter)}</td>
+                                        <td class="wbba">${fn:escapeXml(parameter)}</td>
                                     </c:forEach>
                                 </tr>
                             </c:forEach>
