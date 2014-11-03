@@ -8,10 +8,13 @@
         var substationBusDisableBusPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker', '', 'substationBusDisableBusPointPicker', 'pointName:disableBusPoint;deviceName:disableBusDevice');
         substationBusDisableBusPointPicker.destinationFieldId = 'subDisablePointValue';
         substationBusDisableBusPointPicker.memoryGroup = 'pointPicker';
-        
+        <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="voltReductionPointPicker"/>
+        substationBusDisableBusPointPicker.outputColumns = ${outputColumns};
+
         var substationBusVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker', '', 'substationBusVoltReductionPointPicker', 'pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice');
         substationBusVoltReductionPointPicker.destinationFieldId = 'subReductionPointValue';
         substationBusVoltReductionPointPicker.memoryGroup = 'pointPicker';
+        substationBusVoltReductionPointPicker.outputColumns = ${outputColumns};
         
         var sub_Var_PointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'sub_Var_PointPicker', 'pointName:sub_Var_Point;deviceName:sub_Var_Device');
         sub_Var_PointPicker.destinationFieldId = 'var_point';

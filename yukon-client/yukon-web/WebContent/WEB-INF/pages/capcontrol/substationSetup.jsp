@@ -7,6 +7,8 @@
     <script type="text/javascript">
         var substationVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker', '', 'substationVoltReductionPointPicker', 'pointName:substationVoltReductionPoint;deviceName:substationDevice');
         substationVoltReductionPointPicker.destinationFieldId = 'substationVoltReductionPointValue';
+        <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="voltReductionPointPicker"/>
+        substationVoltReductionPointPicker.outputColumns = ${outputColumns};
     </script>
 </f:verbatim>
 
