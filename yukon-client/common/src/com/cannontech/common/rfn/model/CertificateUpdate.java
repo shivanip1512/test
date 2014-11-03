@@ -14,6 +14,7 @@ public class CertificateUpdate {
     private Instant timestamp;
     private String fileName;
     private String updateId;
+    private int yukonUpdateId;
     private List<RfnGateway> pending = new ArrayList<>();
     private List<RfnGateway> failed = new ArrayList<>();
     private List<RfnGateway> successful = new ArrayList<>();
@@ -64,6 +65,14 @@ public class CertificateUpdate {
     
     public void setSuccessful(List<RfnGateway> successful) {
         this.successful = successful;
+    }
+    
+    public void setYukonUpdateId(int yukonUpdateId) {
+        this.yukonUpdateId = yukonUpdateId;
+    }
+    
+    public int getYukonUpdateId() {
+        return yukonUpdateId;
     }
     
     @Override

@@ -233,6 +233,7 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
         certificateUpdate.setFileName(info.getFileName());
         certificateUpdate.setTimestamp(info.getSendDate());
         certificateUpdate.setUpdateId(info.getCertificateId());
+        certificateUpdate.setYukonUpdateId(info.getUpdateId());
         
         List<RfnGateway> successful = new ArrayList<>();
         List<RfnGateway> failed = new ArrayList<>();
@@ -266,6 +267,7 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
             certificateUpdate.setFileName(info.getFileName());
             certificateUpdate.setTimestamp(info.getSendDate());
             certificateUpdate.setUpdateId(info.getCertificateId());
+            certificateUpdate.setYukonUpdateId(info.getUpdateId());
             
             List<RfnGateway> successful = new ArrayList<>();
             List<RfnGateway> failed = new ArrayList<>();
