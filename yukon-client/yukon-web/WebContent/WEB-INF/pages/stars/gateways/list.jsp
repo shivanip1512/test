@@ -113,7 +113,7 @@
 <h3><i:inline key=".cert.updates"/></h3>
 <c:set var="clazz" value="${empty certUpdates ? 'dn' : ''}"/>
 <c:if test="${empty certUpdates}">
-    <div class="empty-list"><i:inline key=".cert.updates.none"/></div>
+    <div class="js-no-cert-updates empty-list"><i:inline key=".cert.updates.none"/></div>
 </c:if>
 <table id="cert-table" class="compact-results-table ${clazz}">
     <thead>
@@ -130,13 +130,14 @@
     <tfoot></tfoot>
     <tbody>
         <c:forEach var="update" items="${certUpdates}">
-            <tr data-update-id="${update.updateId}">
+            <tr data-yui="${update.yukonUpdateId}">
                 <td class="js-cert-update-timestamp">
                     <a href="javascript:void(0);"><cti:formatDate value="${update.timestamp}" type="DATEHM_12"/></a>
                 </td>
                 <td class="js-cert-update-file">${fn:escapeXml(update.fileName)}</td>
                 <c:set var="all" value="${update.gateways}"/>
-                <td class="js-cert-update-gateways">${fn:escapeXml(all[0].name)}<c:if test="${fn:length(all) > 1}">,&nbsp;${fn:escapeXml(all[1].name)}</c:if>
+                <td class="js-cert-update-gateways">
+                    ${fn:escapeXml(all[0].name)}<c:if test="${fn:length(all) > 1}">,&nbsp;${fn:escapeXml(all[1].name)}</c:if>
                     <c:if test="${fn:length(all) > 2}">
                         <i:inline key=".cert.update.more" arguments="${fn:length(all) - 2}"/>
                     </c:if>
@@ -196,7 +197,7 @@
             <td class="js-gw-sn"></td>
             <td colspan="4"><i:inline key=".loadingGatewayData"/></td>
         </tr>
-        <tr class="js-new-cert-update" data-update-id="">
+        <tr class="js-new-cert-update" data-yui="">
             <td class="js-cert-update-timestamp">
                 <a href="javascript:void(0);"></a>
             </td>

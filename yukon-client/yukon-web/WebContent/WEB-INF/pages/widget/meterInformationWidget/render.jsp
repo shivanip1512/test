@@ -36,7 +36,8 @@
     <cti:param name="deviceId" value="${meter.deviceId}"/>
     <cti:param name="shortName" value="meterInformationWidget"/>
 </cti:url>
-<div id="device-edit-popup" data-dialog data-form
+<div id="meter-info-popup" data-dialog
+    data-event="yukon:widget:meter:info:save"
     data-width="500"
     data-title="<cti:msg2 key=".edit" arguments="${meter.name}"/>"
     data-ok-text="<cti:msg2 key="yukon.common.save"/>"
@@ -48,5 +49,7 @@
             <tags:widgetActionUpdate method="ping" nameKey="ping" container="${widgetParameters.widgetId}_results" 
                     icon="icon-ping" classes="M0"/>
     </c:if>
-    <cti:button nameKey="edit" icon="icon-pencil" data-popup="#device-edit-popup"/>
+    <cti:button nameKey="edit" icon="icon-pencil" data-popup="#meter-info-popup"/>
 </div>
+
+<cti:includeScript link="/resources/js/widgets/yukon.widget.meter.info.js"/>

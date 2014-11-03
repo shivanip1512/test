@@ -79,11 +79,11 @@ yukon.assets.gateway.list = (function () {
             contentType: 'application/json'
         }).done(function (updates) {
             
-            Object.keys(updates).forEach(function (updateId) {
+            Object.keys(updates).forEach(function (yui) {
                 
                 var 
-                update = updates[updateId],
-                row = $('[data-update-id="' + updateId + '"]');
+                update = updates[yui],
+                row = $('[data-yui="' + yui + '"]');
                 
                 _updateCertRow(row, update);
                 
@@ -224,11 +224,12 @@ yukon.assets.gateway.list = (function () {
                         var 
                         row = $('.js-new-cert-update').clone()
                               .removeClass('js-new-cert-update')
-                              .attr('data-update-id', update.updateId);
+                              .attr('data-yui', update.yukonUpdateId);
                         
                         _updateCertRow(row, update);
                         
-                        $('#cert-table tbody').append(row);
+                        $('.js-no-cert-updates').hide();
+                        $('#cert-table tbody').append(row).show();
                     },
                     error: function (xhr, status, error, $form) {
                         popup.html(xhr.responseText);
@@ -243,7 +244,7 @@ yukon.assets.gateway.list = (function () {
             /** User clicked one of the cert update timestamp links, show details popup */
             $(document).on('click', '.js-cert-update-timestamp a', function () {
                 
-                var id = $(this).closest('tr').data('updateId'),
+                var id = $(this).closest('tr').data('yui'),
                     timestamp = $(this).text(),
                     popup = $('#gateway-cert-details-popup');
                 

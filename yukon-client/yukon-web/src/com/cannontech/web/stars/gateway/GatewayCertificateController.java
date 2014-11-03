@@ -56,24 +56,22 @@ public class GatewayCertificateController {
     }
     
     @RequestMapping("/gateways/cert-update/data")
-    public @ResponseBody Map<String, Object> data(YukonUserContext userContext) {
+    public @ResponseBody Map<Integer, Object> data(YukonUserContext userContext) {
         
-        Map<String, Object> json = new HashMap<>();
+        Map<Integer, Object> json = new HashMap<>();
         
         List<CertificateUpdate> updates = certificateUpdateService.getAllCertificateUpdates();
         for (CertificateUpdate update : updates) {
-            json.put(update.getUpdateId(), update);
+            json.put(update.getYukonUpdateId(), update);
         }
         
         return json;
     }
     
-    @RequestMapping("/gateways/cert-update/{updateId}/details")
-    public String details(ModelMap model, @PathVariable String updateId) {
+    @RequestMapping("/gateways/cert-update/{id}/details")
+    public String details(ModelMap model, @PathVariable int id) {
         
-        int dbId = certificateUpdateDao.getLatestUpdateForCertificate(updateId);
-        CertificateUpdate update = certificateUpdateService.getCertificateUpdate(dbId);
-        
+        CertificateUpdate update = certificateUpdateService.getCertificateUpdate(id);
         model.addAttribute("update", update);
         
         return "gateways/cert.update.details.jsp";

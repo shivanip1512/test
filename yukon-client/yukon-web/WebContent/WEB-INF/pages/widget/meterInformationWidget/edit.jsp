@@ -3,6 +3,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
+<c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
+
 <c:choose>
     <c:when test="${showCarrierSettings}">
         <cti:url var="action" value="/widget/meterInformationWidget/edit-plc"/>
@@ -12,7 +14,7 @@
     </c:otherwise>
 </c:choose>
 
-<form:form id="meter-info-edit" action="${action}" method="post" commandName="meter">
+<form:form id="meter-info-form" action="${action}" method="post" commandName="meter">
     <cti:csrfToken/>
     <form:hidden path="deviceId"/>
     <input type="hidden" name="shortName" value="meterInformationWidget">
@@ -31,7 +33,7 @@
             <tags:inputNameValue nameKey=".model" path="model"/>
         </c:if>
         <tags:nameValue2 nameKey=".status">
-            <tags:switchButton path="disabled" greenNameKey="enabled" redNameKey="disabled" inverse="true"/>
+            <tags:switchButton path="disabled" greenNameKey="enabled" redNameKey="disabled" inverse="true" classes="M0"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 </form:form>
