@@ -5369,7 +5369,7 @@ create table FileExportHistory (
    OriginalFileName     varchar(100)         not null,
    FileName             varchar(100)         not null,
    FileExportType       varchar(50)          not null,
-   Initiator            varchar(100)         not null,
+   JobName              varchar(100)         not null,
    ExportDate           datetime             not null,
    ExportPath           varchar(300)         null,
    ArchiveFileExists    char(1)              not null,

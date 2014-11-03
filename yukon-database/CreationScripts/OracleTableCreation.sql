@@ -5095,7 +5095,7 @@ create table FileExportHistory  (
    OriginalFileName     VARCHAR2(100)                   not null,
    FileName             VARCHAR2(100)                   not null,
    FileExportType       VARCHAR2(50)                    not null,
-   Initiator            VARCHAR2(100)                   not null,
+   JobName              VARCHAR2(100)                   not null,
    ExportDate           DATE                            not null,
    ExportPath           VARCHAR2(300),
    ArchiveFileExists    CHAR(1)                         not null,
