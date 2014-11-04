@@ -839,7 +839,7 @@ bool CtiTableLMControlHistory::UpdateDynamic(Cti::Database::DatabaseConnection &
         << getControlPriority()
         << getPAOID();
 
-    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__ ))
+    if( ! Cti::Database::executeUpdater( updater, __FILE__, __LINE__, Cti::Database::LogDebug::Disable,  Cti::Database::LogNoRowsAffected::Disable ))
     {
         return InsertDynamic(conn);        // Try a vanilla insert if the update failed!
     }

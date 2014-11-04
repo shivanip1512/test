@@ -315,7 +315,7 @@ bool PaoStatisticsRecord::TryUpdateSum(Database::DatabaseWriter &writer)
         << getStatisticTypeString(_type)
         << _interval_start;
 
-    return Database::executeUpdater( writer, __FILE__, __LINE__ );
+    return Database::executeUpdater( writer, __FILE__, __LINE__, Database::LogDebug::Disable, Database::LogNoRowsAffected::Disable );
 }
 
 bool PaoStatisticsRecord::UpdateSum(Database::DatabaseWriter &writer)
