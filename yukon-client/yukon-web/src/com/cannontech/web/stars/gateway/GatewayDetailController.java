@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.gateway.DataSequence;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -23,6 +24,7 @@ import com.cannontech.common.rfn.model.TimeoutExecutionException;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -44,6 +46,7 @@ public class GatewayDetailController {
     @Autowired private GatewayControllerHelper helper;
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private GatewayEventLogService gatewayEventLogService;
     
     @RequestMapping("/gateways/{id}")
     public String detail(ModelMap model, YukonUserContext userContext, @PathVariable int id) 
@@ -69,7 +72,7 @@ public class GatewayDetailController {
     }
     
     @RequestMapping(value="/gateways/{id}", method=RequestMethod.DELETE)
-    public String delete(FlashScope flash, ModelMap model, @PathVariable int id) 
+    public String delete(FlashScope flash, LiteYukonUser user, ModelMap model, @PathVariable int id) 
             throws NmCommunicationException {
         
         LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
@@ -79,6 +82,9 @@ public class GatewayDetailController {
             boolean success = rfnGatewayService.deleteGateway(pao.getPaoIdentifier());
             if (success) {
                 log.debug("Gateway " + pao.getPaoName() + " deleted.");
+                gatewayEventLogService.deletedGateway(user, pao.getPaoName(), 
+                                                      gateway.getRfnIdentifier().getSensorSerialNumber());
+                
                 flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", pao.getPaoName()));
                 return "redirect:/stars/gateways";
             } else {

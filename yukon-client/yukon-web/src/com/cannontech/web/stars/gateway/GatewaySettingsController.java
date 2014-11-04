@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
@@ -61,6 +62,7 @@ public class GatewaySettingsController {
     @Autowired private GatewaySettingsValidator validator;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private GatewayEventLogService gatewayEventLogService;
     
     @RequestMapping("/gateways/create")
     public String createDialog(ModelMap model) {
@@ -96,6 +98,10 @@ public class GatewaySettingsController {
         try {
             RfnDevice gateway = rfnGatewayService.createGateway(settings);
             log.info("Gateway Created: " + gateway);
+            gatewayEventLogService.createdGateway(userContext.getYukonUser(), gateway.getName(), 
+                                                  gateway.getRfnIdentifier().getSensorSerialNumber(), 
+                                                  settings.getIpAddress(), settings.getAdmin().getUsername(), 
+                                                  settings.getSuperAdmin().getUsername());
             
             // Success
             model.clear();
@@ -193,6 +199,10 @@ public class GatewaySettingsController {
             
             rfnGatewayService.updateGateway(gateway);
             log.info("Gateway updated: " + gateway);
+            gatewayEventLogService.updatedGateway(userContext.getYukonUser(), gateway.getName(), 
+                                                  gateway.getRfnIdentifier().getSensorSerialNumber(), 
+                                                  settings.getIpAddress(), settings.getAdmin().getUsername(), 
+                                                  settings.getSuperAdmin().getUsername());
             
             // Success
             model.clear();

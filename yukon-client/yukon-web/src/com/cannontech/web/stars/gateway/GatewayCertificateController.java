@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
 import com.cannontech.common.rfn.model.CertificateUpdate;
@@ -43,6 +44,7 @@ public class GatewayCertificateController {
     @Autowired private RfnGatewayCertificateUpdateService certificateUpdateService;
     @Autowired private GatewayCertificateUpdateDao certificateUpdateDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private GatewayEventLogService gatewayEventLogService;
     
     /** Certificate update popup. */
     @RequestMapping("/gateways/cert-update/options")
@@ -87,6 +89,10 @@ public class GatewayCertificateController {
             try {
                 Set<RfnGateway> rfnGateways = rfnGatewayService.getGatewaysByPaoIds(Lists.newArrayList(gateways));
                 String certificateId = certificateUpdateService.sendUpdate(rfnGateways, file);
+                
+                // Event logging
+                gatewayEventLogService.sentCertificateUpdate(userContext.getYukonUser(), file.getOriginalFilename(), 
+                                                             certificateId, gateways.length);
                 
                 // Success
                 model.clear();

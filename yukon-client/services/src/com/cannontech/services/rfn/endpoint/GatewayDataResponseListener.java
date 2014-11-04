@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -19,6 +20,8 @@ import com.google.common.collect.ImmutableList;
 public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnIdentifyingMessage> {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayDataResponseListener.class);
+    
+    @Autowired private GatewayEventLogService gatewayEventLogService;
     
     private JmsTemplate outgoingJmsTemplate;
     private final String outgoingTopicName = "yukon.qr.obj.common.rfn.GatewayDataTopic";
@@ -39,6 +42,8 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                 RfnDevice device = rfnDeviceCreationService.createGateway(identifier.getSensorSerialNumber(), identifier);
                 rfnDeviceCreationService.incrementNewDeviceCreated();
                 log.debug("Created new gateway: " + device);
+                gatewayEventLogService.createdGatewayAutomatically(device.getName(), 
+                                                                   device.getRfnIdentifier().getSensorSerialNumber());
                 return device;
             } catch (Exception e) {
                 log.warn("Creation failed for " + identifier, e);

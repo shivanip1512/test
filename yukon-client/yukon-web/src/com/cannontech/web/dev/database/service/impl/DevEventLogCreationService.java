@@ -26,6 +26,7 @@ import com.cannontech.common.events.loggers.DemandResetEventLogService;
 import com.cannontech.common.events.loggers.DemandResponseEventLogService;
 import com.cannontech.common.events.loggers.DisconnectEventLogService;
 import com.cannontech.common.events.loggers.EcobeeEventLogService;
+import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.loggers.InventoryConfigEventLogService;
 import com.cannontech.common.events.loggers.MeteringEventLogService;
@@ -64,6 +65,7 @@ public class DevEventLogCreationService {
     @Autowired private DemandResponseEventLogService demandResponseEventLogService;
     @Autowired private DisconnectEventLogService disconnectEventLogService;
     @Autowired private EcobeeEventLogService ecobeeEventLogService;
+    @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private HardwareEventLogService hardwareEventLogService;
     @Autowired private InventoryConfigEventLogService inventoryConfigEventLogService;
     @Autowired private MeteringEventLogService meteringEventLogService;
@@ -831,6 +833,23 @@ public class DevEventLogCreationService {
                     devEventLog.getEventSource());
             }
         });
+        executables.put(LogType.GATEWAY, new DevEventLogExecutable() {
+           @Override
+           public void execute(DevEventLog devEventLog) {
+               LiteYukonUser user = new LiteYukonUser(0, devEventLog.getUsername());
+               String paoName = devEventLog.getIndicatorString() + "Gateway";
+               String serial = "1111111111";
+               String ipAddress = "127.0.0.1";
+               String adminUser = "Admin";
+               String superUser = "Super";
+               
+               gatewayEventLogService.createdGateway(user, paoName, serial, ipAddress, adminUser, superUser);
+               gatewayEventLogService.createdGatewayAutomatically(paoName, serial);
+               gatewayEventLogService.updatedGateway(user, paoName, serial, ipAddress, adminUser, superUser);
+               gatewayEventLogService.deletedGateway(user, paoName, serial);
+               gatewayEventLogService.sentCertificateUpdate(user, "fake.pkg.nm", "fakeCertificate", 1);
+           }
+        });
         eventLogExecutables = ImmutableMap.copyOf(executables);
     }
 
@@ -847,6 +866,7 @@ public class DevEventLogCreationService {
         DEMAND_RESPONSE(DemandResponseEventLogService.class, 36),
         DISCONNECT(DisconnectEventLogService.class, 6),
         ECOBEE(EcobeeEventLogService.class, 3),
+        GATEWAY(GatewayEventLogService.class, 5),
         HARDWARE(HardwareEventLogService.class, 22),
         INVENTORY_CONFIG(InventoryConfigEventLogService.class, 4),
         METERING(MeteringEventLogService.class, 2),

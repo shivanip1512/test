@@ -68,6 +68,7 @@ public enum ArgEnum {
     totalRequests,
     username, 
     warehouseName,
-    workOrderNumber
+    workOrderNumber,
+    ipAddress
     ;
 }

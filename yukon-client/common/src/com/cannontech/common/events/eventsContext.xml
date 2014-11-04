@@ -97,4 +97,8 @@
     <bean id="demandResetEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
         <property name="serviceInterface" value="com.cannontech.common.events.loggers.DemandResetEventLogService"/>
     </bean>
+    
+    <bean id="gatewayEventLogService" class="com.cannontech.common.events.service.EventLogFactoryBean">
+        <property name="serviceInterface" value="com.cannontech.common.events.loggers.GatewayEventLogService"/>
+    </bean>
 </beans>
