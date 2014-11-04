@@ -48,6 +48,32 @@ yukon.widget.meterInfo = (function () {
                 });
             });
             
+            $(document).on('input', '.js-meter-info-meter-number input[type=text]', function (ev) {
+                
+                var meterNumber = $(this).val();
+                
+                if (!meterNumber) {
+                    $('#meter-info-popup').removeMessages();
+                } else {
+                    $.ajax({
+                        url: yukon.url('/widget/meterInformationWidget/check-meter-number'),
+                        data: {
+                            shortName: 'meterInformationWidget',
+                            deviceId: $('.js-meter-info-id').val(),
+                            meterNumber: meterNumber
+                        },
+                        dataType : 'json'
+                    }).done(function (data) {
+                        if (data.inuse) {
+                            $('#meter-info-popup').addMessage({ message: data.message, messageClass: 'warning' });
+                        } else {
+                            $('#meter-info-popup').removeMessages();
+                        }
+                    });
+                }
+                
+            });
+            
             _initialized = true;
         }
     

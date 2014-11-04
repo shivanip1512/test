@@ -659,7 +659,7 @@
                                 </td>
                                 <td>${fn:escapeXml(gateway.displayType)}</td>
                                 <td class="pointStateColumn">
-                                    <cti:pointStatus pointId="${gateway.commissionedId}" />
+                                    <cti:pointStatus pointId="${gateway.commissionedId}"/>&nbsp;
                                     <cti:pointValue pointId="${gateway.commissionedId}" format="VALUE"/>
                                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                         <c:if test="${inventoryChecking}">

@@ -14,17 +14,22 @@
     </c:otherwise>
 </c:choose>
 
-<form:form id="meter-info-form" action="${action}" method="post" commandName="meter">
+<form:form id="meter-info-form" action="${action}" method="put" commandName="meter">
+
     <cti:csrfToken/>
-    <form:hidden path="deviceId"/>
+    <form:hidden cssClass="js-meter-info-id" path="deviceId"/>
     <input type="hidden" name="shortName" value="meterInformationWidget">
+    <input type="hidden" name="identity" value="false">
+    
     <tags:nameValueContainer2 naturalWidth="false" tableClass="with-form-controls">
         <tags:inputNameValue nameKey=".deviceName" path="name" valueClass="full-width" maxlength="60" size="40"/>
-        <tags:inputNameValue nameKey=".meterNumber" path="meterNumber" maxlength="50" size="40"/>
+        <tags:inputNameValue nameKey=".meterNumber" path="meterNumber" maxlength="50" size="40" 
+            valueClass="js-meter-info-meter-number"/>
         <c:if test="${showCarrierSettings}">
             <tags:inputNameValue nameKey=".physicalAddress" path="address" maxlength="18" size="18"/>
             <c:if test="${routable}">
-                <tags:selectNameValue nameKey=".route" items="${routes}" path="routeId" itemLabel="paoName" itemValue="liteID"/>
+                <tags:selectNameValue nameKey=".route" items="${routes}" path="routeId" itemLabel="paoName" 
+                    itemValue="liteID"/>
             </c:if>
         </c:if>
         <c:if test="${showRFMeshSettings}">
@@ -33,7 +38,7 @@
             <tags:inputNameValue nameKey=".model" path="model"/>
         </c:if>
         <tags:nameValue2 nameKey=".status">
-            <tags:switchButton path="disabled" greenNameKey="enabled" redNameKey="disabled" inverse="true" classes="M0"/>
+            <tags:switchButton path="disabled" greenNameKey="enabled" redNameKey="disabled" inverse="true"/>
         </tags:nameValue2>
     </tags:nameValueContainer2>
 </form:form>

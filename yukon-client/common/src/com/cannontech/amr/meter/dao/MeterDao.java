@@ -16,7 +16,19 @@ public interface MeterDao {
     
     String getFormattedDeviceName(YukonMeter device);
     
+    /**
+     * Returns the meter that has the specified meter number.  Assumes only one meter 
+     * will have this meter number.
+     */
     YukonMeter getForMeterNumber(String meterNumber);
+    
+    /**
+     * Returns a list of meters that have the specified meter number.
+     * @param meterNumber The meter number to search for.
+     * @param excludedIds Optionaly exlcuded device ids. Not used if null or empty.
+     * @return The list of meters that share this meter number.
+     */
+    List<YukonMeter> getForMeterNumber(String meterNumber, Integer... excludedIds);
     
     YukonMeter getForPaoName(String paoName);
     

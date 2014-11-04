@@ -4,14 +4,14 @@ import com.cannontech.amr.meter.model.PlcMeter;
 
 public class PlcMeterModel extends MeterModel {
     
-    private String address;
+    private Integer address;
     private int routeId;
     
-    public String getAddress() {
+    public Integer getAddress() {
         return address;
     }
     
-    public void setAddress(String address) {
+    public void setAddress(Integer address) {
         this.address = address;
     }
     
@@ -26,7 +26,7 @@ public class PlcMeterModel extends MeterModel {
     public static PlcMeterModel of(PlcMeter meter) {
         
         PlcMeterModel model = new PlcMeterModel();
-        model.setAddress(meter.getAddress());
+        model.setAddress(Integer.parseInt(meter.getAddress()));
         model.setDeviceId(meter.getDeviceId());
         model.setDisabled(model.isDisabled());
         model.setMeterNumber(meter.getMeterNumber());

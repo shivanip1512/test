@@ -1,6 +1,7 @@
 package com.cannontech.amr.meter.dao.impl;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -62,7 +63,7 @@ public class MeterDaoImpl implements MeterDao {
             PaoIdentifier paoIdentifier = rs.getPaoIdentifier("paobjectId",  "type");
             String meterNumber = rs.getString("meterNumber");
             
-            SimpleMeter simpleMeter = new SimpleMeter(paoIdentifier, meterNumber);       
+            SimpleMeter simpleMeter = new SimpleMeter(paoIdentifier, meterNumber);
             return simpleMeter;
         }
     };
@@ -170,6 +171,20 @@ public class MeterDaoImpl implements MeterDao {
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Unknown meter number " + meterNumber);
         }
+    }
+    
+    @Override
+    public List<YukonMeter> getForMeterNumber(String meterNumber, Integer... excludedIds) {
+            
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(meterRowMapper.getSql());
+        sql.append("WHERE UPPER(dmg.MeterNumber)").eq(meterNumber.toUpperCase());
+        if (excludedIds != null && excludedIds.length != 0) {
+            sql.append("AND ypo.PAObjectId").notIn(Arrays.asList(excludedIds));
+        }
+        List<YukonMeter> meters = jdbcTemplate.query(sql, meterRowMapper);
+        
+        return meters;
     }
     
     @Override
