@@ -75,8 +75,11 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meterEventsReport.model.MeterEventsFilter;
 import com.cannontech.web.amr.meterEventsReport.model.ScheduledFileExport;
+import com.cannontech.web.amr.util.cronExpressionTag.CronException;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
+import com.cannontech.web.amr.util.cronExpressionTag.CronTagStyleType;
+import com.cannontech.web.amr.util.cronExpressionTag.handler.CustomCronTagStyleHandler;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.common.sort.SortableColumn;
@@ -375,20 +378,35 @@ public class MeterEventsReportController {
             HttpServletRequest request) 
                     throws ServletRequestBindingException, IllegalArgumentException, ParseException {
         
+        try {
+            String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
+            exportData.setScheduleCronString(scheduleCronString);
+        } catch (CronException cronException) {
+            result.rejectValue("scheduleCronString", "yukon.common.invalidCron");
+        }
         exportValidator.validate(exportData, result);
         if (result.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            CronExpressionTagState cronExpressionTagState = new CronExpressionTagState();
             model.addAttribute("exportData", exportData);
-            model.addAttribute("cronExpressionTagState", cronExpressionTagState);
             model.addAttribute("scheduledFileExport", new ScheduledFileExport());
             model.addAttribute("deviceCollection", collection);
             model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
             model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
             model.addAttribute("jobId", jobId);
             model.addAttribute("scheduleModelData", Collections.singletonMap("success", false));
+           
             
+            if (result.hasFieldErrors("scheduleCronString")) {
+                CronExpressionTagState state = new CronExpressionTagState();
+                state.setCronTagStyleType(CronTagStyleType.CUSTOM);
+                state.setCustomExpression(CustomCronTagStyleHandler.getCustomExpression("scheduleCronString", request));
+                model.addAttribute("cronExpressionTagState", state);
+                model.addAttribute("invalidCronString", true);
+            } else {
+                model.addAttribute("cronExpressionTagState",
+                    cronExpressionTagService.parse(exportData.getScheduleCronString(), userContext));
+            }
             return "meterEventsReport/scheduledMeterEventsDialog.jsp";
         }
 
@@ -397,10 +415,7 @@ public class MeterEventsReportController {
                 meterEventsFilter.isOnlyLatestEvent(), meterEventsFilter.isOnlyAbnormalEvents(),
                 meterEventsFilter.isIncludeDisabledPaos(), collection, meterEventsFilter.getAttributes());
         exportData.setParameters(parameters);
-
-        String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
-        exportData.setScheduleCronString(scheduleCronString);
-
+        
         if (jobId == null) {
             exportService.scheduleFileExport(exportData, userContext, request);
             flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".jobs.scheduleSuccess",

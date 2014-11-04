@@ -80,8 +80,11 @@ import com.cannontech.multispeak.service.MultispeakCustomerInfoService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.util.cronExpressionTag.CronException;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
+import com.cannontech.web.amr.util.cronExpressionTag.CronTagStyleType;
+import com.cannontech.web.amr.util.cronExpressionTag.handler.CustomCronTagStyleHandler;
 import com.cannontech.web.amr.waterLeakReport.model.SortBy;
 import com.cannontech.web.amr.waterLeakReport.model.WaterLeakReportFilter;
 import com.cannontech.web.amr.waterLeakReport.model.WaterMeterLeak;
@@ -294,8 +297,12 @@ public class WaterLeakReportController {
             DeviceCollection collection,
             Integer jobId) throws ServletRequestBindingException, ParseException {
         
-        String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
-        exportData.setScheduleCronString(scheduleCronString);
+        try {
+            String scheduleCronString = cronExpressionTagService.build("scheduleCronString", request, userContext);
+            exportData.setScheduleCronString(scheduleCronString);
+        } catch (CronException cronException) {
+            bindingResult.rejectValue("scheduleCronString", "yukon.common.invalidCron");
+        }
 
         scheduledFileExportValidator = new ScheduledFileExportValidator(this.getClass());
         scheduledFileExportValidator.validate(exportData, bindingResult);
@@ -307,9 +314,18 @@ public class WaterLeakReportController {
             if (jobId != null) model.addAttribute("jobId", jobId);
             model.addAttribute("includeDisabledPaos", includeDisabledPaos);
             model.addAttribute("deviceCollection", collection);
-            model.addAttribute("cronExpressionTagState", cronExpressionTagService.parse(scheduleCronString, userContext));
             model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
             model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
+            if (bindingResult.hasFieldErrors()) {
+                CronExpressionTagState state = new CronExpressionTagState();
+                state.setCronTagStyleType(CronTagStyleType.CUSTOM);
+                state.setCustomExpression(CustomCronTagStyleHandler.getCustomExpression("scheduleCronString", request));
+                model.addAttribute("cronExpressionTagState", state);
+                model.addAttribute("invalidCronString", true);
+            } else {
+                model.addAttribute("cronExpressionTagState",
+                    cronExpressionTagService.parse(exportData.getScheduleCronString(), userContext));
+            }
             
             response.setStatus(HttpStatus.BAD_REQUEST.value());
             

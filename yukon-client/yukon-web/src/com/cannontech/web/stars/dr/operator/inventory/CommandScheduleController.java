@@ -30,6 +30,7 @@ import com.cannontech.stars.dr.hardware.model.CommandSchedule;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.amr.util.cronExpressionTag.CronException;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -83,6 +84,17 @@ public class CommandScheduleController {
                                  String formUniqueId) 
     throws ServletRequestBindingException, IllegalArgumentException, ParseException {
         
+        try {
+            /* Set Cron */
+            String cronExpression = null;
+            cronExpression = cronService.build(formUniqueId, request, userContext);
+            schedule.getCommandSchedule().setStartTimeCronString(cronExpression);
+        } catch (CronException CronException) {
+            MessageSourceResolvable invalidCronMsg = new YukonMessageSourceResolvable("yukon.common.invalidCron");
+            flashScope.setError(invalidCronMsg);
+            return "operator/inventory/commandSchedule.jsp";
+        }
+        
         validator.validate(schedule, bindingResult);
         
         int scheduleId = schedule.getCommandSchedule().getCommandScheduleId();
@@ -91,7 +103,6 @@ public class CommandScheduleController {
         if (bindingResult.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
-            
             String cron = schedule.getCommandSchedule().getStartTimeCronString();
             CronExpressionTagState cronState = cronService.parse(cron, userContext);
             modelMap.addAttribute("cronExpressionTagState", cronState);
@@ -105,10 +116,7 @@ public class CommandScheduleController {
             return "operator/inventory/commandSchedule.jsp";
         }
         
-        /* Set Cron */
-        String cronExpression = null;
-        cronExpression = cronService.build(formUniqueId, request, userContext);
-        schedule.getCommandSchedule().setStartTimeCronString(cronExpression);
+
         
         /* Set Duration and Delay */
         Period duration = Period.hours(schedule.getRunPeriodHours()).withMinutes(schedule.getRunPeriodMinutes());
