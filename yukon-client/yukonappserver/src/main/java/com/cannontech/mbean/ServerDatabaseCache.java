@@ -1594,13 +1594,17 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             // A force reload of all paobjects was sent.
             releaseAllYukonPAObjects();
             return lBase;
-        }else if (type == DbChangeType.ADD || type == DbChangeType.UPDATE) {
+        } else if (type == DbChangeType.ADD) {
             lBase = getAllPaosMap().get(id);
             if (lBase == null) {
                 LiteYukonPAObject pao = paoDao.getLiteYukonPAO(id);
                 getAllPaosMap().put(pao.getLiteID(), pao);
                 lBase = pao;
             }
+        } else if (type == DbChangeType.UPDATE) {
+            LiteYukonPAObject pao = paoDao.getLiteYukonPAO(id);
+            getAllPaosMap().put(pao.getLiteID(), pao);
+            lBase = pao;
         } else if (type == DbChangeType.DELETE) {
             lBase = getAllPaosMap().remove(id);
         } else {
