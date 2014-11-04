@@ -14,10 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.meter.dao.impl.MeterRowMapper;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -45,8 +43,6 @@ import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.ScadaAnalog;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -345,11 +341,10 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
     }
 
     /**
-     * Returns alist of paObjects for PaoTag.LM_PROGRAM
+     * Returns a list of paObjects for PaoTag.LM_PROGRAM that user has permission to access.
      * @return
      */
     private List<LiteYukonPAObject> getAuthorizedProgramsList(LiteYukonUser user) {
-        // TODO - should this method actually be getting only programs that this user has access to? PaoPermissions?
         Set<PaoType> paoTypes = paoDefinitionDao.getPaoTypesThatSupportTag(PaoTag.LM_PROGRAM);
         List<LiteYukonPAObject> programs = Lists.newArrayList();
         for (PaoType paoType : paoTypes) {

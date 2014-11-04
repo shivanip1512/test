@@ -174,9 +174,9 @@ public class MultispeakFuncs {
 
             return user;
         } catch (PasswordExpiredException e) {
-            throw new RemoteException("Password expired.");
+            throw new RemoteException("Password expired.", e);
         } catch (BadAuthenticationException e) {
-            throw new RemoteException("User authentication failed.");
+            throw new RemoteException("User authentication failed.", e);
         }
     }
 
