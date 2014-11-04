@@ -865,8 +865,8 @@ YukonError_t Mct420Device::decodeGetConfigOptions( const INMESS &InMessage, cons
                                        : "DST disabled\n";
     descriptor += configuration & 0x02 ? "LED test enabled\n"
                                        : "LED test disabled\n";
-    descriptor += configuration & 0x04 ? "Reconnect button required\n"
-                                       : "Reconnect button not required\n";
+    descriptor += configuration & 0x04 ? "Reconnect button not required\n"
+                                       : "Reconnect button required\n";
     descriptor += configuration & 0x08 ? "Demand limit mode enabled\n"
                                        : "Demand limit mode disabled\n";
     descriptor += configuration & 0x10 ? "Disconnect cycling mode enabled\n"
