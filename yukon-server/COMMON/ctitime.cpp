@@ -5,7 +5,6 @@
 #include <boost/thread/tss.hpp>
 #include <boost/date_time/posix_time/posix_time_types.hpp>
 #include <utility>
-#include <rw/rwtime.h>
 #include <sstream>
 #include <map>
 #include "ctidate.h"
@@ -392,11 +391,6 @@ void CtiTime::extract(struct tm* ctm) const
         ctm->tm_yday  = 0;
         ctm->tm_year  = 0;
     }
-}
-
-unsigned long CtiTime::toRwSeconds() const
-{
-    return _seconds + rwEpoch;
 }
 
 
