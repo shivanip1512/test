@@ -20,6 +20,7 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -61,6 +62,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private SelectionListService selectionListService;
+    @Autowired private PaoDao paoDao;
 
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
@@ -244,20 +246,20 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             HardwareType ht = HardwareType.valueOf(deviceType.getYukonDefID());
             if (ht.isRf()) {
                 try {
-                // add rf device
-                RfnManufacturerModel mm = RfnManufacturerModel.getForType(ht.getForHardwareType()).get(0);
-                String manufacturer = mm.getManufacturer().trim();
-                String model = mm.getModel().trim();
-                String templatePrefix = configurationSource.getString(MasterConfigStringKeysEnum.RFN_METER_TEMPLATE_PREFIX, 
-                        "*RfnTemplate_");
-                String templateName = templatePrefix + manufacturer + "_" + model;
-                YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templateName, dto.getSerialNumber(), true);
-                String name = cache.getAllPaosMap().get(newDevice.getPaoIdentifier().getPaoId()).getPaoName();
-                RfnIdentifier rfn = new RfnIdentifier(dto.getSerialNumber(), manufacturer, model);
-                RfnDevice device = new RfnDevice(name, newDevice.getPaoIdentifier(), rfn);
-                rfnDeviceDao.updateDevice(device);
-                inventoryBaseDao.updateInventoryBaseDeviceId(lib.getInventoryID(), device.getPaoIdentifier().getPaoId());
-                dbChangeManager.processDbChange(lib.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
+                    // add rf device
+                    RfnManufacturerModel mm = RfnManufacturerModel.getForType(ht.getForHardwareType()).get(0);
+                    String manufacturer = mm.getManufacturer().trim();
+                    String model = mm.getModel().trim();
+                    String templatePrefix = configurationSource.getString(MasterConfigStringKeysEnum.RFN_METER_TEMPLATE_PREFIX, 
+                            "*RfnTemplate_");
+                    String templateName = templatePrefix + manufacturer + "_" + model;
+                    YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templateName, dto.getSerialNumber(), true);
+                    String name = paoDao.getYukonPAOName(newDevice.getPaoIdentifier().getPaoId());
+                    RfnIdentifier rfn = new RfnIdentifier(dto.getSerialNumber(), manufacturer, model);
+                    RfnDevice device = new RfnDevice(name, newDevice.getPaoIdentifier(), rfn);
+                    rfnDeviceDao.updateDevice(device);
+                    inventoryBaseDao.updateInventoryBaseDeviceId(lib.getInventoryID(), device.getPaoIdentifier().getPaoId());
+                    dbChangeManager.processDbChange(lib.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
                     DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
                 } catch (BadTemplateDeviceCreationException e) {
                     throw new StarsInvalidArgumentException(e.getMessage(), e);
