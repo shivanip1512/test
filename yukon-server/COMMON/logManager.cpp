@@ -36,21 +36,21 @@ AutoShutdownLoggers::~AutoShutdownLoggers()
 ///  class FileInfo ///
 
 FileInfo::FileInfo() :
-    _path             ("..\\log"),
-    _maxFileSize      (1024 * 1024 * 1024), // 1-Go
-    _maxOpenRetries   (0),
-    _openRetryMillis  (1000),
-    _logRetentionDays (0),
-    _fileAppend       (true),
-    _bufferedIO       (true),
-    _bufferSize       (1024 * 128)
+    path             ("..\\log"),
+    maxFileSize      (1024 * 1024 * 1024), // 1 GB
+    maxOpenRetries   (0),
+    openRetryMillis  (1000),
+    logRetentionDays (0),
+    fileAppend       (true),
+    bufferedIO       (true),
+    bufferSize       (1024 * 128)
 {}
 
 std::string FileInfo::logFileName(const CtiDate &date) const
 {
     std::ostringstream oss;
 
-    oss << _path <<"\\"<< _baseFileName<<"_";
+    oss << path <<"\\"<< baseFileName<<"_";
 
     oss << date.year() << std::setfill('0')
         << std::setw(2) << date.month()
@@ -63,9 +63,9 @@ std::string FileInfo::logFileName(const CtiDate &date) const
 
 bool FileInfo::shouldDeleteFile(const std::string& fileToDelete, const CtiDate& cutOffDate) const
 {
-    const std::string baseFileName    = boost::algorithm::to_lower_copy(_baseFileName);
+    const std::string lowercaseFileName = boost::algorithm::to_lower_copy(baseFileName);
     const std::string date_regex_spec = "2\\d{7}";
-    const std::string file_regex_spec = "\\\\" + baseFileName + "_?" + date_regex_spec + "\\.log$";
+    const std::string file_regex_spec = "\\\\" + lowercaseFileName + "_?" + date_regex_spec + "\\.log$";
 
     CtiString input(fileToDelete);
     input.toLower();
@@ -112,12 +112,12 @@ LogManager::LogManager(const std::string &baseLoggerName)
 
 void LogManager::setOutputPath(const std::string& path)
 {
-    _fileInfo._path = path;
+    _fileInfo.path = path;
 }
 
 void LogManager::setOutputFile(const std::string& baseFileName)
 {
-    _fileInfo._baseFileName.swap(scrub(baseFileName));
+    _fileInfo.baseFileName.swap(scrub(baseFileName));
 }
 
 std::string LogManager::scrub(std::string fileName)
@@ -150,7 +150,7 @@ void LogManager::setToStdOut(const bool toStdout)
 
 void LogManager::setRetentionDays(const unsigned long days)
 {
-    _fileInfo._logRetentionDays = days;
+    _fileInfo.logRetentionDays = days;
 }
 
 void LogManager::setOutputFormat(const LogFormats format)

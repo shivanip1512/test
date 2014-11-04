@@ -24,16 +24,16 @@ struct OwnerInfo
 
 struct IM_EX_CTIBASE FileInfo
 {
-    std::string _path;
-    std::string _baseFileName;
+    std::string path;
+    std::string baseFileName;
 
-    size_t        _maxFileSize;
-    unsigned long _maxOpenRetries;
-    unsigned long _openRetryMillis;
-    unsigned long _logRetentionDays;
-    bool          _fileAppend;
-    bool          _bufferedIO;
-    size_t        _bufferSize;
+    size_t        maxFileSize;
+    unsigned long maxOpenRetries;
+    unsigned long openRetryMillis;
+    unsigned long logRetentionDays;
+    bool          fileAppend;
+    bool          bufferedIO;
+    size_t        bufferSize;
 
     FileInfo();
 

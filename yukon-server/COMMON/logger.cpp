@@ -99,9 +99,18 @@ Logger::Logger(const std::string &loggerName, const Indents indentStyle)
 Logger::~Logger()
 {}
 
+static const size_t MaxMessageSize = 1024 * 1024;  //  1 MB, which should be enough for all sane log entries
+
 void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const char* file, const char* func, int line)
 {
     std::string message = logStream.extractToString();
+    const size_t messageSize = message.size();
+    if( messageSize > MaxMessageSize )
+    {
+        message.resize(MaxMessageSize);
+
+        message += StreamBuffer() << "\n[Message truncated to " << MaxMessageSize << ", originally " << messageSize << "]";
+    }
     boost::replace_all(message, "\n", _newline);
 
     LOG4CXX_DECODE_CHAR(msg, message);

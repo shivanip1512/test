@@ -18,7 +18,8 @@ class IM_EX_CTIBASE LogFileAppender : public log4cxx::WriterAppender
     const FileInfo  _fileInfo;
     CtiDate         _today;
     __int64         _tomorrow;
-    bool            _maxFileSizeReached;
+    __int64         _nextResumeAttempt;
+    bool            _maxFileSizeLogged;
     bool            _lastRolloverFailed;
     size_t          _fileSize;
 
@@ -39,6 +40,10 @@ class IM_EX_CTIBASE LogFileAppender : public log4cxx::WriterAppender
     void subAppend(
             const log4cxx::spi::LoggingEventPtr &event,
             log4cxx::helpers::Pool &p) override;
+
+    bool tryResumeWriting(
+            const __int64 timestamp,
+            log4cxx::helpers::Pool &p);
 
     bool rollover(
             const __int64 eventTimestamp,

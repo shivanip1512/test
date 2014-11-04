@@ -14,8 +14,12 @@
 #include "log4cxx/helpers/fileoutputstream.h"
 #include "log4cxx/helpers/bufferedwriter.h"
 
+#include <apr_time.h>
+
 namespace Cti {
 namespace Logging {
+
+using log4cxx::helpers::LogLog;
 
 namespace {
 
@@ -41,7 +45,7 @@ void deleteOldFile(const std::string &fileToDelete)
     if( ! ::DeleteFile(fileToDelete.c_str()) )
     {
         const std::string error = "Error deleting old log file: "+ fileToDelete;
-        log4cxx::helpers::LogLog::error(toLogStr(error));
+        LogLog::error(toLogStr(error));
     }
 }
 
@@ -87,8 +91,9 @@ public:
 LogFileAppender::LogFileAppender(const log4cxx::LayoutPtr& layout, const FileInfo& fileInfo)
     :   log4cxx::WriterAppender(layout),
         _fileInfo(fileInfo),
-        _maxFileSizeReached(false),
+        _maxFileSizeLogged(false),
         _lastRolloverFailed(false),
+        _nextResumeAttempt(0),
         _nextFlush(0),
         _flushInterval(5 * 1000 * 1000)  //  force a flush every 5 seconds
 {
@@ -107,15 +112,17 @@ void LogFileAppender::activateOptions(log4cxx::helpers::Pool& p)
 
     try
     {
-        setFile(toLogStr(fileName), _fileInfo._fileAppend, _fileInfo._bufferedIO, _fileInfo._bufferSize, p);
+        setFile(toLogStr(fileName), _fileInfo.fileAppend, _fileInfo.bufferedIO, _fileInfo.bufferSize, p);
 
         WriterAppender::activateOptions(p);
     }
     catch( const log4cxx::helpers::IOException& e )
     {
-        std::ostringstream oss;
-        oss <<"setFile("<< fileName <<","<< (_fileInfo._fileAppend ? "true":"false") << ") call failed.";
-        log4cxx::helpers::LogLog::error(toLogStr(oss.str()), e);
+        StreamBuffer sb;
+
+        sb <<"setFile("<< fileName <<","<< (_fileInfo.fileAppend ? "true":"false") << ") call failed.";
+
+        LogLog::error(toLogStr(sb.extractToString()), e);
     }
 }
 
@@ -204,6 +211,40 @@ void LogFileAppender::setFile(
 }
 
 
+bool LogFileAppender::tryResumeWriting(const __int64 timestamp, log4cxx::helpers::Pool &p)
+{
+    if( timestamp < _nextResumeAttempt )
+    {
+        return false;
+    }
+
+    _nextResumeAttempt = apr_time_now() + 5 * 1000 * 1000;  //  try every 5 seconds
+
+    const std::string fileName = _fileInfo.logFileName(_today);
+
+    log4cxx::File outFile;
+    outFile.setPath(toLogStr(fileName));
+    if( ! outFile.exists(p) || outFile.length(p) < _fileInfo.maxFileSize )
+    {
+        try
+        {
+            setFile(toLogStr(fileName), _fileInfo.fileAppend, _fileInfo.bufferedIO, _fileInfo.bufferSize, p);
+
+            return true;
+        }
+        catch( const log4cxx::helpers::IOException& e )
+        {
+            StreamBuffer sb;
+
+            sb <<"setFile("<< fileName <<","<< (_fileInfo.fileAppend ? "true":"false") << ") call failed.";
+
+            LogLog::error(toLogStr(sb.extractToString()), e);
+        }
+    }
+
+    return false;
+}
+
 void LogFileAppender::subAppend(
         const log4cxx::spi::LoggingEventPtr& event,
         log4cxx::helpers::Pool& p)
@@ -221,16 +262,24 @@ void LogFileAppender::subAppend(
             return; // rollover was attempted and failed
         }
 
-        if( _fileInfo._maxFileSize <= _fileSize )
+        if( _fileSize >= _fileInfo.maxFileSize )
         {
-            if( !_maxFileSizeReached )
+            if( ! _maxFileSizeLogged )
             {
-                std::ostringstream oss;
-                oss << "Maximum file size reached: "<< _fileInfo._maxFileSize <<" bytes";
-                log4cxx::helpers::LogLog::error(toLogStr(oss.str()));
-                _maxFileSizeReached = true;
+                StreamBuffer sb;
+
+                sb << "Maximum file size reached: "<< _fileInfo.maxFileSize <<" bytes";
+
+                LogLog::error(toLogStr(sb.extractToString()));
+
+                _maxFileSizeLogged = true;
             }
-            return;
+
+            //  try to resume writing if the file has been removed or is smaller
+            if( ! tryResumeWriting(timestamp, p) )
+            {
+                return;
+            }
         }
 
         if( _writer != NULL )
@@ -263,7 +312,7 @@ bool LogFileAppender::rollover(const __int64 eventTimestamp, log4cxx::helpers::P
     {
         try
         {
-            setFile(toLogStr(fileName), _fileInfo._fileAppend, _fileInfo._bufferedIO, _fileInfo._bufferSize, p);
+            setFile(toLogStr(fileName), _fileInfo.fileAppend, _fileInfo.bufferedIO, _fileInfo.bufferSize, p);
             break;
         }
         catch( const log4cxx::helpers::IOException& e )
@@ -273,27 +322,27 @@ bool LogFileAppender::rollover(const __int64 eventTimestamp, log4cxx::helpers::P
                 return false;
             }
 
-            std::ostringstream oss;
-            oss <<"Error opening log file "<< fileName;
+            StreamBuffer sb;
+            sb <<"Error opening log file "<< fileName;
 
-            if( ++openRetry > _fileInfo._maxOpenRetries )
+            if( ++openRetry > _fileInfo.maxOpenRetries )
             {
-                log4cxx::helpers::LogLog::error(toLogStr(oss.str()), e);
+                LogLog::error(toLogStr(sb.extractToString()), e);
                 _lastRolloverFailed = true;
                 return false;
             }
 
-            oss <<", will retry..";
-            log4cxx::helpers::LogLog::error(toLogStr(oss.str()), e);
+            sb <<", will retry..";
+            LogLog::error(toLogStr(sb.extractToString()), e);
         }
 
-        Sleep(_fileInfo._openRetryMillis);
+        Sleep(_fileInfo.openRetryMillis);
     }
 
     _today    = newDay;
     _tomorrow = makeMicroseconds(CtiTime(_today + 1));
     _lastRolloverFailed = false;
-    _maxFileSizeReached = false;
+    _maxFileSizeLogged = false;
 
     cleanupOldFiles();
 
@@ -304,7 +353,7 @@ void LogFileAppender::cleanupOldFiles() const
 {
     log4cxx::helpers::synchronized sync(mutex);
 
-    if( !_fileInfo._logRetentionDays )
+    if( !_fileInfo.logRetentionDays )
     {
         return;
     }
@@ -314,18 +363,18 @@ void LogFileAppender::cleanupOldFiles() const
     // '\filename_YYYYMMDD.log'
     // Files found are fully verified inside shouldDeleteFile()
 
-    const std::string fileName = _fileInfo._path + "\\" + _fileInfo._baseFileName + "*.log";
+    const std::string fileName = _fileInfo.path + "\\" + _fileInfo.baseFileName + "*.log";
 
     WIN32_FIND_DATA fileInfoFound;
     const HANDLE finderHandle = FindFirstFile(fileName.c_str(), &fileInfoFound);
 
     if( finderHandle != INVALID_HANDLE_VALUE )
     {
-        const CtiDate cutoffDate  = _today - _fileInfo._logRetentionDays;
+        const CtiDate cutoffDate  = _today - _fileInfo.logRetentionDays;
 
         do
         {
-            const std::string fileNameFound = _fileInfo._path + "\\" + fileInfoFound.cFileName;
+            const std::string fileNameFound = _fileInfo.path + "\\" + fileInfoFound.cFileName;
             if( _fileInfo.shouldDeleteFile(fileNameFound, cutoffDate) )
             {
                 deleteOldFile(fileNameFound);
