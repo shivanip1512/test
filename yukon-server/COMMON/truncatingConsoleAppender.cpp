@@ -28,7 +28,8 @@ TruncatingConsoleAppender::TruncatingConsoleAppender(const log4cxx::LayoutPtr& l
     _currentBurst(0),
     _maxBurstSize(250),
     _interval(1000 * 1000),
-    _intervalEnd(0)
+    _intervalEnd(0),
+    _burstBuffer(BurstBufferLength)
 {
     setLayout(layout);
     log4cxx::helpers::WriterPtr wr(new log4cxx::helpers::SystemOutWriter());
@@ -60,19 +61,32 @@ void TruncatingConsoleAppender::subAppend(const log4cxx::spi::LoggingEventPtr& e
     {
         _intervalEnd = std::max(apr_time_now(),  event->getTimeStamp() + _interval);
         _currentBurst = 0;
+
+        for each(const log4cxx::spi::LoggingEventPtr &event in _burstBuffer)
+        {
+            WriterAppender::subAppend(event, p);
+        }
+
+        _burstBuffer.clear();
     }
 
     if( ++_currentBurst < _maxBurstSize )
     {
         WriterAppender::subAppend(event, p);
     }
-    else if( _currentBurst == _maxBurstSize )
+    else
     {
-        StreamBuffer sb;
+        //  circular buffer, only retains BurstBufferLength elements
+        _burstBuffer.push_back(event);
 
-        sb << "Console output truncated, max burst size of " << _maxBurstSize << " reached.";
+        if( _currentBurst == _maxBurstSize )
+        {
+            StreamBuffer sb;
 
-        log4cxx::helpers::LogLog::warn(toLogStr(sb.extractToString()));
+            sb << "Console output truncated, max burst size of " << _maxBurstSize << " reached.";
+
+            log4cxx::helpers::LogLog::warn(toLogStr(sb.extractToString()));
+        }
     }
 }
 

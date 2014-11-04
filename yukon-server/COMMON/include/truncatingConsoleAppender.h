@@ -3,6 +3,8 @@
 #include "dlldefs.h"
 #include "timing_util.h"
 
+#include <boost/circular_buffer.hpp>
+
 #include <log4cxx/writerappender.h>
 
 namespace Cti {
@@ -13,6 +15,8 @@ class IM_EX_CTIBASE TruncatingConsoleAppender : public log4cxx::WriterAppender
     __int64 _interval;
     __int64 _intervalEnd;
     unsigned _maxBurstSize, _currentBurst;
+    static const size_t BurstBufferLength = 10;
+    boost::circular_buffer<log4cxx::spi::LoggingEventPtr> _burstBuffer;
 
     void subAppend(const log4cxx::spi::LoggingEventPtr& event, log4cxx::helpers::Pool& p) override;
 
