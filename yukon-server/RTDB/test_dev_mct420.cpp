@@ -561,6 +561,183 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0xf3 );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   2 );
     }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420_getconfig_options_all_zeroes)
+    {
+        test_Mct420CL mct420;
+        long sequence;
+
+        {
+            CtiCommandParser parse( "getconfig options" );
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct420.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+            BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+            const OUTMESS *om = outList.front();
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x01 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
+
+            sequence = om->Sequence;
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+            INMESS im;
+
+            const std::vector<unsigned char> input = boost::assign::list_of(0).repeat(5, 0);
+
+            std::copy(input.begin(), input.end(), im.Buffer.DSt.Message);
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            im.Sequence = sequence;
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct420.ResultDecode(im, timeNow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            BOOST_CHECK_EQUAL(
+                    retMsg->ResultString(),
+                    "Test MCT-420CL / Configuration information:"
+                    "\nDST disabled"
+                    "\nLED test disabled"
+                    "\nReconnect button not required"
+                    "\nDemand limit mode disabled"
+                    "\nDisconnect cycling mode disabled"
+                    "\nRepeater role disabled"
+                    "\nDisconnect collar is not MCT-410d Rev E (or later)"
+                    "\nDaily reporting disabled"
+                    "\nTest MCT-420CL / Event mask information:"
+                    "\nZero usage event mask disabled"
+                    "\nDisconnect error event mask disabled"
+                    "\nMeter reading corrupted event mask disabled"
+                    "\nReverse power event mask disabled"
+                    "\nPower fail event event mask disabled"
+                    "\nUnder voltage event event mask disabled"
+                    "\nOver voltage event event mask disabled"
+                    "\nRTC lost event mask disabled"
+                    "\nRTC adjusted event mask disabled"
+                    "\nHoliday flag event mask disabled"
+                    "\nDST change event mask disabled"
+                    "\nTamper flag event mask disabled"
+                    "\nTest MCT-420CL / Meter alarm mask information:"
+                    "\nUnprogrammed meter alarm mask disabled"
+                    "\nConfiguration error meter alarm mask disabled"
+                    "\nSelf check error meter alarm mask disabled"
+                    "\nRAM failure meter alarm mask disabled"
+                    "\nNon-volatile memory failure meter alarm mask disabled"
+                    "\nMeasurement error meter alarm mask disabled"
+                    "\nPower failure meter alarm mask disabled"
+                    "\nTest MCT-420CL / Channel configuration:"
+                    "\nChannel 2: No meter attached"
+                    "\nChannel 3: No meter attached"
+                    "\n");
+        }
+    }
+    BOOST_AUTO_TEST_CASE(test_dev_mct420_getconfig_options_all_Fs)
+    {
+        test_Mct420CL mct420;
+        long sequence;
+
+        {
+            CtiCommandParser parse( "getconfig options" );
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct420.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+            BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+            const OUTMESS *om = outList.front();
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x01 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
+
+            sequence = om->Sequence;
+        }
+
+        delete_container(vgList);
+        delete_container(retList);
+        delete_container(outList);
+
+        vgList.clear();
+        retList.clear();
+        outList.clear();
+
+        {
+            CtiTime timeNow(CtiDate(1, 1, 2010), 1, 2, 3);
+
+            INMESS im;
+
+            const std::vector<unsigned char> input = boost::assign::list_of(0xff).repeat(5, 0xff);
+
+            std::copy(input.begin(), input.end(), im.Buffer.DSt.Message);
+            im.Buffer.DSt.Length = 13;
+            im.Buffer.DSt.Address = 0x1ffff;  //  CarrierAddress is -1 by default, so the lower 13 bits are all set
+            im.Sequence = sequence;
+
+            BOOST_CHECK_EQUAL( ClientErrors::None, mct420.ResultDecode(im, timeNow, vgList, retList, outList) );
+        }
+
+        {
+            BOOST_REQUIRE_EQUAL( retList.size(),  1 );
+
+            const CtiReturnMsg *retMsg = dynamic_cast<CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            BOOST_CHECK_EQUAL(
+                    retMsg->ResultString(),
+                    "Test MCT-420CL / Configuration information:"
+                    "\nDST enabled"
+                    "\nLED test enabled"
+                    "\nReconnect button required"
+                    "\nDemand limit mode enabled"
+                    "\nDisconnect cycling mode enabled"
+                    "\nRepeater role enabled"
+                    "\nDisconnect collar is MCT-410d Rev E (or later)"
+                    "\nDaily reporting enabled"
+                    "\nTest MCT-420CL / Event mask information:"
+                    "\nZero usage event mask enabled"
+                    "\nDisconnect error event mask enabled"
+                    "\nMeter reading corrupted event mask enabled"
+                    "\nReverse power event mask enabled"
+                    "\nPower fail event event mask enabled"
+                    "\nUnder voltage event event mask enabled"
+                    "\nOver voltage event event mask enabled"
+                    "\nRTC lost event mask enabled"
+                    "\nRTC adjusted event mask enabled"
+                    "\nHoliday flag event mask enabled"
+                    "\nDST change event mask enabled"
+                    "\nTamper flag event mask enabled"
+                    "\nTest MCT-420CL / Meter alarm mask information:"
+                    "\nUnprogrammed meter alarm mask enabled"
+                    "\nConfiguration error meter alarm mask enabled"
+                    "\nSelf check error meter alarm mask enabled"
+                    "\nRAM failure meter alarm mask enabled"
+                    "\nNon-volatile memory failure meter alarm mask enabled"
+                    "\nMeasurement error meter alarm mask enabled"
+                    "\nPower failure meter alarm mask enabled"
+                    "\nTest MCT-420CL / Channel configuration:"
+                    "\nChannel 2: Net metering mode enabled"
+                    "\n");
+        }
+    }
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
 BOOST_AUTO_TEST_SUITE_END()
 
