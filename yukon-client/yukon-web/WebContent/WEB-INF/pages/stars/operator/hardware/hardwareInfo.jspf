@@ -29,7 +29,7 @@ function updateServiceCompanyInfo() {
     var url = yukon.url('/stars/operator/hardware/serviceCompanyInfo');
     var serviceCompanyId = 
         <cti:displayForPageEditModes modes="EDIT,CREATE">
-            $('#serviceCompanyId').val();
+            $('#service-company-select').val();
         </cti:displayForPageEditModes>
 
         <cti:displayForPageEditModes modes="VIEW">
@@ -42,10 +42,10 @@ function updateServiceCompanyInfo() {
             url: url,
             data: params
         }).done(function(data, status, xhrobj) {
-            $('#serviceCompanyContainer').html(data).show();
+            $('#service-company-address').html(data).show();
         });
     } else {
-        $('#serviceCompanyContainer').html('');
+        $('#service-company-address').html('');
     }
 }
 
@@ -270,13 +270,13 @@ $(function() { updateServiceCompanyInfo();});
     <tags:sectionContainer2 nameKey="serviceAndStorageSection">
     
         <tags:nameValueContainer2>
-                
-            <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <tags:selectNameValue nameKey=".serviceCompany" path="serviceCompanyId" itemLabel="serviceCompanyName" itemValue="serviceCompanyId" 
-                    items="${serviceCompanies}" defaultItemValue="0" defaultItemLabel="(none)" onchange="updateServiceCompanyInfo()"/>
-            </cti:displayForPageEditModes>
             
+            <tags:selectNameValue id="service-company-select" nameKey=".serviceCompany" path="serviceCompanyId" itemLabel="serviceCompanyName" itemValue="serviceCompanyId" 
+                items="${serviceCompanies}" defaultItemValue="0" defaultItemLabel="(none)" onchange="updateServiceCompanyInfo()"/>
             
+            <tags:nameValue2 excludeColon="true">
+                <div id="service-company-address"></div>
+            </tags:nameValue2>
             
             <cti:displayForPageEditModes modes="EDIT,VIEW">
                 <tags:selectNameValue nameKey=".warehouse" path="warehouseId"  itemLabel="warehouseName" itemValue="warehouseID" items="${warehouses}"  defaultItemValue="0" defaultItemLabel="${noneSelectOption}"/>
