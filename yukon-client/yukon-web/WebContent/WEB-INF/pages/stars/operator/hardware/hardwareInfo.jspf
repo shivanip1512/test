@@ -276,9 +276,7 @@ $(function() { updateServiceCompanyInfo();});
                     items="${serviceCompanies}" defaultItemValue="0" defaultItemLabel="(none)" onchange="updateServiceCompanyInfo()"/>
             </cti:displayForPageEditModes>
             
-            <tags:nameValue2 nameKey=".serviceCompanyInfo">
-                <div id="serviceCompanyContainer"></div>
-            </tags:nameValue2>
+            
             
             <cti:displayForPageEditModes modes="EDIT,VIEW">
                 <tags:selectNameValue nameKey=".warehouse" path="warehouseId"  itemLabel="warehouseName" itemValue="warehouseID" items="${warehouses}"  defaultItemValue="0" defaultItemLabel="${noneSelectOption}"/>
