@@ -13,8 +13,7 @@ public class DevAMR extends DevObject {
     private Integer addressRangeMin = 1000000;
     private Integer addressRangeMax = 999999999;
     private List<DevPaoType> meterTypes =
-        Lists
-            .newArrayList(new DevPaoType(PaoType.MCT410CL),
+        Lists.newArrayList(new DevPaoType(PaoType.MCT410CL),
                           new DevPaoType(PaoType.MCT410FL),
                           new DevPaoType(PaoType.MCT410IL),
                           new DevPaoType(PaoType.MCT420CD),
@@ -48,7 +47,6 @@ public class DevAMR extends DevObject {
                           new DevPaoType(PaoType.RFN440_2131TD),
                           new DevPaoType(PaoType.RFN440_2132TD),
                           new DevPaoType(PaoType.RFN440_2133TD),
-                          new DevPaoType(PaoType.RFN_1200),
                           new DevPaoType(PaoType.RFWMETER));
     
     public boolean isCreateRfnTemplates() {
