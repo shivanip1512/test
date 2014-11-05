@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,7 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
@@ -110,6 +112,11 @@ public class MeterDaoImpl implements MeterDao {
                  "Manufacturer", rfn.getSensorManufacturer(),
                  "Model", rfn.getSensorModel());
             sql.append("WHERE DeviceId").eq(meter.getDeviceId());
+            try {
+                jdbcTemplate.update(sql);
+            } catch (DataIntegrityViolationException e) {
+                throw new DuplicateException("Duplicate rfn address.", e);
+            }
         }
         
         sendDBChangeMessage(meter);

@@ -29,9 +29,11 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -100,7 +102,9 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             // Validate RF meter settings
             if (meter instanceof RfMeterModel) {
                 
-                RfMeterModel rf = (RfMeterModel) meter;
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "serialNumber", key + "serialNumber.required");
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "manufacturer", key + "manufacturer.required");
+                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "model", key + "model.required");
                 
             }
         }
@@ -219,7 +223,42 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     }
     
     @RequestMapping(value="edit-rf", method=RequestMethod.PUT)
-    public String editRf(ModelMap model, LiteYukonUser user, @ModelAttribute("meter") RfMeterModel meter) {
+    public String editRf(HttpServletResponse resp, ModelMap model, FlashScope flash, YukonUserContext userContext,
+            @ModelAttribute("meter") RfMeterModel meter, BindingResult result) throws IOException {
+        
+        validator.validate(meter, result);
+        
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("showRFMeshSettings", true);
+            return "meterInformationWidget/edit.jsp";
+        }
+        
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(meter.getDeviceId());
+        RfnIdentifier rfnId = new RfnIdentifier(meter.getSerialNumber(), meter.getManufacturer(), meter.getModel());
+        RfnMeter rfn = new RfnMeter(pao.getPaoIdentifier(), rfnId, 
+                meter.getMeterNumber(), meter.getName(), meter.isDisabled());
+        
+        try {
+            meterDao.update(rfn);
+        } catch (DuplicateException e) {
+            
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("showRFMeshSettings", true);
+            String errorMsg = accessor.getMessage(baseKey + "error.rfn.address.duplicate");
+            model.addAttribute("errorMsg", errorMsg);
+            return "meterInformationWidget/edit.jsp";
+        }
+        
+        // Success
+        model.clear();
+        Map<String, Object> json = new HashMap<>();
+        json.put("success", true);
+        resp.setContentType("application/json");
+        JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "update.successful", meter.getName()));
         
         return null;
     }
