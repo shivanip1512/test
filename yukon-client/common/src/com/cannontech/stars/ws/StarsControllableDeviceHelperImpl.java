@@ -20,7 +20,6 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -62,7 +61,6 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private SelectionListService selectionListService;
-    @Autowired private PaoDao paoDao;
 
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
@@ -253,10 +251,10 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                     String templatePrefix = configurationSource.getString(MasterConfigStringKeysEnum.RFN_METER_TEMPLATE_PREFIX, 
                             "*RfnTemplate_");
                     String templateName = templatePrefix + manufacturer + "_" + model;
-                    YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templateName, dto.getSerialNumber(), true);
-                    String name = paoDao.getYukonPAOName(newDevice.getPaoIdentifier().getPaoId());
+                    String deviceName = dto.getSerialNumber();
+                    YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templateName, deviceName, true);
                     RfnIdentifier rfn = new RfnIdentifier(dto.getSerialNumber(), manufacturer, model);
-                    RfnDevice device = new RfnDevice(name, newDevice.getPaoIdentifier(), rfn);
+                    RfnDevice device = new RfnDevice(deviceName, newDevice.getPaoIdentifier(), rfn);
                     rfnDeviceDao.updateDevice(device);
                     inventoryBaseDao.updateInventoryBaseDeviceId(lib.getInventoryID(), device.getPaoIdentifier().getPaoId());
                     dbChangeManager.processDbChange(lib.getInventoryID(), DBChangeMsg.CHANGE_INVENTORY_DB,
