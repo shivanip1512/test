@@ -76,9 +76,13 @@ public final class SimpleDevice implements YukonDevice {
     public int hashCode() {
         return paoIdentifier.hashCode();
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         return this == obj || obj != null && paoIdentifier.equals(((SimpleDevice)obj).getPaoIdentifier());
+    }
+    
+    public static SimpleDevice of(PaoIdentifier pao) {
+        return new SimpleDevice(pao.getPaoId(), pao.getPaoType());
     }
 }

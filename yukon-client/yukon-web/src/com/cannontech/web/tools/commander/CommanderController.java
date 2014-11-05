@@ -25,26 +25,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.amr.device.search.service.DeviceSearchService;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
+import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.events.loggers.CommanderEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoDistance;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.CommandDao;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
-import com.cannontech.database.TransactionType;
-import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -75,14 +72,12 @@ public class CommanderController {
     
     @Autowired private ServerDatabaseCache cache;
     @Autowired private PaoDao paoDao;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private PaoLocationService paoLocationService;
-    @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private CommandDao commandDao;
     @Autowired private CommanderService commanderService;
     @Autowired private CommanderEventLogService eventLogger;
-    @Autowired private DeviceSearchService deviceSearchService;
+    @Autowired private DeviceUpdateService deviceUpdateService;
     @Autowired private WebUtilityService webUtil;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
@@ -210,9 +205,8 @@ public class CommanderController {
                 throw new IllegalArgumentException("Route type: " + newRoute.getPaoType() + " not supported on "
                         + pao);
             }
-            CarrierBase db = (CarrierBase) dbPersistentDao.retrieveDBPersistent(pao);
-            db.getDeviceRoutes().setRouteID(routeId);
-            dbPersistentDao.performDBChange(db, TransactionType.UPDATE);
+            
+            deviceUpdateService.changeRoute(SimpleDevice.of(pao.getPaoIdentifier()), routeId);
             
             Log.debug("User: " + user.getUsername() + " changed route on " + pao.getPaoName() + " from " 
                 + oldRoute.getPaoName() + " to " + newRoute.getPaoName());
