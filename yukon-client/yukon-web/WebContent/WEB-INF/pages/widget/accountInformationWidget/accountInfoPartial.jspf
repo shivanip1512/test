@@ -10,9 +10,9 @@
 <tags:sectionContainer title="${custInfo}">
     <tags:nameValueContainer2 tableClass="row-highlighting striped two-column-table" >
         <tags:nameValue2 nameKey=".name">
-            ${fn:escapeXml(mspCustomer.firstName)}
-            <c:if test="${not empty mspCustomer.MName}">${fn:escapeXml(mspCustomer.MName)}</c:if>
-            ${fn:escapeXml(mspCustomer.lastName)}
+            <c:if test="${not empty mspCustomer.firstName}">${fn:escapeXml(mspCustomer.firstName)}&emsp;</c:if>
+            <c:if test="${not empty mspCustomer.MName}">${fn:escapeXml(mspCustomer.MName)}&emsp;</c:if>
+            <c:if test="${not empty mspCustomer.lastName}">${fn:escapeXml(mspCustomer.lastName)}</c:if>
         </tags:nameValue2>
         <c:if test="${not empty mspCustomer.DBAName}">
             <tags:nameValue2 nameKey=".dba">${fn:escapeXml(mspCustomer.DBAName)}</tags:nameValue2>
