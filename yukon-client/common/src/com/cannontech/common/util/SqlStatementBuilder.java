@@ -318,6 +318,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     }
     
     public SqlStatementBuilder set(String columnName, Object value, Object... remaining) {
+        
         if (remaining.length % 2 != 0) {
             throw new IllegalArgumentException("Must specify column names and values in pairs.");
         }
@@ -330,14 +331,14 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
                 append(", ");
                 append(remaining[index]);
                 append("=");
-                appendArgument(remaining[index+1]);
+                appendArgument(remaining[index + 1]);
             } else {
                 throw new IllegalArgumentException("column names must be string values");
             }
         }
         return this;
     }
-
+    
     public SqlStatementBuilder values(Object first, Object... remaining) {
         List<Object> list = Lists.newArrayListWithCapacity(1 + remaining.length);
         list.add(first);

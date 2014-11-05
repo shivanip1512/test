@@ -87,7 +87,6 @@ import com.cannontech.database.db.device.DeviceIDLCRemote;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
 import com.cannontech.dbeditor.DatabaseEditorUtil;
 import com.cannontech.device.range.DlcAddressRangeService;
-import com.cannontech.device.range.IntegerRange;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableSet;
@@ -2200,10 +2199,12 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
             PaoType paoType = deviceBase.getPaoType();
             try {
                 int address = Integer.parseInt(getPhysicalAddressTextField().getText());
-                IntegerRange range = dlcAddressRangeService.getEnforcedAddressRangeForDevice(paoType);
                 // Verify Address is within range
-                if (!range.isWithinRange(address)) {
-                    setErrorString("Invalid address. Device address range: " + range);
+                if (!dlcAddressRangeService.isValidEnforcedAddress(paoType, address)) {
+                    
+                    String rangeString = dlcAddressRangeService.rangeString(paoType);
+                    setErrorString("Invalid address. Device address range: " + rangeString);
+                    
                     return false;
                 }
 

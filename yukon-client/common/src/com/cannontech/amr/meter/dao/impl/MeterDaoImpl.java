@@ -23,6 +23,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -33,6 +34,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.TransactionType;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -73,28 +75,41 @@ public class MeterDaoImpl implements MeterDao {
     public void update(YukonMeter meter) {
         // Update the meter's name and the meter's type
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("UPDATE yukonPaobject").set("paoName", meter.getName(), "type", meter.getPaoType());
-        sql.append("WHERE paobjectId").eq(meter.getDeviceId());
+        sql.append("UPDATE YukonPaobject")
+        .set("PaoName", meter.getName(), 
+             "Type", meter.getPaoType(), 
+             "DisableFlag", YNBoolean.valueOf(meter.isDisabled()));
+        sql.append("WHERE PaobjectId").eq(meter.getDeviceId());
+        
         jdbcTemplate.update(sql);
         
         // Update the meter's meter number
         sql = new SqlStatementBuilder();
-        sql.append("UPDATE deviceMeterGroup").set("meterNumber", meter.getMeterNumber());
-        sql.append("WHERE deviceId").eq(meter.getDeviceId());
+        sql.append("UPDATE DeviceMeterGroup").set("MeterNumber", meter.getMeterNumber());
+        sql.append("WHERE DeviceId").eq(meter.getDeviceId());
         jdbcTemplate.update(sql);
         
         if (meter instanceof PlcMeter) {
             // Update the meter's address
             sql = new SqlStatementBuilder();
-            sql.append("UPDATE deviceCarrierSettings").set("address", ((PlcMeter) meter).getAddress());
-            sql.append("WHERE deviceId").eq(meter.getDeviceId());
+            sql.append("UPDATE DeviceCarrierSettings").set("Address", ((PlcMeter) meter).getAddress());
+            sql.append("WHERE DeviceId").eq(meter.getDeviceId());
             jdbcTemplate.update(sql);
             
             // Update the meter's route
             sql = new SqlStatementBuilder();
-            sql.append("UPDATE deviceRoutes").set("routeId", ((PlcMeter) meter).getRouteId());
-            sql.append("WHERE deviceId").eq(meter.getDeviceId());
+            sql.append("UPDATE DeviceRoutes").set("RouteId", ((PlcMeter) meter).getRouteId());
+            sql.append("WHERE DeviceId").eq(meter.getDeviceId());
             jdbcTemplate.update(sql);
+        } else if (meter instanceof RfnMeter) {
+            // Update the rfn address
+            RfnIdentifier rfn = ((RfnMeter) meter).getRfnIdentifier();
+            sql = new SqlStatementBuilder();
+            sql.append("UPDATE RfnAddress")
+            .set("SerialNumber", rfn.getSensorSerialNumber(),
+                 "Manufacturer", rfn.getSensorManufacturer(),
+                 "Model", rfn.getSensorModel());
+            sql.append("WHERE DeviceId").eq(meter.getDeviceId());
         }
         
         sendDBChangeMessage(meter);

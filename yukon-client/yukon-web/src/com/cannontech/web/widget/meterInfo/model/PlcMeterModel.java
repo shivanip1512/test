@@ -28,7 +28,7 @@ public class PlcMeterModel extends MeterModel {
         PlcMeterModel model = new PlcMeterModel();
         model.setAddress(Integer.parseInt(meter.getAddress()));
         model.setDeviceId(meter.getDeviceId());
-        model.setDisabled(model.isDisabled());
+        model.setDisabled(meter.isDisabled());
         model.setMeterNumber(meter.getMeterNumber());
         model.setName(meter.getName());
         model.setRouteId(meter.getRouteId());

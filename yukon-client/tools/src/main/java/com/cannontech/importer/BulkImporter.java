@@ -313,7 +313,7 @@ public void runImport(List<ImportData> imps) {
                 }
                 
                 /*Address range check for 400 series*/
-                if (!dlcAddressRangeService.isEnforcedAddress(templateMeter.getPaoType(), Integer.parseInt(address))) {
+                if (!dlcAddressRangeService.isValidEnforcedAddress(templateMeter.getPaoType(), Integer.parseInt(address))) {
                     String error = "Has an incorrect " + templateMeter.getPaoType() + " address ("+address+").  ";
                     log.error(logMsgPrefix + error);
                     errorMsg.add(error);

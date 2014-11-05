@@ -40,7 +40,6 @@ import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
 import com.cannontech.dbeditor.DatabaseEditorOptionPane;
 import com.cannontech.device.range.DlcAddressRangeService;
-import com.cannontech.device.range.IntegerRange;
 import com.cannontech.spring.YukonSpringHook;
 
 public class DeviceNameAddressPanel extends DataInputPanel implements CaretListener {
@@ -387,23 +386,25 @@ public class DeviceNameAddressPanel extends DataInputPanel implements CaretListe
             setErrorString("The Name text field must be filled in");
             return false;
         }
-
+        
         if (StringUtils.isBlank(getAddress())) {
             setErrorString("The Address text field must be filled in");
             return false;
         }
-
+        
         int address = Integer.parseInt(getAddress());
         PaoType paoType = deviceBase.getPaoType();
-        IntegerRange range = dlcAddressRangeService.getEnforcedAddressRangeForDevice(paoType);
-        if (!range.isWithinRange(address)) {
-            setErrorString("Invalid address. Device address range: " + range);
+        if (!dlcAddressRangeService.isValidEnforcedAddress(paoType, address)) {
+            
+            String rangeString = dlcAddressRangeService.rangeString(paoType);
+            setErrorString("Invalid address. Device address range: " + rangeString);
             getJLabelErrorMessage().setText("(" + getErrorString() + ")");
             getJLabelErrorMessage().setToolTipText("(" + getErrorString() + ")");
             getJLabelErrorMessage().setVisible(true);
+            
             return false;
         }
-
+        
         if (!isUniquePao(deviceName, deviceBase.getPaoType())) {
             setErrorString("Name '" + deviceName + "' is already in use.");
             getJLabelErrorMessage().setText("(" + getErrorString() + ")");
@@ -411,7 +412,7 @@ public class DeviceNameAddressPanel extends DataInputPanel implements CaretListe
             getJLabelErrorMessage().setVisible(true);
             return false;
         }
-
+        
         getJLabelErrorMessage().setText("");
         getJLabelErrorMessage().setToolTipText("");
         getJLabelErrorMessage().setVisible(false);

@@ -107,7 +107,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     public SimpleDevice createCarrierDeviceByDeviceType(PaoType paoType, String name, int address, int routeId, boolean createPoints) throws DeviceCreationException {
 
         // test
-        if (!dlcAddressRangeService.isEnforcedAddress(paoType, address)) {
+        if (!dlcAddressRangeService.isValidEnforcedAddress(paoType, address)) {
             throw new DeviceCreationException("Invalid address: " + address + ".");
         }
         else if (StringUtils.isBlank(name)) {

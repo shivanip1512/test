@@ -21,10 +21,11 @@
     <entry key="yukon.web.widgets.meterInformationWidget.enabled">Enabled</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.notApplicable">Not Applicable</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.edit">Edit {0}</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.update.successful">Meter {0} updated successfully.</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.error.deviceName.required">Device name is required.</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.error.deviceName.unique">Device name must be unique.</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.error.physicalAddress.required">Physical address is required.</entry>
-    <entry key="yukon.web.widgets.meterInformationWidget.error.physicalAddress.range">Physical address must be within range: {0} - {1}.</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.error.physicalAddress.range">Physical address must be within range(s): {0}.</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.error.meterNumber.required">Meter number is required.</entry>
     
     <!-- meterReadingsResult.tag -->

@@ -1,7 +1,6 @@
 package com.cannontech.web.widget.meterInfo;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,7 +36,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.device.range.DlcAddressRangeService;
-import com.cannontech.device.range.IntegerRange;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -47,7 +45,6 @@ import com.cannontech.web.widget.meterInfo.model.MeterModel;
 import com.cannontech.web.widget.meterInfo.model.PlcMeterModel;
 import com.cannontech.web.widget.meterInfo.model.RfMeterModel;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
-import com.google.common.collect.Lists;
 
 /**
  * Widget used to display basic device information
@@ -56,7 +53,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     
     private final static String baseKey = "yukon.web.widgets.meterInformationWidget.";
     
-    private final Validator plcValidator = new SimpleValidator<MeterModel>(MeterModel.class) {
+    private final Validator validator = new SimpleValidator<MeterModel>(MeterModel.class) {
         
         private final static String key = baseKey + "error.";
         
@@ -65,7 +62,6 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             
             LiteYukonPAObject pao = cache.getAllPaosMap().get(meter.getDeviceId());
             PaoType type = pao.getPaoType();
-            IntegerRange range = addressRangeService.getEnforcedAddressRangeForDevice(type);
             
             // Device Name
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", key + "deviceName.required");
@@ -74,8 +70,10 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             }
             if (!errors.hasFieldErrors("name")) {
                 LiteYukonPAObject unique = paoDao.findUnique(meter.getName(), type);
-                if (unique.getPaoIdentifier().getPaoId() != pao.getPaoIdentifier().getPaoId()) {
-                    errors.rejectValue("name", key + "deviceName.unique");
+                if (unique != null) {
+                    if (unique.getPaoIdentifier().getPaoId() != pao.getPaoIdentifier().getPaoId()) {
+                        errors.rejectValue("name", key + "deviceName.unique");
+                    }
                 }
             }
             
@@ -90,8 +88,10 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
                 // Physical Address
                 YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "address", key + "physicalAddress.required");
                 if (!errors.hasFieldErrors("address")) {
-                    if (!range.isWithinRange(plc.getAddress())) {
-                        Object[] args = new Object[] { range.getLower(), range.getUpper() };
+                    boolean validAddress = addressRangeService.isValidEnforcedAddress(type, plc.getAddress());
+                    if (!validAddress) {
+                        String ranges = addressRangeService.rangeString(type);
+                        Object[] args = new Object[] { ranges };
                         errors.rejectValue("address", key + "physicalAddress.range", args, null);
                     }
                 }
@@ -187,7 +187,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     public String editPlc(HttpServletResponse resp, ModelMap model, FlashScope flash,
             @ModelAttribute("meter") PlcMeterModel meter, BindingResult result) throws IOException {
         
-        plcValidator.validate(meter, result);
+        validator.validate(meter, result);
         
         if (result.hasErrors()) {
             LiteYukonPAObject pao = cache.getAllPaosMap().get(meter.getDeviceId());
@@ -201,13 +201,19 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             return "meterInformationWidget/edit.jsp";
         }
         
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(meter.getDeviceId());
+        PlcMeter plc = new PlcMeter(pao.getPaoIdentifier(), meter.getMeterNumber(), meter.getName(), meter.isDisabled(), 
+                null, meter.getRouteId(), Integer.toString(meter.getAddress()));
+        
+        meterDao.update(plc);
+        
         // Success
         model.clear();
         Map<String, Object> json = new HashMap<>();
         json.put("success", true);
         resp.setContentType("application/json");
         JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".update.successful"));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "update.successful", meter.getName()));
         
         return null;
     }

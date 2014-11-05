@@ -54,7 +54,11 @@ public interface MeterDao {
     
     Comparator<YukonMeter> getMeterComparator();
     
-    void update(YukonMeter newMeterInfo);
+    /** 
+     * Updates the meters fields include plc fields and rfn fields. 
+     * See {@link RfnMeter} and {@link PlcMeter}. 
+     */
+    void update(YukonMeter meter);
     
     PaoLoader<DisplayablePao> getDisplayableDeviceLoader();
     

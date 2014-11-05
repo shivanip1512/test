@@ -10,16 +10,15 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.device.range.DlcAddressRangeService;
-import com.cannontech.device.range.IntegerRange;
 
 public class MeterConfigValidator extends SimpleValidator<YukonMeter> {
     
-    private DlcAddressRangeService dlcAddressRangeService;
+    private @Autowired DlcAddressRangeService dlcAddressRangeService;
     
     public MeterConfigValidator() {
         super(YukonMeter.class);
     }
-
+    
     @Override
     public void doValidation(YukonMeter meter, Errors errors) {
         
@@ -39,7 +38,7 @@ public class MeterConfigValidator extends SimpleValidator<YukonMeter> {
                 PaoType deviceType = plcMeter.getPaoType();
                 try {
                     int physicalAddress = Integer.parseInt(plcMeter.getAddress()); 
-                    if(!dlcAddressRangeService.isEnforcedAddress(deviceType, physicalAddress)) {
+                    if(!dlcAddressRangeService.isValidEnforcedAddress(deviceType, physicalAddress)) {
                         failAddress(plcMeter, errors);
                     }
                 } catch (NumberFormatException e) {
@@ -52,15 +51,11 @@ public class MeterConfigValidator extends SimpleValidator<YukonMeter> {
     
     private void failAddress(YukonMeter meter, Errors errors) {
         String paoTypeString = meter.getPaoType().getPaoTypeName();
-        IntegerRange range = dlcAddressRangeService.getEnforcedAddressRangeForDevice(meter.getPaoType());
-
-        errors.rejectValue("address", "yukon.web.modules.operator.meterConfig.error.invalidRange", new Object[]{paoTypeString, range}, null);
+        
+        String rangeString = dlcAddressRangeService.rangeString(meter.getPaoType());
+        
+        errors.rejectValue("address", "yukon.web.modules.operator.meterConfig.error.invalidRange", 
+                new Object[]{ paoTypeString, rangeString }, null);
     }
-
-    @Autowired
-    public void setPlcAddressRangeService(DlcAddressRangeService dlcAddressRangeService) {
-        this.dlcAddressRangeService = dlcAddressRangeService;
-    }
-    
     
 }
