@@ -229,7 +229,8 @@ yukon.assets.gateway.list = (function () {
                         _updateCertRow(row, update);
                         
                         $('.js-no-cert-updates').hide();
-                        $('#cert-table tbody').append(row).show();
+                        $('#cert-table tbody').append(row);
+                        $('#cert-table').show();
                     },
                     error: function (xhr, status, error, $form) {
                         popup.html(xhr.responseText);
