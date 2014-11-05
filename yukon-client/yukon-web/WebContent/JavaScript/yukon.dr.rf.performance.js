@@ -1,7 +1,7 @@
 yukon.namespace('yukon.dr.rf.performance');
 
 /**
- * Module that manages the javascript for dr rf broadcast performance
+ * Module for the dr rf broadcast performance section of the dr dashboard page
  * @module   yukon.dr.rf.performance
  * @requires JQUERY
  * @requires JQUERYUI

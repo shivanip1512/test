@@ -1,7 +1,7 @@
 yukon.namespace('yukon.dr.dashboard');
 
 /**
- * Module that manages the javascript for DR Dashboard
+ * Module for the dr dashboard page
  * @module   yukon.dr.dashboard
  * @requires JQUERY
  * @requires JQUERY UI
