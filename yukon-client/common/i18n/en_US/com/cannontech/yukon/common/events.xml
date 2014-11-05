@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-
+    
+    <!-- 
+    In general, event logs should follow this convention:
+    [ObjectType] {name} [created|updated|deleted] [optionally some additional meta info {a}] by {username}
+    
+    Example:
+    <entry key="...">Gateway {2} created with Serial number={3}, IP Address={4}, Admin={5}, Super Admin={6} by {1}.</entry>
+    -->
+    
     <!-- Event Log Arg Annotation i18n keys -->
     <entry key="yukon.common.events.accountNumber">Account Number</entry>
     <entry key="yukon.common.events.applianceType">Appliance Type</entry>
@@ -31,6 +39,7 @@
     <entry key="yukon.common.events.globalSettingValue">Global Setting Value</entry>
     <entry key="yukon.common.events.hardwareType">Hardware Type</entry>
     <entry key="yukon.common.events.inventoryId">Inventory Id</entry>
+    <entry key="yukon.common.events.ipAddress">IP Address</entry>
     <entry key="yukon.common.events.loadGroupIds">Load Group Ids</entry>
     <entry key="yukon.common.events.loadGroupName">Load Group Name</entry>
     <entry key="yukon.common.events.message">Message</entry>
@@ -204,19 +213,19 @@
     <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate.3">Model</entry>
     <entry key="yukon.common.events.system.rfn.unableToCreateDeviceFromTemplate.4">Serial Number</entry>
     
-    <entry key="yukon.common.events.system.rfn.gateway.createdGateway">{1} created gateway "{2}". Serial number={3}, IP Address={4}, Admin={5}, Super Admin={6}.</entry>
-    <entry key="yukon.common.events.system.rfn.gateway.createdGateway.4">Admin Username</entry>
-    <entry key="yukon.common.events.system.rfn.gateway.createdGateway.5">Super Admin Username</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.createdGateway">Gateway {2} created with Serial number={3}, IP Address={4}, Admin={5}, Super Admin={6} by {1}.</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.createdGateway.5">Admin Username</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.createdGateway.6">Super Admin Username</entry>
     
-    <entry key="yukon.common.events.system.rfn.gateway.createdGatewayAutomatically">Gateway "{1}" created via Network Manager. Serial number={2}.</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.createdGatewayAutomatically">Gateway {1} created with Serial number={2} via Network Manager.</entry>
     
-    <entry key="yukon.common.events.system.rfn.gateway.updatedGateway">{1} updated gateway "{2}". Serial number={3}, IP Address={4}, Admin={5}, Super Admin={6}.</entry>
-    <entry key="yukon.common.events.system.rfn.gateway.updatedGateway.4">Admin Username</entry>
-    <entry key="yukon.common.events.system.rfn.gateway.updatedGateway.5">Super Admin Username</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.updatedGateway">Gateway {2} updated with Serial number={3}, IP Address={4}, Admin={5}, Super Admin={6} by {1}.</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.updatedGateway.5">Admin Username</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.updatedGateway.6">Super Admin Username</entry>
     
-    <entry key="yukon.common.events.system.rfn.gateway.deletedGateway">{1} deleted gateway "{2}" with serial number {3}.</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.deletedGateway">Gateway {2} deleted with serial number {3} by {1}.</entry>
     
-    <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate">{1} sent certificate update {2} with id {3} to {7} gateways.</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate">Certificate update {2} sent with id {3} to {7} gateways by {1}.</entry>
     <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate.2">Package Name</entry>
     <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate.3">Certificate Identifier</entry>
     <entry key="yukon.common.events.system.rfn.gateway.sentCertificateUpdate.7">Gateways Affected</entry>

@@ -29,6 +29,7 @@ public enum ArgEnum {
     globalSettingValue,
     hardwareType,
     inventoryId,
+    ipAddress,
     loadGroupIds,
     loadGroupName,
     message,
@@ -69,6 +70,5 @@ public enum ArgEnum {
     username, 
     warehouseName,
     workOrderNumber,
-    ipAddress
     ;
 }
