@@ -14,12 +14,10 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
     
     private RfnGatewayData data;
     private PaoLocation paoLocation;
-    private String name;
     
     public RfnGateway(String name, YukonPao pao, RfnIdentifier rfnIdentifier, RfnGatewayData data) {
         super(name, pao, rfnIdentifier);
         this.data = data;
-        this.name = name;
     }
     
     public RfnGatewayData getData() {
@@ -93,11 +91,6 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
     
     public void setLocation(PaoLocation paoLocation) {
         this.paoLocation = paoLocation;
-    }
-    
-    @Override
-    public String getName() {
-        return name;
     }
     
     public void setName(String name) {
