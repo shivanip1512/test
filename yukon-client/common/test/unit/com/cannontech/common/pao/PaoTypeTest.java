@@ -512,7 +512,8 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART_SI,
                         PaoType.ECOBEE_3,
                         PaoType.ECOBEE_SMART,
-                        PaoType.RFN_GATEWAY);
+                        PaoType.RFN_GATEWAY,
+                        PaoType.RFN_1200);
 
     private static final ImmutableSet<PaoType> nonMctTypes =
         ImmutableSet.of(PaoType.CCU710A,

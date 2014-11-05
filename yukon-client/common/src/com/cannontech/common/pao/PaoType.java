@@ -416,8 +416,7 @@ public enum PaoType implements DatabaseRepresentationSource {
             SENTINEL,
             SIXNET,
             TRANSDATA_MARKV,
-            VECTRON,
-            RFN_1200);
+            VECTRON);
         
         rfTypes = ImmutableSet.of(
             RFN410CL,
