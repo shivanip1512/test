@@ -1,8 +1,7 @@
 package com.cannontech.dr.assetavailability;
 
 /**
- * This has the summary of asset availability. The count of the asset based on
- * there status
+ * A summary for a set of inventory, containing the number of inventory in each asset availability state.
  */
 public class AssetAvailabilitySummary {
     private Integer unavailableSize = 0;

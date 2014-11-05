@@ -14,6 +14,7 @@ import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.SimpleAssetAvailability;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * Service for calculating the asset availability of DR devices and aggregate groups (load groups,
@@ -36,7 +37,7 @@ public interface AssetAvailabilityService {
      * Gets a asset availability summary of all inventory in all load groups in the specified
      * DR grouping.
      * 
-     * @param drPaoIdentifier - pao identifier.
+     * @param drPaoIdentifier - Identify a program, load group, control area or scenario.
      * @return AssetAvailabilitySummary which has count based on status.
      */
     public AssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier);
@@ -65,14 +66,15 @@ public interface AssetAvailabilityService {
      * Gets the details of assets for a program/load group/control area/scenario based on filters and paging
      * provided.
      * 
-     * @param paoIdentifier - pao identifier.
+     * @param paoIdentifier - Identify a program, load group, control area or scenario.
      * @param paging - paging details.
      * @param filters - List of selected filters.
      * @param sortBy - sorting order.
+     * @param userContext - used to get the user details
      * @return List of AssetAvailabilityDetails.
      */
     public List<AssetAvailabilityDetails> getAssetAvailability(PaoIdentifier paoIdentifier, PagingParameters paging,
-            AssetAvailabilityCombinedStatus[] filters, SortingParameters sortBy);
+            AssetAvailabilityCombinedStatus[] filters, SortingParameters sortBy, YukonUserContext userContext);
 
     /**
      * Returns every device in the specified load group, program, scenario or control area whose asset

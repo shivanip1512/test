@@ -306,17 +306,17 @@ public class ControlAreaController extends DemandResponseControllerBase {
         DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
         List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, null, paging, sorting);
 
-        model = getAssetAvailabilityInfo(controlArea, model, userContext);
+        int assetTotal = getAssetAvailabilityInfo(controlArea, model, userContext);
 
         SearchResults<AssetAvailabilityDetails> result =
-            SearchResults.pageBasedForSublist(resultsList, paging, Integer.parseInt(model.get("assetTotal").toString()));
+            SearchResults.pageBasedForSublist(resultsList, paging, assetTotal);
 
         model.addAttribute("assetId", assetId);
         model.addAttribute("controlAreaId", assetId);
         model.addAttribute("controlArea", controlArea);
         model.addAttribute("type", "controlArea");
         model.addAttribute("result", result);
-        model.addAttribute("assetTotal", model.get("assetTotal"));
+        model.addAttribute("assetTotal", assetTotal);
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         addAssetColumns(model, accessor, sorting);

@@ -10,13 +10,10 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -40,6 +37,7 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
@@ -56,7 +54,7 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     private final DRGroupDeviceMappingDao drGroupDeviceMappingDao;
     private final GlobalSettingDao globalSettingDao;
     private final DynamicLcrCommunicationsDao lcrCommunicationsDao;
-    @Autowired private AssetAvailabilityDao assetAvailabilityDao;
+    private final AssetAvailabilityDao assetAvailabilityDao;
     
     @Autowired
     public AssetAvailabilityServiceImpl(OptOutEventDao optOutEventDao,
@@ -64,13 +62,15 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
                                         InventoryDao inventoryDao,
                                         DRGroupDeviceMappingDao drGroupDeviceMappingDao,
                                         GlobalSettingDao globalSettingDao,
-                                        DynamicLcrCommunicationsDao lcrCommunicationsDao) {
+                                        DynamicLcrCommunicationsDao lcrCommunicationsDao,
+                                        AssetAvailabilityDao assetAvailabilityDao) {
         this.optOutEventDao = optOutEventDao;
         this.lmHardwareConfigurationDao = lmHardwareConfigurationDao;
         this.inventoryDao = inventoryDao;
         this.drGroupDeviceMappingDao = drGroupDeviceMappingDao;
         this.globalSettingDao = globalSettingDao;
         this.lcrCommunicationsDao = lcrCommunicationsDao;
+        this.assetAvailabilityDao = assetAvailabilityDao;
     }
     
     @Override
@@ -78,18 +78,14 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         log.debug("Calculating asset availability summary for " + drPaoIdentifier.getPaoType() + " "
             + drPaoIdentifier.getPaoId());
 
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-
         Instant now = Instant.now();
         DateTime communicatingWindowEnd = now.minus(getCommunicationWindowDuration()).toDateTime();
-        String communicatingWindowEndFormatted = formatter.print(communicatingWindowEnd);
-
         DateTime runtimeWindowEnd = now.minus(getRuntimeWindowDuration()).toDateTime();
-        String runtimeWindowEndFormatted = formatter.print(runtimeWindowEnd);
+        
         Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(drPaoIdentifier);
         AssetAvailabilitySummary assetAvailabilitySummary =
-            assetAvailabilityDao.getAssetAvailabilitySummary(loadGroupIds, communicatingWindowEndFormatted,
-                runtimeWindowEndFormatted, formatter.print(now));
+            assetAvailabilityDao.getAssetAvailabilitySummary(loadGroupIds, communicatingWindowEnd.toInstant(),
+                runtimeWindowEnd.toInstant(), now);
 
         return assetAvailabilitySummary;
     }
@@ -252,27 +248,17 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     
     @Override
     public List<AssetAvailabilityDetails> getAssetAvailability(PaoIdentifier paoIdentifier, PagingParameters paging,
-            AssetAvailabilityCombinedStatus[] filters, SortingParameters sortBy) {
+            AssetAvailabilityCombinedStatus[] filters, SortingParameters sortBy,YukonUserContext userContext) {
         log.debug("Calculating asset availability for " + paoIdentifier.getPaoType() + " " + paoIdentifier.getPaoId());
         Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(paoIdentifier);
 
-        String sortingOrder = (sortBy == null) ? "SERIAL_NUM" : sortBy.getSort();
-        String sortingDirection = ((sortBy == null) ? (Direction.asc).name() : sortBy.getDirection().toString());
-
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
-
         Instant now = Instant.now();
-        DateTime communicatingWindowEnd = now.minus(getCommunicationWindowDuration()).toDateTime();
-        String communicatingWindowEndFormatted = formatter.print(communicatingWindowEnd);
-
-        DateTime runtimeWindowEnd = now.minus(getRuntimeWindowDuration()).toDateTime();
-        String runtimeWindowEndFormatted = formatter.print(runtimeWindowEnd);
-
-        String filterString = convertFilterListToString(filters);
-
+        Instant communicatingWindowEnd = now.minus(getCommunicationWindowDuration());
+        Instant runtimeWindowEnd = now.minus(getRuntimeWindowDuration());
+        
         List<AssetAvailabilityDetails> assetAvailabilityDetails =
-            assetAvailabilityDao.getAssetAvailabilityDetails(loadGroupIds, paging, filterString, sortingOrder,
-                sortingDirection, communicatingWindowEndFormatted, runtimeWindowEndFormatted, formatter.print(now));
+            assetAvailabilityDao.getAssetAvailabilityDetails(loadGroupIds, paging, filters, sortBy,
+                communicatingWindowEnd, runtimeWindowEnd,now,userContext);
         return assetAvailabilityDetails;
     }
 
@@ -402,20 +388,6 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
         return applianceIds;
     }
     
-    private String convertFilterListToString(AssetAvailabilityCombinedStatus[] filters) {
-        final StringBuilder filterCriteria = new StringBuilder();
-        if (null != filters) {
-            for (final AssetAvailabilityCombinedStatus status : filters) {
-                if (filterCriteria.length() > 0) {
-                    filterCriteria.append(',');
-                }
-                filterCriteria.append("'").append(status).append("'");
-            }
-            return filterCriteria.toString();
-        }
-        return null;
-    }
-    
     /**
      * Uses the map of devices to inventory to output a set of inventoryIds matching the specified deviceIds.
      */
@@ -435,4 +407,5 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     private Duration getRuntimeWindowDuration() {
         return Duration.standardHours(globalSettingDao.getInteger(GlobalSettingType.LAST_RUNTIME_HOURS));
     }
+
 }

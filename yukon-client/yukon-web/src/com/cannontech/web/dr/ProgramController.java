@@ -150,17 +150,17 @@ public class ProgramController extends ProgramControllerBase {
 
         List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, null, paging, sorting);
 
-        model = getAssetAvailabilityInfo(program, model, userContext);
+        int assetTotal = getAssetAvailabilityInfo(program, model, userContext);
 
         SearchResults<AssetAvailabilityDetails> result =
-            SearchResults.pageBasedForSublist(resultsList, paging, Integer.parseInt(model.get("assetTotal").toString()));
-
+            SearchResults.pageBasedForSublist(resultsList, paging, assetTotal);
+        
         model.addAttribute("assetId", assetId);
         model.addAttribute("programId", assetId);
         model.addAttribute("program", program);
         model.addAttribute("type", "program");
         model.addAttribute("result", result);
-        model.addAttribute("assetTotal", model.get("assetTotal"));
+        model.addAttribute("assetTotal", assetTotal);
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         addAssetColumns(model, accessor, sorting);

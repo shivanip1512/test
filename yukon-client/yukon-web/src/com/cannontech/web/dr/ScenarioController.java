@@ -142,17 +142,17 @@ public class ScenarioController extends DemandResponseControllerBase {
 
         List<AssetAvailabilityDetails> resultsList = getResultsList(scenario, userContext, null, paging, sorting);
 
-        model = getAssetAvailabilityInfo(scenario, model, userContext);
+        int assetTotal = getAssetAvailabilityInfo(scenario, model, userContext);
 
         SearchResults<AssetAvailabilityDetails> result =
-            SearchResults.pageBasedForSublist(resultsList, paging, Integer.parseInt(model.get("assetTotal").toString()));
+            SearchResults.pageBasedForSublist(resultsList, paging, assetTotal);
 
         model.addAttribute("assetId", assetId);
         model.addAttribute("scenarioId", assetId);
         model.addAttribute("scenario", scenario);
         model.addAttribute("type", "scenario");
         model.addAttribute("result", result);
-        model.addAttribute("assetTotal", model.get("assetTotal"));
+        model.addAttribute("assetTotal", assetTotal);
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         addAssetColumns(model, accessor, sorting);

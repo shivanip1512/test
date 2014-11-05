@@ -165,17 +165,17 @@ public class LoadGroupController extends DemandResponseControllerBase {
 
         List<AssetAvailabilityDetails> resultsList = getResultsList(loadGroup, userContext, null, paging, sorting);
 
-        model = getAssetAvailabilityInfo(loadGroup, model, userContext);
+        int assetTotal = getAssetAvailabilityInfo(loadGroup, model, userContext);
 
         SearchResults<AssetAvailabilityDetails> result =
-            SearchResults.pageBasedForSublist(resultsList, paging, Integer.parseInt(model.get("assetTotal").toString()));
+            SearchResults.pageBasedForSublist(resultsList, paging, assetTotal);
 
         model.addAttribute("assetId", assetId);
         model.addAttribute("loadGroupId", assetId);
         model.addAttribute("loadGroup", loadGroup);
         model.addAttribute("type", "loadGroup");
         model.addAttribute("result", result);
-        model.addAttribute("assetTotal", model.get("assetTotal"));
+        model.addAttribute("assetTotal", assetTotal);
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         addAssetColumns(model, accessor, sorting);

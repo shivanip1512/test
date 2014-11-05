@@ -15,7 +15,6 @@ public class AssetAvailabilityDetails {
     private Instant lastRun;
     private String appliances;
     private AssetAvailabilityCombinedStatus availability;
-    private boolean isOptedOut;
 
     public String getSerialNumber() {
         return serialNumber;
@@ -63,14 +62,6 @@ public class AssetAvailabilityDetails {
 
     public void setAvailability(AssetAvailabilityCombinedStatus availability) {
         this.availability = availability;
-    }
-
-    public boolean isOptedOut() {
-        return isOptedOut;
-    }
-
-    public void setOptedOut(boolean isOptedOut) {
-        this.isOptedOut = isOptedOut;
     }
 
 }

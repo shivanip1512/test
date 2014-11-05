@@ -8,6 +8,7 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.mock.MockGlobalSettingDao;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.dr.assetavailability.dao.MockAssetAvailabilityDao;
 import com.cannontech.dr.assetavailability.dao.MockDrGroupDeviceMappingDao;
 import com.cannontech.dr.assetavailability.dao.MockLcrCommunicationsDao;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
@@ -61,13 +62,15 @@ public class AssetAvailabilityServiceBuilder {
         //LCR Communications
         MockLcrCommunicationsDao lcrCommunicationsDao = new MockLcrCommunicationsDao(data);
         
+        MockAssetAvailabilityDao mockAssetAvailabilityDao = new MockAssetAvailabilityDao();
         
         AssetAvailabilityServiceImpl assetAvailabilityService = new AssetAvailabilityServiceImpl(optOutEventDao, 
                                                                                                  lmHardwareConfigurationDao, 
                                                                                                  inventoryDao,
                                                                                                  drGroupDeviceMappingDao, 
                                                                                                  globalSettingDao,
-                                                                                                 lcrCommunicationsDao);
+                                                                                                 lcrCommunicationsDao,
+                                                                                                 mockAssetAvailabilityDao);
         return assetAvailabilityService;
     }
     

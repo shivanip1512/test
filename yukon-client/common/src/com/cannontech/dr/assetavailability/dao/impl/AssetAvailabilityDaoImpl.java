@@ -4,60 +4,76 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.support.JdbcUtils;
-import org.springframework.jdbc.support.MetaDataAccessException;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.inventory.HardwareType;
+import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.util.SqlBuilder;
+import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
+import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.dao.AssetAvailabilityDao;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.dr.optout.model.OptOutEventState;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.user.YukonUserContext;
+import com.google.common.collect.Lists;
 
 public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    private static final Logger log = YukonLogManager.getLogger(AssetAvailabilityDaoImpl.class);
-
-    private boolean checkOracleDatabase() {
-        try {
-            String databaseProductName =
-                (String) JdbcUtils.extractDatabaseMetaData(yukonJdbcTemplate.getDataSource(), "getDatabaseProductName");
-
-            if (databaseProductName.contains("Oracle")) {
-                return true;
-            }
-        } catch (MetaDataAccessException e) {
-            log.error(e.getMessage());
-        }
-        return false;
-    }
+    @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
+    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
+    @Autowired private EnergyCompanyDao ecDao;
 
     @Override
     public List<AssetAvailabilityDetails> getAssetAvailabilityDetails(Iterable<Integer> loadGroupIds,
-            PagingParameters pagingParameters, String filterCriteria, String sortingOrder, String sortingDirection,
-            String communicatingWindowEnd, String runtimeWindowEnd, String currentTime) {
-        boolean isOracle = checkOracleDatabase();
+            PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filterCriteria,
+            SortingParameters sortingParameters, Instant communicatingWindowEnd, Instant runtimeWindowEnd,
+            Instant currentTime, YukonUserContext userContext) {
 
+        String sortingOrder = (sortingParameters == null) ? "SERIAL_NUM" : sortingParameters.getSort();
+        Direction sortingDirection = ((sortingParameters == null) ? Direction.asc : sortingParameters.getDirection());
+        
+        /*
+         * SQL first fetches
+         * AppliancesCategory,DeviceId,InventoryId,ManufacturerSerialNumber,Type,LastCommunication,
+         * LastNonZeroRuntime,Availability for those inventory that belongs to the passed load group.
+         * Availability is considered as
+         *  1. Active - If the device is in oneway its always considered active. If its a two way device and
+         *  its LastNonZeroRuntime greater than the runtimeWindowEnd.
+         *  2. Inactive - If LastCommunication is greater than communication window then its Inactive.
+         *  3. OptedOut - If the inventory is in OptOutEvent table with StartDate less than current time and
+         *  stopDate greater than currentTime and eventState as START_OPT_OUT_SENT. Then that inventory is
+         *  considered to be opted out.
+         *  4. Unavailable - If non of the above status are valid then the device is considered as unavailable.
+         * This row set has a alias innertable. Next the records are ordered by the sortBy column and then a
+         * row number is attached to each row in the innertable, this row set is given alias outertable. Then
+         * to get the final row set its filtered by row number based on pagination values and filter values.
+         */
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM (");
         sql.append("SELECT (ROW_NUMBER() OVER (ORDER BY");
         if (("SERIAL_NUM").equals(sortingOrder)) {
-            if (isOracle) {
-                sql.append("CAST(");
+            if(isSerialNumberNumeric(userContext)) {
+                sql.append(castToNumeric(sortingOrder).getSql());
+            } else {
                 sql.append(sortingOrder);
-                sql.append("AS INT)");
-            } else {    
-                sql.append("CONVERT(INT,");
-                sql.append(sortingOrder);
-                sql.append(")");
             }
         } else {
             sql.append(sortingOrder);
@@ -75,25 +91,22 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sql.append("FROM YukonListEntry");
         sql.append("WHERE EntryID=lmbase.LMHardwareTypeID) AS type,");
         sql.append("LastCommunication AS last_comm, LastNonZeroRuntime AS last_run,");
-        sql.append("(SELECT CASE WHEN inv.DeviceId=0 THEN 'ACTIVE' ELSE");
+        sql.append("(SELECT CASE WHEN inv.DeviceId=0 THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE).append("ELSE");
         sql.append("(SELECT CASE WHEN lmbase.InventoryId IN");
         sql.append("(SELECT DISTINCT ib.InventoryId");
         sql.append("FROM InventoryBase ib ");
         sql.append(  "JOIN OptOutEvent ooe ON ooe.InventoryId = ib.InventoryId WHERE ooe.StartDate").lt(currentTime);
-        sql.append(  "AND ooe.StopDate").gt(currentTime);;
-        sql.append(  "AND ooe.EventState = 'START_OPT_OUT_SENT') THEN 'OPTED_OUT' ");
-        sql.append("ELSE CASE WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
-        sql.append("THEN 'ACTIVE'");
-        sql.append("ELSE CASE WHEN LastCommunication").gt(communicatingWindowEnd);
-        sql.append("THEN 'INACTIVE' ");
-        sql.append("ELSE 'UNAVAILABLE' END END END");
-        if (isOracle) {
-            sql.append("FROM Dual");
-        }
+        sql.append(  "AND ooe.StopDate").gt(currentTime);
+        sql.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT).append(")THEN").appendArgument_k(
+            AssetAvailabilityCombinedStatus.OPTED_OUT);
+        sql.append("WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
+        sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
+        sql.append("WHEN LastCommunication").gt(communicatingWindowEnd);
+        sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);
+        sql.append("ELSE").appendArgument_k(AssetAvailabilityCombinedStatus.UNAVAILABLE).append("END");
+        sql.append(getTable().getSql());
         sql.append(")END");
-        if (isOracle) {
-            sql.append("FROM Dual");
-        }
+        sql.append(getTable().getSql());
         sql.append(")  AS availability");
         sql.append("FROM LMHardwareBase lmbase , ApplianceBase appbase,LMHardwareConfiguration hdconf,InventoryBase inv");
         sql.append(  "LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
@@ -115,9 +128,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
             sql.append(  " AND ");
         }
         if (null != filterCriteria) {
-            sql.append(" Availability IN ( ");
-            sql.append(filterCriteria);
-            sql.append(")");
+            sql.append(" Availability").in(Lists.newArrayList(filterCriteria));
         }
 
         final List<AssetAvailabilityDetails> resultList = new ArrayList<AssetAvailabilityDetails>();
@@ -131,15 +142,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
                 assetAvailability.setType(HardwareType.valueOf(rs.getInt("type")));
                 assetAvailability.setLastComm(rs.getInstant("last_comm"));
                 assetAvailability.setLastRun(rs.getInstant("last_run"));
-                if (AssetAvailabilityCombinedStatus.ACTIVE.name().equals(rs.getString("availability"))) {
-                    assetAvailability.setAvailability(AssetAvailabilityCombinedStatus.ACTIVE);
-                } else if (AssetAvailabilityCombinedStatus.INACTIVE.name().equals(rs.getString("availability"))) {
-                    assetAvailability.setAvailability(AssetAvailabilityCombinedStatus.INACTIVE);
-                } else if (AssetAvailabilityCombinedStatus.UNAVAILABLE.name().equals(rs.getString("availability"))) {
-                    assetAvailability.setAvailability(AssetAvailabilityCombinedStatus.UNAVAILABLE);
-                } else if (AssetAvailabilityCombinedStatus.OPTED_OUT.name().equals(rs.getString("availability"))) {
-                    assetAvailability.setAvailability(AssetAvailabilityCombinedStatus.OPTED_OUT);
-                }
+                assetAvailability.setAvailability(rs.getEnum("availability", AssetAvailabilityCombinedStatus.class));
                 resultList.add(assetAvailability);
             }
         });
@@ -148,28 +151,38 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
 
     @Override
     public AssetAvailabilitySummary getAssetAvailabilitySummary(Iterable<Integer> loadGroupIds,
-            String communicatingWindowEnd, String runtimeWindowEnd, String currentTime) {
-        boolean isOracle = checkOracleDatabase();
-
+            Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime) {
+        /*
+         * First the ManufacturerSerialNumber and Availability is fetched for those inventory that belongs to
+         * the passed load group. This row set have alias outertable.Then the count of each
+         * status(Availability) is found.
+         * Availability is considered as
+         *  1. Active - If the device is in oneway its always considered active. If its a two way device and
+         *  its LastNonZeroRuntime greater than the runtimeWindowEnd.
+         *  2. Inactive - If LastCommunication is greater than communication window then its Inactive.
+         *  3. OptedOut - If the inventory is in OptOutEvent table with StartDate less than current time and
+         *  stopDate greater than currentTime and eventState as START_OPT_OUT_SENT. Then that inventory is
+         *  considered to be opted out.
+         *  4. Unavailable - If non of the above status are valid then the device is considered as unavailable.
+         */
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Availability, COUNT(Availability) AS count");
         sql.append("FROM (SELECT DISTINCT lmbase.ManufacturerSerialNumber as serial_num,");
-        sql.append("(SELECT CASE WHEN inv.DeviceId=0 THEN 'ACTIVE'");
+        sql.append("(SELECT CASE WHEN inv.DeviceId=0 THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
         sql.append("ELSE (SELECT CASE WHEN lmbase.InventoryId IN ");
         sql.append("(SELECT DISTINCT ib.InventoryId FROM InventoryBase ib ");
         sql.append(  "JOIN OptOutEvent ooe ON ooe.InventoryId = ib.InventoryId WHERE ooe.StartDate").lt(currentTime);
         sql.append(  "AND ooe.StopDate").gt(currentTime);
-        sql.append(  "AND ooe.EventState = 'START_OPT_OUT_SENT') THEN 'OPTED_OUT' ");
-        sql.append("ELSE CASE WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
-        sql.append("THEN 'ACTIVE' ELSE CASE WHEN LastCommunication").gt(communicatingWindowEnd);
-        sql.append("THEN 'INACTIVE' ELSE 'UNAVAILABLE' END END END");
-        if (isOracle) {
-            sql.append("FROM Dual");
-        }
+        sql.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT).append(") THEN").appendArgument_k(
+            AssetAvailabilityCombinedStatus.OPTED_OUT);
+        sql.append("WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
+        sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
+        sql.append("WHEN LastCommunication").gt(communicatingWindowEnd);
+        sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);
+        sql.append("ELSE").appendArgument_k(AssetAvailabilityCombinedStatus.UNAVAILABLE).append("END");
+        sql.append(getTable().getSql());
         sql.append(")END");
-        if (isOracle) {
-            sql.append("From Dual");
-        }
+        sql.append(getTable().getSql());
         sql.append(")  AS availability");
         sql.append("FROM LMHardwareBase lmbase, ApplianceBase appbase,LMHardwareConfiguration hdconf,InventoryBase inv");
         sql.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceId=dynlcr.DeviceId) ");
@@ -184,20 +197,21 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                String availability = rs.getString("availability");
-
+                AssetAvailabilityCombinedStatus availability =
+                    rs.getEnum("availability", AssetAvailabilityCombinedStatus.class);
+                int count = rs.getInt("count");    
                 switch (availability) {
-                case "ACTIVE":
-                    assetAvailabilitySummary.setActiveSize(Integer.valueOf(rs.getString("count")));
+                case ACTIVE:
+                    assetAvailabilitySummary.setActiveSize(count);
                     break;
-                case "INACTIVE":
-                    assetAvailabilitySummary.setInactiveSize(Integer.valueOf(rs.getString("count")));
+                case INACTIVE:
+                    assetAvailabilitySummary.setInactiveSize(count);
                     break;
-                case "UNAVAILABLE":
-                    assetAvailabilitySummary.setUnavailableSize(Integer.valueOf(rs.getString("count")));
+                case UNAVAILABLE:
+                    assetAvailabilitySummary.setUnavailableSize(count);
                     break;
-                case "OPTED_OUT":
-                    assetAvailabilitySummary.setOptedOutSize(Integer.valueOf(rs.getString("count")));
+                case OPTED_OUT:
+                    assetAvailabilitySummary.setOptedOutSize(count);
                     break;
                 }
             }
@@ -208,5 +222,50 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
 
         assetAvailabilitySummary.setTotalSize(total);
         return assetAvailabilitySummary;
+    }
+    
+
+    private SqlFragmentSource castToNumeric(String sortingOrder) {
+        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
+        SqlBuilder oracleSql =
+            builder.buildFor(DatabaseVendor.ORACLE9I, DatabaseVendor.ORACLE10G, DatabaseVendor.ORACLE11G,
+                DatabaseVendor.ORACLE12C);
+        oracleSql.append("CAST (");
+        oracleSql.append(sortingOrder);
+        oracleSql.append(" AS NUMBER(19))");
+
+        SqlBuilder otherSql = builder.buildOther();
+        otherSql.append("CAST (");
+        otherSql.append(sortingOrder);
+        otherSql.append(" AS BIGINT)");
+
+        return builder;
+    }
+    
+    private SqlFragmentSource getTable() {
+        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
+        SqlBuilder oracleSql =
+            builder.buildFor(DatabaseVendor.ORACLE9I, DatabaseVendor.ORACLE10G, DatabaseVendor.ORACLE11G,
+                DatabaseVendor.ORACLE12C);
+        oracleSql.append("FROM Dual");
+
+        SqlBuilder otherSql = builder.buildOther();
+        otherSql.append("");
+
+        return builder;
+    }
+    
+    private boolean isSerialNumberNumeric(YukonUserContext userContext) {
+        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
+
+        SerialNumberValidation value =
+            energyCompanySettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,
+                SerialNumberValidation.class, yukonEnergyCompany.getEnergyCompanyId());
+        if (value.equals(SerialNumberValidation.NUMERIC)) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 }

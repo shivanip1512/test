@@ -1,5 +1,6 @@
 package com.cannontech.dr.assetavailability;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -16,6 +17,21 @@ import com.google.common.collect.Sets;
 
 public class AssetAvailabilityServiceTest {
    
+    @Test
+    public void getAssetAvailability_ByDrGroupPaoIdentifier() {
+        Instant now = getNow();
+
+        // All the data this method asserts against is set up here
+        AssetAvailabilityService assetAvailabilityService = buildServiceWithOneInEachState(false, now);
+        AssetAvailabilityCombinedStatus[] filters = { AssetAvailabilityCombinedStatus.ACTIVE };
+        // 107 = area containing all inventory
+        PaoIdentifier paoIdentifier = new PaoIdentifier(107, PaoType.LM_CONTROL_AREA);
+        List<AssetAvailabilityDetails> assetAvailabilityDetails =
+            assetAvailabilityService.getAssetAvailability(paoIdentifier, null, filters, null,null);
+
+        testAssetAvailabilityDetails(assetAvailabilityDetails.get(0));
+    }
+    
     @Test
     public void getAssetAvailability_ByInventoryIds() {
         Instant now = getNow();
@@ -74,6 +90,18 @@ public class AssetAvailabilityServiceTest {
         testApplianceAssetAvailabilitySummary(applianceSummary);
     }
     
+    @Test
+    public void getAssetAvailabilityFromDrGroup() {
+        PaoIdentifier drPaoIdentifier = new PaoIdentifier(107, PaoType.LM_CONTROL_AREA); //107 = area containing all inventory
+        
+        //All the data this method asserts against is set up here
+        AssetAvailabilityService assetAvailabilityService = buildServiceWithOneInEachState();
+        
+        AssetAvailabilitySummary aaSummary = assetAvailabilityService.getAssetAvailabilityFromDrGroup(drPaoIdentifier);
+        
+        testAssetAvailabilitySummary(aaSummary);
+    }
+    
     private void testApplianceAssetAvailabilitySummary(ApplianceAssetAvailabilitySummary applianceSummary) {
         //All appliances
         Set<Integer> expectedAllAppliances = Sets.newHashSet(10011, 10021, 10031, 10032, 10041, 10051, 10061, 10071, 10081);
@@ -106,7 +134,8 @@ public class AssetAvailabilityServiceTest {
         Assert.assertEquals("Incorrect number of unavailable appliances", 2, applianceSummary.getUnavailableSize(true)); //include opted-out
     }
     
-    private void testSimpleAssetAvailabilitySummary(AssetAvailabilitySummary aaSummary) {
+    
+    private void testAssetAvailabilitySummary(AssetAvailabilitySummary aaSummary) {
         
         //Opted-out inventory
         Assert.assertEquals("Incorrect number of opted-out inventory.", 4, aaSummary.getOptedOutSize().intValue());
@@ -121,6 +150,15 @@ public class AssetAvailabilityServiceTest {
         Assert.assertEquals("Incorrect number of unavailable inventory", 1, aaSummary.getUnavailableSize().intValue()); //exclude opted-out
     }
     
+    private void testAssetAvailabilityDetails(AssetAvailabilityDetails availability) {
+        Assert.assertEquals("Incorrect A.A. status.", AssetAvailabilityCombinedStatus.ACTIVE, availability.getAvailability());
+        Assert.assertNull("Incorrect communication time.", availability.getLastComm());
+        Assert.assertNull("Incorrect last non-zero run time.", availability.getLastRun());
+        Assert.assertNotNull("Incorrect serial number", availability.getSerialNumber());
+        Assert.assertNotNull("Incorrect type", availability.getType());
+        Assert.assertNotNull("Incorrect appliance", availability.getAppliances());
+        
+    }
     //Test inventory 1 - one-way
     private void testSimpleAssetAvailability_OneWay(SimpleAssetAvailability availability, Instant now) {
         Assert.assertEquals("Inventory id mismatch.", 1, availability.getInventoryId());

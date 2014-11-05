@@ -95,15 +95,16 @@ public abstract class DemandResponseControllerBase {
     protected static NaturalOrderComparator naturalOrder = new NaturalOrderComparator();
 
 
-    protected ModelMap getAssetAvailabilityInfo(DisplayablePao dispPao, ModelMap model, YukonUserContext userContext) {
+    protected int getAssetAvailabilityInfo(DisplayablePao dispPao, ModelMap model, YukonUserContext userContext) {
         AssetAvailabilitySummary aaSummary =
             assetAvailabilityService.getAssetAvailabilityFromDrGroup(dispPao.getPaoIdentifier());
+        int assetTotal = aaSummary.getTotalSize();
         model.addAttribute("assetAvailabilitySummary", aaSummary);
-        model.addAttribute("assetTotal", aaSummary.getTotalSize());
+        model.addAttribute("assetTotal", assetTotal);
         model.addAttribute("pieJSONData", assetAvailabilityChartService.getJsonPieData(aaSummary, userContext));
         model.addAttribute("colorMap", colorMap);
         model.addAttribute("maxPingableDevices", AssetAvailabilityPingService.PING_MAXIMUM_DEVICES);
-        return model;
+        return assetTotal;
     }
 
     protected List<AssetAvailabilityDetails> getResultsList(DisplayablePao dispPao, YukonUserContext userContext,
@@ -112,7 +113,8 @@ public abstract class DemandResponseControllerBase {
         paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), dispPao, Permission.LM_VISIBLE);
         log.debug("Getting asset availability for " + dispPao.getPaoIdentifier());
         List<AssetAvailabilityDetails> resultList =
-            assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier(), paging, filters, sortBy);
+            assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier(), paging, filters, sortBy,
+                userContext);
 
         return resultList;
     }
@@ -149,7 +151,7 @@ public abstract class DemandResponseControllerBase {
         MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         List<AssetAvailabilityDetails> resultList =
-            assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier(), null, filters, null);
+            assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier(), null, filters, null,userContext);
 
         List<String[]> dataRows = Lists.newArrayList();
         for (AssetAvailabilityDetails details : resultList) {
