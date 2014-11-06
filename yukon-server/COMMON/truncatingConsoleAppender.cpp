@@ -8,6 +8,8 @@
 #include <log4cxx/helpers/loglog.h>
 #include <log4cxx/helpers/transcoder.h>
 
+#include <boost/range/algorithm/count.hpp>
+
 #include <apr_time.h>
 
 namespace Cti {
@@ -70,16 +72,13 @@ void TruncatingConsoleAppender::subAppend(const log4cxx::spi::LoggingEventPtr& e
         _burstBuffer.clear();
     }
 
-    if( ++_currentBurst < _maxBurstSize )
+    if( _currentBurst < _maxBurstSize )
     {
         WriterAppender::subAppend(event, p);
-    }
-    else
-    {
-        //  circular buffer, only retains BurstBufferLength elements
-        _burstBuffer.push_back(event);
 
-        if( _currentBurst == _maxBurstSize )
+        _currentBurst += 1 + boost::range::count(event->getMessage(), '\n');
+
+        if( _currentBurst >= _maxBurstSize )
         {
             StreamBuffer sb;
 
@@ -87,6 +86,11 @@ void TruncatingConsoleAppender::subAppend(const log4cxx::spi::LoggingEventPtr& e
 
             log4cxx::helpers::LogLog::warn(toLogStr(sb.extractToString()));
         }
+    }
+    else
+    {
+        //  circular buffer, only retains BurstBufferLength elements
+        _burstBuffer.push_back(event);
     }
 }
 
