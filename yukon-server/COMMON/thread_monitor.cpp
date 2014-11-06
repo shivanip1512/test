@@ -87,8 +87,6 @@ using namespace boost::posix_time;
 ************************************************************************************************/
 
 
-
-
 //===========================================================================================================
 //===========================================================================================================
 
@@ -114,7 +112,7 @@ void CtiThreadMonitor::run( void )
     int cnt = 0;
     long snooze = 1000;
 
-    messageOut( "ts", "Monitor Startup" );
+    CTILOG_INFO(dout, "Monitor Startup");
 
     SetThreadName(-1, "ThreadMon");
 
@@ -122,25 +120,19 @@ void CtiThreadMonitor::run( void )
     {
         sleep( snooze );
 
-        if( getDebugLevel() & DEBUGLEVEL_THREAD_MONITOR )
-            messageOut( "ts", "Monitor Loop" );  //temp, remove in prod
-
         snooze = checkForExpriration();
 
         processQueue();
 
         if( !gConfigParms.isTrue("YUKON_DISABLE_THREADMONITOR") )
         {
-
             processExtraCommands();
 
             processExpired();
-
-            // _queue.clearAndDestroy();
         }
     }
 
-    messageOut( "ts", "Monitor Shutdown" );
+    CTILOG_INFO(dout, "Monitor Shutdown");
 }
 
 //===========================================================================================================
@@ -191,6 +183,15 @@ long CtiThreadMonitor::checkForExpriration( void )
         return( 1000 );   //1 second default sleep
 }
 
+namespace {
+
+std::string timeString( ptime in )
+{
+    return( to_simple_string( in ) );
+}
+
+}
+
 //===========================================================================================================
 // chug thru the queue and add in new entries that we've heard from and mark them as 'updated'
 // we're also updating entries that existed previously
@@ -218,8 +219,8 @@ void CtiThreadMonitor::processQueue( void )
             {
                 if( !i->getReported() )
                 {
-                    messageOut( "tsisvs", "Thread W/ID", i->getId(), "", i->getName(), "has reported" );
-                    messageOut( "tsisvs", "Thread W/ID", i->getId(), " Last heard from: ", timeString( i->getTickledTime() ),"");
+                    CTILOG_INFO(dout, "Thread W/ID " << i->getId() << " " << i->getName() << " has reported."
+                                      "\nLast heard from: " << timeString(i->getTickledTime()));
                 }
                 _threadData.remove(tempId);//smart pointer will delete reg data item!
             }
@@ -260,8 +261,8 @@ void CtiThreadMonitor::processExpired( void )
 
                     regData->setActionTaken(true);//trying to ensure we dont act twice on an object that does not go away
 
-                    messageOut( "tsisvs", "Thread W/ID", i->first, "", regData->getName(), "Is UNREPORTED" );
-                    messageOut( "tsisvs", "Thread W/ID", i->first, " Last heard from: ", timeString( regData->getTickledTime() ),"");
+                    CTILOG_WARN(dout, "Thread W/ID " << i->first << " " << regData->getName() << " is UNREPORTED"
+                                       "\nLast heard from: " << timeString(regData->getTickledTime()));
 
                     int reaction_type = regData->getBehavior();
 
@@ -288,7 +289,7 @@ void CtiThreadMonitor::processExpired( void )
 
                         default:
                             {
-                                messageOut( "tsi", "Illegal Behaviour For ID", i->first );
+                                CTILOG_ERROR(dout, "Illegal Behaviour For ID " << i->first);
                             }
                             break;
                     }
@@ -315,7 +316,9 @@ void CtiThreadMonitor::processExpired( void )
                 }
 
                 if( getDebugLevel() & DEBUGLEVEL_THREAD_MONITOR )
-                    messageOut( "tsisv", "Removing Thread ID", regData->getId(), " ", regData->getName() );
+                {
+                    CTILOG_DEBUG(dout, "Removing Thread ID " << regData->getId() << " " << regData->getName());
+                }
             }
         }
         if(nextOutput.length()>1)
@@ -327,7 +330,7 @@ void CtiThreadMonitor::processExpired( void )
     }
     catch( ... )
     {
-        messageOut( "ts", "Monitor: Unknown Exception In processExpired()" );
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
@@ -343,7 +346,9 @@ void CtiThreadMonitor::processExtraCommands( void )
             if( i->second->getBehavior() == CtiThreadRegData::LogOut )
             {
                 if( getDebugLevel() & DEBUGLEVEL_THREAD_MONITOR )
-                    messageOut( "tsis", "Thread ID", i->first, "Logging Out" );
+                {
+                    CTILOG_DEBUG(dout, "Thread ID " << i->first << " Logging Out");
+                }
 
                 i = _threadData.getMap().erase( i );
             }
@@ -355,36 +360,10 @@ void CtiThreadMonitor::processExtraCommands( void )
     }
     catch( ... )
     {
-        messageOut( "ts", "Monitor: Unknown Exception In processExtraCommands()" );
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
 
-//===========================================================================================================
-// we'll print out the data we have for all the threads we're watching
-//===========================================================================================================
-/*
-void CtiThreadMonitor::dump( void )
-{
-    //if we only operate on a copy, we can't explode if someone changes the map
-    ThreadData temp_map = _threadData;
-
-    for( ThreadData::spiterator i = temp_map.getMap().begin(); i != temp_map.getMap().end(); i++ )
-    {
-       CtiThreadRegDataSPtr temp = i->second;
-
-      {
-         CtiLockGuard<CtiLogger> doubt_guard( dout );
-         messageOut( "" );
-         messageOut( "sv", "Thread name             : ", temp->getName() );
-         messageOut( "si", "Thread id               : ", temp->getId() );
-         messageOut( "si", "Thread behaviour type   : ", temp->getBehaviour() );
-         messageOut( "si", "Thread tickle frequency : ", temp->getTickleFreq() );
-         messageOut( "sv", "Thread tickle time      : ", timeString( temp->getTickledTime() ) );
-         messageOut( "" );
-      }
-   }
-}
-*/
 //===========================================================================================================
 // each thread that reports to us will give us info (at least initially) that looks like the regdata
 // we're trying hard to keep from anyone sending us illegal data, so we check for an id of zero before we
@@ -409,21 +388,22 @@ void CtiThreadMonitor::tickle( CtiThreadRegData *in )
                 _queue.putQueue( in );
 
                 if( isDebugLudicrous() )
-                    messageOut( "tsis", "Thread", in->getId(), "Inserted" );
+                {
+                    CTILOG_TRACE(dout, "Thread " << in->getId() << " Inserted");
+                }
 
                 //our thread may have shut down, so we don't want the queue to keep growing
                 //as we won't be processing it anymore
                 if( !isRunning() )
                 {
-                    if( getDebugLevel() & DEBUGLEVEL_THREAD_MONITOR )
-                        messageOut( "ts", "WARNING: Monitor Is NOT Running, Deleting Monitor Queue" );
+                    CTILOG_WARN(dout, "Monitor Is NOT Running, Deleting Monitor Queue");
 
                     _queue.clearAndDestroy();
                 }
             }
             else
             {
-                messageOut( "ts", "Thread Id INVALID" );
+                CTILOG_ERROR(dout, "Thread Id INVALID");
             }
 
             interrupt();   //this should wake us up if we're asleep
@@ -431,60 +411,8 @@ void CtiThreadMonitor::tickle( CtiThreadRegData *in )
     }
     catch( ... )
     {
-        messageOut( "ts", "Monitor: Passed BAD Data" );
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-}
-
-//===========================================================================================================
-// http://gethelp.devx.com/techtips/cpp_pro/10min/2001/feb/10min0201-3.asp
-//
-// fmt == a format string that we look at to decide how to handle the parameters passed in
-// 'i' == integer
-// 's' == c-style string
-// 'v' == a std::string
-// 't' == timestamp
-//===========================================================================================================
-
-void CtiThreadMonitor::messageOut( const char *fmt, ... )
-{
-    const char *p = fmt;
-
-    va_list ap;
-    va_start( ap, fmt );
-
-    Cti::StreamBuffer outLog;
-
-    while( *p )
-    {
-        if( *p == 'i' )
-        {
-            int num = va_arg( ap, int );
-            outLog << " " << num;
-        }
-        else if( *p == 't' )
-        {
-            outLog << CtiTime();
-        }
-        else if( *p == 's' )
-        {
-            std::string word = va_arg( ap, char * );
-            outLog << " " << word;
-        }
-        else if( *p == 'v' )
-        {
-            std::string word = va_arg( ap, std::string );
-            outLog << " " << word;
-        }
-        else
-        {
-            outLog << " messageOut format problem" << endl;
-        }
-
-        ++p;
-    }
-    CTILOG_INFO(dout, outLog);
-
-    va_end( ap );
 }
 
 //===========================================================================================================
@@ -568,17 +496,4 @@ void CtiThreadMonitor::recalculatePointIDList(void)
     CtiLockGuard<CtiMutex> guard(_vectorMux);
     _pointIDList = tempList;
 }
-//===========================================================================================================
-//===========================================================================================================
-std::string CtiThreadMonitor::now( void )
-{
-    return( to_simple_string( second_clock::local_time() ) );
-}
 
-//===========================================================================================================
-//===========================================================================================================
-
-std::string CtiThreadMonitor::timeString( ptime in )
-{
-    return( to_simple_string( in ) );
-}

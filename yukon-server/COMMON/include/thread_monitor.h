@@ -75,9 +75,6 @@ private:
    void processQueue( void );
    void processExpired( void );
    void processExtraCommands( void );
-   std::string now( void );
-   std::string timeString( boost::posix_time::ptime in );
-   void messageOut( const char *fmt, ... );
 
    State _currentState;//status point!
 
