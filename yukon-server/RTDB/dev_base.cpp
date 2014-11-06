@@ -266,6 +266,16 @@ CtiPointSPtr CtiDeviceBase::getDevicePointOffsetTypeEqual(INT offset, CtiPointTy
     return pPoint;
 }
 
+boost::optional<long> CtiDeviceBase::getPointIdForOffsetAndType(int offset, CtiPointType_t type)
+{
+    if( _pointMgr )
+    {
+        return _pointMgr->getIdForOffsetAndType( getID(), offset, type );
+    }
+
+    return boost::none;
+}
+
 
 YukonError_t CtiDeviceBase::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {

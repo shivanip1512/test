@@ -576,7 +576,7 @@ ULONG Mct410Device::calcNextLPScanTime( void )
             const int interval_len = getLoadProfileInterval(channel);
             const int block_len    = interval_len * 6;
 
-            CtiPointSPtr pPoint = getDevicePointOffsetTypeEqual((channel + 1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
+            boost::optional<long> pointId = getPointIdForOffsetAndType((channel + 1) + PointOffset_LoadProfileOffset, DemandAccumulatorPointType);
 
             if( interval_len <= 0 )
             {
@@ -584,7 +584,7 @@ ULONG Mct410Device::calcNextLPScanTime( void )
 
                 _lp_info[channel].current_schedule = Now.seconds() + (30 * 60);
             }
-            else if( !getLoadProfile()->isChannelValid(channel) || !pPoint )
+            else if( !getLoadProfile()->isChannelValid(channel) || ! pointId )
             {
                 //  if we're not collecting load profile, or there's no point defined, don't scan
                 _lp_info[channel].current_schedule = YUKONEOT;
@@ -597,7 +597,7 @@ ULONG Mct410Device::calcNextLPScanTime( void )
                     //  so we haven't talked to it yet
                     _lp_info[channel].collection_point = 86400;
 
-                    CtiTablePointDispatch pd(pPoint->getPointID());
+                    CtiTablePointDispatch pd(*pointId);
 
                     if(pd.Restore())
                     {
