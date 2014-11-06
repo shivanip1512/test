@@ -261,8 +261,8 @@ public class JobManagerImpl implements JobManager {
     @Override
     public YukonJob scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task,
                                 String cronExpression, YukonUserContext userContext) {
-        return scheduleJob(jobDefinition, task, cronExpression, userContext, emptyPropertyMap,
-            nextValueHelper.getNextValue("Job"));
+        int jobGroupId = nextValueHelper.getNextValue("Job");  // re-using the job sequencer to get a new jobGroupId
+        return scheduleJob(jobDefinition, task, cronExpression, userContext, emptyPropertyMap, jobGroupId);
     }
 
     @Override
