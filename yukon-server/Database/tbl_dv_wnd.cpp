@@ -3,6 +3,7 @@
 #include "tbl_dv_wnd.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "desolvers.h"
 
 using namespace std;
 

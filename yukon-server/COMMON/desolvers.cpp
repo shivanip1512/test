@@ -239,7 +239,7 @@ string desolveDeviceType( int aType )
     return Ret;
 }
 
-string desolvePointType( int aPointType )
+const string &desolvePointType( int aPointType )
 {
     static const string analog = "Analog";
     static const string status = "Status";
@@ -252,22 +252,21 @@ string desolvePointType( int aPointType )
     static const string system       = "System";
     static const string statusoutput = "StatusOutput";
     static const string analogoutput = "AnalogOutput";
-
-    string Ret;
+    static const string none;
 
     switch( aPointType )
     {
-        case StatusPointType:            Ret = status;            break;
-        case AnalogPointType:            Ret = analog;            break;
-        case PulseAccumulatorPointType:  Ret = pulseaccumulator;  break;
-        case DemandAccumulatorPointType: Ret = demandaccumulator; break;
-        case CalculatedPointType:        Ret = calculated;        break;
-        case StatusOutputPointType:      Ret = statusoutput;      break;
-        case AnalogOutputPointType:      Ret = analogoutput;      break;
-        case SystemPointType:            Ret = system;            break;
-        case CalculatedStatusPointType:  Ret = calcstatus;        break;
+        case StatusPointType:            return status;
+        case AnalogPointType:            return analog;
+        case PulseAccumulatorPointType:  return pulseaccumulator;
+        case DemandAccumulatorPointType: return demandaccumulator;
+        case CalculatedPointType:        return calculated;
+        case StatusOutputPointType:      return statusoutput;
+        case AnalogOutputPointType:      return analogoutput;
+        case SystemPointType:            return system;
+        case CalculatedStatusPointType:  return calcstatus;
     }
 
-    return Ret;
+    return none;
 }
 

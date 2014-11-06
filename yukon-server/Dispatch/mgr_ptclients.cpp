@@ -22,6 +22,7 @@
 #include "con_mgr_vg.h"
 #include "pointdefs.h"
 #include "resolvers.h"
+#include "desolvers.h"
 #include "tbl_pt_alarm.h"
 
 #include <list>
@@ -1409,19 +1410,15 @@ bool CtiPointClientManager::pointHasConnection(LONG pointID, const CtiServer::pt
 
 CtiPointManager::ptr_type CtiPointClientManager::getOffsetTypeEqual(LONG pao, INT offset, CtiPointType_t type)
 {
-    Inherited::ptr_type retVal;
-
-    if( pao != 0 )
+    if( pao )
     {
-        int pointID = GetPIDFromDeviceAndOffsetAndType(pao, offset, desolvePointType(type));
-
-        if( pointID != 0 )
+        if( const int pointID = GetPIDFromDeviceAndOffsetAndType(pao, offset, type) )
         {
-            retVal = getPoint(pointID);
+            return getPoint(pointID);
         }
     }
 
-    return retVal;
+    return ptr_type();
 }
 
 /**

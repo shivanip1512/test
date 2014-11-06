@@ -7,6 +7,7 @@
 #include "pt_accum.h"
 #include "pt_status.h"
 #include "devicetypes.h"
+#include "desolvers.h"
 #include "rtdb_test_helpers.h"
 
 #include "boost_test_helpers.h"

@@ -18,6 +18,7 @@
 #include "dllyukon.h"
 #include "exceptions.h"
 #include "prot_base.h"
+#include "desolvers.h"
 
 using namespace std;
 

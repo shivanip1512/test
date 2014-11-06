@@ -6,7 +6,6 @@
 #include "dbmemobject.h"
 #include "dbaccess.h"
 #include "resolvers.h"
-#include "desolvers.h"
 #include "yukon.h"
 #include "loggable.h"
 #include "tbl_unitmeasure.h"

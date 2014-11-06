@@ -8,7 +8,6 @@
 #include "dbaccess.h"
 #include "dllbase.h"
 #include "resolvers.h"
-#include "desolvers.h"
 #include "types.h"
 #include "logger.h"
 #include "yukon.h"

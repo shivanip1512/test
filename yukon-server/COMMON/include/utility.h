@@ -15,7 +15,7 @@
 class INMESS;
 class CtiOutMessage;
 class CtiMutex;
-
+enum CtiPointType_t;
 
 
 IM_EX_CTIBASE LONG GetMaxLMControl(long pao);
@@ -100,7 +100,7 @@ IM_EX_CTIBASE int   generateTransmissionID();
 IM_EX_CTIBASE LONG  GetPAOIdOfPoint(long pid);
 IM_EX_CTIBASE INT   GetPIDFromDeviceAndOffset(int device, int offset);
 IM_EX_CTIBASE INT   GetPIDFromDeviceAndControlOffset(int device, int offset);
-IM_EX_CTIBASE INT   GetPIDFromDeviceAndOffsetAndType(int device, int offset, std::string &type);
+IM_EX_CTIBASE INT   GetPIDFromDeviceAndOffsetAndType(int device, int offset, CtiPointType_t type);
 IM_EX_CTIBASE std::vector<unsigned long>  GetPseudoPointIDs();
 
 IM_EX_CTIBASE INT   EstablishOutMessagePriority(CtiOutMessage *Out, INT priority);

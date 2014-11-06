@@ -47,6 +47,7 @@
 
 #include "connection_client.h"
 #include "win_helper.h"
+#include "desolvers.h"
 
 #include <rw/thr/thrfunc.h>
 #include <rw/rwerr.h>

@@ -5,7 +5,6 @@
 #include <iomanip>
 #include <cctype>
 
-#include "desolvers.h"
 #include "dsm2.h"
 #include "expresscom.h"
 #include "rte_xcu.h"

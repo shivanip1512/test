@@ -3,6 +3,7 @@
 #include "tbl_scanrate.h"
 #include "database_connection.h"
 #include "database_reader.h"
+#include "desolvers.h"
 
 using std::string;
 using std::endl;

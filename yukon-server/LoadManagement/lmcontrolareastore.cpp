@@ -40,7 +40,6 @@
 #include "septempoffsetgear.h"
 #include "ecobeeCycleGear.h"
 #include "resolvers.h"
-#include "desolvers.h"
 #include "devicetypes.h"
 #include "dbaccess.h"
 #include "database_reader.h"

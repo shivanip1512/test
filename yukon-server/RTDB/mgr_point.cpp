@@ -15,10 +15,12 @@
 #include "pt_status.h"
 
 #include "resolvers.h"
+#include "desolvers.h"
 #include "module_util.h"
 
 #include "cparms.h"
 #include "database_reader.h"
+#include "database_util.h"
 
 using namespace std;
 
@@ -923,6 +925,58 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
     }
 
     return pRet;
+}
+
+boost::optional<long> CtiPointManager::getIdForOffsetAndType(long pao, int offset, CtiPointType_t type)
+{
+    {
+        coll_type::reader_lock_guard_t guard(getLock());
+
+        multimap<pao_offset_t, long>::const_iterator type_itr, upper_bound;
+
+        type_itr    = _type_offsets.lower_bound(pao_offset_t(pao, offset));
+        upper_bound = _type_offsets.upper_bound(pao_offset_t(pao, offset));
+
+        for( ; type_itr != upper_bound; type_itr++ )
+        {
+            if( const ptr_type p = getPoint(type_itr->second) )
+            {
+                if( p->getType() == type )
+                {
+                    return p->getPointID();
+                }
+            }
+        }
+    }
+
+    //  not found in our local store, try hitting the DB
+    static const char *sql =
+        "SELECT pointid"
+        " FROM Point"
+        " WHERE paobjectid=?"
+        " AND pointtype=?"
+        " AND pointoffset=?";
+
+    Cti::Database::DatabaseConnection conn;
+
+    Cti::Database::DatabaseReader rdr(conn, sql);
+
+    Cti::Database::executeCommand(rdr, __FILE__,  __LINE__);
+
+    rdr << pao;
+    rdr << desolvePointType(type);
+    rdr << offset;
+
+    if( rdr() )
+    {
+        long pointid;
+
+        rdr >> pointid;
+
+        return pointid;
+    }
+
+    return boost::none;
 }
 
 CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT Offset)

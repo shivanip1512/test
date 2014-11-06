@@ -10,7 +10,6 @@
 #include "dbmemobject.h"
 #include "dbaccess.h"
 #include "resolvers.h"
-#include "desolvers.h"
 #include "yukon.h"
 #include "pointdefs.h"
 #include "pointtypes.h"

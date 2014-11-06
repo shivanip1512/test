@@ -7,7 +7,6 @@
 #include "ccfeeder.h"
 #include "cccapbank.h"
 #include "ccstate.h"
-#include "desolvers.h"
 #include "resolvers.h"
 #include "devicetypes.h"
 #include "dbaccess.h"

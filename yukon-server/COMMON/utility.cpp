@@ -11,6 +11,7 @@
 #include "utility.h"
 #include "ctidate.h"
 #include "devicetypes.h"
+#include "desolvers.h"
 
 #include <boost/regex.hpp>
 #include <boost/optional.hpp>
@@ -769,33 +770,33 @@ INT GetPIDFromDeviceAndControlOffset(int device, int offset)
     return id;
 }
 
-INT GetPIDFromDeviceAndOffsetAndType(int device, int offset, string &type)
+INT GetPIDFromDeviceAndOffsetAndType(int device, int offset, CtiPointType_t type)
 {
-    string sql("SELECT POINTID FROM POINT WHERE PAOBJECTID = ");
-    INT id = 0;
+    static const char *sql =
+        "SELECT POINTID"
+        " FROM POINT"
+        " WHERE PAOBJECTID=?"
+        " AND POINTOFFSET=?"
+        " AND POINTTYPE=?";
 
-    sql += CtiNumStr(device);
-    sql += " AND POINTOFFSET = ";
-    sql += CtiNumStr(offset);
-    sql += " AND POINTTYPE = '";
-    sql += type;
-    sql += "'";
+    INT id = 0;
 
     DatabaseConnection conn;
     DatabaseReader rdr(conn, sql);
-    rdr.execute();
+    rdr << device;
+    rdr << offset;
+    rdr << desolvePointType(type);
 
-    if(rdr())
+    if( Cti::Database::executeCommand(rdr, __FILE__, __LINE__) )
     {
-        rdr >> id;
-    }
-    else if( ! rdr.isValid() )
-    {
-        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-    }
-    else
-    {
-        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+        if(rdr())
+        {
+            rdr >> id;
+        }
+        else
+        {
+            CTILOG_DEBUG(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
+        }
     }
 
     return id;

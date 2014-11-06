@@ -12,7 +12,6 @@
 #include "devicetypes.h"
 #include "lmid.h"
 #include "lmprogrambase.h"
-#include "desolvers.h"
 #include "pointdefs.h"
 #include "pointtypes.h"
 #include "logger.h"

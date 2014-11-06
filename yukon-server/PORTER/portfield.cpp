@@ -35,6 +35,7 @@
 #include "portfield.h"
 #include "dev_dlcbase.h"
 #include "connection_client.h"
+#include "desolvers.h"
 
 using namespace std;
 

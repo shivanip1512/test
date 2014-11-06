@@ -24,6 +24,7 @@
 #include "dllyukon.h"
 #include "cparms.h"
 #include "ctidate.h"
+#include "desolvers.h"
 
 #include "cmd_dlc.h"
 

@@ -50,6 +50,7 @@
 
 #include "devicetypes.h"
 #include "resolvers.h"
+#include "desolvers.h"
 #include "utility.h"
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace

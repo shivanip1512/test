@@ -90,6 +90,7 @@ public:
     ptr_type getEqualByName(LONG pao, std::string pname);
     void     getEqualByPAO(long pao, std::vector<ptr_type> &points);
     long     getPAOIdForPointId(long pointid);
+    boost::optional<long> getIdForOffsetAndType(long pao, int offset, CtiPointType_t Type);
 
     virtual void expire (long pid);
     virtual void erase  (long pid);
