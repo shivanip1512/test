@@ -11536,7 +11536,7 @@
         <!-- Creatable=false means it cannot be created in DBEditor, nor listed as a type in device configurations...to-date -->
         <displayName>RFN-1200</displayName>
         <displayGroup>RFMESH</displayGroup>
-        <changeGroup>rfn</changeGroup>
+        <changeGroup>rfnda</changeGroup>
         <points>
             <point type="Analog" offset="22">
                 <init>true</init>
