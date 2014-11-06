@@ -118,6 +118,7 @@ yukon.ami.meterEventsReport = (function () {
         }
         $('#numEventTypes').html(numSelected);
         $('#filterPopupEventTypes').dialog('close');
+        $('#download-meter-events-btn, #schedule-meter-events-btn').prop('disabled', numSelected == 0);
     },
     
     /** Schedules a meter event report. */
@@ -232,7 +233,7 @@ yukon.ami.meterEventsReport = (function () {
                         $('#scheduleDialog').html(data);
                         yukon.tag.scheduledFileExportInputs.initializeFields();
                     });
-                    if ($('scheduleDialog').hasClass('ui-dialog-content')) {
+                    if ($('#scheduleDialog').hasClass('ui-dialog-content')) {
                         $('#scheduleDialog').dialog('destroy');
                     }
                     _createScheduleReportDialog(_modelData.newSchedulePopupTitle);

@@ -1,5 +1,6 @@
 package com.cannontech.web.amr.meterEventsReport.model;
 
+import java.util.Collections;
 import java.util.Set;
 
 import org.joda.time.Instant;
@@ -10,7 +11,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 public class MeterEventsFilter {
     private Instant fromInstant;
     private Instant toInstant;
-    private Set<? extends Attribute> attributes;
+    private Set<? extends Attribute> attributes = Collections.emptySet();
     private boolean onlyAbnormalEvents;
     private boolean onlyLatestEvent;
     private boolean includeDisabledPaos;

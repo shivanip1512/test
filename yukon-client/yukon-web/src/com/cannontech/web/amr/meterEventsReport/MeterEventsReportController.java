@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
@@ -180,7 +181,7 @@ public class MeterEventsReportController {
         Map<Attribute, Boolean> meterEventTypesMap
             = Maps.newHashMapWithExpectedSize(availableEventAttributes.size());
         for (Attribute attr : availableEventAttributes) {
-            meterEventTypesMap.put(attr, true);
+            meterEventTypesMap.put(attr, false);
         }
         for(Attribute attribute : task.getAttributes()) {
             BuiltInAttribute builtInAttribute = (BuiltInAttribute) attribute;
@@ -284,12 +285,16 @@ public class MeterEventsReportController {
         
         SortBy sort = SortBy.valueOf(sorting.getSort());
         
-        List<MeterPointValue> events = 
-            paoPointValueService.getMeterPointValues(
+        List<MeterPointValue> events;
+        if (!CollectionUtils.isEmpty(meterEventsFilter.getAttributes())) {
+            events = paoPointValueService.getMeterPointValues(
                 Sets.newHashSet(collection.getDeviceList()), meterEventsFilter.getAttributes(),
                 Range.inclusive(meterEventsFilter.getFromInstant(), meterEventsFilter.getToInstant()),
                 meterEventsFilter.isOnlyLatestEvent() ? 1 : null,  meterEventsFilter.isIncludeDisabledPaos(),
                 meterEventsFilter.isOnlyAbnormalEvents() ? NON_ABNORMAL_VALUES : null, userContext);
+        } else {
+            events = Collections.emptyList();
+        }
 
         if (sorting.getDirection() == Direction.desc) {
             Collections.sort(events, Collections.reverseOrder(getSorter(sort, userContext)));
@@ -384,6 +389,10 @@ public class MeterEventsReportController {
         } catch (CronException cronException) {
             result.rejectValue("scheduleCronString", "yukon.common.invalidCron");
         }
+        if (CollectionUtils.isEmpty(meterEventsFilter.getAttributes())) {
+             // The UI attempts to make this never happen but just in case it does, lets reject this request
+            result.reject(baseKey + ".noEventTypes");
+        }
         exportValidator.validate(exportData, result);
         if (result.hasErrors()) {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
@@ -395,8 +404,7 @@ public class MeterEventsReportController {
             model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
             model.addAttribute("jobId", jobId);
             model.addAttribute("scheduleModelData", Collections.singletonMap("success", false));
-           
-            
+
             if (result.hasFieldErrors("scheduleCronString")) {
                 CronExpressionTagState state = new CronExpressionTagState();
                 state.setCronTagStyleType(CronTagStyleType.CUSTOM);

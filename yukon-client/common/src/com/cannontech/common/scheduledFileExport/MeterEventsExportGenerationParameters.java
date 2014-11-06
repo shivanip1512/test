@@ -58,9 +58,11 @@ public class MeterEventsExportGenerationParameters implements ExportFileGenerati
 				+ ", OnlyLatestEvent: " + onlyLatestEvent
 				+ ", OnlyAbnormalEvents: " + onlyAbnormalEvents
 				+ ", IncludeDisabledDevices: " + includeDisabledDevices;
-		for(Attribute attribute : attributes) {
-			returnString += attribute.getMessage() + ", ";
-		}
+        if (attributes != null) {
+            for (Attribute attribute : attributes) {
+                returnString += attribute.getMessage() + ", ";
+            }
+        }
 		returnString += ", DeviceCollection: " + deviceCollection.getDescription() + "]";		
 				
 		return returnString;
