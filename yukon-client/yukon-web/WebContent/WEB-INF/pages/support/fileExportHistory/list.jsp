@@ -9,7 +9,7 @@
 <cti:standardPage module="support" page="fileExportHistory">
     
     <form action="list" class="clearfix stacked">
-        <tags:nameValueContainer2 tableClass="striped">
+        <tags:nameValueContainer2 tableClass="with-form-controls">
 		    <tags:nameValue2 nameKey=".search.name">
             	<input type="text" name="name" value="${searchName}">
             </tags:nameValue2>
