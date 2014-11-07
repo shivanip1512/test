@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ public class TrendsHomeController {
     @Autowired private GraphDao graphDao;
     
     @RequestMapping({"/trends", "/trends/"})
-    public String trends(HttpSession session, ModelMap model, YukonUserContext userContext) throws JsonProcessingException {
+    public String trends(ModelMap model, YukonUserContext userContext) throws JsonProcessingException {
         
         List<LiteGraphDefinition> trends = graphDao.getGraphDefinitions();
         model.addAttribute("trends", trends);
@@ -55,7 +54,7 @@ public class TrendsHomeController {
     }
     
     @RequestMapping("/trends/{id}")
-    public String trend(HttpSession session, ModelMap model, YukonUserContext userContext, @PathVariable int id) throws JsonProcessingException {
+    public String trend(ModelMap model, YukonUserContext userContext, @PathVariable int id) throws JsonProcessingException {
         
         List<LiteGraphDefinition> trends = graphDao.getGraphDefinitions();
         model.addAttribute("trends", trends);
@@ -69,7 +68,7 @@ public class TrendsHomeController {
         return "trends/trends.jsp";
     }
     
-    @RequestMapping("/{id}/csv")
+    @RequestMapping("/trends/{id}/csv")
     public void csv(HttpServletResponse resp, @PathVariable int id, long from, long to) throws IOException {
         
         Instant start = new Instant(from);
@@ -85,12 +84,12 @@ public class TrendsHomeController {
         graph.setTrendProperties(props);
         graph.update(start, stop);
         
-        ServletOutputStream out = resp.getOutputStream();
         
         String fileName = graph.getTrendModel().getChartName().toString();
         fileName += new java.text.SimpleDateFormat("yyyyMMdd").format(graph.getTrendModel().getStartDate());
         fileName += ".csv";
 
+        ServletOutputStream out = resp.getOutputStream();
         resp.addHeader("Content-Disposition", "attachment; filename=" + fileName);
         resp.setContentType("text/x-comma-separated-values");
         graph.encodeCSV(out);
