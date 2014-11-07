@@ -78,8 +78,10 @@ GO
 UPDATE Job SET JobGroupId = JobId;
 GO
 ALTER TABLE Job ALTER COLUMN JobGroupId INT NOT NULL;
+GO
 
 sp_rename 'FileExportHistory.Initiator', 'JobName', 'COLUMN';
+GO
 
 UPDATE FileExportHistory SET JobName = REPLACE(JobName, 'Billing Schedule: ', '');
 UPDATE FileExportHistory SET JobName = REPLACE(JobName, 'Archived Data Export Schedule: ', '');
@@ -266,4 +268,4 @@ INSERT INTO JobScheduledRepeating VALUES (-3, '0 0 22 ? * 7');
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.3', '30-SEP-2014', 'Latest Update', 0, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('6.3', '11-NOV-2014', 'Latest Update', 0, GETDATE());
