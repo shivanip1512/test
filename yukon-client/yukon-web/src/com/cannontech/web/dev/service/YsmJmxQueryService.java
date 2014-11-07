@@ -27,6 +27,7 @@ public class YsmJmxQueryService {
     private @Autowired ConfigurationSource config;
     
     public Object get(ObjectName name, String attribute) throws Exception {
+        
         if (config.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE, false)) {
             try {
                 
@@ -45,7 +46,7 @@ public class YsmJmxQueryService {
                     return object;
                 } catch (Exception e2) {
                     log.error("Could not retrieve value.", e2);
-                    throw e;
+                    return null;
                 }
             }
         } else {
@@ -64,4 +65,5 @@ public class YsmJmxQueryService {
             }
         }
     }
+    
 }

@@ -76,7 +76,11 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 .yukon-header .nav .navOut {overflow: visible;margin:0 auto;width: @page-width;}
 
 .yukon-header .nav ul {margin:0;padding:0;z-index: 400;}
-.yukon-header .nav li:hover ul, .yukon-header .nav li:focus ul {left: 3px;}
+.yukon-header .nav li:hover ul, 
+.yukon-header .nav li:focus ul {
+    left: 3px;
+    display: block;
+}
 .yukon-header .nav ul li, .yukon-header .nav ul li.dropdown a, .yukon-header .nav ul li.dropdown span {background: url(../layout/sprite_nav.png) right 0 no-repeat;z-index: 2;list-style: none;}
 .yukon-header .nav ul li {background-position: 0 0;position:relative;margin:0 -7px 0 0; padding:0 0 0 1px; float:left;}
 
@@ -86,9 +90,10 @@ nav, header, footer, section, aside, hgroup, section {display:block;}
 .yukon-header .nav ul li a, .yukon-header .nav ul li span {display: block;padding: 0 24px 0 22px;background-position: right 0;color: @primary-color;line-height: 72px;text-shadow: 0 1px 1px white;font-size: 1.077em;}
 .yukon-header .nav ul ul {
   background: white;
-  border: 1px solid #D6D6D6;
+  border: 1px solid #d6d6d6;
   border-radius: 0 5px 5px 5px;
-  box-shadow: 0 1px 2px #CCC;
+  box-shadow: 0 1px 2px #ccc;
+  display: none;
   left: -9999px;
   margin-top: -17px;
   min-width: 100%;
