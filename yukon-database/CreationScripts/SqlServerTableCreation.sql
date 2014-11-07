@@ -13792,7 +13792,7 @@ go
 /*==============================================================*/
 IF OBJECT_ID ('sp_SmartIndexMaintenance') IS NOT NULL
     DROP PROCEDURE sp_SmartIndexMaintenance
-GO
+go
 
 CREATE PROCEDURE sp_SmartIndexMaintenance AS
 BEGIN TRY
@@ -13911,4 +13911,4 @@ BEGIN CATCH
     RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
 END CATCH
 EXEC xp_logevent 201000, N'Smart Index Maintenance Complete';  /* write to SQLServer Log */
-GO
+go
