@@ -29,7 +29,7 @@
 <cti:msg var="take10" argument="10px"/>
 <cti:msg var="take12" argument="12px"/>
 
-<cti:standardPage page="scheduledGroupRequestHome.${mode}" module="tools">
+<cti:standardPage module="tools" page="schedules.${mode}">
         
         <%-- ERROR MSG --%>
         <c:if test="${not empty errorMsg}">

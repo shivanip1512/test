@@ -151,6 +151,12 @@
     <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.nonQueuedRetryCount">Number of non-queued retries.</entry>
     <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.maxTotalRunTimeHours">Maximum total run-time hours.</entry>
     
+    <entry key="yukon.web.modules.tools.schedules.EDIT.pageName">Edit Schedule</entry>
+    <entry key="yukon.web.modules.tools.schedules.EDIT.pageDescription">{0}</entry>
+    
+    <entry key="yukon.web.modules.tools.schedules.CREATE.pageName">Create Schedule</entry>
+    <entry key="yukon.web.modules.tools.schedules.CREATE.pageDescription">Create Schedule</entry>
+    
     <!-- Misc -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
