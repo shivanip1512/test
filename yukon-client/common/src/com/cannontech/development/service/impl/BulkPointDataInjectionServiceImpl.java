@@ -130,7 +130,7 @@ public class BulkPointDataInjectionServiceImpl implements BulkPointDataInjection
             pointData.setTagsPointMustArchive(true);
             double pointValue = Math.random() * (valueHigh - valueLow) + valueLow + runningTotal;
             pointData.setValue(pointValue);
-            if (attribute == BuiltInAttribute.USAGE) {
+            if (attribute == BuiltInAttribute.USAGE || attribute== BuiltInAttribute.USAGE_WATER) {
                 runningTotal = pointValue;
             }
             data.add(pointData);
