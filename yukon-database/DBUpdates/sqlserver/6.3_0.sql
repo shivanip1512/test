@@ -140,6 +140,8 @@ GO
 IF OBJECT_ID ('sp_SmartIndexMaintenance') IS NOT NULL
     DROP PROCEDURE sp_SmartIndexMaintenance
 GO
+
+/* @start-block */
 CREATE PROCEDURE sp_SmartIndexMaintenance AS
 
 BEGIN TRY
@@ -259,6 +261,7 @@ BEGIN CATCH
 END CATCH
 EXEC xp_logevent 201000, N'Smart Index Maintenance Complete';  /* write to SQLServer Log */
 GO
+/* @end-block */
 
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-3, 'spSmartIndexMaintanenceJobDefinition', 'N', -3);
 INSERT INTO JobScheduledRepeating VALUES (-3, '0 0 22 ? * 7');
