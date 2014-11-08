@@ -134,12 +134,17 @@ DROP TABLE temp_JobFileExport;
 /* End YUK-13804 */
 
 /* Start YUK-13738 */
+/* @start-block */
 IF OBJECT_ID ('SmartIndexMaintenance') IS NOT NULL
     DROP PROCEDURE SmartIndexMaintenance
 GO
+
+/* @start-block */
+/* @end-block */
 IF OBJECT_ID ('sp_SmartIndexMaintenance') IS NOT NULL
     DROP PROCEDURE sp_SmartIndexMaintenance
 GO
+/* @end-block */
 
 /* @start-block */
 CREATE PROCEDURE sp_SmartIndexMaintenance AS
