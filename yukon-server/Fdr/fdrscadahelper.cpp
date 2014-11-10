@@ -153,11 +153,9 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
     {
         CTILOG_ERROR(dout, _parent->logNow() <<"Invalid control state for "<< id);
 
-        std::ostringstream msg;
-        msg << _parent->getInterfaceName() << ": Invalid control state received from " << id;
-        string desc(msg.str().c_str());
-        string action("");
-        _parent->logEvent (desc,action,true);
+        _parent->logEvent(
+                Cti::StreamBuffer() << _parent->getInterfaceName() << ": Invalid control state received from " << id, "", true);
+
         return false;
     }
 
@@ -175,11 +173,9 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
             CTILOG_ERROR(dout, _parent->logNow() <<"Foreign control point "<< id <<
                     " was mapped to non-control point "<< dest);
 
-            string desc = Cti::StreamBuffer() << _parent->getInterfaceName() << ": Foreign control point " << id <<
-                    " was mapped to non-control point " << dest;
+            _parent->logEvent(
+                    Cti::StreamBuffer() << _parent->getInterfaceName() << ": Foreign control point " << id << " was mapped to non-control point " << dest, "");
 
-            string action("");
-            _parent->logEvent (desc, action);
             continue;
         }
 
@@ -188,14 +184,9 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
             CTILOG_ERROR(dout, _parent->logNow() <<"Foreign control point "<< id
                     <<" was mapped to "<< dest <<", which is not configured for control");
 
-            std::ostringstream msg;
-            msg << _parent->getInterfaceName() << ": Control point " << id
-                << " was mapped to " << dest
-                << ", which is not configured for control" << endl;
-            string desc(msg.str().c_str());
-            string action("");
+            _parent->logEvent(
+                    Cti::StreamBuffer() << _parent->getInterfaceName() << ": Control point " << id << " was mapped to " << dest << ", which is not configured for control", "");
 
-            _parent->logEvent (desc, action);
             continue;
         }
 

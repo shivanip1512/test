@@ -9,26 +9,8 @@
 #include "fdrdnphelper.h"
 #include "dnp_object_analoginput.h"
 #include "prot_dnp.h"
-#include "loggable.h"
+#include "string_util.h"
 
-// global defines
-#define DNPSLAVE_PORTNUMBER      2085
-#define FDR_DNP_HEADER_SIZE        10
-#define FDR_DNP_REQ_FUNC_LOCATION  12
-#define FDR_DNP_DATA_CRC_MARKER    16
-#define FDR_DNP_HEADER_BYTE1     0x05
-#define FDR_DNP_HEADER_BYTE2     0x64
-
-
-#define SINGLE_SOCKET_DNP_CONFIRM      0
-#define SINGLE_SOCKET_DNP_READ         1
-#define SINGLE_SOCKET_DNP_WRITE        2
-#define SINGLE_SOCKET_DNP_DIRECT_OP    5
-#define SINGLE_SOCKET_DNP_DATALINK_REQ 100
-
-// forward declarations
-struct CtiDnpId;
-std::ostream& operator<< (std::ostream&, const CtiDnpId&);
 
 struct CtiDnpId : public Cti::Loggable
 {
@@ -59,20 +41,19 @@ struct CtiDnpId : public Cti::Loggable
 
     std::string toString() const
     {
-        std::ostringstream oss;
-        oss << *this;
-        return oss.str();
+        return Cti::StreamBuffer()
+            << "[DNP: Master= "<< MasterServerName
+            << ", M=" << MasterId
+            << ", S=" << SlaveId
+            << ", P=" << PointType
+            << ", O=" << Offset << "]";
     }
 };
 
-inline std::ostream& operator<< (std::ostream& os, const CtiDnpId& id)
-{
-    return os << "[DNP: Master= "<< id.MasterServerName <<", M=" << id.MasterId << ", S="
-        << id.SlaveId << ", P=" << id.PointType
-        << ", O=" << id.Offset << "]";
-}
+namespace Cti {
+namespace Fdr {
 
-class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
+class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
 {
     public:
         // helper structs
@@ -80,9 +61,9 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
 
 
         // constructors and destructors
-        CtiFDRDnpSlave();
+        DnpSlave();
 
-        virtual ~CtiFDRDnpSlave();
+        virtual ~DnpSlave();
 
         virtual unsigned int getMessageSize(const char* data);
 
@@ -143,7 +124,8 @@ class IM_EX_FDRDNPSLAVE CtiFDRDnpSlave : public CtiFDRSocketServer
 
         static const std::string CtiFdrDNPInMessageString;
         static const std::string CtiFdrDNPOutMessageString;
-
-    public:
-
 };
+
+}
+}
+
