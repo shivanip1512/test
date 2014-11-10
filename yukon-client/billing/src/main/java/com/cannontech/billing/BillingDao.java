@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -28,7 +29,7 @@ import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.device.base.DeviceData;
 import com.cannontech.billing.format.ExtendedTOURecordFormatter;
 import com.cannontech.billing.mainprograms.BillingFileDefaults;
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
@@ -43,6 +44,8 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
 
 public class BillingDao {
+
+    private static final Logger log = YukonLogManager.getLogger(BillingDao.class);
 
     /**
      * Retrieves billing data from the database and returns a list of
@@ -108,7 +111,7 @@ public class BillingDao {
         sql.append("     p.pointoffset,");
         sql.append("     rph.timestamp DESC");
 
-        CTILogger.info("SQL Statement: " + sql);
+        log.debug("SQL Statement: " + sql);
 
         YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
 
@@ -208,7 +211,7 @@ public class BillingDao {
             }
         });
 
-        CTILogger.info("@" + BillingDao.class.toString() + " Data Collection : Took "
+        log.info("@" + BillingDao.class.toString() + " Data Collection : Took "
             + (System.currentTimeMillis() - timer));
         return deviceList;
     }
@@ -232,7 +235,7 @@ public class BillingDao {
             conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
 
             if (conn == null) {
-                CTILogger.info(":  Error getting database connection.");
+                log.info(":  Error getting database connection.");
                 return null;
             }
             pstmt = conn.prepareStatement(sql.toString());
@@ -254,7 +257,7 @@ public class BillingDao {
                 multiplierHashTable.put(pointID, multiplier);
             }
         } catch (SQLException e) {
-            CTILogger.error(e);
+            log.error(e);
         } finally {
             SqlUtils.close(rset, pstmt, conn);
         }
@@ -287,13 +290,13 @@ public class BillingDao {
                     tempLineString = readBuffer.readLine();
                 }
             } catch (IOException ioe) {
-                CTILogger.error(ioe);
+                log.error(ioe);
             }
         } catch (FileNotFoundException fnfe) {
 
-            CTILogger.info("***********************************************************************************************");
-            CTILogger.info("Cannot find meterAndAccountNumbers.txt attempting to get account numbers from the device names.");
-            CTILogger.info("***********************************************************************************************");
+            log.info("***********************************************************************************************");
+            log.info("Cannot find meterAndAccountNumbers.txt attempting to get account numbers from the device names.");
+            log.info("***********************************************************************************************");
 
             return null;
         }
