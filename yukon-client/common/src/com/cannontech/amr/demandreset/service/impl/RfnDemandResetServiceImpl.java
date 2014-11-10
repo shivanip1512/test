@@ -371,7 +371,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
             DeviceVerificationInfo deviceVerificationInfo =
                 new DeviceVerificationInfo(callback, verificationExecution);
             for (SimpleDevice device : verifiableDevices) {
-                deviceVerificationInfo.addDevice(deviceToPoint.get(device).getLiteID(), device);
+                deviceVerificationInfo.addDevice(deviceToPoint.get(device.getPaoIdentifier()).getLiteID(), device);
             }
             devicesAwaitingVerification.add(deviceVerificationInfo);
             asyncDynamicDataSource.registerForPointData(this, deviceVerificationInfo.getPointIds());

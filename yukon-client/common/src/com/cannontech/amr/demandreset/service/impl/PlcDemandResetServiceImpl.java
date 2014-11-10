@@ -262,7 +262,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
              * after "getconfig ied time command" is send we receive 2 values one for
              * "IED Demand Reset Count" another for IED Blink Count" ignore "IED Blink Count"
              */
-            if (value.getId() == deviceToPoint.get(device).getLiteID()) {
+            if (value.getId() == deviceToPoint.get(device.getPaoIdentifier()).getLiteID()) {
                 if (value.getPointDataTimeStamp() == null) {
                     log.error("Failed:" + device);
                     callback.cannotVerify(device, getError(DemandResetError.NO_TIMESTAMP));
