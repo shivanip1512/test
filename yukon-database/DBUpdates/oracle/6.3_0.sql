@@ -128,4 +128,4 @@ DROP TABLE temp_JobFileExport;
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-INSERT INTO CTIDatabase VALUES ('6.3', '30-SEP-2014', 'Latest Update', 0, SYSDATE);
+INSERT INTO CTIDatabase VALUES ('6.3', '11-NOV-2014', 'Latest Update', 0, SYSDATE);
