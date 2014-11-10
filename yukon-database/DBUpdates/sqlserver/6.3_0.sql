@@ -138,9 +138,9 @@ DROP TABLE temp_JobFileExport;
 IF OBJECT_ID ('SmartIndexMaintenance') IS NOT NULL
     DROP PROCEDURE SmartIndexMaintenance
 GO
+/* @end-block */
 
 /* @start-block */
-/* @end-block */
 IF OBJECT_ID ('sp_SmartIndexMaintenance') IS NOT NULL
     DROP PROCEDURE sp_SmartIndexMaintenance
 GO
