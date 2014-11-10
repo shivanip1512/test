@@ -128,6 +128,8 @@ UPDATE FileExportHistory SET FileExportHistory.JobGroupId =
         AND BeanName = 'scheduledMeterEventsFileExportJobDefinition')
 WHERE FileExportType = 'METER_EVENTS';
 
+DELETE FROM FileExportHistory WHERE JobGroupId IS NULL;
+
 ALTER TABLE FileExportHistory ALTER COLUMN JobGroupId INT NOT NULL;
 GO
 DROP TABLE temp_JobFileExport;
