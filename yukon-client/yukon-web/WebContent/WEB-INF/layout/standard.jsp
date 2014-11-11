@@ -63,7 +63,7 @@
             </div>
         </div>
         
-        <div id="page">
+        <div class="yukon-page">
             <header class="yukon-header">
                 <div class="outer">
                     <div class="inner">
@@ -73,8 +73,8 @@
                                 <input type="text" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>"
                                     role="search" name="q" class="search-field">
                             </form>
-                            <cti:button id="yukon-alert-button" data-alert-sound="${alertSounds}"
-                                data-alert-flash="${alertFlash}" classes="action dn" label="0"/>
+                            <cti:button data-alert-sound="${alertSounds}"
+                                data-alert-flash="${alertFlash}" classes="yukon-alert-button action dn" label="0"/>
                             <cm:dropdown triggerClasses="b-user-menu fl" icon="icon-user"
                                 label="${fn:escapeXml(displayName)}" type="button">
                                 <cti:checkRolesAndProperties value="ADMIN_SUPER_USER">
@@ -95,7 +95,7 @@
                     </div>
                 </div>
                 <div class="nav">
-                    <div class="navOut">
+                    <div class="nav-outer">
                         <nav role="navigation">
                             <ul>
                                 <li class="logo"><a href="${homeUrl}"></a></li>
@@ -133,7 +133,7 @@
                 </div>
             </header>
             
-            <section id="content" role="main" <c:if test="${widePage}">class="wide"</c:if>>
+            <section class="yukon-content" role="main" <c:if test="${widePage}">class="wide"</c:if>>
                 
                 <c:set var="layout" value="${showContextualNavigation ? 'column-4-20' : 'column-24'}"/>
                 <c:set var="columnNum" value="${showContextualNavigation ? 'two nogutter' : 'one nogutter'}"/>

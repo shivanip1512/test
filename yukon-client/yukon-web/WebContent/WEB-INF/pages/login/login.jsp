@@ -1,13 +1,13 @@
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <tags:noAuthPage module="login" page="login">
-    <section id="content" style="min-height: 420px;">
+    <section class="yukon-content" style="min-height: 420px;">
         <div class="login-content">
-            <div class="column-12-12">
+            <div class="column-12-12 clearfix">
                 <div class="one column">
                     <div><h1 class="tagline"><i:inline key="yukon.web.login.tagline"/></h1></div>
                 </div>
@@ -15,17 +15,17 @@
                     <div class="faded-round-box login-form">
                         <cti:flashScopeMessages/>
                         <c:if test="${!empty param.failed}">
-                            <div class="loginErrorMsg">
+                            <div class="login-error-msg">
                                 <cti:msg2 key="yukon.web.login.invalidLogin"/>
                             </div>
                         </c:if>
                         <c:if test="${!empty param.retrySeconds}">
-                            <div class="loginErrorMsg">
+                            <div class="login-error-msg">
                                 <cti:msg2 key="yukon.web.login.retry" argument="${param.retrySeconds}"/>
                             </div>
                         </c:if>
                         <c:if test="${!empty param.invalid}">
-                            <div class="loginErrorMsg">
+                            <div class="login-error-msg">
                                 <cti:msg2 key="yukon.web.login.invalidUrlAccess"/>
                             </div>
                         </c:if>
@@ -53,4 +53,3 @@
         </div>
     </section>
 </tags:noAuthPage>
-            

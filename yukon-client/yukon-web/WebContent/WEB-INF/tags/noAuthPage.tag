@@ -52,13 +52,13 @@
 </head>
 
 <body>
-  <div id="page">
+  <div class="yukon-page">
     <header class="yukon-header">
       <div class="outer" role="banner">
         <div class="inner"></div>
       </div>
       <div class="nav">
-        <div class="navOut">
+        <div class="nav-outer">
           <nav role="navigation">
             <ul>
               <li class="logo" style="background: transparent;"><a href="#"></a></li>

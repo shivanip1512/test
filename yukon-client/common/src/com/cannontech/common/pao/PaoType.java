@@ -590,26 +590,28 @@ public enum PaoType implements DatabaseRepresentationSource {
         checkArgument(deviceType != null, Integer.toString(paoTypeId));
         return deviceType;
     }
-
+    
     /**
      * Looks up the the PaoType based on the string that is stored in the PAObject table.
+     * 
+     * NOTE: Use YukonJdbcConnection or YukonResultSet.getEnum instead when retrieving a pao type
+     * from a result set.  This method should only be used for retrieving pao types from 
+     * messaging classes holding pao type strings.
      * 
      * @param dbString - type name to lookup, case insensitive
      * @return
      * @throws IllegalArgumentException - if no match
-     * @deprecated It is suggest to use YukonJdbcConnection or YukonResultSet.getEnum instead.
      */
-    @Deprecated
     public static PaoType getForDbString(String dbString) throws IllegalArgumentException {
         PaoType deviceType = lookupByDbString.get(dbString.toUpperCase().trim());
         checkArgument(deviceType != null, dbString);
         return deviceType;
     }
-
+    
     public boolean isDirectProgram() {
         return directProgramTypes.contains(this);
     }
-
+    
     public boolean isLmProgram() {
         return lmProgramTypes.contains(this);
     }

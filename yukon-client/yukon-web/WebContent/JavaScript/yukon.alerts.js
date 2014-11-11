@@ -19,7 +19,7 @@ yukon.alerts = (function () {
         /** @type {number} - count of the alerts. */
         _oldCount = 0,
         
-        _alert_button = '#yukon-alert-button',
+        _alert_button = '.yukon-alert-button',
         
                _clear_button = '.js-clear-all-yukon-alerts',
         
@@ -44,7 +44,9 @@ yukon.alerts = (function () {
         *   @param {number} count - alert count.
         */
         _updateCount = function (count) {
-            var button = $('#yukon-alert-button');
+            
+            var button = $(_alert_button);
+            
             button.children('.b-label').html(count);
             if (count > 0) {
                 button.addClass('red');
