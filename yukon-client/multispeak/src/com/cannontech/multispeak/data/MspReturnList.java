@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.multispeak.deploy.service.MspObject;
 import com.google.common.collect.Iterables;
 
 public abstract class MspReturnList {
@@ -66,6 +67,8 @@ public abstract class MspReturnList {
     		return ((PlcMeter)lastObject).getMeterNumber();
     	} else if (lastObject instanceof com.cannontech.multispeak.deploy.service.Meter) {
     		return ((com.cannontech.multispeak.deploy.service.Meter)lastObject).getMeterNo();
+    	} else if (lastObject instanceof MspObject) {
+    	    return ((MspObject) lastObject).getObjectID();
     	} else {
     		log.error("Object unrecognized for parsing lastSent value. Returning toString of object:" + lastObject.toString());
     		return lastObject.toString();
