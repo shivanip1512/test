@@ -66,7 +66,7 @@ public class AdaTabularController {
         
         //convert date/times into String array for header
         String[] headerRow = new String[dateTimeList.size()+1];
-        headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.analysis.deviceName");
+        headerRow[0] = messageSourceAccessor.getMessage("yukon.web.modules.tools.bulk.analysis.NAME");
         for(int i = 0; i < dateTimeList.size(); i++) {
             headerRow[i+1] = dateFormattingService.format(dateTimeList.get(i), DateFormatEnum.DATEHM, userContext);
         }
