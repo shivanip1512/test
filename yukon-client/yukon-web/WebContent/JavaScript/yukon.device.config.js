@@ -239,6 +239,7 @@ yukon.deviceConfig = (function () {
                         success: function (data, status, xhr, $form) {
 
                             $('#category-popup').dialog('close');
+                            location.reload();
                             // TODO add message
 
                         },
