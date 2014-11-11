@@ -270,7 +270,6 @@ public class GraphClient extends JPanel implements DBChangeListener, GraphDefine
                 if (currentWeek != NO_WEEK) {
                     currentWeek = FIRST_WEEK;
                 }
-                refresh();
             }
         } else if (event.getSource() == getViewMenu().getDefaultRadioButtonItem()) {
             getGraph().setViewType(GraphRenderers.DEFAULT);
