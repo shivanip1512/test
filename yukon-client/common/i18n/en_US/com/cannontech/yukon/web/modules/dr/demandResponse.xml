@@ -448,7 +448,7 @@
 <entry key="yukon.web.modules.dr.ecobee.details.pageName">Ecobee Details</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.queryStats.title">Query Statistics</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.issues.title">Sync Issues ({0})</entry>
-<entry key="yukon.web.modules.dr.ecobee.details.stats.tooltip">(Current Total) / (Montly Limit)</entry>
+<entry key="yukon.web.modules.dr.ecobee.details.stats.tooltip">(Current Total) / (Monthly Limit)</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.dataDownloads.title">Data Downloads (5 most recent)</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.download.title">Download (maximum 7-day date range)</entry>
 <entry key="yukon.web.modules.dr.ecobee.details.loadGroupPicker">Select a Load Group</entry>

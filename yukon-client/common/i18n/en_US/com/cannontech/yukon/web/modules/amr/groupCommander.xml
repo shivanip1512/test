@@ -3,7 +3,7 @@
 <properties>
 
 <entry key="yukon.web.commander.groupCommander.completionEmail.subject">Group Commander has Completed</entry>
-<entry key="yukon.web.commander.groupCommander.completionEmail.body">Your ''{3}'' command has completed. {1} devices were sucessfully processed and {2} devices failed. The full results are available online at {0}.</entry>
+<entry key="yukon.web.commander.groupCommander.completionEmail.body">Your ''{3}'' command has completed. {1} devices were successfully processed and {2} devices failed. The full results are available online at {0}.</entry>
 <entry key="yukon.web.commander.groupCommander.completionEmail.successFileName">Successfully Processed.pdf</entry>
 <entry key="yukon.web.commander.groupCommander.completionEmail.failureFileName">Processing Failures.pdf</entry>
 

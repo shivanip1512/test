@@ -41,7 +41,7 @@
 <entry key="yukon.common.cancel">Cancel</entry>
 <entry key="yukon.common.choose">Choose</entry>
 <entry key="yukon.common.clientApplicationRememberMe.NONE">None</entry>
-<entry key="yukon.common.clientApplicationRememberMe.USERNAME">Username (recomended)</entry>
+<entry key="yukon.common.clientApplicationRememberMe.USERNAME">Username (recommended)</entry>
 <entry key="yukon.common.clientApplicationRememberMe.USERNAME_AND_PASSWORD">Username and Password (less secure)</entry>
 <entry key="yukon.common.collapseAll">Collapse All</entry>
 <entry key="yukon.common.comma">,</entry>

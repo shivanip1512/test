@@ -297,7 +297,7 @@
     <entry key="yukon.common.setting.SMTP_TLS_ENABLED.description">When true, if supported by the mail server, sends mail using TLS encryption.</entry>
     <entry key="yukon.common.setting.INTERVAL">Interval</entry>
     <entry key="yukon.common.setting.INTERVAL.description"></entry>
-    <entry key="yukon.common.setting.BASELINE_CALCTIME">Basline Calc Time</entry>
+    <entry key="yukon.common.setting.BASELINE_CALCTIME">Baseline Calc Time</entry>
     <entry key="yukon.common.setting.BASELINE_CALCTIME.description"></entry>
     <entry key="yukon.common.setting.DAYS_PREVIOUS_TO_COLLECT">Days Previous To Collect</entry>
     <entry key="yukon.common.setting.DAYS_PREVIOUS_TO_COLLECT.description"></entry>
@@ -327,7 +327,7 @@
     <entry key="yukon.common.setting.OADR_TRUSTSTORE_PASSWORD.description">The truststore's password.</entry>
     <entry key="yukon.common.setting.OADR_REPLY_LIMIT">Reply Limit</entry>
     <entry key="yukon.common.setting.OADR_REPLY_LIMIT.description">The maximum number of distribute events to receive from the VTN (No limit if 0.)</entry>
-    <entry key="yukon.common.setting.OADR_VTN_THUMBPRINT">VTN Thumprint</entry>
+    <entry key="yukon.common.setting.OADR_VTN_THUMBPRINT">VTN Thumbprint</entry>
     <entry key="yukon.common.setting.OADR_VTN_THUMBPRINT.description">The certificate thumbprint of the VTN.</entry>
     <entry key="yukon.common.setting.OADR_YUKON_USER">OpenADR Yukon User</entry>
     <entry key="yukon.common.setting.OADR_YUKON_USER.description">The Yukon User for which the load management requests will be executed.</entry>
@@ -406,7 +406,7 @@
     <entry key="yukon.common.energyCompanySetting.OPTOUT_NOTIFICATION_RECIPIENTS">Opt Out Notification Recipients</entry>
     <entry key="yukon.common.energyCompanySetting.OPTOUT_NOTIFICATION_RECIPIENTS.description">Comma separated list of email addresses. Recipients of the Opt Out notification email.</entry>
     <entry key="yukon.common.energyCompanySetting.SERIAL_NUMBER_VALIDATION">Serial Number Validation</entry>
-    <entry key="yukon.common.energyCompanySetting.SERIAL_NUMBER_VALIDATION.description">Treat serial numbers as numeric or alpha-numberic. Possible values (Numeric, Alphanumeric)</entry>
+    <entry key="yukon.common.energyCompanySetting.SERIAL_NUMBER_VALIDATION.description">Treat serial numbers as numeric or alphanumeric. Possible values (Numeric, Alphanumeric)</entry>
     <entry key="yukon.common.energyCompanySetting.SINGLE_ENERGY_COMPANY">Single Energy Company</entry>
     <entry key="yukon.common.energyCompanySetting.SINGLE_ENERGY_COMPANY.description">Indicates whether this is a single energy company system.</entry>
     <entry key="yukon.common.energyCompanySetting.TRACK_HARDWARE_ADDRESSING">Track Hardware Addressing</entry>

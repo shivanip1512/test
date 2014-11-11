@@ -29,8 +29,8 @@
     <entry key="yukon.web.modules.tools.commander.select.deviceSearchField.LOAD_GROUP.linkText">Load Group</entry>
     <entry key="yukon.web.modules.tools.commander.select.deviceSearchField.LMGROUP_SERIAL">Group Serial Number</entry>
     <entry key="yukon.web.modules.tools.commander.select.deviceSearchField.LMGROUP_SERIAL.linkText">Group Serial Number</entry>
-    <entry key="yukon.web.modules.tools.commander.select.deviceSearchField.LMGROUP_CAPACITY">kW Capactiy</entry>
-    <entry key="yukon.web.modules.tools.commander.select.deviceSearchField.LMGROUP_CAPACITY.linkText">kW Capactiy</entry>
+    <entry key="yukon.web.modules.tools.commander.select.deviceSearchField.LMGROUP_CAPACITY">kW Capacity</entry>
+    <entry key="yukon.web.modules.tools.commander.select.deviceSearchField.LMGROUP_CAPACITY.linkText">kW Capacity</entry>
     <entry key="yukon.web.modules.tools.commander.select.deviceSearchField.LMGROUP_ROUTE">Group Route</entry>
     <entry key="yukon.web.modules.tools.commander.select.deviceSearchField.LMGROUP_ROUTE.linkText">Group Route</entry>
     <entry key="yukon.web.modules.tools.commander.select.deviceSearchField.LMGROUP_TYPE">Group Type</entry>

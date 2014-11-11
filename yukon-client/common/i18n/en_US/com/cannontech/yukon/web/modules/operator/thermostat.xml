@@ -85,7 +85,7 @@
     <entry key="yukon.web.modules.operator.thermostatHistory.multiple.pageName">History</entry>
     <entry key="yukon.web.modules.operator.thermostatHistory.historyTableTitle">Command History</entry>
     <entry key="yukon.web.modules.operator.thermostatHistory.details.title">Command History Detail</entry>
-    <entry key="yukon.web.modules.operator.thermostatHistory.noInfo">Information not avaliable</entry>
+    <entry key="yukon.web.modules.operator.thermostatHistory.noInfo">Information not available</entry>
     
     <entry key="yukon.web.modules.operator.thermostatManual.runProgramText"><![CDATA[
         <b>or</b> Click <b>RUN PROGRAM</b> to revert to your thermostat program.

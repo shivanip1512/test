@@ -185,7 +185,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.NON_VOLATILE_MEM_FAILURE">Non Volatile Mem Failure</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUTSTATION_DNP3_SERCOMM_LOCKED">Outstation DNP3 SerComm Locked</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PASSWORD_TABLE_CRC_ERROR">Password Table Crc Error</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.PHASE_ANGLE_DISPLACEMENT">Phase Angle Displacment</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.PHASE_ANGLE_DISPLACEMENT">Phase Angle Displacement</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PHASE_LOSS">Phase Loss</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC">Polarity, Cross-phase and Energy Flow Diagnostic</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POTENTIAL_INDICATOR_WARNING">Potential Indicator Warning</entry>

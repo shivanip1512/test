@@ -131,7 +131,7 @@ Group names may not be blank or contain slashes.
 <entry key="yukon.web.modules.tools.deviceGroups.create.composed.instructions.title">Instructions</entry>
 <entry key="yukon.web.modules.tools.deviceGroups.create.composed.instructions"><![CDATA[
 	<ul>
-		<li>A <strong>Composed Device Group</strong> contains devices that are choosen from other Device Groups.</li>
+		<li>A <strong>Composed Device Group</strong> contains devices that are chosen from other Device Groups.</li>
 		<li>To make a Composed Device Group, you must select the Device Groups that it will be based upon.</li>
 		<br>
 		<li>For each Device Group that you select, you may specify that the Composed Device Group will either choose devices that 

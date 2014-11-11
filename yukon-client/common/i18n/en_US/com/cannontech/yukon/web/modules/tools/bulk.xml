@@ -229,7 +229,7 @@
     <entry key="yukon.common.device.bulk.massChangeSelect.header">Choose The Type Of Change To Perform On Selected Devices:</entry>
     <entry key="yukon.common.device.bulk.massChangeSelect.noteLabel">Note:</entry>
     <entry key="yukon.common.device.bulk.massChangeSelect.noteText"><![CDATA[
-        Selecting any of these options will not immediatly make any changes.<br>You will be directed to a page with additional options specific to the type of change selected.
+        Selecting any of these options will not immediately make any changes.<br>You will be directed to a page with additional options specific to the type of change selected.
     ]]></entry>
 
     <!-- massChangeOptions.jsp -->
@@ -608,11 +608,11 @@
     
     <!-- options text -->
     <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsOptionLabel">Missing Points</entry>
-    <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsOptionDescription">Masking points may take a a little longer when working with a collection containg many devices.</entry>
+    <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsOptionDescription">Masking points may take a a little longer when working with a collection containing many devices.</entry>
     <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsFalseOptionText">Mask Points That No Devices Have</entry>
     <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsFalseOptionTooltip">Click the button to mask those points that none of the selected devices currently have.</entry>
     <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsTrueOptionText">Unmask Points</entry>
-    <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsTrueOptionTooltip">Click the button to view all supported points for each device type will be shown, even if noneof the selected devices currently have the point.</entry>
+    <entry key="yukon.common.device.bulk.removePointsHome.maskMissingPointsTrueOptionTooltip">Click the button to view all supported points for each device type will be shown, even if none of the selected devices currently have the point.</entry>
     
     <entry key="yukon.common.device.bulk.removePointsHome.sharedPointsOptionLabel">Shared Points</entry>
     <entry key="yukon.common.device.bulk.removePointsHome.sharedPointsFalseOptionText">All Points</entry>
@@ -654,7 +654,7 @@
     <entry key="yukon.common.device.bulk.updateUpload.header">Upload a CSV formatted file containing column headers for fields you want to update:</entry>
     <entry key="yukon.common.device.bulk.updateUpload.noteLabel">Note:</entry>
     <entry key="yukon.common.device.bulk.updateUpload.noteText"><![CDATA[
-        Uploading a file will not immediatly make any changes.<br>You will be directed to a page with additional options and/or opportunity to confirm.
+        Uploading a file will not immediately make any changes.<br>You will be directed to a page with additional options and/or opportunity to confirm.
     ]]></entry>
     <entry key="yukon.common.device.bulk.updateUpload.optionsLabel">Options:</entry>
     <entry key="yukon.common.device.bulk.updateUpload.updateFileLabel">Update File:</entry>
@@ -763,7 +763,7 @@
     <entry key="yukon.common.device.bulk.importUpload.header">Import Devices via CSV File</entry>
     <entry key="yukon.common.device.bulk.importUpload.noteLabel">Note:</entry>
     <entry key="yukon.common.device.bulk.importUpload.noteText"><![CDATA[
-        Uploading a file will not immediatly create any devices.<br>You will be directed to a page with additional options and/or opportunity to confirm.
+        Uploading a file will not immediately create any devices.<br>You will be directed to a page with additional options and/or opportunity to confirm.
     ]]></entry>
     <entry key="yukon.common.device.bulk.importUpload.optionsLabel">Options:</entry>
     <entry key="yukon.common.device.bulk.importUpload.importFileLabel">Import File:</entry>
