@@ -100,7 +100,7 @@
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.calculation">The calculation name (must match entries in the calculation file).</entry>
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.forceQualityNormal">Whether the point quality should be set to "normal" or not.</entry>
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.updateRate">How frequently to update the point value.</entry>
-    <entry key="yukon.web.modules.tools.bulk.pointImport.column.calculationName">The caculation identifier to be used in the point import file.</entry>
+    <entry key="yukon.web.modules.tools.bulk.pointImport.column.calculationName">The calculation identifier to be used in the point import file.</entry>
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.calculationType">The type of calculation to perform.</entry>
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.calculationDeviceName">The name of the device whose point will be used in the calculation.</entry>
     <entry key="yukon.web.modules.tools.bulk.pointImport.column.calculationDeviceType">The type of the device whose point will be used in the calculation.</entry>
