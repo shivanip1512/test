@@ -90,4 +90,8 @@ public final class PaoIdentifier implements YukonPao, Serializable {
         return true;
     }
     
+    public static PaoIdentifier of (int paoId, PaoType type) {
+        return new PaoIdentifier(paoId, type);
+    }
+    
 }

@@ -147,8 +147,6 @@ public class UpdaterHelper {
         AREA_VOLT_REDUCTION;
     }
     
-    
-
     public static final String keyPrefix = "yukon.web.modules.capcontrol.";
     
     // The color schemes - based on the schedule status
@@ -160,16 +158,13 @@ public class UpdaterHelper {
         // Pending subbus (Yellow like color)
         new Color(240, 145, 0) 
     };
-
+    
     private DateFormattingService dateFormattingService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private PaoLoadingService paoLoadingService;
     private RolePropertyDao rolePropertyDao;
     private static final Logger log = YukonLogManager.getLogger(UpdaterHelper.class);
-
-    /**
-     * getValueAt method for CapBanks.
-     */
+    
     public Object getCapBankValueAt(CapBankDevice capBank, UpdaterDataType dataType, YukonUserContext context) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         
@@ -186,11 +181,11 @@ public class UpdaterHelper {
         }
         
         switch (dataType) {
-
+        
         case CB_NAME_COLUMN: {
-            return accessor.getMessage("yukon.web.modules.capcontrol.capBankName", capBank.getCcName(), capBank.getControlOrder());
+            return accessor.getMessage(keyPrefix + "capBankName", capBank.getCcName(), capBank.getControlOrder());
         }
-
+        
         case CB_STATUS_COLUMN: {
             String fixedLabel = CapControlUtils.getFixedText(context.getYukonUser());
             
@@ -198,51 +193,51 @@ public class UpdaterHelper {
             LiteState capBankState = CapControlUtils.getCapBankState(controlStatus);
             if (capBankState == null) {
                 log.error("A CapBank state was found that has no corresponding status.");
-                return accessor.getMessage("yukon.web.modules.capcontrol.unknownState", controlStatus);
+                return accessor.getMessage(keyPrefix + "unknownState", controlStatus);
             }
-
+            
             boolean isCapBankDisabled = capBank.getCcDisableFlag() == true;
             boolean isFixedState = capBank.getOperationalState().equalsIgnoreCase(CapBank.FIXED_OPSTATE);
             boolean isStandaloneState = capBank.getOperationalState().equalsIgnoreCase(CapBank.STANDALONE_OPSTATE);
             String currentState = capBankState.getStateText();
             boolean showIgnoreReason = capBank.isIgnoreFlag();
-
+            
             if (isCapBankDisabled) {
-                String disStateString = accessor.getMessage("yukon.web.modules.capcontrol.disabled") + " : " + (isFixedState ? fixedLabel : currentState);
+                String disStateString = accessor.getMessage(keyPrefix + "disabled") + " : " + (isFixedState ? fixedLabel : currentState);
                 disStateString += capBank.getControlStatusQualityString();
                 if (capBank.getOvUVDisabled()) {
-                    disStateString += accessor.getMessage("yukon.web.modules.capcontrol.ovuvDisabled");
+                    disStateString += accessor.getMessage(keyPrefix + "ovuvDisabled");
                 }
-
+                
                 disStateString += (showIgnoreReason ? " " + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
                 return disStateString;
             } 
-
+            
             String enStateString = "";
             if (isFixedState) {
                 enStateString = fixedLabel + " : ";
             } else if (isStandaloneState ) {
                 enStateString = CapBank.STANDALONE_OPSTATE + " : ";
             }
-
+            
             enStateString += currentState;
-            enStateString += capBank.getControlStatusQualityString();           
-
+            enStateString += capBank.getControlStatusQualityString();
+            
             if (capBank.getOvUVDisabled()) {
-                enStateString += accessor.getMessage("yukon.web.modules.capcontrol.ovuvDisabled");
+                enStateString += accessor.getMessage(keyPrefix + "ovuvDisabled");
             }
             enStateString += (showIgnoreReason ? " " + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
             return enStateString;
         }
-
+        
         case CB_OP_COUNT_COLUMN: {
             return capBank.getTotalOperations();
         }
-
+        
         case CB_BANK_SIZE_COLUMN: {
             return capBank.getBankSize();
         }
-
+        
         case CB_TIME_STAMP_COLUMN: {
             Date date = capBank.getLastStatusChangeTime();
             if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime()) {
@@ -250,7 +245,7 @@ public class UpdaterHelper {
             }
             return dateFormattingService.format(date, DateFormatEnum.BOTH, context);
         }
-
+        
         case CB_SHORT_TIME_STAMP_COLUMN: {
             Date date = capBank.getLastStatusChangeTime();
             if (date.getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime()) {
@@ -262,12 +257,12 @@ public class UpdaterHelper {
         case CB_PARENT_COLUMN: {
             int parentId = capBank.getParentID();
             if (parentId > 0 ) {
-                return paoLoadingService.getDisplayablePao(new PaoIdentifier(parentId, PaoType.CAP_CONTROL_FEEDER)).getName();
+                return paoLoadingService.getDisplayablePao(PaoIdentifier.of(parentId, PaoType.CAP_CONTROL_FEEDER)).getName();
             } else {
                 return accessor.getMessage("yukon.web.defaults.dashes");
             }
         }
-
+        
         case CB_CURRENT_DAILY_OP_COLUMN: {
             return capBank.getCurrentDailyOperations();
         }
@@ -275,14 +270,14 @@ public class UpdaterHelper {
         case CB_DAILY_TOTAL_OP_COLUMN: {
             int daily = capBank.getCurrentDailyOperations();
             int total = capBank.getTotalOperations();
-            return accessor.getMessage("yukon.web.modules.capcontrol.dailyOps", daily, total);
+            return accessor.getMessage(keyPrefix + "dailyOps", daily, total);
         }
 
         case CB_DAILY_MAX_TOTAL_OP_COLUMN: {
             int daily = capBank.getCurrentDailyOperations();
             int max = capBank.getMaxDailyOperation();
             int total = capBank.getTotalOperations();
-            return accessor.getMessage("yukon.web.modules.capcontrol.dailyMaxTotalOps", daily, max, total);
+            return accessor.getMessage(keyPrefix + "dailyMaxTotalOps", daily, max, total);
         }
 
         case CB_CONTROLLER:{
@@ -295,21 +290,21 @@ public class UpdaterHelper {
             
         case CB_LOCAL_REMOTE_TEXT:{
             if (capBank.getLocalControlFlag()) {
-                return accessor.getMessage("yukon.web.modules.capcontrol.local");
+                return accessor.getMessage(keyPrefix + "local");
             } else {
-                return accessor.getMessage("yukon.web.modules.capcontrol.remote");
+                return accessor.getMessage(keyPrefix + "remote");
             }
         }
 
         case CB_WARNING_POPUP:{
-            String warningText = accessor.getMessage("yukon.web.modules.capcontrol.alerts");
+            String warningText = accessor.getMessage(keyPrefix + "alerts");
 
             if (capBank.getMaxDailyOperationHitFlag()) {
-                warningText += " " + accessor.getMessage("yukon.web.modules.capcontrol.maxDailyOps");
+                warningText += " " + accessor.getMessage(keyPrefix + "maxDailyOps");
             }
 
             if (capBank.getOvuvSituationFlag()) {
-                warningText += " " + accessor.getMessage("yukon.web.modules.capcontrol.ovuvSituation");
+                warningText += " " + accessor.getMessage(keyPrefix + "ovuvSituation");
             }
             
             return warningText;
@@ -442,17 +437,17 @@ public class UpdaterHelper {
             boolean isDisabled = substation.getCcDisableFlag();
             String state = "";
             if (isDisabled) {
-                state = accessor.getMessage("yukon.web.modules.capcontrol.disabled");
+                state = accessor.getMessage(keyPrefix + "disabled");
             } else {
-                state = accessor.getMessage("yukon.web.modules.capcontrol.enabled");
+                state = accessor.getMessage(keyPrefix + "enabled");
             }
             
             if (substation.getRecentlyControlledFlag()) {
-                state += " " + accessor.getMessage("yukon.web.modules.capcontrol.pending");
+                state += " " + accessor.getMessage(keyPrefix + "pending");
             }
             
             if (substation.getOvuvDisableFlag()) {
-                state += accessor.getMessage("yukon.web.modules.capcontrol.ovuvDisabled");
+                state += accessor.getMessage(keyPrefix + "ovuvDisabled");
             }
             
             return state;
@@ -471,7 +466,7 @@ public class UpdaterHelper {
         case SUB_POWER_FACTOR_COLUMN: {
             String pf =  getPowerFactorText(substation.getPowerFactorValue() , true, context.getYukonUser(), accessor);     
             String estPf = getPowerFactorText(substation.getEstimatedPFValue(), true, context.getYukonUser(), accessor);
-            return accessor.getMessage("yukon.web.modules.capcontrol.pfEstPf", pf, estPf);
+            return accessor.getMessage(keyPrefix + "pfEstPf", pf, estPf);
         }
         
         case SUB_SP_AREA_ENABLED: {
@@ -486,7 +481,7 @@ public class UpdaterHelper {
             boolean saEnabled = substation.getSpecialAreaEnabled();
             if (saEnabled) {
                 String specialAreaName = paoLoadingService.getDisplayablePao(new PaoIdentifier(substation.getSpecialAreaId(), PaoType.CAP_CONTROL_SPECIAL_AREA)).getName();
-                return accessor.getMessage("yukon.web.modules.capcontrol.saEnabled", specialAreaName);
+                return accessor.getMessage(keyPrefix + "saEnabled", specialAreaName);
             } else {
                 return " ";
             }
@@ -513,7 +508,7 @@ public class UpdaterHelper {
         case AREA_POWER_FACTOR_COLUMN: {
             String pf =  getPowerFactorText(area.getPowerFactorValue() , true, context.getYukonUser(), accessor);     
             String estPf = getPowerFactorText(area.getEstimatedPFValue(), true, context.getYukonUser(), accessor);
-            return accessor.getMessage("yukon.web.modules.capcontrol.pfEstPf", pf, estPf);
+            return accessor.getMessage(keyPrefix + "pfEstPf", pf, estPf);
         }
         
         case AREA_VOLT_REDUCTION: { 
@@ -549,25 +544,25 @@ public class UpdaterHelper {
         case SUB_CURRENT_STATE_COLUMN: {
             String state = "";
             if (subBus.getCcDisableFlag()) {
-                state = accessor.getMessage("yukon.web.modules.capcontrol.disabled");
+                state = accessor.getMessage(keyPrefix + "disabled");
             } else {
-                state = accessor.getMessage("yukon.web.modules.capcontrol.enabled");
+                state = accessor.getMessage(keyPrefix + "enabled");
             }
             
             if (subBus.getRecentlyControlledFlag()) {
-                state += " " + accessor.getMessage("yukon.web.modules.capcontrol.pending");
+                state += " " + accessor.getMessage(keyPrefix + "pending");
             }
             
             if (subBus.getDualBusEnabled() && subBus.getSwitchOverStatus()) {
-                state += accessor.getMessage("yukon.web.modules.capcontrol.altBus");
+                state += accessor.getMessage(keyPrefix + "altBus");
             }
 
             if (subBus.getPrimaryBusFlag()) {
-                state += accessor.getMessage("yukon.web.modules.capcontrol.primaryBus");
+                state += accessor.getMessage(keyPrefix + "primaryBus");
             }
             
             if (subBus.getOvUvDisabledFlag()) {
-                state += accessor.getMessage("yukon.web.modules.capcontrol.ovuvDisabled");
+                state += accessor.getMessage(keyPrefix + "ovuvDisabled");
             }
             return state;
         }
@@ -601,7 +596,7 @@ public class UpdaterHelper {
             String target = num.format(subBus.getPeakPFSetPoint());
             String open = CommonUtils.formatDecimalPlaces(subBus.getOffPkLead(), 0);
             
-            return accessor.getMessage("yukon.web.modules.capcontrol.closeTargetOpen", close, target, open);
+            return accessor.getMessage(keyPrefix + "closeTargetOpen", close, target, open);
         }
         case SUB_TARGET_COLUMN: {
             // decide which set Point we are to use
@@ -610,7 +605,7 @@ public class UpdaterHelper {
             num.setMinimumFractionDigits(1);
             
             if (subBus.getControlMethod() == ControlMethod.TIME_OF_DAY) {
-                return accessor.getMessage("yukon.web.modules.capcontrol.tod");
+                return accessor.getMessage(keyPrefix + "tod");
             } else if (subBus.getControlMethod() == ControlMethod.NONE) {
                 return accessor.getMessage("yukon.web.defaults.none");
             } 
@@ -623,12 +618,12 @@ public class UpdaterHelper {
                     String target = num.format(subBus.getPeakPFSetPoint());
                     String open = CommonUtils.formatDecimalPlaces(subBus.getPeakLead(), 0);
                     
-                    return accessor.getMessage("yukon.web.modules.capcontrol.closeTargetOpen", close, target, open);
+                    return accessor.getMessage(keyPrefix + "closeTargetOpen", close, target, open);
                 } else {
                     String lead = CommonUtils.formatDecimalPlaces(subBus.getPeakLead(), 0); 
                     String lag = CommonUtils.formatDecimalPlaces(subBus.getPeakLag(), 0);
                     
-                    return accessor.getMessage("yukon.web.modules.capcontrol.peakLeadLag", lead, lag);
+                    return accessor.getMessage(keyPrefix + "peakLeadLag", lead, lag);
                 }
                 
             } else {
@@ -638,12 +633,12 @@ public class UpdaterHelper {
                     String target = num.format(subBus.getOffpeakPFSetPoint()); 
                     String open = CommonUtils.formatDecimalPlaces(subBus.getOffPkLead(), 0);
                     
-                    return accessor.getMessage("yukon.web.modules.capcontrol.closeTargetOpen", close, target, open);
+                    return accessor.getMessage(keyPrefix + "closeTargetOpen", close, target, open);
                 } else {
                     String lead = CommonUtils.formatDecimalPlaces(subBus.getOffPkLead() ,0); 
                     String lag = CommonUtils.formatDecimalPlaces(subBus.getOffPkLag(), 0);
                     
-                    return accessor.getMessage("yukon.web.modules.capcontrol.offPeakLeadLag", lead, lag);
+                    return accessor.getMessage(keyPrefix + "offPeakLeadLag", lead, lag);
                 }
             }
         }
@@ -653,7 +648,7 @@ public class UpdaterHelper {
             num.setMaximumFractionDigits(3);
             num.setMinimumFractionDigits(0);
 
-            return accessor.getMessage("yukon.web.modules.capcontrol.targetVar", num.format(subBus.getTargetvarvalue()));
+            return accessor.getMessage(keyPrefix + "targetVar", num.format(subBus.getTargetvarvalue()));
         }
 
         case SUB_VAR_LOAD_POPUP: {
@@ -664,7 +659,7 @@ public class UpdaterHelper {
             String a = num.format(subBus.getPhaseA()); 
             String b = num.format(subBus.getPhaseB()); 
             String c = num.format(subBus.getPhaseC()); 
-            return accessor.getMessage("yukon.web.modules.capcontrol.varLoad", a, b, c);
+            return accessor.getMessage(keyPrefix + "varLoad", a, b, c);
         }
 
         case SUB_DAILY_OPERATIONS_COLUMN: {
@@ -673,9 +668,9 @@ public class UpdaterHelper {
             
             if (max <= 0) {
                 String na = accessor.getMessage("yukon.web.defaults.na");
-                return accessor.getMessage("yukon.web.modules.capcontrol.dailyOps", current, na);
+                return accessor.getMessage(keyPrefix + "dailyOps", current, na);
             } else {
-                return accessor.getMessage("yukon.web.modules.capcontrol.dailyOps", current, max);
+                return accessor.getMessage(keyPrefix + "dailyOps", current, max);
             }
         }
 
@@ -699,7 +694,7 @@ public class UpdaterHelper {
             String pf = getPowerFactorText(subBus.getPowerFactorValue(), true, context.getYukonUser(), accessor);
             String estPf = getPowerFactorText(subBus.getEstimatedPFValue(), true, context.getYukonUser(), accessor);
             
-            return accessor.getMessage("yukon.web.modules.capcontrol.pfEstPf", pf, estPf);
+            return accessor.getMessage(keyPrefix + "pfEstPf", pf, estPf);
         }
         
         // This is returning a css class to be updated, no data.
@@ -809,25 +804,25 @@ public class UpdaterHelper {
             String state = null;
 
             if (feeder.getCcDisableFlag()) {
-                state = accessor.getMessage("yukon.web.modules.capcontrol.disabled");
+                state = accessor.getMessage(keyPrefix + "disabled");
             } else if (feeder.getRecentlyControlledFlag()) {
                 state = CapControlUtils.getFeederPendingState(feeder);
 
                 if (state == null) {
-                    state = accessor.getMessage("yukon.web.modules.capcontrol.pending"); // we dont know what Pending state its in
+                    state = accessor.getMessage(keyPrefix + "pending"); // we dont know what Pending state its in
                 }
 
             } else {
-                state = accessor.getMessage("yukon.web.modules.capcontrol.enabled");
+                state = accessor.getMessage(keyPrefix + "enabled");
             }
             
             // show waived with a W at the end of the state
             if (feeder.getWaiveControlFlag()) {
-                state += accessor.getMessage("yukon.web.modules.capcontrol.waive");
+                state += accessor.getMessage(keyPrefix + "waive");
             }
             
             if (feeder.getOvUvDisabledFlag()) {
-                state += accessor.getMessage("yukon.web.modules.capcontrol.ovuvDisabled");
+                state += accessor.getMessage(keyPrefix + "ovuvDisabled");
             }
             
             return state;
@@ -862,7 +857,7 @@ public class UpdaterHelper {
             String target = num.format(feeder.getPeakPFSetPoint());
             String open = CommonUtils.formatDecimalPlaces(feeder.getOffPkLead(), 0);
             
-            return accessor.getMessage("yukon.web.modules.capcontrol.closeTargetOpen", close, target, open);
+            return accessor.getMessage(keyPrefix + "closeTargetOpen", close, target, open);
         }
         
         case FDR_TARGET_COLUMN: {
@@ -872,7 +867,7 @@ public class UpdaterHelper {
             num.setMinimumFractionDigits(1);
             
             if (feeder.getControlmethod() == ControlMethod.TIME_OF_DAY) {
-                return accessor.getMessage("yukon.web.modules.capcontrol.tod");
+                return accessor.getMessage(keyPrefix + "tod");
             } else if (feeder.getControlmethod() == ControlMethod.NONE) {
                 return accessor.getMessage("yukon.web.defaults.none");
             } 
@@ -883,11 +878,11 @@ public class UpdaterHelper {
                     String close = CommonUtils.formatDecimalPlaces(feeder.getPeakLag(), 0); 
                     String target = num.format(feeder.getPeakPFSetPoint()); 
                     String open = CommonUtils.formatDecimalPlaces(feeder.getPeakLead(), 0);
-                    return accessor.getMessage("yukon.web.modules.capcontrol.closeTargetOpen", close, target, open);
+                    return accessor.getMessage(keyPrefix + "closeTargetOpen", close, target, open);
                 } else {
                     String lead = CommonUtils.formatDecimalPlaces(feeder.getPeakLead(), 0); 
                     String lag = CommonUtils.formatDecimalPlaces(feeder.getPeakLag(), 0); 
-                    return accessor.getMessage("yukon.web.modules.capcontrol.peakLeadLag", lead, lag);
+                    return accessor.getMessage(keyPrefix + "peakLeadLag", lead, lag);
                 }
                 
             } else {
@@ -896,11 +891,11 @@ public class UpdaterHelper {
                     String close = CommonUtils.formatDecimalPlaces(feeder.getOffPkLag(), 0); 
                     String target = num.format(feeder.getOffpeakPFSetPoint()); 
                     String open = CommonUtils.formatDecimalPlaces(feeder.getOffPkLead(), 0);
-                    return accessor.getMessage("yukon.web.modules.capcontrol.closeTargetOpen", close, target, open);
+                    return accessor.getMessage(keyPrefix + "closeTargetOpen", close, target, open);
                 } else {
                     String lead = CommonUtils.formatDecimalPlaces(feeder.getOffPkLead(), 0); 
                     String lag = CommonUtils.formatDecimalPlaces(feeder.getOffPkLag(), 0); 
-                    return accessor.getMessage("yukon.web.modules.capcontrol.offPeakLeadLag", lead, lag);
+                    return accessor.getMessage(keyPrefix + "offPeakLeadLag", lead, lag);
                 }
                 
             }
@@ -912,7 +907,7 @@ public class UpdaterHelper {
             num.setMaximumFractionDigits(3);
             num.setMinimumFractionDigits(0);
             
-            return accessor.getMessage("yukon.web.modules.capcontrol.targetVar", num.format(feeder.getTargetvarvalue()));
+            return accessor.getMessage(keyPrefix + "targetVar", num.format(feeder.getTargetvarvalue()));
         }
         
         case FDR_VAR_LOAD_POPUP: {
@@ -923,13 +918,13 @@ public class UpdaterHelper {
             String a = num.format(feeder.getPhaseA()); 
             String b = num.format(feeder.getPhaseB()); 
             String c = num.format(feeder.getPhaseC()); 
-            return accessor.getMessage("yukon.web.modules.capcontrol.varLoad", a, b, c);
+            return accessor.getMessage(keyPrefix + "varLoad", a, b, c);
         }
         
         case FDR_POWER_FACTOR_COLUMN: {
             String pf =  getPowerFactorText(feeder.getPowerFactorValue() , true, context.getYukonUser(), accessor);     
             String estPf = getPowerFactorText(feeder.getEstimatedPFValue(), true, context.getYukonUser(), accessor);
-            return accessor.getMessage("yukon.web.modules.capcontrol.pfEstPf", pf, estPf);
+            return accessor.getMessage(keyPrefix + "pfEstPf", pf, estPf);
         }
 
         case FDR_DAILY_OPERATIONS_COLUMN: {
@@ -938,9 +933,9 @@ public class UpdaterHelper {
             
             if (max <= 0) {
                 String na = accessor.getMessage("yukon.web.defaults.na");
-                return accessor.getMessage("yukon.web.modules.capcontrol.dailyOps", current, na);
+                return accessor.getMessage(keyPrefix + "dailyOps", current, na);
             } else {
-                return accessor.getMessage("yukon.web.modules.capcontrol.dailyOps", current, max);
+                return accessor.getMessage(keyPrefix + "dailyOps", current, max);
             }
         }
 
@@ -1058,7 +1053,7 @@ public class UpdaterHelper {
         	String b = CommonUtils.formatDecimalPlaces(feeder.getPhaseB(),decPlaces);
         	String c = CommonUtils.formatDecimalPlaces(feeder.getPhaseC(),decPlaces);
         	
-        	return accessor.getMessage("yukon.web.modules.capcontrol.oneline.threePhase", a, b, c);
+        	return accessor.getMessage(keyPrefix + "oneline.threePhase", a, b, c);
         }
         
         case FDR_ONELINE_WATTS_VOLTS_COLUMN: {
@@ -1075,7 +1070,7 @@ public class UpdaterHelper {
             } else {
         		volts = CommonUtils.formatDecimalPlaces(feeder.getCurrentVoltLoadPointValue(), decPlaces);
         	}
-        	return accessor.getMessage("yukon.web.modules.capcontrol.oneline.wattsVolts", watts, volts);
+        	return accessor.getMessage(keyPrefix + "oneline.wattsVolts", watts, volts);
         }
 
         default:
@@ -1103,7 +1098,7 @@ public class UpdaterHelper {
         }
 
         String formatted = CommonUtils.formatDecimalPlaces(value * (compute ? 100 : 1), decPlaces);
-        return accessor.getMessage("yukon.web.modules.capcontrol.pfPercent", formatted);
+        return accessor.getMessage(keyPrefix + "pfPercent", formatted);
     }
 
     public String getHTMLFgColor(SubStation subBus) {
@@ -1226,11 +1221,11 @@ public class UpdaterHelper {
                     String target = num.format(subBus.getPeakPFSetPoint());
                     String open = CommonUtils.formatDecimalPlaces(subBus.getPeakLead(), 0);
                     
-                    return accessor.getMessage("yukon.web.modules.capcontrol.closeTargetOpen", close, target, open);
+                    return accessor.getMessage(keyPrefix + "closeTargetOpen", close, target, open);
                 } else {
                     String lead = CommonUtils.formatDecimalPlaces(subBus.getPeakLead(), 0); 
                     String lag = CommonUtils.formatDecimalPlaces(subBus.getPeakLag(), 0);
-                    return accessor.getMessage("yukon.web.modules.capcontrol.peakLeadLag", lead, lag);
+                    return accessor.getMessage(keyPrefix + "peakLeadLag", lead, lag);
                 }
                 
             } else {
@@ -1240,11 +1235,11 @@ public class UpdaterHelper {
                     String target = num.format(subBus.getOffpeakPFSetPoint());
                     String open = CommonUtils.formatDecimalPlaces(subBus.getOffPkLead(), 0);
                     
-                    return accessor.getMessage("yukon.web.modules.capcontrol.closeTargetOpen", close, target, open);
+                    return accessor.getMessage(keyPrefix + "closeTargetOpen", close, target, open);
                 } else {
                     String lead = CommonUtils.formatDecimalPlaces(subBus.getOffPkLead(), 0); 
                     String lag = CommonUtils.formatDecimalPlaces(subBus.getOffPkLag(), 0);
-                    return accessor.getMessage("yukon.web.modules.capcontrol.peakLeadLag", lead, lag);
+                    return accessor.getMessage(keyPrefix + "peakLeadLag", lead, lag);
                 }
             }
 
@@ -1268,9 +1263,9 @@ public class UpdaterHelper {
             
             if (max <= 0) {
                 String na = accessor.getMessage("yukon.web.defaults.na");
-                return accessor.getMessage("yukon.web.modules.capcontrol.dailyOps", current, na);
+                return accessor.getMessage(keyPrefix + "dailyOps", current, na);
             } else {
-                return accessor.getMessage("yukon.web.modules.capcontrol.dailyOps", current, max);
+                return accessor.getMessage(keyPrefix + "dailyOps", current, max);
             }
         }
         
@@ -1279,7 +1274,7 @@ public class UpdaterHelper {
             String b = CommonUtils.formatDecimalPlaces(subBus.getPhaseB(), decPlaces);
             String c = CommonUtils.formatDecimalPlaces(subBus.getPhaseC(), decPlaces);
             
-            return accessor.getMessage("yukon.web.modules.capcontrol.oneline.threePhase", a, b, c);
+            return accessor.getMessage(keyPrefix + "oneline.threePhase", a, b, c);
         }
         
         case SUB_ONELINE_KVAR_LOAD_COLUMN: {
