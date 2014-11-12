@@ -96,7 +96,7 @@
     <entry key="yukon.web.components.button.mute.hoverText">Mute</entry>
     <entry key="yukon.web.components.button.mute.label">Mute</entry>
     <entry key="yukon.web.components.button.next.label">Next</entry>
-    <entry key="yukon.web.components.button.next.label">Next</entry>
+    <entry key="yukon.web.components.button.no.label">No</entry>
     <entry key="yukon.web.components.button.off.label">Off</entry>
     <entry key="yukon.web.components.button.ok.label">OK</entry>
     <entry key="yukon.web.components.button.on.label">On</entry>
@@ -138,6 +138,7 @@
     <entry key="yukon.web.components.button.upload.label">Upload</entry>
     <entry key="yukon.web.components.button.verify.label">Verify</entry>
     <entry key="yukon.web.components.button.view.label">View</entry>
+    <entry key="yukon.web.components.button.yes.label">Yes</entry>
     
     <entry key="yukon.web.components.cronPicker.daily">Daily</entry>
     <entry key="yukon.web.components.cronPicker.weekly">Weekly</entry>

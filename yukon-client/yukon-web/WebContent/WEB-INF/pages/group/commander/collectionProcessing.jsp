@@ -1,49 +1,46 @@
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 
 <cti:standardPage module="tools" page="bulk.sendCommand">
-
-    <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.sendCommand" deviceCollection="${deviceCollection}">
-  
-    <%-- ERROR MSG --%>
-    <c:if test="${not empty param.errorMsg}">
-        <div class="error">${param.errorMsg}</div>
-        <c:set var="errorMsg" value="" scope="request"/>
-        <br>
-    </c:if>
     
-    <div style="width: 700px;">
-        <form id="collectionProcessingForm" action="<cti:url value="/group/commander/executeCollectionCommand" />" method="post">
-            <cti:csrfToken/>
-            <cti:deviceCollection deviceCollection="${deviceCollection}" />
-      
-              <%-- SELECT COMMAND --%>
-              <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
-              <div>${selectCommandLabel}:</div>
-            <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
-                selectedCommandString="${param.commandString}" selectedSelectValue="${param.commandSelectValue}"/>
-            <br><br>
-            <c:if test="${!isSmtpConfigured}">            
-            	<cti:msg var="sendEmailAddressLabel" key="yukon.common.email.send"/>
-	            <div>${sendEmailAddressLabel} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: 
-                	<input type="checkbox" name="sendEmail" data-toggle="email-address">
-	            </div>
-    	        <br>          
-        	    <%-- EMAIL --%>
-            	<cti:msg var="emailAddressLabel" key="yukon.common.email.address"/>
-	            <div>${emailAddressLabel} :
-    	        	<input type="text" name="emailAddress" value="${email}" size="40" disabled="disabled" data-toggle-group="email-address">
-    	        </div>
-	            <br><br>
-			</c:if>
-            <cti:button nameKey="execute" type="submit" classes="primary action" busy="true"/>
+    <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.sendCommand" deviceCollection="${deviceCollection}">
+        
+        <%-- ERROR MSG --%>
+        <c:if test="${not empty param.errorMsg}">
+            <div class="error stacked">${param.errorMsg}</div>
+            <c:set var="errorMsg" value="" scope="request"/>
+        </c:if>
+        
+        <form id="collectionProcessingForm" action="<cti:url value="/group/commander/executeCollectionCommand"/>" method="post">
+            <cti:csrfToken />
+            <cti:deviceCollection deviceCollection="${deviceCollection}"/>
+            
+            <%-- SELECT COMMAND --%>
+            <div class="stacked">
+                <cti:msg var="selectCommandLabel" key="yukon.common.device.commander.commandSelector.selectCommand"/>
+                <h4>${selectCommandLabel}:</h4>
+                <amr:commandSelector selectName="commandSelectValue" fieldName="commandString" commands="${commands}" 
+                    selectedCommandString="${param.commandString}"
+                    selectedSelectValue="${param.commandSelectValue}"/>
+            </div>
+            <c:if test="${!isSmtpConfigured}">
+                <tags:nameValueContainer2 tableClass="with-form-controls name-collapse">
+                    <tags:nameValue2 nameKey="yukon.common.email.send">
+                        <tags:switchButton offNameKey="no" onNameKey="yes" name="sendEmail" classes="fn"
+                            toggleGroup="email-address"/>
+                        <input type="text" name="emailAddress" value="${email}" size="40" disabled
+                            data-toggle-group="email-address">
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+            </c:if>
+            <div class="page-action-area">
+                <cti:button nameKey="execute" type="submit" classes="primary action" busy="true"/>
+            </div>
         </form>
-    </div>
-  
-  </tags:bulkActionContainer>
+        
+    </tags:bulkActionContainer>
     
 </cti:standardPage>
