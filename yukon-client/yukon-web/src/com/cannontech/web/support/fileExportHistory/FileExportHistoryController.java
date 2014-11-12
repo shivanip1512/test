@@ -92,9 +92,4 @@ public class FileExportHistoryController {
         }
         return null;
     }
- 
-    @InitBinder
-    public void initialize(WebDataBinder webDataBinder) throws ExecutionException {
-        EnumPropertyEditor.register(webDataBinder, FileExportType.class);
-    }
 }
