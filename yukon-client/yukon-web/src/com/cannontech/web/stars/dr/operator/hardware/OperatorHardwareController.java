@@ -253,8 +253,7 @@ public class OperatorHardwareController {
                         
                         LiteContact primaryContact = contactDao.getPrimaryContactForAccount(possibleDuplicate.getAccountID());
                         
-                        inventoryCheckingAddDto.setName(primaryContact.getContFirstName()
-                            + primaryContact.getContFirstName() == null
+                        inventoryCheckingAddDto.setName(primaryContact.getContFirstName() == null
                                 ? none : primaryContact.getContFirstName() + " " + primaryContact.getContLastName());
                         
                         LiteAddress address = addressDao.getByAddressId(primaryContact.getAddressID());

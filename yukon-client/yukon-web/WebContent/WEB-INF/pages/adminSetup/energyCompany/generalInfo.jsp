@@ -49,7 +49,7 @@ $(function() {
                         
                         <cti:displayForPageEditModes modes="VIEW">
                             <tags:nameValue2 nameKey=".address">
-                                <tags:address address="${generalInfo.address}" inLine="true"/>
+                                <tags:address address="${generalInfo.address}"/>
                             </tags:nameValue2>
                         </cti:displayForPageEditModes>
                         
