@@ -603,9 +603,8 @@ bool CtiFDR_Dsm2Filein::validateAndDecodeLine (string &aLine, CtiMessage **aRetM
 
 
 
-int CtiFDR_Dsm2Filein::readConfig( void )
+bool CtiFDR_Dsm2Filein::readConfig()
 {
-    int         successful = TRUE;
     string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_INTERVAL);
@@ -709,7 +708,7 @@ int CtiFDR_Dsm2Filein::readConfig( void )
         CTILOG_DEBUG(dout, loglist);
     }
 
-    return successful;
+    return true;
 }
 
 

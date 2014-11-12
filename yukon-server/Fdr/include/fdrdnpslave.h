@@ -51,7 +51,7 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
 
         virtual unsigned int getMessageSize(const char* data);
 
-        virtual int readConfig( void );
+        bool readConfig() override;
 
         void startup();
 
@@ -91,26 +91,6 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         typedef std::map<std::string, std::string> ServerNameMap;
         ServerNameMap _serverNameLookup;
         int _staleDataTimeOut;
-
-        static const CHAR * KEY_LISTEN_PORT_NUMBER;
-        static const CHAR * KEY_DB_RELOAD_RATE;
-        static const CHAR * KEY_DEBUG_MODE;
-        static const CHAR * KEY_FDR_DNPSLAVE_SERVER_NAMES;
-        static const CHAR * KEY_LINK_TIMEOUT;
-        static const CHAR * KEY_STALEDATA_TIMEOUT;
-
-        static const std::string dnpMasterId;
-        static const std::string dnpSlaveId;
-        static const std::string dnpPointType;
-        static const std::string dnpPointOffset;
-        static const std::string dnpPointStatusString;
-        static const std::string dnpPointAnalogString;
-        static const std::string dnpPointCalcAnalogString;
-        static const std::string dnpPointCounterString;
-        static const std::string dnpPointMultiplier;
-
-        static const std::string CtiFdrDNPInMessageString;
-        static const std::string CtiFdrDNPOutMessageString;
 };
 
 }

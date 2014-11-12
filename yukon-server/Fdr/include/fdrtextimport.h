@@ -27,7 +27,7 @@ public:
     virtual BOOL    run( void );
     virtual BOOL    stop( void );
 
-    int readConfig( void );
+    bool readConfig() override;
     bool buildAndAddPoint (CtiFDRPoint &aPoint,
                            DOUBLE aValue,
                            CtiTime aTimestamp,

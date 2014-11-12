@@ -659,7 +659,7 @@ ULONG CtiFDRInterface::getDebugLevel()
  * classes.
  *
  */
-int CtiFDRInterface::reloadConfigs() {
+bool CtiFDRInterface::reloadConfigs() {
     CtiLockGuard<CtiMutex> cparm_guard(iCparmMutex);
     gConfigParms.RefreshConfigParameters();
     CtiFDRInterface::readConfig();
@@ -676,9 +676,8 @@ int CtiFDRInterface::reloadConfigs() {
 *
 *************************************************************************
 */
-int CtiFDRInterface::readConfig( void )
+bool CtiFDRInterface::readConfig()
 {
-    int         successful = TRUE;
     string   tempStr;
     char        *eptr;
 
@@ -699,7 +698,7 @@ int CtiFDRInterface::readConfig( void )
     iCparmReloadSeconds = gConfigParms.getValueAsInt(KEY_CPARM_RELOAD_RATE_SECONDS,300);
     CTILOG_INFO(dout, "CPARM Reload Rate is " << iCparmReloadSeconds << " seconds.");
 
-    return successful;
+    return true;
 }
 
 /************************************************************************

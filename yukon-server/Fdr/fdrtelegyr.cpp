@@ -1617,7 +1617,7 @@ string CtiFDRTelegyr::decipherReason( int transmissionReason )
 //here we read our Cparms to get our settings
 //=================================================================================================================================
 
-int CtiFDRTelegyr::readConfig( void )
+bool CtiFDRTelegyr::readConfig()
 {
    string   tempStr;
 
@@ -1753,7 +1753,7 @@ int CtiFDRTelegyr::readConfig( void )
       CTILOG_DEBUG(dout, loglist);
    }
 
-   return TRUE;
+   return true;
 }
 
 //=================================================================================================================================

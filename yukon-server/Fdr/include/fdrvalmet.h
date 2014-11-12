@@ -25,7 +25,7 @@ class IM_EX_FDRVALMET CtiFDR_Valmet : public CtiFDRSingleSocket
         virtual int getMessageSize(CHAR *data);
         virtual std::string decodeClientName(CHAR *data);
 
-        virtual int readConfig( void );
+        bool readConfig() override;
 
         // end getters and setters
         static const CHAR * KEY_LISTEN_PORT_NUMBER;

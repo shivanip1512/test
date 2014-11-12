@@ -72,7 +72,7 @@ bool CtiFDR_Rdex::isRegistrationNeeded()
 *
 **************************************************
 */
-int CtiFDR_Rdex::readConfig()
+bool CtiFDR_Rdex::readConfig()
 {
     string   tempStr;
 

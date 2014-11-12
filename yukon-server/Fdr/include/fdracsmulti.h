@@ -188,7 +188,7 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
 
         virtual unsigned int getMessageSize(const char* data);
         virtual unsigned int getMagicInitialMsgSize(){return ACS_MULTI_HEADER_SIZE;};
-        virtual int readConfig( void );
+        bool readConfig() override;
 
         enum {ACS_Open = 0, ACS_Closed = 1, ACS_Invalid=99};
 

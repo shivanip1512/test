@@ -78,7 +78,7 @@ CtiFDRAcsMulti::~CtiFDRAcsMulti()
 *
 **************************************************
 */
-int CtiFDRAcsMulti::readConfig()
+bool CtiFDRAcsMulti::readConfig()
 {
     string   tempStr;
 

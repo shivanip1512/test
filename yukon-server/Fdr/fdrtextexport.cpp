@@ -160,9 +160,8 @@ CHAR CtiFDR_TextExport::YukonToForeignDST (bool aFlag)
     return retVal;
 }
 
-int CtiFDR_TextExport::readConfig( void )
+bool CtiFDR_TextExport::readConfig()
 {
-    int         successful = TRUE;
     string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_INTERVAL);
@@ -265,7 +264,7 @@ int CtiFDR_TextExport::readConfig( void )
         CTILOG_DEBUG(dout, loglist)
     }
 
-    return successful;
+    return true;
 }
 
 

@@ -141,7 +141,7 @@ void CtiFDR_ValmetMulti::stopMultiListeners()
 * Description: loads cparm config values
 *
 *************************************************/
-int CtiFDR_ValmetMulti::readConfig()
+bool CtiFDR_ValmetMulti::readConfig()
 {
     int linkTimeout = gConfigParms.getValueAsInt(KEY_LINK_TIMEOUT, 60);
     setLinkTimeout(linkTimeout);

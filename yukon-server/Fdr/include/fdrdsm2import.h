@@ -30,7 +30,7 @@ class IM_EX_FDRDSM2IMPORT CtiFDR_Dsm2Import : public CtiFDRAsciiImportBase
         virtual BOOL    run( void );
         virtual BOOL    stop( void );
 
-        int readConfig( void );
+        bool readConfig() override;
 
         enum {Dsm2_Invalid=0,
               Dsm2_Open, 

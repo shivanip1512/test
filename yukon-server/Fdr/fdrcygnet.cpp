@@ -232,9 +232,8 @@ BOOL CtiFDRCygnet::stop( void )
 *
 **************************************************
 */
-int CtiFDRCygnet::readConfig( void )
+bool CtiFDRCygnet::readConfig( void )
 {
-    int         successful = TRUE;
     string   tempStr;
 
 
@@ -306,7 +305,7 @@ int CtiFDRCygnet::readConfig( void )
         }
     }
 
-    return successful;
+    return true;
 }
 
 

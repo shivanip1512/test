@@ -409,9 +409,8 @@ bool CtiFDR_Dsm2Import::validateAndDecodeLine (string &aLine, CtiMessage **retMs
 
 
 
-int CtiFDR_Dsm2Import::readConfig( void )
+bool CtiFDR_Dsm2Import::readConfig()
 {
-    int         successful = TRUE;
     string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_INTERVAL);
@@ -499,7 +498,7 @@ int CtiFDR_Dsm2Import::readConfig( void )
         CTILOG_DEBUG(dout, loglist);
     }
 
-    return successful;
+    return true;
 }
 
 /****************************************************************************************

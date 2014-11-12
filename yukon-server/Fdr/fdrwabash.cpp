@@ -43,9 +43,8 @@ BOOL FDRWabash::init()
     return loadTranslationLists();
 }
 
-int FDRWabash::readConfig()
+bool FDRWabash::readConfig()
 {
-    int ok = true;
     string tempString;
     _writeInitialLoad = false;
 

@@ -200,9 +200,8 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
     return returnBool;
 }
 
-int CtiFDR_LodeStarImportBase::readConfig( void )
+bool CtiFDR_LodeStarImportBase::readConfig()
 {
-    int         successful = TRUE;
     string   tempStr;
 
     tempStr = getCparmValueAsString(getKeyInterval());
@@ -306,9 +305,7 @@ int CtiFDR_LodeStarImportBase::readConfig( void )
         CTILOG_DEBUG(dout, loglist);
     }
 
-
-
-    return successful;
+    return true;
 }
 
 

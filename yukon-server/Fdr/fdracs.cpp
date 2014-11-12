@@ -65,9 +65,9 @@ CtiFDR_ACS::~CtiFDR_ACS()
 *
 **************************************************
 */
-int CtiFDR_ACS::readConfig()
+bool CtiFDR_ACS::readConfig()
 {
-    int successful = Inherited::readConfig();
+    bool successful = Inherited::readConfig();
     string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_LISTEN_PORT_NUMBER);

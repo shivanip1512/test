@@ -53,9 +53,9 @@ BOOL FDRTriStateSub::init()
     return true;
 }
 
-int FDRTriStateSub::readConfig( void )
+bool FDRTriStateSub::readConfig()
 {
-    int         successful = TRUE;
+    bool successful = true;
     string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_PORT_NUMBER);

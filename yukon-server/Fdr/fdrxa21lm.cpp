@@ -258,9 +258,8 @@ bool CtiFDR_XA21LM::isRegistrationNeeded()
 *
 **************************************************
 */
-int CtiFDR_XA21LM::readConfig()
+bool CtiFDR_XA21LM::readConfig()
 {
-    int         successful = TRUE;
     string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_LISTEN_PORT_NUMBER);
@@ -359,7 +358,7 @@ int CtiFDR_XA21LM::readConfig()
 
         CTILOG_DEBUG(dout, loglist);
     }
-    return successful;
+    return true;
 }
 
 /*

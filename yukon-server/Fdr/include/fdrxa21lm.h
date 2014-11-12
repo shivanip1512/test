@@ -262,7 +262,7 @@ class IM_EX_FDRXA21LM CtiFDR_XA21LM : public CtiFDRSingleSocket
         virtual int getMessageSize(CHAR *data);
         virtual std::string decodeClientName(CHAR *data);
 
-        virtual int readConfig( void );
+        bool readConfig() override;
 
         virtual int processRegistrationMessage(CHAR *data);
         virtual int processControlMessage(CHAR *data);

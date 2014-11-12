@@ -182,7 +182,7 @@ class IM_EX_FDRRDEX CtiFDR_Rdex : public CtiFDRSingleSocket
         virtual int getMessageSize(CHAR *data);
         virtual std::string decodeClientName(CHAR *data);
 
-        virtual int readConfig( void );
+        bool readConfig() override;
 
         virtual int processValueMessage(CHAR *data);
         virtual int processStatusMessage(CHAR *data);

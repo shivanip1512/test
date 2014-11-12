@@ -149,9 +149,8 @@ CHAR CtiFDR_BEPC::YukonToForeignDST (bool aFlag)
     return retVal;
 }
 
-int CtiFDR_BEPC::readConfig( void )
+bool CtiFDR_BEPC::readConfig( void )
 {
-    int successful = TRUE;
     string tempStr;
 
     tempStr = getCparmValueAsString(KEY_INTERVAL);
@@ -233,7 +232,7 @@ int CtiFDR_BEPC::readConfig( void )
         CTILOG_DEBUG(dout, loglist);
     }
 
-    return successful;
+    return true;
 }
 
 

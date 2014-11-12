@@ -1,57 +1,10 @@
 #include "precompiled.h"
 
-#include <iostream>
-
-#include <stdio.h>
-
-/** include files **/
-
-#include "ctidate.h"
-#include "ctitime.h"
-#include "ctistring.h"
-#include <boost/tokenizer.hpp>
-
-#include "cparms.h"
-#include "msg_multi.h"
-#include "msg_ptreg.h"
-#include "msg_cmd.h"
-#include "message.h"
-#include "msg_reg.h"
-#include "msg_ptreg.h"
-#include "msg_pdata.h"
-#include "msg_signal.h"
-#include "pointtypes.h"
-#include "dllbase.h"
-#include "logger.h"
-#include "guard.h"
-#include "fdrpointlist.h"
-#include "fdrsocketinterface.h"
-#include "fdrscadaserver.h"
-#include "utility.h"
-#include "socket_helper.h"
-// this class header
 #include "fdrdnpslave.h"
+
 #include "prot_dnp.h"
-#include "prot_base.h"
-#include "dnp_object_binaryinput.h"
-#include "dnp_object_counter.h"
-#include "dnp_objects.h"
+
 #include "std_helper.h"
-#include "win_helper.h"
-
-#define DNPSLAVE_PORTNUMBER      2085
-#define FDR_DNP_HEADER_SIZE        10
-#define FDR_DNP_REQ_FUNC_LOCATION  12
-#define FDR_DNP_HEADER_BYTE1     0x05
-#define FDR_DNP_HEADER_BYTE2     0x64
-
-
-#define SINGLE_SOCKET_DNP_CONFIRM      0
-#define SINGLE_SOCKET_DNP_READ         1
-#define SINGLE_SOCKET_DNP_WRITE        2
-#define SINGLE_SOCKET_DNP_DIRECT_OP    5
-#define SINGLE_SOCKET_DNP_DATALINK_REQ 100
-
 
 using namespace std;
 using namespace Cti::Protocol;
@@ -59,29 +12,31 @@ using namespace Cti::Protocol;
 namespace Cti {
 namespace Fdr {
 
+enum MiscDefines
+{
+    DNPSLAVE_PORTNUMBER       = 2085,
+    FDR_DNP_HEADER_SIZE       = 10,
+    FDR_DNP_REQ_FUNC_LOCATION = 12,
+    FDR_DNP_HEADER_BYTE1 = 0x05,
+    FDR_DNP_HEADER_BYTE2 = 0x64,
+};
+
+enum DnpApplicationFunctionCodes
+{
+    SINGLE_SOCKET_DNP_CONFIRM      = 0,
+    SINGLE_SOCKET_DNP_READ         = 1,
+    SINGLE_SOCKET_DNP_WRITE        = 2,
+    SINGLE_SOCKET_DNP_DIRECT_OP    = 5,
+    SINGLE_SOCKET_DNP_DATALINK_REQ = 100,
+};
+
 /** global used to start the interface by c functions **/
 DnpSlave * dnpSlaveInterface;
 
-const CHAR * DnpSlave::KEY_LISTEN_PORT_NUMBER = "FDR_DNPSLAVE_PORT_NUMBER";
-const CHAR * DnpSlave::KEY_DB_RELOAD_RATE = "FDR_DNPSLAVE_DB_RELOAD_RATE";
-const CHAR * DnpSlave::KEY_DEBUG_MODE = "FDR_DNPSLAVE_DEBUG_MODE";
-const CHAR * DnpSlave::KEY_FDR_DNPSLAVE_SERVER_NAMES = "FDR_DNPSLAVE_SERVER_NAMES";
-const CHAR * DnpSlave::KEY_LINK_TIMEOUT = "FDR_DNPSLAVE_LINK_TIMEOUT_SECONDS";
-const CHAR * DnpSlave::KEY_STALEDATA_TIMEOUT = "FDR_DNPSLAVE_STALEDATA_TIMEOUT";
-
-const string DnpSlave::dnpMasterId="MasterId";
-const string DnpSlave::dnpSlaveId="SlaveId";
-const string DnpSlave::dnpPointType="POINTTYPE";
-const string DnpSlave::dnpPointOffset="Offset";
-const string DnpSlave::dnpPointStatusString="Status";
-const string DnpSlave::dnpPointAnalogString="Analog";
-const string DnpSlave::dnpPointCalcAnalogString="CalcAnalog";
-const string DnpSlave::dnpPointCounterString="PulseAccumulator";
-const string DnpSlave::dnpPointMultiplier="Multiplier";
 
 
-const string DnpSlave::CtiFdrDNPInMessageString="DNP InMessage";
-const string DnpSlave::CtiFdrDNPOutMessageString="DNP OutMessage";
+const string DNPInMessageString="DNP InMessage";
+const string DNPOutMessageString="DNP OutMessage";
 
 
 // Constructors, Destructor, and Operators
@@ -103,10 +58,16 @@ void DnpSlave::startup()
 *
 **************************************************
 */
-int DnpSlave::readConfig()
+bool DnpSlave::readConfig()
 {
-    int         successful = TRUE;
     string   tempStr;
+
+    const char *KEY_LISTEN_PORT_NUMBER          = "FDR_DNPSLAVE_PORT_NUMBER";
+    const char *KEY_DB_RELOAD_RATE              = "FDR_DNPSLAVE_DB_RELOAD_RATE";
+    const char *KEY_DEBUG_MODE                  = "FDR_DNPSLAVE_DEBUG_MODE";
+    const char *KEY_FDR_DNPSLAVE_SERVER_NAMES   = "FDR_DNPSLAVE_SERVER_NAMES";
+    const char *KEY_LINK_TIMEOUT                = "FDR_DNPSLAVE_LINK_TIMEOUT_SECONDS";
+    const char *KEY_STALEDATA_TIMEOUT           = "FDR_DNPSLAVE_STALEDATA_TIMEOUT";
 
     setPortNumber(gConfigParms.getValueAsInt( KEY_LISTEN_PORT_NUMBER, DNPSLAVE_PORTNUMBER));
 
@@ -169,9 +130,9 @@ int DnpSlave::readConfig()
 
         CTILOG_INFO(dout, "FDRDnpSlave Configs"
                 << loglist);
-
     }
-    return successful;
+
+    return true;
 }
 
 CtiFDRClientServerConnectionSPtr DnpSlave::createNewConnection(SOCKET newSocket)
@@ -359,7 +320,7 @@ int DnpSlave::processDataLinkConfirmationRequest(Cti::Fdr::ServerConnection& con
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
             CTILOG_DEBUG(dout, logNow() <<" "<< getInterfaceName() <<" received DNP " << linkMessage <<" request message."<<
-                    dumpDNPMessage(CtiFdrDNPInMessageString, data, bufferSize));
+                    dumpDNPMessage(DNPInMessageString, data, bufferSize));
         }
 
         buffer = new UCHAR[bufferSize];
@@ -392,7 +353,7 @@ int DnpSlave::processDataLinkConfirmationRequest(Cti::Fdr::ServerConnection& con
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
             CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" sending DNP "<< linkMessage <<" message."<<
-                    dumpDNPMessage(CtiFdrDNPOutMessageString, (CHAR *)buffer, bufferSize));
+                    dumpDNPMessage(DNPOutMessageString, (CHAR *)buffer, bufferSize));
         }
     }
     else
@@ -419,7 +380,7 @@ int DnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connection,
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
         CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" received DNP scan request message"<<
-                dumpDNPMessage(CtiFdrDNPInMessageString, data, size));
+                dumpDNPMessage(DNPInMessageString, data, size));
     }
 
     BYTEUSHORT dest, src;
@@ -487,7 +448,7 @@ int DnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connection,
                  if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                  {
                      CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" sending DNP scan response message."<<
-                             dumpDNPMessage(CtiFdrDNPOutMessageString, buffer, bufferSize));
+                             dumpDNPMessage(DNPOutMessageString, buffer, bufferSize));
                  }
                  connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
              }
@@ -517,6 +478,16 @@ int DnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connection,
 DnpId DnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
 {
     DnpId dnpId;
+
+    static const string dnpMasterId              = "MasterId";
+    static const string dnpSlaveId               = "SlaveId";
+    static const string dnpPointType             = "POINTTYPE";
+    static const string dnpPointOffset           = "Offset";
+    static const string dnpPointStatusString     = "Status";
+    static const string dnpPointAnalogString     = "Analog";
+    static const string dnpPointCalcAnalogString = "CalcAnalog";
+    static const string dnpPointCounterString    = "PulseAccumulator";
+    static const string dnpPointMultiplier       = "Multiplier";
 
     string masterId  = pointDestination.getTranslationValue(dnpMasterId);
     string slaveId   = pointDestination.getTranslationValue(dnpSlaveId);

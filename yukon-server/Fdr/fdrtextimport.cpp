@@ -537,9 +537,8 @@ bool CtiFDR_TextImport::validateAndDecodeLine (string &aLine, CtiMessage **aRetM
 
 
 
-int CtiFDR_TextImport::readConfig( void )
+bool CtiFDR_TextImport::readConfig()
 {
-    int         successful = TRUE;
     string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_INTERVAL);
@@ -664,7 +663,7 @@ int CtiFDR_TextImport::readConfig( void )
         CTILOG_DEBUG(dout, loglist);
     }
 
-    return successful;
+    return true;
 }
 
 

@@ -601,9 +601,8 @@ bool CtiFDR_Inet::loadClientList()
 *
 **************************************************
 */
-int CtiFDR_Inet::readConfig( void )
+bool CtiFDR_Inet::readConfig()
 {
-    int         successful = TRUE;
     string   tempStr;
 
 
@@ -700,7 +699,7 @@ int CtiFDR_Inet::readConfig( void )
         CTILOG_DEBUG(dout, loglist);
     }
 
-    return successful;
+    return true;
 }
 
 

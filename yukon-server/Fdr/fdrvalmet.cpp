@@ -75,7 +75,7 @@ CtiFDR_Valmet::~CtiFDR_Valmet()
 *
 **************************************************
 */
-int CtiFDR_Valmet::readConfig()
+bool CtiFDR_Valmet::readConfig()
 {
     string   tempStr;
 

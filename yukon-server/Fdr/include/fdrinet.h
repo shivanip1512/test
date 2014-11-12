@@ -149,7 +149,7 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
         virtual bool loadClientList(void);
         bool loadList(std::string &aDirection, CtiFDRPointList &aList);
 
-        virtual int   readConfig( void );
+        bool readConfig() override;
         virtual void setCurrentClientLinkStates();
         int   findConnectionByNameInList(std::string aName);
         int   findClientInList(const Cti::SocketAddress& aAddr);

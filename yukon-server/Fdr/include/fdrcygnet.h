@@ -75,7 +75,7 @@ class IM_EX_FDRCYGNET CtiFDRCygnet : public CtiFDRInterface
 
         ULONG   calculateNextSendTime();
 
-        int     readConfig( void );
+        bool    readConfig() override;
 
         enum {Cygnet_Open = 0, Cygnet_Closed = 1};
 

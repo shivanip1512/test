@@ -456,9 +456,9 @@ int CtiFDR_STEC::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT aStecLoa
     return retVal;
 }
 
-int CtiFDR_STEC::readConfig( void )
+bool CtiFDR_STEC::readConfig()
 {
-    int         successful = TRUE;
+    bool successful = true;
     string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_PORT_NUMBER);

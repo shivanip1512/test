@@ -58,7 +58,7 @@ class IM_EX_FDRRCCS CtiFDR_Rccs : public CtiFDR_Inet
 
     protected:
 
-        int   readConfig( void );
+        bool readConfig() override;
         virtual bool  findAndInitializeClients( void );
         virtual void setCurrentClientLinkStates();
 

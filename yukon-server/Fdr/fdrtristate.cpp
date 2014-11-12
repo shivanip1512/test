@@ -401,9 +401,9 @@ int CtiFDR_Tristate::sendToDispatch(CtiTime aTime, FLOAT aSystemLoad, FLOAT a30M
     return retVal;
 }
 
-int CtiFDR_Tristate::readConfig( void )
+bool CtiFDR_Tristate::readConfig()
 {
-    int         successful = TRUE;
+    bool successful = true;
     string   tempStr;
 
     tempStr = getCparmValueAsString(KEY_PORT_NUMBER);

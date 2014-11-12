@@ -76,7 +76,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         virtual BOOL        run( void );
         virtual BOOL        stop( void );
 
-        virtual int readConfig( void );
+        virtual bool readConfig();
 
         virtual int processMessageFromForeignSystem (CHAR *data) = 0;
 
@@ -164,7 +164,7 @@ class IM_EX_FDRBASE CtiFDRInterface
         // add things here and then send dispatch a multi point msg
         CtiFIFOQueue<CtiMessage> iDispatchQueue;
 
-        int  reloadConfigs();
+        bool reloadConfigs();
 
         void disconnect( void );
 

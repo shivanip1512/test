@@ -35,9 +35,9 @@ class __declspec(dllexport) FDRTriStateSub : public CtiFDRFtpInterface
         bool sendMessageToForeignSys( CtiMessage *aMessage );
         int processMessageFromForeignSystem( char* );//should never be called.
 
-		virtual int fail();
+        virtual int fail();
         virtual int decodeFile ();
-        int readConfig( void );
+        bool readConfig() override;
 
         virtual BOOL init( void );   
         virtual BOOL run( void );

@@ -143,5 +143,5 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
       void halt( void );
 
       int noDataAction( int no_msg_count );
-      int readConfig( void );
+      bool readConfig() override;
 };

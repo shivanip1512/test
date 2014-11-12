@@ -650,9 +650,8 @@ void CtiFDR_Rccs::setCurrentClientLinkStates()
 *
 **************************************************
 */
-int CtiFDR_Rccs::readConfig( void )
+bool CtiFDR_Rccs::readConfig()
 {
-    int         successful = TRUE;
     string   tempStr;
 
 
@@ -769,7 +768,7 @@ int CtiFDR_Rccs::readConfig( void )
 
     }
 
-    return successful;
+    return true;
 }
 
 int CtiFDR_Rccs::processMessageFromForeignSystem(CHAR *aBuffer)

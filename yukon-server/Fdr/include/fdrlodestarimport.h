@@ -56,7 +56,7 @@ public:
     virtual int getExpectedNumOfEntries() = 0;
 
 
-    int readConfig( void );
+    bool readConfig() override;
 
     const char * getIntervalKey();
     USHORT ForeignToYukonQuality (std::string aQuality);
