@@ -54,7 +54,7 @@
                         </td>
                         <td>
                             <span class="meta">
-                                <tags:liteAddress ignore="(none)" address="${fn.escapeXml(serviceCompany.address)}"></tags:liteAddress>
+                                <tags:liteAddress ignore="(none)" address="${serviceCompany.address}"></tags:liteAddress>
                             </span>
                         </td>
                     </tr>
