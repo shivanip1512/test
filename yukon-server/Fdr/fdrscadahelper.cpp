@@ -309,7 +309,7 @@ static bool checkValueType(CtiPointType_t type)
 template class IM_EX_FDRBASE CtiFDRScadaHelper<CtiAcsId>;
 
 #include "fdrdnpslave.h"
-template class IM_EX_FDRBASE CtiFDRScadaHelper<CtiDnpId>;
+template class IM_EX_FDRBASE CtiFDRScadaHelper<Cti::Fdr::DnpId>;
 
 #include "fdrvalmetmulti.h"
 template class IM_EX_FDRBASE CtiFDRScadaHelper<CtiValmetPortId>;

@@ -27,7 +27,6 @@
 #include "fdrpointlist.h"
 #include "fdrsocketinterface.h"
 #include "fdrscadaserver.h"
-#include "fdrdnphelper.h"
 #include "utility.h"
 #include "socket_helper.h"
 // this class header
@@ -87,20 +86,14 @@ const string DnpSlave::CtiFdrDNPOutMessageString="DNP OutMessage";
 
 // Constructors, Destructor, and Operators
 DnpSlave::DnpSlave() :
-    CtiFDRSocketServer(string("DNPSLAVE")),
+    CtiFDRSocketServer("DNPSLAVE"),
     _staleDataTimeOut(0)
 {
-    _helper = new CtiFDRDNPHelper<CtiDnpId>(this);
 }
 
 void DnpSlave::startup()
 {
     init();
-}
-
-DnpSlave::~DnpSlave()
-{
-    delete _helper;
 }
 
 /*************************************************
@@ -220,7 +213,7 @@ bool DnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sen
         CtiFDRDestination pointDestination = translationPoint->getDestinationList()[x];
         // translate and put the point id the list
 
-        CtiDnpId dnpId = ForeignToYukonId(pointDestination);
+        DnpId dnpId = ForeignToYukonId(pointDestination);
         if (!dnpId.valid)
         {
             return foundPoint;
@@ -228,8 +221,12 @@ bool DnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sen
 
         if (sendList)
         {
-            _helper->removeSendMapping(dnpId, pointDestination);
-            _helper->addSendMapping(dnpId, pointDestination);
+            _sendMap[pointDestination] = dnpId;
+
+            if( getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL )
+            {
+                CTILOG_DEBUG(dout, "Added send mapping "<< pointDestination <<" to " << dnpId);
+            }
         }
     }
     return foundPoint;
@@ -241,26 +238,22 @@ void DnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool 
     {
         return;
     }
-    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    for each( const CtiFDRDestination &dest in translationPoint->getDestinationList() )
     {
-        CtiFDRDestination pointDestination = translationPoint->getDestinationList()[x];
-        // translate and put the point id the list
+        SendMap::iterator itr = _sendMap.find(dest);
 
-
-        CtiDnpId dnpId = ForeignToYukonId(pointDestination);
-        if (!dnpId.valid)
+        if ( itr != _sendMap.end() )
         {
-            return;
+            if( getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL )
+            {
+                CTILOG_DEBUG(dout, "Removing send mapping "<< itr->first <<" to "<< itr->second);
+            }
+
+            _sendMap.erase(itr);
         }
-
-        if (!_helper->getIdForDestination(pointDestination, dnpId))
+        else
         {
-            return;
-        }
-
-        if (!recvList)
-        {
-            _helper->removeSendMapping(dnpId, pointDestination);
+            CTILOG_WARN(dout, "No mapping found for " << dest);
         }
     }
 }
@@ -436,14 +429,12 @@ int DnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connection,
     src.ch[1] = data[7];
     int seqnumber = (data[11] & 0x0F);
 
-
-    std::map<CtiFDRDestination, CtiDnpId> sendMap = _helper->getSendMappings();
-    for (std::map<CtiFDRDestination, CtiDnpId>::iterator iter = sendMap.begin(); iter != sendMap.end(); iter++)
+    for each( SendMap::value_type mapping in _sendMap )
     {
-        CtiDnpId dnpId = iter->second;
+        const DnpId &dnpId = mapping.second;
         if (dnpId.SlaveId == dest.sh && dnpId.MasterId == src.sh )
         {
-            CtiFDRDestination fdrdest = iter->first;
+            const CtiFDRDestination &fdrdest = mapping.first;
             CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
             CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
             if (!findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
@@ -523,9 +514,9 @@ int DnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connection,
 
 
 
-CtiDnpId DnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
+DnpId DnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
 {
-    CtiDnpId dnpId;
+    DnpId dnpId;
 
     string masterId  = pointDestination.getTranslationValue(dnpMasterId);
     string slaveId   = pointDestination.getTranslationValue(dnpSlaveId);

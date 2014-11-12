@@ -37,7 +37,7 @@ using std::pair;
 using std::multimap;
 
 // Constructors, Destructor, and Operators
-CtiFDRSocketServer::CtiFDRSocketServer(string &name) :
+CtiFDRSocketServer::CtiFDRSocketServer(string name) :
     CtiFDRInterface(name),
     _portNumber(0),
     _pointTimeVariation(0),

@@ -1,18 +1,21 @@
 #pragma once
 
-#include <map>
-
 #include "dlldefs.h"
 #include "queues.h"
 #include "fdrpointlist.h"
 #include "fdrscadaserver.h"
-#include "fdrdnphelper.h"
 #include "dnp_object_analoginput.h"
 #include "prot_dnp.h"
 #include "string_util.h"
 
+#include <boost/tuple/tuple_comparison.hpp>
 
-struct CtiDnpId : public Cti::Loggable
+#include <map>
+
+namespace Cti {
+namespace Fdr {
+
+struct DnpId : public Cti::Loggable
 {
     USHORT MasterId;
     USHORT SlaveId;
@@ -22,21 +25,11 @@ struct CtiDnpId : public Cti::Loggable
     BOOL valid;
 
     CtiFDRClientServerConnection::Destination MasterServerName;
-    bool operator<(const CtiDnpId& other) const
+
+    bool operator<(const DnpId &other) const
     {
-        if( MasterServerName < other.MasterServerName )  return true;
-        if( MasterServerName > other.MasterServerName )  return false;
-
-        if( MasterId < other.MasterId )  return true;
-        if( MasterId > other.MasterId )  return false;
-
-        if( SlaveId < other.SlaveId )  return true;
-        if( SlaveId > other.SlaveId )  return false;
-
-        if( PointType < other.PointType )  return true;
-        if( PointType > other.PointType )  return false;
-
-        return Offset < other.Offset;
+        return boost::tie(      MasterServerName,       MasterId,       SlaveId,       PointType,       Offset)
+             < boost::tie(other.MasterServerName, other.MasterId, other.SlaveId, other.PointType, other.Offset);
     }
 
     std::string toString() const
@@ -50,20 +43,11 @@ struct CtiDnpId : public Cti::Loggable
     }
 };
 
-namespace Cti {
-namespace Fdr {
-
 class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
 {
     public:
-        // helper structs
-        CtiFDRDNPHelper<CtiDnpId>* _helper;
-
-
         // constructors and destructors
         DnpSlave();
-
-        virtual ~DnpSlave();
 
         virtual unsigned int getMessageSize(const char* data);
 
@@ -89,14 +73,17 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
 
 
     private:
-        CtiDnpId    ForeignToYukonId(CtiFDRDestination pointDestination);
-        bool        YukonToForeignQuality (USHORT aQuality, CtiTime lastTimeStamp);
+        DnpId   ForeignToYukonId(CtiFDRDestination pointDestination);
+        bool    YukonToForeignQuality (USHORT aQuality, CtiTime lastTimeStamp);
         int processScanSlaveRequest (Cti::Fdr::ServerConnection& connection,
                                          const char* data, unsigned int size, bool includeTime);
         int processDataLinkConfirmationRequest(Cti::Fdr::ServerConnection& connection, const char* data);
 
         bool isScanIntegrityRequest(const char* data, unsigned int size);
         std::string dumpDNPMessage(const std::string direction, const char* data, unsigned int size);
+
+        typedef std::map<CtiFDRDestination, DnpId> SendMap;
+        SendMap _sendMap;
 
         Cti::Protocol::DNPSlaveInterface  _dnpData;
 

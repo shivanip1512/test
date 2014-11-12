@@ -13,7 +13,7 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
 
     public:
         // constructors and destructors
-        CtiFDRSocketServer(std::string &);
+        CtiFDRSocketServer(std::string);
 
         virtual ~CtiFDRSocketServer();
 
