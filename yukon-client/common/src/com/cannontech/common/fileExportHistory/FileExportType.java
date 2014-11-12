@@ -11,6 +11,7 @@ public enum FileExportType implements DisplayableEnum {
 	ARCHIVED_DATA_EXPORT,
 	WATER_LEAK,
 	METER_EVENTS,
+	ALL
 	;
 	
 	private static final String prefix = "yukon.web.modules.support.fileExportHistory.types.";
