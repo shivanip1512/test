@@ -45,7 +45,7 @@ public class FileExportHistoryController {
     
     @RequestMapping("list")
     public String list(ModelMap model, FlashScope flashScope, String name, String jobName, Integer entryId,
-            @RequestParam(value = "FileExportType", required = false) FileExportType exportType, Integer jobGroupId) {
+            FileExportType exportType, Integer jobGroupId) {
 
         List<ExportHistoryEntry> exports;
         if (entryId != null) {
