@@ -1250,7 +1250,7 @@ void KlondikeProtocol::clearRoutes()
 }
 
 
-void KlondikeProtocol::setWrap(Cti::Protocol::Wrap *wrap)
+void KlondikeProtocol::setWrap(Protocols::Wrap *wrap)
 {
     _wrap = wrap;
 }

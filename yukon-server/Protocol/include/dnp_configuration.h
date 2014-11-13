@@ -1,14 +1,14 @@
 #pragma once
 
 namespace Cti {
-namespace Protocol {
+namespace Protocols {
 namespace DNP {
 
 struct config_data
 {
     config_data( const unsigned internalRetries_,
                  const bool     useLocalTime_,
-                 const bool     enableDnpTimesyncs_, 
+                 const bool     enableDnpTimesyncs_,
                  const bool     omitTimeRequest_,
                  const bool     enableUnsolicitedClass1_,
                  const bool     enableUnsolicitedClass2_,

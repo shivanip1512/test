@@ -6,7 +6,7 @@
 #include "prot_base.h"
 
 namespace Cti {
-namespace Protocol {
+namespace Protocols {
 
 YukonError_t Interface::generate( CtiXfer &xfer )                       {   return ClientErrors::NoMethod;   }
 YukonError_t Interface::decode  ( CtiXfer &xfer, YukonError_t status )  {   return ClientErrors::NoMethod;   }

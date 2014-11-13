@@ -12,7 +12,7 @@ using boost::crc_16_type;
 
 #include "pointtypes.h"
 
-class IM_EX_PROT CtiProtocolSeriesV : public Cti::Protocol::Interface
+class IM_EX_PROT CtiProtocolSeriesV : public Cti::Protocols::Interface
 {
 private:
     // WORKAROUND:

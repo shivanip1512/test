@@ -16,7 +16,7 @@
 #include <map>
 
 namespace Cti {
-namespace Protocol {
+namespace Protocols {
 
 class IM_EX_PROT DNPInterface : public Interface
 {

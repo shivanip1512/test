@@ -11,7 +11,7 @@
 #include "ion_net_application.h"
 
 
-class IM_EX_PROT CtiProtocolION : public Cti::Protocol::Interface
+class IM_EX_PROT CtiProtocolION : public Cti::Protocols::Interface
 {
 private:
     // WORKAROUND:

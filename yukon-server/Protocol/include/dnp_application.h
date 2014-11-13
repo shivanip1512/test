@@ -7,7 +7,7 @@
 #include "dnp_configuration.h"
 
 namespace Cti {
-namespace Protocol {
+namespace Protocols {
 namespace DNP {
 
 class ApplicationLayer

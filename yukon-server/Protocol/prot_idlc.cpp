@@ -25,8 +25,8 @@ using namespace std;
 
 #include "cti_asmc.h"
 
-namespace Cti       {
-namespace Protocol  {
+namespace Cti {
+namespace Protocols {
 
 IDLC::IDLC() :
     _address(0),

@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_object_binaryinput
-*
-* Date:   7/8/2002
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/04/03 15:25:17 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 
@@ -19,9 +6,9 @@
 
 using std::endl;
 
-namespace Cti       {
-namespace Protocol  {
-namespace DNP       {
+namespace Cti {
+namespace Protocols {
+namespace DNP {
 
 BinaryInput::BinaryInput(int group, int variation) : Object(group, variation)
 {

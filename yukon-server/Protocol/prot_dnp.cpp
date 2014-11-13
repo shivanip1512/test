@@ -23,12 +23,12 @@
 using std::endl;
 using std::string;
 
-namespace Cti       {
-namespace Protocol  {
+namespace Cti {
+namespace Protocols {
 
 using boost::scoped_ptr;
 
-using namespace Cti::Protocol::DNP;
+using namespace DNP;
 
 DNPInterface::DNPInterface() :
     _command(Command_Invalid),

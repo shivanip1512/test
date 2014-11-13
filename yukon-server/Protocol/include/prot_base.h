@@ -9,7 +9,7 @@
 #include "xfer.h"
 
 namespace Cti {
-namespace Protocol {
+namespace Protocols {
 
 class IM_EX_PROT Interface : private boost::noncopyable
 {

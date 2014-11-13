@@ -1,8 +1,8 @@
 #pragma once
 
-namespace Cti       {
-namespace Protocol  {
-namespace DNP       {
+namespace Cti {
+namespace Protocols {
+namespace DNP {
 namespace DatalinkPacket {
 
     enum

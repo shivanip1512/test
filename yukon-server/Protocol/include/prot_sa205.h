@@ -6,7 +6,7 @@
 #include "pointtypes.h"
 #include "prot_base.h"
 
-class IM_EX_PROT CtiProtocolSA205 : public Cti::Protocol::Interface
+class IM_EX_PROT CtiProtocolSA205 : public Cti::Protocols::Interface
 {
 private:
     // WORKAROUND:

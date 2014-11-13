@@ -5,18 +5,21 @@
 #include "boost_test_helpers.h"
 
 using Cti::byte_buffer;
+using namespace Cti::Protocols;
+typedef Interface::pointlist_t  pointlist_t;
+typedef Interface::stringlist_t stringlist_t;
 
 BOOST_AUTO_TEST_SUITE( test_prot_dnp )
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 {
-    Cti::Protocol::DNPInterface dnp;
+    DNPInterface dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(4, 3);
     dnp.setName("Test DNP device");
-    dnp.setCommand(Cti::Protocol::DNPInterface::Command_Loopback);
+    dnp.setCommand(DNPInterface::Command_Loopback);
 
     CtiXfer xfer;
 
@@ -170,7 +173,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        Cti::Protocol::Interface::pointlist_t point_list;
+        pointlist_t point_list;
 
         dnp.getInboundPoints(point_list);
 
@@ -196,7 +199,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        Cti::Protocol::Interface::stringlist_t string_list;
+        stringlist_t string_list;
 
         dnp.getInboundStrings(string_list);
 
@@ -222,13 +225,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 {
-    Cti::Protocol::DNPInterface dnp;
+    DNPInterface dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(Cti::Protocol::DNPInterface::Command_Class1230Read_WithTime);
+    dnp.setCommand(DNPInterface::Command_Class1230Read_WithTime);
 
     CtiXfer xfer;
 
@@ -307,7 +310,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        Cti::Protocol::Interface::pointlist_t point_list;
+        pointlist_t point_list;
 
         dnp.getInboundPoints(point_list);
 
@@ -353,7 +356,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        Cti::Protocol::Interface::stringlist_t string_list;
+        stringlist_t string_list;
 
         dnp.getInboundStrings(string_list);
 
@@ -383,13 +386,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
 {
-    Cti::Protocol::DNPInterface dnp;
+    DNPInterface dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(Cti::Protocol::DNPInterface::Command_Class1230Read_WithTime);
+    dnp.setCommand(DNPInterface::Command_Class1230Read_WithTime);
 
     CtiXfer xfer;
 
@@ -468,7 +471,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        Cti::Protocol::Interface::pointlist_t point_list;
+        pointlist_t point_list;
 
         dnp.getInboundPoints(point_list);
 
@@ -514,7 +517,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        Cti::Protocol::Interface::stringlist_t string_list;
+        stringlist_t string_list;
 
         dnp.getInboundStrings(string_list);
 
@@ -544,13 +547,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
 {
-    Cti::Protocol::DNPInterface dnp;
+    DNPInterface dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(Cti::Protocol::DNPInterface::Command_Class1230Read_WithTime);
+    dnp.setCommand(DNPInterface::Command_Class1230Read_WithTime);
 
     CtiXfer xfer;
 
@@ -657,7 +660,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        Cti::Protocol::Interface::pointlist_t point_list;
+        pointlist_t point_list;
 
         dnp.getInboundPoints(point_list);
 
@@ -703,7 +706,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        Cti::Protocol::Interface::stringlist_t string_list;
+        stringlist_t string_list;
 
         dnp.getInboundStrings(string_list);
 
@@ -733,13 +736,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolicited)
 {
-    Cti::Protocol::DNPInterface dnp;
+    DNPInterface dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(Cti::Protocol::DNPInterface::Command_Class1230Read_WithTime);
+    dnp.setCommand(DNPInterface::Command_Class1230Read_WithTime);
 
     CtiXfer xfer;
 
@@ -926,7 +929,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        Cti::Protocol::Interface::pointlist_t point_list;
+        pointlist_t point_list;
 
         dnp.getInboundPoints(point_list);
 
@@ -1002,7 +1005,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        Cti::Protocol::Interface::stringlist_t string_list;
+        stringlist_t string_list;
 
         dnp.getInboundStrings(string_list);
 
@@ -1032,13 +1035,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
 {
-    Cti::Protocol::DNPInterface dnp;
+    DNPInterface dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(Cti::Protocol::DNPInterface::Command_Class1230Read);
+    dnp.setCommand(DNPInterface::Command_Class1230Read);
 
     CtiXfer xfer;
 
@@ -1116,7 +1119,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        Cti::Protocol::Interface::pointlist_t point_list;
+        pointlist_t point_list;
 
         dnp.getInboundPoints(point_list);
 
@@ -1162,7 +1165,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        Cti::Protocol::Interface::stringlist_t string_list;
+        stringlist_t string_list;
 
         dnp.getInboundStrings(string_list);
 
@@ -1192,13 +1195,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
 {
-    Cti::Protocol::DNPInterface dnp;
+    DNPInterface dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(Cti::Protocol::DNPInterface::Command_Class1230Read);
+    dnp.setCommand(DNPInterface::Command_Class1230Read);
 
     CtiXfer xfer;
 
@@ -1276,7 +1279,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        Cti::Protocol::Interface::pointlist_t point_list;
+        pointlist_t point_list;
 
         dnp.getInboundPoints(point_list);
 
@@ -1322,7 +1325,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        Cti::Protocol::Interface::stringlist_t string_list;
+        stringlist_t string_list;
 
         dnp.getInboundStrings(string_list);
 
@@ -1352,13 +1355,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
 {
-    Cti::Protocol::DNPInterface dnp;
+    DNPInterface dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(Cti::Protocol::DNPInterface::Command_Class1230Read);
+    dnp.setCommand(DNPInterface::Command_Class1230Read);
 
     CtiXfer xfer;
 
@@ -1464,7 +1467,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        Cti::Protocol::Interface::pointlist_t point_list;
+        pointlist_t point_list;
 
         dnp.getInboundPoints(point_list);
 
@@ -1510,7 +1513,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        Cti::Protocol::Interface::stringlist_t string_list;
+        stringlist_t string_list;
 
         dnp.getInboundStrings(string_list);
 
@@ -1540,13 +1543,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
 {
-    Cti::Protocol::DNPInterface dnp;
+    DNPInterface dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(Cti::Protocol::DNPInterface::Command_Class1230Read);
+    dnp.setCommand(DNPInterface::Command_Class1230Read);
 
     CtiXfer xfer;
 
@@ -1732,7 +1735,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        Cti::Protocol::Interface::pointlist_t point_list;
+        pointlist_t point_list;
 
         dnp.getInboundPoints(point_list);
 
@@ -1808,7 +1811,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        Cti::Protocol::Interface::stringlist_t string_list;
+        stringlist_t string_list;
 
         dnp.getInboundStrings(string_list);
 
@@ -1838,13 +1841,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
 {
-    Cti::Protocol::DNPInterface dnp;
+    DNPInterface dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(Cti::Protocol::DNPInterface::Command_UnsolicitedInbound);
+    dnp.setCommand(DNPInterface::Command_UnsolicitedInbound);
 
     CtiXfer xfer;
 
@@ -1924,7 +1927,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        Cti::Protocol::Interface::pointlist_t point_list;
+        pointlist_t point_list;
 
         dnp.getInboundPoints(point_list);
 
@@ -1970,7 +1973,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        Cti::Protocol::Interface::stringlist_t string_list;
+        stringlist_t string_list;
 
         dnp.getInboundStrings(string_list);
 
@@ -1981,15 +1984,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
     }
 }
 
-struct test_DNPInterface : public Cti::Protocol::DNPInterface
+struct test_DNPInterface : public DNPInterface
 {
-    using Cti::Protocol::DNPInterface::getCommand;
+    using DNPInterface::getCommand;
 };
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
 {
-    using Cti::Protocol::DNPInterface;
-
     test_DNPInterface dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
@@ -2237,7 +2238,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
     }
 
     {
-        Cti::Protocol::Interface::pointlist_t point_list;
+        pointlist_t point_list;
 
         dnp.getInboundPoints(point_list);
 
@@ -2273,7 +2274,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
         }
 
-        Cti::Protocol::Interface::stringlist_t string_list;
+        stringlist_t string_list;
 
         dnp.getInboundStrings(string_list);
 
@@ -2303,17 +2304,17 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
 {
-    Cti::Protocol::DNPInterface dnp;
+    DNPInterface dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(502, 1000);
     dnp.setName("Test DNP device");
 
-    Cti::Protocol::DNPInterface::output_point op;
+    DNPInterface::output_point op;
 
-    op.dout.control    = Cti::Protocol::DNP::BinaryOutputControl::PulseOn;
-    op.dout.trip_close = Cti::Protocol::DNP::BinaryOutputControl::Close;
+    op.dout.control    = DNP::BinaryOutputControl::PulseOn;
+    op.dout.trip_close = DNP::BinaryOutputControl::Close;
     op.dout.on_time = 0;
     op.dout.off_time = 0;
     op.dout.queue = false;
@@ -2321,10 +2322,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
     op.dout.count = 1;
 
     op.control_offset = 1;
-    op.type = Cti::Protocol::DNPInterface::DigitalOutputPointType;
+    op.type = DNPInterface::DigitalOutputPointType;
     op.expiration = ~0;
 
-    dnp.setCommand(Cti::Protocol::DNPInterface::Command_SetDigitalOut_Direct, op);
+    dnp.setCommand(DNPInterface::Command_SetDigitalOut_Direct, op);
 
     CtiXfer xfer;
 
@@ -2400,7 +2401,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        Cti::Protocol::Interface::stringlist_t string_list;
+        stringlist_t string_list;
 
         dnp.getInboundStrings(string_list);
 
@@ -2417,17 +2418,17 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
 {
-    Cti::Protocol::DNPInterface dnp;
+    DNPInterface dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(502, 1000);
     dnp.setName("Test DNP device");
 
-    Cti::Protocol::DNPInterface::output_point op;
+    DNPInterface::output_point op;
 
-    op.dout.control    = Cti::Protocol::DNP::BinaryOutputControl::PulseOn;
-    op.dout.trip_close = Cti::Protocol::DNP::BinaryOutputControl::Close;
+    op.dout.control    = DNP::BinaryOutputControl::PulseOn;
+    op.dout.trip_close = DNP::BinaryOutputControl::Close;
     op.dout.on_time = 0;
     op.dout.off_time = 0;
     op.dout.queue = false;
@@ -2435,10 +2436,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
     op.dout.count = 1;
 
     op.control_offset = 1;
-    op.type = Cti::Protocol::DNPInterface::DigitalOutputPointType;
+    op.type = DNPInterface::DigitalOutputPointType;
     op.expiration = ~0;
 
-    dnp.setCommand(Cti::Protocol::DNPInterface::Command_SetDigitalOut_Direct, op);
+    dnp.setCommand(DNPInterface::Command_SetDigitalOut_Direct, op);
 
     CtiXfer xfer;
 
@@ -2514,7 +2515,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
 
         BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
-        Cti::Protocol::Interface::stringlist_t string_list;
+        stringlist_t string_list;
 
         dnp.getInboundStrings(string_list);
 

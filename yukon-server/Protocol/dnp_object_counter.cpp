@@ -5,9 +5,9 @@
 
 using std::endl;
 
-namespace Cti       {
-namespace Protocol  {
-namespace DNP       {
+namespace Cti {
+namespace Protocols {
+namespace DNP {
 
 Counter::Counter(int variation) :
     Object(Group, variation),

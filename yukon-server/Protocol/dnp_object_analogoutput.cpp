@@ -10,9 +10,9 @@ using std::endl;
 using boost::int16_t;
 using boost::int32_t;
 
-namespace Cti       {
-namespace Protocol  {
-namespace DNP       {
+namespace Cti {
+namespace Protocols {
+namespace DNP {
 
 AnalogOutputStatus::AnalogOutputStatus(int group, int variation) : Object(group, variation)
 {

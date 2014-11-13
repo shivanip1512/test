@@ -15,7 +15,7 @@
                                     // CPARMS for setting "PROTOCOL_SA_TELVENT"
 #define CTIPROT_ABRUPT_RESTORE                  0x00000010          // Using this could make the restores work WRONG...  Remove this and code wrapped one day soon.
 
-class IM_EX_PROT CtiProtocolSA3rdParty : public Cti::Protocol::Interface
+class IM_EX_PROT CtiProtocolSA3rdParty : public Cti::Protocols::Interface
 {
 private:
     // WORKAROUND:

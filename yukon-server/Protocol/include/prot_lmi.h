@@ -12,7 +12,7 @@
 #include "verification_objects.h"
 
 
-class IM_EX_PROT CtiProtocolLMI : public Cti::Protocol::Interface
+class IM_EX_PROT CtiProtocolLMI : public Cti::Protocols::Interface
 {
 private:
     // WORKAROUND:

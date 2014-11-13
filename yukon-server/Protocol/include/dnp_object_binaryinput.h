@@ -3,9 +3,9 @@
 #include "dnp_objects.h"
 #include "dnp_object_time.h"
 
-namespace Cti       {
-namespace Protocol  {
-namespace DNP       {
+namespace Cti {
+namespace Protocols {
+namespace DNP {
 
 class IM_EX_PROT BinaryInput : public Object
 {

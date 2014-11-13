@@ -3,9 +3,9 @@
 #include "dnp_datalink.h"
 #include "xfer.h"
 
-namespace Cti       {
-namespace Protocol  {
-namespace DNP       {
+namespace Cti {
+namespace Protocols {
+namespace DNP {
 
 namespace Transport {
 

@@ -5,8 +5,8 @@
 
 #include "prot_wrap.h"
 
-namespace Cti       {
-namespace Protocol  {
+namespace Cti {
+namespace Protocols {
 
 class IM_EX_PROT IDLC : public Wrap
 {

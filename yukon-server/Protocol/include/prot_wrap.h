@@ -2,8 +2,8 @@
 
 #include "prot_base.h"
 
-namespace Cti       {
-namespace Protocol  {
+namespace Cti {
+namespace Protocols {
 
 
 class Wrap : public Interface

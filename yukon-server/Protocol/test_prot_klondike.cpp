@@ -12,7 +12,7 @@ using Cti::byte_buffer;
 
 BOOST_AUTO_TEST_SUITE( test_prot_klondike )
 
-class Test_Wrap : public Cti::Protocol::Wrap
+class Test_Wrap : public Cti::Protocols::Wrap
 {
 public:
 

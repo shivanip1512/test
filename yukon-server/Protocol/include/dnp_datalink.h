@@ -4,9 +4,9 @@
 
 #include "dnp_datalink_packet.h"
 
-namespace Cti       {
-namespace Protocol  {
-namespace DNP       {
+namespace Cti {
+namespace Protocols {
+namespace DNP {
 
 class DatalinkLayer
 {

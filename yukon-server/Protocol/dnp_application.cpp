@@ -9,9 +9,9 @@
 using std::endl;
 using std::string;
 
-namespace Cti       {
-namespace Protocol  {
-namespace DNP       {
+namespace Cti {
+namespace Protocols {
+namespace DNP {
 
 ApplicationLayer::ApplicationLayer() :
     _dstAddr(0),

@@ -7,9 +7,9 @@
 using std::endl;
 using std::vector;
 
-namespace Cti       {
-namespace Protocol  {
-namespace DNP       {
+namespace Cti {
+namespace Protocols {
+namespace DNP {
 
 using Transport::TransportPacket;
 

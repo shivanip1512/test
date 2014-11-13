@@ -10,7 +10,7 @@
 namespace Cti {
 namespace Protocols {
 
-class IM_EX_PROT ModbusProtocol : public Protocol::Interface
+class IM_EX_PROT ModbusProtocol : public Interface
 {
 private:
     // WORKAROUND:
@@ -84,8 +84,8 @@ protected:
     BYTE                          _inBuffer[505];
     ULONG                         _inCountActual;
 
-    Protocol::Interface::stringlist_t _string_results;
-    Protocol::Interface::pointlist_t  _point_results;
+    Interface::stringlist_t _string_results;
+    Interface::pointlist_t  _point_results;
 
 public:
 

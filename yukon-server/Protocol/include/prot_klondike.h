@@ -13,7 +13,7 @@
 namespace Cti {
 namespace Protocols {
 
-class IM_EX_PROT KlondikeProtocol : public Cti::Protocol::Interface
+class IM_EX_PROT KlondikeProtocol : public Interface
 {
 private:
     // WORKAROUND:
@@ -308,9 +308,9 @@ private:
 
     static bool responseExpected(CommandCode command);
 
-    Cti::Protocol::Wrap *_wrap;
+    Wrap *_wrap;
 
-    Cti::Protocol::IDLC _idlc_wrap;
+    IDLC _idlc_wrap;
     //DNP::Datalink _dnp_wrap;
 
     struct route_entry_t
@@ -327,7 +327,7 @@ private:
 
 protected:
 
-    void setWrap(Cti::Protocol::Wrap *wrap);    //  unit test access function
+    void setWrap(Wrap *wrap);    //  unit test access function
     virtual long currentTime();  //  unit test access function override
 
 public:

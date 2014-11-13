@@ -10,9 +10,9 @@
 
 #include "prot_base.h"
 
-namespace Cti       {
-namespace Protocol  {
-namespace DNP       {
+namespace Cti {
+namespace Protocols {
+namespace DNP {
 
 class TimeCTO;  //  forward declaration
 class Time;

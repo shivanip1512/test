@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dnp_objects
-*
-* Date:   5/21/2002
-*
-* Author: Matt Fisher
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2008/02/15 21:07:24 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dllbase.h"
@@ -31,9 +16,9 @@
 
 using namespace std;
 
-namespace Cti       {
-namespace Protocol  {
-namespace DNP       {
+namespace Cti {
+namespace Protocols {
+namespace DNP {
 
 Object::Object( int group, int variation ) :
     _group(group),

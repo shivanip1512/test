@@ -9,11 +9,11 @@
 
 BOOST_AUTO_TEST_SUITE( test_prot_dnp )
 
-const Cti::Protocol::DNP::TimeCTO *NoTimeCTO = 0;
+const Cti::Protocols::DNP::TimeCTO *NoTimeCTO = 0;
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_object_internalindications)
 {
-    using Cti::Protocol::DNP::InternalIndications;
+    using Cti::Protocols::DNP::InternalIndications;
 
     const void *Null = 0;
 
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_internalindications)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_input)
 {
-    using Cti::Protocol::DNP::BinaryInput;
+    using Cti::Protocols::DNP::BinaryInput;
 
     gDNPOfflineNonUpdated = true;
 
@@ -197,7 +197,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_input)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_output)
 {
-    using Cti::Protocol::DNP::BinaryOutput;
+    using Cti::Protocols::DNP::BinaryOutput;
 
     gDNPOfflineNonUpdated = true;
 
@@ -294,7 +294,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_binary_output)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_input)
 {
-    using Cti::Protocol::DNP::AnalogInput;
+    using Cti::Protocols::DNP::AnalogInput;
 
     gDNPOfflineNonUpdated = true;
 
@@ -434,7 +434,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_input)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
 {
-    using Cti::Protocol::DNP::AnalogOutputStatus;
+    using Cti::Protocols::DNP::AnalogOutputStatus;
 
     gDNPOfflineNonUpdated = true;
 
@@ -546,7 +546,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_object_analog_output_status)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_object_counter)
 {
-    using Cti::Protocol::DNP::Counter;
+    using Cti::Protocols::DNP::Counter;
 
     gDNPOfflineNonUpdated = true;
 

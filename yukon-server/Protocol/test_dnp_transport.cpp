@@ -8,13 +8,15 @@ using std::vector;
 
 BOOST_AUTO_TEST_SUITE( test_dnp_transport )
 
-struct test_Transport : private Cti::Protocol::DNP::TransportLayer
+struct test_Transport : private Cti::Protocols::DNP::TransportLayer
 {
-    using Cti::Protocol::DNP::TransportLayer::packet_sequence_t;
+    using Cti::Protocols::DNP::TransportLayer::packet_sequence_t;
 
-    using Cti::Protocol::DNP::TransportLayer::isPacketSequenceValid;
-    using Cti::Protocol::DNP::TransportLayer::extractPayload;
+    using Cti::Protocols::DNP::TransportLayer::isPacketSequenceValid;
+    using Cti::Protocols::DNP::TransportLayer::extractPayload;
 };
+
+using Cti::Protocols::DNP::Transport::TransportPacket;
 
 BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_no_packets)
 {
@@ -25,8 +27,6 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_no_packets)
 
 BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_one_packet)
 {
-    using Cti::Protocol::DNP::Transport::TransportPacket;
-
     TransportPacket packets[] =
     {
         TransportPacket(0x01, 0, 0),
@@ -63,8 +63,6 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_one_packet)
 
 BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_two_packets)
 {
-    using Cti::Protocol::DNP::Transport::TransportPacket;
-
     TransportPacket packets[] =
     {
         TransportPacket(0x09, 0, 0),  //   9
@@ -110,8 +108,6 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_two_packets)
 
 BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_three_packets)
 {
-    using Cti::Protocol::DNP::Transport::TransportPacket;
-
     TransportPacket packets[] =
     {
         TransportPacket(0x12, 0, 0),  //  18
@@ -175,8 +171,6 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_three_packets)
 
 BOOST_AUTO_TEST_CASE(test_dnp_transport_isPacketSequenceValid_wraparound)
 {
-    using Cti::Protocol::DNP::Transport::TransportPacket;
-
     //  try from 1 to 5 packets - can't go to 64 since next_permutation() is O(N!) below
     for( int packet_count = 1; packet_count <= 5; ++packet_count )
     {
@@ -248,8 +242,6 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_no_packets)
 
 BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_one_packet)
 {
-    using Cti::Protocol::DNP::Transport::TransportPacket;
-
     const std::string expected_string = "This is the expected string.";
     const std::vector<unsigned char> expected(expected_string.begin(),
                                               expected_string.end());
@@ -271,8 +263,6 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_one_packet)
 
 BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_two_packets)
 {
-    using Cti::Protocol::DNP::Transport::TransportPacket;
-
     const std::string expected_string = "This is the expected string.";
     const std::vector<unsigned char> expected(expected_string.begin(),
                                               expected_string.end());
@@ -325,8 +315,6 @@ BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_two_packets)
 
 BOOST_AUTO_TEST_CASE(test_dnp_transport_extractPayload_three_packets)
 {
-    using Cti::Protocol::DNP::Transport::TransportPacket;
-
     const std::string expected_string = "This is the expected string.";
     const std::vector<unsigned char> expected(expected_string.begin(),
                                               expected_string.end());
