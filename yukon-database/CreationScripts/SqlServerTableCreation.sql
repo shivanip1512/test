@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/31/2014 4:49:04 PM                        */
+/* Created on:     11/12/2014 7:59:16 PM                        */
 /*==============================================================*/
 
 
@@ -13786,10 +13786,6 @@ go
 
 
 
-/*==============================================================*/
-/* Added manually to the creation scripts for now. Will need to add to Power Designer yet. */
-/* YUK-13788 */
-/*==============================================================*/
 IF OBJECT_ID ('sp_SmartIndexMaintenance') IS NOT NULL
     DROP PROCEDURE sp_SmartIndexMaintenance
 go
@@ -13912,3 +13908,5 @@ BEGIN CATCH
 END CATCH
 EXEC xp_logevent 201000, N'Smart Index Maintenance Complete';  /* write to SQLServer Log */
 go
+
+
