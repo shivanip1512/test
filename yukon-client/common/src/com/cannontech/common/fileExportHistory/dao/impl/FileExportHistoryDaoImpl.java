@@ -109,7 +109,7 @@ public class FileExportHistoryDaoImpl implements FileExportHistoryDao {
             sql.append("WHERE  OriginalFileName").contains(nameFragment);
             clause2Start = " AND ";
         }
-        if (FileExportType.ALL != jobType || null == jobType) {
+        if (null != jobType) {
             sql.append(clause2Start).append("FileExportType").eq_k(jobType);
             clause2Start = " AND ";
         }

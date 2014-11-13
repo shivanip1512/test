@@ -45,9 +45,9 @@ public class FileExportHistoryController {
     
     @RequestMapping("list")
     public String list(ModelMap model, FlashScope flashScope, String name, String jobName, Integer entryId,
-            FileExportType exportType, Integer jobGroupId) {
+            @RequestParam(defaultValue="ARCHIVED_DATA_EXPORT") FileExportType exportType, Integer jobGroupId) {
 
-        List<ExportHistoryEntry> exports;
+        List<ExportHistoryEntry> exports = null;
         if (entryId != null) {
             ExportHistoryEntry entry = fileExportHistoryDao.getEntry(entryId);
             exports = Lists.newArrayList(entry);
