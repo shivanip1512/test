@@ -512,7 +512,7 @@ span.dynatree-folder a {
         transition: border-color .20s;
         cursor: pointer;
         &:focus {outline: none;}
-
+        
         &.ui-state-hover {
             background-color: #F4F4F4;
             border-color: #aaa;
@@ -520,11 +520,11 @@ span.dynatree-folder a {
             color: #333;
         }
     }
-
+    
     .ui-datepicker-header {
         padding: 5px 0;
         border-bottom: 1px solid #ccc;
-
+        
         /* Position the titlebar buttons */
         .ui-datepicker-next,
         .ui-datepicker-prev {
@@ -537,7 +537,7 @@ span.dynatree-folder a {
         .ui-datepicker-next {
             right: 5px;
         }
-
+        
         /* Remove jQuery UI properties from 'icons' and apply our own. */
        .ui-datepicker-prev span,
        .ui-datepicker-next span {
@@ -566,19 +566,19 @@ span.dynatree-folder a {
             }
         }
     }
-
+    
     .ui-datepicker-calendar {
         width: 95%;
         margin-right: auto;
         margin-left: auto;
-
+        
         th {
             padding-bottom: 0;
         }
         td {
             width: 14.2857142857%;
         }
-
+        
         /* days */
         .ui-state-default {
             border-radius: 2px;
@@ -586,12 +586,12 @@ span.dynatree-folder a {
             color: @font-color;
             background: white;
         }
-
+        
         /* today */
         .ui-state-highlight {
             background: #eee;
         }
-
+        
         /* selected */
         .ui-state-active,
         /* hover */
@@ -602,7 +602,7 @@ span.dynatree-folder a {
             color: @primary-color;
         }
     }
-
+    
     .ui-datepicker-buttonpane {
         /* Clearfix the buttonpane */
         &:before, 
@@ -611,15 +611,15 @@ span.dynatree-folder a {
             display: table;
         }
         &:after { clear: both; }
-
+        
         .ui-datepicker-close {
             float: left;
         }
-
+        
         button.ui-datepicker-current {
             float: right;
             opacity: 1;
-
+            
             /* make today button primary */
             background: @primary-button-color;
             border: 1px solid @primary-button-color-border !important;
@@ -634,6 +634,13 @@ span.dynatree-folder a {
             }
         }
     }
+}
+
+
+/** Timer Pickers */
+.ui-datepicker .ui-timepicker-div .ui-widget-header {
+    padding: 5px 0;
+    border-bottom: 1px solid #ccc;
 }
 
 

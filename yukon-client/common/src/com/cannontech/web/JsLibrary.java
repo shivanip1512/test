@@ -35,7 +35,7 @@ public enum JsLibrary {
     JQUERY_UI("/resources/js/lib/jquery-ui/jquery-ui.js"), //http://www.jqueryui.com
     JQUERY_UI_MIN("/resources/js/lib/jquery-ui/jquery-ui.min.js"), //http://www.jqueryui.com
     
-    JQUERY_UI_TIME_PICKER_ADDON("/JavaScript/lib/jQueryUI/plugins/datetimepicker/jquery-ui-timepicker-addon.js"), //https://github.com/trentrichardson/jQuery-Timepicker-Addon
+    JQUERY_UI_TIME_PICKER("/resources/js/lib/time-picker/jquery-ui-timepicker-addon.min.js"), //https://github.com/trentrichardson/jQuery-Timepicker-Addon
     JQUERY_UI_WIDGET("/JavaScript/lib/jQuery/plugins/fileupload/jquery.ui.widget.js"), //https://github.com/blueimp/jQuery-File-Upload/wiki/Basic-plugin
 
     YUKON_FLOTCHARTS("/JavaScript/yukon.flot.js"), //in-house
