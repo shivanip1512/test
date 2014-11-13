@@ -30,9 +30,9 @@ Ccu721Device::~Ccu721Device()
 }
 
 
-Protocol::Interface *Ccu721Device::getProtocol()
+Protocols::Interface *Ccu721Device::getProtocol()
 {
-    return (Protocol::Interface *)&_klondike;
+    return &_klondike;
 }
 
 

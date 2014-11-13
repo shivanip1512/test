@@ -18,7 +18,7 @@ private:
 public:
     CtiDeviceSeriesV() {};
 
-    Cti::Protocol::Interface *getProtocol();
+    Cti::Protocols::Interface *getProtocol() override;
 
     YukonError_t ExecuteRequest (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;
 

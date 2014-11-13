@@ -3,6 +3,8 @@
 #include "dev_cbc8020.h"
 #include "ctidate.h"
 
+typedef Cti::Protocols::Interface::pointlist_t pointlist_t;
+
 BOOST_AUTO_TEST_SUITE( test_dev_cbc8020 )
 
 struct TestCbc8020Device : Cti::Devices::Cbc8020Device
@@ -15,7 +17,7 @@ struct TestCbc8020Device : Cti::Devices::Cbc8020Device
 
 BOOST_AUTO_TEST_CASE(test_firmware_points_no_points_present)
 {
-    Cti::Protocol::Interface::pointlist_t points;
+    pointlist_t points;
 
     TestCbc8020Device::combineFirmwarePoints(points);
 
@@ -26,7 +28,7 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_no_points_present)
 BOOST_AUTO_TEST_CASE(test_firmware_points_both_present)
 {
     CtiPointDataMsg *msg1 = new CtiPointDataMsg(), *msg2 = new CtiPointDataMsg();
-    Cti::Protocol::Interface::pointlist_t points;
+    pointlist_t points;
 
     msg1->setValue(4);
     msg1->setType(AnalogPointType);
@@ -41,7 +43,7 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_both_present)
 
     /*
         Resulting firmware version should be '0.4.1'
-     
+
         chars                   ==  '0',    '.',    '4',    '.',    '1'
         hex                     ==  30,     2e,     34,     2e,     31
         encoded (hex - 0x20)    ==  10,     0e,     14,     0e,     11
@@ -73,7 +75,7 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_both_present)
 BOOST_AUTO_TEST_CASE(test_firmware_points_major_present_only)
 {
     CtiPointDataMsg *msg1 = new CtiPointDataMsg();
-    Cti::Protocol::Interface::pointlist_t points;
+    pointlist_t points;
 
     msg1->setValue(8);
     msg1->setType(AnalogPointType);
@@ -96,7 +98,7 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_major_present_only)
 BOOST_AUTO_TEST_CASE(test_firmware_points_minor_present_only)
 {
     CtiPointDataMsg *msg1 = new CtiPointDataMsg();
-    Cti::Protocol::Interface::pointlist_t points;
+    pointlist_t points;
 
     msg1->setValue(15);
     msg1->setType(AnalogPointType);
@@ -119,7 +121,7 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_minor_present_only)
 BOOST_AUTO_TEST_CASE(test_firmware_points_major_minor_extra)
 {
     CtiPointDataMsg *msg1 = new CtiPointDataMsg(), *msg2 = new CtiPointDataMsg(), *msg3 = new CtiPointDataMsg();
-    Cti::Protocol::Interface::pointlist_t points;
+    pointlist_t points;
 
     msg1->setValue(16);
     msg1->setType(AnalogPointType);
@@ -187,7 +189,7 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_major_major_minor_minor)
                     *msg2 = new CtiPointDataMsg(),
                     *msg3 = new CtiPointDataMsg(),
                     *msg4 = new CtiPointDataMsg();
-    Cti::Protocol::Interface::pointlist_t points;
+    pointlist_t points;
 
     msg1->setValue(7);
     msg1->setType(AnalogPointType);
@@ -217,7 +219,7 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_major_major_minor_minor)
         hex                     ==  30,     2e,     34,     2e,     32,     28
         encoded (hex - 0x20)    ==  10,     0e,     14,     0e,     12,     18
         6-bit binary            ==  010000, 001110, 010100, 001110, 010010, 011000
-     
+
         4-bit regroup (rhs)     ==  0100 0000 1110 0101 0000 1110 0100 1001 1000
         as hex #                ==  40e50e498
         as decimal #            ==  17420051608
@@ -254,7 +256,7 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_major_major_minor_minor)
 BOOST_AUTO_TEST_CASE(test_firmware_points_both_present_max_length_output)
 {
     CtiPointDataMsg *msg1 = new CtiPointDataMsg(), *msg2 = new CtiPointDataMsg();
-    Cti::Protocol::Interface::pointlist_t points;
+    pointlist_t points;
 
     msg1->setValue(205);    // 0xCD == 12.13
     msg1->setType(AnalogPointType);
@@ -269,7 +271,7 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_both_present_max_length_output)
 
     /*
         Resulting firmware version should be '12.13.14'
-     
+
         chars                   ==  '1',    '2',    '.',    '1',    '3',    '.',    '1',    '4'
         hex                     ==  31,     32,     2e,     31,     33,     2e,     31,     34
         encoded (hex - 0x20)    ==  11,     12,     0e,     11,     13,     0e,     11,     14
@@ -301,7 +303,7 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_both_present_max_length_output)
 BOOST_AUTO_TEST_CASE(test_firmware_points_both_present_max_length_output_truncated)
 {
     CtiPointDataMsg *msg1 = new CtiPointDataMsg(), *msg2 = new CtiPointDataMsg();
-    Cti::Protocol::Interface::pointlist_t points;
+    pointlist_t points;
 
     msg1->setValue(205);    // 0xCD == 12.13
     msg1->setType(AnalogPointType);
@@ -316,7 +318,7 @@ BOOST_AUTO_TEST_CASE(test_firmware_points_both_present_max_length_output_truncat
 
     /*
         Resulting firmware version should be '12.13.1#'
-     
+
         chars                   ==  '1',    '2',    '.',    '1',    '3',    '.',    '1',    '#'
         hex                     ==  31,     32,     2e,     31,     33,     2e,     31,     23
         encoded (hex - 0x20)    ==  11,     12,     0e,     11,     13,     0e,     11,     03

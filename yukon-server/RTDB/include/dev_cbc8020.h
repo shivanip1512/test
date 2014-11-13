@@ -36,9 +36,9 @@ protected:
         PointOffset_FirmwareRevision      = 9999
     };
 
-    virtual void processPoints( Cti::Protocol::Interface::pointlist_t &points );
+    void processPoints( Protocols::Interface::pointlist_t &points ) override;
 
-    static void combineFirmwarePoints( Cti::Protocol::Interface::pointlist_t &points );
+    static void combineFirmwarePoints( Protocols::Interface::pointlist_t &points );
 
 };
 

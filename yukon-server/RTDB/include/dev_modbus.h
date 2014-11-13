@@ -52,12 +52,12 @@ protected:
     Protocols::ModbusProtocol _modbus;
     CtiTableDeviceAddress  _modbus_address;
 
-    Protocol::Interface::stringlist_t _string_results;
-    Protocol::Interface::pointlist_t  _point_results;
+    Protocols::Interface::stringlist_t _string_results;
+    Protocols::Interface::pointlist_t  _point_results;
 
-    virtual Protocol::Interface *getProtocol();
+    Protocols::Interface *getProtocol() override;
 
-    virtual void processPoints( Protocol::Interface::pointlist_t &points );
+    void processPoints( Protocols::Interface::pointlist_t &points );
 
 public:
 

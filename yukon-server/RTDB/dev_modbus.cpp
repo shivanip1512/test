@@ -171,7 +171,7 @@ YukonError_t ModbusDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser 
 }
 
 
-Protocol::Interface *ModbusDevice::getProtocol()
+Protocols::Interface *ModbusDevice::getProtocol()
 {
     return &_modbus;
 }
@@ -411,8 +411,8 @@ void ModbusDevice::sendDispatchResults(CtiConnection &vg_connection)
     string                    resultString;
     CtiTime                       Now;
 
-    Protocol::Interface::pointlist_t points;
-    Protocol::Interface::pointlist_t::iterator itr;
+    Protocols::Interface::pointlist_t points;
+    Protocols::Interface::pointlist_t::iterator itr;
 
     vgMsg  = CTIDBG_new CtiReturnMsg(getID());  //  , InMessage.Return.CommandStr
 
@@ -466,9 +466,9 @@ void ModbusDevice::sendDispatchResults(CtiConnection &vg_connection)
 }
 
 
-void ModbusDevice::processPoints( Protocol::Interface::pointlist_t &points )
+void ModbusDevice::processPoints( Protocols::Interface::pointlist_t &points )
 {
-    Protocol::Interface::pointlist_t::iterator itr;
+    Protocols::Interface::pointlist_t::iterator itr;
     CtiPointDataMsg *msg;
     CtiPointSPtr point;
     string resultString;

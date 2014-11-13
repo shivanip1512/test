@@ -645,7 +645,7 @@ UdpPortHandler::ip_packet *UdpPortHandler::recvPacket(unsigned char * const recv
 
 bool UdpPortHandler::validatePacket(ip_packet *&p)
 {
-    if( Protocol::DNP::DatalinkLayer::isPacketValid(p->data, p->len) )
+    if( Protocols::DNP::DatalinkLayer::isPacketValid(p->data, p->len) )
     {
         p->protocol = packet::ProtocolTypeDnp;
     }

@@ -26,7 +26,7 @@ class CtiTransmitterInfo;
 
 namespace Cti {
     class DeviceQueueInterface;
-namespace Protocol {
+namespace Protocols {
     class Interface;
 }
 namespace Devices {
@@ -145,9 +145,6 @@ public:
     virtual LONG getRouteID() const;
 
     virtual LONG getDemandInterval();
-
-    virtual Cti::Protocol::Interface *getProtocol();
-
 
     virtual ULONG getUniqueIdentifier() const;
     virtual bool hasLongScanRate(const std::string &cmd) const;
@@ -375,7 +372,6 @@ inline std::string CtiDeviceBase::getPassword() const           { return std::st
 inline std::string CtiDeviceBase::getPhoneNumber() const        { return std::string();}
 inline LONG   CtiDeviceBase::getRouteID() const                 { return -1;}
 inline LONG   CtiDeviceBase::getDemandInterval()                { return LONG_MAX;}
-inline Cti::Protocol::Interface *CtiDeviceBase::getProtocol()   { return NULL;}
 inline void   CtiDeviceBase::invalidateScanRates()              { }
 inline void   CtiDeviceBase::deleteNonUpdatedScanRates()        { }
 

@@ -2,7 +2,7 @@
 
 #include "dev_cbc7020.h"
 
-
+typedef Cti::Protocols::Interface::pointlist_t pointlist_t;
 
 BOOST_AUTO_TEST_SUITE( test_dev_cbc7020 )
 
@@ -16,7 +16,7 @@ struct TestCbc7020Device : Cti::Devices::Cbc7020Device
 
 BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_no_points_present)
 {
-    Cti::Protocol::Interface::pointlist_t   points;
+    pointlist_t   points;
 
     TestCbc7020Device::processFirmwarePoint( points );
 
@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_no_points_present)
 
 BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_nonfirmware_points_present)
 {
-    Cti::Protocol::Interface::pointlist_t   points;
+    pointlist_t   points;
 
     // push in a non-firmware point
 
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_nonfirmware_points_pr
 
 BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_points_present)
 {
-    Cti::Protocol::Interface::pointlist_t   points;
+    pointlist_t   points;
 
     // push in a non-firmware point
 
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_points_present)
 
 BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_low_limit)
 {
-    Cti::Protocol::Interface::pointlist_t   points;
+    pointlist_t   points;
 
     // and a firmware point -- value = 0x0001 == 1
 
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_low_lim
 
 BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_high_limit)
 {
-    Cti::Protocol::Interface::pointlist_t   points;
+    pointlist_t   points;
 
     // and a firmware point -- value = 0xFF1A == 65306
 
@@ -166,7 +166,7 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_high_li
 
 BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_major_version_underflow)
 {
-    Cti::Protocol::Interface::pointlist_t   points;
+    pointlist_t   points;
 
     // and a firmware point -- value = 0x1200 == 4608 --> major revision == 0
 
@@ -199,7 +199,7 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_major_v
 
 BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_major_version_overflow)
 {
-    Cti::Protocol::Interface::pointlist_t   points;
+    pointlist_t   points;
 
     // and a firmware point -- value = 0x1220 == 4640 --> major revision == 32
 
@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE(test_test_dev_cbc7020_firmware_points_point_present_major_v
 
     /*
         Resulting firmware version should be '0.0'
-     
+
         chars                   ==  '0',    '.',    '0'
         hex                     ==  30,     2e,     30
         encoded (hex - 0x20)    ==  10,     0e,     10

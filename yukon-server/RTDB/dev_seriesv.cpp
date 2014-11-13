@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_systemv
-*
-* Date:   2004-jan-14
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/08/14 15:57:40 $
-*
-* Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 
@@ -21,9 +8,9 @@ using std::string;
 using std::endl;
 using std::list;
 
-Cti::Protocol::Interface *CtiDeviceSeriesV::getProtocol()
+Cti::Protocols::Interface *CtiDeviceSeriesV::getProtocol()
 {
-    return (Cti::Protocol::Interface *)&_seriesv;
+    return (Cti::Protocols::Interface *)&_seriesv;
 }
 
 

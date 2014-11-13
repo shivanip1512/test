@@ -77,9 +77,9 @@ YukonError_t Cbc7020Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser
     return nRet;
 }
 
-void Cbc7020Device::processFirmwarePoint( Cti::Protocol::Interface::pointlist_t &points )
+void Cbc7020Device::processFirmwarePoint( Protocols::Interface::pointlist_t &points )
 {
-    Protocol::Interface::pointlist_t::iterator pt_itr, last_pos;
+    Protocols::Interface::pointlist_t::iterator pt_itr, last_pos;
 
     last_pos    = points.end();
 
@@ -145,7 +145,7 @@ void Cbc7020Device::processFirmwarePoint( Cti::Protocol::Interface::pointlist_t 
 }
 
 //  This overrides the processPoints function in dev_dnp, but calls it afterward to do the real processing
-void Cbc7020Device::processPoints( Protocol::Interface::pointlist_t &points )
+void Cbc7020Device::processPoints( Protocols::Interface::pointlist_t &points )
 {
     // preprocess any existing firmware point
     processFirmwarePoint(points);

@@ -18,9 +18,9 @@ CtiDeviceLMI::CtiDeviceLMI() :
 {
 }
 
-Cti::Protocol::Interface *CtiDeviceLMI::getProtocol()
+Cti::Protocols::Interface *CtiDeviceLMI::getProtocol()
 {
-    return (Cti::Protocol::Interface *)&_lmi;
+    return (Cti::Protocols::Interface *)&_lmi;
 }
 
 
@@ -54,8 +54,8 @@ void CtiDeviceLMI::sendDispatchResults(CtiConnection &vg_connection)
     string                      resultString;
     CtiTime                       Now;
 
-    Cti::Protocol::Interface::pointlist_t points;
-    Cti::Protocol::Interface::pointlist_t::iterator itr;
+    Cti::Protocols::Interface::pointlist_t points;
+    Cti::Protocols::Interface::pointlist_t::iterator itr;
 
     vgMsg  = CTIDBG_new CtiReturnMsg(getID());
 

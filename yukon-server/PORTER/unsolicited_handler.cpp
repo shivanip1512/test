@@ -609,7 +609,7 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
             {
                 dnp_device->initUnsolicited();
 
-                dr->xfer.setInCountExpected(Cti::Protocol::DNP::DatalinkPacket::HeaderLength);  //  we expect at least a header
+                dr->xfer.setInCountExpected(Protocols::DNP::DatalinkPacket::HeaderLength);  //  we expect at least a header
 
                 //  push a null OM on there so can distinguish this request from anything else that comes in
                 dr->outbound.push_back(0);

@@ -54,7 +54,7 @@ protected:
 
     Protocols::KlondikeProtocol _klondike;
 
-    Protocol::Interface *getProtocol();
+    Protocols::Interface *getProtocol() override;
 
 public:
 

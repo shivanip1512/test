@@ -26,7 +26,7 @@ private:
 protected:
 
     CtiProtocolLMI _lmi;
-    Cti::Protocol::Interface *getProtocol();
+    Cti::Protocols::Interface *getProtocol() override;
 
 public:
 

@@ -606,7 +606,7 @@ YukonError_t CtiDeviceSingle::initiateLoadProfileScan(OutMessageList &outList, I
 }
 
 
-inline Protocol::Interface *CtiDeviceSingle::getProtocol()
+inline Protocols::Interface *CtiDeviceSingle::getProtocol()
 {
     return 0;
 }
@@ -615,7 +615,7 @@ inline Protocol::Interface *CtiDeviceSingle::getProtocol()
 YukonError_t CtiDeviceSingle::generate(CtiXfer &xfer)
 {
     YukonError_t retval = ClientErrors::Abnormal;
-    Protocol::Interface *prot = getProtocol();
+    Protocols::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->generate(xfer);
 
@@ -625,7 +625,7 @@ YukonError_t CtiDeviceSingle::generate(CtiXfer &xfer)
 YukonError_t CtiDeviceSingle::decode(CtiXfer &xfer, YukonError_t status)
 {
     YukonError_t retval = ClientErrors::Abnormal;
-    Protocol::Interface *prot = getProtocol();
+    Protocols::Interface *prot = getProtocol();
 
     try
     {
@@ -644,7 +644,7 @@ YukonError_t CtiDeviceSingle::decode(CtiXfer &xfer, YukonError_t status)
 YukonError_t CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
 {
     YukonError_t retval = ClientErrors::Abnormal;
-    Protocol::Interface *prot = getProtocol();
+    Protocols::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->recvCommRequest(OutMessage);
 
@@ -654,7 +654,7 @@ YukonError_t CtiDeviceSingle::recvCommRequest(OUTMESS *OutMessage)
 YukonError_t CtiDeviceSingle::sendCommResult(INMESS &InMessage)
 {
     YukonError_t retval = ClientErrors::Abnormal;
-    Protocol::Interface *prot = getProtocol();
+    Protocols::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->sendCommResult(InMessage);
 
@@ -664,7 +664,7 @@ YukonError_t CtiDeviceSingle::sendCommResult(INMESS &InMessage)
 bool CtiDeviceSingle::isTransactionComplete(void)
 {
     bool retval = true;
-    Protocol::Interface *prot = getProtocol();
+    Protocols::Interface *prot = getProtocol();
 
     if( prot )  retval = prot->isTransactionComplete();
 

@@ -148,15 +148,18 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 {
     YukonError_t nRet = ClientErrors::NoMethod;
 
-    Protocol::DNPInterface::Command command = Protocol::DNPInterface::Command_Invalid;
-    Protocol::DNPInterface::output_point controlout;
+    using Protocols::DNPInterface;
+    using namespace Protocols::DNP;
+
+    DNPInterface::Command command = DNPInterface::Command_Invalid;
+    DNPInterface::output_point controlout;
     pseudo_info p_i = {false, -1, -1};
 
     switch( parse.getCommand() )
     {
         case LoopbackRequest:
         {
-            command = Protocol::DNPInterface::Command_Loopback;
+            command = DNPInterface::Command_Loopback;
 
             break;
         }
@@ -165,8 +168,8 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
         {
             CtiPointStatusSPtr pStatus;
 
-            Protocol::DNP::BinaryOutputControl::ControlCode controltype = Protocol::DNP::BinaryOutputControl::Noop;
-            Protocol::DNP::BinaryOutputControl::TripClose   trip_close = Protocol::DNP::BinaryOutputControl::NUL;
+            BinaryOutputControl::ControlCode controltype = BinaryOutputControl::Noop;
+            BinaryOutputControl::TripClose   trip_close  = BinaryOutputControl::NUL;
             int offset   = 0,
                 on_time  = 0,
                 off_time = 0;
@@ -224,11 +227,11 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
                         if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
                         {
-                            controltype = Protocol::DNP::BinaryOutputControl::LatchOff;
+                            controltype = BinaryOutputControl::LatchOff;
                         }
                         else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
                         {
-                            controltype = Protocol::DNP::BinaryOutputControl::LatchOn;
+                            controltype = BinaryOutputControl::LatchOn;
                         }
 
                         offset = controlParameters->getControlOffset();
@@ -250,21 +253,21 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
                         if( findStringIgnoreCase(parse.getCommandStr().c_str(), " direct") )
                         {
-                            trip_close = Protocol::DNP::BinaryOutputControl::NUL;
+                            trip_close = BinaryOutputControl::NUL;
                         }
                         else
                         {
                             if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
                             {
-                                trip_close = Protocol::DNP::BinaryOutputControl::Trip;
+                                trip_close = BinaryOutputControl::Trip;
                             }
                             else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
                             {
-                                trip_close = Protocol::DNP::BinaryOutputControl::Close;
+                                trip_close = BinaryOutputControl::Close;
                             }
                         }
 
-                        controltype = Protocol::DNP::BinaryOutputControl::PulseOn;
+                        controltype = BinaryOutputControl::PulseOn;
                         offset      = controlParameters->getControlOffset();
                     }
 
@@ -291,11 +294,11 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
                 if( parse.getFlags() & CMD_FLAG_CTL_OPEN )
                 {
-                    controltype = Protocol::DNP::BinaryOutputControl::PulseOff;
+                    controltype = BinaryOutputControl::PulseOff;
                 }
                 else if( parse.getFlags() & CMD_FLAG_CTL_CLOSE )
                 {
-                    controltype = Protocol::DNP::BinaryOutputControl::PulseOn;
+                    controltype = BinaryOutputControl::PulseOn;
                 }
 
                 p_i.is_pseudo = false;
@@ -307,7 +310,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
             }
             else
             {
-                controlout.type            = Protocol::DNPInterface::DigitalOutputPointType;
+                controlout.type            = DNPInterface::DigitalOutputPointType;
                 controlout.control_offset  = offset;
 
                 controlout.dout.control    = controltype;
@@ -346,12 +349,12 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                     if( parse.isKeyValid("sbo_selectonly") )
                     {
                         //  for diagnostics - used for verifying SBO timeouts
-                        command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_SelectOnly;
+                        command = DNPInterface::Command_SetDigitalOut_SBO_SelectOnly;
                     }
                     else if( parse.isKeyValid("sbo_operate") )
                     {
                         //  the other half of SBO_SelectOnly
-                        command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_Operate;
+                        command = DNPInterface::Command_SetDigitalOut_SBO_Operate;
                     }
                     else if( pStatus &&
                              pStatus->getControlParameters() &&
@@ -359,12 +362,12 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                               pStatus->getControlParameters()->getControlType() == ControlType_SBOLatch) )
                     {
                         //  if successful, this will transition to SBO_Operate in DNPInterface on Porter-side
-                        command = Protocol::DNPInterface::Command_SetDigitalOut_SBO_Select;
+                        command = DNPInterface::Command_SetDigitalOut_SBO_Select;
                     }
                     else
                     {
                         //  boring old direct control
-                        command = Protocol::DNPInterface::Command_SetDigitalOut_Direct;
+                        command = DNPInterface::Command_SetDigitalOut_Direct;
                     }
                 }
             }
@@ -391,11 +394,11 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                 {
                     if( omitTimeRequest )
                     {
-                        command = Protocol::DNPInterface::Command_Class123Read;
+                        command = DNPInterface::Command_Class123Read;
                     }
                     else
                     {
-                        command = Protocol::DNPInterface::Command_Class123Read_WithTime;
+                        command = DNPInterface::Command_Class123Read_WithTime;
                     }
 
                     break;
@@ -412,11 +415,11 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                 {
                     if( omitTimeRequest )
                     {
-                        command = Protocol::DNPInterface::Command_Class1230Read;
+                        command = DNPInterface::Command_Class1230Read;
                     }
                     else
                     {
-                        command = Protocol::DNPInterface::Command_Class1230Read_WithTime;
+                        command = DNPInterface::Command_Class1230Read_WithTime;
                     }
 
                     break;
@@ -429,8 +432,6 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
         case PutValueRequest:
         {
             int offset;
-
-            using Cti::Protocol::DNP::AnalogOutputStatus;
 
             boost::optional<long> control_offset;
 
@@ -490,16 +491,16 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
                     if (parse.isKeyValid("analogfloatvalue"))
                     {
-                        controlout.type = Protocol::DNPInterface::AnalogOutputFloatPointType;
+                        controlout.type = DNPInterface::AnalogOutputFloatPointType;
                     }
                     else
                     {
-                        controlout.type = Protocol::DNPInterface::AnalogOutputPointType;
+                        controlout.type = DNPInterface::AnalogOutputPointType;
                     }
 
                     controlout.aout.value     = parse.getdValue("analogvalue");
 
-                    command = Protocol::DNPInterface::Command_SetAnalogOut;
+                    command = DNPInterface::Command_SetAnalogOut;
                 }
             }
 
@@ -510,17 +511,17 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
         {
             if(parse.isKeyValid("timesync"))
             {
-                command = Protocol::DNPInterface::Command_WriteTime;
+                command = DNPInterface::Command_WriteTime;
             }
             else if( parse.isKeyValid("unsolicited") )
             {
                 if( parse.getiValue("unsolicited") )
                 {
-                    command = Protocol::DNPInterface::Command_UnsolicitedEnable;
+                    command = DNPInterface::Command_UnsolicitedEnable;
                 }
                 else
                 {
-                    command = Protocol::DNPInterface::Command_UnsolicitedDisable;
+                    command = DNPInterface::Command_UnsolicitedDisable;
                 }
             }
 
@@ -531,7 +532,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
         {
             if(parse.isKeyValid("time"))
             {
-                command = Protocol::DNPInterface::Command_ReadTime;
+                command = DNPInterface::Command_ReadTime;
             }
 
             break;
@@ -546,7 +547,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
         }
     }
 
-    if( command == Protocol::DNPInterface::Command_Invalid )
+    if( command == DNPInterface::Command_Invalid )
     {
         string resultString;
 
@@ -590,7 +591,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 }
 
 
-Protocol::Interface *DnpDevice::getProtocol()
+Protocols::Interface *DnpDevice::getProtocol()
 {
     return &_dnp;
 }
@@ -622,14 +623,14 @@ YukonError_t DnpDevice::sendCommRequest( OUTMESS *&OutMessage, OutMessageList &o
         //  give it a higher priority if it's a time sync or a control command
         switch( _pil_info.protocol_command )
         {
-            case Protocol::DNPInterface::Command_WriteTime:
+            case Protocols::DNPInterface::Command_WriteTime:
                 OutMessage->Priority = MAXPRIORITY - 1;
                 break;
 
-            case Protocol::DNPInterface::Command_SetDigitalOut_Direct:
-            case Protocol::DNPInterface::Command_SetDigitalOut_SBO_Operate:
-            case Protocol::DNPInterface::Command_SetDigitalOut_SBO_Select:
-            case Protocol::DNPInterface::Command_SetDigitalOut_SBO_SelectOnly:
+            case Protocols::DNPInterface::Command_SetDigitalOut_Direct:
+            case Protocols::DNPInterface::Command_SetDigitalOut_SBO_Operate:
+            case Protocols::DNPInterface::Command_SetDigitalOut_SBO_Select:
+            case Protocols::DNPInterface::Command_SetDigitalOut_SBO_SelectOnly:
                 OutMessage->Priority = MAXPRIORITY - 2;
                 break;
         }
@@ -713,7 +714,7 @@ bool DnpDevice::isConfigurationValueTrue(const std::string &configKey) const
 void DnpDevice::initUnsolicited()
 {
     loadConfigData();
-    _dnp.setCommand(Protocol::DNPInterface::Command_UnsolicitedInbound);
+    _dnp.setCommand(Protocols::DNPInterface::Command_UnsolicitedInbound);
 }
 
 
@@ -721,8 +722,8 @@ YukonError_t DnpDevice::sendCommResult(INMESS &InMessage)
 {
     char *buf;
     string result_string;
-    Protocol::DNPInterface::stringlist_t strings;
-    Protocol::DNPInterface::stringlist_t::iterator itr;
+    Protocols::DNPInterface::stringlist_t strings;
+    Protocols::DNPInterface::stringlist_t::iterator itr;
 
     buf = reinterpret_cast<char *>(InMessage.Buffer.InMessage);
 
@@ -764,8 +765,8 @@ void DnpDevice::sendDispatchResults(CtiConnection &vg_connection)
     string                    resultString;
     CtiTime                       Now;
 
-    Protocol::Interface::pointlist_t points;
-    Protocol::Interface::pointlist_t::iterator itr;
+    Protocols::Interface::pointlist_t points;
+    Protocols::Interface::pointlist_t::iterator itr;
 
     vgMsg  = CTIDBG_new CtiReturnMsg(getID());  //  , InMessage.Return.CommandStr
 
@@ -794,9 +795,9 @@ void DnpDevice::sendDispatchResults(CtiConnection &vg_connection)
     //           so i have to handle pseudo points here, in the device code
     switch( _porter_info.protocol_command )
     {
-        case Protocol::DNPInterface::Command_SetDigitalOut_Direct:
-        case Protocol::DNPInterface::Command_SetDigitalOut_SBO_Select:  //  presumably this will transition...  we need to verify this...
-        case Protocol::DNPInterface::Command_SetDigitalOut_SBO_Operate:
+        case Protocols::DNPInterface::Command_SetDigitalOut_Direct:
+        case Protocols::DNPInterface::Command_SetDigitalOut_SBO_Select:  //  presumably this will transition...  we need to verify this...
+        case Protocols::DNPInterface::Command_SetDigitalOut_SBO_Operate:
         {
             if( _porter_info.pseudo_info.is_pseudo /*&& !_dnp.errorCondition()*/ )  //  ... for example, make sure the control was successful
             {
@@ -817,14 +818,14 @@ void DnpDevice::sendDispatchResults(CtiConnection &vg_connection)
 }
 
 
-void DnpDevice::processPoints( Protocol::Interface::pointlist_t &points )
+void DnpDevice::processPoints( Protocols::Interface::pointlist_t &points )
 {
-    Protocol::Interface::pointlist_t::iterator itr;
+    Protocols::Interface::pointlist_t::iterator itr;
     CtiPointDataMsg *msg;
     CtiPointSPtr point;
     string resultString;
 
-    Protocol::Interface::pointlist_t demand_points;
+    Protocols::Interface::pointlist_t demand_points;
 
     for( itr = points.begin(); itr != points.end(); itr++ )
     {
@@ -1110,11 +1111,11 @@ void DnpDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 
    if( getType() == TYPE_DARTRTU )
    {
-       _dnp.setOptions(Protocol::DNPInterface::Options_DatalinkConfirm);
+       _dnp.setOptions(Protocols::DNPInterface::Options_DatalinkConfirm);
    }
    else
    {
-       _dnp.setOptions(Protocol::DNPInterface::Options_None);
+       _dnp.setOptions(Protocols::DNPInterface::Options_None);
    }
 }
 

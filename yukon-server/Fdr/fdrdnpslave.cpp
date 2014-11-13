@@ -7,7 +7,7 @@
 #include "std_helper.h"
 
 using namespace std;
-using namespace Cti::Protocol;
+using namespace Cti::Protocols;
 
 namespace Cti {
 namespace Fdr {
@@ -35,8 +35,8 @@ DnpSlave * dnpSlaveInterface;
 
 
 
-const string DNPInMessageString="DNP InMessage";
-const string DNPOutMessageString="DNP OutMessage";
+const string DNPInMessageString  = "DNP InMessage";
+const string DNPOutMessageString = "DNP OutMessage";
 
 
 // Constructors, Destructor, and Operators
@@ -232,7 +232,6 @@ bool DnpSlave::buildForeignSystemMessage(const CtiFDRDestination& destination,
 int DnpSlave::processMessageFromForeignSystem (Cti::Fdr::ServerConnection& connection,
                                          const char* data, unsigned int size)
 {
-    BYTEUSHORT dest, src;
     BOOL timeFlag = false;
     unsigned long function = getHeaderBytes(data, size);
 
@@ -401,7 +400,7 @@ int DnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connection,
             if (!findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
                 continue;
 
-            Cti::Protocol::DNPSlaveInterface::input_point iPoint;
+            Protocols::DNPSlaveInterface::input_point iPoint;
 
             iPoint.online = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp());
             iPoint.control_offset = dnpId.Offset;
@@ -411,17 +410,17 @@ int DnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connection,
             if (dnpId.PointType == StatusPointType )
             {
                 iPoint.din.trip_close = (fdrPoint->getValue() == 0)?(DNP::BinaryOutputControl::Trip):(DNP::BinaryOutputControl::Close);
-                iPoint.type = Cti::Protocol::DNPSlaveInterface::DigitalInput;
+                iPoint.type = Protocols::DNPSlaveInterface::DigitalInput;
             }
             else if (dnpId.PointType == AnalogPointType )
             {
                 iPoint.ain.value =  (fdrPoint->getValue() * dnpId.Multiplier);
-                iPoint.type = Cti::Protocol::DNPSlaveInterface::AnalogInputType;
+                iPoint.type = Protocols::DNPSlaveInterface::AnalogInputType;
             }
             else if (dnpId.PointType == PulseAccumulatorPointType )
             {
                 iPoint.counterin.value =  (fdrPoint->getValue() * dnpId.Multiplier);
-                iPoint.type = Cti::Protocol::DNPSlaveInterface::Counters;
+                iPoint.type = Protocols::DNPSlaveInterface::Counters;
             }
             else
             {

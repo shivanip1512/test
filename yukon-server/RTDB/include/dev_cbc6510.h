@@ -36,7 +36,7 @@ private:
 
 protected:
 
-    virtual void processPoints( Protocol::Interface::pointlist_t &points );
+    void processPoints( Protocols::Interface::pointlist_t &points ) override;
 
 public:
 

@@ -60,7 +60,7 @@ void CtiDeviceION::setMeterGroupData( const string &meterNumber )
 }
 
 
-Protocol::Interface *CtiDeviceION::getProtocol( void )
+Protocols::Interface *CtiDeviceION::getProtocol( void )
 {
     return &_ion;
 }

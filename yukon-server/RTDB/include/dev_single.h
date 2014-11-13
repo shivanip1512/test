@@ -21,7 +21,7 @@
 class CtiVerificationBase;  //  this is so boost_time.h isn't included via verification_objects.h - for now
 
 namespace Cti {
-namespace Protocol {
+namespace Protocols {
     class Interface;
 }
 }
@@ -99,7 +99,7 @@ protected:
 
     bool validatePendingStatus(bool status, int scantype, CtiTime &now = CtiTime());
 
-    virtual Cti::Protocol::Interface *getProtocol();
+    virtual Cti::Protocols::Interface *getProtocol();
 
     static unsigned intervalsPerDay(unsigned intervalLength);
 

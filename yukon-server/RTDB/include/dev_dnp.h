@@ -37,8 +37,8 @@ private:
 
     struct outmess_header
     {
-        Protocol::DNPInterface::Command      command;
-        Protocol::DNPInterface::output_point parameter;
+        Protocols::DNPInterface::Command      command;
+        Protocols::DNPInterface::output_point parameter;
         pseudo_info                          pseudo_info;
         //  we really only use one outbound point at the moment...  otherwise we'd need a parameter count
         //    for passing multiple parameters around, etc
@@ -46,8 +46,8 @@ private:
 
     struct info_struct
     {
-        Protocol::DNPInterface::Command      protocol_command;
-        Protocol::DNPInterface::output_point protocol_parameter;
+        Protocols::DNPInterface::Command      protocol_command;
+        Protocols::DNPInterface::output_point protocol_parameter;
         pseudo_info pseudo_info;
         std::string      user;
     };
@@ -61,14 +61,14 @@ private:
 
 protected:
 
-    Protocol::DNPInterface _dnp;
+    Protocols::DNPInterface _dnp;
     CtiTableDeviceAddress  _dnp_address;
 
     void resetDNPScansPending( void );
 
-    virtual Protocol::Interface *getProtocol();
+    Protocols::Interface *getProtocol() override;
 
-    virtual void processPoints( Protocol::Interface::pointlist_t &points );
+    virtual void processPoints( Protocols::Interface::pointlist_t &points );
 
     void loadConfigData();
 

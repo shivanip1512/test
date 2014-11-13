@@ -57,7 +57,7 @@ public:
     void DecodeDatabaseReader(Cti::RowReader &rdr) override;
 
     virtual std::string getDescription(const CtiCommandParser & parse) const;
-    Cti::Protocol::Interface *getProtocol( void );
+    Cti::Protocols::Interface *getProtocol() override;
 
     //  virtual in case different ION devices need to form up alternate requests for the same command
     YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList) override;

@@ -62,9 +62,9 @@ YukonError_t Cbc6510Device::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser
 
 
 //  This overrides the processPoints function in dev_dnp, but calls it afterward to do the real processing
-void Cbc6510Device::processPoints( Protocol::Interface::pointlist_t &points )
+void Cbc6510Device::processPoints( Protocols::Interface::pointlist_t &points )
 {
-    Protocol::Interface::pointlist_t::iterator pt_itr, last_pos;
+    Protocols::Interface::pointlist_t::iterator pt_itr, last_pos;
     int last_offset;
 
     CtiPointDataMsg *pt_msg;

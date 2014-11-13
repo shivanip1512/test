@@ -26,10 +26,10 @@ namespace Devices {
  * increase by one and all major and minor revision messages
  * previously in the vector will remain there untouched.
  */
-void Cbc8020Device::combineFirmwarePoints( Cti::Protocol::Interface::pointlist_t &points )
+void Cbc8020Device::combineFirmwarePoints( Protocols::Interface::pointlist_t &points )
 {
     CtiPointDataMsg *major = 0, *minor = 0;
-    Cti::Protocol::Interface::pointlist_t::iterator itr, end = points.end();
+    Protocols::Interface::pointlist_t::iterator itr, end = points.end();
 
     // We need to check if the firmware analog points are present, then consolidate
     // them into single points for processing.
@@ -109,7 +109,7 @@ void Cbc8020Device::combineFirmwarePoints( Cti::Protocol::Interface::pointlist_t
     }
 }
 
-void Cbc8020Device::processPoints( Cti::Protocol::Interface::pointlist_t &points )
+void Cbc8020Device::processPoints( Protocols::Interface::pointlist_t &points )
 {
     combineFirmwarePoints(points);
 
