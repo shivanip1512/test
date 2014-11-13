@@ -2202,7 +2202,7 @@ public class DeviceBaseEditorPanel extends DataInputPanel {
                 // Verify Address is within range
                 if (!dlcAddressRangeService.isValidEnforcedAddress(paoType, address)) {
                     
-                    String rangeString = dlcAddressRangeService.rangeString(paoType);
+                    String rangeString = dlcAddressRangeService.rangeStringEnforced(paoType);
                     setErrorString("Invalid address. Device address range: " + rangeString);
                     
                     return false;

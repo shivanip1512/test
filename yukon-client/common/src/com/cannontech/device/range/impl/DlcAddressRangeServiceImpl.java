@@ -37,10 +37,10 @@ public class DlcAddressRangeServiceImpl implements DlcAddressRangeService {
         
         List<Range<Integer>> ranges = getEnforcedAddressRangeForDevice(paoType);
         for (Range<Integer> range : ranges) {
-            if (! range.contains(address)) return false;
+            if (range.contains(address)) return true;
         }
         
-        return true;
+        return false;
     }
     
     @Override
@@ -48,10 +48,10 @@ public class DlcAddressRangeServiceImpl implements DlcAddressRangeService {
         
         List<Range<Integer>> ranges = getAddressRangeForDevice(paoType);
         for (Range<Integer> range : ranges) {
-            if (! range.contains(address)) return false;
+            if (range.contains(address)) return true;
         }
         
-        return true;
+        return false;
     }
     
     /**
@@ -84,7 +84,12 @@ public class DlcAddressRangeServiceImpl implements DlcAddressRangeService {
     public String rangeString(PaoType type) {
         return rangeString(getAddressRangeForDevice(type));
     }
-    
+
+    @Override
+    public String rangeStringEnforced(PaoType type) {
+        return rangeString(getEnforcedAddressRangeForDevice(type));
+    }
+
     @Override
     public String rangeString(List<Range<Integer>> ranges) {
         

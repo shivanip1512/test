@@ -41,6 +41,12 @@ public interface DlcAddressRangeService {
      */
     String rangeString(List<Range<Integer>> ranges);
     
+    /**
+     * Calls {@link DlcAddressRangeService#rangeString(List)} for Enforced Range.
+     * @param type
+     * @return
+     */
+    String rangeStringEnforced(PaoType type);
     /** 
      * Creates string representation for a pao type.
      * i.e. "[2 - 4]"

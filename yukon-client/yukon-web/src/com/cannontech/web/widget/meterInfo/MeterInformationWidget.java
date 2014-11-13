@@ -92,7 +92,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
                 if (!errors.hasFieldErrors("address")) {
                     boolean validAddress = addressRangeService.isValidEnforcedAddress(type, plc.getAddress());
                     if (!validAddress) {
-                        String ranges = addressRangeService.rangeString(type);
+                        String ranges = addressRangeService.rangeStringEnforced(type);
                         Object[] args = new Object[] { ranges };
                         errors.rejectValue("address", key + "physicalAddress.range", args, null);
                     }

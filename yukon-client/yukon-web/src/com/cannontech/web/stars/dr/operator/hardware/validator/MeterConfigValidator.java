@@ -52,7 +52,7 @@ public class MeterConfigValidator extends SimpleValidator<YukonMeter> {
     private void failAddress(YukonMeter meter, Errors errors) {
         String paoTypeString = meter.getPaoType().getPaoTypeName();
         
-        String rangeString = dlcAddressRangeService.rangeString(meter.getPaoType());
+        String rangeString = dlcAddressRangeService.rangeStringEnforced(meter.getPaoType());
         
         errors.rejectValue("address", "yukon.web.modules.operator.meterConfig.error.invalidRange", 
                 new Object[]{ paoTypeString, rangeString }, null);

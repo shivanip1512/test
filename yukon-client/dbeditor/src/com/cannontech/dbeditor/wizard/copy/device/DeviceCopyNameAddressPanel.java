@@ -667,7 +667,7 @@ public class DeviceCopyNameAddressPanel extends DataInputPanel implements ItemLi
                 PaoType paoType = deviceBase.getPaoType();
                 if (!dlcAddressRangeService.isValidEnforcedAddress(paoType, address)) {
                     
-                    String rangeString = dlcAddressRangeService.rangeString(paoType);
+                    String rangeString = dlcAddressRangeService.rangeStringEnforced(paoType);
                     setErrorString("Invalid address. Device address range: " + rangeString);
                     getJLabelErrorMessage().setText("(" + getErrorString() + ")");
                     getJLabelErrorMessage().setToolTipText("(" + getErrorString() + ")");
