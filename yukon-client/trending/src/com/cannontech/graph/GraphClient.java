@@ -270,6 +270,7 @@ public class GraphClient extends JPanel implements DBChangeListener, GraphDefine
                 if (currentWeek != NO_WEEK) {
                     currentWeek = FIRST_WEEK;
                 }
+                refresh();
             }
         } else if (event.getSource() == getViewMenu().getDefaultRadioButtonItem()) {
             getGraph().setViewType(GraphRenderers.DEFAULT);
@@ -1690,7 +1691,7 @@ public class GraphClient extends JPanel implements DBChangeListener, GraphDefine
             savedViewType = getTrendProperties().getViewType();
         }
 
-        if ((getTrendProperties().getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK) {
+        if ((found &&(getTrendProperties().getOptionsMaskSettings() & GraphRenderers.EVENT_MASK) == GraphRenderers.EVENT_MASK)) {
             getGraph().setPeriod(ServletUtil.EVENT);
             Date tomorrow = ServletUtil.getTomorrow();
             getGraph().setStartDate(tomorrow);
