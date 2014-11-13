@@ -26,6 +26,8 @@
                     <li><a href="<cti:url value="/dev/setupDatabase/main"/>">Setup Development Database</a></li>
                     <li><a href="<cti:url value="/dev/miscellaneousMethod/main"/>">Miscellaneous Methods</a></li>
                     <li><a href="<cti:url value="/dev/db-change"/>">DbChange Messages</a></li>
+                    <li><a href="<cti:url value="/dev/create-import-files"/>">Create Import Files</a></li>
+                    <li><a href="<cti:url value="/dev/uber-log"/>">Uber Log</a></li>
                 </ul>
             </tags:sectionContainer>
         </div>
