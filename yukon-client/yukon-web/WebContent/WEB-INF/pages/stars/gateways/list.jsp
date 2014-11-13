@@ -8,20 +8,24 @@
 
 <cti:standardPage module="operator" page="gateways.list">
     
-<div id="page-buttons" class="dn">
-    <cti:button icon="icon-plus-green" nameKey="create" data-popup="#gateway-create-popup"/>
-</div>
+<cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+    <div id="page-buttons" class="dn">
+        <cti:button icon="icon-plus-green" nameKey="create" data-popup="#gateway-create-popup"/>
+    </div>
 
-<div id="gateway-create-popup" class="dn" 
-    data-title="<cti:msg2 key=".create.title"/>" data-url="gateways/create" 
-    data-width="570" data-min-width="570" data-dialog data-event="yukon:assets:gateway:save" 
-    data-ok-text="<cti:msg2 key="components.button.save.label"/>" data-load-event="yukon:assets:gateway:load"></div>
+    <div id="gateway-create-popup" class="dn" 
+        data-title="<cti:msg2 key=".create.title"/>" data-url="gateways/create" 
+        data-width="570" data-min-width="570" data-dialog data-event="yukon:assets:gateway:save" 
+        data-ok-text="<cti:msg2 key="components.button.save.label"/>" data-load-event="yukon:assets:gateway:load"></div>
+</cti:checkRolesAndProperties>
 
-<div id="gateway-cert-popup" class="dn" data-dialog 
-    data-title="<cti:msg2 key=".cert.update.label"/>"
-    data-event="yukon:assets:gateway:cert:update"
-    data-url="<cti:url value="/stars/gateways/cert-update/options"/>"
-    data-ok-text="<cti:msg2 key="components.button.start.label"/>"></div>
+<cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+    <div id="gateway-cert-popup" class="dn" data-dialog 
+        data-title="<cti:msg2 key=".cert.update.label"/>"
+        data-event="yukon:assets:gateway:cert:update"
+        data-url="<cti:url value="/stars/gateways/cert-update/options"/>"
+        data-ok-text="<cti:msg2 key="components.button.start.label"/>"></div>
+</cti:checkRolesAndProperties>
     
 <div id="gateway-collect-data-popup" class="dn"></div>
 <div id="gateway-cert-details-popup" class="dn"></div>
@@ -86,11 +90,13 @@
                         </td>
                         <td class="action-column">
                             <cm:dropdown>
-                                <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"
-                                    data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
-                                <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"
-                                    data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
-                                <li class="divider"></li>
+                                <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+                                    <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"
+                                        data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
+                                    <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"
+                                        data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
+                                    <li class="divider"></li>
+                                </cti:checkRolesAndProperties>
                                 <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" 
                                     data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"
                                     classes="js-gw-collect-data"/>
@@ -164,9 +170,12 @@
         
     </tbody>
 </table>
-<div class="page-action-area">
-    <cti:button icon="icon-plus-green" nameKey="cert.update" data-popup="#gateway-cert-popup" classes="M0"/>
-</div>
+
+<cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+    <div class="page-action-area">
+        <cti:button icon="icon-plus-green" nameKey="cert.update" data-popup="#gateway-cert-popup" classes="M0"/>
+    </div>
+</cti:checkRolesAndProperties>
 
 <div id="gateway-templates" class="dn">
     <table>

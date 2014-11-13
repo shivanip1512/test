@@ -50,6 +50,7 @@
     <entry key="yukon.common.role.ODDS_FOR_CONTROL">Odds For Control</entry>
     <entry key="yukon.common.role.SCHEDULER">Scheduler</entry>
     <entry key="yukon.common.role.WORK_ORDER">Work Order</entry>
+    <entry key="yukon.common.role.DEVICE_MANAGEMENT">Device Management</entry>
     
     <!-- System Role Category -->
     <entry key="yukon.common.role.AUTHENTICATION">Authentication</entry>

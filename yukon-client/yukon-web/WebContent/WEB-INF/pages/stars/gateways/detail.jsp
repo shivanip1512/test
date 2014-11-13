@@ -29,15 +29,23 @@
 <div id="page-actions" class="dn">
     <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" classes="js-gw-collect-data"
         data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
-    <li class="divider"></li>
-    <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"
-        data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
-    <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"
-        data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
-    <li class="divider"></li>
-    <cm:dropdownOption icon="icon-pencil" key="components.button.edit.label" data-popup="#gateway-edit-popup"/>
-    <cm:dropdownOption icon="icon-cross" key="components.button.delete.label" id="gateway-delete"
-        data-ok-event="yukon:assets:gateways:delete"/>
+    <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+        <li class="divider"></li>
+        <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"
+            data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
+        <cm:dropdownOption icon="icon-disconnect" key=".disconnect" classes="js-gw-disconnect"
+            data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}"/>
+    </cti:checkRolesAndProperties>
+    <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE, INFRASTRUCTURE_DELETE">
+        <li class="divider"></li>
+    </cti:checkRolesAndProperties>
+    <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+        <cm:dropdownOption icon="icon-pencil" key="components.button.edit.label" data-popup="#gateway-edit-popup"/>
+    </cti:checkRolesAndProperties>
+    <cti:checkRolesAndProperties value="INFRASTRUCTURE_DELETE">
+        <cm:dropdownOption icon="icon-cross" key="components.button.delete.label" id="gateway-delete"
+            data-ok-event="yukon:assets:gateways:delete"/>
+    </cti:checkRolesAndProperties>
 </div>
 
 <div id="gateway-edit-popup" data-dialog class="dn" data-title="<cti:msg2 key=".edit.title"/>"
@@ -56,13 +64,15 @@
         data-title="<cti:msg2 key=".location.set"/>"
         data-url="${locationUrl}"></div>
 
-<cti:url var="scheduleUrl" value="/stars/gateways/${gateway.paoIdentifier.paoId}/schedule/options"/>
-<div id="gateway-schedule-popup" data-dialog class="dn" 
-        data-title="<cti:msg2 key=".schedule"/>"
-        data-event="yukon:assets:gateway:schedule:save"
-        data-ok-text="<cti:msg2 key="components.button.save.label"/>"
-        data-width="460" data-height="264"
-        data-url="${scheduleUrl}"></div>
+<cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+    <cti:url var="scheduleUrl" value="/stars/gateways/${gateway.paoIdentifier.paoId}/schedule/options"/>
+    <div id="gateway-schedule-popup" data-dialog class="dn" 
+            data-title="<cti:msg2 key=".schedule"/>"
+            data-event="yukon:assets:gateway:schedule:save"
+            data-ok-text="<cti:msg2 key="components.button.save.label"/>"
+            data-width="460" data-height="264"
+            data-url="${scheduleUrl}"></div>
+</cti:checkRolesAndProperties>
 
 <c:set var="data" value="${gateway.data}"/>
 <div class="column-12-12 clearfix">
@@ -101,9 +111,11 @@
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
         
-        <div class="buffered clearfix">
-            <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup" classes="fr"/>
-        </div>
+        <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
+            <div class="buffered clearfix">
+                <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup" classes="fr"/>
+            </div>
+        </cti:checkRolesAndProperties>
     </div>
     
     <div class="column two nogutter">
@@ -220,7 +232,9 @@
                 <tags:nameValueContainer2 tableClass="with-form-controls">
                     <tags:nameValue2 nameKey=".schedule" valueClass="full-width">
                         <span class="js-gw-schedule"><cti:formatCron value="${data.collectionSchedule}"/></span>
-                        <cti:button nameKey="edit" icon="icon-pencil" classes="fr" data-popup="#gateway-schedule-popup"/>
+                        <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
+                            <cti:button nameKey="edit" icon="icon-pencil" classes="fr" data-popup="#gateway-schedule-popup"/>
+                        </cti:checkRolesAndProperties>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
             </div>

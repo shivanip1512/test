@@ -33,6 +33,7 @@ import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -44,6 +45,7 @@ import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.gateway.model.GatewaySettingsValidator;
 import com.cannontech.web.stars.gateway.model.Location;
 import com.fasterxml.jackson.core.JsonGenerationException;
@@ -78,6 +80,7 @@ public class GatewaySettingsController {
      * Create a gateway, return gateway settings popup when validation or creation fails, 
      * otherwise return success json payload. 
      */
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
     @RequestMapping(value={"/gateways", "/gateways/"}, method=RequestMethod.POST)
     public String create(ModelMap model,
             YukonUserContext userContext,
@@ -128,6 +131,7 @@ public class GatewaySettingsController {
         
     }
     
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
     @RequestMapping("/gateways/{id}/edit")
     public String editDialog(ModelMap model, @PathVariable int id) {
         
@@ -158,6 +162,7 @@ public class GatewaySettingsController {
     }
     
     /** Update the gateway */
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
     @RequestMapping(value="/gateways/{id}", method=RequestMethod.PUT)
     public String update(ModelMap model,
             YukonUserContext userContext,
@@ -232,6 +237,7 @@ public class GatewaySettingsController {
     
     /** Set schedule popup. 
      * @throws NmCommunicationException */
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
     @RequestMapping("/gateways/{id}/schedule/options")
     public String schedule(ModelMap model, YukonUserContext userContext, @PathVariable int id) 
             throws NmCommunicationException {
@@ -246,10 +252,11 @@ public class GatewaySettingsController {
     }
     
     /** Set schedule. */ 
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
     @RequestMapping("/gateways/{id}/schedule")
     public String schedule(HttpServletResponse resp, HttpServletRequest req, ModelMap model, FlashScope flash,
             YukonUserContext userContext, @PathVariable int id, String uid) 
-    throws JsonGenerationException, JsonMappingException, IOException {
+            throws JsonGenerationException, JsonMappingException, IOException {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         

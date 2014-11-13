@@ -26,12 +26,14 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -76,6 +78,7 @@ public class GatewayListController {
         return json;
     }
     
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
     @RequestMapping("/gateways/{id}/connect")
     public @ResponseBody Map<String, Object> connect(YukonUserContext userContext, @PathVariable int id) {
         
@@ -95,6 +98,7 @@ public class GatewayListController {
         return json;
     }
     
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
     @RequestMapping("/gateways/{id}/disconnect")
     public @ResponseBody Map<String, Object> disconnect(YukonUserContext userContext, @PathVariable int id) {
         

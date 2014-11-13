@@ -1,12 +1,6 @@
 package com.cannontech.core.roleproperties;
 
-import static com.cannontech.core.roleproperties.YukonRoleCategory.Application;
-import static com.cannontech.core.roleproperties.YukonRoleCategory.CapControl;
-import static com.cannontech.core.roleproperties.YukonRoleCategory.Cbc_Oneline;
-import static com.cannontech.core.roleproperties.YukonRoleCategory.Consumer;
-import static com.cannontech.core.roleproperties.YukonRoleCategory.DemandResponse;
-import static com.cannontech.core.roleproperties.YukonRoleCategory.Notifications;
-import static com.cannontech.core.roleproperties.YukonRoleCategory.Operator;
+import static com.cannontech.core.roleproperties.YukonRoleCategory.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -56,13 +50,14 @@ public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
      * of basePropertyID.
      */
     CONSUMER_INFO(Operator, Operator.baseRoleId - 1, Operator.basePropertyId - 100, Operator.basePropertyId - 800),
-    DEVICE_ACTIONS(Operator, Operator.baseRoleId - 13, Operator.basePropertyId - 1300),
-    OPERATOR_ESUBSTATION_DRAWINGS(Operator, Operator.baseRoleId - 6, Operator.basePropertyId - 600),
-    INVENTORY(Operator, Operator.baseRoleId - 9, Operator.basePropertyId - 900),
     METERING(Operator, Operator.baseRoleId - 2, Operator.basePropertyId - 200),
+    OPERATOR_ESUBSTATION_DRAWINGS(Operator, Operator.baseRoleId - 6, Operator.basePropertyId - 600),
     ODDS_FOR_CONTROL(Operator, Operator.baseRoleId - 7, Operator.basePropertyId - 700),
-    SCHEDULER(Operator, Operator.baseRoleId - 12, Operator.basePropertyId - 1200),
+    INVENTORY(Operator, Operator.baseRoleId - 9, Operator.basePropertyId - 900),
     WORK_ORDER(Operator, Operator.baseRoleId - 10, Operator.basePropertyId - 1000),
+    SCHEDULER(Operator, Operator.baseRoleId - 12, Operator.basePropertyId - 1200),
+    DEVICE_ACTIONS(Operator, Operator.baseRoleId - 13, Operator.basePropertyId - 1300),
+    DEVICE_MANAGEMENT(Operator, Operator.baseRoleId - 14, Operator.basePropertyId - 1400),
     ;
 
     private final YukonRoleCategory category;

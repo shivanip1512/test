@@ -330,6 +330,10 @@ public enum YukonRoleProperty {
     WORK_ORDER_CREATE_NEW(WORK_ORDER, WORK_ORDER.getBasePropertyId() - 1, booleanType()),
     WORK_ORDER_REPORT(WORK_ORDER, WORK_ORDER.getBasePropertyId() - 2, booleanType()),
     ADDTL_ORDER_NUMBER_LABEL(WORK_ORDER, WORK_ORDER.getBasePropertyId() - 3, stringType()),
+    
+    INFRASTRUCTURE_CREATE_AND_UPDATE(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId(), booleanType()),
+    INFRASTRUCTURE_DELETE(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 1, booleanType()),
+    INFRASTRUCTURE_ADMIN(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 2, booleanType()),
     ;
     
     private final YukonRole role;

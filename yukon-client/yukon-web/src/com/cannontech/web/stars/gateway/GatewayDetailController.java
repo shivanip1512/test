@@ -23,6 +23,7 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.TimeoutExecutionException;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -31,6 +32,7 @@ import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.Lists;
 
@@ -71,6 +73,7 @@ public class GatewayDetailController {
         return "gateways/detail.jsp";
     }
     
+    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_DELETE)
     @RequestMapping(value="/gateways/{id}", method=RequestMethod.DELETE)
     public String delete(FlashScope flash, LiteYukonUser user, ModelMap model, @PathVariable int id) 
             throws NmCommunicationException {
