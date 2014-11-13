@@ -50,7 +50,7 @@ public class GatewayDataTopicListener implements MessageListener {
                     handleGatewayUpgradeMessage(gatewayUpgradeMessage);
                 }
             } catch (JMSException e) {
-                log.warn("Unable to extract GatewayDataResponse from message", e);
+                log.warn("Unable to extract GatewayDataResponse or RfnGatewayUpgradeResponse from message", e);
             }
         }
     }
