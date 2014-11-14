@@ -121,7 +121,7 @@ bool DnpSlave::readConfig()
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
-        Cti::FormattedList loglist;
+        FormattedList loglist;
 
         loglist.add(KEY_LISTEN_PORT_NUMBER) << getPortNumber();
         loglist.add(KEY_DB_RELOAD_RATE)     << getReloadRate();
@@ -137,12 +137,12 @@ bool DnpSlave::readConfig()
 
 CtiFDRClientServerConnectionSPtr DnpSlave::createNewConnection(SOCKET newSocket)
 {
-    Cti::SocketAddress peerAddr( Cti::SocketAddress::STORAGE_SIZE );
+    SocketAddress peerAddr( SocketAddress::STORAGE_SIZE );
 
     if( getpeername(newSocket, &peerAddr._addr.sa, &peerAddr._addrlen) == SOCKET_ERROR )
     {
         const DWORD error = WSAGetLastError();
-        CTILOG_ERROR(dout, "getpeername() failed with error code: "<< error <<" / "<< Cti::getSystemErrorMessage(error));
+        CTILOG_ERROR(dout, "getpeername() failed with error code: "<< error <<" / "<< getSystemErrorMessage(error));
 
         return CtiFDRClientServerConnectionSPtr();
     }
@@ -229,7 +229,7 @@ bool DnpSlave::buildForeignSystemMessage(const CtiFDRDestination& destination,
     return false;
 }
 
-int DnpSlave::processMessageFromForeignSystem (Cti::Fdr::ServerConnection& connection,
+int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
                                          const char* data, unsigned int size)
 {
     BOOL timeFlag = false;
@@ -306,7 +306,7 @@ int DnpSlave::processMessageFromForeignSystem (Cti::Fdr::ServerConnection& conne
 }
 
 
-int DnpSlave::processDataLinkConfirmationRequest(Cti::Fdr::ServerConnection& connection, const char* data)
+int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection, const char* data)
 {
     int retVal = 0;
     unsigned char* buffer = NULL;
@@ -369,7 +369,7 @@ int DnpSlave::processDataLinkConfirmationRequest(Cti::Fdr::ServerConnection& con
 
 }
 
-int DnpSlave::processScanSlaveRequest (Cti::Fdr::ServerConnection& connection,
+int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
                                          const char* data, unsigned int size, bool includeTime)
 {
 
@@ -637,10 +637,10 @@ bool DnpSlave::isScanIntegrityRequest(const char* data, unsigned int size)
 
 std::string DnpSlave::dumpDNPMessage(const string dnpDirection, const char* data, unsigned int size)
 {
-    Cti::StreamBuffer sb;
+    StreamBuffer sb;
 
     sb << endl << dnpDirection <<" message:"
-       << endl << Cti::arrayToRange(reinterpret_cast<const unsigned char*>(data), size);
+       << endl << arrayToRange(reinterpret_cast<const unsigned char*>(data), size);
 
     return sb;
 }

@@ -1354,16 +1354,6 @@ void CtiPendingOpThread::checkControlStatusChange( CtiPendable *&pendable )
     }
 }
 
-void CtiPendingOpThread::removeControl(CtiPendable *&pendable)
-{
-    CtiLockGuard<CtiMutex> guard(_controlMux);
-    CtiPendingOpSet_t::iterator it = _pendingControls.find(CtiPendingPointOperations(pendable->_pointID, CtiPendingPointOperations::pendingControl));
-
-    if( it != _pendingControls.end() )
-    {
-        it = erasePendingControl(it);
-    }
-}
 
 void CtiPendingOpThread::removeLimit(CtiPendable *&pendable)
 {

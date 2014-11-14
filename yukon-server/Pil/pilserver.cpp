@@ -136,9 +136,6 @@ int PilServer::execute()
 
     try
     {
-        //  all references to this need to be moved to Scanner - we now use PilToPorter and PorterToPil
-        PortPipeInit (NOWAIT);
-
         if(!bServerClosing)
         {
             MainThread_ = rwMakeThreadFunction(*this, &PilServer::mainThread);

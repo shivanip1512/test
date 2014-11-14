@@ -495,11 +495,6 @@ struct timeSyncDNPDevices
 
         if( dnpTimesyncEnabled )
         {
-            if(RemoteRecord->getPortID() != port_id || RemoteRecord->isInhibited())
-            {
-                return;
-            }
-
             /* Allocate some memory */
             OUTMESS *OutMessage = new OUTMESS;
 

@@ -98,7 +98,6 @@ public:
     void processPendableAdd(CtiPendable *&pendable);
     void removeLimit(CtiPendable *&pendable);
     void removePointData(CtiPendable *&pendable);
-    void removeControl(CtiPendable *&pendable);
 
     static CtiPointNumericSPtr getPointOffset(CtiPendingPointOperations &ppc, long pao, int poff);
 
