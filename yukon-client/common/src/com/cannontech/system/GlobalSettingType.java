@@ -115,7 +115,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
     GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
-//    WEB_LOGO_URL(GlobalSettingSubCategory.WEB_SERVER, stringType(), "CannonLogo.gif"), -- remove this (esub_login.jsp)
+    WEB_LOGO_URL(GlobalSettingSubCategory.WEB_SERVER, stringType(), "CannonLogo.gif"), // remove this (esub_login.jsp)
 
     // Data Export (previously Billing)
     WIZ_ACTIVATE(GlobalSettingSubCategory.DATA_EXPORT, booleanType(), false),
