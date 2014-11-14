@@ -80,7 +80,7 @@ public class RfnGatewayDataCacheImpl implements RfnGatewayDataCache {
                 public void run() {
                     try {
                         cache.get(paoIdentifier);
-                    } catch (ExecutionException e) {
+                    } catch (Exception e) {
                         log.error("Asynchronous rfn gateway cache update failed", e);
                     }
                 }

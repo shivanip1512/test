@@ -36,19 +36,10 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
         
         @Override
         protected RfnDevice processCreation(RfnIdentifyingMessage message, RfnIdentifier identifier) {
-            //Somehow, we got data for a gateway that is not in the database.
+            //We got data for a gateway that is not in the database.
+            //Don't do anything - we will expect to get a GatewayArchiveRequest soon
             log.warn("Received data for a gateway that is not in the database. Creating " + identifier);
-            try {
-                RfnDevice device = rfnDeviceCreationService.createGateway(identifier.getSensorSerialNumber(), identifier);
-                rfnDeviceCreationService.incrementNewDeviceCreated();
-                log.debug("Created new gateway: " + device);
-                gatewayEventLogService.createdGatewayAutomatically(device.getName(), 
-                                                                   device.getRfnIdentifier().getSensorSerialNumber());
-                return device;
-            } catch (Exception e) {
-                log.warn("Creation failed for " + identifier, e);
-                throw new RuntimeException("Creation failed for " + identifier, e);
-            }
+            throw new RuntimeException("Creation not attempted for " + identifier);
         }
         
         @Override
