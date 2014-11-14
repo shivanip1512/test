@@ -135,7 +135,12 @@ public class GatewayDetailController {
         
         Map<String, Object> json = new HashMap<>();
         try {
-            boolean success = rfnGatewayService.testConnection(id, ip, username, password);
+            boolean success = false;
+            if (ip == null || username == null || password == null) {
+                success = rfnGatewayService.testConnection(id);
+            } else {
+                success = rfnGatewayService.testConnection(id, ip, username, password);
+            }
             json.put("success", success);
         } catch (NmCommunicationException e) {
             json.put("success", false);

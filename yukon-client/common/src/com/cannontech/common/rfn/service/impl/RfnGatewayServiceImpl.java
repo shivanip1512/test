@@ -355,6 +355,17 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         return sendConnectionRequest(request);
     }
     
+    @Override
+    public boolean testConnection(int deviceId) throws NmCommunicationException {
+        RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+        
+        // Build request
+        GatewayConnectionTestRequest request = new GatewayConnectionTestRequest();
+        request.setRfnIdentifier(device.getRfnIdentifier());
+        
+        return sendConnectionRequest(request);
+    }
+    
     private boolean sendConnectionRequest(GatewayConnectionTestRequest request) 
             throws NmCommunicationException {
         
