@@ -6,8 +6,36 @@
 
 #include "std_helper.h"
 
+#include <boost/scoped_ptr.hpp>
+
 using namespace std;
 using namespace Cti::Protocols;
+
+namespace {
+boost::scoped_ptr<Cti::Fdr::DnpSlave> dnpSlaveInterface;
+}
+
+extern "C" {
+
+DLLEXPORT int RunInterface(void)
+{
+    // make a point to the interface
+    dnpSlaveInterface.reset(new Cti::Fdr::DnpSlave);
+    dnpSlaveInterface->startup();
+    // now start it up
+    return dnpSlaveInterface->run();
+}
+
+DLLEXPORT int StopInterface( void )
+{
+    dnpSlaveInterface->stop();
+
+    dnpSlaveInterface.reset();
+
+    return 0;
+}
+
+}
 
 namespace Cti {
 namespace Fdr {
@@ -29,10 +57,6 @@ enum DnpApplicationFunctionCodes
     SINGLE_SOCKET_DNP_DIRECT_OP    = 5,
     SINGLE_SOCKET_DNP_DATALINK_REQ = 100,
 };
-
-/** global used to start the interface by c functions **/
-DnpSlave * dnpSlaveInterface;
-
 
 
 const string DNPInMessageString  = "DNP InMessage";
@@ -297,7 +321,7 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
         {
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
             {
-                CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" received an unsupported DNP message, response not generated.");
+                CTILOG_DEBUG(dout, logNow() << " received an unsupported DNP message, response not generated.");
             }
             break;
         }
@@ -318,7 +342,7 @@ int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection, c
 
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
-            CTILOG_DEBUG(dout, logNow() <<" "<< getInterfaceName() <<" received DNP " << linkMessage <<" request message."<<
+            CTILOG_DEBUG(dout, logNow() <<" received DNP " << linkMessage <<" request message."<<
                     dumpDNPMessage(DNPInMessageString, data, bufferSize));
         }
 
@@ -351,7 +375,7 @@ int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection, c
         linkMessage = ( linkStatusReq ? "data link acknowledgement" : "ack" );
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
-            CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" sending DNP "<< linkMessage <<" message."<<
+            CTILOG_DEBUG(dout, logNow() <<" sending DNP "<< linkMessage <<" message."<<
                     dumpDNPMessage(DNPOutMessageString, (CHAR *)buffer, bufferSize));
         }
     }
@@ -360,7 +384,7 @@ int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection, c
         //error processing data link confirmation Request
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
-            CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" received an DNP data link confirmation request message, response not generated.");
+            CTILOG_DEBUG(dout, logNow() <<" received an DNP data link confirmation request message, response not generated.");
         }
         retVal = -1;
     }
@@ -378,7 +402,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
     CtiXfer xfer = CtiXfer(NULL, 0, (BYTE*)data, getMessageSize(data));
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
-        CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" received DNP scan request message"<<
+        CTILOG_DEBUG(dout, logNow() <<" received DNP scan request message"<<
                 dumpDNPMessage(DNPInMessageString, data, size));
     }
 
@@ -400,7 +424,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
             if (!findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
                 continue;
 
-            Protocols::DNPSlaveInterface::input_point iPoint;
+            DNPSlaveInterface::input_point iPoint;
 
             iPoint.online = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp());
             iPoint.control_offset = dnpId.Offset;
@@ -410,17 +434,17 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
             if (dnpId.PointType == StatusPointType )
             {
                 iPoint.din.trip_close = (fdrPoint->getValue() == 0)?(DNP::BinaryOutputControl::Trip):(DNP::BinaryOutputControl::Close);
-                iPoint.type = Protocols::DNPSlaveInterface::DigitalInput;
+                iPoint.type = DNPSlaveInterface::DigitalInput;
             }
             else if (dnpId.PointType == AnalogPointType )
             {
                 iPoint.ain.value =  (fdrPoint->getValue() * dnpId.Multiplier);
-                iPoint.type = Protocols::DNPSlaveInterface::AnalogInputType;
+                iPoint.type = DNPSlaveInterface::AnalogInputType;
             }
             else if (dnpId.PointType == PulseAccumulatorPointType )
             {
                 iPoint.counterin.value =  (fdrPoint->getValue() * dnpId.Multiplier);
-                iPoint.type = Protocols::DNPSlaveInterface::Counters;
+                iPoint.type = DNPSlaveInterface::Counters;
             }
             else
             {
@@ -446,7 +470,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
                  std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
                  if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                  {
-                     CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" sending DNP scan response message."<<
+                     CTILOG_DEBUG(dout, logNow() <<" sending DNP scan response message."<<
                              dumpDNPMessage(DNPOutMessageString, buffer, bufferSize));
                  }
                  connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
@@ -458,7 +482,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
          {
              if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
              {
-                 CTILOG_DEBUG(dout, logNow() << getInterfaceName() <<" was not able to generate scan response.");
+                 CTILOG_DEBUG(dout, logNow() <<" was not able to generate scan response.");
              }
          }
      }
@@ -601,39 +625,6 @@ unsigned int DnpSlave::getMessageSize(const char* data)
     return msgSize;
 }
 
-bool DnpSlave::isScanIntegrityRequest(const char* data, unsigned int size)
-{
-
-    /*    05 64 17 c4 1e 00 01 00 d3 05
-          c0 c3
-          01 - read
-          32 01 - data object 50 variation 1 - TIME AND DATE
-          06 - qualifier - no index, packed.  no range field
-          3c 02 - data object 60 variation 2 - class 1 data
-          06 - qualifier - no index, packed.  no range field
-          3c 03 - data object 60 variation 3 - class 2 data
-          06 - qualifier - no index, packed.  no range field
-          3c 04 - data object 60 variation 4 - class 3 data
-          06 - qualifier - no index, packed.  no range field
-          3c <ce 3c - 16byte CRC> 01 - data object 60 variation 1 - class 0 data
-          06 - qualifier - no index, packed.  no range field
-          75 e1 - CRC
-    */
-    bool retVal = false;
-    if (size > FDR_DNP_HEADER_SIZE && size > FDR_DNP_REQ_FUNC_LOCATION + 17)
-    {
-
-        if (data[FDR_DNP_REQ_FUNC_LOCATION + 13] == 0x3c &&
-            data[FDR_DNP_REQ_FUNC_LOCATION + 16] == 0x01 &&
-            data[FDR_DNP_REQ_FUNC_LOCATION + 17] == 0x06 )
-        {
-            retVal = true;
-        }
-    }
-
-
-    return retVal;
-}
 
 std::string DnpSlave::dumpDNPMessage(const string dnpDirection, const char* data, unsigned int size)
 {
@@ -654,63 +645,5 @@ unsigned int DnpSlave::getMagicInitialMsgSize()
 
 }
 }
-
-
-/****************************************************************************************
-*
-*      Here Starts some C functions that are used to Start the
-*      Interface and Stop it from the Main() of FDR.EXE.
-*
-*/
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/************************************************************************
-* Function Name: Extern C int RunInterface(void)
-*
-* Description: This is used to Start the Interface from the Main()
-*              of FDR.EXE. Each interface it Dynamicly loaded and
-*              this function creates a global FDRCygnet Object and then
-*              calls its run method to cank it up.
-*
-*************************************************************************
-*/
-
-    DLLEXPORT int RunInterface(void)
-    {
-
-        // make a point to the interface
-        Cti::Fdr::dnpSlaveInterface = new Cti::Fdr::DnpSlave();
-        Cti::Fdr::dnpSlaveInterface->startup();
-        // now start it up
-        return Cti::Fdr::dnpSlaveInterface->run();
-    }
-
-/************************************************************************
-* Function Name: Extern C int StopInterface(void)
-*
-* Description: This is used to Stop the Interface from the Main()
-*              of FDR.EXE. Each interface it Dynamicly loaded and
-*              this function stops a global FDRCygnet Object and then
-*              deletes it.
-*
-*************************************************************************
-*/
-    DLLEXPORT int StopInterface( void )
-    {
-
-        Cti::Fdr::dnpSlaveInterface->stop();
-        delete Cti::Fdr::dnpSlaveInterface;
-        Cti::Fdr::dnpSlaveInterface = 0;
-
-        return 0;
-    }
-
-
-#ifdef __cplusplus
-}
-#endif
 
 

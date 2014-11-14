@@ -49,27 +49,27 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         // constructors and destructors
         DnpSlave();
 
-        virtual unsigned int getMessageSize(const char* data);
+        unsigned int getMessageSize(const char* data) override;
 
         bool readConfig() override;
 
         void startup();
 
     protected:
-        virtual CtiFDRClientServerConnectionSPtr createNewConnection(SOCKET newConnection);
+        CtiFDRClientServerConnectionSPtr createNewConnection(SOCKET newConnection) override;
 
-        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList);
-        virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
+        bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList) override;
+        void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList) override;
 
-        virtual bool buildForeignSystemMessage(const CtiFDRDestination& destination,
-                                               char** buffer,
-                                               unsigned int& bufferSize);
+        bool buildForeignSystemMessage(const CtiFDRDestination& destination,
+                                       char** buffer,
+                                       unsigned int& bufferSize) override;
 
-        virtual int processMessageFromForeignSystem(Cti::Fdr::ServerConnection& connection,
-                                           const char* data, unsigned int size);
-        virtual unsigned long getHeaderBytes(const char* data, unsigned int size);
+        int processMessageFromForeignSystem(Cti::Fdr::ServerConnection& connection,
+                                           const char* data, unsigned int size) override;
+        unsigned long getHeaderBytes(const char* data, unsigned int size) override;
 
-        virtual unsigned int getMagicInitialMsgSize();
+        unsigned int getMagicInitialMsgSize() override;
 
 
     private:
@@ -79,7 +79,6 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
                                          const char* data, unsigned int size, bool includeTime);
         int processDataLinkConfirmationRequest(Cti::Fdr::ServerConnection& connection, const char* data);
 
-        bool isScanIntegrityRequest(const char* data, unsigned int size);
         std::string dumpDNPMessage(const std::string direction, const char* data, unsigned int size);
 
         typedef std::map<CtiFDRDestination, DnpId> SendMap;
