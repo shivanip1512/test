@@ -3,7 +3,7 @@
         Device group picker that sets selected group names in a hidden input.
         If using multi-selection mode, multiple hidden inputs with the same name are used
         and the controller should expect an array of Strings: 'String[] groups'.
-        When a selection is made the 'yukon.deviceGroupPicker.chosen' event is fired." %>
+        When a selection is made the 'yukon:tags:device:group:picker:chosen' event is fired." %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -77,7 +77,7 @@
         <c:if test="${not empty pageScope.dialogId}">id="${dialogId}"</c:if>
         data-title="<cti:msg2 key="${titleKey}"/>"
         data-width="400"
-        data-event="yukon.deviceGroupPicker.chosen">
+        data-event="yukon:tags:device:group:picker:chosen">
     
     <div class="tree-controls clearfix">
         <cti:msg2 var="expand" key="yukon.common.expandAll"/>

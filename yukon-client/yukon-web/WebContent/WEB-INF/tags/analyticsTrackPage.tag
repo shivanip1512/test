@@ -4,7 +4,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<cti:includeScript link="/JavaScript/yukon.analytics.js"/>
+<cti:includeScript link="YUKON_ANALYTICS"/>
 
 <%-- Cooper Tracking Ids --%>
 <%-- ******************* --%>
@@ -17,32 +17,32 @@
 
 <c:set var="disableAnalytics" value="false"/>
 <c:choose>
-	<c:when test="${!enabled}">
-	    <c:set var="disableAnalytics" value="true"/>
-	</c:when>
-	<c:otherwise>
-		<cti:checkGlobalRolesAndProperties value="DISABLE_ANALYTICS">
-			<c:set var="disableAnalytics" value="true"/>
-		</cti:checkGlobalRolesAndProperties>
-	</c:otherwise>
+    <c:when test="${!enabled}">
+        <c:set var="disableAnalytics" value="true"/>
+    </c:when>
+    <c:otherwise>
+        <cti:checkGlobalRolesAndProperties value="DISABLE_ANALYTICS">
+            <c:set var="disableAnalytics" value="true"/>
+        </cti:checkGlobalRolesAndProperties>
+    </c:otherwise>
 </c:choose>
 
 <c:if test="${!disableAnalytics}">
-	<c:set var="devMode" value="false"/>
-	<cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
-		<c:set var="devMode" value="true"/>
-	</cti:checkGlobalRolesAndProperties>
-	<cti:checkYukonVersionUndefined>
-		<c:set var="devMode" value="true"/>
-	</cti:checkYukonVersionUndefined>
+    <c:set var="devMode" value="false"/>
+    <cti:checkGlobalRolesAndProperties value="DEVELOPMENT_MODE">
+        <c:set var="devMode" value="true"/>
+    </cti:checkGlobalRolesAndProperties>
+    <cti:checkYukonVersionUndefined>
+        <c:set var="devMode" value="true"/>
+    </cti:checkYukonVersionUndefined>
 
-	<c:set var="cooperTrackingId" value="${devMode ? cooperDev : cooperProd}"/>
+    <c:set var="cooperTrackingId" value="${devMode ? cooperDev : cooperProd}"/>
 
-	<%-- Only add GA if we have tracking Id(s) --%>
-	<c:if test="${fn:length(cooperTrackingId) != 0 || fn:length(additionalTrackingIds) != 0}">
-		<script>
+    <%-- Only add GA if we have tracking Id(s) --%>
+    <c:if test="${fn:length(cooperTrackingId) != 0 || fn:length(additionalTrackingIds) != 0}">
+        <script>
             yukon.analytics.setTrackingIds({cooper_tracking_id: '${cooperTrackingId}',
                 additional_tracking_ids: '${additionalTrackingIds}'});
-		</script>
-	</c:if>
+        </script>
+    </c:if>
 </c:if>

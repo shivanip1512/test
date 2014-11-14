@@ -83,6 +83,7 @@ public class LayoutController {
         
         boolean dev = configSource.getBoolean(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE);
         
+        /** JS ORDER MATTERS! **/
         Builder<String> b = ImmutableList.builder();
         
         b.add(JsLibrary.DEBUGGER.getPath());
@@ -108,10 +109,10 @@ public class LayoutController {
         b.add(JsLibrary.YUKON_COOKIE.getPath());
         b.add(JsLibrary.YUKON_ALERTS.getPath());
         b.add(JsLibrary.YUKON_CONFIRM.getPath());
-        b.add("/JavaScript/yukon.ui.util.js");
-        b.add("/JavaScript/yukon.data.updater.js");
-        b.add("/JavaScript/yukon.dropdown.js");
-        b.add("/JavaScript/yukon.analytics.js");
+        b.add(JsLibrary.YUKON_UI_UTIL.getPath());
+        b.add(JsLibrary.YUKON_UPDATER.getPath());
+        b.add(JsLibrary.YUKON_DROPDOWN.getPath());
+        b.add(JsLibrary.YUKON_ANALYTICS.getPath());
         b.add(JsLibrary.YUKON_FAVORITES.getPath());
         b.add(JsLibrary.YUKON_SIMPLE_POPUPS.getPath());
         b.add(JsLibrary.YUKON_PICKER.getPath());

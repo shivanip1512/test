@@ -1,12 +1,12 @@
-yukon.namespace('yukon.deviceGroupPicker');
+yukon.namespace('yukon.tags.deviceGroupPicker');
 
 /**
  * Handles behavior for the deviceGroupPicker.tag 
- * @module yukon.deviceGroupPicker
+ * @module yukon.tags.deviceGroupPicker
  * @requires JQUERY
  * @requires yukon
  */
-yukon.deviceGroupPicker = (function () {
+yukon.tags.deviceGroupPicker = (function () {
 
     'use strict';
     
@@ -127,7 +127,7 @@ yukon.deviceGroupPicker = (function () {
             });
             
             /** A selection was made, update the input(s) and close the dialog. */
-            $(document).on('yukon.deviceGroupPicker.chosen', '.js-device-group-picker-dialog', function (ev) {
+            $(document).on('yukon:tags:device:group:picker:chosen', '.js-device-group-picker-dialog', function (ev) {
                 
                 var
                 dialog = $(this),
@@ -203,4 +203,4 @@ yukon.deviceGroupPicker = (function () {
     return mod;
 })();
 
-$(function () { yukon.deviceGroupPicker.init(); });
+$(function () { yukon.tags.deviceGroupPicker.init(); });

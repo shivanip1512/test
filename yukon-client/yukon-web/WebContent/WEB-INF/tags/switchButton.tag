@@ -37,6 +37,7 @@
         </c:otherwise>
     </c:choose>
     <cti:msgScope paths="yukon.web.components.button"> <%--Do not format, spaces will be added by browser. --%>
-        <label for="${id}" class="button left yes ${pageScope.onClasses}"><span class="b-label"><cti:msg2 key=".${onNameKey}.label"/></span></label><label for="${id}" class="button right no ${pageScope.offClasses}"><span class="b-label"><cti:msg2 key=".${offNameKey}.label"/></span></label>
+        <label for="${id}" class="button left yes ${pageScope.onClasses}"><span class="b-label"><cti:msg2 key=".${onNameKey}.label"/></span></label
+        ><label for="${id}" class="button right no ${pageScope.offClasses}"><span class="b-label"><cti:msg2 key=".${offNameKey}.label"/></span></label>
     </cti:msgScope>
 </label>

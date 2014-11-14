@@ -16,7 +16,6 @@
 <cti:includeScript link="${timeFormatter}"/>
 <cti:includeScript link="/JavaScript/yukon.temperature.js"/>
 <cti:includeScript link="/JavaScript/yukon.thermostat.js"/>
-<cti:includeScript link="JSON"/>
 
 <cti:flashScopeMessages/>
 

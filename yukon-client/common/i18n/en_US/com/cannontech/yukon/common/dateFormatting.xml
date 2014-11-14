@@ -39,7 +39,7 @@
 
 <entry key="yukon.common.dateFormatting.intervalSeparator">&#160;to&#160;</entry>
 
-<entry key="yukon.common.timeFormatter">/JavaScript/yukon.format.time.js</entry>
+<entry key="yukon.common.timeFormatter">/resources/js/common/yukon.format.time.js</entry>
 <entry key="yukon.common.date.start">Start Date</entry>
 <entry key="yukon.common.date.stop">Stop Date</entry>
 <entry key="yukon.common.time.start">Start Time</entry>

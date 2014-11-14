@@ -36,6 +36,7 @@
 <cti:includeScript link="MODERNIZR" force="true"/>
 
 <cti:includeScript link="JQUERY" force="true"/>
+<cti:includeScript link="JQUERY_TIPSY" force="true"/>
 <cti:includeScript link="JQUERY_COOKIE" force="true"/>
 <cti:includeScript link="JQUERY_UI" force="true"/>
 <cti:includeScript link="JQUERY_CHOSEN" force="true"/>
@@ -45,8 +46,7 @@
 <cti:includeScript link="JQUERY_PLACEHOLDER" force="true"/>
 <cti:includeScript link="YUKON" force="true"/>
 <cti:includeScript link="YUKON_COOKIE" force="true"/>
-<cti:includeScript link="JQUERY_TIPSY" force="true"/>
-<script src="<cti:url value="/JavaScript/yukon.ui.util.js"/>"></script>
+<cti:includeScript link="YUKON_UI_UTIL" force="true"/>
 
 <cti:css key="yukon.web.login.loginStyles"/>
 </head>
