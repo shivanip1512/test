@@ -77,6 +77,7 @@ public final class CommandRequestExecutionDefaults {
         b.put(ARCHIVE_DATA_ANALYSIS_LP_READ,                      new ExecutionInfo(false, 7, false));
         b.put(MULTISPEAK_METER_READ_EVENT,                        new ExecutionInfo(true, 13, false));
         b.put(MULTISPEAK_FORMATTED_BLOCK_READ_EVENT,              new ExecutionInfo(true, 13, false));
+        b.put(MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND,           new ExecutionInfo(true, 13, false));
         b.put(ASSET_AVAILABILITY_READ,                            new ExecutionInfo(false, 8, false));
         b.put(LM_DEVICE_DETAILS_ATTRIBUTE_READ,                   new ExecutionInfo(false, 8, false));
         infoLookup = b.build();

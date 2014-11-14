@@ -193,6 +193,8 @@
     <entry key="yukon.common.setting.MSP_PAONAME_ALIAS.description">Defines a Yukon Pao (Device) Name field alias. Valid values(0-5): [0=Device Name, 1=Account Number, 2=Service Location, 3=Customer, 4=EA Location, 5=Grid Location, 6=Service Location [Position]]</entry>
     <entry key="yukon.common.setting.MSP_PAONAME_EXTENSION">PAO Name Extension</entry>
     <entry key="yukon.common.setting.MSP_PAONAME_EXTENSION.description">The extension name of the field appended to PaoName Alias. Leave this value blank to ignore the use of extensions.</entry>
+    <entry key="yukon.common.setting.MSP_RFN_PING_FORCE_CHANNEL_READ">Force Read for OD Ping (RFN Only)</entry>
+    <entry key="yukon.common.setting.MSP_RFN_PING_FORCE_CHANNEL_READ.description">Force an attribute read for RFN meter types, otherwise latest archived outage status will be used.</entry>
     <entry key="yukon.common.setting.DEFAULT_ROUNDING_MODE">Default Rounding Mode</entry>
     <entry key="yukon.common.setting.DEFAULT_ROUNDING_MODE.description">Rounding Mode used when formatting value data in billing formats. Available placeholders: HALF_EVEN, CEILING, FLOOR, UP, DOWN, HALF_DOWN, HALF_UP</entry>
     <entry key="yukon.common.setting.SCHEDULE_PARAMETERS_AVAILABLE_FILE_EXTENSIONS">Available File Extensions</entry>

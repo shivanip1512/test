@@ -4,7 +4,9 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumSet;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,10 +85,10 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
@@ -94,8 +96,11 @@ import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.Disconnect410State;
+import com.cannontech.database.db.point.stategroup.OutageStatus;
+import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
@@ -125,16 +130,22 @@ import com.cannontech.multispeak.deploy.service.LoadActionCode;
 import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.MeterGroup;
 import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.cannontech.multispeak.deploy.service.OA_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.OutageDetectDeviceType;
+import com.cannontech.multispeak.deploy.service.OutageDetectionEvent;
 import com.cannontech.multispeak.deploy.service.OutageEventType;
+import com.cannontech.multispeak.deploy.service.OutageLocation;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 import com.cannontech.multispeak.event.MeterReadEvent;
 import com.cannontech.multispeak.event.MultispeakEvent;
-import com.cannontech.multispeak.event.ODEvent;
 import com.cannontech.multispeak.service.MultispeakMeterService;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
+import com.google.common.collect.BiMap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -142,9 +153,12 @@ import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.MapMaker;
+import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
+import com.google.common.collect.Sets;
 
 public class MultispeakMeterServiceImpl implements MultispeakMeterService, MessageListener {
 
@@ -161,6 +175,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceUpdateService deviceUpdateService;
+    @Autowired private DynamicDataSource dynamicDataSource;
+    @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private MeterDao meterDao;
     @Autowired private MeterReadProcessingService meterReadProcessingService;
     @Autowired private MeterSearchDao meterSearchDao;
@@ -378,7 +394,12 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         log.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
         multispeakEventLogService.initiateMeterRead(meterNumber, meter, "N/A", "getLatestReadingByMeterNo", mspVendor.getCompanyName());
 
-        writePilRequest(meter, commandStr, id, 13);
+        // Writes a request to pil for the meter and commandStr using the id for mspVendor.
+        commandStr += " update noqueue";
+        Request pilRequest = new Request(meter.getPaoIdentifier().getPaoId(), commandStr, id);
+        pilRequest.setPriority(13);
+        porterConnection.write(pilRequest);
+
         systemLog("getLatestReadingByMeterNo", "(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + commandStr, mspVendor);
 
         synchronized (event) {
@@ -405,52 +426,281 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     @Override
-    public synchronized ErrorObject[] odEvent(MultispeakVendor mspVendor, String[] meterNumbers, String transactionID,
-            String responseUrl) throws RemoteException {
-        
-        if (mspVendor.getUrl() == null || mspVendor.getUrl().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+    public synchronized ErrorObject[] odEvent(final MultispeakVendor mspVendor, String[] meterNumbers,
+            final String transactionId, final String responseUrl) throws RemoteException {
+
+        if (StringUtils.isBlank(responseUrl)) { // no need to go through all the work if we have no one to respond to.
             throw new RemoteException("OMS vendor unknown.  Please contact Yukon administrator to set the Multispeak Vendor Role Property value in Yukon.");
         }
+
         if (!porterConnection.isValid()) {
             throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
         }
 
-        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         log.info("Received " + meterNumbers.length + " Meter(s) for Outage Verification Testing from " + mspVendor.getCompanyName());
         multispeakEventLogService.initiateODEventRequest(meterNumbers.length, "initiateOutageDetectionEventRequest", mspVendor.getCompanyName());
+        
+        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        List<YukonMeter> rfnPaosToPing = Lists.newArrayList();
+        List<CommandRequestDevice> plcCommandRequests = Lists.newArrayList();
 
         for (String meterNumber : meterNumbers) {
-
             try {
                 YukonMeter meter = mspMeterDao.getMeterForMeterNumber(meterNumber);
 
-                // Validate meter can receive porter command requests and command string exists, then perform action
-                // This is limiting us to PLC support only for this request.
-                boolean canInitiatePorterRequest = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
-                if (!canInitiatePorterRequest) {
-                    ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
-                                                                  "MeterNumber (" + meterNumber + ") - Meter cannot receive requests from porter.",
-                                                                  "Meter",
-                                                                  "ODEvent",
-                                                                  mspVendor.getCompanyName());
-                    errorObjects.add(err);
-                } else { // do archaic way
-                    long id = generateMessageID();
-                    ODEvent event = new ODEvent(mspVendor, id, transactionID, responseUrl);
-                    getEventsMap().put(new Long(id), event);
-                    multispeakEventLogService.initiateODEvent(meterNumber, meter, transactionID, "initiateOutageDetectionEventRequest", mspVendor.getCompanyName());
-                    writePilRequest(meter, "ping", id, 13);
+                // TODO validate is OD supported meter ???
+                
+                if (meter instanceof RfnMeter) {
+                    rfnPaosToPing.add(meter);
+                    multispeakEventLogService.initiateODEvent(meterNumber, meter, transactionId, "initiateOutageDetectionEventRequest", mspVendor.getCompanyName());
+                    continue;
                 }
 
+                // Assume plc if we made it this far, validate meter can receive porter command requests and command string exists, then perform action
+                boolean supportsPing = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
+                if (!supportsPing) {
+                    ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
+                                                                  "MeterNumber (" + meterNumber + ") - Meter cannot receive requests from porter. ",
+                                                                  "Meter", "ODEvent", mspVendor.getCompanyName());
+                    errorObjects.add(err);
+                } else { // build up a list of plc command requests (to be sent later)
+                    CommandRequestDevice request = new CommandRequestDevice();
+                    request.setDevice(SimpleDevice.of(meter.getPaoIdentifier()));
+                    request.setCommandCallback(new CommandCallbackBase("ping"));
+                    plcCommandRequests.add(request);
+                    multispeakEventLogService.initiateODEvent(meterNumber, meter, transactionId, "initiateOutageDetectionEventRequest", mspVendor.getCompanyName());
+                }
             } catch (NotFoundException e) {
                 multispeakEventLogService.meterNotFound(meterNumber, "initiateOutageDetectionEventRequest", mspVendor.toString());
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "ODEvent", mspVendor.getCompanyName());
                 errorObjects.add(err);
                 log.error(e);
             }
+
         }
 
+        // perform read attribute(?) on list of meters
+        doRfnOutagePing(rfnPaosToPing, mspVendor, transactionId, responseUrl);
+        // perform plc action on list of commandRequests
+        doPlcOutagePing(plcCommandRequests, mspVendor, transactionId, responseUrl);
+
         return mspObjectDao.toErrorObject(errorObjects);
+    }
+
+    /**
+     * Performs the PLC meter disconnect. 
+     * Returns immediately, does not wait for a response. 
+     * Callback will initiate a cdEventNotification on receivedValue.
+     */
+    private void doPlcOutagePing(List<CommandRequestDevice> plcCommandRequests, final MultispeakVendor mspVendor,
+            final String transactionId, final String responseUrl) {
+        
+        YukonUserContext yukonUserContext = YukonUserContext.system;
+        CommandCompletionCallbackAdapter<CommandRequestDevice> callback = new CommandCompletionCallbackAdapter<CommandRequestDevice>() {
+
+            @Override
+            public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                log.warn("receivedIntermediateError for odEvent " + error.getDescription());
+            }
+
+            @Override
+            public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
+                log.debug("receivedIntermediateResultString for odEvent " + value);
+            }
+
+            @Override
+            public void receivedValue(CommandRequestDevice command, PointValueHolder value) {
+                log.debug("receivedValue for odEvent" + value);
+            }
+
+            @Override
+            public void receivedLastResultString(CommandRequestDevice command, String value) {
+                log.debug("receivedLastResultString for odEvent " + value);
+                SimpleMeter yukonMeter = meterDao.getSimpleMeterForId(command.getDevice().getDeviceId());
+                
+                Date now = new Date();  // may need to get this from the porter Return Message, but for now "now" will do.
+                OutageEventType outageEventType = getForStatusCode(0);
+                OutageDetectionEvent outageDetectionEvent = buildOutageDetectionEvent(yukonMeter, outageEventType, now, value);
+
+                sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
+            }
+
+            @Override
+            public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                log.warn("receivedLastError for odEvent " + error.getDescription());
+                SimpleMeter yukonMeter = meterDao.getSimpleMeterForId(command.getDevice().getDeviceId());
+                
+                Date now = new Date();  // may need to get this from the porter Return Message, but for now "now" will do.
+                OutageEventType outageEventType = getForStatusCode(error.getErrorCode());
+                OutageDetectionEvent outageDetectionEvent = buildOutageDetectionEvent(yukonMeter, outageEventType, now, error.getPorter());
+
+                sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
+            }
+
+            @Override
+            public void complete() {
+                log.debug("complete for odEvent");
+            }
+
+            @Override
+            public void processingExceptionOccured(String reason) {
+                log.warn("processingExceptionOccured for odEvent " + reason);
+            }
+        };
+
+        commandRequestDeviceExecutor.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND, yukonUserContext.getYukonUser());
+    }
+
+    /**
+     * Performs the RFN meter disconnect. 
+     * Returns immediately, does not wait for a response. 
+     * Callback will initiate a cdEventNotification on success or error.
+     */
+    private void doRfnOutagePing(final List<YukonMeter> meters, final MultispeakVendor mspVendor, final String transactionId, final String responseUrl) {
+
+        boolean isChannelReadForPing = globalSettingDao.getBoolean(GlobalSettingType.MSP_RFN_PING_FORCE_CHANNEL_READ);
+
+        if (isChannelReadForPing) {
+            DeviceAttributeReadCallback callback = new DeviceAttributeReadCallback() {
+    
+                @Override
+                public void complete() {
+                    log.debug("deviceAttributeReadCallback.complete for odEvent");
+                }
+    
+                @Override
+                public void receivedValue(PaoIdentifier pao, PointValueHolder value) {
+                    log.debug("deviceAttributeReadCallback.receivedLastValue for odEvent");
+                }
+    
+                @Override
+                public void receivedLastValue(PaoIdentifier pao, String value) {    //success
+                    log.debug("deviceAttributeReadCallback.receivedLastValue for odEvent");
+                    
+                    YukonMeter yukonMeter = meterDao.getForId(pao.getPaoId());  // can we get this from meters?
+                    if (meters.contains(yukonMeter)) {  // meter may have already been handled and removed by receivedError
+                        Date now = new Date();  // may need to get this from the callback, but for now "now" will do.
+                        OutageEventType outageEventType = getForStatusCode(0);
+                        OutageDetectionEvent outageDetectionEvent = buildOutageDetectionEvent(yukonMeter, outageEventType, now, "");
+                        sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
+                    }
+                }
+    
+                @Override
+                public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {  //failure
+                    log.warn("deviceAttributeReadCallback.receivedError for odEvent: " + pao + ": " + error);
+                    
+                    YukonMeter yukonMeter = meterDao.getForId(pao.getPaoId());  // can we get this from meters?
+                    meters.remove(yukonMeter);
+                    Date now = new Date();  // may need to get this from the callback, but for now "now" will do.
+                    OutageEventType outageEventType = getForStatusCode(error.getType().getErrorCode());
+                    OutageDetectionEvent outageDetectionEvent = buildOutageDetectionEvent(yukonMeter, outageEventType, now, error.toString());
+                    sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
+                }
+    
+                @Override
+                public void receivedException(DeviceAttributeReadError error) {
+                    log.warn("deviceAttributeReadCallback.receivedException in odEvent callback: " + error);
+                }
+    
+            };
+            deviceAttributeReadService.initiateRead(meters, Sets.newHashSet(BuiltInAttribute.OUTAGE_STATUS), callback, DeviceRequestType.MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND, UserUtils.getYukonUser());
+        } else {    //save network expense by just returning latest known value. 
+
+            BiMap<LitePoint, PaoIdentifier> pointsToPaos = attributeService.getPoints(meters,  BuiltInAttribute.OUTAGE_STATUS).inverse();
+            Set<Integer> pointIds = Sets.newHashSet(Iterables.transform(pointsToPaos.keySet(), LitePoint.ID_FUNCTION));
+            Set<? extends PointValueQualityHolder> pointValues = dynamicDataSource.getPointValues(pointIds);
+
+            final ImmutableMap<Integer, LitePoint> pointLookup = Maps.uniqueIndex(pointsToPaos.keySet(), LitePoint.ID_FUNCTION);
+            final ImmutableMap<PaoIdentifier, YukonMeter> meterLookup = PaoUtils.indexYukonPaos(meters);
+            
+            for (PointValueQualityHolder pointValue : pointValues) {
+                Integer pointId = pointValue.getId();
+                LitePoint litePoint = pointLookup.get(pointId);
+                PaoIdentifier paoIdentifier = pointsToPaos.get(litePoint);
+                YukonMeter yukonMeter = meterLookup.get(paoIdentifier);
+
+                OutageStatus outageStatus = PointStateHelper.decodeRawState(OutageStatus.class, pointValue.getValue());
+                OutageEventType outageEventType;
+
+                switch (outageStatus) {
+                case GOOD:
+                    outageEventType = OutageEventType.Restoration;
+                    break;
+                case BAD: 
+                    outageEventType = OutageEventType.Outage;
+                    break;
+                default:
+                    outageEventType = OutageEventType.NoResponse;
+                    break;
+                }
+                
+                OutageDetectionEvent outageDetectionEvent = buildOutageDetectionEvent(yukonMeter, outageEventType, pointValue.getPointDataTimeStamp(), "Last Known Status");
+                sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
+            }
+        }
+    }
+    
+    private OutageEventType getForStatusCode(int statusCode) {
+        for (OutageEventType eventType : supportedEventTypes) {
+            if (outageConfig.get(eventType).contains(statusCode)) {
+                return eventType;
+            }
+        }
+        return OutageEventType.NoResponse;
+    }
+    
+    private void sendODEventNotification(SimpleMeter meter, MultispeakVendor mspVendor, String transactionId, String responseUrl, OutageDetectionEvent outageDetectionEvent) {
+        
+        try {
+            OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor, responseUrl);
+            if (port != null) {
+                OutageDetectionEvent[] odEvents = new OutageDetectionEvent[1];
+                odEvents[0] = outageDetectionEvent;
+
+                log.info("Sending ODEventNotification (" + responseUrl + "): Meter Number " + meter.toString() + " OutageEventType: " + outageDetectionEvent.getOutageEventType());
+                // TODO - Do we want an EventLog when we send out notification messages?
+                
+                ErrorObject[] errObjects = port.ODEventNotification(odEvents, transactionId);
+
+                multispeakEventLogService.notificationResponse("ODEventNotification", transactionId, outageDetectionEvent.getObjectID(),
+                                                               outageDetectionEvent.getOutageEventType().toString(),
+                                                               ArrayUtils.getLength(errObjects), responseUrl);
+                if (errObjects != null) {
+                    multispeakFuncs.logErrorObjects(responseUrl, "ODEventNotification", errObjects);
+                }
+            } else {
+                log.error("Port not found for OA_Server (" + mspVendor.getCompanyName() + ")");
+            }
+        } catch (RemoteException e) {
+            log.error("TargetService: " + responseUrl + " - initiateOutageDetection (" + mspVendor.getCompanyName() + ")");
+            log.error("RemoteExceptionDetail: " + e.getMessage());
+        }
+    }
+
+    private OutageDetectionEvent buildOutageDetectionEvent(SimpleMeter yukonMeter, OutageEventType outageEventType, Date timestamp, String resultString) {
+
+        OutageDetectionEvent outageDetectionEvent = new OutageDetectionEvent();
+        String meterNumber = yukonMeter.getMeterNumber();
+
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.setTime(timestamp);
+        outageDetectionEvent.setEventTime(cal);
+        System.out.println("EventTime: " + cal.getTime());
+        outageDetectionEvent.setObjectID(meterNumber);
+        outageDetectionEvent.setOutageDetectDeviceID(meterNumber);
+        outageDetectionEvent.setOutageDetectDeviceType(OutageDetectDeviceType.Meter);
+
+        OutageLocation outageLocation = new OutageLocation();
+        outageLocation.setObjectID(meterNumber);
+        outageLocation.setMeterNo(meterNumber);
+        outageDetectionEvent.setOutageLocation(outageLocation);
+
+        // set defaults, may be overwritten below
+        outageDetectionEvent.setOutageEventType(outageEventType);
+        outageDetectionEvent.setErrorString(outageEventType.getValue() + ": " + resultString);
+
+        return outageDetectionEvent;
     }
 
     @Override
@@ -553,7 +803,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                         log.info("Sending ReadingChangedNotification (" + responseUrl + "): Meter Number " + meterRead.getObjectID());
                         ErrorObject[] errObjects = port.readingChangedNotification(meterReads, transactionID);
                         multispeakEventLogService.notificationResponse("readingChangedNotification", transactionID, meterRead.getObjectID(), 
-                                                                       meterRead.getPosKWh().toString(), errObjects.length, responseUrl); //just picked PoskWh to log...because nothing better
+                                                                       meterRead.getPosKWh().toString(), ArrayUtils.getLength(errObjects), responseUrl); //just picked PoskWh to log...because nothing better
                         if (!ArrayUtils.isEmpty(errObjects)) {
                             multispeakFuncs.logErrorObjects(responseUrl, "ReadingChangedNotification", errObjects);
                         }
@@ -648,7 +898,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 try {
                     ErrorObject[] errObjects = port.formattedBlockNotification(formattedBlock, transactionId, "errorString?");
                     multispeakEventLogService.notificationResponse("formattedBlockNotification", transactionId, block.getObjectId(), 
-                                                                   "", errObjects.length, responseUrl);
+                                                                   "", ArrayUtils.getLength(errObjects), responseUrl);
                     if (!ArrayUtils.isEmpty(errObjects)) {
                         multispeakFuncs.logErrorObjects(responseUrl, "FormattedBlockNotification", errObjects);
                     }
@@ -919,31 +1169,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             log.error("TargetService: " + responseUrl + " - initiateConnectDisconnect (" + mspVendor.getCompanyName() + ")");
             log.error("RemoteExceptionDetail: " + e.getMessage());
         }
-    }
-
-    /**
-     * Writes a request to pil for the meter and commandStr using the id for
-     * mspVendor. log a message for the method name.
-     */
-    private void writePilRequest(YukonMeter meter, String commandStr, long id, int priority) {
-
-        Request pilRequest = setupPilRequest(meter, commandStr, id, priority);
-        doWritePilRequest(pilRequest);
-    }
-
-    private Request setupPilRequest(YukonMeter meter, String commandStr, long id, int priority) {
-
-        Request pilRequest = null;
-        commandStr += " update";
-        commandStr += " noqueue";
-        pilRequest = new Request(meter.getPaoIdentifier().getPaoId(), commandStr, id);
-        pilRequest.setPriority(priority);
-
-        return pilRequest;
-    }
-
-    private void doWritePilRequest(Request pilRequest) {
-        porterConnection.write(pilRequest);
     }
 
     /**
