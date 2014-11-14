@@ -33,6 +33,7 @@ import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.DuplicateEnrollmentException;
+import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
@@ -75,6 +76,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.dr.operator.AccountImportFields;
 import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -121,7 +123,7 @@ public class AccountImportService {
         boolean preScan = result.isPrescan();
         final File custFile = result.getCustomerFile();
         final File hwFile = result.getHardwareFile();
-        
+        boolean isZigbeeDevice = false;
         File logFile = null;
         
         List<String[]> custFieldsList = null;
@@ -149,6 +151,9 @@ public class AccountImportService {
         
         // Map from serial # (String) to account # (String)
         Map<String, String> hwFieldsMap = Maps.newHashMap();
+
+        // Set containing all zigbee end point types that is used to validate device types
+        ImmutableSet<HardwareType> zigbeeEndPointTypes = HardwareType.getZigbeeEndpointTypes();
 
         try {
             final String fs = System.getProperty("file.separator");
@@ -563,7 +568,24 @@ public class AccountImportService {
                             addToLog(lineNoKey, value, importLog);
                             continue;
                         }
-                        
+
+                        isZigbeeDevice = false;
+                        for(HardwareType hardwareType : zigbeeEndPointTypes) {
+                            if(!isZigbeeDevice && hardwareType.name().equalsIgnoreCase(deviceType.getEntryText())) {
+                                result.custFileErrors++;
+                                String[] value = result.getCustLines().get(lineNoKey);
+                                value[1] = "[line: " + lineNo + " error: Cannot import Zigbee End Point device type \"" +
+                                        hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
+                                result.getCustLines().put(lineNoKey, value);
+                                addToLog(lineNoKey, value, importLog);
+                                isZigbeeDevice = true;
+                            }
+                        }
+
+                        if(isZigbeeDevice) {
+                            continue;
+                        }
+
                         String[] appFields = null;
                         if (hwColIdx[result.COL_APP_TYPE] != -1) {
                             appFields = prepareFields(ImportFields.NUM_APP_FIELDS);
@@ -795,7 +817,24 @@ public class AccountImportService {
                         addToLog(lineNoKey, value, importLog);
                         continue;
                     }
-                    
+
+                    isZigbeeDevice = false;
+                    for(HardwareType hardwareType : zigbeeEndPointTypes) {
+                        if(!isZigbeeDevice && hardwareType.name().equalsIgnoreCase(deviceType.getEntryText())) {
+                            result.custFileErrors++;
+                            String[] value = result.getCustLines().get(lineNoKey);
+                            value[1] = "[line: " + lineNo + " error: Cannot import Zigbee End Point device type \"" +
+                                    hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
+                            result.getCustLines().put(lineNoKey, value);
+                            addToLog(lineNoKey, value, importLog);
+                            isZigbeeDevice = true;
+                        }
+                    }
+
+                    if(isZigbeeDevice) {
+                        continue;
+                    }
+
                     String[] custFields = null;
                     if (preScan) {
                         custFields = custFieldsMap.get(hwFields[ImportFields.IDX_ACCOUNT_ID]);
