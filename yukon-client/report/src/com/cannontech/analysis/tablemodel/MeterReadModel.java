@@ -195,10 +195,11 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
             sql.append("    SELECT sP.paobjectid, max(sRPH.timestamp) maxTime");
             sql.append("    FROM RawPointHistory sRPH");
             sql.append("      JOIN Point sP on sRPH.pointId = sP.pointId");
+            sql.append("      JOIN YukonPaobject InnerPao on sp.PaobjectId = InnerPao.PaobjectId");
             sql.append("    WHERE timestamp > ").appendArgument(getStartDate());
             sql.append("      AND timestamp <= ").appendArgument(getStopDate());
             if (excludeDisabledDevices) {
-                sql.append("    AND PAO.DISABLEFLAG").eq("N");
+                sql.append("    AND InnerPao.DISABLEFLAG").eq("N");
             }
             sql.appendFragment(buildWhereClause("sP.paobjectId"));
             sql.append("    GROUP BY sP.paobjectid");
