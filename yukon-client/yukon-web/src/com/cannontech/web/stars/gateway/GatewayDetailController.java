@@ -54,7 +54,6 @@ public class GatewayDetailController {
     public String detail(ModelMap model, YukonUserContext userContext, @PathVariable int id) 
             throws NmCommunicationException {
         
-        //TODO: handle network manager communication exception gracefully
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
         model.addAttribute("gateway", gateway);
         helper.addText(model, userContext);
