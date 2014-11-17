@@ -316,7 +316,7 @@ public class RfnGatewayServiceTest {
         RfnGateway rfnGateway = new RfnGateway("New Name", gatewayPaoId, gatewayRfnId, rfnGatewayData);
         rfnGateway.setLocation(location);
         
-        Assert.assertTrue("Failed to update gateway", service.updateGateway(rfnGateway));
+        Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, service.updateGateway(rfnGateway));
     }
     
     @Test
@@ -374,7 +374,7 @@ public class RfnGatewayServiceTest {
         RfnGateway rfnGateway = new RfnGateway("New Name", gatewayPaoId, gatewayRfnId, rfnGatewayData);
         rfnGateway.setLocation(location);
         
-        Assert.assertTrue("Failed to update gateway", service.updateGateway(rfnGateway));
+        Assert.assertEquals("Failed to update gateway", GatewayUpdateResult.SUCCESSFUL, service.updateGateway(rfnGateway));
     }
     
     @Test
@@ -433,7 +433,7 @@ public class RfnGatewayServiceTest {
         
         rfnGateway.setLocation(location);
         
-        Assert.assertFalse("Unexpected gateway update", service.updateGateway(rfnGateway));
+        Assert.assertEquals("Unexpected gateway update", GatewayUpdateResult.FAILED, service.updateGateway(rfnGateway));
     }
     
     @Test(expected=NmCommunicationException.class)

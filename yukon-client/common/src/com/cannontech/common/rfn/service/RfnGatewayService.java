@@ -5,6 +5,7 @@ import java.util.Set;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.rfn.message.gateway.DataType;
+import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -68,11 +69,11 @@ public interface RfnGatewayService {
      * sent back to Network Manager and updated in Yukon's cache. Any null parameters will not be
      * updated. This is a blocking operation.
      * 
-     * @return true if the gateway was updated successfully.
+     * @return The GatewayUpdateResult indicating the success or failure reason.
      * @throws NmCommunicationException if there is a communication error between Yukon
      *             and Network Manager.
      */
-    boolean updateGateway(RfnGateway gateway) throws NmCommunicationException;
+    GatewayUpdateResult updateGateway(RfnGateway gateway) throws NmCommunicationException;
     
     /**
      * Delete the gateway. This will attempt to delete the gateway in Network Manager as well as Yukon.

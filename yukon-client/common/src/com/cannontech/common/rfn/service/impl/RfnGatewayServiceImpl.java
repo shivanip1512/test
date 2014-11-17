@@ -218,7 +218,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             return gateway;
         }
         
-        throw new GatewayUpdateException("Gateway creation failed");
+        throw new GatewayUpdateException("Gateway creation failed", response.getResult());
     }
     
     private GatewayCreateRequest buildGatewayCreateRequest(GatewaySettings settings) {
@@ -236,7 +236,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public boolean updateGateway(RfnGateway gateway) throws NmCommunicationException {
+    public GatewayUpdateResult updateGateway(RfnGateway gateway) throws NmCommunicationException {
         
         // Determine if change is local Yukon DB change (i.e. name) or remote Network Manager change.
         PaoIdentifier paoIdentifier = gateway.getPaoIdentifier();
@@ -261,6 +261,8 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             sendGatewayEditRequest = true;
         }
         
+        GatewayUpdateResult result = GatewayUpdateResult.SUCCESSFUL;
+        
         // If necessary, send GatewayEditRequest
         if (sendGatewayEditRequest) {
             GatewayEditRequest request = new GatewayEditRequest();
@@ -283,14 +285,15 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             }
             
             // Parse GatewayUpdateResponse
-            if (response.getResult() == GatewayUpdateResult.SUCCESSFUL) {
+            result = response.getResult();
+            if (result == GatewayUpdateResult.SUCCESSFUL) {
                 // Force the data cache to update
                 dataCache.remove(paoIdentifier);
                 // Note: for lazy loading, comment out this line.
                 dataCache.get(paoIdentifier);
             } else {
-                log.info("Edit gateway " + paoIdentifier + " result: " + response.getResult());
-                return false;
+                log.info("Edit gateway " + paoIdentifier + " result: " + result);
+                return result;
             }
         }
         
@@ -303,7 +306,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             paoLocationDao.save(gateway.getLocation());
         }
         
-        return true;
+        return result;
     }
 
     @Override
@@ -320,7 +323,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         // Parse GatewayUpdateResponse on temp queue
         try {
             GatewayUpdateResponse response = replyHandler.waitForCompletion();
-            if (response.getResult() == GatewayUpdateResult.SUCCESSFUL) {
+            if (response.getResult() == GatewayUpdateResult.SUCCESSFUL || response.getResult() == GatewayUpdateResult.FAILED_UNKNOWN_GATEWAY) {
                 // Delete from yukon database and cache, and send DB change message
                 deviceDao.removeDevice(gateway);
                 dataCache.remove(paoIdentifier);

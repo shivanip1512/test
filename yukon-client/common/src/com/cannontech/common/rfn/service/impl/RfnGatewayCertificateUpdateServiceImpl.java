@@ -64,16 +64,10 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
         byte[] upgradeData = null;
         try (InputStream fis = upgradePackage.getInputStream()) {
             upgradeData = IOUtils.toByteArray(fis);
-        } catch (IOException e) {
-            throw e;
         }
         
-        String upgradeId;
-        try {
-            upgradeId = getCertificateId(upgradePackage);
-        } catch (GatewayCertificateException e) {
-            throw e;
-        }
+        //Throws GatewayCertificateException if parsing fails
+        String upgradeId = getCertificateId(upgradePackage);
         
         // Use the id from the certificate file to record this certificate update in the database
         final int updateDbId = certificateUpdateDao.createUpdate(upgradeId, upgradePackage.getOriginalFilename());
@@ -170,56 +164,72 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
         try (InputStream fis = upgradePackage.getInputStream()) {
             upgradeData = IOUtils.toByteArray(fis);
             ByteBuffer buf = ByteBuffer.wrap(upgradeData);
+            
             int upgradeImgLen = buf.getInt();
             if (upgradeImgLen > buf.remaining()) {
-                throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
-                                                      + " is invalid: Upgrade image length " + upgradeImgLen
-                                                      + " exceeds package size");
+                String message = "Upgrade package " + upgradePackage.getName() + " is invalid: Upgrade image length " 
+                        + upgradeImgLen + " exceeds package size";
+                log.error(message);
+                throw new GatewayCertificateException(message);
             }
+            
             // We are only interested in the first fragment.
             int fragmentLen = buf.getInt();
             if (fragmentLen > upgradeImgLen) {
-                throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
-                                                      + " is invalid: Fragment length " + fragmentLen
-                                                      + " exceeds upgrade image length " + upgradeImgLen);
+                String message = "Upgrade package " + upgradePackage.getName() + " is invalid: Fragment length " 
+                        + fragmentLen + " exceeds upgrade image length " + upgradeImgLen;
+                log.error(message);
+                throw new GatewayCertificateException(message);
             }
+            
             int totalLen = buf.getInt();
             if (totalLen + 4 > fragmentLen) {
-                throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
-                                    + " is invalid: Fragment's total length " + fragmentLen
-                                    + " exceeds fragment length " + upgradeImgLen);
+                String message = "Upgrade package " + upgradePackage.getName() + " is invalid: Fragment's total length " 
+                        + fragmentLen + " exceeds fragment length " + upgradeImgLen;
+                log.error(message);
+                throw new GatewayCertificateException(message);
             }
+            
             short infoLen = buf.getShort();
             if (infoLen > fragmentLen) {
-                throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
-                                    + " is invalid: Fragment's total length " + fragmentLen
-                                    + " exceeds fragment length " + upgradeImgLen);
+                String message = "Upgrade package " + upgradePackage.getName() + " is invalid: Fragment's total length " 
+                        + fragmentLen + " exceeds fragment length " + upgradeImgLen;
+                log.error(message);
+                throw new GatewayCertificateException(message);
             }
+            
             // Check each TLV (type,length,value) in info data until we find the upgradeId.
             while (infoLen > 4) {
                 short tlvType = buf.getShort();
                 infoLen -= 2;
                 short tlvLen = buf.getShort();
                 infoLen -= 2;
+                
                 if (tlvLen > infoLen) {
-                    throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
-                                                          + " is invalid: Info TLV length " + tlvLen
-                                                          + " exceeds remaining info length " + infoLen);
+                    String message = "Upgrade package " + upgradePackage.getName() + " is invalid: Info TLV length " 
+                            + tlvLen + " exceeds remaining info length " + infoLen;
+                    log.error(message);
+                    throw new GatewayCertificateException(message);
                 }
+                
                 byte[] cbuf = new byte[tlvLen];
                 buf.get(cbuf);
                 if (tlvType == 0) {
                     return new String(cbuf);
                 }
             }
-            throw new GatewayCertificateException("Upgrade package " + upgradePackage.getName()
-                                                  + " is invalid: upgradeId not found.");
+            
+            String message = "Upgrade package " + upgradePackage.getName() + " is invalid: upgradeId not found.";
+            log.error(message);
+            throw new GatewayCertificateException(message);
+            
         } catch (IOException e) {
             for (Throwable t : e.getSuppressed()) {
                 log.warn("Failed to close upgrade package file.", t);
             }
-            throw new GatewayCertificateException("Unable to access upgrade package file "
-                                                  + upgradePackage.getName(), e);
+            String message = "Unable to access upgrade package file " + upgradePackage.getName();
+            log.error(message);
+            throw new GatewayCertificateException(message, e);
         }
     }
     

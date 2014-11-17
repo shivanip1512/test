@@ -13,6 +13,9 @@ public enum GatewayUpdateResult {
     
     SUCCESSFUL,
     FAILED_UNKNOWN_GATEWAY, // delete or edit failure
-    FAILED, // all other failures
+    FAILED_INCORRECT_AUTH,  // create or edit failure
+    FAILED_BAD_IP,          // create or edit failure
+    FAILED,                 // all other failures
+    ;
     
 }

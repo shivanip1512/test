@@ -24,6 +24,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.gateway.DataType;
+import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -114,16 +115,19 @@ public class GatewaySettingsController {
             JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
             return null;
             
-        } catch (NmCommunicationException|GatewayUpdateException e) {
+        } catch (NmCommunicationException e) {
             
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.CREATE);
-            String errorMsg;
-            if (e instanceof NmCommunicationException) {
-                errorMsg = accessor.getMessage(baseKey + "error.comm");
-            } else {
-                errorMsg = accessor.getMessage(baseKey + "create.error");
-            }
+            String errorMsg = accessor.getMessage(baseKey + "error.comm");
+            model.addAttribute("errorMsg", errorMsg);
+            
+            return "gateways/settings.jsp";
+        } catch (GatewayUpdateException e) {
+            
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.CREATE);
+            String errorMsg = accessor.getMessage(baseKey + "error." + e.getReason().name());
             model.addAttribute("errorMsg", errorMsg);
             
             return "gateways/settings.jsp";
@@ -202,33 +206,38 @@ public class GatewaySettingsController {
             
             gateway.setData(data);
             
-            rfnGatewayService.updateGateway(gateway);
-            log.info("Gateway updated: " + gateway);
-            gatewayEventLogService.updatedGateway(userContext.getYukonUser(), gateway.getName(), 
-                                                  gateway.getRfnIdentifier().getSensorSerialNumber(), 
-                                                  settings.getIpAddress(), settings.getAdmin().getUsername(), 
-                                                  settings.getSuperAdmin().getUsername());
+            GatewayUpdateResult updateResult = rfnGatewayService.updateGateway(gateway);
             
-            // Success
-            model.clear();
-            Map<String, Object> json = new HashMap<>();
-            json.put("success", true);
-            resp.setContentType("application/json");
-            JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.update.successful", settings.getName()));
-            
-            return null;
+            if (updateResult == GatewayUpdateResult.SUCCESSFUL) {
+                log.info("Gateway updated: " + gateway);
+                gatewayEventLogService.updatedGateway(userContext.getYukonUser(), gateway.getName(), 
+                                                      gateway.getRfnIdentifier().getSensorSerialNumber(), 
+                                                      settings.getIpAddress(), settings.getAdmin().getUsername(), 
+                                                      settings.getSuperAdmin().getUsername());
+                
+                // Success
+                model.clear();
+                Map<String, Object> json = new HashMap<>();
+                json.put("success", true);
+                resp.setContentType("application/json");
+                JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.update.successful", settings.getName()));
+                
+                return null;
+            } else {
+                resp.setStatus(HttpStatus.BAD_REQUEST.value());
+                model.addAttribute("mode", PageEditMode.EDIT);
+                String errorMsg = accessor.getMessage(baseKey + "error." + updateResult.name());
+                model.addAttribute("errorMsg", errorMsg);
+                
+                return "gateways/settings.jsp";
+            }
             
         } catch (NmCommunicationException e) {
             
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.EDIT);
-            String errorMsg;
-            if (e instanceof NmCommunicationException) {
-                errorMsg = accessor.getMessage(baseKey + "error.comm");
-            } else {
-                errorMsg = accessor.getMessage(baseKey + "create.error");
-            }
+            String errorMsg = accessor.getMessage(baseKey + "error.comm");
             model.addAttribute("errorMsg", errorMsg);
             
             return "gateways/settings.jsp";
