@@ -316,7 +316,7 @@ public class WaterLeakReportController {
             model.addAttribute("deviceCollection", collection);
             model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
             model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
-            if (bindingResult.hasFieldErrors()) {
+            if (bindingResult.hasFieldErrors("scheduleCronString")) {
                 CronExpressionTagState state = new CronExpressionTagState();
                 state.setCronTagStyleType(CronTagStyleType.CUSTOM);
                 state.setCustomExpression(CustomCronTagStyleHandler.getCustomExpression("scheduleCronString", request));

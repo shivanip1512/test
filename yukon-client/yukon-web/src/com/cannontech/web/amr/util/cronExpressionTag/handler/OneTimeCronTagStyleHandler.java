@@ -70,12 +70,20 @@ public class OneTimeCronTagStyleHandler extends CronTagStyleHandlerBase {
         if (usesCustomTime(parts)) {
             return false;
         }
-        
-        if (parts.length == 7 && NumberUtils.isDigits(parts[6])) {
+
+        if (!(parts.length == 7)) {
+            return false;
+        } else if (!NumberUtils.isDigits(parts[0]) || !NumberUtils.isDigits(parts[1])
+            || !NumberUtils.isDigits(parts[2]) || !NumberUtils.isDigits(parts[6])) {
+            return false;
+        } else if (StringUtils.containsAny(parts[3], '/', '*', ',', '-')
+            || StringUtils.containsAny(parts[4], '/', '*', ',', '-')
+            || StringUtils.containsAny(parts[5], '/', '*', ',', '-')) {
+            return false;
+        } else {
             return true;
         }
         
-        return false;
     }
     
     // PARSE
@@ -101,6 +109,7 @@ public class OneTimeCronTagStyleHandler extends CronTagStyleHandlerBase {
     }
     
     // DESCRIPTION
+    @Override
     public String generateDescription(CronExpressionTagState state, YukonUserContext userContext) {
         String dateStr = dateFormattingService.format(state.getDate(), DateFormatEnum.DATE, userContext);
         String desc = "One-time, " + dateStr + ", at " + getTimeDescription(state, userContext);
