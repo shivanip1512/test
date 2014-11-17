@@ -13,6 +13,10 @@ import com.cannontech.common.inventory.Hardware;
 import com.cannontech.common.inventory.HardwareHistory;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.Address;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
+import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -55,6 +59,7 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private SelectionListService selectionListService;
+    @Autowired private RfnDeviceCreationService rfnDeviceCreationService;
 
     private static int complete ;
     private static int total;
@@ -346,7 +351,17 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
             return;
         }
         try {
-            hardwareUiService.createHardware(hardware, energyCompany.getUser());
+            HardwareType type = hardware.getHardwareType();
+            if (type.isRf()) {
+                /** For rf devices the {@link RfnDeviceCreationService} will end up calling {@link HardwareUiService} createHardware method 
+                 * after it creates the pao part of the device using the {@link DeviceCreationService}. */
+                PaoType paoType = type.getForHardwareType();
+                RfnManufacturerModel templateSettings = RfnManufacturerModel.getForType(paoType).get(0);
+                RfnIdentifier rfId = new RfnIdentifier(hardware.getSerialNumber(), templateSettings.getManufacturer(), templateSettings.getModel());
+                rfnDeviceCreationService.create(rfId, hardware, energyCompany.getUser());
+            } else {
+                hardwareUiService.createHardware(hardware, energyCompany.getUser());
+            }
             devStars.incrementSuccessCount();
             if (accountId == 0) {
                 log.info("STARS Hardware added: " + hardware.getDisplayName() + " to warehouse");
@@ -357,7 +372,7 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
             // We should have caught this already in canAddStarsHardware, but createHardware requires it
             log.info("Hardware Object " + hardware.getDisplayName() + " is in another energy company.");
         } catch (RuntimeException e) {
-            log.info(e.getMessage());
+            log.error("Unable to create stars device", e);
             devStars.incrementFailureCount();
         }
     }
@@ -374,11 +389,6 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
         hardware.setDisplayType(hardwareName);
         hardware.setSerialNumber(inventoryIdIteratorString);
         hardware.setDeviceNotes("Device Notes for inventoryId: " + inventoryIdIteratorString);
-        /* Non-ZigBee two way LCR fields */
-        if (hardwareType.isTwoWay() && !hardwareType.isZigbee()) {
-            hardware.setTwoWayDeviceName(hardwareType + " " + inventoryIdIteratorString);
-            hardware.setCreatingNewTwoWayDevice(true);
-        }
         String ccuName = DevCCU.SIM_711.getName();
         Integer routeId = paoDao.getRouteIdForRouteName(ccuName);
         if (routeId == null) {
@@ -400,7 +410,7 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
         hardware.setHardwareHistory(Lists.newArrayList(hardwareHistory));
 
         /* Non-ZigBee two way LCR fields */
-        if (hardwareType.isTwoWay() && !hardwareType.isZigbee()) {
+        if (hardwareType.isTwoWay() && !hardwareType.isZigbee() && !hardwareType.isRf()) {
             hardware.setCreatingNewTwoWayDevice(true);
         }
         return hardware;
