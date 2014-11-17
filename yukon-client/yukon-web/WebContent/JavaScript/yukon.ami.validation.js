@@ -61,7 +61,9 @@ yukon.ami.validation = (function () {
         $('#review-form [id="display-type-checkbox"]').click(function(e) {
             var reviewTableUrl = yukon.url('/amr/veeReview/reviewTable');
             $.post(reviewTableUrl, $('#review-form').serialize()).done(function(result) {
-                $('#reviewTable').html(result);
+               var table = $('#reviewTable'),
+                  url = table.data('baseUrl') + '?' + $('#review-form').serialize();
+                $('#reviewTable').html(result).data('url', url);
                 yukon.ui.unbusy($('#saveButton'));
             });
         });

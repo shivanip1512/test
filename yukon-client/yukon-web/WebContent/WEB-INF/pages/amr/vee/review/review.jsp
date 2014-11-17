@@ -62,7 +62,7 @@
                 </c:if>
                     
                 <%-- REVIEW TABLE --%>
-                <div id="reviewTable" data-url="reviewTable">
+                <div id="reviewTable"  data-base-url="reviewTable" data-url="reviewTable">
                     <%@ include file="reviewTable.jsp" %>
                 </div>
             </form>
