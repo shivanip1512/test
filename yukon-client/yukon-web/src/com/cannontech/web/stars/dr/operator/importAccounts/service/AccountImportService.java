@@ -106,7 +106,9 @@ public class AccountImportService {
     private PrintWriter importLog;
     private Executor executor;
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    
+    // Set containing all zigbee end point types that is used to validate device types
+    private ImmutableSet<HardwareType> zigbeeEndPointTypes = HardwareType.getZigbeeEndpointTypes();
+
     public void startAccountImport(final AccountImportResult result, final YukonUserContext context) {
         executor.execute(new Runnable() {
             @Override
@@ -123,7 +125,6 @@ public class AccountImportService {
         boolean preScan = result.isPrescan();
         final File custFile = result.getCustomerFile();
         final File hwFile = result.getHardwareFile();
-        boolean isZigbeeDevice = false;
         File logFile = null;
         
         List<String[]> custFieldsList = null;
@@ -152,8 +153,6 @@ public class AccountImportService {
         // Map from serial # (String) to account # (String)
         Map<String, String> hwFieldsMap = Maps.newHashMap();
 
-        // Set containing all zigbee end point types that is used to validate device types
-        ImmutableSet<HardwareType> zigbeeEndPointTypes = HardwareType.getZigbeeEndpointTypes();
 
         try {
             final String fs = System.getProperty("file.separator");
@@ -569,20 +568,8 @@ public class AccountImportService {
                             continue;
                         }
 
-                        isZigbeeDevice = false;
-                        for(HardwareType hardwareType : zigbeeEndPointTypes) {
-                            if(!isZigbeeDevice && hardwareType.name().equalsIgnoreCase(deviceType.getEntryText())) {
-                                result.custFileErrors++;
-                                String[] value = result.getCustLines().get(lineNoKey);
-                                value[1] = "[line: " + lineNo + " error: Cannot import Zigbee End Point device type \"" +
-                                        hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
-                                result.getCustLines().put(lineNoKey, value);
-                                addToLog(lineNoKey, value, importLog);
-                                isZigbeeDevice = true;
-                            }
-                        }
 
-                        if(isZigbeeDevice) {
+                        if(isZigbeeEndPointDevice(deviceType, result, lineNoKey, hwFields)) {
                             continue;
                         }
 
@@ -818,20 +805,7 @@ public class AccountImportService {
                         continue;
                     }
 
-                    isZigbeeDevice = false;
-                    for(HardwareType hardwareType : zigbeeEndPointTypes) {
-                        if(!isZigbeeDevice && hardwareType.name().equalsIgnoreCase(deviceType.getEntryText())) {
-                            result.custFileErrors++;
-                            String[] value = result.getCustLines().get(lineNoKey);
-                            value[1] = "[line: " + lineNo + " error: Cannot import Zigbee End Point device type \"" +
-                                    hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
-                            result.getCustLines().put(lineNoKey, value);
-                            addToLog(lineNoKey, value, importLog);
-                            isZigbeeDevice = true;
-                        }
-                    }
-
-                    if(isZigbeeDevice) {
+                    if(isZigbeeEndPointDevice(deviceType, result, lineNoKey, hwFields)) {
                         continue;
                     }
 
@@ -1168,7 +1142,24 @@ public class AccountImportService {
         result.setNumAcctImported(result.getNumAcctImported() + 1);
         return liteAcctInfo;
     }
-    
+
+    // Private method to identify whether given YukonListEntry is a Zigbee End Point type or not
+    private boolean isZigbeeEndPointDevice(YukonListEntry deviceType, AccountImportResult result, Integer lineNoKey, String[] hwFields) {
+
+        for(HardwareType hardwareType : zigbeeEndPointTypes) {
+            if(hardwareType.name().equalsIgnoreCase(deviceType.getEntryText())) {
+                result.custFileErrors++;
+                String[] value = result.getCustLines().get(lineNoKey);
+                value[1] = "[line: " + lineNoKey.intValue() + " error: Cannot import Zigbee End Point device type \"" +
+                        hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
+                result.getCustLines().put(lineNoKey, value);
+                addToLog(lineNoKey, value, importLog);
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void setCustomerFields(String[] fields, String[] columns, int[] colIdx, AccountImportResult result) {
         
         if (colIdx[result.COL_ACCOUNT_NO] >= 0 && colIdx[result.COL_ACCOUNT_NO] < columns.length) {
