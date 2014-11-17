@@ -203,8 +203,6 @@ public class MeterEventsReportController {
         model.addAttribute("deviceCollection", collection);
         model.addAttribute("fileExtensionChoices", exportHelper.setupFileExtChoices(exportData));
         model.addAttribute("exportPathChoices", exportHelper.setupExportPathChoices(exportData));
-        
-        model.addAttribute("deviceCollection", collection);
         model.addAttribute("fromInstant", fromInstant);
         model.addAttribute("toInstant", toInstant);
         model.addAttribute("jobId", jobId);
