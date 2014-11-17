@@ -17,14 +17,15 @@ import com.google.common.collect.ImmutableMap;
  * energy companies must be created at the same time.
  */
 public final class EnergyCompany implements YukonEnergyCompany {
+    
     private final int ecId;
     private final String name;
     private final LiteYukonUser user;
     private final int contactId;
-
+    
     private EnergyCompany parent;
     private List<EnergyCompany> children;
-
+    
     private EnergyCompany(int ecId, String name, LiteYukonUser user, int contactId) {
         this.ecId = ecId;
         this.name = name;
@@ -35,18 +36,19 @@ public final class EnergyCompany implements YukonEnergyCompany {
         // available outside this class.
         children = new ArrayList<>();
     }
-
+    
     /**
      * A builder class to create a hierarchy of EnergyCompany instances.  This class is the ONLY way to create
      * energy companies and they should all be created at the same time.  (This should of course be only done in
      * a single DAO that caches them.)
      */
     public static class Builder {
+        
         private final Map<Integer, EnergyCompany> temporaryMutableMap = new HashMap<>();
         private final Map<Integer, Integer> parentIdsById = new HashMap<>();
-
+        
         private boolean built = false;
-
+        
         public void addEnergyCompany(int ecId, String name, LiteYukonUser user, int contactId, Integer parentEcId) {
             checkState(!built, "Cannot add more energy companies.");
             temporaryMutableMap.put(ecId, new EnergyCompany(ecId, name, user, contactId));
@@ -54,11 +56,11 @@ public final class EnergyCompany implements YukonEnergyCompany {
                 parentIdsById.put(ecId, parentEcId);
             }
         }
-
+        
         public Map<Integer, EnergyCompany> build() {
             checkState(!built, "Cannot add build more than once.");
             built = true;
-
+            
             // Build parent/child relationships.
             for (Map.Entry<Integer, Integer> entry : parentIdsById.entrySet()) {
                 EnergyCompany ec = temporaryMutableMap.get(entry.getKey());
@@ -71,52 +73,54 @@ public final class EnergyCompany implements YukonEnergyCompany {
             for (EnergyCompany ec : temporaryMutableMap.values()) {
                 ec.children = ImmutableList.copyOf(ec.children);
             }
-
+            
             return ImmutableMap.copyOf(temporaryMutableMap);
         }
     }
-
+    
+    /** @deprecated Use {@link #getId()} instead. */
     @Override
     @Deprecated
     public int getEnergyCompanyId() {
         return ecId;
     }
-
+    
     public int getId() {
         return ecId;
     }
-
+    
     @Override
     public String getName() {
         return name;
     }
-
+    
     @Override
     @Deprecated
+    /** @deprecated Use {@link #getUser()} instead. */
     public LiteYukonUser getEnergyCompanyUser() {
         return user;
     }
-
+    
     public LiteYukonUser getUser() {
         return user;
     }
-
+    
     public int getContactId() {
         return contactId;
     }
-
+    
     public EnergyCompany getParent() {
         return parent;
     }
-
+    
     public List<EnergyCompany> getChildren() {
         return children;
     }
-
+    
     public boolean isDefaultEc() {
         return ecId == EnergyCompanyDao.DEFAULT_ENERGY_COMPANY_ID;
     }
-
+    
     /**
      * Get all ancestors of this energy company (parent, parent of parent, etc.).
      */
@@ -130,7 +134,7 @@ public final class EnergyCompany implements YukonEnergyCompany {
         }
         return builder.build();
     }
-
+    
     /**
      * Get all descendants of this energy company (children, children of children, etc.).
      */
@@ -144,12 +148,12 @@ public final class EnergyCompany implements YukonEnergyCompany {
         }
         return builder.build();
     }
-
+    
     @Override
     public int hashCode() {
         return ecId;
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -164,4 +168,5 @@ public final class EnergyCompany implements YukonEnergyCompany {
         EnergyCompany other = (EnergyCompany) obj;
         return ecId == other.ecId;
     }
+    
 }
