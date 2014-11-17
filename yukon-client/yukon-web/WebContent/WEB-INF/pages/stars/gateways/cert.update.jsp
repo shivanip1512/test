@@ -8,7 +8,8 @@
 
 <cti:url var="url" value="/stars/gateways/cert-update"/>
 <form id="gateway-cert-form" method="POST" enctype="multipart/form-data" action="${url}">
-        
+<cti:csrfToken/>
+
 <tags:nameValueContainer2 tableClass="with-form-controls">
     <tags:nameValue2 nameKey=".file">
         <input type="file" name="file">

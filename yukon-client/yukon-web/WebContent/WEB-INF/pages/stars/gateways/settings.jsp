@@ -48,11 +48,13 @@
             </spring:bind>
             <spring:bind path="admin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                <form:password path="admin.password" cssClass="js-gateway-edit-password M0 right ${clazz}" 
+                <c:set var="clazz" value="${clazz} ${mode == 'EDIT' ? 'middle' : 'right'}"/>
+                <form:password path="admin.password" cssClass="js-gateway-edit-password M0 ${clazz}" 
                     placeholder="${phPassword}" tabindex="4" showPassword="true"/>
-<%-- Add back when NM test connection works. --%>
-<%--                 <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn"  --%>
-<%--                     disabled="true" nameKey="testConnection" tabindex="5"/> --%>
+                <c:if test="${mode == 'EDIT'}">
+                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
+                         disabled="true" nameKey="testConnection" tabindex="5"/>
+                </c:if>
             </spring:bind>
             
             <spring:bind path="admin.username">
@@ -71,11 +73,13 @@
             </spring:bind>
             <spring:bind path="superAdmin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                <form:password  path="superAdmin.password" cssClass="js-gateway-edit-password M0 right ${clazz}" 
+                <c:set var="clazz" value="${clazz} ${mode == 'EDIT' ? 'middle' : 'right'}"/>
+                <form:password  path="superAdmin.password" cssClass="js-gateway-edit-password M0 ${clazz}" 
                     placeholder="${phPassword}" tabindex="7" showPassword="true"/>
-<%-- Add back when NM test connection works. --%>
-<%--                 <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn"  --%>
-<%--                     disabled="true" nameKey="testConnection" tabindex="8"/> --%>
+                <c:if test="${mode == 'EDIT'}">
+                    <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
+                         disabled="true" nameKey="testConnection" tabindex="8"/>
+                </c:if>
             </spring:bind>
             <spring:bind path="superAdmin.username">
                 <c:if test="${status.error}"><form:errors path="superAdmin.username" cssClass="error" element="div"/></c:if>
