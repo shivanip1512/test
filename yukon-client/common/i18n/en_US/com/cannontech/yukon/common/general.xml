@@ -146,7 +146,7 @@
 <entry key="yukon.common.undo">Undo</entry>
 <entry key="yukon.common.units">Units</entry>
 <entry key="yukon.common.value">State/Value</entry>
-<entry key="yukon.common.view">View</entry>
+<entry key="yukon.common.view">view</entry>
 <entry key="yukon.common.warning">Warning</entry>
 <entry key="yukon.common.warningMessage">Warning: {0}</entry>
 <entry key="yukon.web.chooseAccountNumbers">Choose Account Numbers</entry>
