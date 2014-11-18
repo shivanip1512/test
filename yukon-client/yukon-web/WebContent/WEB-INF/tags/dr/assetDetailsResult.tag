@@ -15,7 +15,7 @@
     <cti:param name="filter[]" value="${filter}"/>
 </cti:url>
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
-
+<cti:msg2 var="noDateMsg" key="yukon.web.defaults.na"/>
 <div data-url="${baseUrl}">
     <table class="compact-results-table">
         <thead>
@@ -34,8 +34,8 @@
                 <tr>
                     <td>${row.serialNumber}</td>
                     <td><i:inline key="${row.type}"/></td>
-                    <td><cti:formatDate type="BOTH" value="${row.lastComm}"/></td>
-                    <td><cti:formatDate type="BOTH" value="${row.lastRun}"/></td>
+                    <td><cti:formatDate type="BOTH" value="${row.lastComm}" nullText="${noDateMsg}"/></td>
+                    <td><cti:formatDate type="BOTH" value="${row.lastRun}" nullText="${noDateMsg}"/></td>
                     <td><tags:expandableString name="${row.serialNumber}" value="${row.appliances}" maxLength="20"/></td>
                     <c:set var="availabilityClass" value="${colorMap[row.availability]}"></c:set>
                     <td class="${availabilityClass}"><i:inline key="${row.availability}"/></td>

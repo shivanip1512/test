@@ -166,8 +166,6 @@
                 <value>classpath:com/cannontech/yukon/web/login</value>
                 <value>classpath:com/cannontech/yukon/web/error</value>
                 <value>classpath:com/cannontech/yukon/web/changeLogin</value>
-                <value>classpath:com/cannontech/yukon/web/defaults</value>
-                <value>classpath:com/cannontech/yukon/web/commonTerms</value>
                 <value>classpath:com/cannontech/yukon/web/components</value>
                 <value>classpath:com/cannontech/yukon/web/displayableEnums</value>
                 <value>classpath:com/cannontech/yukon/web/tags</value>

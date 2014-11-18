@@ -2,7 +2,6 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 
 <properties>
-
 <entry key="yukon.common.address">Address</entry>
 <entry key="yukon.common.attribute">Attribute</entry>
 <entry key="yukon.common.attribute.select">Select Attribute</entry>
@@ -10,6 +9,7 @@
 <entry key="yukon.common.attributeGroups.BLINK_AND_OUTAGE">Blink &amp; Outage</entry>
 <entry key="yukon.common.attributeGroups.CURRENT">Current</entry>
 <entry key="yukon.common.attributeGroups.DEMAND">Demand</entry>
+<entry key="yukon.common.attributeGroups.ESTIMATED_LOAD">Estimated Load</entry>
 <entry key="yukon.common.attributeGroups.OTHER">Other</entry>
 <entry key="yukon.common.attributeGroups.PROFILE">Profile</entry>
 <entry key="yukon.common.attributeGroups.REACTIVE">Reactive</entry>
@@ -24,7 +24,6 @@
 <entry key="yukon.common.attributeGroups.STATUS">Status</entry>
 <entry key="yukon.common.attributeGroups.USAGE">Usage</entry>
 <entry key="yukon.common.attributeGroups.VOLTAGE">Voltage</entry>
-<entry key="yukon.common.attributeGroups.ESTIMATED_LOAD">Estimated Load</entry>
 <entry key="yukon.common.attributes.pointNotFound">Point not configured.</entry>
 <entry key="yukon.common.authenticationCategory.AD">Active Directory</entry>
 <entry key="yukon.common.authenticationCategory.ENCRYPTED">Encrypted</entry>
@@ -73,13 +72,13 @@
 <entry key="yukon.common.file3">File 3</entry>
 <entry key="yukon.common.file4">File 4</entry>
 <entry key="yukon.common.filter">Filter</entry>
-<entry key="yukon.common.float.hundredths">{0,number,#,##0.00}</entry>
 <entry key="yukon.common.float.hundred_millionths">{0,number,#,##0.00000000}</entry>
 <entry key="yukon.common.float.hundred_thousandths">{0,number,#,##0.00000}</entry>
+<entry key="yukon.common.float.hundredths">{0,number,#,##0.00}</entry>
 <entry key="yukon.common.float.millionths">{0,number,#,##0.000000}</entry>
-<entry key="yukon.common.float.tenths">{0,number,#,##0.0}</entry>
 <entry key="yukon.common.float.ten_millionths">{0,number,#,##0.0000000}</entry>
 <entry key="yukon.common.float.ten_thousandths">{0,number,#,##0.0000}</entry>
+<entry key="yukon.common.float.tenths">{0,number,#,##0.0}</entry>
 <entry key="yukon.common.float.thousandths">{0,number,#,##0.000}</entry>
 <entry key="yukon.common.from">From</entry>
 <entry key="yukon.common.help">Help</entry>
@@ -150,6 +149,58 @@
 <entry key="yukon.common.view">View</entry>
 <entry key="yukon.common.warning">Warning</entry>
 <entry key="yukon.common.warningMessage">Warning: {0}</entry>
+<entry key="yukon.web.chooseAccountNumbers">Choose Account Numbers</entry>
+<entry key="yukon.web.chooseControlAreas">Choose Control Areas</entry>
+<entry key="yukon.web.chooseGroups">Choose Groups</entry>
+<entry key="yukon.web.chooseProgram">Choose Program</entry>
+<entry key="yukon.web.choosePrograms">Choose Programs</entry>
+<entry key="yukon.web.chooseScenarios">Choose Scenarios</entry>
+<entry key="yukon.web.chooseSerialNumbers">Choose Serial Numbers</entry>
+<entry key="yukon.web.chooseUsers">Choose Users</entry>
 <entry key="yukon.web.common.rfnExpressComMessage.error">RF ExpressCom message error: {0}</entry>
-
+<entry key="yukon.web.defaults.actions">Actions</entry>
+<entry key="yukon.web.defaults.add">Add</entry>
+<entry key="yukon.web.defaults.all">All</entry>
+<entry key="yukon.web.defaults.blank"></entry>
+<entry key="yukon.web.defaults.celsius">°C</entry>
+<entry key="yukon.web.defaults.copy.prefix">Copy of</entry>
+<entry key="yukon.web.defaults.copy.suffix"> - Copy</entry>
+<entry key="yukon.web.defaults.dashes">---</entry>
+<entry key="yukon.web.defaults.dashesTwo">--</entry>
+<entry key="yukon.web.defaults.date">Date</entry>
+<entry key="yukon.web.defaults.dateRange">Date Range</entry>
+<entry key="yukon.web.defaults.day">Day</entry>
+<entry key="yukon.web.defaults.default">(default)</entry>
+<entry key="yukon.web.defaults.degree">°</entry>
+<entry key="yukon.web.defaults.deviceCount">Device Count</entry>
+<entry key="yukon.web.defaults.devices">Devices</entry>
+<entry key="yukon.web.defaults.download">Download</entry>
+<entry key="yukon.web.defaults.fahrenheit">°F</entry>
+<entry key="yukon.web.defaults.hourAbbreviation">{0} hr</entry>
+<entry key="yukon.web.defaults.minuteAbbreviation">{0} min</entry>
+<entry key="yukon.web.defaults.month">Month</entry>
+<entry key="yukon.web.defaults.moreInfoSuffix">…</entry>
+<entry key="yukon.web.defaults.na">N/A</entry>
+<entry key="yukon.web.defaults.no">No</entry>
+<entry key="yukon.web.defaults.noDevices">(no devices selected)</entry>
+<entry key="yukon.web.defaults.none">(none)</entry>
+<entry key="yukon.web.defaults.off">Off</entry>
+<entry key="yukon.web.defaults.on">On</entry>
+<entry key="yukon.web.defaults.or">or</entry>
+<entry key="yukon.web.defaults.pageTitle">Energy Services Operations Center</entry>
+<entry key="yukon.web.defaults.quickView">Quick View</entry>
+<entry key="yukon.web.defaults.remove">Remove</entry>
+<entry key="yukon.web.defaults.selector.selectOne">-- Select One --</entry>
+<entry key="yukon.web.defaults.showAll">Show All</entry>
+<entry key="yukon.web.defaults.start">Start</entry>
+<entry key="yukon.web.defaults.stop">Stop</entry>
+<entry key="yukon.web.defaults.upload">Upload</entry>
+<entry key="yukon.web.defaults.year">Year</entry>
+<entry key="yukon.web.defaults.yes">Yes</entry>
+<entry key="yukon.web.format">Format</entry>
+<entry key="yukon.web.help.multiSelect">Hold CTRL key down to select multiple values</entry>
+<entry key="yukon.web.help.rangeSelect">Hold Shift key down to select range of values</entry>
+<entry key="yukon.web.min">Min</entry>
+<entry key="yukon.web.reports">Reports</entry>
+<entry key="yukon.web.settings">Settings</entry>
 </properties>

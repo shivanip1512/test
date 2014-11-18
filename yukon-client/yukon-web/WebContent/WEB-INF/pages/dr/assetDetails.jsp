@@ -24,7 +24,7 @@
     <div class="column-12-12">
         <div class="column one">
             <div class="page-action-area stacked">
-                <strong class="fl">Filter:</strong>
+                <strong class="fl"><cti:msg2 key=".filter"/></strong>
                 <button data-filter="ACTIVE" class="left on">
                     <span class="b-label green"><cti:msg2 key=".active"/></span></button>
                 <button data-filter="INACTIVE" class="middle on">
