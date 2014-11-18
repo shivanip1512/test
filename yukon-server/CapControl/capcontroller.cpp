@@ -236,13 +236,13 @@ void CtiCapController::stop()
 
     try
     {
-        if( _pilConnection )
+        if( _porterConnection )
         {
-            if( _pilConnection->valid() )
+            if( _porterConnection->valid() )
             {
-                _pilConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+                _porterConnection->WriteConnQue( new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
             }
-            _pilConnection->close();
+            _porterConnection->close();
         }
     }
     catch(...)
@@ -784,7 +784,7 @@ void CtiCapController::controlLoop()
                         {
                             CTILOG_DEBUG(dout, "PIL MESSAGES " << multiPilMsg);
                         }
-                        getPILConnection()->WriteConnQue(multiPilMsg);
+                        getPorterConnection()->WriteConnQue(multiPilMsg);
                         multiPilMsg = new CtiMultiMsg();
                     }
                 }
@@ -1294,45 +1294,45 @@ DispatchConnectionPtr CtiCapController::getDispatchConnection()
 }
 
 /*---------------------------------------------------------------------------
-    getPILConnection
+    getPorterConnection
 
-    Returns a connection to PIL, initializes if isn't created yet.
+    Returns a connection to Porter, initializes if isn't created yet.
 ---------------------------------------------------------------------------*/
-boost::shared_ptr<CtiClientConnection> CtiCapController::getPILConnection()
+boost::shared_ptr<CtiClientConnection> CtiCapController::getPorterConnection()
 {
     try
     {
         {
-            ReaderGuard guard( _pilConnectionLock );
+            ReaderGuard guard( _porterConnectionLock );
 
-            if( _pilConnection && _pilConnection->isConnectionUsable() )
+            if( _porterConnection && _porterConnection->isConnectionUsable() )
             {
-                return _pilConnection; // use the current connection if its valid
+                return _porterConnection; // use the current connection if its valid
             }
         }
 
         {
-            WriterGuard guard( _pilConnectionLock );
+            WriterGuard guard( _porterConnectionLock );
 
             // the connection state might have change, lets re-check it
-            if( _pilConnection && _pilConnection->isConnectionUsable() )
+            if( _porterConnection && _porterConnection->isConnectionUsable() )
             {
-                return _pilConnection;
+                return _porterConnection;
             }
 
-            if( _pilConnection )
+            if( _porterConnection )
             {
                 CTILOG_WARN(dout, "Porter Connection Hiccup");
             }
 
-            _pilConnection.reset( new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::pil ));
-            _pilConnection->setName("CC to Pil");
-            _pilConnection->start();
+            _porterConnection.reset( new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::porter ));
+            _porterConnection->setName("CC to Porter");
+            _porterConnection->start();
 
-            // send a registration message to Pil
-            _pilConnection->WriteConnQue( new CtiRegistrationMsg( "CapController", 0, false ));
+            // send a registration message to Porter
+            _porterConnection->WriteConnQue( new CtiRegistrationMsg( "CapController", 0, false ));
 
-            return _pilConnection;
+            return _porterConnection;
         }
     }
     catch(...)
@@ -1356,7 +1356,7 @@ void CtiCapController::checkPIL()
     {
         try
         {
-            CtiMessage* inMsg = getPILConnection()->ReadConnQue(0);
+            CtiMessage* inMsg = getPorterConnection()->ReadConnQue(0);
 
             if ( inMsg != NULL )
             {
@@ -4024,7 +4024,7 @@ void CtiCapController::manualCapBankControl( CtiRequestMsg* pilRequest, CtiMulti
     {
         if (pilRequest != NULL)
         {
-            getPILConnection()->WriteConnQue(pilRequest);
+            getPorterConnection()->WriteConnQue(pilRequest);
         }
 
         if (multiMsg != NULL)
@@ -4065,7 +4065,7 @@ void CtiCapController::confirmCapBankControl( CtiMultiMsg* pilMultiMsg, CtiMulti
         {
             if (pilMultiMsg->getCount() > 0)
             {
-                getPILConnection()->WriteConnQue(pilMultiMsg);
+                getPorterConnection()->WriteConnQue(pilMultiMsg);
             }
             else
             {

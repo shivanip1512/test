@@ -64,7 +64,7 @@ void RfnRequestManager::tick()
     //  provide a hint as to which devices are ready for a new request
     handleNewRequests(devicesToInspect);
 
-    //  make the results available to PIL
+    //  make the results available to Porter
     postResults();
 
     handleStatistics();

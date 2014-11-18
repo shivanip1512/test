@@ -79,7 +79,7 @@ char* ScheduleIDVariable = "ScheduleID";
 char* HolidayScheduleIDVariable = "HolidayScheduleID";
 char* PILRequestPriorityVariable = "MessagePriority";
 
-CtiClientConnection* PILConnection = 0;
+CtiClientConnection* PorterConnection = 0;
 CtiClientConnection* VanGoghConnection = 0;
 CtiClientConnection* NotificationConnection = 0;
 
@@ -145,7 +145,7 @@ void _MessageThrFunc()
         while( true )
         {
             //Wake up every second to respect cancellation requests
-            if( CtiMessage *in_ptr = PILConnection->ReadConnQue( 1000 ) )
+            if( CtiMessage *in_ptr = PorterConnection->ReadConnQue( 1000 ) )
             {
                 std::auto_ptr<CtiMessage> inboundMessage(in_ptr);
 
@@ -278,11 +278,10 @@ std::string DumpRequestMessage(const CtiRequestMsg& msg)
 /* Connects to the PIL and VanGogh*/
 int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 {
-    if(PILConnection != 0 && VanGoghConnection != 0 && NotificationConnection != 0)
+    if( PorterConnection && VanGoghConnection && NotificationConnection )
     {
       return 0;
     }
-    //RWASSERT( PILConnection == 0 && VanGoghConnection == 0 );
 
     //Set up the defaults
     string fm_config_range;
@@ -357,13 +356,13 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
 
     CTILOG_INFO(dout, "MCCMD done loading cparms");
 
-    PILConnection = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::pil );
-    PILConnection->setName("MCCMD to Pil");
-    PILConnection->start();
+    PorterConnection = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::porter );
+    PorterConnection->setName("MCCMD to Porter");
+    PorterConnection->start();
 
     //Send a registration message
     CtiRegistrationMsg* reg = new CtiRegistrationMsg("MCCMD", 0, false );
-    PILConnection->WriteConnQue( reg );
+    PorterConnection->WriteConnQue( reg );
 
     VanGoghConnection = new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
     VanGoghConnection->setName("MCCMD to Dispatch");
@@ -391,9 +390,9 @@ int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
     if( MessageThr.isValid() )
         MessageThr.requestCancellation();
 
-    CTILOG_INFO(dout, "Shutting down connection to PIL");
+    CTILOG_INFO(dout, "Shutting down connection to Porter");
 
-    PILConnection->close();
+    PorterConnection->close();
 
     CTILOG_INFO(dout, "Shutting down connection to VanGogh");
 
@@ -403,8 +402,8 @@ int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 
     NotificationConnection->close();
 
-    delete PILConnection;
-    PILConnection = 0;
+    delete PorterConnection;
+    PorterConnection = 0;
 
     delete VanGoghConnection;
     VanGoghConnection = 0;
@@ -850,7 +849,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
                 endl <<"              /appendextension:zzz - files with this extension will be appended to file"<<
                 endl <<"                   where zzz is an extension such as txt, dat, cfg, ect.."<<
                 endl <<"                   NOTE: Commands are exported to file export\\sent-mm-dd-yyyy.txt");
-        
+
         retVal = TCL_ERROR;
     }
     else
@@ -1543,7 +1542,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
         inboundMessageQueues.insert(msgid, requestQueue);
     }
 
-    PILConnection->WriteConnQue(multi_req);
+    PorterConnection->WriteConnQue(multi_req);
 
     // We dont care about responses, dont set up the queue, send the message and exit.
     if ( ! timeout )
@@ -1644,7 +1643,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
         if( now > lastPorterCountTime + PORT_COUNT_REQUEST_SECONDS )
         {
             lastPorterCountTime = now;
-            PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request count", msgid, msgid));
+            PorterConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request count", msgid, msgid));
         }
     } while(true);
 
@@ -1656,7 +1655,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
     // We now always send the cancel message.
     if( two_way && timeout > 0 && !gDoNotSendCancel)
     {
-        PILConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", msgid, msgid));
+        PorterConnection->WriteConnQue(CTIDBG_new CtiRequestMsg(0, "system message request cancel", msgid, msgid));
     }
 
     // set up good and bad tcl lists

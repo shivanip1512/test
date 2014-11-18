@@ -606,7 +606,7 @@
 	<bean id="messaging.PorterConnectionFactory" parent="messaging.ParentConnectionFactory"
 		class="com.cannontech.messaging.util.impl.AmqConnectionFactory">
 		<constructor-arg ref="messaging.thrift.PorterMessageFactory"/>
-		<constructor-arg value="pil"/>
+		<constructor-arg value="porter"/>
 	</bean>
 
 	<bean id="messaging.ConnectionFactoryService" lazy-init="false"

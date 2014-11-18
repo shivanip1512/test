@@ -109,7 +109,7 @@ PilServer::PilServer(CtiDeviceManager *DM, CtiPointManager *PM, CtiRouteManager 
    bServerClosing(FALSE),
    _currentParse(""),
    _currentUserMessageId(0),
-   _listenerConnection( Cti::Messaging::ActiveMQ::Queue::pil ),
+   _listenerConnection( Cti::Messaging::ActiveMQ::Queue::porter ),
    _rfnRequestId(0)
 {
     serverClosingEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
@@ -183,7 +183,7 @@ void PilServer::mainThread()
 
     VanGoghConnection.setName("Pil to Dispatch");
     VanGoghConnection.start();
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PIL_REGISTRATION_NAME, rwThreadId(), TRUE));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PIL_REGISTRATION_NAME, rwThreadId(), true));
 
     if( CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0) )
     {
@@ -1466,7 +1466,7 @@ void PilServer::schedulerThread()
 
         while( !message_queue.empty() && (*(message_queue.begin()))->getMessageTime() <= CtiTime::now() )
         {
-            //  write it to PIL
+            //  submit it to the main queue
             putQueue(*(message_queue.begin()));
 
             message_queue.erase(message_queue.begin());

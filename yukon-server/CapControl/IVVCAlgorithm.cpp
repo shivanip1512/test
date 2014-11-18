@@ -949,7 +949,7 @@ void IVVCAlgorithm::operateBank(long bankId, CtiCCSubstationBusPtr subbus, Dispa
             if (request != NULL)
             {
                 CtiTime time = request->getMessageTime();
-                CtiCapController::getInstance()->getPILConnection()->WriteConnQue(request);
+                CtiCapController::getInstance()->getPorterConnection()->WriteConnQue(request);
 
                 sendIVVCAnalysisMessage(
                     IVVCAnalysisMessage::createCapbankOperationMessage( subbus->getPaoId(),
@@ -1218,7 +1218,7 @@ bool IVVCAlgorithm::busVerificationAnalysisState(IVVCStatePtr state, CtiCCSubsta
     }
     if (pilMsg.size() > 0)
     {
-        CtiCapController::getInstance()->getPILConnection()->WriteConnQue(pilMessages);
+        CtiCapController::getInstance()->getPorterConnection()->WriteConnQue(pilMessages);
         sendPointChangesAndEvents(dispatchConnection,pointChanges,ccEvents);
     }
 

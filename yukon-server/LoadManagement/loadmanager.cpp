@@ -158,11 +158,11 @@ void CtiLoadManager::stop()
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
-        if( _pilConnection.get() != NULL && _pilConnection->valid() )
+        if( _porterConnection.get() != NULL && _porterConnection->valid() )
         {
-            _pilConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+            _porterConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
         }
-        _pilConnection.reset(); // Note this delete will block for the message above to go out.
+        _porterConnection.reset(); // Note this delete will block for the message above to go out.
     }
     catch( ... )
     {
@@ -282,7 +282,7 @@ void CtiLoadManager::controlLoop()
                 try
                 {
                     checkDispatch(currentDateTime);
-                    checkPIL(currentDateTime);
+                    checkPorter(currentDateTime);
                 }
                 catch( ... )
                 {
@@ -467,7 +467,7 @@ void CtiLoadManager::controlLoop()
                     {
                         multiPilMsg->setMessagePriority(13);
                         multiPilMsg->resetTime();                       // CGP 5/21/04 Update its time to current time.
-                        getPILConnection()->WriteConnQue(multiPilMsg);
+                        getPorterConnection()->WriteConnQue(multiPilMsg);
                         multiPilMsg = CTIDBG_new CtiMultiMsg();
                     }
                 }
@@ -656,27 +656,27 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getDispatchConnection()
 }
 
 /*---------------------------------------------------------------------------
-  getPILConnection
+  getPorterConnection
 
-  Returns a connection to PIL, initializes if isn't created yet.
+  Returns a connection to Porter, initializes if isn't created yet.
   ---------------------------------------------------------------------------*/
-boost::shared_ptr<CtiClientConnection> CtiLoadManager::getPILConnection()
+boost::shared_ptr<CtiClientConnection> CtiLoadManager::getPorterConnection()
 {
     try
     {
-        if( ! _pilConnection || ! _pilConnection->isConnectionUsable() )
+        if( ! _porterConnection || ! _porterConnection->isConnectionUsable() )
         {
-            //Connect to Pil
-            _pilConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::pil ));
-            _pilConnection->setName("LM to Pil");
-            _pilConnection->start();
+            //Connect to Porter
+            _porterConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::porter ));
+            _porterConnection->setName("LM to Porter");
+            _porterConnection->start();
 
-            //Send a registration message to Pil
+            //Send a registration message to Porter
             CtiRegistrationMsg* registrationMsg = CTIDBG_new CtiRegistrationMsg("LoadManagement", 0, false );
-            _pilConnection->WriteConnQue( registrationMsg );
+            _porterConnection->WriteConnQue( registrationMsg );
         }
 
-        return _pilConnection;
+        return _porterConnection;
     }
     catch( ... )
     {
@@ -697,7 +697,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getNotificationConnection
     {
         if( ! _notificationConnection || ! _notificationConnection->isConnectionUsable() )
         {
-            //Connect to Pil
+            //Connect to Porter
             _notificationConnection.reset( CTIDBG_new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::notification ));
             _notificationConnection->setName("LM to Notification");
             _notificationConnection->start();
@@ -749,7 +749,7 @@ void CtiLoadManager::checkDispatch(CtiTime currentTime)
 
   Reads off the PIL connection and handles messages accordingly.
   ---------------------------------------------------------------------------*/
-void CtiLoadManager::checkPIL(CtiTime currentTime)
+void CtiLoadManager::checkPorter(CtiTime currentTime)
 {
     bool done = FALSE;
 
@@ -757,7 +757,7 @@ void CtiLoadManager::checkPIL(CtiTime currentTime)
     {
         try
         {
-            CtiMessage* in = getPILConnection()->ReadConnQue(0);
+            CtiMessage* in = getPorterConnection()->ReadConnQue(0);
 
             if( in != NULL )
             {
@@ -1298,7 +1298,7 @@ void CtiLoadManager::sendMessageToPIL( CtiMessage* message )
     try
     {
         message->resetTime();                       // CGP 5/21/04 Update its time to current time.
-        getPILConnection()->WriteConnQue(message);
+        getPorterConnection()->WriteConnQue(message);
     }
     catch( ... )
     {

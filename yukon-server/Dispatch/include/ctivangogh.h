@@ -237,7 +237,7 @@ public:
     void  checkForStatusAlarms(CtiPointDataMsg  *pData, CtiMultiWrapper &aWrap, const CtiPointBase &point);
     void  checkForNumericAlarms(CtiPointDataMsg  *pData, CtiMultiWrapper &aWrap, const CtiPointBase &point);
     INT   markPointNonUpdated(const CtiPointBase &point, CtiMultiWrapper &aWrap);
-    CtiServer::ptr_type getPILConnection();
+    CtiServer::ptr_type getPorterConnection();
     CtiServer::ptr_type getScannerConnection();
     void  validateConnections();
     void  postSignalAsEmail( CtiSignalMsg &sig );

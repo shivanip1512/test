@@ -26,7 +26,7 @@ namespace Queue {
     const std::string prefix          = "com.eaton.eas.yukon.";
 
     const std::string dispatch        = prefix + "dispatch";
-    const std::string pil             = prefix + "pil";
+    const std::string porter          = prefix + "porter";
     const std::string notification    = prefix + "notification";
     const std::string macs            = prefix + "macs";
     const std::string capcontrol      = prefix + "capcontrol";

@@ -3236,7 +3236,7 @@ INT CtiVanGogh::markPointNonUpdated(const CtiPointBase &point, CtiMultiWrapper &
 }
 
 
-CtiServer::ptr_type CtiVanGogh::getPILConnection()
+CtiServer::ptr_type CtiVanGogh::getPorterConnection()
 {
     CtiServer::ptr_type Mgr;
 
@@ -5026,7 +5026,7 @@ void CtiVanGogh::writeMessageToClient(const CtiMessage *pReq, string clientName)
             {
                 if( CM->WriteConnQue( pReq->replicateMessage(), 5000 ) )
                 {
-                    CTILOG_ERROR(dout, "Message to PIL was unable to be queued"<<
+                    CTILOG_ERROR(dout, "Message to Porter was unable to be queued"<<
                             pReq);
                 }
 

@@ -41,12 +41,12 @@ private:
 
     void controlLoop();
 
-    boost::shared_ptr<CtiClientConnection> getPILConnection();
+    boost::shared_ptr<CtiClientConnection> getPorterConnection();
     boost::shared_ptr<CtiClientConnection> getDispatchConnection();
     boost::shared_ptr<CtiClientConnection> getNotificationConnection();
 
     void checkDispatch(CtiTime currentTime);
-    void checkPIL(CtiTime currentTime);
+    void checkPorter(CtiTime currentTime);
     void registerForPoints(const std::vector<CtiLMControlArea*>& controlAreas);
     void parseMessage( CtiMessage *message, CtiTime currentTime );
     void pointDataMsg( long pointID, double value, unsigned quality, unsigned tags, CtiTime& timestamp, CtiTime currentTime );
@@ -57,7 +57,7 @@ private:
     static CtiLoadManager* _instance;
     RWThread _loadManagerThread;
 
-    boost::shared_ptr<CtiClientConnection> _pilConnection;
+    boost::shared_ptr<CtiClientConnection> _porterConnection;
     boost::shared_ptr<CtiClientConnection> _dispatchConnection;
     boost::shared_ptr<CtiClientConnection> _notificationConnection;
 

@@ -66,7 +66,7 @@ class CtiCapController : public MessageListener
                                 CtiMultiMsg_vec& pointChanges, Cti::CapControl::EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages);
 
         DispatchConnectionPtr getDispatchConnection();
-        boost::shared_ptr<CtiClientConnection> getPILConnection();
+        boost::shared_ptr<CtiClientConnection> getPorterConnection();
 
         void processNewMessage(CtiMessage* message);
 
@@ -115,14 +115,14 @@ class CtiCapController : public MessageListener
         RWThread _messageSenderThread;
         RWThread _incomingMessageProcessorThread;
 
-        boost::shared_ptr<CtiClientConnection> _pilConnection;
+        boost::shared_ptr<CtiClientConnection> _porterConnection;
         DispatchConnectionPtr _dispatchConnection;
 
         typedef Cti::readers_writer_lock_t Lock;
         typedef Lock::reader_lock_guard_t  ReaderGuard;
         typedef Lock::writer_lock_guard_t  WriterGuard;
 
-        mutable Lock _pilConnectionLock;
+        mutable Lock _porterConnectionLock;
         mutable Lock _dispatchConnectionLock;
 
         CtiPCPtrQueue< CtiMessage > _incomingMessageQueue;
