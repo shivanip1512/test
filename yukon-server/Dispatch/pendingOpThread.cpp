@@ -1349,7 +1349,7 @@ void CtiPendingOpThread::checkControlStatusChange( CtiPendable *&pendable )
         }
         else
         {
-            CTILOG_ERROR(dout, "Unexpected control state ("<< pendable->_value <<")");
+            CTILOG_WARN(dout, "Unexpected control state ("<< pendable->_value <<")");
         }
     }
 }
