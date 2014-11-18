@@ -47,7 +47,7 @@ void DispatchMsgHandlerThread(void *Arg)
 
     VanGoghConnection.setName("Porter to Dispatch");
     VanGoghConnection.start();
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PORTER_REGISTRATION_NAME, rwThreadId(), FALSE));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PORTER_REGISTRATION_NAME, rwThreadId(), false));
 
     LastThreadMonitorTime = LastThreadMonitorTime.now();
 

@@ -77,7 +77,7 @@ void main(int argc, char **argv)
         CtiClientConnection Connect( Cti::Messaging::ActiveMQ::Queue::dispatch );
         Connect.start();
 
-        Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg("point changer", rwThreadId(), TRUE) );
+        Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg("point changer", rwThreadId(), true) );
 
         CtiPointRegistrationMsg *ptReg = CTIDBG_new CtiPointRegistrationMsg( 0 );
         ptReg->insert( atol( argv[2] ) );

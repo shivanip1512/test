@@ -564,7 +564,6 @@ IM_EX_MSG MessagePtr<Thrift::Registration>::type populateThrift( const ::CtiRegi
     omsg->__set__appName                ( imsg.getAppName() );
     omsg->__set__appId                  ( imsg.getAppId() );
     omsg->__set__appIsUnique            ( imsg.getAppIsUnique() );
-    omsg->__set__appKnownPort           ( imsg.getAppKnownPort() );
     omsg->__set__appExpirationDelay     ( imsg.getAppExpirationDelay() );
 
     return omsg;
@@ -578,7 +577,6 @@ IM_EX_MSG MessagePtr<::CtiRegistrationMsg>::type populateMessage( const Thrift::
     omsg->setAppName                    ( imsg._appName );
     omsg->setAppID                      ( imsg._appId );
     omsg->setAppIsUnique                ( imsg._appIsUnique );
-    omsg->setAppKnownPort               ( imsg._appKnownPort );
     omsg->setAppExpirationDelay         ( imsg._appExpirationDelay );
 
     return omsg;

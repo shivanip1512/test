@@ -135,7 +135,7 @@ void main(int argc, char **argv)
             // start the connection
             Connect.start();
 
-            Connect.WriteConnQue(new CtiRegistrationMsg(argv[0], rwThreadId(), FALSE));
+            Connect.WriteConnQue(new CtiRegistrationMsg(argv[0], rwThreadId(), false));
             CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_NOTHING);
             Connect.WriteConnQue(PtRegMsg);
 

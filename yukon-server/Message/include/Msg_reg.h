@@ -13,11 +13,10 @@ public:
 
 private:
 
-   std::string      _appName;
+   std::string    _appName;
    int            _appId;
-   int            _appIsUnique;
+   bool           _appIsUnique;
 
-   int            _appKnownPort;
    int            _appExpirationDelay;     // How many seconds till I believe this guy is DEAD.
 
 public:
@@ -25,7 +24,7 @@ public:
    typedef  CtiMessage  Inherited;
 
    CtiRegistrationMsg();
-   CtiRegistrationMsg(std::string str, int id, RWBoolean bUnique, int port = -1, int delay = 900);
+   CtiRegistrationMsg(std::string str, int id, bool unique);
    CtiRegistrationMsg(const CtiRegistrationMsg &aRef);
    virtual ~CtiRegistrationMsg();
    // Assignement operator
@@ -41,10 +40,7 @@ public:
    void        setAppID(int id);
 
    RWBoolean   getAppIsUnique() const;
-   void        setAppIsUnique(RWBoolean b);
-
-   int         getAppKnownPort() const;
-   void        setAppKnownPort(int p);
+   void        setAppIsUnique(bool b);
 
    int         getAppExpirationDelay() const;
    void        setAppExpirationDelay(int d);

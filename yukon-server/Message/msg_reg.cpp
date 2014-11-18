@@ -47,7 +47,6 @@ std::string CtiRegistrationMsg::toString() const
     itemList.add("Client Name")                  << _appName;
     itemList.add("Client App Id")                << _appId;
     itemList.add("Is client unique?")            << _appIsUnique;
-    itemList.add("Client Known connection Port") << _appKnownPort;
     itemList.add("Client Expiration Delay")      << _appExpirationDelay; // How many seconds till I believe this guy is DEAD.
 
     return (Inherited::toString() += itemList.toString());
@@ -55,23 +54,19 @@ std::string CtiRegistrationMsg::toString() const
 
 CtiRegistrationMsg::CtiRegistrationMsg() :
    CtiMessage(15),
-   _appIsUnique(FALSE),
+   _appIsUnique(false),
    _appId(0),
-   _appKnownPort(-1),                // Not all apps will have one.
-   _appExpirationDelay(900)          // 5 minute default delay...
+   _appExpirationDelay(900)          // 15 minute default delay...
 {
-   // cout << "Creating registration object" << endl;
 }
 
-CtiRegistrationMsg::CtiRegistrationMsg(string str, int id, RWBoolean bUnique, int port, int delay) :
+CtiRegistrationMsg::CtiRegistrationMsg(string str, int id, bool unique) :
    CtiMessage(15),
-   _appIsUnique(bUnique),
+   _appIsUnique(unique),
    _appName(str),
    _appId(id),
-   _appKnownPort(port),
-   _appExpirationDelay(delay)
+   _appExpirationDelay(900)          // 15 minute default delay...
 {
-   // cout << "Creating registration object" << endl;
 }
 
 CtiRegistrationMsg::CtiRegistrationMsg(const CtiRegistrationMsg &aRef)
@@ -81,7 +76,6 @@ CtiRegistrationMsg::CtiRegistrationMsg(const CtiRegistrationMsg &aRef)
 
 CtiRegistrationMsg::~CtiRegistrationMsg()
 {
-   // cout << "Deleting registration object" << endl;
 }
 
 // Assignement operator
@@ -95,7 +89,6 @@ CtiRegistrationMsg& CtiRegistrationMsg::operator=(const CtiRegistrationMsg& aRef
       _appIsUnique          = aRef.getAppIsUnique();
       _appName              = aRef.getAppName();
       _appId                = aRef.getAppId();
-      _appKnownPort         = aRef.getAppKnownPort();
       _appExpirationDelay   = aRef.getAppExpirationDelay();
    }
 
@@ -109,11 +102,8 @@ void        CtiRegistrationMsg::setAppName(string str)     { _appName = str; }
 int         CtiRegistrationMsg::getAppId() const              { return _appId;   }
 void        CtiRegistrationMsg::setAppID(int id)              { _appId = id;    }
 
-RWBoolean   CtiRegistrationMsg::getAppIsUnique() const        { return _appIsUnique; }
-void        CtiRegistrationMsg::setAppIsUnique(RWBoolean b)   { _appIsUnique = b;    }
-
-int         CtiRegistrationMsg::getAppKnownPort() const       { return _appKnownPort; }
-void        CtiRegistrationMsg::setAppKnownPort(int p)        { _appKnownPort = p; }
+bool        CtiRegistrationMsg::getAppIsUnique() const        { return _appIsUnique; }
+void        CtiRegistrationMsg::setAppIsUnique(bool b)        { _appIsUnique = b;    }
 
 int         CtiRegistrationMsg::getAppExpirationDelay() const { return _appExpirationDelay; }
 void        CtiRegistrationMsg::setAppExpirationDelay(int d)  { _appExpirationDelay = d; }

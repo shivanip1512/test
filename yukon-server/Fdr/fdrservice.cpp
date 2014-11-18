@@ -261,7 +261,7 @@ void CtiFDRService::Run( )
         // Initialize the connection to VanGogh....
         FdrVanGoghConnection.setName("FDR Service to Dispatch");
         FdrVanGoghConnection.start();
-        FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg("FDR Service", rwThreadId(), TRUE));
+        FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg("FDR Service", rwThreadId(), true));
 
         do
         {

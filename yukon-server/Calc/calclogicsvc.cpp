@@ -216,7 +216,7 @@ void CtiCalcLogicService::Run( )
                 //    the program name and such doesn't change - only our requested points do.)
 
                 // USE A SINGLE Simple Name - bdw
-                dispatchConnection->WriteConnQue( new CtiRegistrationMsg("CalcLogic"+CtiNumStr(conncnt++), rwThreadId(), FALSE ));
+                dispatchConnection->WriteConnQue( new CtiRegistrationMsg("CalcLogic"+CtiNumStr(conncnt++), rwThreadId(), false ));
             }
 
             try

@@ -74,7 +74,7 @@ void main(int argc, char **argv)
 
         string regStr = "Lurker";
 
-        myConnection.WriteConnQue( CTIDBG_new CtiRegistrationMsg(regStr, rwThreadId( ), TRUE) );
+        myConnection.WriteConnQue( CTIDBG_new CtiRegistrationMsg(regStr, rwThreadId( ), true) );
         myConnection.WriteConnQue( CTIDBG_new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ) );
 
         CtiMessage *incomingMsg;

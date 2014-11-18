@@ -389,7 +389,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     // Initialize the connection to VanGogh....
     VanGoghConnection.setName("Scanner to Dispatch");
     VanGoghConnection.start();
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, rwThreadId(), TRUE));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, rwThreadId(), true));
 
     CtiTime NextScan[MAX_SCAN_TYPE];
 

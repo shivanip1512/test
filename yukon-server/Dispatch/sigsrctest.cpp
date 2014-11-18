@@ -86,7 +86,7 @@ void main(int argc, char **argv)
       Connect.start();
       
       // Insert a registration message into the multi
-      Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg( "SignalSource", rwThreadId(), TRUE ));
+      Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg( "SignalSource", rwThreadId(), true ));
 
 /*      CtiEmailMsg       *pEmail = CTIDBG_new CtiEmailMsg(1, CtiEmailMsg::CICustomerEmailType);
       Connect.WriteConnQue(pEmail);

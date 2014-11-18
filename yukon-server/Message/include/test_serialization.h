@@ -562,7 +562,6 @@ struct TestCase<CtiRegistrationMsg> : public TestCase<CtiMessage>
         GenerateRandom( imsg._appName );
         GenerateRandom( imsg._appId );
         GenerateRandom( appIsUnique );
-        GenerateRandom( imsg._appKnownPort );
         GenerateRandom( imsg._appExpirationDelay );
 
         imsg._appIsUnique = appIsUnique;
@@ -578,7 +577,6 @@ struct TestCase<CtiRegistrationMsg> : public TestCase<CtiMessage>
         CompareMember( "_appName",              imsg._appName,                  omsg._appName );
         CompareMember( "_appId",                imsg._appId,                    omsg._appId );
         CompareMember( "_appIsUnique",          imsg._appIsUnique,              omsg._appIsUnique );
-        CompareMember( "_appKnownPort",         imsg._appKnownPort,             omsg._appKnownPort );
         CompareMember( "_appExpirationDelay",   imsg._appExpirationDelay,       omsg._appExpirationDelay );
     }
 };
