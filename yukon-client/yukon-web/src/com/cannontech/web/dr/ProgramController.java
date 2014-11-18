@@ -148,19 +148,17 @@ public class ProgramController extends ProgramControllerBase {
         rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
         DisplayablePao program = programService.getProgram(assetId);
 
-        List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, null, paging, sorting);
+        SearchResults<AssetAvailabilityDetails> result = getResultsList(program, userContext, null, paging, sorting);
 
         int assetTotal = getAssetAvailabilityInfo(program, model, userContext);
 
-        SearchResults<AssetAvailabilityDetails> result =
-            SearchResults.pageBasedForSublist(resultsList, paging, assetTotal);
-        
         model.addAttribute("assetId", assetId);
         model.addAttribute("programId", assetId);
         model.addAttribute("program", program);
         model.addAttribute("type", "program");
         model.addAttribute("result", result);
-        model.addAttribute("assetTotal", assetTotal);
+        model.addAttribute("filter",
+            AssetAvailabilityCombinedStatus.getStringValues(AssetAvailabilityCombinedStatus.values()));
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         addAssetColumns(model, accessor, sorting);
@@ -183,21 +181,17 @@ public class ProgramController extends ProgramControllerBase {
     public String page(ModelMap model, YukonUserContext userContext, int assetId,
             @DefaultItemsPerPage(25) PagingParameters paging,
             @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
-            @RequestParam(value = "filter[]", required = false) AssetAvailabilityCombinedStatus[] filters,
-            @RequestParam(value = "assetTotal", required = false) String assetTotal) {
+            @RequestParam(value = "filter[]", required = false) AssetAvailabilityCombinedStatus[] filters) {
 
         DisplayablePao program = programService.getProgram(assetId);
-        List<AssetAvailabilityDetails> resultsList = getResultsList(program, userContext, filters, paging, sorting);
-
-        SearchResults<AssetAvailabilityDetails> result =
-            SearchResults.pageBasedForSublist(resultsList, paging, Integer.valueOf(assetTotal));
-
+        SearchResults<AssetAvailabilityDetails> result = getResultsList(program, userContext, filters, paging, sorting);
+        
         model.addAttribute("result", result);
         model.addAttribute("type", "program");
         model.addAttribute("assetId", assetId);
         model.addAttribute("colorMap", colorMap);
-        model.addAttribute("assetTotal", assetTotal);
-
+        
+        model.addAttribute("filter", AssetAvailabilityCombinedStatus.getStringValues(filters));
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         addAssetColumns(model, accessor, sorting);
 
