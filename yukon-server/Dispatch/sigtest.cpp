@@ -38,7 +38,7 @@ void main( int argc, char **argv )
         Connect.start();
 
         // Send registration message
-        Connect.WriteConnQue( new CtiRegistrationMsg(argv[1], rwThreadId(), true ));
+        Connect.WriteConnQue( new CtiRegistrationMsg(argv[1], rwThreadId(), false ));
 
         // Register for a few points which "test.exe" will change.
         Connect.WriteConnQue( new CtiPointRegistrationMsg(REG_EVENTS | REG_ALARMS | REG_NO_UPLOAD ));

@@ -97,14 +97,14 @@ CtiRegistrationMsg& CtiRegistrationMsg::operator=(const CtiRegistrationMsg& aRef
 
 string   CtiRegistrationMsg::getAppName() const            { return _appName; }
 string&  CtiRegistrationMsg::getAppName()                  { return _appName; }
-void        CtiRegistrationMsg::setAppName(string str)     { _appName = str; }
+void     CtiRegistrationMsg::setAppName(string str)        { _appName = str; }
 
-int         CtiRegistrationMsg::getAppId() const              { return _appId;   }
-void        CtiRegistrationMsg::setAppID(int id)              { _appId = id;    }
+int      CtiRegistrationMsg::getAppId() const              { return _appId;   }
+void     CtiRegistrationMsg::setAppID(int id)              { _appId = id;    }
 
-bool        CtiRegistrationMsg::getAppIsUnique() const        { return _appIsUnique; }
-void        CtiRegistrationMsg::setAppIsUnique(bool b)        { _appIsUnique = b;    }
+bool     CtiRegistrationMsg::getAppIsUnique() const        { return _appIsUnique; }
+void     CtiRegistrationMsg::setAppIsUnique(bool b)        { _appIsUnique = b;    }
 
-int         CtiRegistrationMsg::getAppExpirationDelay() const { return _appExpirationDelay; }
-void        CtiRegistrationMsg::setAppExpirationDelay(int d)  { _appExpirationDelay = d; }
+int      CtiRegistrationMsg::getAppExpirationDelay() const { return _appExpirationDelay; }
+void     CtiRegistrationMsg::setAppExpirationDelay(int d)  { _appExpirationDelay = d; }
 

@@ -34,16 +34,16 @@ public:
 
    std::string   getAppName() const;
    std::string&  getAppName();
-   void        setAppName(std::string str);
+   void          setAppName(std::string str);
 
-   int         getAppId() const;
-   void        setAppID(int id);
+   int   getAppId() const;
+   void  setAppID(int id);
 
-   RWBoolean   getAppIsUnique() const;
-   void        setAppIsUnique(bool b);
+   bool  getAppIsUnique() const;
+   void  setAppIsUnique(bool b);
 
-   int         getAppExpirationDelay() const;
-   void        setAppExpirationDelay(int d);
+   int   getAppExpirationDelay() const;
+   void  setAppExpirationDelay(int d);
 
    virtual std::string toString() const override;
 };
