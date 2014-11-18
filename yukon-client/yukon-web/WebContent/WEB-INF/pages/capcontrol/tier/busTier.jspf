@@ -21,7 +21,7 @@
 
 <tags:boxContainer2 nameKey="busContainer" hideEnabled="true" showInitially="true" styleClass="clear ${styleClass}">
 
-    <table id="subBusTable" class="compact-results-table has-actions">
+    <table id="subBusTable" class="compact-results-table has-actions row-highlighting">
         <thead>
             <tr>
                 <th width="16px"></th>
@@ -73,13 +73,9 @@
 
                 <%-- State --%>
                 <td class="wsnw">
-                    <c:if test="${hasSubBusControl}"><a id="subbusState_${subbusId}" class="subtle-link" href="javascript:void(0);"></c:if>
-                    <c:if test="${not hasSubBusControl}"><span></c:if>
-                        <span class="box state-box js-state" data-pao-id="${subbusId}">&nbsp;</span>
-                        <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBBUS/${subbusId}/STATE_FLAGS"/>
-                        <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="STATE" styleClass="vat"/>
-                    <c:if test="${hasSubBusControl}"></a></c:if>
-                    <c:if test="${not hasSubBusControl}"></span></c:if>
+                    <span class="box state-box js-state" data-pao-id="${subbusId}">&nbsp;</span>
+                    <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBBUS/${subbusId}/STATE_FLAGS"/>
+                    <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="STATE" styleClass="vat"/>
                 </td>
 
                 <%-- Target --%>
@@ -170,6 +166,13 @@
                     <cti:msg2 var="busAddInfoTitle" key=".busAddInfoTitle" arguments="${viewableSubBus.subBus.ccName}"/>
 
                     <cm:dropdown icon="icon-cog" triggerClasses="fr">
+                        <c:if test="${hasSubBusControl}">
+                            <li>
+                                <a id="subbusState_${subbusId}" href="javascript:void(0)" class="clearfix">
+                                    <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".bus.actions"/></span>
+                                </a>
+                            </li>
+                        </c:if>
                         <cm:dropdownOption key=".busAddInfo.label" href="javascript:yukon.da.showDialog('${busAddInfoTitle}', '../addInfo/bus?busId=${subbusId}')" icon="icon-magnifier" />
                         <cm:dropdownOption key=".location.label" href="${locationLink}" icon="icon-interstate" />
                         <c:if test="${viewableSubBus.ivvcControlled}">

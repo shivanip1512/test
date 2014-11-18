@@ -640,7 +640,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 		if (getDbPersistent() instanceof CapControlSubBus) {
 			String dualBusEn = ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().getDualBusEnabled();
 			Boolean val = (dualBusEn.equalsIgnoreCase("Y") ? Boolean.TRUE : Boolean.FALSE);
-			this.setEnableDualBus(val);
+			setEnableDualBus(val);
 		}
 	}
 
@@ -907,23 +907,39 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
                 updateDBObject(dbPers, facesMsg);
             }
             
-            if(getDbPersistent() instanceof CapControlSubBus 
-            	|| getDbPersistent() instanceof CapControlArea
-            	|| getDbPersistent() instanceof CapControlSpecialArea
-            	|| getDbPersistent() instanceof CapControlFeeder){
+            if (dbPers instanceof CapControlSubBus ||
+                dbPers instanceof CapControlArea ||
+                dbPers instanceof CapControlSpecialArea ||
+                dbPers instanceof CapControlFeeder) {
                 
                 if(getHolidayScheduleId() != -1 && getHolidayStrategyId() < 1){
                     //if a holiday schedule is selected, a strategy must also be selected
                     facesMsg.setDetail("Holiday Strategy: strategy not selected.");
                     facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 } else if(dataModelOK) {
-                	int paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
+                	int paoId = ((YukonPAObject)dbPers).getPAObjectID();
                 	seasonScheduleDao.saveSeasonStrategyAssigment(paoId, getAssignedStratMap(), getScheduleId());
                 	holidayScheduleDao.saveHolidayScheduleStrategyAssigment(paoId, getHolidayScheduleId(), getHolidayStrategyId());
                 }
             }
             pointNameMap = null;
             paoNameMap = null;
+
+            if (dbPers instanceof CapControlSubstation) {
+                for (LiteYukonPAObject bus : unassignedSubBuses) {
+                    capControlCache.handleDeleteItem(bus.getLiteID());
+                }
+            }
+            if (dbPers instanceof CapControlSubstationBus) {
+                for (LiteYukonPAObject feeder : unassignedFeeders) {
+                    capControlCache.handleDeleteItem(feeder.getLiteID());
+                }
+            }
+            if (dbPers instanceof CapControlFeeder) {
+                for (LiteYukonPAObject bank : unassignedBanks) {
+                    capControlCache.handleDeleteItem(bank.getLiteID());
+                }
+            }
 		} catch (TransactionException te) {
             String errorString = te.getMessage();
             facesMsg.setDetail(errorString);
@@ -2011,11 +2027,11 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     }
     
     public void setScheduleId(Integer id) {
-        this.scheduleId = id;
+        scheduleId = id;
     }
     
     public void setHolidayScheduleId(Integer id) {
-        this.holidayScheduleId = id;
+        holidayScheduleId = id;
     }
     
 	public List<LiteYukonPAObject> getUnassignedSubBuses() {

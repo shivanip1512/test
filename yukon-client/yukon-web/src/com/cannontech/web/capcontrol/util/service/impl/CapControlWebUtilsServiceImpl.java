@@ -69,10 +69,13 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
             
             if (subBus.getAlternateBusId() > 0) {
                 SubBus linkedSub = capControlCache.getSubBus(subBus.getAlternateBusId());
-                SubStation station = capControlCache.getSubstation(linkedSub.getParentID());
-                
-                alternateStationId = station.getCcId();
-                alternateAreaId = station.getParentID();
+                try {
+                    SubStation station = capControlCache.getSubstation(linkedSub.getParentID());
+                    alternateStationId = station.getCcId();
+                    alternateAreaId = station.getParentID();
+                } catch (NotFoundException exception) {
+                    //Dual bus alternate bus is currently an orphan.
+                }
             }
 
             viewable.setAlternateStationId(alternateStationId);

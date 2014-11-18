@@ -1,5 +1,7 @@
 package com.cannontech.message.capcontrol.model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.message.capcontrol.streamable.SubStation;
@@ -41,6 +43,10 @@ public class SubStations extends CapControlMessage {
 			return stations.get(index);
 		}
 	}
+
+    public List<SubStation> getSubstations() {
+        return new ArrayList<>(stations);
+    }
 	
 	/**
 	 * Only used to filter the unwanted SubStations out

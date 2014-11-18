@@ -196,16 +196,16 @@
     <!-- Arguments available for Cap Control pages 0: name (pao) -->
     <entry key="yukon.web.modules.search.capcontrol.area.title">Area: {0}</entry>
     <entry key="yukon.web.modules.search.capcontrol.area.summary"></entry>
-    <entry key="yukon.web.modules.search.capcontrol.substation.title">Substation: {0}</entry>
-    <entry key="yukon.web.modules.search.capcontrol.substation.summary"><![CDATA[Area: <strong>{1}</strong>]]></entry>
-    <entry key="yukon.web.modules.search.capcontrol.subbus.title">Substation Bus: {0} on Substation: {1}</entry>
-    <entry key="yukon.web.modules.search.capcontrol.subbus.summary"><![CDATA[Area: <strong>{2}</strong>, Substation: <strong>{3}</strong>]]></entry>
-    <entry key="yukon.web.modules.search.capcontrol.feeder.title">Feeder: {0} on Substation: {1}</entry>
-    <entry key="yukon.web.modules.search.capcontrol.feeder.summary"><![CDATA[Area: <strong>{2}</strong>, Substation: <strong>{3}</strong>, Substation Bus: <strong>{4}</strong>]]></entry>
-    <entry key="yukon.web.modules.search.capcontrol.capbank.title">Cap Bank: {0} on Substation: {1}</entry>
-    <entry key="yukon.web.modules.search.capcontrol.capbank.summary"><![CDATA[Area: <strong>{2}</strong>, Substation: <strong>{3}</strong>, Substation Bus: <strong>{4}</strong>, Feeder: <strong>{5}</strong>]]></entry>
-    <entry key="yukon.web.modules.search.capcontrol.cbc.title">CBC: {0} on Substation: {1}</entry>
-    <entry key="yukon.web.modules.search.capcontrol.cbc.summary"><![CDATA[Area: <strong>{2}</strong>, Substation: <strong>{3}</strong>, Substation Bus: <strong>{4}</strong>, Feeder: <strong>{5}</strong>, Cap Bank: <strong>{6}</strong>]]></entry>
+      <entry key="yukon.web.modules.search.capcontrol.substation.title">Substation: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.substation.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.bus.title">Bus: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.bus.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.feeder.title">Feeder: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.feeder.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.bank.title">Cap Bank: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.bank.summary"></entry>
+    <entry key="yukon.web.modules.search.capcontrol.cbc.title">CBC: {0}</entry>
+    <entry key="yukon.web.modules.search.capcontrol.cbc.summary"></entry>
     
     <entry key="yukon.web.modules.search.capcontrol.edit.CAPBANK.title">Cap Bank Editor: {0}</entry>
     <entry key="yukon.web.modules.search.capcontrol.edit.CAPBANK.summary"></entry>

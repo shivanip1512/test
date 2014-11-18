@@ -57,24 +57,10 @@
 
                 <%-- State --%>
                 <td class="wsnw">
-                    <c:if test="${hasFeederControl}">
-                        <a id="feederState_${feederId}"  class="subtle-link" href="javascript:void(0);">
-                    </c:if>
-                    <c:if test="${not hasFeederControl}">
-                        <span>
-                    </c:if>
-                        <span class="box state-box js-state" data-pao-id="${feederId}">&nbsp;</span>
-                        <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="FEEDER/${feederId}/STATE_FLAGS"/>
+                    <span class="box state-box js-state" data-pao-id="${feederId}">&nbsp;</span>
+                    <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="FEEDER/${feederId}/STATE_FLAGS"/>
 
-                        <cti:capControlValue paoId="${feederId}" type="FEEDER" format="STATE"/>
-
-                    <c:if test="${hasFeederControl}">
-                        </a>
-                    </c:if>
-                    <c:if test="${not hasFeederControl}">
-                        </span>
-                    </c:if>
-
+                    <cti:capControlValue paoId="${feederId}" type="FEEDER" format="STATE"/>
                 </td>
 
                 <%-- Target --%>
@@ -174,7 +160,14 @@
                         <cti:capControlValue paoId="${feederId}" type="FEEDER" format="DAILY_MAX_OPS"/>
                     </span>
                     <cm:dropdown icon="icon-cog" triggerClasses="fr">
-                       <cm:dropdownOption key=".location.label" icon="icon-interstate" href="${locationUrl}" />
+                        <c:if test="${hasFeederControl}">
+                            <li>
+                                <a id="feederState_${feederId}" href="javascript:void(0)" class="clearfix">
+                                    <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".feeder.actions"/></span>
+                                </a>
+                            </li>
+                        </c:if>
+                        <cm:dropdownOption key=".location.label" icon="icon-interstate" href="${locationUrl}" />
                     </cm:dropdown>
                 </td>
             </tr>

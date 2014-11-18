@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.faces.context.FacesContext;
 
 import com.cannontech.capcontrol.dao.SubstationDao;
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.capcontrol.CapControlArea;
@@ -24,6 +25,7 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
     CapControlArea area;
     SubstationDao substationDao = YukonSpringHook.getBean("ccSubstationDao", SubstationDao.class);
     PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+    CapControlCache ccCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
     
     List<CBCAreaData> assignedSubstations = new ArrayList<CBCAreaData>();
     List<CBCAreaData> unassingedSubstations = new ArrayList<CBCAreaData>();
@@ -59,7 +61,6 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void add() {
         
         FacesContext context = FacesContext.getCurrentInstance();
@@ -81,7 +82,6 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void remove() {
         FacesContext context = FacesContext.getCurrentInstance();
         Map paramMap = context.getExternalContext().getRequestParameterMap();
@@ -109,6 +109,7 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
 
     public List<CBCAreaData> getAssigned() {
         Collections.sort(assignedSubstations, new Comparator<CBCAreaData>() {
+            @Override
             public int compare(CBCAreaData o1, CBCAreaData o2) {
                 Integer intA = o1.getDisplayOrder();
                 Integer intB = o2.getDisplayOrder();
@@ -123,6 +124,7 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
         return unassingedSubstations;
     }
 
+    @Override
     public void updateDataModel() {
         List<Integer> assignedIds = CBCAreaData.toIntegerList(getAssigned());
         List<Integer> unassignedIds = CBCAreaData.toIntegerList(getUnassigned());
@@ -131,6 +133,9 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
         handleUnassignedIds(unassignedIds, connection);
         assignNewSubs(getAssigned(), connection);
         CBCDBUtil.closeConnection(connection);
+        for (int unassigned : unassignedIds) {
+            ccCache.handleDeleteItem(unassigned);
+        }
     }
 
     public void assignNewSubs(List<CBCAreaData> assignedSubs, Connection connection) {

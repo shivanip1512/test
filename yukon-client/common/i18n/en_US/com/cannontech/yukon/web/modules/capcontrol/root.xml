@@ -347,6 +347,8 @@
     <entry key="yukon.web.modules.capcontrol.substation.moveBankTitle">Cap Bank Move for {0} (Pick feeder by clicking on name)</entry>
     <entry key="yukon.web.modules.capcontrol.substation.verificationInProgress.hoverText">Currently being used in a Verification schedule</entry>
     <entry key="yukon.web.modules.capcontrol.substation.capBank.actions">Bank Actions</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.feeder.actions">Feeder Actions</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.bus.actions">Bus Actions</entry>
     <entry key="yukon.web.modules.capcontrol.substation.capBank.state">Change Yukon State</entry>
     <entry key="yukon.web.modules.capcontrol.substation.capBank.info">Bank Info</entry>
     <entry key="yukon.web.modules.capcontrol.substation.cbc.info">CBC Info</entry>

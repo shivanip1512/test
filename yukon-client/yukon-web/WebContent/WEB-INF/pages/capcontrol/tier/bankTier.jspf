@@ -12,7 +12,7 @@
 
 <tags:boxContainer2 nameKey="banksContainer" hideEnabled="true" showInitially="true">
     <c:set var="hasControlAttr" value="${hasCapbankControl ? 'data-has-control' : ''}" />
-    <table id="capBankTable" class="compact-results-table has-actions" ${hasControlAttr}>
+    <table id="capBankTable" class="compact-results-table has-actions row-highlighting" ${hasControlAttr}>
         <thead>
             <tr>
                 <th width="16px"></th>

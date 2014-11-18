@@ -298,8 +298,8 @@ public final class CapControlUtils {
             List<SubBus> buses = ccCache.getSubBusesBySubStation(sub);
             for (SubBus bus: buses) {
                 if( bus != null) {
-                    sumOfVars += bus.getEstimatedVarLoadPointValue().doubleValue();
-                    sumOfWatts += Math.abs(bus.getCurrentWattLoadPointValue().doubleValue());
+                    sumOfVars += bus.getEstimatedVarLoadPointValue();
+                    sumOfWatts += Math.abs(bus.getCurrentWattLoadPointValue());
                 }
             }
         }
@@ -308,7 +308,7 @@ public final class CapControlUtils {
         if (sumOfVars < 0) {
             retVal = retVal * (-1);
         }
-        return retVal.isNaN() ? 0.0 : retVal.doubleValue();
+        return retVal.isNaN() ? 0.0 : retVal;
     }
 
     public static boolean isTwoWay(PaoType type) {

@@ -256,6 +256,12 @@
     </servlet>
 
     <servlet>
+        <servlet-name>vv</servlet-name>
+        <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>dev</servlet-name>
         <servlet-class>com.cannontech.web.spring.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -672,6 +678,12 @@
         <servlet-name>tools</servlet-name>
         <url-pattern>/tools</url-pattern>
         <url-pattern>/tools/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>vv</servlet-name>
+        <url-pattern>/vv</url-pattern>
+        <url-pattern>/vv/*</url-pattern>
     </servlet-mapping>
     
     <servlet-mapping>

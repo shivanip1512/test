@@ -172,4 +172,5 @@ public interface CapControlCache {
      */
     boolean refresh();
 
+    void handleDeleteItem(int id);
 }

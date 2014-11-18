@@ -377,4 +377,7 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         return CtiUtilities.NONE_ZERO_ID;
     }
     
+    @Override
+    public void handleDeleteItem(int id) {
+    }
 }
