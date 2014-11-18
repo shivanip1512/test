@@ -1,8 +1,10 @@
 package com.cannontech.dr.assetavailability;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
+
 
 public enum AssetAvailabilityCombinedStatus implements DisplayableEnum {
     ACTIVE(AssetAvailabilityStatus.ACTIVE),
@@ -45,6 +47,15 @@ public enum AssetAvailabilityCombinedStatus implements DisplayableEnum {
     public String getFormatKey() {
         return "yukon.web.modules.dr.assetDetails.status." + name();
     }
+    
+    public static String getStringValues(AssetAvailabilityCombinedStatus[] array) {
+        String assetAvailabilityCombinedStatus = null;
+        if (null != array) {
+            assetAvailabilityCombinedStatus = Joiner.on(',').join(array);
+        }
+        return assetAvailabilityCombinedStatus;
+    }
+    
 }
 
 

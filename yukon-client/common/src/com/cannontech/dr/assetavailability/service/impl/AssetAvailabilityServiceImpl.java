@@ -18,6 +18,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.ApplianceWithRuntime;
@@ -247,18 +248,20 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
     }
     
     @Override
-    public List<AssetAvailabilityDetails> getAssetAvailability(PaoIdentifier paoIdentifier, PagingParameters paging,
-            AssetAvailabilityCombinedStatus[] filters, SortingParameters sortBy,YukonUserContext userContext) {
+    public SearchResults<AssetAvailabilityDetails> getAssetAvailability(PaoIdentifier paoIdentifier,
+            PagingParameters paging, AssetAvailabilityCombinedStatus[] filters, SortingParameters sortBy,
+            YukonUserContext userContext) {
         log.debug("Calculating asset availability for " + paoIdentifier.getPaoType() + " " + paoIdentifier.getPaoId());
         Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(paoIdentifier);
 
         Instant now = Instant.now();
         Instant communicatingWindowEnd = now.minus(getCommunicationWindowDuration());
         Instant runtimeWindowEnd = now.minus(getRuntimeWindowDuration());
-        
-        List<AssetAvailabilityDetails> assetAvailabilityDetails =
+
+        SearchResults<AssetAvailabilityDetails> assetAvailabilityDetails =
             assetAvailabilityDao.getAssetAvailabilityDetails(loadGroupIds, paging, filters, sortBy,
-                communicatingWindowEnd, runtimeWindowEnd,now,userContext);
+                communicatingWindowEnd, runtimeWindowEnd, now, userContext);
+
         return assetAvailabilityDetails;
     }
 

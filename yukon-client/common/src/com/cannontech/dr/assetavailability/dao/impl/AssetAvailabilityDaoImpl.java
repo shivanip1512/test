@@ -11,6 +11,7 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -40,7 +41,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
     @Autowired private EnergyCompanyDao ecDao;
 
     @Override
-    public List<AssetAvailabilityDetails> getAssetAvailabilityDetails(Iterable<Integer> loadGroupIds,
+    public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(Iterable<Integer> loadGroupIds,
             PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filterCriteria,
             SortingParameters sortingParameters, Instant communicatingWindowEnd, Instant runtimeWindowEnd,
             Instant currentTime, YukonUserContext userContext) {
@@ -65,90 +66,103 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
          * to get the final row set its filtered by row number based on pagination values and filter values.
          */
         
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
-        sql.append("FROM (");
-        sql.append("SELECT (ROW_NUMBER() OVER (ORDER BY");
+        SqlStatementBuilder sqlPaginateQuery = new SqlStatementBuilder();
+        SqlStatementBuilder sqlTotalCountQuery = new SqlStatementBuilder();
+        SqlStatementBuilder sqlCommon = new SqlStatementBuilder();
+        sqlTotalCountQuery.append("SELECT COUNT(*)");
+        sqlPaginateQuery.append("SELECT *");
+
+        sqlPaginateQuery.append("FROM (");
+        sqlPaginateQuery.append("SELECT (ROW_NUMBER() OVER (ORDER BY");
         if (("SERIAL_NUM").equals(sortingOrder)) {
-            if(isSerialNumberNumeric(userContext)) {
-                sql.append(castToNumeric(sortingOrder).getSql());
+            if (isSerialNumberNumeric(userContext)) {
+                sqlPaginateQuery.append(castToNumeric(sortingOrder).getSql());
             } else {
-                sql.append(sortingOrder);
+                sqlPaginateQuery.append(sortingOrder);
             }
         } else {
-            sql.append(sortingOrder);
+            sqlPaginateQuery.append(sortingOrder);
         }
-        sql.append(" ");
-        sql.append(sortingDirection);
-        sql.append(")) AS RowNumber, Appliances,DeviceId,InventoryId,serial_num,Type,last_comm,last_run,Availability");
-        sql.append("FROM ");
-        sql.append("(SELECT DISTINCT ");
-        sql.append("(SELECT Description");
-        sql.append("FROM ApplianceCategory");
-        sql.append("WHERE ApplianceCategoryId=appbase.ApplianceCategoryID) AS appliances,");
-        sql.append("inv.DeviceId AS deviceid,lmbase.InventoryID AS inventoryid, lmbase.ManufacturerSerialNumber AS serial_num,");
-        sql.append("(SELECT YukonDefinitionId");
-        sql.append("FROM YukonListEntry");
-        sql.append("WHERE EntryID=lmbase.LMHardwareTypeID) AS type,");
-        sql.append("LastCommunication AS last_comm, LastNonZeroRuntime AS last_run,");
-        sql.append("(SELECT CASE WHEN inv.DeviceId=0 THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE).append("ELSE");
-        sql.append("(SELECT CASE WHEN lmbase.InventoryId IN");
-        sql.append("(SELECT DISTINCT ib.InventoryId");
-        sql.append("FROM InventoryBase ib ");
-        sql.append(  "JOIN OptOutEvent ooe ON ooe.InventoryId = ib.InventoryId WHERE ooe.StartDate").lt(currentTime);
-        sql.append(  "AND ooe.StopDate").gt(currentTime);
-        sql.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT).append(")THEN").appendArgument_k(
-            AssetAvailabilityCombinedStatus.OPTED_OUT);
-        sql.append("WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
-        sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
-        sql.append("WHEN LastCommunication").gt(communicatingWindowEnd);
-        sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);
-        sql.append("ELSE").appendArgument_k(AssetAvailabilityCombinedStatus.UNAVAILABLE).append("END");
-        sql.append(getTable().getSql());
-        sql.append(")END");
-        sql.append(getTable().getSql());
-        sql.append(")  AS availability");
-        sql.append("FROM LMHardwareBase lmbase , ApplianceBase appbase,LMHardwareConfiguration hdconf,InventoryBase inv");
-        sql.append(  "LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
-        sql.append("WHERE inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID");
-        sql.append(  "AND hdconf.ApplianceID=appbase.ApplianceID");
-        sql.append(  "AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
-        sql.append("WHERE AddressingGroupID").in(loadGroupIds);
-        sql.append(")) innertable)outertable");
+        sqlPaginateQuery.append(" ");
+        sqlPaginateQuery.append(sortingDirection);
+        sqlPaginateQuery.append(")) AS RowNumber, Appliances,DeviceId,InventoryId,serial_num,Type,last_comm,last_run,"
+            + "Availability");
+        sqlCommon.append("FROM ");
+        sqlCommon.append("(SELECT DISTINCT ");
+        sqlCommon.append("(SELECT Description");
+        sqlCommon.append("FROM ApplianceCategory");
+        sqlCommon.append("WHERE ApplianceCategoryId=appbase.ApplianceCategoryID) AS appliances,");
+        sqlCommon.append("inv.DeviceId AS deviceid,lmbase.InventoryID AS inventoryid, lmbase.ManufacturerSerialNumber "
+            + "AS serial_num,");
+        sqlCommon.append("(SELECT YukonDefinitionId");
+        sqlCommon.append("FROM YukonListEntry");
+        sqlCommon.append("WHERE EntryID=lmbase.LMHardwareTypeID) AS type,");
+        sqlCommon.append("LastCommunication AS last_comm, LastNonZeroRuntime AS last_run,");
+        sqlCommon.append("(SELECT CASE WHEN inv.DeviceId=0 THEN").appendArgument_k(
+            AssetAvailabilityCombinedStatus.ACTIVE).append("ELSE");
+        sqlCommon.append("(SELECT CASE WHEN lmbase.InventoryId IN");
+        sqlCommon.append("(SELECT DISTINCT ib.InventoryId");
+        sqlCommon.append("FROM InventoryBase ib ");
+        sqlCommon.append("JOIN OptOutEvent ooe ON ooe.InventoryId = ib.InventoryId WHERE ooe.StartDate").lt(currentTime);
+        sqlCommon.append("AND ooe.StopDate").gt(currentTime);
+        sqlCommon.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT).append(")THEN").
+            appendArgument_k(AssetAvailabilityCombinedStatus.OPTED_OUT);
+        sqlCommon.append("WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
+        sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
+        sqlCommon.append("WHEN LastCommunication").gt(communicatingWindowEnd);
+        sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);
+        sqlCommon.append("ELSE").appendArgument_k(AssetAvailabilityCombinedStatus.UNAVAILABLE).append("END");
+        sqlCommon.append(getTable().getSql());
+        sqlCommon.append(")END");
+        sqlCommon.append(getTable().getSql());
+        sqlCommon.append(")  AS availability");
+        sqlCommon.append("FROM LMHardwareBase lmbase , ApplianceBase appbase,LMHardwareConfiguration hdconf,"
+            + "InventoryBase inv");
+        sqlCommon.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
+        sqlCommon.append("WHERE inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID");
+        sqlCommon.append("AND hdconf.ApplianceID=appbase.ApplianceID");
+        sqlCommon.append("AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
+        sqlCommon.append("WHERE AddressingGroupID").in(loadGroupIds);
+        sqlCommon.append(")) innertable ");
+        if (null != filterCriteria) {
+            sqlCommon.append(" WHERE Availability").in(Lists.newArrayList(filterCriteria));
+        }
+        sqlTotalCountQuery.append(sqlCommon);
+        sqlPaginateQuery.append(sqlCommon);
+        sqlPaginateQuery.append(")outertable");
         if (null != pagingParameters || null != filterCriteria) {
-            sql.append(" WHERE ");
+            sqlPaginateQuery.append(" WHERE ");
         }
         if (null != pagingParameters) {
-            sql.append(" RowNumber BETWEEN");
-            sql.append(pagingParameters.getOneBasedStartIndex());
-            sql.append(  " AND ");
-            sql.append(pagingParameters.getOneBasedEndIndex());
+            sqlPaginateQuery.append(" RowNumber BETWEEN");
+            sqlPaginateQuery.append(pagingParameters.getOneBasedStartIndex());
+            sqlPaginateQuery.append(" AND ");
+            sqlPaginateQuery.append(pagingParameters.getOneBasedEndIndex());
         }
-        if (null != pagingParameters && null != filterCriteria) {
-            sql.append(  " AND ");
-        }
-        if (null != filterCriteria) {
-            sql.append(" Availability").in(Lists.newArrayList(filterCriteria));
-        }
-
         final List<AssetAvailabilityDetails> resultList = new ArrayList<AssetAvailabilityDetails>();
 
-        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
-            @Override
-            public void processRow(YukonResultSet rs) throws SQLException {
-                AssetAvailabilityDetails assetAvailability = new AssetAvailabilityDetails();
-                assetAvailability.setAppliances(rs.getString("appliances"));
-                assetAvailability.setSerialNumber(rs.getString("serial_num"));
-                assetAvailability.setType(HardwareType.valueOf(rs.getInt("type")));
-                assetAvailability.setLastComm(rs.getInstant("last_comm"));
-                assetAvailability.setLastRun(rs.getInstant("last_run"));
-                assetAvailability.setAvailability(rs.getEnum("availability", AssetAvailabilityCombinedStatus.class));
-                resultList.add(assetAvailability);
-            }
-        });
-        return resultList;
-    }
+        int totalHitCount = yukonJdbcTemplate.queryForInt(sqlTotalCountQuery);
 
+        if (totalHitCount > 0) {
+            yukonJdbcTemplate.query(sqlPaginateQuery, new YukonRowCallbackHandler() {
+                @Override
+                public void processRow(YukonResultSet rs) throws SQLException {
+                    AssetAvailabilityDetails assetAvailability = new AssetAvailabilityDetails();
+                    assetAvailability.setAppliances(rs.getString("appliances"));
+                    assetAvailability.setSerialNumber(rs.getString("serial_num"));
+                    assetAvailability.setType(HardwareType.valueOf(rs.getInt("type")));
+                    assetAvailability.setLastComm(rs.getInstant("last_comm"));
+                    assetAvailability.setLastRun(rs.getInstant("last_run"));
+                    assetAvailability.setAvailability(rs.getEnum("availability", AssetAvailabilityCombinedStatus.class));
+                    resultList.add(assetAvailability);
+                }
+            });
+        }
+        SearchResults<AssetAvailabilityDetails> result =
+            SearchResults.pageBasedForSublist(resultList, pagingParameters, totalHitCount);
+        return result;
+
+    }
     @Override
     public AssetAvailabilitySummary getAssetAvailabilitySummary(Iterable<Integer> loadGroupIds,
             Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime) {

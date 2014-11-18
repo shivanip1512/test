@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.dr.assetavailability.service.AssetAvailabilityService;
 import com.google.common.collect.Sets;
 
@@ -26,8 +27,10 @@ public class AssetAvailabilityServiceTest {
         AssetAvailabilityCombinedStatus[] filters = { AssetAvailabilityCombinedStatus.ACTIVE };
         // 107 = area containing all inventory
         PaoIdentifier paoIdentifier = new PaoIdentifier(107, PaoType.LM_CONTROL_AREA);
-        List<AssetAvailabilityDetails> assetAvailabilityDetails =
-            assetAvailabilityService.getAssetAvailability(paoIdentifier, null, filters, null,null);
+        
+        SearchResults<AssetAvailabilityDetails> result = assetAvailabilityService.getAssetAvailability(paoIdentifier, 
+                null, filters, null,null);
+        List<AssetAvailabilityDetails> assetAvailabilityDetails = result.getResultList();
 
         testAssetAvailabilityDetails(assetAvailabilityDetails.get(0));
     }

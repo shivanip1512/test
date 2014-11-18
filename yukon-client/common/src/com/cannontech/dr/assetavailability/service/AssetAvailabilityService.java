@@ -9,6 +9,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
@@ -71,10 +72,10 @@ public interface AssetAvailabilityService {
      * @param filters - List of selected filters.
      * @param sortBy - sorting order.
      * @param userContext - used to get the user details
-     * @return List of AssetAvailabilityDetails.
+     * @return SearchResults of AssetAvailabilityDetails.
      */
-    public List<AssetAvailabilityDetails> getAssetAvailability(PaoIdentifier paoIdentifier, PagingParameters paging,
-            AssetAvailabilityCombinedStatus[] filters, SortingParameters sortBy, YukonUserContext userContext);
+    public SearchResults<AssetAvailabilityDetails> getAssetAvailability(PaoIdentifier paoIdentifier, PagingParameters 
+            paging, AssetAvailabilityCombinedStatus[] filters, SortingParameters sortBy, YukonUserContext userContext);
 
     /**
      * Returns every device in the specified load group, program, scenario or control area whose asset

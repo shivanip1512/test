@@ -11,6 +11,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
@@ -24,7 +25,7 @@ public class MockAssetAvailabilityDao implements AssetAvailabilityDao {
     private static final Logger log = YukonLogManager.getLogger(AssetAvailabilityDao.class);
 
     @Override
-    public List<AssetAvailabilityDetails> getAssetAvailabilityDetails(Iterable<Integer> loadGroupIds,
+    public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(Iterable<Integer> loadGroupIds,
             PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filterCriteria,
             SortingParameters sortingParameters, Instant communicatingWindowEnd, Instant runtimeWindowEnd,
             Instant currentTime, YukonUserContext userContext) {
@@ -36,7 +37,9 @@ public class MockAssetAvailabilityDao implements AssetAvailabilityDao {
         assetAvailability.setType(HardwareType.LCR_4000);
         assetAvailability.setAvailability(AssetAvailabilityCombinedStatus.ACTIVE);
         resultList.add(assetAvailability);
-        return resultList;
+        SearchResults<AssetAvailabilityDetails> result = SearchResults.pageBasedForSublist(resultList, 1, 10, 20);
+        
+        return result;
     }
 
     @Override

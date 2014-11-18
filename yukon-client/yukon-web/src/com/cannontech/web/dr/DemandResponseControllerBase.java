@@ -20,6 +20,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.DisplayablePao;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -107,17 +108,17 @@ public abstract class DemandResponseControllerBase {
         return assetTotal;
     }
 
-    protected List<AssetAvailabilityDetails> getResultsList(DisplayablePao dispPao, YukonUserContext userContext,
-            AssetAvailabilityCombinedStatus[] filters, PagingParameters paging, SortingParameters sortBy) {
+    protected SearchResults<AssetAvailabilityDetails> getResultsList(DisplayablePao dispPao, YukonUserContext userContext,
+        AssetAvailabilityCombinedStatus[] filters, PagingParameters paging, SortingParameters sortBy) {
 
-        paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), dispPao, Permission.LM_VISIBLE);
-        log.debug("Getting asset availability for " + dispPao.getPaoIdentifier());
-        List<AssetAvailabilityDetails> resultList =
-            assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier(), paging, filters, sortBy,
-                userContext);
+    paoAuthorizationService.verifyAllPermissions(userContext.getYukonUser(), dispPao, Permission.LM_VISIBLE);
+    log.debug("Getting asset availability for " + dispPao.getPaoIdentifier());
+    SearchResults<AssetAvailabilityDetails> resultList =
+        assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier(), paging, filters, sortBy,
+            userContext);
 
-        return resultList;
-    }
+    return resultList;
+}
 
     /*
      * Used as part of the downloadToCsv feature in the controllers.
@@ -150,9 +151,11 @@ public abstract class DemandResponseControllerBase {
 
         MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(userContext);
         
-        List<AssetAvailabilityDetails> resultList =
-            assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier(), null, filters, null,userContext);
+        SearchResults<AssetAvailabilityDetails> results = 
+                assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier(), null, filters, null, 
+                    userContext);
 
+        List<AssetAvailabilityDetails> resultList = results.getResultList();
         List<String[]> dataRows = Lists.newArrayList();
         for (AssetAvailabilityDetails details : resultList) {
             String[] dataRow = new String[6];

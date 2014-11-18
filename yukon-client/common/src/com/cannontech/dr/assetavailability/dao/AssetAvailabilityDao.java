@@ -6,6 +6,7 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
@@ -26,9 +27,9 @@ public interface AssetAvailabilityDao {
      * @param runtimeWindowEnd -- runtime window end time
      * @param currentTime -- current Time.
      * @param userContext - user context used to extract the user details.
-     * @return List of AssetAvailabilityDetails which have the details of assets.
+     * @return SearchResults of AssetAvailabilityDetails which have the details of assets.
      */
-    List<AssetAvailabilityDetails> getAssetAvailabilityDetails(Iterable<Integer> loadGroupIds,
+    SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(Iterable<Integer> loadGroupIds,
             PagingParameters pagingParameters, AssetAvailabilityCombinedStatus[] filters,
             SortingParameters sortingParameters, Instant communicatingWindowEnd, Instant runtimeWindowEnd,
             Instant currentTime, YukonUserContext userContext);

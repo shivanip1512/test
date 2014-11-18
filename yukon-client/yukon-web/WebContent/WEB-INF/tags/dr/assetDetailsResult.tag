@@ -2,7 +2,6 @@
 
 <%@ attribute name="result" required="true" type="com.cannontech.common.search.result.SearchResults" %>
 <%@ attribute name="assetId" required="true" %>
-<%@ attribute name="assetTotal" required="false" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -10,9 +9,10 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+
 <cti:url var="baseUrl" value="page">
     <cti:param name="assetId" value="${assetId}"/>
-    <cti:param name="assetTotal" value="${assetTotal}"/>
+    <cti:param name="filter[]" value="${filter}"/>
 </cti:url>
 <cti:msgScope paths="modules.operator.hardware.assetAvailability">
 

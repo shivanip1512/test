@@ -304,20 +304,18 @@ public class ControlAreaController extends DemandResponseControllerBase {
 
         rolePropertyDao.verifyProperty(YukonRoleProperty.SHOW_ASSET_AVAILABILITY, userContext.getYukonUser());
         DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
-        List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, null, paging, sorting);
+        SearchResults<AssetAvailabilityDetails> result = getResultsList(controlArea, userContext, null, paging, sorting);
 
-        int assetTotal = getAssetAvailabilityInfo(controlArea, model, userContext);
-
-        SearchResults<AssetAvailabilityDetails> result =
-            SearchResults.pageBasedForSublist(resultsList, paging, assetTotal);
+        getAssetAvailabilityInfo(controlArea, model, userContext);
 
         model.addAttribute("assetId", assetId);
         model.addAttribute("controlAreaId", assetId);
         model.addAttribute("controlArea", controlArea);
         model.addAttribute("type", "controlArea");
         model.addAttribute("result", result);
-        model.addAttribute("assetTotal", assetTotal);
-
+        model.addAttribute("filter",
+            AssetAvailabilityCombinedStatus.getStringValues(AssetAvailabilityCombinedStatus.values()));
+        
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         addAssetColumns(model, accessor, sorting);
 
@@ -328,21 +326,16 @@ public class ControlAreaController extends DemandResponseControllerBase {
     public String page(ModelMap model, YukonUserContext userContext, int assetId,
             @DefaultItemsPerPage(25) PagingParameters paging,
             @DefaultSort(dir = Direction.asc, sort = "SERIAL_NUM") SortingParameters sorting,
-            @RequestParam(value = "filter[]", required = false) AssetAvailabilityCombinedStatus[] filters,
-            @RequestParam(value = "assetTotal", required = false) String assetTotal) {
+            @RequestParam(value = "filter[]", required = false) AssetAvailabilityCombinedStatus[] filters) {
 
         DisplayablePao controlArea = controlAreaService.getControlArea(assetId);
-        List<AssetAvailabilityDetails> resultsList = getResultsList(controlArea, userContext, filters, paging, sorting);
-
-        SearchResults<AssetAvailabilityDetails> result =
-            SearchResults.pageBasedForSublist(resultsList, paging, Integer.valueOf(assetTotal));
+        SearchResults<AssetAvailabilityDetails> result = getResultsList(controlArea, userContext, filters, paging, sorting);
 
         model.addAttribute("result", result);
         model.addAttribute("type", "controlArea");
         model.addAttribute("assetId", assetId);
         model.addAttribute("colorMap", colorMap);
-        model.addAttribute("assetTotal", assetTotal);
-
+        model.addAttribute("filter", AssetAvailabilityCombinedStatus.getStringValues(filters));
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
         addAssetColumns(model, accessor, sorting);
 
