@@ -73,7 +73,9 @@ public class SearchResults<T> {
                                                            int numberOfResults) {
         SearchResults<T> result = new SearchResults<>();
         result.setResultList(sublist);
-        result.setBounds(pagingParameters.getStartIndex(), pagingParameters.getItemsPerPage(), numberOfResults);
+        if (pagingParameters != null) {
+            result.setBounds(pagingParameters.getStartIndex(), pagingParameters.getItemsPerPage(), numberOfResults);
+        }
         return result;
     }
 
