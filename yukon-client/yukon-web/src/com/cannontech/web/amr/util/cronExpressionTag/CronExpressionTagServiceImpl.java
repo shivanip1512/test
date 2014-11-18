@@ -48,7 +48,15 @@ public class CronExpressionTagServiceImpl implements CronExpressionTagService {
         CronTagStyleHandler handler = handlerMap.get(type);
         String expression = handler.build(id, request, userContext);
         validateExpression(expression);
-        
+        // If the Cron Style is custom .User cannot add a ONE time expression in Cron expression
+        if (CronTagStyleType.CUSTOM == type) {
+            // parts
+            String[] parts = getParts(expression);
+            CronTagStyleHandler oneTimeHandler = handlerMap.get(CronTagStyleType.ONETIME);
+            if (oneTimeHandler.canParse(parts)) {
+                throw new CronException(CronExceptionType.REQUEST_BINDING);
+            }
+        }
         return expression;
     }
     
