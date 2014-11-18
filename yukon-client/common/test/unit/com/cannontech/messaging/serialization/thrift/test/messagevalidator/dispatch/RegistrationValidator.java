@@ -17,7 +17,6 @@ public class RegistrationValidator extends AutoInitializedClassValidator<Registr
         ctrlObj.setAppName(generator.generateString());
         generator.generateInt(); // for cpp _appId field
         ctrlObj.setAppIsUnique(ConverterHelper.boolToInt(generator.generateBoolean()));
-        ctrlObj.setAppKnownPort(generator.generateInt());
         ctrlObj.setAppExpirationDelay( generator.generateInt());
         ignoreField("regID");
     }
