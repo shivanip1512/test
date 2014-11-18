@@ -150,7 +150,7 @@ public class ProgramController extends ProgramControllerBase {
 
         SearchResults<AssetAvailabilityDetails> result = getResultsList(program, userContext, null, paging, sorting);
 
-        int assetTotal = getAssetAvailabilityInfo(program, model, userContext);
+        getAssetAvailabilityInfo(program, model, userContext);
 
         model.addAttribute("assetId", assetId);
         model.addAttribute("programId", assetId);
