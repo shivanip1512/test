@@ -124,7 +124,8 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append("AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
         sqlCommon.append("WHERE AddressingGroupID").in(loadGroupIds);
         sqlCommon.append(")) innertable ");
-        if (null != filterCriteria) {
+        
+        if (filterCriteria != null && filterCriteria.length != 0) {
             sqlCommon.append(" WHERE Availability").in(Lists.newArrayList(filterCriteria));
         }
         sqlTotalCountQuery.append(sqlCommon);
