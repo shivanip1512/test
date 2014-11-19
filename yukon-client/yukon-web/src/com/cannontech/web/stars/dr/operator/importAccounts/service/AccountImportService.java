@@ -76,7 +76,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.stars.dr.operator.AccountImportFields;
 import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -106,9 +105,7 @@ public class AccountImportService {
     private PrintWriter importLog;
     private Executor executor;
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    // Set containing all zigbee end point types that is used to validate device types
-    private ImmutableSet<HardwareType> zigbeeEndPointTypes = HardwareType.getZigbeeEndpointTypes();
-
+    
     public void startAccountImport(final AccountImportResult result, final YukonUserContext context) {
         executor.execute(new Runnable() {
             @Override
@@ -569,7 +566,7 @@ public class AccountImportService {
                         }
 
 
-                        if(isZigbeeEndPointDevice(deviceType, result, lineNoKey, hwFields)) {
+                        if(isZigbeeDevice(deviceType, result, lineNoKey, hwFields)) {
                             continue;
                         }
 
@@ -805,7 +802,7 @@ public class AccountImportService {
                         continue;
                     }
 
-                    if(isZigbeeEndPointDevice(deviceType, result, lineNoKey, hwFields)) {
+                    if(isZigbeeDevice(deviceType, result, lineNoKey, hwFields)) {
                         continue;
                     }
 
@@ -1143,24 +1140,37 @@ public class AccountImportService {
         return liteAcctInfo;
     }
 
-    // Private method to identify whether given YukonListEntry is a Zigbee End Point type or not
-    private boolean isZigbeeEndPointDevice(YukonListEntry deviceType, AccountImportResult result, Integer lineNoKey,
+    
+    /**
+     * Private method to identify whether given YukonListEntry is a Zigbee device type or not
+     * 
+     * @param deviceType - The deviceType value from hardware import sheet
+     * @param result - Account Import Result for the current import operation
+     * @param lineNoKey - Key or index of line number in the import sheet
+     * @param hwFields - The string array holding the hardware sheet details
+     * @return - boolean true if the device type corresponds to zibgee device
+     */
+    private boolean isZigbeeDevice(YukonListEntry deviceType, AccountImportResult result, Integer lineNoKey,
             String[] hwFields) {
 
-        for (HardwareType hardwareType : zigbeeEndPointTypes) {
-            if (hardwareType.name().equalsIgnoreCase(deviceType.getEntryText())) {
+        boolean isZigbee = false;
+        try {
+            if (HardwareType.valueOf(deviceType.getYukonDefID()).isZigbee()) {
                 result.custFileErrors++;
                 String[] value = result.getCustLines().get(lineNoKey);
                 value[1] =
-                        "[line: " + lineNoKey.intValue() + " error: Cannot import Zigbee End Point device type \""
-                                + hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
+                    "[line: " + lineNoKey.intValue() + " error: Cannot import Zigbee device type \""
+                        + hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
                 result.getCustLines().put(lineNoKey, value);
                 addToLog(lineNoKey, value, importLog);
-                return true;
+                isZigbee = true;
             }
+        } catch (IllegalArgumentException exception) {
+            log.debug("Hardware Device type is not valid", exception);
         }
-        return false;
+        return isZigbee;
     }
+    
 
     private void setCustomerFields(String[] fields, String[] columns, int[] colIdx, AccountImportResult result) {
         
