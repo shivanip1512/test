@@ -61,7 +61,7 @@ enum DnpApplicationFunctionCodes
 const std::string DNPInMessageString  = "DNP InMessage";
 const std::string DNPOutMessageString = "DNP OutMessage";
 
-using Protocols::DNPSlaveInterface;
+using Protocols::DnpSlaveProtocol;
 using namespace Protocols::DNP;
 
 // Constructors, Destructor, and Operators
@@ -429,7 +429,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
             if (!findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
                 continue;
 
-            DNPSlaveInterface::input_point iPoint;
+            DnpSlaveProtocol::input_point iPoint;
 
             iPoint.online = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp());
             iPoint.control_offset = dnpId.Offset;
@@ -439,17 +439,17 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
             if (dnpId.PointType == StatusPointType )
             {
                 iPoint.din.trip_close = (fdrPoint->getValue() == 0)?(BinaryOutputControl::Trip):(BinaryOutputControl::Close);
-                iPoint.type = DNPSlaveInterface::DigitalInput;
+                iPoint.type = DnpSlaveProtocol::DigitalInput;
             }
             else if (dnpId.PointType == AnalogPointType )
             {
                 iPoint.ain.value =  (fdrPoint->getValue() * dnpId.Multiplier);
-                iPoint.type = DNPSlaveInterface::AnalogInputType;
+                iPoint.type = DnpSlaveProtocol::AnalogInputType;
             }
             else if (dnpId.PointType == PulseAccumulatorPointType )
             {
                 iPoint.counterin.value =  (fdrPoint->getValue() * dnpId.Multiplier);
-                iPoint.type = DNPSlaveInterface::Counters;
+                iPoint.type = DnpSlaveProtocol::Counters;
             }
             else
             {
@@ -461,8 +461,8 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
     }
 
     _dnpSlave.setAddresses(src.sh, dest.sh);
-    _dnpSlave.setSlaveCommand(DNPSlaveInterface::Command_Class1230Read);
-    _dnpSlave.setOptions(DNPSlaveInterface::Options_SlaveResponse, seqnumber);
+    _dnpSlave.setSlaveCommand(DnpSlaveProtocol::Command_Class1230Read);
+    _dnpSlave.setOptions(DnpSlaveProtocol::Options_SlaveResponse, seqnumber);
 
      while( !_dnpSlave.isTransactionComplete() )
      {

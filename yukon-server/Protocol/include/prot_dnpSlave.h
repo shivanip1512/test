@@ -5,17 +5,17 @@
 namespace Cti {
 namespace Protocols {
 
-class IM_EX_PROT DNPSlaveInterface : public DNPInterface
+class IM_EX_PROT DnpSlaveProtocol : public DnpProtocol
 {
     struct input_point;
 
-    typedef DNPInterface Inherited;
+    typedef DnpProtocol Inherited;
     std::vector<input_point> _input_point_list;
     void addObjectBlock(DNP::ObjectBlock *objBlock);
 
 public:
 
-    DNPSlaveInterface();
+    DnpSlaveProtocol();
 
     bool setSlaveCommand( Command command );
     void setOptions( int options, int seqNumber=0 );

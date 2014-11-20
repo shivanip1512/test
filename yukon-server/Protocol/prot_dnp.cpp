@@ -30,20 +30,20 @@ using boost::scoped_ptr;
 
 using namespace DNP;
 
-DNPInterface::DNPInterface() :
+DnpProtocol::DnpProtocol() :
     _command(Command_Invalid),
     _last_complaint(0)
 {
     setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
 }
 
-DNPInterface::~DNPInterface()
+DnpProtocol::~DnpProtocol()
 {
     delete_container(_string_results);
     delete_container(_point_results);
 }
 
-void DNPInterface::setAddresses( unsigned short slaveAddress, unsigned short masterAddress )
+void DnpProtocol::setAddresses( unsigned short slaveAddress, unsigned short masterAddress )
 {
     _masterAddress = masterAddress;
     _slaveAddress  = slaveAddress;
@@ -52,7 +52,7 @@ void DNPInterface::setAddresses( unsigned short slaveAddress, unsigned short mas
 }
 
 
-void DNPInterface::setOptions( int options )
+void DnpProtocol::setOptions( int options )
 {
     _options = options;
 
@@ -60,7 +60,7 @@ void DNPInterface::setOptions( int options )
 }
 
 
-bool DNPInterface::setCommand( Command command )
+bool DnpProtocol::setCommand( Command command )
 {
     _command = command;
 
@@ -75,7 +75,7 @@ bool DNPInterface::setCommand( Command command )
 }
 
 
-bool DNPInterface::setCommand( Command command, output_point &point )
+bool DnpProtocol::setCommand( Command command, output_point &point )
 {
     _command_parameters.clear();
 
@@ -84,7 +84,7 @@ bool DNPInterface::setCommand( Command command, output_point &point )
     return setCommand(command);
 }
 
-void DNPInterface::setConfigData( unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs,
+void DnpProtocol::setConfigData( unsigned internalRetries, bool useLocalTime, bool enableDnpTimesyncs,
                                   bool omitTimeRequest, bool enableUnsolicitedClass1,
                                   bool enableUnsolicitedClass2, bool enableUnsolicitedClass3 )
 {
@@ -101,7 +101,7 @@ void DNPInterface::setConfigData( unsigned internalRetries, bool useLocalTime, b
     _app_layer.setConfigData(_config.get());
 }
 
-YukonError_t DNPInterface::generate( CtiXfer &xfer )
+YukonError_t DnpProtocol::generate( CtiXfer &xfer )
 {
     if( _app_layer.isTransactionComplete() )
     {
@@ -361,7 +361,7 @@ YukonError_t DNPInterface::generate( CtiXfer &xfer )
 }
 
 
-YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
+YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 {
     YukonError_t retVal;
     bool final = true;
@@ -744,7 +744,7 @@ YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
 }
 
 
-void DNPInterface::recordPoints( int group, const pointlist_t &points )
+void DnpProtocol::recordPoints( int group, const pointlist_t &points )
 {
     pointtype_values *target = 0;
 
@@ -780,7 +780,7 @@ void DNPInterface::recordPoints( int group, const pointlist_t &points )
 }
 
 
-string DNPInterface::pointSummary(unsigned points)
+string DnpProtocol::pointSummary(unsigned points)
 {
     string report;
 
@@ -817,7 +817,7 @@ string DNPInterface::pointSummary(unsigned points)
 }
 
 
-string DNPInterface::pointDataReport(const std::map<unsigned, double> &pointdata, unsigned points)
+string DnpProtocol::pointDataReport(const std::map<unsigned, double> &pointdata, unsigned points)
 {
     string report, item;
 
@@ -882,7 +882,7 @@ string DNPInterface::pointDataReport(const std::map<unsigned, double> &pointdata
 }
 
 
-void DNPInterface::getInboundPoints( pointlist_t &points )
+void DnpProtocol::getInboundPoints( pointlist_t &points )
 {
     points.insert(points.end(), _point_results.begin(), _point_results.end());
 
@@ -890,7 +890,7 @@ void DNPInterface::getInboundPoints( pointlist_t &points )
 }
 
 
-void DNPInterface::getInboundStrings( stringlist_t &strings )
+void DnpProtocol::getInboundStrings( stringlist_t &strings )
 {
     strings.insert(strings.end(), _string_results.begin(), _string_results.end());
 
@@ -898,7 +898,7 @@ void DNPInterface::getInboundStrings( stringlist_t &strings )
 }
 
 
-bool DNPInterface::isTransactionComplete( void ) const
+bool DnpProtocol::isTransactionComplete( void ) const
 {
     //  ACH: factor in application layer retries... ?
 
@@ -924,7 +924,7 @@ const std::map<int, const char *> ControlResultStrings = boost::assign::map_list
         (BinaryOutputControl::Status_Undefined,         "Request not accepted because of some other undefined reason.")
         ;
 
-const char *DNPInterface::getControlResultString( int result_status ) const
+const char *DnpProtocol::getControlResultString( int result_status ) const
 {
     const boost::optional<const char *> controlResultString = mapFind(ControlResultStrings, result_status);
 
@@ -937,23 +937,23 @@ const char *DNPInterface::getControlResultString( int result_status ) const
 }
 
 
-DNP::ApplicationLayer& DNPInterface::getApplicationLayer()
+DNP::ApplicationLayer& DnpProtocol::getApplicationLayer()
 {
     return _app_layer;
 }
 
-DNPInterface::Command DNPInterface::getCommand()
+DnpProtocol::Command DnpProtocol::getCommand()
 {
     return _command;
 }
 
-void DNPInterface::addStringResults(string *s)
+void DnpProtocol::addStringResults(string *s)
 {
     _string_results.push_back(s);
     return;
 }
 
-unsigned DNPInterface::convertLocalSecondsToUtcSeconds( const unsigned seconds )
+unsigned DnpProtocol::convertLocalSecondsToUtcSeconds( const unsigned seconds )
 {
     _TIME_ZONE_INFORMATION tzinfo;
 
@@ -970,7 +970,7 @@ unsigned DNPInterface::convertLocalSecondsToUtcSeconds( const unsigned seconds )
     }
 }
 
-unsigned DNPInterface::convertUtcSecondsToLocalSeconds( const unsigned seconds )
+unsigned DnpProtocol::convertUtcSecondsToLocalSeconds( const unsigned seconds )
 {
     _TIME_ZONE_INFORMATION tzinfo;
 

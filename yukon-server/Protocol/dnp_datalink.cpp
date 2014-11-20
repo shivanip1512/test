@@ -68,11 +68,11 @@ void DatalinkLayer::setAddresses( unsigned short dst, unsigned short src)
 
 void DatalinkLayer::setOptions(int options)
 {
-    if( options & DNPInterface::Options_DatalinkConfirm )
+    if( options & DnpProtocol::Options_DatalinkConfirm )
     {
         _dl_confirm = true;
     }
-    if( options & DNPInterface::Options_SlaveResponse )
+    if( options & DnpProtocol::Options_SlaveResponse )
     {
         _slave_response = true;
     }

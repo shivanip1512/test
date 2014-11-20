@@ -13,13 +13,13 @@ BOOST_AUTO_TEST_SUITE( test_prot_dnp )
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 {
-    DNPInterface dnp;
+    DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(4, 3);
     dnp.setName("Test DNP device");
-    dnp.setCommand(DNPInterface::Command_Loopback);
+    dnp.setCommand(DnpProtocol::Command_Loopback);
 
     CtiXfer xfer;
 
@@ -225,13 +225,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 {
-    DNPInterface dnp;
+    DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(DNPInterface::Command_Class1230Read_WithTime);
+    dnp.setCommand(DnpProtocol::Command_Class1230Read_WithTime);
 
     CtiXfer xfer;
 
@@ -386,13 +386,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
 {
-    DNPInterface dnp;
+    DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(DNPInterface::Command_Class1230Read_WithTime);
+    dnp.setCommand(DnpProtocol::Command_Class1230Read_WithTime);
 
     CtiXfer xfer;
 
@@ -547,13 +547,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
 {
-    DNPInterface dnp;
+    DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(DNPInterface::Command_Class1230Read_WithTime);
+    dnp.setCommand(DnpProtocol::Command_Class1230Read_WithTime);
 
     CtiXfer xfer;
 
@@ -736,13 +736,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolicited)
 {
-    DNPInterface dnp;
+    DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(DNPInterface::Command_Class1230Read_WithTime);
+    dnp.setCommand(DnpProtocol::Command_Class1230Read_WithTime);
 
     CtiXfer xfer;
 
@@ -1035,13 +1035,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
 {
-    DNPInterface dnp;
+    DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(DNPInterface::Command_Class1230Read);
+    dnp.setCommand(DnpProtocol::Command_Class1230Read);
 
     CtiXfer xfer;
 
@@ -1195,13 +1195,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
 {
-    DNPInterface dnp;
+    DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(DNPInterface::Command_Class1230Read);
+    dnp.setCommand(DnpProtocol::Command_Class1230Read);
 
     CtiXfer xfer;
 
@@ -1355,13 +1355,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
 {
-    DNPInterface dnp;
+    DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(DNPInterface::Command_Class1230Read);
+    dnp.setCommand(DnpProtocol::Command_Class1230Read);
 
     CtiXfer xfer;
 
@@ -1543,13 +1543,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
 {
-    DNPInterface dnp;
+    DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(DNPInterface::Command_Class1230Read);
+    dnp.setCommand(DnpProtocol::Command_Class1230Read);
 
     CtiXfer xfer;
 
@@ -1841,13 +1841,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
 {
-    DNPInterface dnp;
+    DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(1234, 1);
     dnp.setName("Test DNP device");
-    dnp.setCommand(DNPInterface::Command_UnsolicitedInbound);
+    dnp.setCommand(DnpProtocol::Command_UnsolicitedInbound);
 
     CtiXfer xfer;
 
@@ -1984,9 +1984,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
     }
 }
 
-struct test_DNPInterface : public DNPInterface
+struct test_DNPInterface : public DnpProtocol
 {
-    using DNPInterface::getCommand;
+    using DnpProtocol::getCommand;
 };
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
@@ -1997,7 +1997,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
 
     dnp.setAddresses(4, 3);
     dnp.setName("Test DNP device");
-    dnp.setCommand(DNPInterface::Command_Loopback);
+    dnp.setCommand(DnpProtocol::Command_Loopback);
 
     CtiXfer xfer;
 
@@ -2157,7 +2157,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
     }
 
     {
-        BOOST_CHECK_EQUAL(DNPInterface::Command_WriteTime, dnp.getCommand());
+        BOOST_CHECK_EQUAL(DnpProtocol::Command_WriteTime, dnp.getCommand());
 
         // Override the current time to Tue, 27 May 2014 16:22:59 GMT
         Cti::Test::Override_CtiTime_Now override_ctiTime_now(1401207779);
@@ -2304,14 +2304,14 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
 {
-    DNPInterface dnp;
+    DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(502, 1000);
     dnp.setName("Test DNP device");
 
-    DNPInterface::output_point op;
+    DnpProtocol::output_point op;
 
     op.dout.control    = DNP::BinaryOutputControl::PulseOn;
     op.dout.trip_close = DNP::BinaryOutputControl::Close;
@@ -2322,10 +2322,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
     op.dout.count = 1;
 
     op.control_offset = 1;
-    op.type = DNPInterface::DigitalOutputPointType;
+    op.type = DnpProtocol::DigitalOutputPointType;
     op.expiration = ~0;
 
-    dnp.setCommand(DNPInterface::Command_SetDigitalOut_Direct, op);
+    dnp.setCommand(DnpProtocol::Command_SetDigitalOut_Direct, op);
 
     CtiXfer xfer;
 
@@ -2418,14 +2418,14 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
 {
-    DNPInterface dnp;
+    DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
     dnp.setAddresses(502, 1000);
     dnp.setName("Test DNP device");
 
-    DNPInterface::output_point op;
+    DnpProtocol::output_point op;
 
     op.dout.control    = DNP::BinaryOutputControl::PulseOn;
     op.dout.trip_close = DNP::BinaryOutputControl::Close;
@@ -2436,10 +2436,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
     op.dout.count = 1;
 
     op.control_offset = 1;
-    op.type = DNPInterface::DigitalOutputPointType;
+    op.type = DnpProtocol::DigitalOutputPointType;
     op.expiration = ~0;
 
-    dnp.setCommand(DNPInterface::Command_SetDigitalOut_Direct, op);
+    dnp.setCommand(DnpProtocol::Command_SetDigitalOut_Direct, op);
 
     CtiXfer xfer;
 

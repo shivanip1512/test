@@ -11,13 +11,13 @@ namespace Protocols {
 
 using namespace DNP;
 
-DNPSlaveInterface::DNPSlaveInterface()
+DnpSlaveProtocol::DnpSlaveProtocol()
 {
    getApplicationLayer().completeSlave();
-   setOptions(DNPSlaveInterface::Options_SlaveResponse);
+   setOptions(DnpSlaveProtocol::Options_SlaveResponse);
 }
 
-YukonError_t DNPSlaveInterface::slaveDecode( CtiXfer &xfer )
+YukonError_t DnpSlaveProtocol::slaveDecode( CtiXfer &xfer )
 {
     if( xfer.getOutBuffer()[10] & 0x80 )
     {
@@ -28,7 +28,7 @@ YukonError_t DNPSlaveInterface::slaveDecode( CtiXfer &xfer )
     return getApplicationLayer().decode(xfer, ClientErrors::None);
 }
 
-int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
+int DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
 {
     if( getApplicationLayer().isTransactionComplete() )
     {
@@ -149,7 +149,7 @@ int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
     return retVal;
 }
 
-void DNPSlaveInterface::slaveTransactionComplete()
+void DnpSlaveProtocol::slaveTransactionComplete()
 {
     if( getApplicationLayer().errorCondition() )
     {
@@ -160,13 +160,13 @@ void DNPSlaveInterface::slaveTransactionComplete()
     return;
 }
 
-void DNPSlaveInterface::addInputPoint(const input_point &ip)
+void DnpSlaveProtocol::addInputPoint(const input_point &ip)
 {
     _input_point_list.push_back(ip);
     return;
 }
 
-bool DNPSlaveInterface::setSlaveCommand( Command command )
+bool DnpSlaveProtocol::setSlaveCommand( Command command )
 {
     setCommand(command);
 
@@ -178,7 +178,7 @@ bool DNPSlaveInterface::setSlaveCommand( Command command )
     return getCommand() != Command_Invalid;
 }
 
-void DNPSlaveInterface::addObjectBlock(ObjectBlock *objBlock)
+void DnpSlaveProtocol::addObjectBlock(ObjectBlock *objBlock)
 {
     if( !objBlock->empty() )
     {
@@ -190,7 +190,7 @@ void DNPSlaveInterface::addObjectBlock(ObjectBlock *objBlock)
     }
 }
 
-void DNPSlaveInterface::setOptions( int options, int seqNumber )
+void DnpSlaveProtocol::setOptions( int options, int seqNumber )
 {
     Inherited::setOptions(options);
     getApplicationLayer().setSequenceNumber(seqNumber);

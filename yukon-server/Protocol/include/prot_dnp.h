@@ -18,15 +18,15 @@
 namespace Cti {
 namespace Protocols {
 
-class IM_EX_PROT DNPInterface : public Interface
+class IM_EX_PROT DnpProtocol : public Interface
 {
 private:
     // WORKAROUND:
     // Declare copy ctor and assignment operator private with no implementation
     // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
     // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    DNPInterface(const DNPInterface&);
-    DNPInterface& operator=(const DNPInterface&);
+    DnpProtocol(const DnpProtocol&);
+    DnpProtocol& operator=(const DnpProtocol&);
 
     enum   Command;
     struct output_point;
@@ -87,8 +87,8 @@ protected:
 
 public:
 
-    DNPInterface();
-    virtual ~DNPInterface();
+    DnpProtocol();
+    virtual ~DnpProtocol();
 
     void setAddresses( unsigned short slaveAddress, unsigned short masterAddress );
     void setOptions( int options );
