@@ -1,9 +1,7 @@
-package util;
-
+package com.cannontech.web.amr.util.cronExpressionTag.handler;
+        
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.cannontech.web.amr.util.cronExpressionTag.handler.OneTimeCronTagStyleHandler;
 
 public class OneTimeCronTagStyleHandlerTest {
     private OneTimeCronTagStyleHandler handler = new OneTimeCronTagStyleHandler();
