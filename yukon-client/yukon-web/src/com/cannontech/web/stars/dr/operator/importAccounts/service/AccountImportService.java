@@ -1166,7 +1166,7 @@ public class AccountImportService {
                 isZigbee = true;
             }
         } catch (IllegalArgumentException exception) {
-            log.debug("Hardware Device type is not valid", exception);
+            log.warn("Hardware Device type is not valid", exception);
         }
         return isZigbee;
     }
