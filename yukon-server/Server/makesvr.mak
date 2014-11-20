@@ -127,7 +127,7 @@ con_mgr.obj:	precompiled.h dlldefs.h collectable.h con_mgr.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
 		msg_server_resp.h msg_cmd.h
 ctique.obj:	precompiled.h
-dlldbmemmgr.obj:	precompiled.h dlldefs.h module_util.h
+dlldbmemmgr.obj:	precompiled.h dlldefs.h module_util.h ctitime.h
 executor.obj:	precompiled.h executor.h message.h ctitime.h dlldefs.h \
 		ctidbgmem.h collectable.h loggable.h yukon.h types.h \
 		con_mgr.h connection_server.h connection.h msg_multi.h \

@@ -333,7 +333,7 @@ lmcontrolareastore.obj:	precompiled.h mgr_holiday.h ctidate.h \
 		lmgrouppoint.h lmgroupsa105.h lmgroupsa205.h lmgroupsa305.h \
 		lmgroupsadigital.h lmgroupgolay.h lmprogramcontrolwindow.h \
 		sepcyclegear.h smartgearbase.h septempoffsetgear.h \
-		ecobeeCycleGear.h resolvers.h db_entry_defines.h desolvers.h \
+		ecobeeCycleGear.h resolvers.h db_entry_defines.h \
 		devicetypes.h database_util.h database_writer.h row_writer.h \
 		ctibase.h streamSocketConnection.h socket_helper.h \
 		win_helper.h msg_dbchg.h loadmanager.h connection_client.h \
@@ -900,16 +900,16 @@ lmprogramdirect.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
 		configval.h readers_writer_lock.h connection_base.h \
 		worker_thread.h tbl_lmprogramhistory.h lmgrouppoint.h \
-		devicetypes.h lmid.h desolvers.h loadmanager.h \
-		connection_client.h lmcontrolareastore.h executor.h \
-		msg_server_req.h lmmessage.h ConstraintViolation.h \
-		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
-		ctibase.h streamSocketConnection.h socket_helper.h \
-		win_helper.h msg_signal.h msg_notif_lmcontrol.h \
-		lmprogramthermostatgear.h lmprogramcontrolwindow.h \
-		lmconstraint.h lmutility.h database_writer.h row_writer.h \
-		database_util.h smartgearbase.h lmgroupdigisep.h \
-		GroupControlInterface.h SepControlInterface.h
+		devicetypes.h lmid.h loadmanager.h connection_client.h \
+		lmcontrolareastore.h executor.h msg_server_req.h lmmessage.h \
+		ConstraintViolation.h lmprogramcurtailment.h \
+		lmcurtailcustomer.h lmcicustomerbase.h ctibase.h \
+		streamSocketConnection.h socket_helper.h win_helper.h \
+		msg_signal.h msg_notif_lmcontrol.h lmprogramthermostatgear.h \
+		lmprogramcontrolwindow.h lmconstraint.h lmutility.h \
+		database_writer.h row_writer.h database_util.h \
+		smartgearbase.h lmgroupdigisep.h GroupControlInterface.h \
+		SepControlInterface.h
 lmprogramdirectgear.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -1145,7 +1145,7 @@ loadmanager.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		ctibase.h streamSocketConnection.h socket_helper.h \
 		win_helper.h resolvers.h db_entry_defines.h devicetypes.h \
 		clistener.h connection_server.h connection_listener.h \
-		debug_timer.h amq_constants.h
+		debug_timer.h module_util.h amq_constants.h
 main.obj:	precompiled.h lmcontrolareastore.h lmcontrolarea.h \
 		dbmemobject.h connection.h dlldefs.h message.h ctitime.h \
 		ctidbgmem.h collectable.h loggable.h msg_multi.h msg_pdata.h \

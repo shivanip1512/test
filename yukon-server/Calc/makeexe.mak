@@ -202,7 +202,7 @@ calc.obj:	precompiled.h calc.h ctiqueues.h calccomponent.h ctitime.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		pointdefs.h regression.h tbl_pt_limit.h dbmemobject.h \
 		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h row_reader.h
+		row_reader.h
 calccomponent.obj:	precompiled.h calccomponent.h ctitime.h dlldefs.h \
 		ctidate.h pointstore.h hashkey.h hash_functions.h rtdb.h \
 		utility.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
@@ -213,12 +213,12 @@ calccomponent.obj:	precompiled.h calccomponent.h ctitime.h dlldefs.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		pointdefs.h regression.h tbl_pt_limit.h dbmemobject.h \
 		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h row_reader.h calc.h ctiqueues.h \
-		database_connection.h database_reader.h
+		row_reader.h calc.h ctiqueues.h database_connection.h \
+		database_reader.h
 calclogicsvc.obj:	precompiled.h id_calc.h module_util.h dlldefs.h \
-		dbaccess.h dllbase.h dsm2.h streamConnection.h yukon.h \
-		types.h ctidbgmem.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h utility.h ctitime.h \
+		ctitime.h dbaccess.h dllbase.h dsm2.h streamConnection.h \
+		yukon.h types.h ctidbgmem.h netports.h timing_util.h \
+		immutable.h atomic.h critical_section.h guard.h utility.h \
 		queues.h cticalls.h os2_2w32.h constants.h numstr.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -233,7 +233,7 @@ calclogicsvc.obj:	precompiled.h id_calc.h module_util.h dlldefs.h \
 		worker_thread.h cservice.h calcthread.h hashkey.h \
 		hash_functions.h calc.h ctiqueues.h calccomponent.h ctidate.h \
 		pointstore.h rtdb.h regression.h tbl_pt_limit.h dbmemobject.h \
-		resolvers.h db_entry_defines.h desolvers.h amq_constants.h
+		resolvers.h db_entry_defines.h amq_constants.h
 calcthread.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -251,7 +251,7 @@ calcthread.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		calcthread.h hashkey.h hash_functions.h calc.h ctiqueues.h \
 		calccomponent.h pointstore.h rtdb.h regression.h \
 		tbl_pt_limit.h dbmemobject.h resolvers.h db_entry_defines.h \
-		desolvers.h database_writer.h row_writer.h database_util.h
+		database_writer.h row_writer.h database_util.h
 calc_logic.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -270,8 +270,8 @@ calc_logic.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		worker_thread.h cservice.h calcthread.h calc.h ctiqueues.h \
 		calccomponent.h ctidate.h pointstore.h regression.h \
 		tbl_pt_limit.h dbmemobject.h resolvers.h db_entry_defines.h \
-		desolvers.h thread_monitor.h smartmap.h thread.h \
-		thread_register_data.h msg_dbchg.h logManager.h module_util.h
+		thread_monitor.h smartmap.h thread.h thread_register_data.h \
+		msg_dbchg.h logManager.h module_util.h
 log.obj:	precompiled.h connection_client.h connection.h dlldefs.h \
 		message.h ctitime.h ctidbgmem.h collectable.h loggable.h \
 		msg_multi.h msg_pdata.h yukon.h types.h pointdefs.h \
@@ -333,7 +333,7 @@ pointstore.obj:	precompiled.h pointstore.h hashkey.h hash_functions.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h pointdefs.h regression.h tbl_pt_limit.h \
 		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h row_reader.h ctidate.h
+		db_entry_defines.h row_reader.h ctidate.h
 test_calc.obj:	calc.h ctiqueues.h calccomponent.h ctitime.h dlldefs.h \
 		ctidate.h pointstore.h hashkey.h hash_functions.h rtdb.h \
 		utility.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
@@ -344,7 +344,7 @@ test_calc.obj:	calc.h ctiqueues.h calccomponent.h ctitime.h dlldefs.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		pointdefs.h regression.h tbl_pt_limit.h dbmemobject.h \
 		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h row_reader.h
+		row_reader.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

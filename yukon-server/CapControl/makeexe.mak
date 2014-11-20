@@ -294,7 +294,7 @@ capcontroller.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		thread_monitor.h smartmap.h thread_register_data.h \
 		ThreadStatusKeeper.h ExecutorFactory.h ccclientconn.h \
 		connection_server.h connection_listener.h ccclientlistener.h \
-		millisecond_timer.h
+		millisecond_timer.h module_util.h
 capcontrolpao.obj:	precompiled.h CapControlPao.h yukon.h types.h \
 		ctidbgmem.h cctypes.h capcontroller.h dbaccess.h dllbase.h \
 		dsm2.h streamConnection.h dlldefs.h netports.h timing_util.h \
@@ -663,7 +663,7 @@ ccfeeder.obj:	precompiled.h ccfeeder.h Controllable.h CapControlPao.h \
 		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
 		ccexecutor.h msg_signal.h ctdpcptrq.h CtiPCPtrQueue.h \
 		mgr_holiday.h msg_lmcontrolhistory.h tbl_pt_alarm.h \
-		resolvers.h db_entry_defines.h desolvers.h
+		resolvers.h db_entry_defines.h
 ccmain.obj:	precompiled.h ccsubstationbusstore.h ccarea.h ccAreaBase.h \
 		Controllable.h CapControlPao.h yukon.h types.h ctidbgmem.h \
 		cctypes.h StrategyManager.h readers_writer_lock.h dlldefs.h \
@@ -755,10 +755,10 @@ ccoriginalparent.obj:	precompiled.h ccoriginalparent.h ccid.h ccutil.h \
 		database_writer.h database_connection.h dbaccess.h \
 		row_writer.h
 ccservice.obj:	precompiled.h id_capcontrol.h module_util.h dlldefs.h \
-		ccservice.h cservice.h dllBase.h dsm2.h streamConnection.h \
-		yukon.h types.h ctidbgmem.h netports.h timing_util.h \
-		immutable.h atomic.h critical_section.h guard.h utility.h \
-		ctitime.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
+		ctitime.h ccservice.h cservice.h dllBase.h dsm2.h \
+		streamConnection.h yukon.h types.h ctidbgmem.h netports.h \
+		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
 		optional.h macro_offset.h ccsubstationbus.h Controllable.h \
@@ -923,7 +923,7 @@ ccsubstationbus.obj:	precompiled.h ccsubstationbus.h Controllable.h \
 		CapControlDispatchConnection.h msg_cmd.h msg_dbchg.h \
 		ccexecutor.h msg_signal.h ctdpcptrq.h CtiPCPtrQueue.h \
 		mgr_holiday.h tbl_pt_alarm.h resolvers.h db_entry_defines.h \
-		desolvers.h MsgVerifyBanks.h
+		MsgVerifyBanks.h
 ccsubstationbusstore.obj:	precompiled.h ccsubstationbusstore.h \
 		ccarea.h ccAreaBase.h Controllable.h CapControlPao.h yukon.h \
 		types.h ctidbgmem.h cctypes.h StrategyManager.h \
@@ -960,11 +960,11 @@ ccsubstationbusstore.obj:	precompiled.h ccsubstationbusstore.h \
 		VoltageRegulatorManager.h VoltageRegulatorLoader.h \
 		DatabaseDaoFactory.h PointResponseDao.h database_connection.h \
 		dbaccess.h PointResponseDatabaseDao.h database_reader.h \
-		database_writer.h row_writer.h desolvers.h resolvers.h \
-		db_entry_defines.h msg_dbchg.h msg_signal.h capcontroller.h \
-		connection_client.h connection.h msg_multi.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h rwutil.h boost_time.h configkey.h \
-		configval.h worker_thread.h DispatchConnection.h \
+		database_writer.h row_writer.h resolvers.h db_entry_defines.h \
+		msg_dbchg.h msg_signal.h capcontroller.h connection_client.h \
+		connection.h msg_multi.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h rwutil.h boost_time.h configkey.h configval.h \
+		worker_thread.h DispatchConnection.h \
 		CapControlDispatchConnection.h msg_cmd.h ccexecutor.h \
 		ctdpcptrq.h CtiPCPtrQueue.h mgr_holiday.h thread_monitor.h \
 		smartmap.h thread_register_data.h database_transaction.h \

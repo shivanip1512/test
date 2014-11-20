@@ -314,7 +314,7 @@ mc_server.obj:	precompiled.h mc_server.h mc.h logger.h dlldefs.h \
 		mc_script.h mc_scheduler.h mgr_holiday.h ctidate.h \
 		mc_fileint.h fileint.h connection_client.h thread_monitor.h \
 		smartmap.h thread_register_data.h msg_cmd.h amq_constants.h \
-		tbl_devicereadjoblog.h
+		module_util.h tbl_devicereadjoblog.h
 mc_server_client_serialization_test.obj:	precompiled.h message.h \
 		ctitime.h dlldefs.h ctidbgmem.h collectable.h loggable.h \
 		msg_cmd.h msg_dbchg.h yukon.h types.h msg_lmcontrolhistory.h \

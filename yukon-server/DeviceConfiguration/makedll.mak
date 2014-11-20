@@ -139,7 +139,8 @@ da_lp_deviceconfig.obj:	precompiled.h da_lp_deviceconfig.h yukon.h \
 		string_util.h exception_helper.h boostutil.h mutex.h \
 		dsm2err.h words.h optional.h macro_offset.h hashkey.h \
 		hash_functions.h config_data_mct.h
-id_dcdll.obj:	precompiled.h id_dcdll.h module_util.h dlldefs.h
+id_dcdll.obj:	precompiled.h id_dcdll.h module_util.h dlldefs.h \
+		ctitime.h
 mgr_config.obj:	precompiled.h mgr_config.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \

@@ -130,6 +130,6 @@ test_calc.obj:	calc.h ctiqueues.h calccomponent.h ctitime.h dlldefs.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		pointdefs.h regression.h tbl_pt_limit.h dbmemobject.h \
 		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h row_reader.h
+		row_reader.h
 #ENDUPDATE#
 

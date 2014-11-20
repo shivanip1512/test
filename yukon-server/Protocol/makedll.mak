@@ -329,7 +329,7 @@ ansi_kv2_mtable_110.obj:	precompiled.h logger.h dlldefs.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
 		critical_section.h atomic.h ansi_kv2_mtable_110.h \
 		std_ansi_tbl_base.h
-dll_prot.obj:	precompiled.h module_util.h dlldefs.h
+dll_prot.obj:	precompiled.h module_util.h dlldefs.h ctitime.h
 dnp_application.obj:	precompiled.h dnp_application.h dnp_objects.h \
 		dllbase.h dsm2.h streamConnection.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h timing_util.h immutable.h \
@@ -743,6 +743,20 @@ prot_dnp.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
 		dnp_object_analoginput.h dnp_object_analogoutput.h \
 		dnp_object_counter.h dnp_object_internalindications.h \
 		std_helper.h
+prot_dnpslave.obj:	precompiled.h prot_dnpSlave.h prot_dnp.h dlldefs.h \
+		pointtypes.h prot_base.h msg_pdata.h yukon.h types.h \
+		ctidbgmem.h pointdefs.h message.h ctitime.h collectable.h \
+		loggable.h xfer.h dsm2.h streamConnection.h netports.h \
+		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
+		logger.h streamBuffer.h string_util.h exception_helper.h \
+		boostutil.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h packet_finder.h dnp_application.h \
+		dnp_objects.h dllbase.h dnp_transport.h dnp_datalink.h \
+		dnp_datalink_packet.h dnp_configuration.h \
+		dnp_object_binaryoutput.h dnp_object_analoginput.h \
+		dnp_object_time.h dnp_object_binaryinput.h \
+		dnp_object_counter.h
 prot_e2edatatransfer.obj:	precompiled.h prot_e2eDataTransfer.h \
 		dlldefs.h logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
@@ -774,9 +788,9 @@ prot_gpuff.obj:	precompiled.h prot_gpuff.h dlldefs.h msg_pdata.h \
 		queues.h cticalls.h os2_2w32.h constants.h numstr.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		dbaccess.h resolvers.h db_entry_defines.h desolvers.h \
-		cparms.h rwutil.h database_connection.h database_reader.h \
-		boost_time.h configkey.h configval.h
+		dbaccess.h resolvers.h db_entry_defines.h cparms.h rwutil.h \
+		database_connection.h database_reader.h boost_time.h \
+		configkey.h configval.h
 prot_idlc.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
 		utility.h ctitime.h queues.h cticalls.h yukon.h types.h \

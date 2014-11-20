@@ -114,15 +114,14 @@ test_pilserver.obj:	pilserver.h dsm2.h streamConnection.h yukon.h \
 		ctitokenizer.h parsevalue.h dev_exclusion.h \
 		tbl_paoexclusion.h config_device.h rte_base.h dbmemobject.h \
 		tbl_pao_lite.h tbl_rtcomm.h resolvers.h db_entry_defines.h \
-		desolvers.h msg_signal.h tbl_static_paoinfo.h encryption.h \
-		tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h slctdev.h mgr_point.h mgr_route.h \
-		repeaterrole.h mgr_config.h devicetypes.h amq_constants.h \
-		mgr_rfn_request.h dev_rfn.h rfn_identifier.h cmd_rfn.h \
-		cmd_device.h dev_single.h msg_pcreturn.h tbl_dv_scandata.h \
-		tbl_dv_wnd.h xfer.h exceptions.h rfn_asid.h \
-		rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h RfnE2eMsg.h \
-		RfnE2eDataConfirmMsg.h RfnE2eDataRequestMsg.h \
-		cmd_rfn_demandFreeze.h
+		msg_signal.h tbl_static_paoinfo.h encryption.h tbl_base.h \
+		tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h \
+		slctdev.h mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
+		devicetypes.h amq_constants.h mgr_rfn_request.h dev_rfn.h \
+		rfn_identifier.h cmd_rfn.h cmd_device.h dev_single.h \
+		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h xfer.h \
+		exceptions.h rfn_asid.h rfn_e2e_messenger.h \
+		RfnE2eDataIndicationMsg.h RfnE2eMsg.h RfnE2eDataConfirmMsg.h \
+		RfnE2eDataRequestMsg.h cmd_rfn_demandFreeze.h
 #ENDUPDATE#
 

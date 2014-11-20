@@ -114,18 +114,14 @@ test_gen_reply.obj:	trx_711.h trx_info.h logger.h dlldefs.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
 		dllbase.h message.h collectable.h tbl_pao_lite.h row_reader.h \
 		tbl_rtcomm.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h msg_signal.h \
-		tbl_static_paoinfo.h pointdefs.h database_connection.h \
-		rwutil.h database_reader.h boost_time.h encryption.h \
-		port_base.h dev_base.h dev_exclusion.h tbl_paoexclusion.h \
-		tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h logManager.h module_util.h tbl_port_base.h \
-		xfer.h counter.h cparms.h configkey.h configval.h
+		db_entry_defines.h msg_signal.h tbl_static_paoinfo.h \
+		pointdefs.h database_connection.h rwutil.h database_reader.h \
+		boost_time.h encryption.h port_base.h dev_base.h \
+		dev_exclusion.h tbl_paoexclusion.h tbl_base.h tbl_scanrate.h \
+		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h logManager.h \
+		module_util.h tbl_port_base.h xfer.h counter.h cparms.h \
+		configkey.h configval.h
 test_lantronixencryption.obj:	encryption_lantronix.h EncodingFilter.h
-test_paostatistics.obj:	PaoStatistics.h PaoStatisticsRecord.h \
-		ctitime.h dlldefs.h yukon.h types.h ctidbgmem.h test_reader.h \
-		row_reader.h utility.h queues.h cticalls.h os2_2w32.h \
-		constants.h numstr.h
 test_paostatisticsrecord.obj:	PaoStatisticsRecord.h ctitime.h \
 		dlldefs.h yukon.h types.h ctidbgmem.h ctidate.h
 #ENDUPDATE#

@@ -701,30 +701,27 @@ fdrdestination.obj:	precompiled.h fdrpoint.h dlldefs.h pointtypes.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h database_reader.h row_reader.h boost_time.h
-fdrdnpslave.obj:	precompiled.h ctidate.h dlldefs.h ctitime.h \
-		ctistring.h cparms.h rwutil.h yukon.h types.h ctidbgmem.h \
-		database_connection.h dbaccess.h dllbase.h dsm2.h \
+fdrdnpslave.obj:	precompiled.h fdrdnpslave.h dlldefs.h queues.h \
+		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
+		fdrpointlist.h mgr_fdrpoint.h smartmap.h boostutil.h \
+		utility.h ctitime.h numstr.h dllbase.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h utility.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h database_reader.h row_reader.h boost_time.h \
-		configkey.h configval.h msg_multi.h collectable.h msg_pdata.h \
-		pointdefs.h pointtypes.h message.h msg_ptreg.h msg_cmd.h \
-		msg_reg.h msg_signal.h fdrpointlist.h mgr_fdrpoint.h \
-		smartmap.h readers_writer_lock.h fdrpoint.h fdrdestination.h \
-		fdr.h fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h connection_base.h \
-		worker_thread.h fdrdebuglevel.h socket_helper.h win_helper.h \
-		fdrscadaserver.h fdrsocketserver.h \
-		fdrclientserverconnection.h serverconnection.h fdrdnpslave.h \
-		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
-		dnp_object_time.h prot_dnp.h packet_finder.h \
-		dnp_application.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_configuration.h \
-		dnp_object_binaryoutput.h dnp_object_binaryinput.h \
-		dnp_object_counter.h std_helper.h
+		atomic.h critical_section.h guard.h logger.h streamBuffer.h \
+		loggable.h string_util.h exception_helper.h mutex.h dsm2err.h \
+		words.h optional.h macro_offset.h readers_writer_lock.h \
+		fdrpoint.h pointtypes.h fdrdestination.h fdr.h pointdefs.h \
+		rwutil.h database_connection.h dbaccess.h database_reader.h \
+		row_reader.h boost_time.h fdrscadaserver.h fdrsocketserver.h \
+		fdrclientserverconnection.h serverconnection.h fdrinterface.h \
+		message.h collectable.h msg_dbchg.h connection_client.h \
+		connection.h msg_multi.h msg_pdata.h msg_ptreg.h msg_reg.h \
+		queue.h cparms.h configkey.h configval.h connection_base.h \
+		worker_thread.h fdrdebuglevel.h msg_cmd.h socket_helper.h \
+		win_helper.h dnp_object_analoginput.h dnp_objects.h \
+		prot_base.h xfer.h dnp_object_time.h prot_dnpSlave.h \
+		prot_dnp.h packet_finder.h dnp_application.h dnp_transport.h \
+		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
+		dnp_object_binaryoutput.h amq_constants.h std_helper.h
 fdrdsm2filein.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h rwutil.h yukon.h types.h ctidbgmem.h \
 		database_connection.h dbaccess.h dllbase.h dsm2.h \
@@ -1030,10 +1027,11 @@ fdrscadahelper.obj:	precompiled.h msg_cmd.h message.h ctitime.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
 		configval.h connection_base.h worker_thread.h socket_helper.h \
 		win_helper.h fdrdnpslave.h dnp_object_analoginput.h \
-		dnp_objects.h prot_base.h xfer.h dnp_object_time.h prot_dnp.h \
-		packet_finder.h dnp_application.h dnp_transport.h \
-		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
-		dnp_object_binaryoutput.h fdrvalmetmulti.h
+		dnp_objects.h prot_base.h xfer.h dnp_object_time.h \
+		prot_dnpSlave.h prot_dnp.h packet_finder.h dnp_application.h \
+		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
+		dnp_configuration.h dnp_object_binaryoutput.h \
+		fdrvalmetmulti.h
 fdrscadaserver.obj:	precompiled.h fdrscadaserver.h dlldefs.h \
 		fdrsocketserver.h queues.h cticalls.h yukon.h types.h \
 		ctidbgmem.h os2_2w32.h constants.h \
@@ -1444,8 +1442,8 @@ test_fdrdnpslave.obj:	fdrdnpslave.h dlldefs.h queues.h cticalls.h \
 		queue.h cparms.h configkey.h configval.h connection_base.h \
 		worker_thread.h fdrdebuglevel.h msg_cmd.h socket_helper.h \
 		win_helper.h dnp_object_analoginput.h dnp_objects.h \
-		prot_base.h xfer.h dnp_object_time.h prot_dnp.h \
-		packet_finder.h dnp_application.h dnp_transport.h \
+		prot_base.h xfer.h dnp_object_time.h prot_dnpSlave.h \
+		prot_dnp.h packet_finder.h dnp_application.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h boost_test_helpers.h \
 		millisecond_timer.h

@@ -162,8 +162,8 @@ test_fdrdnpslave.obj:	fdrdnpslave.h dlldefs.h queues.h cticalls.h \
 		queue.h cparms.h configkey.h configval.h connection_base.h \
 		worker_thread.h fdrdebuglevel.h msg_cmd.h socket_helper.h \
 		win_helper.h dnp_object_analoginput.h dnp_objects.h \
-		prot_base.h xfer.h dnp_object_time.h prot_dnp.h \
-		packet_finder.h dnp_application.h dnp_transport.h \
+		prot_base.h xfer.h dnp_object_time.h prot_dnpSlave.h \
+		prot_dnp.h packet_finder.h dnp_application.h dnp_transport.h \
 		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h boost_test_helpers.h \
 		millisecond_timer.h

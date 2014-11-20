@@ -233,20 +233,20 @@ dispatchpointdatarequest.obj:	precompiled.h DispatchPointDataRequest.h \
 		row_reader.h boost_time.h configkey.h configval.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		PointDataRequest.h msg_signal.h
-dll_msg.obj:	precompiled.h module_util.h dlldefs.h amq_constants.h \
-		amq_connection.h thread.h mutex.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
-		constants.h numstr.h logger.h streamBuffer.h loggable.h \
-		string_util.h exception_helper.h boostutil.h \
+dll_msg.obj:	precompiled.h module_util.h dlldefs.h ctitime.h \
+		amq_constants.h amq_connection.h thread.h mutex.h guard.h \
+		utility.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
+		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
+		loggable.h string_util.h exception_helper.h boostutil.h \
 		critical_section.h atomic.h StreamableMessage.h \
 		connection_base.h RfnBroadcastReplyMessage.h
-dll_rfn_e2e.obj:	precompiled.h module_util.h dlldefs.h \
+dll_rfn_e2e.obj:	precompiled.h module_util.h dlldefs.h ctitime.h \
 		rfn_e2e_messenger.h rfn_asid.h rfn_identifier.h \
 		streamBuffer.h loggable.h RfnE2eDataIndicationMsg.h \
 		RfnE2eMsg.h RfnE2eDataConfirmMsg.h RfnE2eDataRequestMsg.h \
 		readers_writer_lock.h critical_section.h guard.h utility.h \
-		ctitime.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
-		os2_2w32.h constants.h numstr.h logger.h string_util.h \
+		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
+		constants.h numstr.h logger.h string_util.h \
 		exception_helper.h boostutil.h atomic.h
 id_ctimsg.obj:	precompiled.h utility.h ctitime.h dlldefs.h queues.h \
 		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
@@ -480,9 +480,9 @@ rfn_e2e_messenger.obj:	precompiled.h rfn_e2e_messenger.h rfn_asid.h \
 		StreamableMessage.h connection_base.h \
 		RfnBroadcastReplyMessage.h std_helper.h
 server_client_serialization_test.obj:	precompiled.h logManager.h \
-		dlldefs.h module_util.h logger.h streamBuffer.h loggable.h \
-		string_util.h exception_helper.h boostutil.h utility.h \
-		ctitime.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
+		dlldefs.h module_util.h ctitime.h logger.h streamBuffer.h \
+		loggable.h string_util.h exception_helper.h boostutil.h \
+		utility.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
 		os2_2w32.h constants.h numstr.h critical_section.h atomic.h \
 		message.h collectable.h msg_cmd.h msg_dbchg.h \
 		msg_lmcontrolhistory.h pointdefs.h msg_multi.h msg_pdata.h \

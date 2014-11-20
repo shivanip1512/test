@@ -108,7 +108,7 @@ dllyukon.obj:	precompiled.h tbl_route.h dllbase.h dsm2.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h dbmemobject.h row_reader.h tbl_rtcarrier.h \
 		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h tbl_rtcomm.h ctibase.h streamSocketConnection.h \
+		tbl_rtcomm.h ctibase.h streamSocketConnection.h \
 		socket_helper.h win_helper.h tbl_rtmacro.h tbl_rtrepeater.h \
 		tbl_rtversacom.h msg_pcrequest.h message.h collectable.h \
 		pt_base.h tbl_pt_base.h pointdefs.h tbl_state_grp.h rwutil.h \
@@ -215,7 +215,7 @@ tbl_dv_address.obj:	precompiled.h tbl_dv_address.h types.h logger.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
 		guard.h mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h row_reader.h
+		db_entry_defines.h row_reader.h
 tbl_dv_cbc.obj:	precompiled.h tbl_dv_cbc.h dlldefs.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h netports.h \
 		timing_util.h immutable.h atomic.h critical_section.h guard.h \
@@ -377,7 +377,7 @@ tbl_dv_wnd.obj:	precompiled.h tbl_dv_wnd.h row_reader.h ctitime.h \
 		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
 		optional.h macro_offset.h dbmemobject.h resolvers.h \
-		pointtypes.h db_entry_defines.h desolvers.h database_reader.h
+		pointtypes.h db_entry_defines.h database_reader.h desolvers.h
 tbl_dyn_lcrcomms.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
 		utility.h ctitime.h queues.h cticalls.h yukon.h types.h \
@@ -618,7 +618,7 @@ tbl_pt_accum.obj:	precompiled.h tbl_pt_accum.h row_reader.h ctitime.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h
+		db_entry_defines.h
 tbl_pt_accumhistory.obj:	precompiled.h tbl_pt_accumhistory.h yukon.h \
 		types.h ctidbgmem.h dbmemobject.h row_reader.h ctitime.h \
 		dlldefs.h dbaccess.h dllbase.h dsm2.h streamConnection.h \
@@ -637,7 +637,7 @@ tbl_pt_alarm.obj:	precompiled.h row_reader.h ctitime.h dlldefs.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h tbl_pt_alarm.h dbmemobject.h resolvers.h \
-		pointtypes.h db_entry_defines.h desolvers.h
+		pointtypes.h db_entry_defines.h
 tbl_pt_analog.obj:	precompiled.h tbl_pt_analog.h row_reader.h \
 		ctitime.h dlldefs.h dbmemobject.h
 tbl_pt_base.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
@@ -648,8 +648,7 @@ tbl_pt_base.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
 		db_entry_defines.h tbl_pt_base.h row_reader.h dllbase.h \
 		dsm2.h streamConnection.h netports.h timing_util.h \
 		immutable.h guard.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h dbmemobject.h dbaccess.h desolvers.h \
-		pointdefs.h
+		macro_offset.h dbmemobject.h dbaccess.h pointdefs.h
 tbl_pt_control.obj:	precompiled.h tbl_pt_control.h row_reader.h \
 		ctitime.h dlldefs.h dllbase.h dsm2.h streamConnection.h \
 		yukon.h types.h ctidbgmem.h netports.h timing_util.h \
@@ -666,7 +665,7 @@ tbl_pt_limit.obj:	precompiled.h tbl_pt_limit.h dlldefs.h dllbase.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h dbmemobject.h dbaccess.h resolvers.h \
-		pointtypes.h db_entry_defines.h desolvers.h row_reader.h
+		pointtypes.h db_entry_defines.h row_reader.h
 tbl_pt_property.obj:	precompiled.h tbl_pt_property.h row_reader.h \
 		ctitime.h dlldefs.h dllbase.h dsm2.h streamConnection.h \
 		yukon.h types.h ctidbgmem.h netports.h timing_util.h \
@@ -700,7 +699,7 @@ tbl_pt_unit.obj:	precompiled.h tbl_pt_unit.h row_reader.h ctitime.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h tbl_unitmeasure.h
+		db_entry_defines.h tbl_unitmeasure.h
 tbl_rfnidentifier.obj:	precompiled.h tbl_rfnidentifier.h \
 		rfn_identifier.h streamBuffer.h dlldefs.h loggable.h \
 		row_reader.h ctitime.h
@@ -720,8 +719,8 @@ tbl_rtcarrier.obj:	precompiled.h tbl_rtcarrier.h row_reader.h \
 		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
 		optional.h macro_offset.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h dbmemobject.h \
-		database_connection.h database_reader.h
+		db_entry_defines.h dbmemobject.h database_connection.h \
+		database_reader.h
 tbl_rtcomm.obj:	precompiled.h tbl_rtcomm.h row_reader.h ctitime.h \
 		dlldefs.h dbaccess.h dllbase.h dsm2.h streamConnection.h \
 		yukon.h types.h ctidbgmem.h netports.h timing_util.h \
@@ -730,7 +729,7 @@ tbl_rtcomm.obj:	precompiled.h tbl_rtcomm.h row_reader.h ctitime.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h resolvers.h pointtypes.h db_entry_defines.h \
-		desolvers.h dbmemobject.h ctibase.h streamSocketConnection.h \
+		dbmemobject.h ctibase.h streamSocketConnection.h \
 		socket_helper.h win_helper.h database_connection.h \
 		database_reader.h
 tbl_rtmacro.obj:	precompiled.h tbl_rtmacro.h row_reader.h ctitime.h \
@@ -741,9 +740,9 @@ tbl_rtmacro.obj:	precompiled.h tbl_rtmacro.h row_reader.h ctitime.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		database_connection.h database_reader.h
+		db_entry_defines.h ctibase.h streamSocketConnection.h \
+		socket_helper.h win_helper.h database_connection.h \
+		database_reader.h
 tbl_rtrepeater.obj:	precompiled.h tbl_rtrepeater.h row_reader.h \
 		ctitime.h dlldefs.h loggable.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h netports.h \
@@ -770,8 +769,8 @@ tbl_scanrate.obj:	precompiled.h tbl_scanrate.h row_reader.h ctitime.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		dbmemobject.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h desolvers.h database_connection.h \
-		database_reader.h
+		db_entry_defines.h database_connection.h database_reader.h \
+		desolvers.h
 tbl_state.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -831,7 +830,7 @@ tbl_unitmeasure.obj:	precompiled.h tbl_unitmeasure.h row_reader.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h dbmemobject.h dbaccess.h resolvers.h \
-		pointtypes.h db_entry_defines.h desolvers.h
+		pointtypes.h db_entry_defines.h
 test_tbl_dv_idlcremote.obj:	tbl_dv_idlcremote.h rwutil.h yukon.h \
 		types.h ctidbgmem.h database_connection.h dbaccess.h \
 		dllbase.h dsm2.h streamConnection.h dlldefs.h netports.h \
