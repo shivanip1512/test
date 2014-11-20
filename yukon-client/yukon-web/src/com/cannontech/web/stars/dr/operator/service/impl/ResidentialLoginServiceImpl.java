@@ -22,7 +22,7 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
+import com.cannontech.web.login.model.Login;
 import com.cannontech.web.stars.dr.operator.service.ResidentialLoginService;
 
 public class ResidentialLoginServiceImpl implements ResidentialLoginService{
@@ -35,7 +35,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
     @Autowired private YukonUserDao yukonUserDao;
 
     @Override
-    public Integer createResidentialLogin(final LoginBackingBean loginBackingBean, final LiteYukonUser user,
+    public Integer createResidentialLogin(final Login loginBackingBean, final LiteYukonUser user,
             final int accountId, final int energyCompanyId) {
         Integer newUserId = transactionTemplate.execute(new TransactionCallback<Integer>() {
             @Override
@@ -83,7 +83,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
     }
     
     @Override
-    public void updateResidentialLogin(final LoginBackingBean loginBackingBean, final YukonUserContext userContext, 
+    public void updateResidentialLogin(final Login loginBackingBean, final YukonUserContext userContext, 
                                         final LiteYukonUser residentialUser, final int energyCompanyId) {
 
         transactionTemplate.execute(new TransactionCallback<Object>() {
@@ -113,7 +113,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
     }
     
     @Override
-    public void updateResidentialPassword(final LoginBackingBean loginBackingBean,
+    public void updateResidentialPassword(final Login loginBackingBean,
                                         final YukonUserContext userContext, 
                                         final LiteYukonUser residentialUser) {
         transactionTemplate.execute(new TransactionCallback<Object>() {
@@ -145,7 +145,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
      * 
      * @throws IllegalArgumentException - the user group in the backing bean is not a apart of the energy company.
      */
-    private void checkSuppliedResidentialUserGroup(final int energyCompanyId, final LoginBackingBean loginBackingBean) {
+    private void checkSuppliedResidentialUserGroup(final int energyCompanyId, final Login loginBackingBean) {
         List<LiteUserGroup> ecResidentialUserGroups = ecMappingDao.getResidentialUserGroups(energyCompanyId);
 
         LiteUserGroup residentialLoginGroup = userGroupDao.findLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
@@ -154,7 +154,7 @@ public class ResidentialLoginServiceImpl implements ResidentialLoginService{
         }
     }
     
-    private void updateLoginStatus(LoginBackingBean loginBackingBean, LiteYukonUser residentialUser) {
+    private void updateLoginStatus(Login loginBackingBean, LiteYukonUser residentialUser) {
         
         LoginStatusEnum loginStatus = null;
         if (loginBackingBean.isLoginEnabled()) {

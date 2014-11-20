@@ -31,6 +31,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.google.common.collect.Multimap;
 
 public class UserGroupDaoImpl implements UserGroupDao {
+    
     private static final Logger log = YukonLogManager.getLogger(UserGroupDaoImpl.class);
     
     @Autowired private DbChangeManager dbChangeManager;
@@ -65,18 +66,18 @@ public class UserGroupDaoImpl implements UserGroupDao {
         userGroupTemplate.setPrimaryKeyField("UserGroupId");
         userGroupTemplate.setFieldMapper(userGroupFieldMapper);
     }
-
+    
     //Row Mappers
-
+    
     public static class DBUserGroupRowMapper implements YukonRowMapper<com.cannontech.database.db.user.UserGroup> {
         @Override
         public com.cannontech.database.db.user.UserGroup mapRow(YukonResultSet rs) throws SQLException {
-            com.cannontech.database.db.user.UserGroup userGroup = new com.cannontech.database.db.user.UserGroup();
             
+            com.cannontech.database.db.user.UserGroup userGroup = new com.cannontech.database.db.user.UserGroup();
             userGroup.setUserGroupId(rs.getInt("UserGroupId"));
             userGroup.setUserGroupName(rs.getString("Name"));
             userGroup.setUserGroupDescription(rs.getStringSafe("Description"));
-
+            
             return userGroup;
         }
     }
@@ -85,6 +86,7 @@ public class UserGroupDaoImpl implements UserGroupDao {
 
         @Override
         public UserGroup mapRow(YukonResultSet rs) throws SQLException {
+            
             UserGroup userGroup = new UserGroup();
             userGroup.setUserGroupId(rs.getInt("UserGroupId"));
             userGroup.setUserGroup(new DBUserGroupRowMapper().mapRow(rs));
@@ -104,18 +106,18 @@ public class UserGroupDaoImpl implements UserGroupDao {
     public void create(final com.cannontech.database.db.user.UserGroup userGroup) {
         userGroupTemplate.insert(userGroup);
     }
-
+    
     @Override
     public void update(com.cannontech.database.db.user.UserGroup userGroup) {
-        userGroupTemplate.update(userGroup);
         
+        userGroupTemplate.update(userGroup);
         dbChangeManager.processDbChange(userGroup.getUserGroupId(), 
                                         DBChangeMsg.CHANGE_USER_GROUP_DB,
                                         DBChangeMsg.CAT_USER_GROUP, 
                                         DBChangeMsg.CAT_USER_GROUP, 
                                         DbChangeType.UPDATE);
     }
-
+    
     @Override
     public void delete(int userGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -133,58 +135,63 @@ public class UserGroupDaoImpl implements UserGroupDao {
     
     @Override
     public com.cannontech.database.db.user.UserGroup getDBUserGroup(int userGroupId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
-        sql.append("FROM UserGroup UG");
-        sql.append("WHERE UG.UserGroupId").eq(userGroupId);
         
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT UserGroupId, Name, Description");
+        sql.append("FROM UserGroup");
+        sql.append("WHERE UserGroupId").eq(userGroupId);
         com.cannontech.database.db.user.UserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new DBUserGroupRowMapper());
+        
         return userGroup;
     }
     
     @Override
     public LiteUserGroup getLiteUserGroup(int userGroupId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
-        sql.append("FROM UserGroup UG");
-        sql.append("WHERE UG.UserGroupId").eq(userGroupId);
         
-        LiteUserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new LiteUserGroupRowMapper());
-        return userGroup;
-    }
-
-    @Override
-    public UserGroup getUserGroup(int userGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT *");
+        sql.append("SELECT UserGroupId, Name, Description");
         sql.append("FROM UserGroup");
         sql.append("WHERE UserGroupId").eq(userGroupId);
+        LiteUserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new LiteUserGroupRowMapper());
         
+        return userGroup;
+    }
+    
+    @Override
+    public UserGroup getUserGroup(int userGroupId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT UserGroupId, Name, Description");
+        sql.append("FROM UserGroup");
+        sql.append("WHERE UserGroupId").eq(userGroupId);
         UserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new UserGroupRowMapper());
+        
         return userGroup;
     }
     
     @Override
     public int getNumberOfUsers(int userGroupId) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
         sql.append("FROM UserGroup UG");
-        sql.append("  JOIN YukonUser YU ON YU.UserGroupId = UG.UserGroupId");
+        sql.append("JOIN YukonUser YU ON YU.UserGroupId = UG.UserGroupId");
         sql.append("WHERE UG.UserGroupId").eq(userGroupId);
-        
         int userCount = yukonJdbcTemplate.queryForInt(sql);
+        
         return userCount;
     }
-
+    
     @Override
     public List<UserGroup> getUserGroupsByRoleGroupId(int roleGroupId) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM UserGroup UG");
-        sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON UGYGM.UserGroupId = UG.UserGroupId");
+        sql.append("JOIN UserGroupToYukonGroupMapping UGYGM ON UGYGM.UserGroupId = UG.UserGroupId");
         sql.append("WHERE UGYGM.GroupId").eq(roleGroupId);
-        
         List<UserGroup> userGroups = yukonJdbcTemplate.query(sql, new UserGroupRowMapper());
+        
         return userGroups;
     }
     
@@ -192,36 +199,39 @@ public class UserGroupDaoImpl implements UserGroupDao {
     public LiteUserGroup getLiteUserGroupByUserId(int userId) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT UG.*");
+            sql.append("SELECT UG.UserGroupId, UG.Name, UG.Description");
             sql.append("FROM UserGroup UG");
-            sql.append("  JOIN YukonUser YU ON UG.UserGroupId = YU.UserGroupId");
+            sql.append("JOIN YukonUser YU ON UG.UserGroupId = YU.UserGroupId");
             sql.append("WHERE YU.UserId").eq(userId);
             LiteUserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new LiteUserGroupRowMapper());
+            
             return userGroup;
         } catch (EmptyResultDataAccessException e) {}
         return null;
     }
-
+    
     @Override
     public List<LiteUserGroup> getLiteUserGroupsByRoleGroupId(int roleGroupId) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM UserGroup UG");
-        sql.append("  JOIN UserGroupToYukonGroupMapping UGYGM ON UGYGM.UserGroupId = UG.UserGroupId");
+        sql.append("JOIN UserGroupToYukonGroupMapping UGYGM ON UGYGM.UserGroupId = UG.UserGroupId");
         sql.append("WHERE UGYGM.GroupId").eq(roleGroupId);
-        
         List<LiteUserGroup> liteUserGroups = yukonJdbcTemplate.query(sql, new LiteUserGroupRowMapper());
+        
         return liteUserGroups;
     }
 
     @Override
     public LiteUserGroup getLiteUserGroupByUserGroupName(String userGroupName) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UG.*");
-        sql.append("FROM UserGroup UG");
-        sql.append("WHERE UG.Name").eq(userGroupName);
         
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT UserGroupId, Name, Description");
+        sql.append("FROM UserGroup");
+        sql.append("WHERE Name").eq(userGroupName);
         LiteUserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new LiteUserGroupRowMapper());
+        
         return userGroup;
     }
     
@@ -233,34 +243,37 @@ public class UserGroupDaoImpl implements UserGroupDao {
         
         return null;
     }
-
+    
     @Override
     public com.cannontech.database.db.user.UserGroup getDBUserGroupByUserGroupName(String userGroupName) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UG.*");
-        sql.append("FROM UserGroup UG");
-        sql.append("WHERE UG.Name").eq(userGroupName);
+        sql.append("SELECT UserGroupId, Name, Description");
+        sql.append("FROM UserGroup");
+        sql.append("WHERE Name").eq(userGroupName);
         
         com.cannontech.database.db.user.UserGroup userGroup = yukonJdbcTemplate.queryForObject(sql, new DBUserGroupRowMapper());
         return userGroup;
     }
-
+    
     @Override
     public List<LiteUserGroup> getAllLiteUserGroups() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UG.*");
-        sql.append("FROM UserGroup UG");
         
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT UserGroupId, Name, Description");
+        sql.append("FROM UserGroup UG");
         List<LiteUserGroup> userGroups = yukonJdbcTemplate.query(sql, new LiteUserGroupRowMapper());
+        
         return userGroups;
     }
-
+    
     @Override
     public void createUserGroupToYukonGroupMappng(int userGroupId, int roleGroupId) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("INSERT INTO UserGroupToYukonGroupMapping");
         sql.values(userGroupId, roleGroupId);
-
+        
         yukonJdbcTemplate.update(sql);
         
         dbChangeManager.processDbChange(userGroupId, 
@@ -269,14 +282,15 @@ public class UserGroupDaoImpl implements UserGroupDao {
                                         DBChangeMsg.CAT_USER_GROUP, 
                                         DbChangeType.UPDATE);
     }
-
+    
     @Override
     public void deleteUserGroupToYukonGroupMappng(int userGroupId, int roleGroupId) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM UserGroupToYukonGroupMapping");
         sql.append("WHERE UserGroupId").eq(userGroupId);
         sql.append("  AND groupId").eq(roleGroupId);
-
+        
         yukonJdbcTemplate.update(sql);
         
         dbChangeManager.processDbChange(userGroupId, 
@@ -285,4 +299,5 @@ public class UserGroupDaoImpl implements UserGroupDao {
                                         DBChangeMsg.CAT_USER_GROUP, 
                                         DbChangeType.UPDATE);
     }
+    
 }

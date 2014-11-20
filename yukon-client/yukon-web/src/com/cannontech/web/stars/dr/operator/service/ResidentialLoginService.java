@@ -2,7 +2,7 @@ package com.cannontech.web.stars.dr.operator.service;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
+import com.cannontech.web.login.model.Login;
 
 public interface ResidentialLoginService {
 
@@ -15,7 +15,7 @@ public interface ResidentialLoginService {
      * @param energyCompanyId
      * @return the yukonuser id that was created
      */
-    public Integer createResidentialLogin(LoginBackingBean loginBackingBean, LiteYukonUser user, int accountId, int energyCompanyId);
+    public Integer createResidentialLogin(Login loginBackingBean, LiteYukonUser user, int accountId, int energyCompanyId);
 
     /**
      * This method updates the username and login group for an existing residential login
@@ -24,7 +24,7 @@ public interface ResidentialLoginService {
      * @param residentialUser
      * @param energyCompanyId
      */
-    void updateResidentialLogin(LoginBackingBean loginBackingBean, YukonUserContext userContext, LiteYukonUser residentialUser, int energyCompanyId);
+    void updateResidentialLogin(Login loginBackingBean, YukonUserContext userContext, LiteYukonUser residentialUser, int energyCompanyId);
 
     /**
      * This method updates the password for an existing residential login
@@ -32,7 +32,7 @@ public interface ResidentialLoginService {
      * @param userContext
      * @param residentialUser
      */
-    void updateResidentialPassword(LoginBackingBean loginBackingBean, YukonUserContext userContext,
+    void updateResidentialPassword(Login loginBackingBean, YukonUserContext userContext,
                                    LiteYukonUser residentialUser);
 
 }

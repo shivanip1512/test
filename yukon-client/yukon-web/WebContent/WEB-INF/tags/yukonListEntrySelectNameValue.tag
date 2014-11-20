@@ -12,13 +12,15 @@
 <%@ attribute name="path" required="true" %>
 <%@ attribute name="nameClass" %>
 <%@ attribute name="valueClass" %>
+<%@ attribute name="inputClass" description="CSS class names applied to the select." %>
 
 <tags:nameValue2 nameKey="${nameKey}" valueClass="${pageScope.valueClass}" nameClass="${pageScope.nameClass}">
-	<tags:yukonListEntrySelect id="${pageScope.id}" 
+    <tags:yukonListEntrySelect id="${pageScope.id}"
                                path="${path}" 
                                energyCompanyId="${energyCompanyId}" 
                                listName="${listName}"
-	                           defaultItemValue="${pageScope.defaultItemValue}"
-	                           defaultItemLabel="${pageScope.defaultItemLabel}"
-	                           onchange="${pageScope.onchange}"/>
+                               defaultItemValue="${pageScope.defaultItemValue}"
+                               defaultItemLabel="${pageScope.defaultItemLabel}"
+                               onchange="${pageScope.onchange}"
+                               classes="${pageScope.inputClass}"/>
 </tags:nameValue2>

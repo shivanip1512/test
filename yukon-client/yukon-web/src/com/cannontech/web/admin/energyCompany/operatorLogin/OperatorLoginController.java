@@ -47,8 +47,8 @@ import com.cannontech.web.admin.energyCompany.general.model.EnergyCompanyInfoFra
 import com.cannontech.web.admin.energyCompany.service.EnergyCompanyInfoFragmentHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.login.model.Login;
 import com.cannontech.web.security.csrf.CsrfTokenService;
-import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
 import com.cannontech.web.stars.dr.operator.validator.LoginPasswordValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
@@ -69,7 +69,7 @@ public class OperatorLoginController {
     @Autowired private YukonUserDao yukonUserDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private CsrfTokenService csrfTokenService;
-
+    
     private void checkPermissionsAndSetupModel(EnergyCompanyInfoFragment energyCompanyInfoFragment,
                                                ModelMap modelMap,
                                                YukonUserContext userContext) {
@@ -83,8 +83,8 @@ public class OperatorLoginController {
         modelMap.addAttribute("currentUserId", userContext.getYukonUser().getUserID());
     }
     
-    private LoginBackingBean loginBackingBeanFromYukonUser(LiteYukonUser user) {
-        LoginBackingBean login = new LoginBackingBean();
+    private Login loginBackingBeanFromYukonUser(LiteYukonUser user) {
+        Login login = new Login();
         
         if(user.getUserGroupId() != null){
             LiteUserGroup userResidentialUserGroup = userGroupDao.getLiteUserGroup(user.getUserGroupId());
@@ -102,8 +102,8 @@ public class OperatorLoginController {
     
     @RequestMapping("home")
     public String home(YukonUserContext userContext, ModelMap modelMap, int ecId,  EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-
-        //check permissions
+        
+        // Check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
         List<Integer> energyCompanyIds = Collections.singletonList(ecId);
@@ -119,10 +119,10 @@ public class OperatorLoginController {
                                     FlashScope flashScope,
                                     EnergyCompanyInfoFragment energyCompanyInfoFragment) {
 
-        //check permissions
+        // Check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         LiteYukonUser user  = yukonUserDao.getLiteYukonUser(operatorLoginId);
-        LoginBackingBean login = loginBackingBeanFromYukonUser(user);
+        Login login = loginBackingBeanFromYukonUser(user);
         if(!ecMappingDao.isOperatorInOperatorUserGroup(operatorLoginId)){
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.incorrectGroupEdit"));
         }
@@ -138,17 +138,17 @@ public class OperatorLoginController {
                                    ModelMap modelMap,
                                    int ecId,
                                    EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-      //check permissions
+        // Check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
-        LoginBackingBean login = new LoginBackingBean();
+        Login login = new Login();
         login.setLoginEnabled(true);
         modelMap.addAttribute("operatorLogin", login);
         modelMap.addAttribute("mode", PageEditMode.CREATE);
         
-        //determine if we can set a password
+        // Determine if we can set a password
         AuthType defaultAuthType = authenticationService.getDefaultAuthType();
         modelMap.addAttribute("supportsPasswordSet", authenticationService.supportsPasswordSet(defaultAuthType));
-
+        
         return "energyCompany/operatorLogin/create.jsp"; 
     }
     
@@ -160,7 +160,7 @@ public class OperatorLoginController {
                                    FlashScope flashScope,
                                    EnergyCompanyInfoFragment energyCompanyInfoFragment) {
         
-        //check permissions
+        // Check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
         if(user.getUserGroupId() != null){
@@ -169,7 +169,7 @@ public class OperatorLoginController {
             return "redirect:home";
         }
         
-        LoginBackingBean login = loginBackingBeanFromYukonUser(yukonUserDao.getLiteYukonUser(userId));
+        Login login = loginBackingBeanFromYukonUser(yukonUserDao.getLiteYukonUser(userId));
         modelMap.addAttribute("add", true);
         modelMap.addAttribute("operatorLogin", login);
         modelMap.addAttribute("mode", PageEditMode.CREATE);
@@ -181,16 +181,16 @@ public class OperatorLoginController {
     @RequestMapping(method=RequestMethod.POST, value="update", params="add")
     public String saveOperatorLogin(HttpServletRequest request, YukonUserContext userContext,
                                     ModelMap modelMap, int ecId,
-                                      final @ModelAttribute ("operatorLogin") LoginBackingBean operatorLogin,
+                                      final @ModelAttribute ("operatorLogin") Login operatorLogin,
                                       BindingResult bindingResult, FlashScope flashScope,
                                       EnergyCompanyInfoFragment energyCompanyInfoFragment) throws Exception {
-        //check permissions
+        // Check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
-
+        
         UserGroup userGroup = userGroupDao.getDBUserGroupByUserGroupName(operatorLogin.getUserGroupName());
         ecMappingDao.addEnergyCompanyOperatorLoginListMapping(operatorLogin.getUserId(), ecId);
         yukonUserDao.updateUserGroupId(operatorLogin.getUserId(), userGroup.getUserGroupId());
-
+        
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginAdded"));
         
         return "redirect:home";
@@ -199,18 +199,18 @@ public class OperatorLoginController {
     @RequestMapping(method=RequestMethod.POST, value="update", params="save")
     public String createOperatorLogin(HttpServletRequest request, YukonUserContext userContext,
                                       ModelMap modelMap, int ecId,
-                                      final @ModelAttribute ("operatorLogin") LoginBackingBean operatorLogin,
+                                      final @ModelAttribute ("operatorLogin") Login operatorLogin,
                                       BindingResult bindingResult, FlashScope flashScope,
                                       EnergyCompanyInfoFragment energyCompanyInfoFragment) throws Exception {
-        //check permissions
+        // Check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
-
+        
         AuthType defaultAuthType = authenticationService.getDefaultAuthType();
-
-        //validate login
+        
+        // Validate login
         LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(null);
         LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(null);
-
+        
         passwordValidator.validate(operatorLogin, bindingResult);
         usernameValidator.validate(operatorLogin, bindingResult);
         if (bindingResult.hasErrors()) {
@@ -221,13 +221,13 @@ public class OperatorLoginController {
             return "energyCompany/operatorLogin/create.jsp";
         }
         
-        //save login
+        // Save login
         UserGroup userGroup = userGroupDao.getDBUserGroupByUserGroupName(operatorLogin.getUserGroupName());
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(ecId);
         StarsAdminUtil.createOperatorLogin(operatorLogin.getUsername(), operatorLogin.getPassword1(), 
                                             operatorLogin.getLoginStatus(), userGroup, energyCompany);
-
-        //add message
+        
+        // Add message
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginCreated"));
         
         return "redirect:home";
@@ -236,9 +236,9 @@ public class OperatorLoginController {
     @RequestMapping("edit")
     public String editOperatorLogin(YukonUserContext userContext, ModelMap model, int ecId, int operatorLoginId,
                                     FlashScope flashScope, EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-        // check permissions
+        // Check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, model, userContext);
-        LoginBackingBean login = loginBackingBeanFromYukonUser(yukonUserDao.getLiteYukonUser(operatorLoginId));
+        Login login = loginBackingBeanFromYukonUser(yukonUserDao.getLiteYukonUser(operatorLoginId));
         model.addAttribute("operatorLogin", login);
         model.addAttribute("username", login.getUsername());
         addEditFieldsToModel(model, operatorLoginId, login.getUserId());
@@ -263,18 +263,18 @@ public class OperatorLoginController {
     
     @RequestMapping(method=RequestMethod.POST, value="update", params="update")
     public String updateOperatorLogin(YukonUserContext userContext, ModelMap model, int ecId,
-                                      final @ModelAttribute ("operatorLogin") LoginBackingBean operatorLogin,
+                                      final @ModelAttribute ("operatorLogin") Login operatorLogin,
                                       BindingResult bindingResult, FlashScope flashScope,
                                       EnergyCompanyInfoFragment energyCompanyInfoFragment) throws Exception {
-
-        //check permissions
+        
+        // Check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, model, userContext);
         
-        //validate login
+        // Validate login
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(operatorLogin.getUserId());
         LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(user);
         usernameValidator.validate(operatorLogin, bindingResult);
-
+        
         if (StringUtils.isNotBlank(operatorLogin.getPassword1()) && StringUtils.isNotBlank(operatorLogin.getPassword1())) {
             // Both are blank tells us the user doesn't want to change the password
             // Note we do not need to validate if they are blank because a blank password will not change the current password
@@ -286,22 +286,22 @@ public class OperatorLoginController {
             List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             addEditFieldsToModel(model, operatorLogin.getUserId(), user.getUserID());
-
+            
             return "energyCompany/operatorLogin/create.jsp";
         }
         
-        //save login
+        // Save login
         LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(operatorLogin.getUserId());
         LiteUserGroup userGroup = userGroupDao.findLiteUserGroupByUserGroupName(operatorLogin.getUserGroupName());
         StarsAdminUtil.updateLogin(liteUser, operatorLogin.getUsername(), operatorLogin.getPassword1(),
             operatorLogin.getLoginStatus(), userGroup);
         
-        //add message
+        // Add message
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginUpdated"));
         
         return "redirect:home";
     }
-
+    
     @RequestMapping(value="toggleOperatorLoginStatus",
                     method = {RequestMethod.POST, RequestMethod.HEAD},
                     headers = "x-requested-with=XMLHttpRequest")
@@ -312,7 +312,7 @@ public class OperatorLoginController {
                                             HttpServletRequest request,
                                             HttpServletResponse response,
                                             EnergyCompanyInfoFragment energyCompanyInfoFragment) throws WebClientException, TransactionException, IOException {
-        //check permissions
+        // Check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
         Map<String, String> jsonResponse = new HashMap<>();
@@ -343,17 +343,17 @@ public class OperatorLoginController {
     public String deleteOperatorLogin(YukonUserContext userContext,
                                       ModelMap modelMap,
                                       int ecId,
-                                      final @ModelAttribute ("operatorLogin") LoginBackingBean operatorLogin,
+                                      final @ModelAttribute ("operatorLogin") Login operatorLogin,
                                       BindingResult bindingResult,
                                       FlashScope flashScope,
                                       EnergyCompanyInfoFragment energyCompanyInfoFragment) {
-      //check permissions
+        // Check permissions
         checkPermissionsAndSetupModel(energyCompanyInfoFragment, modelMap, userContext);
         
-        //delete user
+        // Delete user
         yukonUserDao.deleteUser(operatorLogin.getUserId());
-
-        //add message
+        
+        // Add message
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.operatorLogin.operatorLoginDeleted"));
         
         return "redirect:home";
@@ -366,7 +366,7 @@ public class OperatorLoginController {
         ecMappingDao.deleteEnergyCompanyOperatorLoginListMapping(userId, ecId);
         return Collections.singletonMap("success", "success");
     }
-
+    
     @ModelAttribute("assignableGroups")
     public List<LiteUserGroup> getAssignableGroups(int ecId) {
         return ecMappingDao.getOperatorUserGroups(ecId);
@@ -381,4 +381,5 @@ public class OperatorLoginController {
     public LoginStatusEnum[] getLoginStatusTypes() {
         return LoginStatusEnum.values();
     }
+    
 }

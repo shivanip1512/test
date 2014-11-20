@@ -12,7 +12,7 @@ import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.users.dao.UserGroupDao;
 import com.cannontech.core.users.model.LiteUserGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
+import com.cannontech.web.login.model.Login;
 import com.google.common.collect.Lists;
 
 /**
@@ -21,7 +21,7 @@ import com.google.common.collect.Lists;
  *      * if they match
  *      * checks vs password policy.
  */
-public class LoginPasswordValidator extends SimpleValidator<LoginBackingBean> {
+public class LoginPasswordValidator extends SimpleValidator<Login> {
     public static final int PASSWORD_MAXIMUM_CHAR_LENGTH = 64;
 
     private PasswordPolicyService passwordPolicyService;
@@ -30,7 +30,7 @@ public class LoginPasswordValidator extends SimpleValidator<LoginBackingBean> {
     private LiteYukonUser user;
     
     public LoginPasswordValidator(LiteYukonUser user, PasswordPolicyService passwordPolicyService, UserGroupDao userGroupDao){
-    	super(LoginBackingBean.class);
+    	super(Login.class);
     	this.user = user;
     	this.passwordPolicyService = passwordPolicyService;
     	this.userGroupDao = userGroupDao;
@@ -42,7 +42,7 @@ public class LoginPasswordValidator extends SimpleValidator<LoginBackingBean> {
      *          LoginBackingBean.getPassword2()
      */
     @Override
-    public void doValidation(LoginBackingBean loginBackingBean, Errors errors) {
+    public void doValidation(Login loginBackingBean, Errors errors) {
         // Password Validation
         YukonValidationUtils.checkExceedsMaxLength(errors, "password1", loginBackingBean.getPassword1(), PASSWORD_MAXIMUM_CHAR_LENGTH);
         YukonValidationUtils.checkExceedsMaxLength(errors, "password2", loginBackingBean.getPassword2(), PASSWORD_MAXIMUM_CHAR_LENGTH);

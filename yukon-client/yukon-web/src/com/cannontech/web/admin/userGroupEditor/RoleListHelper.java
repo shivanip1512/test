@@ -6,10 +6,10 @@ import java.util.Set;
 
 import org.springframework.ui.ModelMap;
 
-import com.cannontech.common.util.Pair;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleCategory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
+import com.cannontech.web.admin.userGroupEditor.model.RoleAndGroup;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMultimap;
@@ -42,32 +42,33 @@ public class RoleListHelper {
      * Sorts roles and groups by role category, then role name into an multimap of category to roles.
      * Do not include the roles from the System role category
      */
-    public static Multimap<YukonRoleCategory, Pair<YukonRole, LiteYukonGroup>> sortRolesByCategory(Multimap<YukonRole, LiteYukonGroup> rolesAndGroups) {
-        List<YukonRole> rolesList = Lists.newArrayList(rolesAndGroups.keySet());
-        Ordering<Pair<YukonRole, LiteYukonGroup>> orderingByYukonRole = Ordering.natural().nullsFirst().onResultOf(new Function<Pair<YukonRole, LiteYukonGroup>, String>() {
+    public static Multimap<YukonRoleCategory, RoleAndGroup> 
+        sortRolesByCategory(Multimap<YukonRole, LiteYukonGroup> rolesAndGroups) {
+        
+        List<YukonRole> roles = Lists.newArrayList(rolesAndGroups.keySet());
+        Ordering<RoleAndGroup> orderingByRole = 
+                Ordering.natural().nullsFirst().onResultOf(new Function<RoleAndGroup, String>() {
             @Override
-            public String apply(Pair<YukonRole, LiteYukonGroup> input) {
-                if (input.getFirst() == null) return null;
-                return input.getFirst().name();
+            public String apply(RoleAndGroup input) {
+                if (input.getRole() == null) return null;
+                return input.getRole().name();
             }
         });
         
-        Multimap<YukonRoleCategory, Pair<YukonRole, LiteYukonGroup>> roleCategoryToRoleRoleGroupPairMap = 
-                TreeMultimap.create(YukonRoleCategory.ORDERING_BY_ROLE_CATEGORY_NAME, orderingByYukonRole);
-        for (YukonRole role : rolesList) {
+        Multimap<YukonRoleCategory, RoleAndGroup> categoryToGroups = 
+                TreeMultimap.create(YukonRoleCategory.ORDERING_BY_ROLE_CATEGORY_NAME, orderingByRole);
+        for (YukonRole role : roles) {
             for (LiteYukonGroup roleGroup : rolesAndGroups.get(role)) {
-                Pair<YukonRole, LiteYukonGroup>roleGroupPair = new Pair<YukonRole, LiteYukonGroup>(role, roleGroup);
-
+                RoleAndGroup roleAndGroup = RoleAndGroup.of(role, roleGroup);
                 if (role == null) {
-                    roleCategoryToRoleRoleGroupPairMap.put(null, roleGroupPair);
+                    categoryToGroups.put(null, roleAndGroup);
                     continue;
                 }
-
-                roleCategoryToRoleRoleGroupPairMap.put(role.getCategory(), roleGroupPair);
+                categoryToGroups.put(role.getCategory(), roleAndGroup);
             }
         }
         
-        return roleCategoryToRoleRoleGroupPairMap;
+        return categoryToGroups;
     }
     
     /**

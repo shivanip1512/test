@@ -330,7 +330,9 @@ yukon.ui = (function () {
             var defaults = {
                     event: 'yukon.dialog.ok',
                     okText: yg.text.ok,
-                    cancelText: yg.text.cancel
+                    okClass: '',
+                    cancelText: yg.text.cancel,
+                    cancelClass: ''
                 };
             if (typeof(options) !== 'undefined') {
                 $.extend(defaults, options);
@@ -338,9 +340,9 @@ yukon.ui = (function () {
             
             return [{
                         text: defaults.cancelText, click: function (ev) { $(this).dialog('close'); }, 
-                        'class': 'js-secondary-action' 
+                        'class': 'js-secondary-action ' + defaults.cancelClass 
                     },
-                    { 
+                    {
                         text: defaults.okText, 
                         click: function (ev) {
                             var dialog = $(this).closest('.ui-dialog-content');
@@ -354,7 +356,7 @@ yukon.ui = (function () {
                                 $(defaults.target).trigger(defaults.event);
                             }
                         }, 
-                        'class': 'primary action js-primary-action' 
+                        'class': 'primary action js-primary-action ' + defaults.okClass
                     }];
         },
         
@@ -713,6 +715,8 @@ yukon.ui = (function () {
             
             if (dialog) {
                 if (popup.is('[data-ok-text]')) buttonOptions.okText = popup.data('okText');
+                if (popup.is('[data-ok-class]')) buttonOptions.okClass = popup.data('okClass');
+                if (popup.is('[data-cancel-class]')) buttonOptions.cancelClass = popup.data('cancelClass');
                 if (popup.is('[data-event]')) buttonOptions.event = popup.data('event');
                 if (popup.is('[data-target]')) buttonOptions.target = popup.data('target');
                 if (popup.is('[data-form]')) buttonOptions.form = popup.data('form');

@@ -17,7 +17,7 @@ import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.login.ChangeLoginMessage;
-import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
+import com.cannontech.web.login.model.Login;
 import com.cannontech.web.stars.dr.operator.validator.LoginPasswordValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.user.model.ChangePassword;
@@ -141,11 +141,11 @@ public class ChangePasswordValidatorFactory {
     
             if (!didNewPasswordFail && !didConfirmPasswordFail) {
                 // How about this: does it validate anything about the make-up of the new password?
-                LoginBackingBean loginBackingBean = new LoginBackingBean();
-                loginBackingBean.setPassword1(input.getNewPassword());
-                loginBackingBean.setPassword2(input.getConfirmPassword());
+                Login login = new Login();
+                login.setPassword1(input.getNewPassword());
+                login.setPassword2(input.getConfirmPassword());
                 LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(user);
-                passwordValidator.validate(loginBackingBean, errors);
+                passwordValidator.validate(login, errors);
             }
         }
     

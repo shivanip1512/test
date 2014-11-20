@@ -10,7 +10,12 @@
 <%@ attribute name="excludeColon" %>
 <%@ attribute name="checkBoxDescriptionNameKey" %>
 <%@ attribute name="rowClass" %>
+<%@ attribute name="inputClass" description="CSS class names applied to the checkbox." %>
 
 <tags:nameValue2 nameKey="${nameKey}" labelForId="${pageScope.id}" excludeColon="${pageScope.excludeColon}" rowClass="${pageScope.rowClass}">
-	<tags:checkbox path="${path}" onclick="${pageScope.onclick}" id="${pageScope.id}" descriptionNameKey="${checkBoxDescriptionNameKey}"/>
+    <tags:checkbox path="${path}" 
+        onclick="${pageScope.onclick}" 
+        id="${pageScope.id}" 
+        descriptionNameKey="${checkBoxDescriptionNameKey}"
+        styleClass="${pageScope.inputClass}"/>
 </tags:nameValue2>

@@ -15,7 +15,7 @@
 <c:set var="page" value="forgottenPassword" />
 
 <tags:noAuthPage module="login" page="forgottenPassword">
-<section id="content" style="min-height: 420px;">
+<section class="yukon-content" style="min-height: 420px;">
     <div class="column-24 clear">
         <div class="one column nogutter">
             <div class="page-title-bar">
@@ -33,10 +33,10 @@
                     <i:inline key=".forgottenPasswordMessage"/>
                 </div>
                 
-                <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".forgottenPasswordFields"></tags:nameValue2>
-                </tags:nameValueContainer2>
-                <form:input autocomplete="off" path="forgottenPasswordField" autofocus="autofocus" size="50"/>
+                <div class="stacked">
+                    <h4><i:inline key=".forgottenPasswordFields"/></h4>
+                    <form:input autocomplete="off" path="forgottenPasswordField" autofocus="autofocus" size="50"/>
+                </div>
                 
                 <tags:captcha captchaPublicKey="${captchaPublicKey}" captchaTheme="clean" captchaEnabled="${captchaEnabled}" locale="${locale}"/>
                 <div class="page-action-area">

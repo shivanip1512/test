@@ -68,8 +68,7 @@
                     </cti:displayForPageEditModes>
                 </div>
             </tags:sectionContainer2>
-
-
+            
             <cti:displayForPageEditModes modes="EDIT">
                 <div class="page-action-area">
                     <cti:button nameKey="save" name="update" type="submit" classes="primary action"/>
@@ -82,38 +81,56 @@
                     <cti:url var="editUrl" value="/user/profile/edit"/>
                     <cti:button nameKey="edit" icon="icon-pencil" name="edit" href="${editUrl}"/>
                     <c:if test="${canResetPassword}">
-                        <cti:button id="btnChangePassword" icon="icon-key" nameKey="changePassword.button"/>
+                        <cti:button data-popup="#change-password-popup" icon="icon-key" nameKey="changePassword.button"/>
                     </c:if>
                 </div>
             </cti:displayForPageEditModes>
         </form:form>
-
+        
         <cti:displayForPageEditModes modes="VIEW">
             <c:if test="${canResetPassword}">
-                <d:inline on="#btnChangePassword" id="dlg_change_password" okEvent="evt_ajaxsubmit_confirm_password" nameKey="profile.changePassword" options="{width: 750}">
+                <div id="change-password-popup" class="dn" 
+                        data-dialog 
+                        data-event="yukon:user:profile:password:save" 
+                        data-title="<cti:msg2 key=".profile.changePassword"/>" 
+                        data-width="750">
                     <div class="column-12-12">
                         <div class="column one">
-                            <form id="loginBackingBean">
+                            <form id="change-password-form">
                                 <input type="hidden" name="k" value="${changePwdKey}">
                                 <input type="hidden" name="userId" value="${userProfile.userId}">
                                 <input type="hidden" name="username" value="${fn:escapeXml(userProfile.username)}">
                                 <input type="hidden" name="userGroupName" value="${fn:escapeXml(userGroupName)}">
                                 <tags:nameValueContainer2>
                                     <tr><td class="name"><i:inline key="yukon.web.changelogin.oldPassword"/></td>
-                                        <td class="value"><input maxlength="64" autocomplete="false" type="password" name="oldPassword" value="" class="js-current" placeholder="<cti:msg2 key='yukon.web.changelogin.oldPassword'/>"></input></td>
+                                        <td class="value">
+                                            <input type="password" maxlength="64" autocomplete="false" 
+                                                name="oldPassword" class="js-current-password" 
+                                                placeholder="<cti:msg2 key='yukon.web.changelogin.oldPassword'/>">
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td class="name"><i:inline key="yukon.web.changelogin.newPassword"/></td>
-                                        <td class="value"><input maxlength="64" autocomplete="false" type="password" name="password1" value="" class="password_editor_field new js-check_password" placeholder="<cti:msg2 key='yukon.web.changelogin.newPassword'/>"></input></td>
+                                        <td class="value">
+                                            <input type="password" maxlength="64" autocomplete="false" 
+                                                name="password1" class="js-new-password" 
+                                                placeholder="<cti:msg2 key='yukon.web.changelogin.newPassword'/>">
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td class="name"><i:inline key="yukon.web.changelogin.confirm"/></td>
-                                        <td class="value"><input maxlength="64" autocomplete="false" type="password" name="password2" value="" class="password_editor_field confirm" placeholder="<cti:msg2 key='yukon.web.changelogin.confirm'/>"></input></td>
+                                        <td class="value">
+                                            <input type="password" maxlength="64" autocomplete="false" 
+                                                name="password2" class="js-confirm-password" 
+                                                placeholder="<cti:msg2 key='yukon.web.changelogin.confirm'/>">
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td></td>
                                         <td>
-                                            <div class="no_match error"><i:inline key="yukon.web.modules.passwordPolicy.noMatch.description"/></div>
+                                            <div class="js-password-mismatch error">
+                                                <i:inline key="yukon.web.modules.passwordPolicy.noMatch.description"/>
+                                            </div>
                                             <div class="password_errors dn"></div>
                                         </td>
                                     </tr>
@@ -121,17 +138,17 @@
                             </form>
                         </div>
                         <div class="column two nogutter">
-                            <tags:passwordHelper passwordPolicy="${passwordPolicy}"/>
+                            <tags:passwordHelper passwordPolicy="${passwordPolicy}" userId="${userProfile.userId}"/>
                         </div>
                     </div>
-                </d:inline>
+                </div>
             </c:if>
-
+            
             <%-- PREFERENCES SECTION --%>
             <tags:sectionContainer2 nameKey="preferences">
                 <table id="tbl_preferences" class="full-width with-form-controls">
                     <tbody>
-                    
+                        
                         <tr data-type="${objPrefName}" class="all-preferences-row">
                             <td class="name"><i:inline key=".preferences.default.all"/></td>
                             </td>
@@ -208,10 +225,8 @@
                         <ul class="grouped-list">
                             <li><span class="group"><cti:formatObject value="${category.key}"/></span>
                                 <ul class="groupedItem">
-                                    <c:forEach var="role" items="${category.value}">
-                                        <li class="detail">
-                                            <cti:formatObject value="${role.first}"/>
-                                        </li>
+                                    <c:forEach var="roleAndGroup" items="${category.value}">
+                                        <li><cti:formatObject value="${roleAndGroup.role}"/></li>
                                     </c:forEach>
                                 </ul>
                             </li>

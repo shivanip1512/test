@@ -29,9 +29,10 @@
 <cti:includeCss link="JQUERY_UI_MIN" force="true"/>
 <cti:includeCss link="TIPSY" force="true"/>
 
-
 <%-- Include overrides.css last so that, you know, they actually override.  cascade! --%>
 <cti:includeCss link="OVERRIDES" force="true"/>
+
+<tags:jsGlobals/>
 
 <cti:includeScript link="MODERNIZR" force="true"/>
 
@@ -48,7 +49,6 @@
 <cti:includeScript link="YUKON_COOKIE" force="true"/>
 <cti:includeScript link="YUKON_UI_UTIL" force="true"/>
 
-<cti:css key="yukon.web.login.loginStyles"/>
 </head>
 
 <body>
@@ -80,7 +80,7 @@
                 data-position-my="right bottom" 
                 data-position-at="right top" 
                 data-position-of="#contact-us">
-
+                
               <cti:globalSetting var="email" globalSettingType="CONTACT_EMAIL"/>
               <div class="stacked">
                 <label>

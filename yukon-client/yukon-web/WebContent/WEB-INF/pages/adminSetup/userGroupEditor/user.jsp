@@ -1,79 +1,62 @@
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="adminSetup" page="userEditor.${mode}">
 
-<script type="text/javascript">
-var supportsPasswordSet = ${cti:jsonString(supportsPasswordSet)};
-var originalAuthCategory = '${user.authCategory}';
+<cti:includeScript link="/JavaScript/yukon.admin.user.js"/>
 
-$(function() {
-    $('#cancelChangePassword').click(function(event) {
-        $('#changePasswordPopup').dialog('close');
-    });
-    
-    $('#authCategory').change(function() {
-        var newAuthCategory = $('#authCategory').val();
-        if (newAuthCategory !== originalAuthCategory && supportsPasswordSet[newAuthCategory]) {
-            $('#changeAuthPassword, #changeAuthConfirmPassword').show();
-        } else {
-            $('#changeAuthPassword, #changeAuthConfirmPassword').hide();
-        }
-    });
-    
-    <c:if test="${not empty hasPasswordError and hasPasswordError}">
-         $('#changeAuthPassword, #changeAuthConfirmPassword').show();
-    </c:if>
-});
-</script>
-    
-    <i:simplePopup titleKey=".changePasswordPopup" arguments="${user.username}" id="changePasswordPopup" 
-            on="#changePasswordButton" showImmediately="${showChangePwPopup}">
+    <cti:msg2 var="passwordTitle" key=".changePasswordPopup" arguments="${user.username}"/>
+    <div class="dn" id="change-password-popup" data-dialog 
+            data-title="${passwordTitle}"
+            data-ok-class="js-save-pw-btn"
+            data-event="yukon:admin:user:password:save">
         <tags:setFormEditMode mode="${pwChangeFormMode}"/>
-        <c:if test="${showChangePasswordErrors}">
-            <cti:flashScopeMessages/>
+        <c:if test="${not empty passwordErrorMsg}">
+            <tags:alertBox>${fn:escapeXml(passwordErrorMsg)}</tags:alertBox>
         </c:if>
         <div class="column-12-12">
             <div class="column one">
-                <form:form commandName="password" action="changePassword" method="post">
+                <form:form id="change-password-form" commandName="password" action="change-password" method="post">
                     <cti:csrfToken/>
-                    <input type="hidden" value="${userId}" name="userId">
+                    <input type="hidden" name="userId" value="${userId}">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".password">
-                            <tags:password path="password"/>
+                            <tags:password path="password" cssClass="js-new-password"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".confirmPassword">
-                            <tags:password path="confirmPassword"/>
+                            <tags:password path="confirmPassword" cssClass="js-confirm-password"/>
+                        </tags:nameValue2>
+                        <tags:nameValue2 excludeColon="true">
+                            <div class="js-password-mismatch error">
+                                <i:inline key="yukon.web.modules.passwordPolicy.noMatch.description"/>
+                            </div>
                         </tags:nameValue2>
                     </tags:nameValueContainer2>
-                    <div class="action-area">
-                        <cti:button nameKey="save" type="submit" classes="primary action"/>
-                        <cti:button nameKey="cancel" id="cancelChangePassword"/>
-                    </div>
                 </form:form>
             </div>
             <div class="column two nogutter">
-                <tags:passwordHelper passwordPolicy="${passwordPolicy}"/>
+                <tags:passwordHelper passwordPolicy="${passwordPolicy}" userId="${userId}" saveButton=".js-save-pw-btn"/>
             </div>
-        </div>                     
-    </i:simplePopup>
+        </div>
+    </div>
     
     <tags:setFormEditMode mode="${mode}"/>
     <cti:msg2 var="none" key="yukon.web.defaults.none"/>
-
+    
     <div class="column-12-12">
-
+    
         <div class="column one">
-
+            
             <form:form commandName="user" action="edit" method="post">
                 <cti:csrfToken/>
                 <form:hidden path="userId"/>
-
+                <tags:hidden path="password.password"/>
+                <tags:hidden path="password.confirmPassword"/>
+                
                 <tags:nameValueContainer2>
                     
                     <c:choose>
@@ -82,23 +65,13 @@ $(function() {
                         </c:when>
                         <c:otherwise>
                             <tags:hidden path="username"/>
-                            <tags:nameValue2 nameKey=".username">
-                                <spring:escapeBody htmlEscape="true">${user.username}</spring:escapeBody>
-                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".username">${fn:escapeXml(user.username)}</tags:nameValue2>
                         </c:otherwise>
                     </c:choose>
-
-                    <tags:selectNameValue nameKey=".authentication" items="${authenticationCategories}" path="authCategory"/>
-
-                    <cti:displayForPageEditModes modes="EDIT,CREATE">
-                        <tags:nameValue2 nameKey=".password" rowId="changeAuthPassword" rowClass="dn">
-                            <tags:password path="password.password"/>
-                        </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".confirmPassword" rowId="changeAuthConfirmPassword" rowClass="dn">
-                            <tags:password path="password.confirmPassword"/>
-                        </tags:nameValue2>
-                    </cti:displayForPageEditModes>
-
+                    
+                    <tags:selectNameValue inputClass="js-auth-category" path="authCategory" nameKey=".authentication" 
+                        items="${authenticationCategories}"/>
+                    
                     <c:choose>
                         <c:when test="${editNameAndStatus && currentUserId != user.userId}">
                             <tags:selectNameValue nameKey=".userStatus" items="${loginStatusTypes}" path="loginStatus"/>
@@ -106,22 +79,23 @@ $(function() {
                         <c:otherwise>
                             <tags:hidden path="loginStatus"/>
                             <tags:nameValue2 nameKey=".userStatus">
-                                <spring:escapeBody htmlEscape="true"><i:inline key="${user.loginStatus}"/></spring:escapeBody>
+                                <i:inline key="${user.loginStatus}" htmlEscape="true"/>
                             </tags:nameValue2>
                         </c:otherwise>
                     </c:choose>
                     
                         <cti:displayForPageEditModes modes="EDIT,CREATE">
                             <cti:msg2 var="none" key="defaults.none"/>
-                            <tags:selectNameValue nameKey=".userGroup" items="${userGroups}" itemValue="userGroupId" itemLabel="userGroupName" 
-                                path="userGroupId" defaultItemLabel="${none}" defaultItemValue="" />
+                            <tags:selectNameValue nameKey=".userGroup" items="${userGroups}" itemValue="userGroupId" 
+                                itemLabel="userGroupName" path="userGroupId" 
+                                defaultItemLabel="${none}" defaultItemValue=""/>
                         </cti:displayForPageEditModes>
                         <cti:displayForPageEditModes modes="VIEW">
                             <cti:url value="/adminSetup/userGroup/view" var="userGroupUrl">
                                 <cti:param name="userGroupId" value="${user.userGroupId}" />
                             </cti:url>
                             <tags:nameValue2 nameKey=".userGroup">
-                                <a href="${userGroupUrl}"><spring:escapeBody htmlEscape="true">${userGroupName}</spring:escapeBody></a>
+                                <a href="${userGroupUrl}">${fn:escapeXml(userGroupName)}</a>
                             </tags:nameValue2>
                         </cti:displayForPageEditModes>
                     
@@ -139,10 +113,10 @@ $(function() {
                     <cti:displayForPageEditModes modes="VIEW">
                         <cti:button nameKey="edit" icon="icon-pencil" name="edit" type="submit"/>
                         <c:if test="${supportsPasswordSet[user.authCategory]}">
-                            <cti:button nameKey="changePassword" id="changePasswordButton" icon="icon-key"/>
+                            <cti:button nameKey="changePassword" data-popup="#change-password-popup" icon="icon-key"/>
                         </c:if>
+                        <cti:button nameKey="unlockUser" name="unlockUser" id="unlockUser"  type="submit"/>
                     </cti:displayForPageEditModes>
-                    <cti:button nameKey="unlockUser" name="unlockUser" id="unlockUser"  type="submit"/>
                 </div>
             </form:form>
                 
@@ -165,8 +139,8 @@ $(function() {
                                             <ul class="groupedItem">
                                                 <c:forEach var="roleGroupPair" items="${category.value}">
                                                     <li>
-                                                        <cti:formatObject value="${roleGroupPair.first}"/>
-                                                        &nbsp;<span class="detail wsnw">(${fn:escapeXml(roleGroupPair.second)})</span>
+                                                        <cti:formatObject value="${roleGroupPair.role}"/>
+                                                        &nbsp;<span class="detail wsnw">(${fn:escapeXml(roleGroupPair.group)})</span>
                                                     </li>
                                                 </c:forEach>
                                             </ul>

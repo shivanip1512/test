@@ -86,13 +86,13 @@ import com.cannontech.web.bulk.util.BulkFileUpload;
 import com.cannontech.web.bulk.util.BulkFileUploadUtils;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
+import com.cannontech.web.login.model.Login;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.security.csrf.CsrfTokenService;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.importAccounts.AccountImportResult;
 import com.cannontech.web.stars.dr.operator.importAccounts.service.AccountImportService;
 import com.cannontech.web.stars.dr.operator.model.AccountImportData;
-import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
 import com.cannontech.web.stars.dr.operator.model.OperatorGeneralUiExtras;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
@@ -399,7 +399,7 @@ public class OperatorAccountController {
             uiExtras.setHasOddsForControlRole(hasOddForControlRole);
             
             /* LoginBackingBean */
-            LoginBackingBean loginBackingBean = new LoginBackingBean();
+            Login loginBackingBean = new Login();
             loginBackingBean.setLoginEnabled(LoginStatusEnum.ENABLED);
             
             /* AccountGeneral */
@@ -568,20 +568,20 @@ public class OperatorAccountController {
         OperatorGeneralUiExtras extras = operatorAccountService.getOperatorGeneralUiExtras(accountId, context);
         
         /* LoginBackingBean */
-        LoginBackingBean loginBackingBean = new LoginBackingBean();
+        Login login = new Login();
         if (residentialUser.getUserGroupId() != null) {
             LiteUserGroup userResidentialUserGroup= userGroupDao.getLiteUserGroup(residentialUser.getUserGroupId());
             if (userResidentialUserGroup != null) {
-                loginBackingBean.setUserGroupName(userResidentialUserGroup.getUserGroupName());
+                login.setUserGroupName(userResidentialUserGroup.getUserGroupName());
             }
         }
         
         if (residentialUser.getUserID() == UserUtils.USER_NONE_ID) {
             model.addAttribute("loginMode", LoginModeEnum.CREATE);
-            loginBackingBean.setLoginEnabled(LoginStatusEnum.ENABLED);
+            login.setLoginEnabled(LoginStatusEnum.ENABLED);
         } else {
-            loginBackingBean.setUsername(residentialUser.getUsername());
-            loginBackingBean.setLoginEnabled(residentialUser.getLoginStatus());
+            login.setUsername(residentialUser.getUsername());
+            login.setLoginEnabled(residentialUser.getLoginStatus());
             model.addAttribute("loginMode", LoginModeEnum.EDIT);
         }
 
@@ -589,9 +589,9 @@ public class OperatorAccountController {
         AccountGeneral accountGeneral = new AccountGeneral();
         accountGeneral.setAccountDto(accountDto);
         accountGeneral.setOperatorGeneralUiExtras(extras);
-        accountGeneral.setLoginBackingBean(loginBackingBean);
-        if (!StringUtils.isEmpty(loginBackingBean.getUsername())) {
-            model.addAttribute("passwordBean", loginBackingBean);
+        accountGeneral.setLoginBackingBean(login);
+        if (!StringUtils.isEmpty(login.getUsername())) {
+            model.addAttribute("login", login);
         }
         
         model.addAttribute("accountGeneral", accountGeneral);
@@ -625,7 +625,7 @@ public class OperatorAccountController {
      */
     @RequestMapping(value="updatePassword", method=RequestMethod.POST)
     public @ResponseBody Map<String, ? extends Object> updatePassword(
-            final @ModelAttribute LoginBackingBean loginBackingBean,
+            final @ModelAttribute("login") Login login,
             BindingResult bindingResult,
             final YukonUserContext userContext,
             final AccountInfoFragment accountInfoFragment,
@@ -640,8 +640,8 @@ public class OperatorAccountController {
         /* Make sure the passwords match */
         LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(residentialUser);
         LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(residentialUser);
-        passwordValidator.validate(loginBackingBean, bindingResult);
-        usernameValidator.validate(loginBackingBean, bindingResult);
+        passwordValidator.validate(login, bindingResult);
+        usernameValidator.validate(login, bindingResult);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
         /* 
@@ -657,7 +657,7 @@ public class OperatorAccountController {
                     EventSource.OPERATOR);
             
             /* ensure that we are only updating passwords on existing accounts */
-            residentialLoginService.updateResidentialPassword(loginBackingBean, userContext, residentialUser);
+            residentialLoginService.updateResidentialPassword(login, userContext, residentialUser);
           
             /* Added Event Log Message */
             int userId = SessionUtil.getParentLoginUserId(session, userContext.getYukonUser().getUserID());
@@ -871,7 +871,7 @@ public class OperatorAccountController {
         
         private AccountDto accountDto = new AccountDto();
         private OperatorGeneralUiExtras operatorGeneralUiExtras = new OperatorGeneralUiExtras();
-        private LoginBackingBean loginBackingBean = new LoginBackingBean();
+        private Login loginBackingBean = new Login();
         
         public AccountDto getAccountDto() {
             return accountDto;
@@ -885,10 +885,10 @@ public class OperatorAccountController {
         public void setOperatorGeneralUiExtras(OperatorGeneralUiExtras operatorGeneralUiExtras) {
             this.operatorGeneralUiExtras = operatorGeneralUiExtras;
         }
-        public void setLoginBackingBean(LoginBackingBean loginBackingBean) {
+        public void setLoginBackingBean(Login loginBackingBean) {
             this.loginBackingBean = loginBackingBean;
         }
-        public LoginBackingBean getLoginBackingBean() {
+        public Login getLoginBackingBean() {
             return loginBackingBean;
         }
         
@@ -985,7 +985,7 @@ public class OperatorAccountController {
      * @param originalLoginGroup
      * @return true if any of the login fields were changed.
      */
-    private boolean didLoginChange(LiteYukonUser residentialUser, LoginBackingBean loginBackingBean, 
+    private boolean didLoginChange(LiteYukonUser residentialUser, Login loginBackingBean, 
             String originalLoginUserGroupName) {
         
         String previousUsername = residentialUser.getUsername();

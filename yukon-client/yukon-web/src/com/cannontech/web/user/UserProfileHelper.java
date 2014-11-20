@@ -13,7 +13,6 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.user.UserAuthenticationInfo;
-import com.cannontech.common.util.Pair;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -32,6 +31,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.user.UserGroup;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.admin.userGroupEditor.RoleListHelper;
+import com.cannontech.web.admin.userGroupEditor.model.RoleAndGroup;
 import com.cannontech.web.common.ContactDto;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 import com.cannontech.web.stars.service.PasswordResetService;
@@ -137,8 +137,9 @@ public class UserProfileHelper {
         model.addAttribute("userGroupId", userGroup.getUserGroupId());
         model.addAttribute("userGroupName", userGroup.getUserGroupName());
         
-        Multimap<YukonRole, LiteYukonGroup> rolesAndGroups = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
-        Multimap<YukonRoleCategory, Pair<YukonRole, LiteYukonGroup>> sortedRoles = RoleListHelper.sortRolesByCategory(rolesAndGroups);
+        Multimap<YukonRole, LiteYukonGroup> rolesAndGroups = 
+                roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
+        Multimap<YukonRoleCategory, RoleAndGroup> sortedRoles = RoleListHelper.sortRolesByCategory(rolesAndGroups);
         model.addAttribute("categoryRoleMap", sortedRoles.asMap());
     }
 

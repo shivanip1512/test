@@ -335,23 +335,6 @@ yukon.ui.util = (function () {
             return prefix + input.replace(/\W+/g, '');
         },
         
-        /**
-         * This function takes in an inputElement and an inputType and changes the
-         * current node over to the desired type.
-         *
-         * String inputElement - The id of the element.
-         * String inputType - The desired input type.
-         */ 
-        changeInputType : function (inputElement, inputType) {
-            var input = document.getElementById(inputElement),
-                input2 = document.createElement('input');
-            input2.id = input.id;
-            input2.name = input.name;
-            input2.value = input.value;
-            input2.type = inputType;
-            input.parentNode.replaceChild(input2,input);
-        },
-        
         getHeaderJSON : function (xhr) {
             var json;
             try { json = xhr.getResponseHeader('X-Json'); }

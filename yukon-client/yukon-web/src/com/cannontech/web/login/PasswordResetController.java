@@ -44,7 +44,7 @@ import com.cannontech.web.common.captcha.model.CaptchaResponse;
 import com.cannontech.web.common.captcha.service.CaptchaService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.stars.dr.operator.model.LoginBackingBean;
+import com.cannontech.web.login.model.Login;
 import com.cannontech.web.stars.dr.operator.validator.LoginPasswordValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
@@ -54,19 +54,22 @@ import com.google.common.collect.Maps;
 
 @Controller
 public class PasswordResetController {
-
-    @Autowired private AuthenticationService authenticationService;
+    
+    private static final String baseKey = "yukon.web.modules.login.";
+    
+    @Autowired private AuthenticationService authService;
     @Autowired private CaptchaService captchaService;
     @Autowired private PasswordResetService passwordResetService;
     @Autowired private LoginValidatorFactory loginValidatorFactory;
-    @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private YukonUserContextResolver yukonUserContextResolver;
-    @Autowired private PasswordPolicyService passwordPolicyService;
+    @Autowired private YukonUserDao userDao;
     @Autowired private UserGroupDao userGroupDao;
+    @Autowired private YukonUserContextResolver contextResolver;
+    @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private GlobalSettingDao globalSettingDao;
-
+    
     @RequestMapping(value = "/forgottenPassword", method = RequestMethod.GET)
     public String newForgottenPassword(ModelMap model, HttpServletRequest request) throws Exception {
+        
         globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
         
         setupModelMap(model, request);
@@ -74,12 +77,14 @@ public class PasswordResetController {
         
         return "forgottenPassword.jsp";
     }
-
+    
     @RequestMapping(value = "/forgottenPassword", method = RequestMethod.POST)
-    public String forgottenPasswordRequest(ModelMap model, FlashScope flashScope, HttpServletRequest request, 
-                                           @ModelAttribute ForgottenPassword forgottenPassword, 
-                                           String recaptcha_challenge_field, String recaptcha_response_field)
+    public String forgottenPasswordRequest(HttpServletRequest request, ModelMap model, FlashScope flash,
+                                           @ModelAttribute ForgottenPassword forgottenPassword,
+                                           String recaptcha_challenge_field,
+                                           String recaptcha_response_field)
     throws Exception {
+        
         globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
         
         // Process Captcha
@@ -88,179 +93,185 @@ public class PasswordResetController {
             Captcha captcha = new Captcha(request.getRemoteAddr(), recaptcha_challenge_field, recaptcha_response_field);
             captchaResponse = captchaService.checkCaptcha(captcha);
         } catch (ReCaptchaException e) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.login.changePassword.captchaTimeout"));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "changePassword.captchaTimeout"));
             setupModelMap(model, request);
             return "forgottenPassword.jsp";
         }
-
+        
         // The Captcha failed.  return the user the forgotten password page
         if (captchaResponse.isError()) {
-            forgottenPasswordFieldError(forgottenPassword, flashScope, model, request, captchaResponse.getError().getFormatKey()); 
+            forgottenPasswordFieldError(forgottenPassword, flash, model, request, 
+                    captchaResponse.getError().getFormatKey());
+            
             return "forgottenPassword.jsp";
         }
-
+        
         // Getting the need password reset information.
-        PasswordResetInfo passwordResetInfo = passwordResetService.getPasswordResetInfo(forgottenPassword.getForgottenPasswordField());
-
+        PasswordResetInfo passwordResetInfo = 
+                passwordResetService.getPasswordResetInfo(forgottenPassword.getForgottenPasswordField());
+        
         // Validate the request.
         if (!passwordResetInfo.isPasswordResetInfoValid()) {
-            forgottenPasswordFieldError(forgottenPassword, flashScope, model, request, "yukon.web.modules.login.forgottenPassword.invalidProvidedInformation");
+            forgottenPasswordFieldError(forgottenPassword, flash, model, request, 
+                    baseKey + "forgottenPassword.invalidProvidedInformation");
             return "forgottenPassword.jsp";
         }
-
+        
         // Are we allowed to set this password?
         UserAuthenticationInfo userAuthenticationInfo =
-                yukonUserDao.getUserAuthenticationInfo(passwordResetInfo.getUser().getUserID());
-        if (!authenticationService.supportsPasswordSet(userAuthenticationInfo.getAuthenticationCategory())) {
-            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.login.passwordChange.passwordChangeNotSupported"));
+                userDao.getUserAuthenticationInfo(passwordResetInfo.getUser().getUserID());
+        if (!authService.supportsPasswordSet(userAuthenticationInfo.getAuthenticationCategory())) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "passwordChange.passwordChangeNotSupported"));
             return "redirect:login.jsp";
         }
-
-        String passwordResetUrl = passwordResetService.getPasswordResetUrl(passwordResetInfo.getUser().getUsername(), request);
-        YukonUserContext passwordResetUserContext = yukonUserContextResolver.resolveContext(passwordResetInfo.getUser(), request);
-
+        
+        String passwordResetUrl = 
+                passwordResetService.getPasswordResetUrl(passwordResetInfo.getUser().getUsername(), request);
+        YukonUserContext passwordResetUserContext = contextResolver.resolveContext(passwordResetInfo.getUser(), request);
+        
         // Send out the forgotten password email
         try {
-            passwordResetService.sendPasswordResetEmail(passwordResetUrl, passwordResetInfo.getContact(), passwordResetUserContext);
+            passwordResetService.sendPasswordResetEmail(passwordResetUrl, passwordResetInfo.getContact(), 
+                    passwordResetUserContext);
         } catch (NotFoundException e) {
-            forgottenPasswordFieldError(forgottenPassword, flashScope, model, request, "yukon.web.modules.login.forgottenPassword.emailNotFound"); 
+            forgottenPasswordFieldError(forgottenPassword, flash, model, request, 
+                    baseKey + "forgottenPassword.emailNotFound"); 
             return "forgottenPassword.jsp";
         } catch (EmailException e) {
-            forgottenPasswordFieldError(forgottenPassword, flashScope, model, request, "yukon.web.modules.login.forgottenPassword.emailConnectionIssues"); 
+            forgottenPasswordFieldError(forgottenPassword, flash, model, request, 
+                    baseKey + "forgottenPassword.emailConnectionIssues"); 
             return "forgottenPassword.jsp";
         }
-
-        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.login.forgottenPassword.forgottenPasswordEmailSent"));
+        
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "forgottenPassword.forgottenPasswordEmailSent"));
         return "redirect:/login.jsp";
     }
-
-    @RequestMapping(value = "/changePassword", method = RequestMethod.GET)
+    
+    @RequestMapping(value = "/change-password", method = RequestMethod.GET)
     public String changePassword(ModelMap model, String k) {
-
+        
         LiteYukonUser passwordResetUser = passwordResetService.findUserFromPasswordKey(k);
         if (passwordResetUser == null) {
             return "redirect:/login.jsp";
         }
         
-        // Check to see if the user's password is expired.  If their password is not expired the user should only be able to 
+        // Check to see if the user's password is expired.  
+        // If their password is not expired the user should only be able to 
         // hit this request if they have password recovery enabled.
-        if (!authenticationService.isPasswordExpired(passwordResetUser)) {
+        if (!authService.isPasswordExpired(passwordResetUser)) {
             globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
         }
         
-        /* LoginBackingBean */
-        LoginBackingBean loginBackingBean = new LoginBackingBean();
-        loginBackingBean.setUserId(passwordResetUser.getUserID());
-        loginBackingBean.setUsername(passwordResetUser.getUsername());
-        loginBackingBean.setUserGroupName(userGroupDao.getLiteUserGroup(passwordResetUser.getUserGroupId()).getUserGroupName());
+        /* Login */
+        Login login = new Login();
+        login.setUserId(passwordResetUser.getUserID());
+        login.setUsername(passwordResetUser.getUsername());
+        login.setUserGroupName(userGroupDao.getLiteUserGroup(passwordResetUser.getUserGroupId()).getUserGroupName());
         
         model.addAttribute("k", k);
-        model.addAttribute("loginBackingBean", loginBackingBean);
+        model.addAttribute("login", login);
         model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(passwordResetUser));
         
         return "changePassword.jsp";
     }
-
-    @RequestMapping(value = "/changePassword", method = RequestMethod.POST)
-    public String submitChangePassword(@ModelAttribute LoginBackingBean loginBackingBean, BindingResult bindingResult,
+    
+    @RequestMapping(value = "/change-password", method = RequestMethod.POST)
+    public String submitChangePassword(@ModelAttribute Login login, BindingResult result,
                                        FlashScope flashScope, String k, ModelMap model) {
-        // Check to see if the supplied userId matches up with the hex key.  I'm not sure if this is really necessary.  It might be overkill.
-        LiteYukonUser suppliedPasswordResetUser = yukonUserDao.getLiteYukonUser(loginBackingBean.getUserId());
+        // Check to see if the supplied userId matches up with the hex key.  I'm not sure if this is really necessary.  
+        // It might be overkill.
+        LiteYukonUser suppliedPasswordResetUser = userDao.getLiteYukonUser(login.getUserId());
         LiteYukonUser passwordResetUser = passwordResetService.findUserFromPasswordKey(k);
         if(passwordResetUser == null || !passwordResetUser.equals(suppliedPasswordResetUser)) {
             return "redirect:/login.jsp";
         }
-
-        // Check to see if the user's password is expired.  If their password is not expired the user should only be able to 
+        
+        // Check to see if the user's password is expired.  
+        // If their password is not expired the user should only be able to 
         // hit this request if they have password recovery enabled.
-        if (!authenticationService.isPasswordExpired(passwordResetUser)) {
+        if (!authService.isPasswordExpired(passwordResetUser)) {
             globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
         }
-
+        
         // Validate login change.
         LoginPasswordValidator passwordValidator = loginValidatorFactory.getPasswordValidator(passwordResetUser);
         LoginUsernameValidator usernameValidator = loginValidatorFactory.getUsernameValidator(passwordResetUser);
-
-        passwordValidator.validate(loginBackingBean, bindingResult);
-        usernameValidator.validate(loginBackingBean, bindingResult);
-        if (bindingResult.hasErrors()) {
-            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(bindingResult);
+        
+        passwordValidator.validate(login, result);
+        usernameValidator.validate(login, result);
+        if (result.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
             model.addAttribute("k", k);
             model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(passwordResetUser));
             return "changePassword.jsp";
         }
-
+        
         // Update the user's password to their new supplied password.
-        authenticationService.setPassword(passwordResetUser, loginBackingBean.getPassword1());
+        authService.setPassword(passwordResetUser, login.getPassword1());
         passwordResetService.invalidatePasswordKey(k);
         flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.login.passwordChange.successful"));
+        
         return "redirect:/login.jsp";
     }
     
-    @RequestMapping(value="/checkPassword", method=RequestMethod.POST)
-    public @ResponseBody Map<String, Object> checkPassword(@ModelAttribute LoginBackingBean loginBackingBean, String k, 
-            HttpServletResponse response) {
-
-        // Check to see if the supplied userId matches up with the hex key.  I'm not sure if this is really necessary.  It might be overkill.
-    	LiteYukonUser suppliedPasswordResetUser = yukonUserDao.getLiteYukonUser(loginBackingBean.getUserId());
-    	LiteYukonUser passwordResetUser = passwordResetService.findUserFromPasswordKey(k);
-    	LiteUserGroup liteUserGroup = userGroupDao.getLiteUserGroupByUserGroupName(loginBackingBean.getUserGroupName());
-
-        // Check to see if the user's password is expired.  If their password is not expired the user should only be able to 
+    @RequestMapping(value="/check-password", method=RequestMethod.POST)
+    public @ResponseBody Map<String, Object> checkPassword(HttpServletResponse resp, 
+            int userId, String password) {
+        
+        LiteYukonUser user = userDao.getLiteYukonUser(userId);
+        LiteUserGroup userGroup = userGroupDao.getLiteUserGroupByUserId(userId);
+        
+        // Check to see if the user's password is expired.  
+        // If their password is not expired the user should only be able to 
         // hit this request if they have password recovery enabled.
-        if (!authenticationService.isPasswordExpired(passwordResetUser)) {
+        if (!authService.isPasswordExpired(user)) {
             globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
         }
-
-    	//login validator is not appropriate for checking the password.  I wish it was
-        //but we need information on specific rules not met
-        //check password policies
-        Set<PasswordPolicyError> errantPasswordPolicies = 
-                passwordPolicyService.getPasswordPolicyErrors(loginBackingBean.getPassword1(),
-                                                              passwordResetUser,
-                                                              liteUserGroup);
-        Set<PasswordPolicyError> validPasswordPolicies = new HashSet<>(Arrays.asList(PasswordPolicyError.values()));
-        validPasswordPolicies.removeAll(errantPasswordPolicies); //separate out the validations
         
-        //check policy rules
-        Set<PolicyRule> validPolicyRules = passwordPolicyService.getValidPolicyRules(loginBackingBean.getPassword1(),
-                                                                                     passwordResetUser,
-                                                                                     liteUserGroup);
+        // Login validator is not appropriate for checking the password.  I wish it was
+        // but we need information on specific rules not met check password policies.
+        Set<PasswordPolicyError> errantPasswordPolicies = 
+                passwordPolicyService.getPasswordPolicyErrors(password, user, userGroup);
+        // Separate out the validations.
+        Set<PasswordPolicyError> validPasswordPolicies = new HashSet<>(Arrays.asList(PasswordPolicyError.values()));
+        validPasswordPolicies.removeAll(errantPasswordPolicies); 
+        
+        // Check policy rules
+        Set<PolicyRule> validPolicyRules = passwordPolicyService.getValidPolicyRules(password, user, userGroup);
         Set<PolicyRule> errantPolicyRules = new HashSet<>(Arrays.asList(PolicyRule.values()));
         errantPolicyRules.removeAll(validPolicyRules);
-
+        
         Map<String, Object> result = Maps.newHashMapWithExpectedSize(4);
         result.put("policy_errors", errantPasswordPolicies);
         result.put("rule_errors", errantPolicyRules);
         result.put("policy_validations", validPasswordPolicies);
         result.put("rule_validations", validPolicyRules);
         
-        //All Password Policies MUST be met to be a valid password
+        // All Password Policies MUST be met to be a valid password
         if (errantPasswordPolicies.size() == 0) {
-            /* tell the browser this password is good*/
-            response.setStatus(HttpServletResponse.SC_OK);
-        } else if (passwordResetUser == null || !passwordResetUser.equals(suppliedPasswordResetUser)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            resp.setStatus(HttpServletResponse.SC_OK);
+        } else if (user == null) {
+            resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
-            /* tell the browser there was a problem */
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
         
         return result;
     }
-
+    
     /**
-     * This method sets the forgottenPasswordField with the errorCode supplied and rebuilds the model for rejecting the request.
+     * This method sets the forgottenPasswordField with the errorCode supplied 
+     * and rebuilds the model for rejecting the request.
      */
     private void forgottenPasswordFieldError(ForgottenPassword forgottenPassword, FlashScope flashScope, ModelMap model, 
                                              HttpServletRequest request, String errorCode) {
-
+        
         flashScope.setError(new YukonMessageSourceResolvable(errorCode));
         setupModelMap(model, request);
         model.addAttribute("forgottenPassword", forgottenPassword);
     }
-
+    
     /**
      * Sets up the need information for the view to be rendered
      */
@@ -271,4 +282,5 @@ public class PasswordResetController {
         model.addAttribute("captchaEnabled", captchaEnabled);
         model.addAttribute("locale", RequestContextUtils.getLocale(request));
     }
+    
 }

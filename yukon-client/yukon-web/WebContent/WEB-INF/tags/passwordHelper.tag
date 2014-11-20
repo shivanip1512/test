@@ -3,49 +3,67 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <%@ attribute name="passwordPolicy" required="true" type="com.cannontech.core.authentication.model.PasswordPolicy" %>
+<%@ attribute name="userId" required="true" description="The user id for this password change attempt." %>
 
-<cti:includeScript link="/JavaScript/yukon.ui.passwords.js" force="true" />
+<%@ attribute name="confirmPassword" description="CSS selector for the confirm password input. Default: '.js-confirm-password'." %>
+<%@ attribute name="newPassword" description="CSS selector for the new password input. Default: '.js-new-password'." %>
+<%@ attribute name="saveButton" description="CSS selector for the save button. Default: 'button.unlock'." %>
 
-<script>
-$(function(){
-    yukon.ui.passwords.init({minLength: ${passwordPolicy.minPasswordLength}});
-    $(".password_manager input.new").trigger('keyup');
-});
-</script>
+<cti:default var="newPassword" value=".js-new-password"/>
+<cti:default var="confirmPassword" value=".js-confirm-password"/>
+<cti:default var="saveButton" value=".js-save-pw-btn"/>
+
+<c:set var="keyBase" value="yukon.web.modules.passwordPolicy."/>
+
 <style type="text/css">
-.description .list, .description .list .no_fail {list-style: none;padding-left: 16px;}
-.description .list {padding-left: 0;} 
+.password-manager .rule-list, 
+.password-manager .rule-list .no-fail {
+    list-style: none;
+    padding-left: 16px;
+}
+.password-manager .rule-list { padding-left: 0; } 
 </style>
 
-<div class="description">
-    <h4><i:inline key="yukon.web.modules.passwordPolicy.requirements"/></h4>
-    <ul class="list clearfix">
-        <li class="INVALID_PASSWORD_LENGTH clearfix">
-            <i class="icon icon-blank"></i>
-            <span class="b-label"><i:inline key="yukon.web.modules.passwordPolicy.length.description" 
-                arguments="${passwordPolicy.minPasswordLength}" /></span>
+<div class="password-manager" 
+    data-min-length="${passwordPolicy.minPasswordLength}"
+    data-new-password="${newPassword}"
+    data-confirm-password="${confirmPassword}"
+    data-save-button="${saveButton}"
+    data-user-id="${userId}">
+    
+    <h4><i:inline key="${keyBase}requirements"/></h4>
+    <ul class="rule-list">
+        <li class="INVALID_PASSWORD_LENGTH">
+            <cti:icon icon="icon-tick vh"/>
+            <span><i:inline key="${keyBase}length.description" 
+                arguments="${passwordPolicy.minPasswordLength}"/>
+            </span>
         </li>
         <c:if test="${passwordPolicy.passwordHistory > 0}">
-            <li class="PASSWORD_USED_TOO_RECENTLY clearfix">
-                <i class="icon icon-blank"></i>
-                <span class="b-label"><i:inline key="yukon.web.modules.passwordPolicy.history.description" 
-                    arguments="${passwordPolicy.passwordHistory}" /></span>
+            <li class="PASSWORD_USED_TOO_RECENTLY">
+                <cti:icon icon="icon-tick vh"/>
+                <span><i:inline key="${keyBase}history.description" 
+                    arguments="${passwordPolicy.passwordHistory}"/>
+                </span>
             </li>
         </c:if>
-        <li class="PASSWORD_DOES_NOT_MEET_POLICY_QUALITY clearfix">
-            <i class="icon icon-blank"></i>
-            <span class="b-label"><i:inline key="yukon.web.modules.passwordPolicy.quality.description" 
-                arguments="${passwordPolicy.passwordQualityCheck}" /></span>
+        <li class="PASSWORD_DOES_NOT_MEET_POLICY_QUALITY">
+            <cti:icon icon="icon-tick vh"/>
+            <span><i:inline key="${keyBase}quality.description" 
+                arguments="${passwordPolicy.passwordQualityCheck}"/>
+            </span>
         </li>
-        <li class="clearfix">
-            <ul class="no_fail clearfix">
+        <li>
+            <ul class="no-fail">
                 <c:forEach items="${passwordPolicy.policyRules}" var="rule">
-                    <li class="${rule} clearfix">
-                        <i class="icon icon-blank"></i>
-                        <span class="b-label"><i:inline key="${rule.formatKey}.description" /></span>
+                    <li class="${rule}">
+                        <cti:icon icon="icon-tick vh"/>
+                        <span><i:inline key="${rule.formatKey}.description"/></span>
                     </li>
                 </c:forEach>
             </ul>
         </li>
     </ul>
 </div>
+
+<cti:includeScript link="/JavaScript/yukon.ui.passwords.js" force="true"/>

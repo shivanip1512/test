@@ -6,7 +6,7 @@
 <cti:verifyGlobalRolesAndProperties value="ENABLE_PASSWORD_RECOVERY" />
 
 <tags:noAuthPage module="login" page="forgotPassword">
-    <section id="content" style="min-height: 420px;">
+    <section class="yukon-content" style="min-height: 420px;">
     <div class="column-24 clear">
         <div class="one column nogutter">
             <div class="page-title-bar">

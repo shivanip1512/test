@@ -112,7 +112,7 @@ public class PasswordResetServiceImpl implements PasswordResetService {
 
         String defaultYukonExternalUrl = ServletUtil.getDefaultYukonExternalUrl(request);
         String baseurl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL,
-            defaultYukonExternalUrl.toString()) + request.getContextPath() + "/login/changePassword?k=" + passwordResetKey;
+            defaultYukonExternalUrl.toString()) + request.getContextPath() + "/login/change-password?k=" + passwordResetKey;
 
         return baseurl;
     }

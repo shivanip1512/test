@@ -23,21 +23,18 @@
                 url: '${generatedPasswordUrl}',
                 data: dataHash
             }).done(function (data, textStatus, jqXHR) {
-                 $('#password1').val(data);
-                 $('#password2').val(data);
-                 $("#showPasswordCheckbox").prop('checked', true);
+                 $('.js-password-1').val(data);
+                 $('.js-password-2').val(data);
+                 $(".js-show-password-checkbox").prop('checked', true);
                  showPassword();
             });
         };
-
+        
         function showPassword() {
-            var yukUiAux = yukon.ui.util;
-            if($("#showPasswordCheckbox").is(":checked")) {
-                yukUiAux.changeInputType('password1', 'text');
-                yukUiAux.changeInputType('password2', 'text');
-            }else{
-                yukUiAux.changeInputType('password1', 'password');
-                yukUiAux.changeInputType('password2', 'password');
+            if ($(".js-show-password-checkbox").is(":checked")) {
+                $('.js-password-1, .js-password-2').attr('type', 'text');
+            } else {
+                $('.js-password-1, .js-password-2').attr('type', 'password');
             }
     	}
     </script>
@@ -93,22 +90,22 @@
             <cti:displayForPageEditModes modes="CREATE,EDIT">
                 <c:if test="${supportsPasswordSet}">
                     <tags:nameValue2 nameKey=".password">
-                        <tags:password path="password1" autocomplete="false" />
+                        <tags:password path="password1" cssClass="js-password-1" autocomplete="false" />
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".confirmPassword"> 
-                        <tags:password path="password2" autocomplete="false" />
+                        <tags:password path="password2" cssClass="js-password-2" autocomplete="false" />
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey="defaults.blank" excludeColon="true">
                         <cti:msg2 key=".generatePassword" var="pwordButton"/>
                         <cti:button label="${pwordButton}" onclick="generatePassword();"/>
                         <label class="fl">
-                            <input id="showPasswordCheckbox" type="checkbox" onclick="showPassword()"/>
+                            <input class="js-show-password-checkbox" type="checkbox" onclick="showPassword()"/>
                             <i:inline key=".showPassword"/>
                         </label>
                     </tags:nameValue2>
                 </c:if>
            </cti:displayForPageEditModes>
-
+        
         </tags:nameValueContainer2>
         
         <div class="page-action-area">

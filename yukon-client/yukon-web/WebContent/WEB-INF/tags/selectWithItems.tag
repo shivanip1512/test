@@ -25,7 +25,7 @@
 
 <%-- VIEW MODE --%>
 <cti:displayForPageEditModes modes="VIEW">
-	<spring:bind path="${path}">
+    <spring:bind path="${path}">
         <c:choose>
             <c:when test="${not empty itemValue}">
                 <tags:listItem value="${status.value}" items="${items}" itemValue="${itemValue}" itemLabel="${itemLabel}" defaultItemLabel="${defaultItemLabel}"/>
@@ -34,7 +34,7 @@
                 <tags:listItem value="${status.value}" items="${items}"/>
             </c:otherwise>
         </c:choose>
-	</spring:bind>
+    </spring:bind>
 </cti:displayForPageEditModes>
 
 <%-- EDIT/CREATE MODE --%>
@@ -44,7 +44,7 @@
 
 <c:set var="theInputClass" value="${pageScope.inputClass}"/>
 <c:if test="${status.error}">
-	<c:set var="theInputClass" value="${pageScope.inputClass} error"/>
+    <c:set var="theInputClass" value="${pageScope.inputClass} error"/>
 </c:if>
 
 <form:select id="${id}" disabled="${disabled}" path="${path}" cssClass="${theInputClass}" onchange="${pageScope.onchange}">
@@ -139,8 +139,8 @@
 </form:select>
 
 <c:if test="${status.error}">
-	<br>
-	<form:errors path="${path}" cssClass="error"/>
+    <br>
+    <form:errors path="${path}" cssClass="error"/>
 </c:if>
 
 </spring:bind>

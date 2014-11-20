@@ -27,7 +27,6 @@ import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.user.UserAuthenticationInfo;
-import com.cannontech.common.util.Pair;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.common.validator.YukonMessageCodeResolver;
 import com.cannontech.common.validator.YukonValidationUtils;
@@ -47,6 +46,7 @@ import com.cannontech.database.data.user.UserGroup;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.admin.userGroupEditor.model.RoleAndGroup;
 import com.cannontech.web.admin.userGroupEditor.model.UserGroupValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -75,45 +75,48 @@ public class UserGroupEditorController {
     public String home(YukonUserContext userContext, ModelMap modelMap) {
         return "userGroupEditor/userGroupHome.jsp";
     }
-
+    
     @RequestMapping("view")
     public String view(ModelMap model, int userGroupId) throws SQLException {
-        UserGroup userGroup = userGroupDao.getUserGroup(userGroupId);
         
+        UserGroup userGroup = userGroupDao.getUserGroup(userGroupId);
         model.addAttribute("userGroup", userGroup.getUserGroup());
         model.addAttribute("mode", PageEditMode.VIEW);
-        
         setupModelMap(model, userGroup.getUserGroup());
+        
         return "userGroupEditor/userGroup.jsp";
     }
     
     /* User Editor Edit Page */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="edit")
     public String edit(HttpServletRequest request, ModelMap model, int userGroupId) throws SQLException {
-        UserGroup userGroup = userGroupDao.getUserGroup(userGroupId);
         
+        UserGroup userGroup = userGroupDao.getUserGroup(userGroupId);
         model.addAttribute("userGroupId", userGroupId);
         model.addAttribute("userGroup", userGroup.getUserGroup());
         model.addAttribute("isUserGroupDeletable", userGroup.isUserGroupDeletable());
         model.addAttribute("mode", PageEditMode.EDIT);
         model.addAttribute("userGroupName",userGroup.getUserGroup().getUserGroupName());
+        
         return "userGroupEditor/userGroup.jsp";
     }
 
     @RequestMapping("permissions")
     public String permissions(ModelMap model, int userGroupId, YukonUserContext userContext) throws ServletException {
+        
         rolePropertyDao.verifyProperty(YukonRoleProperty.ADMIN_LM_USER_ASSIGN, userContext.getYukonUser());
         LiteUserGroup userGroup = userGroupDao.getLiteUserGroup(userGroupId);
-
         model.addAttribute("userGroup", userGroup);
         model.addAttribute("userGroupId", userGroupId);
         model.addAttribute("userGroupName", userGroup.getUserGroupName());
+        
         return "userGroupEditor/editGroup.jsp";
     }
 
     /* Update Group */
     @RequestMapping(value="edit", method=RequestMethod.POST, params="update")
     public String update(HttpServletRequest request, @ModelAttribute("userGroup") com.cannontech.database.db.user.UserGroup userGroup, BindingResult result, ModelMap model, FlashScope flash) throws SQLException {
+        
         userGroupValidator.validate(userGroup, result);
         
         if (result.hasErrors()) {
@@ -139,7 +142,7 @@ public class UserGroupEditorController {
     @RequestMapping(value="edit", method=RequestMethod.POST, params="delete")
      */
     public String delete(ModelMap model, FlashScope flash, int userGroupId) {
-
+        
         int numberOfUsers = userGroupDao.getNumberOfUsers(userGroupId);
         if (numberOfUsers > 0) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userGroupEditor.usersCurrentlyAttached"));
@@ -153,7 +156,7 @@ public class UserGroupEditorController {
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userGroupEditor.deletedSuccessful", userGroup.getUserGroupName()));
         return "userGroupEditor/home.jsp";
     }
-
+    
     /* User Group Associations */
     @RequestMapping("association")
     public String association(ModelMap model) {
@@ -200,12 +203,12 @@ public class UserGroupEditorController {
                     conflictingRoleGroupNames.add(liteYukonGroup.getGroupName());
                 }
             }
-
+            
             // Update the user group if we have no conflicts.
             if (conflictingRoleGroupNames.size() == 0) {
                 userGroup.update();
             }
-
+            
             // Display the response message.
             if (!conflictingRoleGroupNames.isEmpty()) {
                 flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.groupConflict", conflictingRoleGroupNames));
@@ -213,11 +216,11 @@ public class UserGroupEditorController {
                 flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.userEditor.updateSuccessful"));
             }
         }
-
+        
         model.addAttribute("userGroupId", userGroupId);
         return "redirect:roleGroups";
     }
-
+    
     @RequestMapping(value="removeRoleGroup", method=RequestMethod.POST)
     public String removeRoleGroup(HttpServletRequest request, ModelMap model, FlashScope flash, int userGroupId, int remove) {
         userGroupDao.deleteUserGroupToYukonGroupMappng(userGroupId, remove);
@@ -280,8 +283,9 @@ public class UserGroupEditorController {
         model.addAttribute("userGroupId", userGroup.getUserGroupId());
         model.addAttribute("userGroupName", userGroup.getUserGroupName());
         
-        Multimap<YukonRole, LiteYukonGroup> rolesAndGroups = roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
-        Multimap<YukonRoleCategory, Pair<YukonRole, LiteYukonGroup>> sortedRoles = RoleListHelper.sortRolesByCategory(rolesAndGroups);
+        Multimap<YukonRole, LiteYukonGroup> rolesAndGroups = 
+                roleDao.getRolesAndRoleGroupsForUserGroup(userGroup.getUserGroupId());
+        Multimap<YukonRoleCategory, RoleAndGroup> sortedRoles = RoleListHelper.sortRolesByCategory(rolesAndGroups);
         model.addAttribute("roles", sortedRoles.asMap());
     }
 }

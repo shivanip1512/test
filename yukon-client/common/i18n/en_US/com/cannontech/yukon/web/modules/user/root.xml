@@ -10,10 +10,8 @@
     <entry key="yukon.web.modules.user.lastname">Last Name</entry>
     <entry key="yukon.web.modules.user.email">Email</entry>
     <entry key="yukon.web.modules.user.profile.changePassword.lastChanged">Password Last Changed</entry>
+    <entry key="yukon.web.modules.user.profile.changePassword">Change Password</entry>
     <entry key="yukon.web.modules.user.profile.changePassword.button.label">Change Password</entry>
-
-    <entry key="yukon.web.modules.user.profile.changePassword.title">Change Password</entry>
-
     <entry key="yukon.web.modules.user.profile.changePassword.success">Your password was updated</entry>
     <entry key="yukon.web.modules.user.profile.changePassword.error.system_save">Internal error while saving your change: {0}</entry>
     <entry key="yukon.web.modules.user.profile.changePassword.error.auth.unsupported">You are not allowed to update your password</entry>
