@@ -151,9 +151,9 @@ public abstract class DemandResponseControllerBase {
 
         MessageSourceAccessor msa = messageSourceResolver.getMessageSourceAccessor(userContext);
         
-        SearchResults<AssetAvailabilityDetails> results = 
-                assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier(), null, filters, null, 
-                    userContext);
+        SearchResults<AssetAvailabilityDetails> results =
+            assetAvailabilityService.getAssetAvailability(dispPao.getPaoIdentifier(), PagingParameters.EVERYTHING,
+                filters, null, userContext);
 
         List<AssetAvailabilityDetails> resultList = results.getResultList();
         List<String[]> dataRows = Lists.newArrayList();

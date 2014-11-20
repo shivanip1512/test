@@ -131,7 +131,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlTotalCountQuery.append(sqlCommon);
         sqlPaginateQuery.append(sqlCommon);
         sqlPaginateQuery.append(")outertable");
-        if (null != pagingParameters) {
+        if (pagingParameters != null) {
             sqlPaginateQuery.append(" WHERE RowNumber BETWEEN");
             sqlPaginateQuery.append(pagingParameters.getOneBasedStartIndex());
             sqlPaginateQuery.append(" AND ");
