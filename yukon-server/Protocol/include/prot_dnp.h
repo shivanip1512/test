@@ -52,13 +52,12 @@ private:
     stringlist_t _string_results;
     pointlist_t  _point_results;
 
-    std::map<unsigned, double> _analog_inputs;
-    std::map<unsigned, double> _binary_inputs;
-    std::map<unsigned, double> _analog_outputs;
-    std::map<unsigned, double> _binary_outputs;
-    std::map<unsigned, double> _counters;
-
-    std::map<unsigned, unsigned> _point_count;
+    typedef std::map<unsigned, double> pointtype_values;
+    pointtype_values _analog_inputs;
+    pointtype_values _binary_inputs;
+    pointtype_values _analog_outputs;
+    pointtype_values _binary_outputs;
+    pointtype_values _counters;
 
     void recordPoints(int group, const pointlist_t &points);
     std::string pointSummary(unsigned points);
@@ -189,73 +188,6 @@ public:
         DefaultSlaveAddress  =    1
     };
 };
-
-
-
-
-class IM_EX_PROT DNPSlaveInterface : public DNPInterface
-{
-    struct input_point;
-
-    typedef DNPInterface Inherited;
-    std::vector<input_point> _input_point_list;
-    void addObjectBlock(DNP::ObjectBlock *objBlock);
-
-public:
-
-    DNPSlaveInterface();
-
-    bool setSlaveCommand( Command command );
-    void setOptions( int options, int seqNumber=0 );
-
-    YukonError_t slaveDecode( CtiXfer &xfer );
-    int slaveGenerate( CtiXfer &xfer );
-    void slaveTransactionComplete();
-
-    void addInputPoint(const input_point &ip);
-
-    enum InputPointType
-    {
-        AnalogInputType,
-        DigitalInput,
-        Counters
-    };
-
-    struct input_point
-    {
-        union
-        {
-            struct ai_point
-            {
-                double value;
-            } ain;
-
-            struct di_point
-            {
-                DNP::BinaryOutputControl::ControlCode control;
-                DNP::BinaryOutputControl::TripClose trip_close;
-                unsigned long on_time;
-                unsigned long off_time;
-                bool queue;
-                bool clear;
-                unsigned char count;
-            } din;
-
-            struct ci_point
-            {
-                double value;
-            } counterin;
-        };
-
-        unsigned long control_offset;
-        InputPointType type;
-        unsigned long expiration;
-        bool online;
-        bool includeTime;
-        CtiTime timestamp;
-    };
-};
-
 
 namespace DNP {
 

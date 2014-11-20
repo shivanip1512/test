@@ -142,8 +142,6 @@ public:
     void setAddresses( unsigned short dst, unsigned short src);
     void setOptions  ( int options );
 
-    void resetLink( void );
-
     void setToOutput( unsigned char *buf, unsigned int len );
     void setToInput ( void );
 

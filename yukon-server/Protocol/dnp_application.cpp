@@ -75,7 +75,8 @@ void ApplicationLayer::setCommand( FunctionCode fc )
 
     _request_function = fc;
 
-    _appState    = SendRequest;
+    _appState       = SendRequest;
+    _errorCondition = ClientErrors::None;
     _comm_errors = 0;
 
     //  this and initUnsolicited() are the only places where _iin is cleared
@@ -88,7 +89,8 @@ void ApplicationLayer::initUnsolicited( void )
     eraseInboundObjectBlocks();
     eraseOutboundObjectBlocks();
 
-    _appState    = RecvUnsolicited;
+    _appState       = RecvUnsolicited;
+    _errorCondition = ClientErrors::None;
     _comm_errors = 0;
 
     //  this and setCommand() are the only places where _iin is cleared
@@ -326,20 +328,9 @@ bool ApplicationLayer::needsTime() const
     return _config && _config->enableDnpTimesyncs && _iin.need_time;
 }
 
-void ApplicationLayer::resetLink( void )
-{
-    _transport.resetLink();
-}
-
-bool ApplicationLayer::isTransactionNotStarted( void ) const
-{
-    return _appState == Complete || _appState == Uninitialized;
-}
-
-
 bool ApplicationLayer::isTransactionComplete( void ) const
 {
-    return _appState == Complete || _appState == Uninitialized || _appState == Failed;
+    return _appState == Complete || _appState == Uninitialized;
 }
 
 
@@ -370,10 +361,9 @@ bool ApplicationLayer::isOneWay( void ) const
 }
 
 
-bool ApplicationLayer::errorCondition( void ) const
+YukonError_t ApplicationLayer::errorCondition( void ) const
 {
-    //  make this return decent error codes, not just a bool
-    return _appState == Failed;
+    return _errorCondition;
 }
 
 
@@ -422,11 +412,11 @@ YukonError_t ApplicationLayer::generate( CtiXfer &xfer )
             default:
             {
                 CTILOG_ERROR(dout, "unhandled state "<< _appState);
+                _appState = Complete;
+
             }
-            case Failed:
+            case Complete:
             {
-                //  eventually, we should respect the results from _transport.initForOutput and _transport.initForInput - they could fail, too
-                _appState = Failed;
                 retVal = ClientErrors::Abnormal;
 
                 break;
@@ -464,7 +454,8 @@ YukonError_t ApplicationLayer::decode( CtiXfer &xfer, YukonError_t status )
         }
         else
         {
-            _appState = Failed;
+            _appState = Complete;
+            _errorCondition = ClientErrors::Abnormal;
         }
 
         if( isDebugLudicrous() )
@@ -537,7 +528,8 @@ YukonError_t ApplicationLayer::decode( CtiXfer &xfer, YukonError_t status )
                 else
                 {
                     _response.buf_len = 0;
-                    _appState = Failed;
+                    _appState = Complete;
+                    _errorCondition = ClientErrors::Abnormal;
                 }
 
                 break;
@@ -570,7 +562,8 @@ YukonError_t ApplicationLayer::decode( CtiXfer &xfer, YukonError_t status )
             {
                 CTILOG_ERROR(dout, "unknown state ("<< _appState <<")");
 
-                _appState = Failed;
+                _appState = Complete;
+                _errorCondition = ClientErrors::Abnormal;
             }
         }
     }

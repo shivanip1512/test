@@ -58,12 +58,6 @@ void TransportLayer::setOptions(int options)
 }
 
 
-void TransportLayer::resetLink( void )
-{
-    _datalink.resetLink();
-}
-
-
 int TransportLayer::initForOutput(unsigned char *buf, unsigned len, unsigned short dstAddr, unsigned short srcAddr)
 {
     int retVal = ClientErrors::None;

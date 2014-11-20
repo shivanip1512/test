@@ -79,14 +79,6 @@ void DatalinkLayer::setOptions(int options)
 }
 
 
-void DatalinkLayer::resetLink( void )
-{
-    _reset_sent = false;
-/*    _fcb_in     = false;
-    _fcb_out    = false;*/
-}
-
-
 void DatalinkLayer::setToOutput( unsigned char *buf, unsigned int len )
 {
     //  if it's too big or there's nothing to copy, set our buffer to zip

@@ -57,6 +57,8 @@ ion_value_variable_program.obj \
 ion_value_variable_fixedarray.obj
 
 DNPOBJS=\
+prot_dnp.obj \
+prot_dnpSlave.obj \
 dnp_application.obj \
 dnp_transport.obj \
 dnp_datalink.obj \
@@ -123,7 +125,6 @@ prot_sa3rdparty.obj \
 prot_sa305.obj \
 prot_sixnet.obj \
 prot_base.obj \
-prot_dnp.obj \
 prot_e2eDataTransfer.obj \
 prot_modbus.obj \
 $(DNPOBJS) \

@@ -746,74 +746,35 @@ YukonError_t DNPInterface::decode( CtiXfer &xfer, YukonError_t status )
 
 void DNPInterface::recordPoints( int group, const pointlist_t &points )
 {
-    pointlist_t::const_iterator itr;
-
-    unsigned count = points.size();
-
-    //  Is it in the map already?
-    if( _point_count.find(group) != _point_count.end() )
-    {
-        _point_count[group] += count;
-    }
-    else
-    {
-        _point_count[group] = count;
-    }
+    pointtype_values *target = 0;
 
     switch( group )
     {
         case AnalogInput::Group:
-        case AnalogInputChange::Group:
-        {
-            for( itr = points.begin(); itr != points.end(); itr++ )
-            {
-                _analog_inputs[(*itr)->getId()] = (*itr)->getValue();
-            }
+        case AnalogInputChange::Group:  target = &_analog_inputs;   break;
 
-            break;
-        }
-
-        case AnalogOutputStatus::Group:
-        {
-            for( itr = points.begin(); itr != points.end(); itr++ )
-            {
-                _analog_outputs[(*itr)->getId()] = (*itr)->getValue();
-            }
-
-            break;
-        }
+        case AnalogOutputStatus::Group: target = &_analog_outputs;  break;
 
         case BinaryInput::Group:
-        case BinaryInputChange::Group:
-        {
-            for( itr = points.begin(); itr != points.end(); itr++ )
-            {
-                _binary_inputs[(*itr)->getId()] = (*itr)->getValue();
-            }
+        case BinaryInputChange::Group:  target = &_binary_inputs;   break;
 
-            break;
-        }
-
-        case BinaryOutput::Group:
-        {
-            for( itr = points.begin(); itr != points.end(); itr++ )
-            {
-                _binary_outputs[(*itr)->getId()] = (*itr)->getValue();
-            }
-
-            break;
-        }
+        case BinaryOutput::Group:       target = &_binary_outputs;  break;
 
         case Counter::Group:
         case CounterFrozen::Group:
-        case CounterEvent::Group:
-        {
-            for( itr = points.begin(); itr != points.end(); itr++ )
-            {
-                _counters[(*itr)->getId()] = (*itr)->getValue();
-            }
+        case CounterEvent::Group:       target = &_counters;        break;
 
-            break;
+        default:
+        {
+            return;
+        }
+    }
+
+    for each( const CtiPointDataMsg *msg in points )
+    {
+        if( msg )
+        {
+            (*target)[msg->getId()] = msg->getValue();
         }
     }
 }
@@ -994,7 +955,6 @@ void DNPInterface::addStringResults(string *s)
 
 unsigned DNPInterface::convertLocalSecondsToUtcSeconds( const unsigned seconds )
 {
-    //  this is CRAZY WIN32 SPECIFIC
     _TIME_ZONE_INFORMATION tzinfo;
 
     switch( GetTimeZoneInformation(&tzinfo) )
@@ -1012,7 +972,6 @@ unsigned DNPInterface::convertLocalSecondsToUtcSeconds( const unsigned seconds )
 
 unsigned DNPInterface::convertUtcSecondsToLocalSeconds( const unsigned seconds )
 {
-    //  this is CRAZY WIN32 SPECIFIC
     _TIME_ZONE_INFORMATION tzinfo;
 
     switch( GetTimeZoneInformation(&tzinfo) )
@@ -1028,191 +987,6 @@ unsigned DNPInterface::convertUtcSecondsToLocalSeconds( const unsigned seconds )
     }
 }
 
-DNPSlaveInterface::DNPSlaveInterface()
-{
-   getApplicationLayer().completeSlave();
-   setOptions(DNPSlaveInterface::Options_SlaveResponse);
-}
-
-
-YukonError_t DNPSlaveInterface::slaveDecode( CtiXfer &xfer )
-{
-    if( xfer.getOutBuffer()[10] & 0x80 )
-    {
-        slaveTransactionComplete();
-        return ClientErrors::None;
-    }
-
-    return getApplicationLayer().decode(xfer, ClientErrors::None);
-}
-
-int DNPSlaveInterface::slaveGenerate( CtiXfer &xfer )
-{
-    if( getApplicationLayer().isTransactionNotStarted() )
-    {
-        switch( getCommand() )
-        {
-            case Command_Class1230Read:
-            case Command_Class123Read:
-            {
-                getApplicationLayer().setCommand(ApplicationLayer::ResponseResponse);
-                ObjectBlock         *dob1;
-                ObjectBlock         *dob2;
-                ObjectBlock         *dob3;
-
-                DNP::AnalogInputChange *ainc;
-                DNP::BinaryInputChange *binc;
-                DNP::CounterEvent *counterevent;
-                DNP::AnalogInput *ain;
-                DNP::BinaryInput *bin;
-                DNP::Counter *counterin;
-
-                dob1 = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
-                dob2 = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
-                dob3 = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
-
-                for ( int i = 0; i < _input_point_list.size(); i++ )
-                {
-                    input_point &ip =  _input_point_list[i];
-
-                    if( ip.type == AnalogInputType )
-                    {
-                        if( ip.includeTime)
-                        {
-                            ainc = CTIDBG_new DNP::AnalogInputChange( DNP::AnalogInputChange::AIC_32BitWithTime);
-                            ainc->setTime(ip.timestamp);
-                            ainc->setValue(ip.ain.value);
-                            ainc->setOnlineFlag(ip.online);
-                            dob1->addObjectIndex(ainc, ip.control_offset);
-                        }
-                        else
-                        {
-                            ain = CTIDBG_new DNP::AnalogInput( DNP::AnalogInput::AI_32Bit );
-                            ain->setValue(ip.ain.value);
-                            ain->setOnlineFlag(ip.online);
-                            dob1->addObjectIndex(ain, ip.control_offset);
-                        }
-                    }
-                    else if( ip.type == DigitalInput )
-                    {
-                        if( ip.includeTime)
-                        {
-                            binc = CTIDBG_new DNP::BinaryInputChange( DNP::BinaryInputChange::BIC_WithTime);
-                            binc->setTime(ip.timestamp);
-                            binc->setStateValue(ip.din.trip_close);
-                            binc->setOnlineFlag(ip.online);
-                            dob2->addObjectIndex(binc, ip.control_offset);
-                        }
-                        else
-                        {
-                            bin = CTIDBG_new DNP::BinaryInput( DNP::BinaryInput::BI_WithStatus);
-                            bin->setStateValue(ip.din.trip_close);
-                            bin->setOnlineFlag(ip.online);
-                            dob2->addObjectIndex(bin, ip.control_offset);
-                        }
-                    }
-                    else if( ip.type == Counters )
-                    {
-                        if( ip.includeTime)
-                        {
-                            counterevent = CTIDBG_new DNP::CounterEvent( DNP::CounterEvent::CE_Delta32BitWithTime);
-                            counterevent->setTime(ip.timestamp);
-                            counterevent->setValue(ip.counterin.value);
-                            counterevent->setOnlineFlag(ip.online);
-                            dob3->addObjectIndex(counterevent, ip.control_offset);
-                        }
-                        else
-                        {
-                            counterin = CTIDBG_new DNP::Counter( DNP::Counter::C_Binary32Bit );
-                            counterin->setValue(ip.counterin.value);
-                            counterin->setOnlineFlag(ip.online);
-                            dob3->addObjectIndex(counterin, ip.control_offset);
-                        }
-                    }
-                }
-                addObjectBlock(dob1);
-                addObjectBlock(dob2);
-                addObjectBlock(dob3);
-
-                break;
-            }
-            case Command_UnsolicitedInbound:
-            case Command_WriteTime:
-            case Command_ReadTime:
-            case Command_Loopback:
-            case Command_UnsolicitedEnable:
-            case Command_UnsolicitedDisable:
-            case Command_SetAnalogOut:
-            case Command_SetDigitalOut_Direct:
-            case Command_SetDigitalOut_SBO_SelectOnly:
-            case Command_SetDigitalOut_SBO_Select:
-            case Command_SetDigitalOut_SBO_Operate:
-            default:
-            {
-                CTILOG_ERROR(dout, "invalid command "<< getCommand());
-
-                setSlaveCommand(Command_Invalid);
-            }
-        }
-
-        //  finalize the request
-        getApplicationLayer().initForSlaveOutput();
-
-    }
-
-    int retVal = getApplicationLayer().generate(xfer);
-    if( retVal )
-    {
-        slaveTransactionComplete();
-    }
-    return retVal;
-}
-
-void DNPSlaveInterface::slaveTransactionComplete()
-{
-    if( getApplicationLayer().errorCondition() )
-    {
-        addStringResults(CTIDBG_new string("Operation failed"));
-    }
-    setSlaveCommand(Command_Complete);
-
-    return;
-}
-
-void DNPSlaveInterface::addInputPoint(const input_point &ip)
-{
-    _input_point_list.push_back(ip);
-    return;
-}
-
-bool DNPSlaveInterface::setSlaveCommand( Command command )
-{
-    setCommand(command);
-
-    if( getCommand() == Command_Complete)
-    {
-        _input_point_list.clear();
-        getApplicationLayer().completeSlave();
-    }
-    return getCommand() != Command_Invalid;
-}
-
-void DNPSlaveInterface::addObjectBlock(DNP::ObjectBlock *objBlock)
-{
-    if( !objBlock->empty() )
-    {
-        getApplicationLayer().addObjectBlock(objBlock);
-    }
-    else
-    {
-        delete objBlock;
-    }
-}
-void DNPSlaveInterface::setOptions( int options, int seqNumber )
-{
-    Inherited::setOptions(options);
-    getApplicationLayer().setSequenceNumber(seqNumber);
-}
 
 }
 }

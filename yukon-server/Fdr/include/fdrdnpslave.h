@@ -5,7 +5,7 @@
 #include "fdrpointlist.h"
 #include "fdrscadaserver.h"
 #include "dnp_object_analoginput.h"
-#include "prot_dnp.h"
+#include "prot_dnpSlave.h"
 #include "string_util.h"
 
 #include <boost/tuple/tuple_comparison.hpp>
@@ -79,12 +79,14 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
                                          const char* data, unsigned int size, bool includeTime);
         int processDataLinkConfirmationRequest(Cti::Fdr::ServerConnection& connection, const char* data);
 
-        std::string dumpDNPMessage(const std::string direction, const char* data, unsigned int size);
+        std::string dumpDNPMessage(const char* data, unsigned int size);
 
         typedef std::map<CtiFDRDestination, DnpId> SendMap;
         SendMap _sendMap;
 
-        Protocols::DNPSlaveInterface  _dnpData;
+        Protocols::DNPSlaveInterface  _dnpSlave;
+
+        CtiClientConnection _porterConnection;
 
         // maps ip address -> server name
         typedef std::map<std::string, std::string> ServerNameMap;

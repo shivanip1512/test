@@ -61,8 +61,6 @@ public:
     void setAddresses( unsigned short dst, unsigned short src );
     void setOptions  ( int options );
 
-    void resetLink( void );
-
     int initForOutput( unsigned char *buf, unsigned len, unsigned short dstAddr, unsigned short srcAddr );
     int initForInput ( unsigned char *buf, unsigned len );
 

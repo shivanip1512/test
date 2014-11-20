@@ -109,10 +109,11 @@ private:
         SendFirstResponse,
         SendResponse,
 
-        Complete,
-        Failed
+        Complete
 
     } _appState;
+
+    YukonError_t _errorCondition;
 
     unsigned _comm_errors;
 
@@ -121,7 +122,6 @@ private:
     object_block_queue _out_object_blocks,
                        _in_object_blocks;
 
-    void reset( void );
     void generateAck( acknowledge_t *app_packet, const control_header ctrl );
 
     void processInput( void );
@@ -150,7 +150,6 @@ public:
     //  initialization functions
     void setAddresses( unsigned short dstAddr, unsigned short srcAddr );
     void setOptions( int options );
-    void resetLink( void );
 
     void setConfigData( const config_data* config );
 
@@ -168,8 +167,7 @@ public:
 
     //  checking completion
     bool isTransactionComplete( void ) const;
-    bool isTransactionNotStarted( void ) const;
-    bool errorCondition( void )        const;
+    YukonError_t errorCondition( void ) const;
     bool isOneWay( void )              const;
 
     //  post-completion processing

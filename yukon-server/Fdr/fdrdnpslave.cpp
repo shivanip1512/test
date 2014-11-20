@@ -4,12 +4,11 @@
 
 #include "prot_dnp.h"
 
+#include "amq_constants.h"
+
 #include "std_helper.h"
 
 #include <boost/scoped_ptr.hpp>
-
-using namespace std;
-using namespace Cti::Protocols;
 
 namespace {
 boost::scoped_ptr<Cti::Fdr::DnpSlave> dnpSlaveInterface;
@@ -59,20 +58,28 @@ enum DnpApplicationFunctionCodes
 };
 
 
-const string DNPInMessageString  = "DNP InMessage";
-const string DNPOutMessageString = "DNP OutMessage";
+const std::string DNPInMessageString  = "DNP InMessage";
+const std::string DNPOutMessageString = "DNP OutMessage";
 
+using Protocols::DNPSlaveInterface;
+using namespace Protocols::DNP;
 
 // Constructors, Destructor, and Operators
 DnpSlave::DnpSlave() :
     CtiFDRSocketServer("DNPSLAVE"),
-    _staleDataTimeOut(0)
+    _staleDataTimeOut(0),
+    _porterConnection(Cti::Messaging::ActiveMQ::Queue::porter)
 {
+    _porterConnection.setName("FDR DNP Slave to Porter");
 }
 
 void DnpSlave::startup()
 {
     init();
+
+    _porterConnection.start();
+    _porterConnection.WriteConnQue(
+            new CtiRegistrationMsg("FDR (DNP Slave)", 0, true));
 }
 
 /*************************************************
@@ -84,7 +91,7 @@ void DnpSlave::startup()
 */
 bool DnpSlave::readConfig()
 {
-    string   tempStr;
+    std::string   tempStr;
 
     const char *KEY_LISTEN_PORT_NUMBER          = "FDR_DNPSLAVE_PORT_NUMBER";
     const char *KEY_DB_RELOAD_RATE              = "FDR_DNPSLAVE_DB_RELOAD_RATE";
@@ -171,11 +178,11 @@ CtiFDRClientServerConnectionSPtr DnpSlave::createNewConnection(SOCKET newSocket)
         return CtiFDRClientServerConnectionSPtr();
     }
 
-    const string ipString = peerAddr.toString();
+    const std::string ipString = peerAddr.toString();
 
     ServerNameMap::const_iterator iter = _serverNameLookup.find(ipString);
 
-    const string connName = (iter == _serverNameLookup.end())? ipString : iter->second;
+    const std::string connName = (iter == _serverNameLookup.end())? ipString : iter->second;
 
     CtiFDRClientServerConnectionSPtr newConnection(new CtiFDRClientServerConnection(connName.c_str(),newSocket,this));
     newConnection->setRegistered(true); //DNPSLAVE doesn't have a separate registration message
@@ -243,13 +250,11 @@ void DnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool 
     }
 }
 
-/********************************************************************************************************
-  not used intentionally
-*********************************************************************************************************/
 bool DnpSlave::buildForeignSystemMessage(const CtiFDRDestination& destination,
                                                char** buffer,
                                                unsigned int& bufferSize)
 {
+    //  could be used for unsolicited reporting in future
     return false;
 }
 
@@ -338,12 +343,12 @@ int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection, c
     if (bufferSize == 10)
     {
         bool linkStatusReq = ( ((data[3] & 0x09) == 0x09 ) ? true : false);
-        string linkMessage = ( linkStatusReq ? "data link status request" : "reset link" );
+        std::string linkMessage = ( linkStatusReq ? "data link status request" : "reset link" );
 
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
             CTILOG_DEBUG(dout, logNow() <<" received DNP " << linkMessage <<" request message."<<
-                    dumpDNPMessage(DNPInMessageString, data, bufferSize));
+                    arrayToRange(reinterpret_cast<const unsigned char*>(data), bufferSize));
         }
 
         buffer = new UCHAR[bufferSize];
@@ -366,7 +371,7 @@ int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection, c
         buffer[7] = data[5];
 
         BYTEUSHORT crc;
-        crc.sh = DNP::DatalinkLayer::crc((const unsigned char*) buffer, 8);
+        crc.sh = DatalinkLayer::crc((const unsigned char*) buffer, 8);
         buffer[8] = crc.ch[0];
         buffer[9] = crc.ch[1];
 
@@ -376,7 +381,7 @@ int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection, c
         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {
             CTILOG_DEBUG(dout, logNow() <<" sending DNP "<< linkMessage <<" message."<<
-                    dumpDNPMessage(DNPOutMessageString, (CHAR *)buffer, bufferSize));
+                    arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
         }
     }
     else
@@ -403,7 +408,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
         CTILOG_DEBUG(dout, logNow() <<" received DNP scan request message"<<
-                dumpDNPMessage(DNPInMessageString, data, size));
+                arrayToRange(reinterpret_cast<const unsigned char*>(data), size));
     }
 
     BYTEUSHORT dest, src;
@@ -433,7 +438,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
 
             if (dnpId.PointType == StatusPointType )
             {
-                iPoint.din.trip_close = (fdrPoint->getValue() == 0)?(DNP::BinaryOutputControl::Trip):(DNP::BinaryOutputControl::Close);
+                iPoint.din.trip_close = (fdrPoint->getValue() == 0)?(BinaryOutputControl::Trip):(BinaryOutputControl::Close);
                 iPoint.type = DNPSlaveInterface::DigitalInput;
             }
             else if (dnpId.PointType == AnalogPointType )
@@ -451,17 +456,17 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
                 continue;
 
             }
-            _dnpData.addInputPoint(iPoint);
+            _dnpSlave.addInputPoint(iPoint);
         }
     }
 
-    _dnpData.setAddresses(src.sh, dest.sh);
-    _dnpData.setSlaveCommand(DNPSlaveInterface::Command_Class1230Read);
-    _dnpData.setOptions(DNPSlaveInterface::Options_SlaveResponse, seqnumber);
+    _dnpSlave.setAddresses(src.sh, dest.sh);
+    _dnpSlave.setSlaveCommand(DNPSlaveInterface::Command_Class1230Read);
+    _dnpSlave.setOptions(DNPSlaveInterface::Options_SlaveResponse, seqnumber);
 
-     while( !_dnpData.isTransactionComplete() )
+     while( !_dnpSlave.isTransactionComplete() )
      {
-         if( _dnpData.slaveGenerate(xfer) == 0 )
+         if( _dnpSlave.slaveGenerate(xfer) == 0 )
          {
              if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
              {
@@ -471,12 +476,12 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
                  if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                  {
                      CTILOG_DEBUG(dout, logNow() <<" sending DNP scan response message."<<
-                             dumpDNPMessage(DNPOutMessageString, buffer, bufferSize));
+                             arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
                  }
                  connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
              }
 
-             _dnpData.slaveDecode(xfer);
+             _dnpSlave.slaveDecode(xfer);
          }
          else
          {
@@ -502,21 +507,21 @@ DnpId DnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
 {
     DnpId dnpId;
 
-    static const string dnpMasterId              = "MasterId";
-    static const string dnpSlaveId               = "SlaveId";
-    static const string dnpPointType             = "POINTTYPE";
-    static const string dnpPointOffset           = "Offset";
-    static const string dnpPointStatusString     = "Status";
-    static const string dnpPointAnalogString     = "Analog";
-    static const string dnpPointCalcAnalogString = "CalcAnalog";
-    static const string dnpPointCounterString    = "PulseAccumulator";
-    static const string dnpPointMultiplier       = "Multiplier";
+    static const std::string dnpMasterId              = "MasterId";
+    static const std::string dnpSlaveId               = "SlaveId";
+    static const std::string dnpPointType             = "POINTTYPE";
+    static const std::string dnpPointOffset           = "Offset";
+    static const std::string dnpPointStatusString     = "Status";
+    static const std::string dnpPointAnalogString     = "Analog";
+    static const std::string dnpPointCalcAnalogString = "CalcAnalog";
+    static const std::string dnpPointCounterString    = "PulseAccumulator";
+    static const std::string dnpPointMultiplier       = "Multiplier";
 
-    string masterId  = pointDestination.getTranslationValue(dnpMasterId);
-    string slaveId   = pointDestination.getTranslationValue(dnpSlaveId);
-    string pointType = pointDestination.getTranslationValue(dnpPointType);
-    string dnpOffset = pointDestination.getTranslationValue(dnpPointOffset);
-    string dnpMultiplier = pointDestination.getTranslationValue(dnpPointMultiplier);
+    std::string masterId  = pointDestination.getTranslationValue(dnpMasterId);
+    std::string slaveId   = pointDestination.getTranslationValue(dnpSlaveId);
+    std::string pointType = pointDestination.getTranslationValue(dnpPointType);
+    std::string dnpOffset = pointDestination.getTranslationValue(dnpPointOffset);
+    std::string dnpMultiplier = pointDestination.getTranslationValue(dnpPointMultiplier);
 
     if (masterId.empty() || slaveId.empty() || pointType.empty() || dnpOffset.empty())
     {
@@ -623,17 +628,6 @@ unsigned int DnpSlave::getMessageSize(const char* data)
         }
     }
     return msgSize;
-}
-
-
-std::string DnpSlave::dumpDNPMessage(const string dnpDirection, const char* data, unsigned int size)
-{
-    StreamBuffer sb;
-
-    sb << endl << dnpDirection <<" message:"
-       << endl << arrayToRange(reinterpret_cast<const unsigned char*>(data), size);
-
-    return sb;
 }
 
 
