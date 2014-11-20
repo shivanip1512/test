@@ -93,7 +93,7 @@
     <entry key="yukon.web.modules.amr.validationEditor.slopeErrorUnits">kWh/day</entry>
     <entry key="yukon.web.modules.amr.validationEditor.slopeError.helpText">
         <![CDATA[
-        This value is used to make the unreasonablility detection less sensitive to usage spikes due to 
+        This value is used to make the unreasonability detection less sensitive to usage spikes due to 
         closely spaced readings.  For example, 150 kWh/day is equivalent to 4500 kWh/month which isn't necessarily 
         that much usage if observed over a short span of time.<br><br>To allow for this, the normalized usage that will be 
         compared to the unreasonable threshold is calculated by taking the usage delta between two readings minus the 
