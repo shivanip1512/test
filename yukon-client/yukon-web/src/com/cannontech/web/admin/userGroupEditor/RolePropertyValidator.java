@@ -1,18 +1,21 @@
 package com.cannontech.web.admin.userGroupEditor;
 
 import java.util.Map;
+import java.util.TimeZone;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.Errors;
-
+import org.joda.time.DateTimeZone;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+
 import com.cannontech.web.admin.userGroupEditor.RolePropertyController.GroupRolePropertyEditorBean;
 
 public class RolePropertyValidator extends SimpleValidator<GroupRolePropertyEditorBean> {
+  
     private final static String baseKey = "yukon.web.modules.adminSetup.config.error.";
 
     public RolePropertyValidator() {
@@ -28,9 +31,12 @@ public class RolePropertyValidator extends SimpleValidator<GroupRolePropertyEdit
             YukonValidationUtils.checkExceedsMaxLength(errors, "values[DEFAULT_TIMEZONE]", timeZoneId, 1000);
             if (StringUtils.isNotBlank(timeZoneId)) {
                 try {
-                    CtiUtilities.getValidTimeZone(timeZoneId);
+                    TimeZone timeZone=CtiUtilities.getValidTimeZone(timeZoneId);
+                    DateTimeZone.forTimeZone(timeZone);
                 } catch (BadConfigurationException e) {
                     errors.rejectValue("values[DEFAULT_TIMEZONE]", baseKey + "invalidTimeZone");
+                } catch (IllegalArgumentException e){
+                    errors.rejectValue("values[DEFAULT_TIMEZONE]", baseKey + "capitalizationMatters");
                 }
             }
            

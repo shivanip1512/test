@@ -3,12 +3,14 @@ package com.cannontech.web.admin.energyCompany.setting;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.commons.collections4.FactoryUtils;
 import org.apache.commons.collections4.map.LazyMap;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -87,10 +89,13 @@ public class EnergyCompanySettingsController {
                             case ENERGY_COMPANY_DEFAULT_TIME_ZONE:
                                 if (StringUtils.isNotBlank((String)newSetting.getValue())){
                                     try{
-                                        CtiUtilities.getValidTimeZone((String)newSetting.getValue());
+                                        TimeZone timeZone=CtiUtilities.getValidTimeZone((String)newSetting.getValue());
+                                        DateTimeZone.forTimeZone(timeZone);
                                     }
                                     catch (BadConfigurationException e) {
                                         errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.timezone.invalid");
+                                    }catch (IllegalArgumentException e){
+                                        errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.timezone.capitalizationMatters");
                                     }
                                 }
                                 break;

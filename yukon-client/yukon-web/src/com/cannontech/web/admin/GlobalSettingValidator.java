@@ -3,10 +3,12 @@ package com.cannontech.web.admin;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.joda.time.DateTimeZone;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.exception.BadConfigurationException;
@@ -43,9 +45,12 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
                 YukonValidationUtils.checkExceedsMaxLength(errors, "values[SYSTEM_TIMEZONE]", timeZoneId, 1000);
                 if (StringUtils.isNotBlank(timeZoneId)) {
                     try {
-                        CtiUtilities.getValidTimeZone(timeZoneId);
+                        TimeZone timeZone=CtiUtilities.getValidTimeZone(timeZoneId);
+                        DateTimeZone.forTimeZone(timeZone);
                     } catch(BadConfigurationException e) {
                         errors.rejectValue("values[SYSTEM_TIMEZONE]", baseKey + "invalidTimeZone", null,"");
+                    }catch (IllegalArgumentException e){
+                        errors.rejectValue("values[SYSTEM_TIMEZONE]", baseKey + "capitalizationMatters",null,"");
                     }
                 }
             }
