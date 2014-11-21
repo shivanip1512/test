@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/20/2014 2:58:27 PM                        */
+/* Created on:     11/21/2014 2:32:35 PM                        */
 /*==============================================================*/
 
 
@@ -8329,6 +8329,7 @@ go
 
 INSERT INTO StatusPointMonitorProcessor VALUES (1, 1, 'DIFFERENCE', 1, 'NoResponse');
 INSERT INTO StatusPointMonitorProcessor VALUES (2, 1, 'DIFFERENCE', 0, 'Restoration');
+INSERT INTO StatusPointMonitorProcessor VALUES (3, 1, 'DIFFERENCE', 2, 'Outage');
 
 /*==============================================================*/
 /* Table: Substation                                            */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/20/2014 11:27:48 AM                       */
+/* Created on:     11/21/2014 2:33:12 PM                        */
 /*==============================================================*/
 
 
@@ -7832,6 +7832,7 @@ create table StatusPointMonitorProcessor  (
 
 INSERT INTO StatusPointMonitorProcessor VALUES (1, 1, 'DIFFERENCE', 1, 'NoResponse');
 INSERT INTO StatusPointMonitorProcessor VALUES (2, 1, 'DIFFERENCE', 0, 'Restoration');
+INSERT INTO StatusPointMonitorProcessor VALUES (3, 1, 'DIFFERENCE', 2, 'Outage');
 
 /*==============================================================*/
 /* Table: Substation                                            */
