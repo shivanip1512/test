@@ -11363,6 +11363,20 @@
                 <unitofmeasure value="Undefined" />
                 <decimalplaces value="0" />
             </point>
+            <point type="Analog" offset="20001">
+                <init>true</init>
+                <name>IP Address</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Undefined" />
+                <decimalplaces value="0" />
+            </point>
+            <point type="Analog" offset="20002">
+                <init>true</init>
+                <name>UDP Port</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Undefined" />
+                <decimalplaces value="0" />
+            </point>
         </points>
         <attributes>
             <attribute name="FIRMWARE_VERSION">
@@ -11376,6 +11390,12 @@
             </attribute>
             <attribute name="IGNORED_CONTROL_REASON">
                 <basicLookup point="Ignored Control Reason" />
+            </attribute>
+            <attribute name="IP_ADDRESS">
+                <basicLookup point="IP Address" />
+            </attribute>
+            <attribute name="UDP_PORT">
+                <basicLookup point="UDP Port" />
             </attribute>
         </attributes>
     </pao>
