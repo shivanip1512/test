@@ -5,7 +5,7 @@
 $(function() {
     
     /** Handle clicks on menu triggers */
-    $(document).on('click', '.dropdown-trigger', function(e) {
+    $(document).on('click', '.dropdown-trigger', function(ev) {
         var trigger = $(this),
         menu = trigger.find('.dropdown-menu');
         
@@ -28,7 +28,7 @@ $(function() {
              * The trigger may have been an icon inside that link, 
              * so  we can't just check if the trigger has an href.
              */
-            if ( $(e.target).closest('[href]').length !== 0 ) {
+            if ( $(ev.target).closest('[href]').length !== 0 ) {
                 return true;
             }
             return false;
@@ -36,7 +36,7 @@ $(function() {
 
         $('ul.dropdown-menu').hide();
         if (trigger.closest('.dropdown-trigger').hasClass('ajax-menu')) {
-            ajaxMenuOpen(trigger, e);
+            ajaxMenuOpen(trigger, ev);
             return false;
         }
         positionDropdownMenu(menu, trigger);

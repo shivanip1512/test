@@ -357,6 +357,10 @@ yukon.tools.commander = (function () {
             valid = false;
             field.addClass('animated shake-subtle error')
             .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
+            
+            if (!Modernizr.cssanimations) {
+                setTimeout(function () { field.removeClass('animated shake-subtle error'); }, 1500);
+            }
         }
         if (!params.paoId && (target === _targetTypes.device || target === _targetTypes.lmGroup)) {
             valid = false;
@@ -365,10 +369,18 @@ yukon.tools.commander = (function () {
             .one(yg.events.animationend, function() { 
                 $(this).removeClass('animated shake-subtle error').find('.b-label').removeClass('error'); 
             }).find('.b-label').addClass('error');
+            
+            if (!Modernizr.cssanimations) {
+                setTimeout(function () { picker.removeClass('animated shake-subtle').find('.b-label').removeClass('error'); }, 1500);
+            }
         } else if ((target === _targetTypes.ecom || target === _targetTypes.vcom) && !params.serialNumber) {
             valid = false;
             $('#serial-number').addClass('animated shake-subtle error')
             .one(yg.events.animationend, function() { $(this).removeClass('animated shake-subtle error'); });
+            
+            if (!Modernizr.cssanimations) {
+                setTimeout(function () { $('#serial-number').removeClass('animated shake-subtle error'); }, 1500);
+            }
         }
         
         if (valid) {
@@ -593,6 +605,11 @@ yukon.tools.commander = (function () {
             /** User hit enter in the command textfield. */
             $('#command-text').on('keyup', function (ev) {
                 if (ev.which === yg.keys.enter) _execute();
+            });
+            
+            /** Stop IE from somehow opening a dropdown menu. */
+            $('#command-text').on('keydown', function (ev) {
+                if (ev.which === yg.keys.enter) return false; 
             });
             
             /** User clicked the clear button in the console. */
