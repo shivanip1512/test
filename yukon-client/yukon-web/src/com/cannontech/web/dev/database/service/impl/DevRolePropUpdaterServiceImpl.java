@@ -32,7 +32,7 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
         if (_lock.tryLock()) {
             try {
                 if (canAddRole(group, YukonRole.ODDS_FOR_CONTROL)) {
-                    setRoleProperty(group, YukonRoleProperty.ODDS_FOR_CONTROL_LABEL, "Odds for Control");
+                    setRoleProperty(group, YukonRoleProperty.ODDS_FOR_CONTROL_ROLE_EXISTS, true);
                     results.put(YukonRole.ODDS_FOR_CONTROL, true);
                 } else {
                     results.put(YukonRole.ODDS_FOR_CONTROL, false);
@@ -40,7 +40,7 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                 }
 
                 if (canAddRole(group, YukonRole.CI_CURTAILMENT)) {
-                    setRoleProperty(group, YukonRoleProperty.CURTAILMENT_LABEL, "CI Curtailment");
+                    setRoleProperty(group, YukonRoleProperty.CURTAILMENT_ROLE_EXISTS, true);
                     results.put(YukonRole.CI_CURTAILMENT, true);
                 } else {
                     results.put(YukonRole.CI_CURTAILMENT, false);
@@ -132,44 +132,8 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                     log.info("Failed due to role conflict for group " + group.getGroupName() + " with YukonRole " + YukonRole.APPLICATION_ESUBSTATION_EDITOR);
                 }
 
-
-                if (canAddRole(group, YukonRole.CBC_ONELINE_SUB_SETTINGS)) {
-                    setRoleProperty(group, YukonRoleProperty.SUB_TARGET,true);
-                    setRoleProperty(group, YukonRoleProperty.SUB_POWER_FACTOR,true);
-                    setRoleProperty(group, YukonRoleProperty.SUB_EST_POWER_FACTOR,true);
-                    setRoleProperty(group, YukonRoleProperty.SUB_WATTS,true);
-                    setRoleProperty(group, YukonRoleProperty.SUB_VOLTS,true);
-                    setRoleProperty(group, YukonRoleProperty.SUB_DAILY_MAX_OPCNT,true);
-                    setRoleProperty(group, YukonRoleProperty.SUB_TIMESTAMP,true);
-                    setRoleProperty(group, YukonRoleProperty.SUB_THREE_PHASE,true);
-                    results.put(YukonRole.CBC_ONELINE_SUB_SETTINGS, true);
-                } else {
-                    results.put(YukonRole.CBC_ONELINE_SUB_SETTINGS, false);
-                    log.info("Failed due to role conflict for group " + group.getGroupName() + " with YukonRole " + YukonRole.CBC_ONELINE_SUB_SETTINGS);
-                }
-
-                if (canAddRole(group, YukonRole.CBC_ONELINE_FEEDER_SETTINGS)) {
-                    setRoleProperty(group, YukonRoleProperty.FDR_KVAR,true);
-                    setRoleProperty(group, YukonRoleProperty.FDR_PF,true);
-                    setRoleProperty(group, YukonRoleProperty.FDR_WATT,true);
-                    setRoleProperty(group, YukonRoleProperty.FDR_OP_CNT,true);
-                    setRoleProperty(group, YukonRoleProperty.FDR_VOLT,true);
-                    setRoleProperty(group, YukonRoleProperty.FDR_TARGET,true);
-                    setRoleProperty(group, YukonRoleProperty.FDR_TIMESTAMP,true);
-                    setRoleProperty(group, YukonRoleProperty.FDR_WATT_VOLT,true);
-                    setRoleProperty(group, YukonRoleProperty.FDR_THREE_PHASE,true);
-                    results.put(YukonRole.CBC_ONELINE_FEEDER_SETTINGS, true);
-                } else {
-                    results.put(YukonRole.CBC_ONELINE_FEEDER_SETTINGS, false);
-                    log.info("Failed due to role conflict for group " + group.getGroupName() + " with YukonRole " + YukonRole.CBC_ONELINE_FEEDER_SETTINGS);
-                }
-
                 if (canAddRole(group, YukonRole.CBC_ONELINE_CAP_SETTINGS)) {
-                    setRoleProperty(group, YukonRoleProperty.CAP_BANK_SIZE,true);
-                    setRoleProperty(group, YukonRoleProperty.CAP_CBC_NAME,true);
-                    setRoleProperty(group, YukonRoleProperty.CAP_TIMESTAMP,true);
                     setRoleProperty(group, YukonRoleProperty.CAP_BANK_FIXED_TEXT, "Fixed");
-                    setRoleProperty(group, YukonRoleProperty.CAP_DAILY_MAX_TOTAL_OPCNT,true);
                     results.put(YukonRole.CBC_ONELINE_CAP_SETTINGS, true);
                 } else {
                     results.put(YukonRole.CBC_ONELINE_CAP_SETTINGS, false);
@@ -228,7 +192,6 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                     setRoleProperty(group, YukonRoleProperty.ADMIN_MEMBER_LOGIN_CNTRL,true);
                     setRoleProperty(group, YukonRoleProperty.ADMIN_MEMBER_ROUTE_SELECT,true);
                     setRoleProperty(group, YukonRoleProperty.ADMIN_MULTI_WAREHOUSE,true);
-                    setRoleProperty(group, YukonRoleProperty.ADMIN_AUTO_PROCESS_BATCH_COMMANDS,true);
                     setRoleProperty(group, YukonRoleProperty.ADMIN_MULTISPEAK_SETUP,true);
                     setRoleProperty(group, YukonRoleProperty.ADMIN_LM_USER_ASSIGN,true);
                     setRoleProperty(group, YukonRoleProperty.ADMIN_EDIT_CONFIG,true);
@@ -302,14 +265,12 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                 }
 
                 if (canAddRole(group, YukonRole.INVENTORY)) {
-                    setRoleProperty(group, YukonRoleProperty.INVENTORY_SHOW_ALL,true);
                     setRoleProperty(group, YukonRoleProperty.SN_ADD_RANGE,true);
                     setRoleProperty(group, YukonRoleProperty.SN_UPDATE_RANGE,true);
                     setRoleProperty(group, YukonRoleProperty.SN_CONFIG_RANGE,true);
                     setRoleProperty(group, YukonRoleProperty.SN_DELETE_RANGE,true);
                     setRoleProperty(group, YukonRoleProperty.INVENTORY_CREATE_HARDWARE,true);
                     setRoleProperty(group, YukonRoleProperty.EXPRESSCOM_TOOS_RESTORE_FIRST,true);
-                    setRoleProperty(group, YukonRoleProperty.ALLOW_MULTIPLE_WAREHOUSES,true);
                     setRoleProperty(group, YukonRoleProperty.PURCHASING_ACCESS,true);
                     setRoleProperty(group, YukonRoleProperty.DEVICE_RECONFIG,true);
                     setRoleProperty(group, YukonRoleProperty.INVENTORY_SEARCH,true);

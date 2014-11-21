@@ -135,14 +135,12 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
         setRoleProperty(roleGroup, YukonRoleProperty.PERMIT_LOGIN_EDIT, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.ALLOW_MEMBER_PROGRAMS, " ");
 
-        setRoleProperty(roleGroup, YukonRoleProperty.LOADCONTROL_EDIT, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.MACS_EDIT, " ");
-        setRoleProperty(roleGroup, YukonRoleProperty.TDC_EXPRESS, " ");
-        setRoleProperty(roleGroup, YukonRoleProperty.TDC_MAX_ROWS, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.TDC_MAX_ROWS, "500");
         setRoleProperty(roleGroup, YukonRoleProperty.TDC_RIGHTS, " ");
-        setRoleProperty(roleGroup, YukonRoleProperty.TDC_ALARM_COUNT, " ");
-        setRoleProperty(roleGroup, YukonRoleProperty.DECIMAL_PLACES, " ");
-        setRoleProperty(roleGroup, YukonRoleProperty.LC_REDUCTION_COL, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.TDC_ALARM_COUNT, "3");
+        setRoleProperty(roleGroup, YukonRoleProperty.DECIMAL_PLACES, "2");
+        setRoleProperty(roleGroup, YukonRoleProperty.LC_REDUCTION_COL, true);
 
         setRoleProperty(roleGroup, YukonRoleProperty.GRAPH_EDIT_GRAPHDEFINITION, " ");
         setRoleProperty(roleGroup, YukonRoleProperty.TRENDING_DISCLAIMER, " ");
@@ -154,7 +152,7 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
         setRoleProperty(roleGroup, YukonRoleProperty.EXPRESSCOM_SERIAL_MODEL,true);
         setRoleProperty(roleGroup, YukonRoleProperty.DCU_SA205_SERIAL_MODEL,false);
         setRoleProperty(roleGroup, YukonRoleProperty.DCU_SA305_SERIAL_MODEL,false);
-        setRoleProperty(roleGroup, YukonRoleProperty.LC_REDUCTION_COL, " ");
+        setRoleProperty(roleGroup, YukonRoleProperty.LC_REDUCTION_COL, true);
         setRoleProperty(roleGroup, YukonRoleProperty.COMMANDS_GROUP, " ");
 
         setRoleProperty(roleGroup, YukonRoleProperty.DYNAMIC_BILLING_FILE_SETUP, " ");
@@ -224,8 +222,6 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
             setRoleProperty(roleGroup, YukonRoleProperty.NAV_BULLET_SELECTED, " ");
             setRoleProperty(roleGroup, YukonRoleProperty.HEADER_LOGO, "yukon/DemoHeaderCES.gif");
             setRoleProperty(roleGroup, YukonRoleProperty.LOG_IN_URL, " ");
-            setRoleProperty(roleGroup, YukonRoleProperty.NAV_CONNECTOR_BOTTOM, " ");
-            setRoleProperty(roleGroup, YukonRoleProperty.NAV_CONNECTOR_MIDDLE, " ");
 
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_ACCOUNT_GENERAL,true);
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY,true);
@@ -236,11 +232,8 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_QUESTIONS_UTIL,true);
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_CHANGE_LOGIN_USERNAME,true);
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_CONSUMER_INFO_THERMOSTATS_ALL,true);
-
-            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_HIDE_OPT_OUT_BOX, false);
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_OPT_OUT_PERIOD, " ");
             setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_WEB_LINK_FAQ, " ");
-            setRoleProperty(roleGroup, YukonRoleProperty.RESIDENTIAL_WEB_LINK_THERM_INSTRUCTIONS, " ");
 
             // Creating the residential user group that the group above will be mapped to.
             UserGroup userGroup = new UserGroup();

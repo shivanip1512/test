@@ -31,8 +31,6 @@ public enum YukonRole implements DisplayableEnum, DatabaseRepresentationSource {
     
     CBC_SETTINGS(CapControl, CapControl.baseRoleId, CapControl.basePropertyId),
     // The below are a little off. We've merged the Cbc_Oneline "category" into the CapControl category...however, we need to retain the original roleIds.
-    CBC_ONELINE_SUB_SETTINGS(CapControl, Cbc_Oneline.baseRoleId, Cbc_Oneline.basePropertyId),
-    CBC_ONELINE_FEEDER_SETTINGS(CapControl, Cbc_Oneline.baseRoleId - 1, Cbc_Oneline.basePropertyId - 100),
     CBC_ONELINE_CAP_SETTINGS(CapControl, Cbc_Oneline.baseRoleId - 2, Cbc_Oneline.basePropertyId - 200),
 
     

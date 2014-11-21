@@ -1121,14 +1121,7 @@ private void handleException(java.lang.Throwable exception)
 private void initClientConnection()
 {
 	//hex value representing the privileges of the user on this machine
-	try {
-        userRightsInt = Integer.parseInt(ClientSession.getInstance()
-            .getRolePropertyValue(YukonRoleProperty.LOADCONTROL_EDIT), 16);
-    } catch (NumberFormatException e) {
-        CTILogger.warn("Unable to parse user rights integer from TDCRole.LOADCONTROL_EDIT, " +
-                       "must be valid hex integer (less than 8 characters).", e);
         userRightsInt = 0;
-    }
 }
 /**
  * Initializes connections

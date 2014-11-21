@@ -24,8 +24,6 @@
     <!-- CapControl Role Category -->
     <entry key="yukon.common.role.CBC_SETTINGS">Cap Control Settings</entry>
     <entry key="yukon.common.role.CBC_ONELINE_CAP_SETTINGS">Cap Bank Display</entry>
-    <entry key="yukon.common.role.CBC_ONELINE_FEEDER_SETTINGS">Feeder Display</entry>
-    <entry key="yukon.common.role.CBC_ONELINE_SUB_SETTINGS">Substation Display</entry>
     
     <!-- Consumer Role Category -->
     <entry key="yukon.common.role.RESIDENTIAL_CUSTOMER">Residential Customer</entry>

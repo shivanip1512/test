@@ -33,7 +33,7 @@
             <xsd:element name="accountUser" type="yukon:YukonUser" minOccurs="0">
                 <xsd:annotation>
                     <xsd:documentation>
-                        If the accountUser is left blank the YukonRoleProperty.RESIDENTIAL_CREATE_LOGIN_FOR_ACCOUNT 
+                        If the accountUser is left blank the EnergyCompanySettingType.AUTO_CREATE_LOGIN_FOR_ACCOUNT
                         role property can be set to auto-create a login
                     </xsd:documentation>
                 </xsd:annotation>

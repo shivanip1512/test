@@ -1394,9 +1394,6 @@ public long getCurrentDisplayNumber()
  */
 private void getExternalResources() 
 {
-	noCreationAllowed = ClientSession.getInstance().getRolePropertyValue(
-				YukonRoleProperty.TDC_EXPRESS);
-
 	TDCDefines.MAX_ROWS = Integer.parseInt(
 				ClientSession.getInstance().getRolePropertyValue( YukonRoleProperty.TDC_MAX_ROWS ) );		
 }
