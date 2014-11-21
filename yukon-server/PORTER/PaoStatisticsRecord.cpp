@@ -227,7 +227,9 @@ bool PaoStatisticsRecord::TryInsert(Database::DatabaseWriter &writer)
         return false;
     }
 
-    if( ! Cti::Database::executeCommand( writer, __FILE__, __LINE__ ))
+    if( ! Cti::Database::executeCommand( writer, __FILE__, __LINE__,
+                                         Cti::Database::LogDebug::Disable,
+                                         Cti::Database::SwallowException::Enable))
     {
         return false;
     }

@@ -46,6 +46,20 @@ bool DatabaseWriter::execute()
     return retVal;
 }
 
+bool DatabaseWriter::executeSwallowDatabaseException()
+{
+    bool retVal = true;
+    try
+    {
+        _command.Execute();
+    }
+    catch(SAException &x)
+    {
+        retVal = false;
+    }
+    return retVal;
+}
+
 void DatabaseWriter::executeWithDatabaseException()
 {
     try

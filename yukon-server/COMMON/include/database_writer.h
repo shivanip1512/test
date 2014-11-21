@@ -22,6 +22,7 @@ public:
 
     RowWriter &setCommandText(const std::string &command);
     bool execute();
+    bool executeSwallowDatabaseException();
     void executeWithDatabaseException();
 
     RowWriter &operator<<(const SpecialValues operand);
