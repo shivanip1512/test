@@ -6,8 +6,11 @@
 
 <cti:msgScope paths="modules.operator.gateways.cert.update">
 
+<c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
+
 <cti:url var="url" value="/stars/gateways/cert-update"/>
 <form id="gateway-cert-form" method="POST" enctype="multipart/form-data" action="${url}">
+
 <cti:csrfToken/>
 
 <tags:nameValueContainer2 tableClass="with-form-controls">
@@ -19,12 +22,14 @@
 <h3><i:inline key=".gateways"/></h3>
 <div class="column-12-12 clearfix js-select-all-container scroll-md">
 <c:forEach var="gateway" items="${gateways}" varStatus="status">
+    <c:set var="checked" value="${checkedGateways[gateway.paoIdentifier.paoId]}"/>
+    
     <c:choose>
         <c:when test="${status.index % 2 == 0}">
             <div class="column one stacked">
                 <label>
                     <input class="js-select-all-item" type="checkbox" 
-                        name="gateways" value="${gateway.paoIdentifier.paoId}">${fn:escapeXml(gateway.name)}
+                        name="gateways" value="${gateway.paoIdentifier.paoId}" ${checked}>${fn:escapeXml(gateway.name)}
                 </label>
             </div>
         </c:when>
@@ -32,14 +37,14 @@
             <div class="column two nogutter stacked">
                 <label>
                     <input class="js-select-all-item" type="checkbox" 
-                        name="gateways" value="${gateway.paoIdentifier.paoId}">${fn:escapeXml(gateway.name)}
+                        name="gateways" value="${gateway.paoIdentifier.paoId}" ${checked}>${fn:escapeXml(gateway.name)}
                 </label>
             </div>
         </c:otherwise>
     </c:choose>
 </c:forEach>
 <div>
-    <label><input class="js-select-all" type="checkbox"><i:inline key="yukon.common.selectall"/></label>
+    <label><input class="js-select-all" type="checkbox" ${selectAll}><i:inline key="yukon.common.selectall"/></label>
 </div>
 </div>
 

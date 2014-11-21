@@ -49,6 +49,7 @@
     <entry key="yukon.web.modules.operator.gateways.cert.update.gateways">Gateways</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.label">Certificate Update</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.file">Certificate File</entry>
+    <entry key="yukon.web.modules.operator.gateways.cert.update.file.ioerror">Error reading certificate file.</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.file.empty">Certificate file was empty.</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.file.invalid">Not a valid certificate file.</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.updates">Certificate Updates</entry>

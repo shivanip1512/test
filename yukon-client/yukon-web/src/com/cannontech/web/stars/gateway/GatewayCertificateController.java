@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.gateway;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Set;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,6 +25,7 @@ import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
 import com.cannontech.common.rfn.model.CertificateUpdate;
+import com.cannontech.common.rfn.model.GatewayCertificateException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -107,21 +110,54 @@ public class GatewayCertificateController {
                 resp.setContentType("application/json");
                 JsonUtils.getWriter().writeValue(resp.getOutputStream(), update);
                 return null;
-            } catch (Exception e) {
+            } catch (IOException e) {
                 
-                model.addAttribute("gateways", rfnGatewayService.getAllGateways());
-                String errorMsg = "";
-                model.addAttribute("errorMsg", errorMsg);
+                List<RfnGateway> gatewayList = Lists.newArrayList(rfnGatewayService.getAllGateways());
+                Collections.sort(gatewayList);
+                Map<Integer, String> gatewaySelectedMap = getGatewaySelectedMap(gateways);
+                
+                model.addAttribute("gateways", gatewayList);
+                model.addAttribute("checkedGateways", gatewaySelectedMap);
+                model.addAttribute("selectAll", gatewaySelectedMap.size() == gatewayList.size() ? "checked" : null);
+                model.addAttribute("errorMsg", accessor.getMessage(baseKey + "cert.update.file.ioerror"));
+                resp.setStatus(HttpStatus.BAD_REQUEST.value());
+                
+                return "gateways/cert.update.jsp";
+            } catch (GatewayCertificateException e) {
+                
+                List<RfnGateway> gatewayList = Lists.newArrayList(rfnGatewayService.getAllGateways());
+                Collections.sort(gatewayList);
+                Map<Integer, String> gatewaySelectedMap = getGatewaySelectedMap(gateways);
+                
+                model.addAttribute("gateways", gatewayList);
+                model.addAttribute("checkedGateways", gatewaySelectedMap);
+                model.addAttribute("selectAll", gatewaySelectedMap.size() == gatewayList.size() ? "checked" : null);
+                model.addAttribute("errorMsg", accessor.getMessage(baseKey + "cert.update.file.invalid"));
+                resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 
                 return "gateways/cert.update.jsp";
             }
         } else {
             
-            model.addAttribute("gateways", rfnGatewayService.getAllGateways());
+            List<RfnGateway> gatewayList = Lists.newArrayList(rfnGatewayService.getAllGateways());
+            Collections.sort(gatewayList);
+            Map<Integer, String> gatewaySelectedMap = getGatewaySelectedMap(gateways);
+            
+            model.addAttribute("gateways", gatewayList);
+            model.addAttribute("checkedGateways", gatewaySelectedMap);
+            model.addAttribute("selectAll", gatewaySelectedMap.size() == gatewayList.size() ? "checked" : null);
             model.addAttribute("errorMsg", accessor.getMessage(baseKey + "cert.update.file.empty"));
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
             
             return "gateways/cert.update.jsp";
         }
     }
     
+    private Map<Integer, String> getGatewaySelectedMap(Integer[] selectedGateways) {
+        Map<Integer, String> map = new HashMap<>();
+        for (Integer gatewayId : selectedGateways) {
+            map.put(gatewayId, "checked");
+        }
+        return map;
+    }
 }
