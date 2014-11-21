@@ -64,4 +64,4 @@ INSERT INTO YukonRoleProperty VALUES(-21402, -214, 'Infrastructure Administratio
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.3', '30-NOV-2014', 'Latest Update', 1, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('6.3', '21-NOV-2014', 'Latest Update', 1, GETDATE());
