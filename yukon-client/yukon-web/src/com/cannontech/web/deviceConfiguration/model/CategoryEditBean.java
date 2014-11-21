@@ -9,6 +9,7 @@ import java.util.SortedMap;
 
 import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.DeviceConfigCategoryItem;
+import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.util.LazySortedMap;
 import com.cannontech.web.deviceConfiguration.enumeration.Read.ReadType;
 
@@ -147,7 +148,9 @@ public class CategoryEditBean {
                 channelIndex++;
             }
         }
-        items.add(new DeviceConfigCategoryItem(categoryId, "enabledChannels", Integer.toString(channelIndex)));
+        if (categoryType.equals(CategoryType.RFN_CHANNEL_CONFIGURATION.value())) {
+            items.add(new DeviceConfigCategoryItem(categoryId, "enabledChannels", Integer.toString(channelIndex)));
+        }
 
         return new DeviceConfigCategory(categoryId, categoryType, categoryName, description, items);
     }
