@@ -1,3 +1,7 @@
+ /** Calculate previous reading difference
+     *  @param {string} attributeName - Name of the attribute
+     *  @param {number} readingValue - Current reading value  
+    */
 function calculatePreviousReadingDifference (attributeName, readingValue) {
     
     var currentValueName = attributeName + "_latestReading",

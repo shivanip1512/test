@@ -1,11 +1,11 @@
-/**
- * Manages the trends page, uses highstock library to display svg trends
- * 
- * @require jQuery 1.9+
- * @require highstock 1.3.9
- */
 yukon.namespace('yukon.trending');
 
+/**
+ * Module to manage the trends page, uses highstock library to display svg trends
+ * 
+ * @require JQUERY
+ * @require highstock 1.3.9
+ */
 yukon.trends = (function() {
     
     var mod = {

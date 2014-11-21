@@ -1,5 +1,5 @@
 /**
- * Object to create and operate a widget
+ * Module to create and operate a widget
  */
 function YukonWidget(shortName, parameters) {
     
@@ -25,12 +25,14 @@ function YukonWidget(shortName, parameters) {
         });
     };
 
+    /** Handles success event */
     this.onSuccess = function (xhr) {
         this.parameters = yukon.ui.util.getHeaderJSON(xhr);
         // this helps prevent this from growing like crazy each time the widget is refreshed
         this.linkInfo = {};
     };
 
+    /** Handles periodic success event */
     this.onSuccessPeriodic = function (transport, json) {
         this.parameters = json;
         // this helps prevent this from growing like crazy each time the widget is refreshed
@@ -38,17 +40,14 @@ function YukonWidget(shortName, parameters) {
     };
 
     /**
-     * Private function to start periodic reloading of the widget.
+     * Function to start periodic reloading of the widget.
      * 
-     * opts - json representing the options 
-     * {
-     *    url - the url of the ajax request
-     *    params - the parameters of the ajax request
-     *    container - the container to load the returned html into
-     *    frequency - the number of seconds to wait between reloads
-     * }
-     * 
-     * context - the widget object making the call
+     * @param {Object} opts - json representing the options 
+     * @param {string} [opts.url] - the url of the ajax request
+     * @param {Object} [opts.params] - the parameters of the ajax request.
+     * @param {Object} [opts.container] - the container to load the returned html into.
+     * @param {Object} [opts.frequency] - the number of seconds to wait between reloads.
+     * @param {Object} context - the widget object making the call
      */
     this.periodicRefresh = function (opts, context) {
         var timeoutId = 0,
@@ -99,6 +98,10 @@ function YukonWidget(shortName, parameters) {
         });
     };
 
+
+    /**
+     * Refresh the widget
+     */
     this.doActionRefresh = function (args) {
         
         var container = this.container,
@@ -154,14 +157,26 @@ function YukonWidget(shortName, parameters) {
         });
     };
 
+    /**
+     * Set the given key with given value. 
+     * @param {string} name - Parameter name.
+     * @param {string} value - Parameter value.
+     */
     this.setParameter = function (name, value) {
         this.parameters[name] = value;
     };
 
+    /** Setup the link info.*/
     this.setupLink = function (key, jsonData) {
         this.linkInfo[key] = jsonData;
     };
-
+    
+    /** Function to start periodic reloading of the widget.
+     *  @param {string} cmd - command action to be performed.
+     *  @param {Object} newParams - New widget parameters
+     *  @param {number} period -  the number of seconds to wait between reloads
+     *  @param {Object} container - the container to load the returned html into
+     */
     this.doPeriodicRefresh = function (cmd, newParams, period, container) {
         var containerToUse = container,
             oldParams,

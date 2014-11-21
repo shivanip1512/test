@@ -1,16 +1,23 @@
-
 yukon.namespace('yukon.weather');
 
+/**
+ * Module that manages the weather data
+ * @module   yukon.weather
+ * @requires JQUERY 
+ * @requires JQUERY UI
+ */
 yukon.weather = (function() {
     var
     _initialized = false, 
 
+    /** Handles search weather stations button clicked again event */
    _searchWeatherStationsAgainBtnClick = function() {
         $("#weatherLocationSearchResults").fadeOut(50, function() {
             $("#weatherLocationSearch").fadeIn(50);
         });
     },
 
+    /** Handles new weather station button click event. */
     _newWeatherLocationBtnClick = function() {
         $("#weatherLocationSearch").show();
         $("#weatherLocationSearchResults").hide();
@@ -18,6 +25,7 @@ yukon.weather = (function() {
         $("#weatherStationDialog").dialog({minWidth:500, title:title, modal:true});
     },
 
+    /** Handles search weather station button click event. */
     _searchWeatherStationsBtnClick = function() {
         $("#findCloseStationsForm").ajaxSubmit({success: function(data) {
             $("#weatherStationDialog").fadeOut(50, function () {
@@ -27,6 +35,7 @@ yukon.weather = (function() {
         }});
     },
 
+    /** Saves a weather station */
     _saveWeatherStationBtnClick = function() {
         $("#saveWeatherLocationForm").ajaxSubmit({success: function(data) {
             $("#weatherStationDialog").fadeOut(50, function () {
@@ -41,6 +50,7 @@ yukon.weather = (function() {
         }});
     },
 
+    /** Reloads the weather stations */
     _reloadWeatherStations = function() {
         $("#weatherLocationsLoading").fadeIn(150);
         $("#weatherLocations").load("weatherLocationsTable", function() {
@@ -68,6 +78,9 @@ yukon.weather = (function() {
             _initialized = true;
         },
 
+        /** Updates the various weather parameter details
+         *  @param {object} metaData - Json containing various weather parameter details.
+         */
         updateWeatherInputFields : function(metaData) {
             var metaDataObj = JSON.parse(metaData.value);
             var paoId = metaDataObj.paoId;

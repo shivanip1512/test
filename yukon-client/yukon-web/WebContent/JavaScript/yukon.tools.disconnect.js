@@ -40,6 +40,9 @@ yukon.tools.disconnect = (function() {
             
         },
         
+        /** Update the progress 
+         *  @param {Object} data - Progress data.
+         */
         progress: function(data) {
             var done = data.value === 'true';
             if (!_canceled) {
