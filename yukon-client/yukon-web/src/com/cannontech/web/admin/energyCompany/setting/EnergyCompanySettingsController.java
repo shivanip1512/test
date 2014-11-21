@@ -95,7 +95,7 @@ public class EnergyCompanySettingsController {
                                     catch (BadConfigurationException e) {
                                         errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.timezone.invalid");
                                     }catch (IllegalArgumentException e){
-                                        errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.timezone.capitalizationMatters");
+                                        errors.rejectValue("settings["+newSetting.getType()+"].value", "yukon.web.modules.adminSetup.energyCompanySettings.timezone.invalidJodaTimeZone");
                                     }
                                 }
                                 break;

@@ -36,7 +36,7 @@ public class RolePropertyValidator extends SimpleValidator<GroupRolePropertyEdit
                 } catch (BadConfigurationException e) {
                     errors.rejectValue("values[DEFAULT_TIMEZONE]", baseKey + "invalidTimeZone");
                 } catch (IllegalArgumentException e){
-                    errors.rejectValue("values[DEFAULT_TIMEZONE]", baseKey + "capitalizationMatters");
+                    errors.rejectValue("values[DEFAULT_TIMEZONE]", baseKey + "invalidJodaTimeZone");
                 }
             }
            

@@ -49,8 +49,8 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
                         DateTimeZone.forTimeZone(timeZone);
                     } catch(BadConfigurationException e) {
                         errors.rejectValue("values[SYSTEM_TIMEZONE]", baseKey + "invalidTimeZone", null,"");
-                    }catch (IllegalArgumentException e){
-                        errors.rejectValue("values[SYSTEM_TIMEZONE]", baseKey + "capitalizationMatters",null,"");
+                    } catch (IllegalArgumentException e){
+                        errors.rejectValue("values[SYSTEM_TIMEZONE]", baseKey + "invalidJodaTimeZone",null,"");
                     }
                 }
             }
