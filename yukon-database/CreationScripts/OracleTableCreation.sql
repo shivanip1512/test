@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/18/2014 4:57:27 PM                        */
+/* Created on:     11/20/2014 11:27:48 AM                       */
 /*==============================================================*/
 
 
@@ -7042,8 +7042,8 @@ create table PROFILEPEAKRESULT  (
 /*==============================================================*/
 create table PaoLocation  (
    PAObjectId           NUMBER                          not null,
-   Latitude             NUMBER(9,6),
-   Longitude            NUMBER(9,6),
+   Latitude             NUMBER(9,6)                     not null,
+   Longitude            NUMBER(9,6)                     not null,
    constraint PK_PaoLocation primary key (PAObjectId)
 );
 

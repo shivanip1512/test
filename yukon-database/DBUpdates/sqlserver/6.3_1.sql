@@ -41,6 +41,18 @@ WHERE RolePropertyId = -21100
 AND VALUE != ' ';
 /* End YUK-13797 */
 
+/* Start YUK-13878 */
+DELETE FROM PaoLocation
+WHERE Latitude  = NULL
+   OR Longitude = NULL;
+
+ALTER TABLE PaoLocation
+ALTER COLUMN Latitude NUMERIC(9,6) NOT NULL;
+
+ALTER TABLE PaoLocation
+ALTER COLUMN Longitude NUMERIC(9,6) NOT NULL;
+/* End YUK-13878 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
