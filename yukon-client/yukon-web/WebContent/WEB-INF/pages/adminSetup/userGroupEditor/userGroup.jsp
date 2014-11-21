@@ -60,10 +60,10 @@
                                                     <c:forEach var="roleGroupPair" items="${category.value}">
                                                         <li>
                                                             <cti:url value="/adminSetup/roleGroup/view" var="roleGroupUrl">
-                                                                <cti:param name="roleGroupId" value="${roleGroupPair.second.groupID}"/>
+                                                                <cti:param name="roleGroupId" value="${roleGroupPair.group.groupID}"/>
                                                             </cti:url>
-                                                            <cti:formatObject value="${roleGroupPair.first}"/>
-                                                            &nbsp;<a href="${roleGroupUrl}" class="detail wsnw">(${fn:escapeXml(roleGroupPair.second)})</a>
+                                                            <cti:formatObject value="${roleGroupPair.role}"/>
+                                                            &nbsp;<a href="${roleGroupUrl}" class="detail wsnw">(${fn:escapeXml(roleGroupPair.group)})</a>
                                                         </li>
                                                     </c:forEach>
                                                 </ul>
