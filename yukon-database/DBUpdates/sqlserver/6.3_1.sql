@@ -53,6 +53,13 @@ ALTER TABLE PaoLocation
 ALTER COLUMN Longitude NUMERIC(9,6) NOT NULL;
 /* End YUK-13878 */
 
+/* Start YUK-13882 */
+INSERT INTO YukonRole VALUES(-214, 'Device Management', 'Operator', 'Permissions for creating, editing, and configuring devices.');
+INSERT INTO YukonRoleProperty VALUES(-21400, -214, 'Infrastructure Create/Edit', 'false', 'Controls the ability to create and edit infrastructure devices. i.e. RF Gateways.');
+INSERT INTO YukonRoleProperty VALUES(-21401, -214, 'Infrastructure Delete', 'false', 'Controls the ability to delete infrastructure devices. i.e. RF Gateways.');
+INSERT INTO YukonRoleProperty VALUES(-21402, -214, 'Infrastructure Administration', 'false', 'Controls the ability to send configuration commands to infrastructure devices. i.e. RF Gateways.');
+/* End YUK-13882 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

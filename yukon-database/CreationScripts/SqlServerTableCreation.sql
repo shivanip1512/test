@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/21/2014 2:32:35 PM                        */
+/* Created on:     11/21/2014 3:02:52 PM                        */
 /*==============================================================*/
 
 
@@ -9621,6 +9621,9 @@ INSERT INTO YukonRole VALUES(-212,'Scheduler','Operator','Operator access to Sch
 /* Device Actions Role */
 INSERT INTO YukonRole VALUES(-213,'Device Actions','Operator','Operator access to device actions'); 
 
+/* Device Management Role */
+INSERT INTO YukonRole VALUES(-214, 'Device Management', 'Operator', 'Permissions for creating, editing, and configuring devices.');
+
 /* Consumer roles */
 INSERT INTO YukonRole VALUES(-400,'Residential Customer','Consumer','Access to residential customer information');
 
@@ -9874,6 +9877,11 @@ INSERT INTO YukonRoleProperty VALUES (-21312,-213,'Manage FDR Translations','fal
 INSERT INTO YukonRoleProperty VALUES (-21313,-213,'Archived Data Export','true','Controls access to Archived Data Export');
 INSERT INTO YukonRoleProperty VALUES (-21314,-213,'Connect/Disconnect','true','Controls access to Connect/Disconnect collection action.');
 INSERT INTO YukonRoleProperty VALUES (-21315,-213,'Demand Reset','true','Controls access to Demand Reset collection action.');
+
+/* Device Management Role Properties */
+INSERT INTO YukonRoleProperty VALUES(-21400, -214, 'Infrastructure Create/Edit', 'false', 'Controls the ability to create and edit infrastructure devices. i.e. RF Gateways.');
+INSERT INTO YukonRoleProperty VALUES(-21401, -214, 'Infrastructure Delete', 'false', 'Controls the ability to delete infrastructure devices. i.e. RF Gateways.');
+INSERT INTO YukonRoleProperty VALUES(-21402, -214, 'Infrastructure Administration', 'false', 'Controls the ability to send configuration commands to infrastructure devices. i.e. RF Gateways.');
 
 /* Residential Customer Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-40001,-400,'Account General','true','Controls whether to show the general account information');
