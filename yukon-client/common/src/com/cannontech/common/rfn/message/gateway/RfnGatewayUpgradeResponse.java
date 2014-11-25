@@ -11,12 +11,16 @@ import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 public class RfnGatewayUpgradeResponse implements RfnIdentifyingMessage, Serializable {
     private static final long serialVersionUID = 1L;
 
+    public static final short gatewayMessageTypeInitialValue = -1;
+    public static final byte gatewayMessageStatusInitialValue = (byte)0x80;
+    public static final int fragmentIdInitialValue = -1;
+
     private String upgradeId;
     private RfnIdentifier rfnIdentifier;
     private RfnGatewayUpgradeResponseType responseType = RfnGatewayUpgradeResponseType.UNKNOWN;
-    private short gatewayMessageType = -1;
-    private byte gatewayMessageStatus = -1;
-    private int fragmentId = -1;
+    private short gatewayMessageType = gatewayMessageTypeInitialValue;
+    private byte gatewayMessageStatus = gatewayMessageStatusInitialValue;
+    private int fragmentId = fragmentIdInitialValue;
     
     public String getUpgradeId() {
         return upgradeId;
