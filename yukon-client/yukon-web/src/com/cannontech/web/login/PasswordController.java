@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.naming.ConfigurationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import net.tanesha.recaptcha.ReCaptchaException;
 
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -24,6 +26,7 @@ import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.cannontech.common.user.UserAuthenticationInfo;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.model.PasswordPolicyError;
 import com.cannontech.core.authentication.model.PolicyRule;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -49,11 +52,12 @@ import com.cannontech.web.stars.dr.operator.validator.LoginPasswordValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.stars.service.PasswordResetService;
+import com.cannontech.web.util.TextView;
 import com.cannontech.web.util.YukonUserContextResolver;
 import com.google.common.collect.Maps;
 
 @Controller
-public class PasswordResetController {
+public class PasswordController {
     
     private static final String baseKey = "yukon.web.modules.login.";
     
@@ -66,6 +70,27 @@ public class PasswordResetController {
     @Autowired private YukonUserContextResolver contextResolver;
     @Autowired private PasswordPolicyService passwordPolicyService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    
+    @RequestMapping(value="generate-password")
+    public TextView generatePassword(HttpServletResponse response, Integer userId, String userGroupName) {
+        
+        LiteYukonUser user = null; 
+        if (userId != null) {
+            user = userDao.getLiteYukonUser(userId);
+        }
+        
+        LiteUserGroup liteUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(userGroupName);
+        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteUserGroup);
+        String generatedPassword = "";
+        try {
+            generatedPassword = passwordPolicy.generatePassword();
+        } catch (ConfigurationException e) {
+            Log.error("No password could be generated for this login.", e);
+        }
+        response.setContentType("text/plain; charset=UTF-8");
+        
+        return new TextView(generatedPassword);
+    }
     
     @RequestMapping(value = "/forgottenPassword", method = RequestMethod.GET)
     public String newForgottenPassword(ModelMap model, HttpServletRequest request) throws Exception {

@@ -24,6 +24,7 @@ yukon.userProfile = (function () {
     },
     
     _setEnumPreference = function(ev, btn) {
+        
         var option = $(ev.currentTarget);
         var row = option.closest('tr');
         var prefName = row.attr('data-type');
@@ -138,8 +139,6 @@ yukon.userProfile = (function () {
         disablePasswordUserInput: function() {
             
             $(document).on('contextmenu paste', 'input[type="password"]', function(event) {
-                event.preventDefault ? event.preventDefault() : event.returnValue = false;
-                // IE8 requires returnValue
                 return false;
             });
             
@@ -148,10 +147,8 @@ yukon.userProfile = (function () {
             // keydown for IE, hopefully also for others instead of the more-used 'keypress'
             $(document).on('keydown', 'input[type="password"]', function(event){
                 if ((event.ctrlKey == true 
-                        && (event.which == '118' || event.which == '86'))
-                        || (event.shiftKey == true && event.keyCode == 45)) {
-                    // IE8 requires returnValue
-                    event.preventDefault ? event.preventDefault() : event.returnValue = false;
+                        && (event.which === '118' || event.which === '86'))
+                        || (event.shiftKey === true && event.keyCode === 45)) {
                     return false;
                 }
             });
@@ -211,7 +208,7 @@ yukon.userProfile = (function () {
         
         togglePreferenceSaveButton: function(event) {
             var ctrlInput = $(event.currentTarget);
-            if (ctrlInput.val() != ctrlInput.attr('prev-value')) {
+            if (ctrlInput.val() !== ctrlInput.attr('prev-value')) {
                 ctrlInput.closest('td').find('.save-preference').show();
             } else {
                 ctrlInput.closest('td').find('.save-preference').hide();

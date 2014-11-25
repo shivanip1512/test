@@ -13,7 +13,6 @@ yukon.ui.passwords = (function () {
     
     var 
     _initialized = false,
-    _minLength, _newPwSelector, _confirmPwSelector, _saveButtonSelector, _userId,
     
     mod = {
         
@@ -21,24 +20,24 @@ yukon.ui.passwords = (function () {
             
             if (_initialized) return;
             
-            var manager = $('.password-manager');
+            var manager = $('.password-manager'),
             
-            _minLength = manager.data('minLength'),
-            _newPwSelector = manager.data('newPassword'),
-            _confirmPwSelector = manager.data('confirmPassword'),
-            _saveButtonSelector = manager.data('saveButton'),
-            _userId = manager.data('userId');
+            minLength = manager.data('minLength'),
+            newPwSelector = manager.data('newPassword'),
+            confirmPwSelector = manager.data('confirmPassword'),
+            saveButtonSelector = manager.data('saveButton'),
+            userId = manager.data('userId');
             
-            $(_newPwSelector).keyup(function (ev) {
+            $(newPwSelector).keyup(function (ev) {
                 
-                $(_saveButtonSelector).prop('disabled', true);
+                $(saveButtonSelector).prop('disabled', true);
                 
                 $.ajax({
                     url: yukon.url('/login/check-password'),
                     type: 'post',
                     data: {
-                        userId: _userId,
-                        password: $(_newPwSelector).val()
+                        userId: userId,
+                        password: $(newPwSelector).val()
                     },
                     dataType: 'json'
                 }).done(function (data) {
@@ -52,19 +51,19 @@ yukon.ui.passwords = (function () {
                 return false;
             });
             
-            $(_newPwSelector + ', ' + _confirmPwSelector).keyup(function (ev) {
+            $(newPwSelector + ', ' + confirmPwSelector).keyup(function (ev) {
                 
-                var confirm = $(_confirmPwSelector).val(),
-                    password = $(_newPwSelector).val(),
+                var confirm = $(confirmPwSelector).val(),
+                    password = $(newPwSelector).val(),
                     meetsRequirements = $('.password-manager ul:first > li > .icon-cross');
                 
                 $('.js-password-mismatch').toggleClass('vh', confirm === password);
-                if (meetsRequirements.length == 0 
+                if (meetsRequirements.length === 0 
                         && confirm === password 
-                        && password.length >= _minLength) {
-                    $(_saveButtonSelector).prop('disabled', false);
+                        && password.length >= minLength) {
+                    $(saveButtonSelector).prop('disabled', false);
                 } else {
-                    $(_saveButtonSelector).prop('disabled', true);
+                    $(saveButtonSelector).prop('disabled', true);
                 }
             });
             

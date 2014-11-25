@@ -36,14 +36,14 @@ yukon.assets.account = (function () {
     _generatePassword = function () {
         
         var data = { userGroupName : $('#change-password-form .js-user-group').val() },
-            userId = $('#change-password-form .js-user-id');
+            userId = $('#change-password-form .js-user-id').val();
         
-        if (0 !== userId.length && parseInt(userId.val(), 10) !== 0) {
-            data['userId'] = userId.val();
+        if (userId) {
+            data.userId = userId;
         }
         
         new $.ajax({
-            url: yukon.url('/stars/operator/account/generatePassword'),
+            url: yukon.url('/login/generate-password'),
             data: data
         }).done(function(data) {
             $(".js-password-editor-field").each(function() {

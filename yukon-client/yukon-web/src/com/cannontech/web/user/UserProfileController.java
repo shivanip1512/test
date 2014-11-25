@@ -46,7 +46,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
-import com.cannontech.web.login.PasswordResetController;
+import com.cannontech.web.login.PasswordController;
 import com.cannontech.web.stars.dr.operator.service.OperatorAccountService;
 import com.cannontech.web.user.model.ChangePassword;
 import com.cannontech.web.user.model.UserProfile;
@@ -77,7 +77,7 @@ public class UserProfileController {
     private static final String baseKey = "yukon.web.modules.user.profile.";
 
     /**
-     * Existing change password functionality requires: "k", "userGroupName", and more {@link PasswordResetController}
+     * Existing change password functionality requires: "k", "userGroupName", and more {@link PasswordController}
      * Ideally we'd create/destroy changePwdKey (k) when the dialog appears/disappears.  As-is, we never destroy it.
      * {@link PasswordResetService.invalidatePasswordKey(k)}
      * 

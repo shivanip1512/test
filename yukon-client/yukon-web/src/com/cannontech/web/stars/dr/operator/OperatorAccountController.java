@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.dr.operator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,13 +8,11 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.annotation.Resource;
-import javax.naming.ConfigurationException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.jfree.util.Log;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -45,7 +42,6 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.Substation;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.validator.YukonValidationUtils;
-import com.cannontech.core.authentication.model.PasswordPolicy;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.authentication.service.PasswordPolicyService;
 import com.cannontech.core.dao.YukonUserDao;
@@ -103,7 +99,6 @@ import com.cannontech.web.stars.dr.operator.validator.LoginPasswordValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginUsernameValidator;
 import com.cannontech.web.stars.dr.operator.validator.LoginValidatorFactory;
 import com.cannontech.web.util.SessionUtil;
-import com.cannontech.web.util.TextView;
 import com.fasterxml.jackson.databind.node.BooleanNode;
 import com.google.common.collect.Lists;
 
@@ -595,29 +590,6 @@ public class OperatorAccountController {
         }
         
         model.addAttribute("accountGeneral", accountGeneral);
-    }
-    
-    // GENERATE PASSWORD
-    @RequestMapping(value="generatePassword")
-    public TextView generatePassword(HttpServletResponse response, Integer userId, String userGroupName) 
-            throws IOException {
-        
-        LiteYukonUser user = null; 
-        if (userId != null) {
-            user = userDao.getLiteYukonUser(userId);
-        }
-        
-        LiteUserGroup liteUserGroup = userGroupDao.findLiteUserGroupByUserGroupName(userGroupName);
-        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(user, liteUserGroup);
-        String generatedPassword = "";
-        try {
-            generatedPassword = passwordPolicy.generatePassword();
-        } catch (ConfigurationException e) {
-            Log.error("No password could be generated for this login.", e);
-        }
-        response.setContentType("text/plain; charset=UTF-8");
-        
-        return new TextView(generatedPassword);
     }
     
     /*
