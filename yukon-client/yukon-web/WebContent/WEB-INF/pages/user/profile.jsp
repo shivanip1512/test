@@ -93,6 +93,7 @@
                         data-dialog 
                         data-event="yukon:user:profile:password:save" 
                         data-title="<cti:msg2 key=".profile.changePassword"/>" 
+                        data-ok-class="js-save-pw-btn"
                         data-width="750">
                     <div class="column-12-12">
                         <div class="column one">

@@ -55,7 +55,7 @@ yukon.ui.passwords = (function () {
                 
                 var confirm = $(confirmPwSelector).val(),
                     password = $(newPwSelector).val(),
-                    meetsRequirements = $('.password-manager ul:first > li > .icon-cross');
+                    meetsRequirements = $('.password-manager ul:first > li > .vh');
                 
                 $('.js-password-mismatch').toggleClass('vh', confirm === password);
                 if (meetsRequirements.length === 0 
