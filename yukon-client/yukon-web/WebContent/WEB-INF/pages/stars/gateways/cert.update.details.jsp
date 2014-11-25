@@ -30,16 +30,18 @@
                 <th><i:inline key=".name"/></th>
                 <th><i:inline key=".serialNumber"/></th>
                 <th><i:inline key=".ipaddress"/></th>
+                <th><i:inline key=".failType"/></th>
             </tr>
         </thead>
         <tfoot></tfoot>
         <tbody>
-            <c:forEach var="gateway" items="${update.failed}">
-                <tr data-gateway-id="${gateway.paoIdentifier.paoId}">
-                    <cti:url var="url" value="/stars/gateways/${gateway.paoIdentifier.paoId}"/>
-                    <td><a href="${url}">${fn:escapeXml(gateway.name)}</a></td>
-                    <td>${gateway.rfnIdentifier.sensorSerialNumber}</td>
-                    <td>${gateway.data.ipAddress}</td>
+            <c:forEach var="gatewayEntry" items="${update.failed}">
+                <tr data-gateway-id="${gatewayEntry.key.paoIdentifier.paoId}">
+                    <cti:url var="url" value="/stars/gateways/${gatewayEntry.key.paoIdentifier.paoId}"/>
+                    <td><a href="${url}">${fn:escapeXml(gatewayEntry.key.name)}</a></td>
+                    <td>${gatewayEntry.key.rfnIdentifier.sensorSerialNumber}</td>
+                    <td>${gatewayEntry.key.data.ipAddress}</td>
+                    <td><i:inline key=".fail.${gatewayEntry.value}"/></td>
                 </tr>
             </c:forEach>
         </tbody>

@@ -3,7 +3,9 @@ package com.cannontech.common.rfn.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.Instant;
 
@@ -16,7 +18,7 @@ public class CertificateUpdate {
     private String updateId;
     private int yukonUpdateId;
     private List<RfnGateway> pending = new ArrayList<>();
-    private List<RfnGateway> failed = new ArrayList<>();
+    private Map<RfnGateway, GatewayCertificateUpdateStatus> failed = new HashMap<>();
     private List<RfnGateway> successful = new ArrayList<>();
     
     public Instant getTimestamp() {
@@ -51,11 +53,11 @@ public class CertificateUpdate {
         this.pending = pending;
     }
     
-    public List<RfnGateway> getFailed() {
+    public Map<RfnGateway, GatewayCertificateUpdateStatus> getFailed() {
         return failed;
     }
     
-    public void setFailed(List<RfnGateway> failed) {
+    public void setFailed(Map<RfnGateway, GatewayCertificateUpdateStatus> failed) {
         this.failed = failed;
     }
     
@@ -142,7 +144,7 @@ public class CertificateUpdate {
     public List<RfnDevice> getGateways() {
         List<RfnDevice> all = new ArrayList<>();
         all.addAll(successful);
-        all.addAll(failed);
+        all.addAll(failed.keySet());
         all.addAll(pending);
         
         Collections.sort(all, new Comparator<RfnDevice>() {

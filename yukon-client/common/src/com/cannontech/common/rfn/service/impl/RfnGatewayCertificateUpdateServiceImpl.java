@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -246,7 +247,7 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
         certificateUpdate.setYukonUpdateId(info.getUpdateId());
         
         List<RfnGateway> successful = new ArrayList<>();
-        List<RfnGateway> failed = new ArrayList<>();
+        Map<RfnGateway, GatewayCertificateUpdateStatus> failed = new HashMap<>();
         List<RfnGateway> pending = new ArrayList<>();
         for (Map.Entry<Integer, GatewayCertificateUpdateStatus> entry : info.getGatewayStatuses().entrySet()) {
             RfnGateway gateway = gateways.get(entry.getKey());
@@ -255,7 +256,7 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
             } else if (entry.getValue().isInProgress()) {
                 pending.add(gateway);
             } else {
-                failed.add(gateway);
+                failed.put(gateway, entry.getValue());
             }
         }
         
@@ -280,7 +281,7 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
             certificateUpdate.setYukonUpdateId(info.getUpdateId());
             
             List<RfnGateway> successful = new ArrayList<>();
-            List<RfnGateway> failed = new ArrayList<>();
+            Map<RfnGateway, GatewayCertificateUpdateStatus> failed = new HashMap<>();
             List<RfnGateway> pending = new ArrayList<>();
             for (Map.Entry<Integer, GatewayCertificateUpdateStatus> entry : info.getGatewayStatuses().entrySet()) {
                 RfnGateway gateway = gateways.get(entry.getKey());
@@ -289,7 +290,7 @@ public class RfnGatewayCertificateUpdateServiceImpl implements RfnGatewayCertifi
                 } else if (entry.getValue().isInProgress()) {
                     pending.add(gateway);
                 } else {
-                    failed.add(gateway);
+                    failed.put(gateway, entry.getValue());
                 }
             }
             

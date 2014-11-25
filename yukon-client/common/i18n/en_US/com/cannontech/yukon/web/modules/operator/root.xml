@@ -54,6 +54,13 @@
     <entry key="yukon.web.modules.operator.gateways.cert.update.file.invalid">Not a valid certificate file.</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.updates">Certificate Updates</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.updates.none">No certificate updates</entry>
+    <entry key="yukon.web.modules.operator.gateways.cert.update.failType">Failure Type</entry>
+    <entry key="yukon.web.modules.operator.gateways.cert.update.fail.TIMEOUT">Timeout waiting for response</entry>
+    <entry key="yukon.web.modules.operator.gateways.cert.update.fail.INVALID_RFN_ID">Invalid RFN identifier</entry>
+    <entry key="yukon.web.modules.operator.gateways.cert.update.fail.INVALID_SUPER_ADMIN_PASSWORD">Invalid super admin password</entry>
+    <entry key="yukon.web.modules.operator.gateways.cert.update.fail.ALREADY_IN_PROGRESS">Update already in progress</entry>
+    <entry key="yukon.web.modules.operator.gateways.cert.update.fail.ABORTED">Update aborted</entry>
+    <entry key="yukon.web.modules.operator.gateways.cert.update.fail.NM_ERROR">Network Manager error</entry>
     <entry key="yukon.web.modules.operator.gateways.delete.success">Gateway {0} deleted successfully.</entry>
     <entry key="yukon.web.modules.operator.gateways.delete.failure">Gateway {0} deleted failed.</entry>
     <entry key="yukon.web.modules.operator.gateways.connect.pending">{0}: connect request pending...</entry>
