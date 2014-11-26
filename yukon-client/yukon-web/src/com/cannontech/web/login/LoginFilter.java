@@ -61,7 +61,7 @@ public class LoginFilter implements Filter {
                          "/login/forgotPassword",
                          "/login/forgottenPassword",
                          "/login/change-password",
-                         "/login/checkPassword",
+                         "/login/check-password",
                          "/servlet/LoginController",
                          "/soap/**",
                          "/servlet/PWordRequest",

@@ -18,7 +18,7 @@
             if (userId.length && userId.val() != 0) {
                 dataHash[ 'userId'] = userId.val();
             }
-
+            
             $.ajax({
                 url: '${generatedPasswordUrl}',
                 data: dataHash

@@ -15,6 +15,7 @@ import net.tanesha.recaptcha.ReCaptchaException;
 import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -172,6 +173,50 @@ public class PasswordController {
         return "redirect:/login.jsp";
     }
     
+    @RequestMapping(value = "/authenticated/change-password", method = RequestMethod.GET)
+    public String changePassword(ModelMap model, LiteYukonUser user) {
+        
+        if (!authService.isPasswordExpired(user)) {
+            globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
+        }
+        
+        Login login = new Login();
+        login.setUserId(user.getUserID());
+        
+        model.addAttribute("login", login);
+        model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(user));
+        
+        return "changePasswordPopup.jsp";
+    }
+    
+    @RequestMapping(value = "/authenticated/change-password", method = RequestMethod.POST)
+    public String authenticatedPasswordChange(HttpServletResponse resp,
+            @ModelAttribute Login login, BindingResult result,
+            FlashScope flashScope, ModelMap model, LiteYukonUser user) {
+        if (!authService.isPasswordExpired(user)) {
+            globalSettingDao.verifySetting(GlobalSettingType.ENABLE_PASSWORD_RECOVERY);
+        }
+        
+        // Validate login change.
+        LoginPasswordValidator validator = loginValidatorFactory.getPasswordValidator(user);
+        validator.validate(login, result);
+        if (result.hasErrors()) {
+            List<MessageSourceResolvable> messages = YukonValidationUtils.errorsForBindingResult(result);
+            flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(user));
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            
+            return "changePasswordPopup.jsp";
+        }
+        
+        // Update the user's password to their new supplied password.
+        authService.setPassword(user, login.getPassword1());
+        flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.login.passwordChange.successful"));
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
+        
+        return null;
+    }
+    
     @RequestMapping(value = "/change-password", method = RequestMethod.GET)
     public String changePassword(ModelMap model, String k) {
         
@@ -207,7 +252,7 @@ public class PasswordController {
         // It might be overkill.
         LiteYukonUser suppliedPasswordResetUser = userDao.getLiteYukonUser(login.getUserId());
         LiteYukonUser passwordResetUser = passwordResetService.findUserFromPasswordKey(k);
-        if(passwordResetUser == null || !passwordResetUser.equals(suppliedPasswordResetUser)) {
+        if (passwordResetUser == null || !passwordResetUser.equals(suppliedPasswordResetUser)) {
             return "redirect:/login.jsp";
         }
         

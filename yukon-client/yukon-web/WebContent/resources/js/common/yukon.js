@@ -322,42 +322,50 @@ yukon.ui = (function () {
          *                                               present. 
          *        {string|element} [target]            - The target of the event (element or selector). 
          *                                               Defaults to the popup.
+         *        {string} [okClass='']                - CSS class names applied to the primary (ok) button.
          *        {string} [okText=yg.text.ok]         - The text of the ok button. Defaults to yg.text.ok.
+         *        {boolean} [okDisabled=false]         - If true, the primary (ok) button will be initially disabled.
+         *        {string} [cancelClass='']            - CSS class names applied to the secondary (cancel) button.
          *        {string} [cancelText=yg.text.cancel] - The text of the cancel button. Defaults to yg.text.cancel.
          */
         buttons: function (options) {
             
             var defaults = {
-                    event: 'yukon.dialog.ok',
-                    okText: yg.text.ok,
-                    okClass: '',
-                    cancelText: yg.text.cancel,
-                    cancelClass: ''
-                };
-            if (typeof(options) !== 'undefined') {
-                $.extend(defaults, options);
-            }
+                event: 'yukon.dialog.ok',
+                okText: yg.text.ok,
+                okClass: '',
+                cancelText: yg.text.cancel,
+                cancelClass: '',
+                okDisabled: false
+            }, 
+            ok, cancel;
             
-            return [{
-                        text: defaults.cancelText, click: function (ev) { $(this).dialog('close'); }, 
-                        'class': 'js-secondary-action ' + defaults.cancelClass 
-                    },
-                    {
-                        text: defaults.okText, 
-                        click: function (ev) {
-                            var dialog = $(this).closest('.ui-dialog-content');
-                            // Don't close the popup here.  We may want it to stay open, ie: validation failed.
-                            if (defaults.hasOwnProperty('form')) {
-                                var form = $(defaults.form);
-                                if (!form.is('form')) form = dialog.find('form');
-                                form.submit();
-                            } else {
-                                defaults.target = defaults.target ? defaults.target : dialog;
-                                $(defaults.target).trigger(defaults.event);
-                            }
-                        }, 
-                        'class': 'primary action js-primary-action ' + defaults.okClass
-                    }];
+            if (typeof (options) !== 'undefined') $.extend(defaults, options);
+            
+            ok = {
+                text: defaults.okText, 
+                click: function (ev) {
+                    var dialog = $(this).closest('.ui-dialog-content');
+                    // Don't close the popup here.  We may want it to stay open, ie: validation failed.
+                    if (defaults.hasOwnProperty('form')) {
+                        var form = $(defaults.form);
+                        if (!form.is('form')) form = dialog.find('form');
+                        form.submit();
+                    } else {
+                        defaults.target = defaults.target ? defaults.target : dialog;
+                        $(defaults.target).trigger(defaults.event);
+                    }
+                }, 
+                'class': 'primary action js-primary-action ' + defaults.okClass,
+                disabled: defaults.okDisabled
+            };
+            
+            cancel = {
+                text: defaults.cancelText, click: function (ev) { $(this).dialog('close'); }, 
+                'class': 'js-secondary-action ' + defaults.cancelClass 
+            };
+            
+            return [cancel, ok];
         },
         
         autowire: function () {
@@ -506,7 +514,7 @@ yukon.ui = (function () {
                 if (btn.is('[data-value]')) {
                     value = btn.data('value');
                     input = btn.is('[data-input]') ? $(btn.data('input')) : btn.siblings('[data-input]');
-                    input.val(value).change();
+                    if (input.length) input.val(value).change();
                 }
             });
             
@@ -716,6 +724,7 @@ yukon.ui = (function () {
             if (dialog) {
                 if (popup.is('[data-ok-text]')) buttonOptions.okText = popup.data('okText');
                 if (popup.is('[data-ok-class]')) buttonOptions.okClass = popup.data('okClass');
+                if (popup.is('[data-ok-disabled]')) buttonOptions.okDisabled = true;
                 if (popup.is('[data-cancel-class]')) buttonOptions.cancelClass = popup.data('cancelClass');
                 if (popup.is('[data-event]')) buttonOptions.event = popup.data('event');
                 if (popup.is('[data-target]')) buttonOptions.target = popup.data('target');

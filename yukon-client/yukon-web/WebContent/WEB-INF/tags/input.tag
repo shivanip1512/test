@@ -16,6 +16,7 @@
 <%@ attribute name="onblur" %>
 <%@ attribute name="maxlength" %>
 <%@ attribute name="path" required="true" %>
+<%@ attribute name="placeholder" %>
 <%@ attribute name="readonly" %>
 <%@ attribute name="size" %>
 <%@ attribute name="tabindex" %>
@@ -49,7 +50,8 @@
             onchange="${pageScope.onchange}"
             onblur="${pageScope.onblur}"
             tabindex="${pageScope.tabindex}"
-            data-toggle-group="${pageScope.toggleGroup}"/>
+            data-toggle-group="${pageScope.toggleGroup}"
+            placeholder="${pageScope.placeholder}"/>
     </c:when>
     <c:otherwise>
         <form:input path="${path}"
@@ -64,7 +66,8 @@
             onchange="${pageScope.onchange}"
             onblur="${pageScope.onblur}"
             tabindex="${pageScope.tabindex}"
-            data-toggle-group="${pageScope.toggleGroup}"/>
+            data-toggle-group="${pageScope.toggleGroup}"
+            placeholder="${pageScope.placeholder}"/>
     </c:otherwise>
 </c:choose>
 

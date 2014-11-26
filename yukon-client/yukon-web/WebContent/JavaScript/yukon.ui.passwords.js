@@ -61,13 +61,15 @@ yukon.ui.passwords = (function () {
                 if (meetsRequirements.length === 0 
                         && confirm === password 
                         && password.length >= minLength) {
-                    $(saveButtonSelector).prop('disabled', false);
+                    $(saveButtonSelector).prop('disabled', false).removeClass('ui-button-disabled ui-state-disabled');
                 } else {
                     $(saveButtonSelector).prop('disabled', true);
                 }
             });
             
             _initialized = true;
+            
+            $(newPwSelector).trigger('keyup');
         },
         
         indicatePassFail: function (data) {

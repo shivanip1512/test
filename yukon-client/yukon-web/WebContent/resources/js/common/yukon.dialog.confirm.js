@@ -20,7 +20,7 @@ yukon.namespace('yukon.dialogConfirm');
 yukon.dialogConfirm = (function () {
     
     var _initialized = false,
-
+        
         /** @type {Object} - reference of current dialog */
         _current_dialog = null,
         
@@ -29,14 +29,14 @@ yukon.dialogConfirm = (function () {
         
         /** @type {string} - used for triggering cancel event */
         _cancel_event = 'yukon.dialog.confirm.cancel',
-
+        
         _init = function () {
             if (!_initialized) {
                 $('html').append('<div id="yukon_dialog_confirm" style="display:none;"><span class="confirm-message"></span></div>');
                 _initialized = true;
             }
         },
-
+        
         /** 
          * Display the dialog and registering the event handler.
          * @param {Object} event - jquery event object.
@@ -64,7 +64,7 @@ yukon.dialogConfirm = (function () {
             
             actionButton = {text: args.strings.ok, click: _default._ok_action, 'class': 'primary action'};
             buttons.push(actionButton);
-
+            
             // Determine the 'ok' click action.
             if (element.data('okEvent')) {
                 // fire an event
