@@ -84,7 +84,7 @@ public class TdcHomeController {
     }
      
     
-    @RequestMapping(value="data-viewer/acknowledgeAll", method=RequestMethod.POST)
+    @RequestMapping(value="data-viewer/acknowledge-all", method=RequestMethod.POST)
     public @ResponseBody Map<String, String> acknowledgeAll(YukonUserContext context) {
         
         int alarms = tdcService.acknowledgeAllAlarms(context.getYukonUser());
@@ -94,7 +94,7 @@ public class TdcHomeController {
         return Collections.singletonMap("success", accessor.getMessage(successMsg));
     }
     
-    @RequestMapping(value="/acknowledge", method=RequestMethod.POST)
+    @RequestMapping(value="data-viewer/acknowledge", method=RequestMethod.POST)
     public @ResponseBody Map<String, String> acknowledge(YukonUserContext context, int pointId, int condition) {
         
         tdcService.acknowledgeAlarm(pointId, condition, context.getYukonUser());

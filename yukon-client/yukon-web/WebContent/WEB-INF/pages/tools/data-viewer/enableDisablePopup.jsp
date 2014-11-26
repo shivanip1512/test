@@ -7,7 +7,7 @@
 
 <cti:msgScope paths="modules.tools.tdc">
     <cti:url var="saveUrl" value="/tools/data-viewer/enableDisableSend"/>
-    <form:form id="enableDisableForm" cssClass="js-preventSubmitViaEnterKey" commandName="backingBean" action="${saveUrl}">
+    <form:form id="tdc-enable-disable-form" cssClass="js-preventSubmitViaEnterKey" commandName="backingBean" action="${saveUrl}">
         <cti:csrfToken/>
         <form:hidden path="pointId" />
         <tags:nameValueContainer2>
@@ -33,7 +33,7 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
         <div class="action-area">
-            <cti:button nameKey="ok" classes="primary js-enableDisable-send" />
+            <cti:button nameKey="ok" classes="primary js-tdc-enable-disable-send" />
             <cti:button nameKey="close" onclick="$('#tdc-popup').dialog('close');" />
         </div>
     </form:form>

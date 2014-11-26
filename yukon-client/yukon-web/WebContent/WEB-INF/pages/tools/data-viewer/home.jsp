@@ -13,11 +13,11 @@
         <source src="<cti:url value="/WebConfig/yukon/audio/beep1.mp3"/>" type="audio/mpeg">
     </audio>
 
-    <cti:includeScript link="/JavaScript/yukon.tdc.js" />
+    <cti:includeScript link="/JavaScript/yukon.tools.tdc.js" />
 
     <div class="column-8-16">
         <div class="column one">
-            <div id="display_tabs" class="section">
+            <div id="tdc-display-tabs" class="section">
                 <ul>
                     <li><a href="#custom_displays"><i:inline key=".display.custom" /></a></li>
                     <li><a href="#events_displays"><i:inline key=".display.event" /></a></li>
@@ -69,7 +69,7 @@
                 </div>
             </div>
         </div>
-        <div class="column two nogutter" id="latestData"></div>
+        <div class="column two nogutter" id="tdc-latest-data"></div>
     </div>
     <div id="page-buttons" class="dn">
         <tags:dynamicChoose updaterString="TDC/ALARM" suffix="${display.displayId}">
@@ -81,9 +81,9 @@
             </tags:dynamicChooseOption>
         </tags:dynamicChoose>
    
-        <cti:button id="b_mute" nameKey="mute" icon="icon-sound" renderMode="buttonImage"/>
-        <cti:button id="b_unmute" nameKey="unmute" icon="icon-sound-mute" renderMode="buttonImage" classes="dn"/>
+        <cti:button id="tdc-mute-btn" nameKey="mute" icon="icon-sound" renderMode="buttonImage"/>
+        <cti:button id="tdc-unmute-btn" nameKey="unmute" icon="icon-sound-mute" renderMode="buttonImage" classes="dn"/>
       
-        <cti:dataUpdaterCallback function="yukon.tdc.toggleAlarm" initialize="true"  value="TDC/ALARM/${display.displayId}"/>
+        <cti:dataUpdaterCallback function="yukon.tools.tdc.toggleAlarm" initialize="true"  value="TDC/ALARM/${display.displayId}"/>
     </div>
 </cti:standardPage>

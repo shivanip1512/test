@@ -1,6 +1,7 @@
 package com.cannontech.web.tools.dataViewer;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.time.DateUtils;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -100,7 +102,7 @@ public class TdcDisplayController {
     @Autowired private DateFormattingService dateFormattingService;
     
     private final static int itemsPerPage = 50;
-    
+
     private final Validator validator = new SimpleValidator<DisplayBackingBean>(DisplayBackingBean.class) {
         @Override
         protected void doValidation(DisplayBackingBean bean, Errors errors) {
@@ -170,7 +172,7 @@ public class TdcDisplayController {
         return "data-viewer/display.jsp";
     }
 
-    @RequestMapping(value = "data-viewer/enableDisable", method = RequestMethod.POST)
+    @RequestMapping(value = "data-viewer/enable-disable", method = RequestMethod.POST)
     public String enableDisable(YukonUserContext userContext, ModelMap model, int pointId) {
 
         DisplayBackingBean backingBean = new DisplayBackingBean();
@@ -247,7 +249,7 @@ public class TdcDisplayController {
         return "data-viewer/unackPopup.jsp";
     }
 
-    @RequestMapping(value = "data-viewer/acknowledgeAlarm", method = RequestMethod.POST)
+    @RequestMapping(value = "data-viewer/acknowledge-alarm", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> acknowledgeAlarm(YukonUserContext userContext, int pointId, int condition) {
 
@@ -259,7 +261,7 @@ public class TdcDisplayController {
         return Collections.singletonMap("success", "success");
     }
 
-    @RequestMapping(value = "data-viewer/acknowledgeAlarmsForDisplay", method = RequestMethod.POST)
+    @RequestMapping(value = "data-viewer/acknowledge-alarms-for-display", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> acknowledgeAlarmsForDisplay(YukonUserContext userContext, int displayId) {
 
@@ -270,7 +272,7 @@ public class TdcDisplayController {
         return getJSONSuccess(successMsg, userContext);
     }
 
-    @RequestMapping(value = "data-viewer/acknowledgeAlarmsForPoint", method = RequestMethod.POST)
+    @RequestMapping(value = "data-viewer/acknowledge-alarms-for-point", method = RequestMethod.POST)
     @ResponseBody
     public Map<String, String> acknowledgeAlarmsForPoint(YukonUserContext userContext, int pointId) {
 
@@ -315,7 +317,7 @@ public class TdcDisplayController {
         return "data-viewer/trendPopup.jsp";
     }
 
-    @RequestMapping(value = "data-viewer/manualEntry", method = RequestMethod.POST)
+    @RequestMapping(value = "data-viewer/manual-entry", method = RequestMethod.POST)
     public String manualEntry(YukonUserContext userContext, ModelMap model, int pointId) {
 
         DisplayBackingBean backingBean = new DisplayBackingBean();
@@ -376,7 +378,7 @@ public class TdcDisplayController {
         return null;
     }
 
-    @RequestMapping(value = "data-viewer/manualControl", method = RequestMethod.POST)
+    @RequestMapping(value = "data-viewer/manual-control", method = RequestMethod.POST)
     public String manualControl(ModelMap model, int pointId, int deviceId) {
         
         DisplayBackingBean backingBean = new DisplayBackingBean();
@@ -485,7 +487,7 @@ public class TdcDisplayController {
         return "data-viewer/tagsPopup.jsp";
     }
     
-    @RequestMapping(value = "data-viewer/tagAdd", method = RequestMethod.POST)
+    @RequestMapping(value = "data-viewer/tag-add", method = RequestMethod.POST)
     public String tagAdd(ModelMap model, @ModelAttribute("backingBean") DisplayBackingBean backingBean) {
         LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
@@ -497,7 +499,7 @@ public class TdcDisplayController {
         return "data-viewer/tagsPopup.jsp";
     }
     
-    @RequestMapping(value = "data-viewer/tagsSave", method = RequestMethod.POST)
+    @RequestMapping(value = "data-viewer/tags-save", method = RequestMethod.POST)
     public @ResponseBody Map<String, String> tagsSave(YukonUserContext userContext,
                         @ModelAttribute("backingBean") DisplayBackingBean backingBean)
             throws Exception {
@@ -561,7 +563,7 @@ public class TdcDisplayController {
         return Collections.singletonMap("success", "success");
     }
 
-    @RequestMapping(value = "data-viewer/tagRemove", method = RequestMethod.POST)
+    @RequestMapping(value = "data-viewer/tag-remove", method = RequestMethod.POST)
     public String tagRemove(ModelMap model,
                            @ModelAttribute("backingBean") DisplayBackingBean backingBean) {
         LitePoint litePoint = pointDao.getLitePoint(backingBean.getPointId());
@@ -602,6 +604,8 @@ public class TdcDisplayController {
                                     new EnumPropertyEditor<>(AltScanRate.class));
         binder.registerCustomEditor(EnabledStatus.class,
                                     new EnumPropertyEditor<>(EnabledStatus.class));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, false));
     }
     
     private Map<String, String> getJSONSuccess(MessageSourceResolvable successMsg,

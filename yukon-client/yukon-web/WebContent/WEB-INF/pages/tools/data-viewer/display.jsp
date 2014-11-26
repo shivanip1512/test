@@ -11,7 +11,7 @@
 
 <cti:standardPage module="tools" page="tdc.display.${mode}">
 
-    <cti:includeScript link="/JavaScript/yukon.tdc.js"/>
+    <cti:includeScript link="/JavaScript/yukon.tools.tdc.js"/>
     <flot:defaultIncludes />
 
     <div id="page-buttons" class="dn">
@@ -21,13 +21,13 @@
                     <cti:button nameKey="tdc.alarm.acknowledgeAll" 
                         data-display-id="${display.displayId}" 
                         icon="icon-tick" 
-                        classes="js-display-alarm-ack"/>
+                        classes="js-tdc-ack-alarms"/>
                 </tags:dynamicChooseOption>
                 <tags:dynamicChooseOption optionId="NO_ALARMS">
                     <cti:button nameKey="tdc.alarm.acknowledgeAll" 
                         data-display-id="${display.displayId}" 
                         icon="icon-tick" 
-                        classes="js-display-alarm-ack dn"/>
+                        classes="js-tdc-ack-alarms dn"/>
                 </tags:dynamicChooseOption>
             </tags:dynamicChoose>
         </c:if>
@@ -147,7 +147,7 @@
                                                     icon="icon-tick" 
                                                     data-point-id="${row.pointId}" 
                                                     data-condition="${row.condition}" 
-                                                    classes="js-one-alarm-ack-b fr" 
+                                                    classes="js-tdc-one-alarm-ack-btn fr" 
                                                     renderMode="buttonImage"/>
                                             </tags:dynamicChooseOption>
                                         </tags:dynamicChoose>
@@ -155,13 +155,13 @@
                                 </c:if>
                                 <c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}">
                                     <td class="action-column">
-                                        <cm:dropdown id="dropdown_${row.pointId}" triggerClasses="fr vh">
+                                        <cm:dropdown triggerClasses="fr vh">
                                             <tags:dynamicChoose updaterString="TDC/ALARM_COUNT_POINT/${row.pointId}" 
                                                     suffix="${row.pointId}">
                                                 <tags:dynamicChooseOption optionId="ONE_ALARM">
                                                     <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" 
                                                         data-point-id="${row.pointId}" data-condition="${row.condition}" 
-                                                        classes="js-one-alarm-ack"/>
+                                                        classes="js-tdc-one-alarm-ack"/>
                                                     <li class="divider"></li>
                                                 </tags:dynamicChooseOption>
                                                 <tags:dynamicChooseOption optionId="MULT_ALARMS">
@@ -174,7 +174,7 @@
                                                     <cti:msg2 key=".popupTitle" arguments="${arguments}" var="popupTitle"/>
                                                     <cm:dropdownOption key=".alarm.acknowledge" icon="icon-tick" 
                                                         data-point-id="${row.pointId}" data-popup-title="${popupTitle}" 
-                                                        classes="js-mult-alarm-ack" id="acknowledge-${row.pointId}"/>
+                                                        classes="js-tdc-mult-alarm-ack" id="acknowledge-${row.pointId}"/>
                                                     <li class="divider"></li>
                                                 </tags:dynamicChooseOption>
                                             </tags:dynamicChoose>
@@ -190,7 +190,7 @@
                                                 <tags:dynamicChooseOption optionId="TRUE">
                                                     <cm:dropdownOption key=".manualEntry.title" icon="icon-pencil" 
                                                         data-point-id="${row.pointId}" data-popup-title="${popupTitle}" 
-                                                        classes="js-manualEntry" id="manualEntry-${row.pointId}"/>
+                                                        classes="js-tdc-manual-entry" id="manualEntry-${row.pointId}"/>
                                                     <li class="divider"></li>
                                                 </tags:dynamicChooseOption>
                                             </tags:dynamicChoose>
@@ -209,7 +209,7 @@
                                                         data-point-id="${row.pointId}" 
                                                         data-popup-title="${popupTitle}" 
                                                         data-device-id="${row.device.deviceId}" 
-                                                        classes="js-manualControl" 
+                                                        classes="js-tdc-manual-control" 
                                                         id="manualControl-${row.pointId}"/>
                                                 </tags:dynamicChooseOption>
                                             </tags:dynamicChoose>
@@ -226,7 +226,7 @@
                                                     data-point-id="${row.pointId}" 
                                                     data-device-id="${row.device.deviceId}" 
                                                     data-popup-title="${popupTitle}" 
-                                                    classes="js-tags" 
+                                                    classes="js-tdc-tags" 
                                                     id="tagsDialog-${row.pointId}"/>
                                             </c:if>
                                             <c:if test="${row.cog.enableDisable}">
@@ -241,7 +241,7 @@
                                                     icon="icon-accept" 
                                                     data-point-id="${row.pointId}" 
                                                     data-popup-title="${popupTitle}" 
-                                                    classes="js-enableDisable" 
+                                                    classes="js-tdc-enable-disable" 
                                                     id="enableDisable-${row.pointId}"/>
                                             </c:if>
                                             <c:if test="${row.cog.trend}">
@@ -256,7 +256,7 @@
                                                     icon="icon-chart-line" 
                                                     data-point-id="${row.pointId}" 
                                                     data-popup-title="${popupTitle}" 
-                                                    classes="js-trend" 
+                                                    classes="js-tdc-trend" 
                                                     id="trendDialog-${row.pointId}"/>
                                             </c:if>
                                             <c:if test="${row.cog.altScan}">
@@ -272,7 +272,7 @@
                                                     data-popup-title="${popupTitle}" 
                                                     data-device-id="${row.device.deviceId}" 
                                                     data-device-name="${row.deviceName}" 
-                                                    classes="js-altScan" 
+                                                    classes="js-tdc-alt-scan" 
                                                     id="altScan-${row.pointId}"/>
                                             </c:if>
                                         </cm:dropdown>

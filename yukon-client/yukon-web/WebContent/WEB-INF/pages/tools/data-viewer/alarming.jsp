@@ -43,7 +43,7 @@
                             <c:if test='${unackAlarms.get(alarm) != null}'>
                                 <cti:button nameKey="alarm.acknowledge" 
                                     icon="icon-tick" 
-                                    classes="fr js-ack" 
+                                    classes="fr js-tdc-ack" 
                                     renderMode="buttonImage" 
                                     data-point-id="${alarm.pointId}" 
                                     data-condition="${alarm.condition}"/>

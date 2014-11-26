@@ -1,12 +1,13 @@
-yukon.namespace('yukon.tdc');
+yukon.namespace('yukon.tools.tdc');
 
 /**
  * Module that manages the data view feature (TDC)
- * @module   yukon.tdc
+ * @module   yukon.tools.tdc
  * @requires JQUERY
  * @requires JQUERY UI
  */
-yukon.tdc = (function () {
+yukon.tools.tdc = (function () {
+    
     
     /** Plays the alarm audio. */
     var _playAudio = function () {
@@ -27,9 +28,8 @@ yukon.tdc = (function () {
             // probably caused by no audio service started or audio driver installed.
         }
     },
-    tdcMod; 
         
-    tdcMod = {
+    _mod = {
         
         /** 
          * Toggle the playing and pausing of alarms.
@@ -46,36 +46,36 @@ yukon.tdc = (function () {
         },
         init : function () {
             
-            $('#latestData').load(yukon.url('/tools/data-viewer/refresh'));
+            $('#tdc-latest-data').load(yukon.url('/tools/data-viewer/refresh'));
             setInterval(function () {
-                $('#latestData').load(yukon.url('/tools/data-viewer/refresh'));
+                $('#tdc-latest-data').load(yukon.url('/tools/data-viewer/refresh'));
             }, 4000);
 
-            $('#display_tabs').tabs({
+            $('#tdc-display-tabs').tabs({
                 'class' : 'section'
             });
        
-            $('#b_mute').click(function (e) {
-                $('#b_mute').hide();
-                $('#b_unmute').show();
+            $('#tdc-mute-btn').click(function (e) {
+                $('#tdc-mute-btn').hide();
+                $('#tdc-unmute-btn').show();
                 _pauseAudio();
                 $('#alarm-audio')[0].mute = true;
             });
 
-            $('#b_unmute').click(function (e) {
-                $('#b_mute').show();
-                $('#b_unmute').hide();
+            $('#tdc-unmute-btn').click(function (e) {
+                $('#tdc-mute-btn').show();
+                $('#tdc-unmute-btn').hide();
                 $('#alarm-audio')[0].mute = false;
             });
             
             $('.js-ack-all').click(function () {
-                $.post(yukon.url('/tools/data-viewer/acknowledgeAll'), {}).done(function (data) {
+                debugger;
+                $.post(yukon.url('/tools/data-viewer/acknowledge-all'), {}).done(function (data) {
                     yukon.ui.alertSuccess(data.success);
                 });
             });    
             
-            $(document).on('click', '.js-ack', function (ev) {
-                
+            $(document).on('click', '.js-tdc-ack', function (ev) {
                 var btn = $(this),
                     pointId = btn.data('pointId'),
                     condition = btn.data('condition'),
@@ -85,11 +85,11 @@ yukon.tdc = (function () {
                 args.condition = condition;
                 
                 $.post(yukon.url('/tools/data-viewer/acknowledge'), args).done(function (data) {
-                    $('#latestData').load(yukon.url('/tools/data-viewer/refresh'));
+                    $('#tdc-latest-data').load(yukon.url('/tools/data-viewer/refresh'));
                 });
             });
             
-            $('.js-trend').click(function (ev) {
+            $('.js-tdc-trend').click(function (ev) {
                 
                 var option = $(this),
                     popupTitle = option.data('popupTitle'),
@@ -106,7 +106,7 @@ yukon.tdc = (function () {
                 });
             });
             
-            $('.js-tags').click(function () {
+            $('.js-tdc-tags').click(function () {
                 
                 var option = $(this),
                     popupTitle = option.data('popupTitle'),
@@ -124,12 +124,12 @@ yukon.tdc = (function () {
                 });
             });
             
-            $('.js-enableDisable').click(function (ev) {
+            $('.js-tdc-enable-disable').click(function (ev) {
                 
                 var option = $(this),
                     popupTitle = option.data('popupTitle'),
                     pointId = option.data('pointId'),
-                    url = yukon.url('/tools/data-viewer/enableDisable');
+                    url = yukon.url('/tools/data-viewer/enable-disable');
                 
                 $('#tdc-popup').load(url, { pointId : pointId }, function () {
                     $('#tdc-popup').dialog({
@@ -140,12 +140,12 @@ yukon.tdc = (function () {
                 });
             });
             
-            $('.js-manualEntry').click(function (ev) {
+            $('.js-tdc-manual-entry').click(function (ev) {
                 
                 var option = $(this),
                     pointId = option.data('pointId'),
                     popupTitle = option.data('popupTitle'),
-                    url = yukon.url('/tools/data-viewer/manualEntry');
+                    url = yukon.url('/tools/data-viewer/manual-entry');
                 
                 $('#tdc-popup').load(url, { pointId : pointId }, function () {
                     $('#tdc-popup').dialog({
@@ -156,13 +156,13 @@ yukon.tdc = (function () {
                 });
             });
             
-            $('.js-manualControl').click(function (ev) {
+            $('.js-tdc-manual-control').click(function (ev) {
                 
                 var option = $(this),
                     pointId = option.data('pointId'),
                     deviceId = option.data('deviceId'),
                     popupTitle = option.data('popupTitle'),
-                    url = yukon.url('/tools/data-viewer/manualControl'),
+                    url = yukon.url('/tools/data-viewer/manual-control'),
                     data = { deviceId : deviceId, pointId : pointId };
                 
                 $('#tdc-popup').load(url, data, function () {
@@ -174,8 +174,7 @@ yukon.tdc = (function () {
                 });
             });
             
-            $('.js-altScan').click(function (ev) {
-                
+            $('.js-tdc-alt-scan').click(function (ev) {
                 var option = $(this),
                     deviceId = option.data('deviceId'),
                     popupTitle = option.data('popupTitle'),
@@ -190,34 +189,29 @@ yukon.tdc = (function () {
                 });
             });
             
-            $('.js-display-alarm-ack').click(function (ev) {
-                $.post(yukon.url('/tools/data-viewer/acknowledgeAlarmsForDisplay'), { displayId: $(this).data('displayId') })
+            $('.js-tdc-ack-alarms').click(function (ev) {
+                $.post(yukon.url('/tools/data-viewer/acknowledge-alarms-for-display'), { displayId: $(this).data('displayId') })
                 .done(function (data) { yukon.ui.alertSuccess(data.success); });
             });
             
-           $('.js-one-alarm-ack').click(function (ev) {
-               
+           $('.js-tdc-one-alarm-ack').click(function (ev) {
                var option = $(this),
                    pointId = option.data('pointId'),
                    condition = option.data('condition'),
                    data = { pointId: pointId, condition: condition };
-               
-                   $('#dropdown_' + pointId).find('ul').hide();
-                   $('#dropdown_' + pointId).removeClass('menu-open');
-                   $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data);
+                   $.post(yukon.url('/tools/data-viewer/acknowledge-alarm'), data);
                });
             
-            $(document).on('click', '.js-one-alarm-ack-b', function (ev) {
-                
+            $(document).on('click', '.js-tdc-one-alarm-ack-btn', function (ev) {
                 var option = $(this),
                     pointId = option.data('pointId'),
                     condition = option.data('condition'),
                     data = { pointId : pointId, condition : condition };
                 
-                $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data);
+                $.post(yukon.url('/tools/data-viewer/acknowledge-alarm'), data);
             });
             
-            $('.js-mult-alarm-ack').click(function (ev) {
+            $('.js-tdc-mult-alarm-ack').click(function (ev) {
                 
                 var option = $(this),
                     pointId = option.data('pointId'),
@@ -233,68 +227,69 @@ yukon.tdc = (function () {
                 });
             });
             
-            $(document).on('click', '.js-altScanRate-send', function (ev) {
+            $(document).on('click', '.js-tdc-alt-scan-rate-send', function (ev) {
                 
                 $.ajax({
-                    url : $('#altScanRateForm').attr('action'),
-                    data : $('#altScanRateForm').serialize(),
+                    url : $('#tdc-alt-scan-rate-form').attr('action'),
+                    data : $('#tdc-alt-scan-rate-form').serialize(),
                     type : 'POST'
                 }).done(function (data, textStatus, jqXHR) {
                     $('#tdc-popup').dialog('close');
                 });
             });
             
-            $(document).on('click', '.js-manualEntry-send', function (ev) {
-                submitFormViaAjax('tdc-popup', 'manualEntryForm');
+            $(document).on('click', '.js-tdc-manual-entry-send', function (ev) {
+                submitFormViaAjax('tdc-popup', 'tdc-manual-entry-form');
             });
             
-            $(document).on('click', '.js-enableDisable-send', function (ev) {
+            $(document).on('click', '.js-tdc-enable-disable-send', function (ev) {
                 
                 $.ajax({
-                    url : $('#enableDisableForm').attr('action'),
-                    data : $('#enableDisableForm').serialize(),
+                    url : $('#tdc-enable-disable-form').attr('action'),
+                    data : $('#tdc-enable-disable-form').serialize(),
                     type : 'POST'
                 }).done(function (data, textStatus, jqXHR) {
                     $('#tdc-popup').dialog('close');
                 });
             });
             
-            $(document).on('click', '.js-manualControl-send', function (ev) {
-                submitFormViaAjax('tdc-popup', 'manualControlForm');
+            $(document).on('click', '.js-tdc-manual-control-send', function (ev) {
+                submitFormViaAjax('tdc-popup', 'tdc-manual-control-form');
             });
             
-            $(document).on('click', '.js-tags-save', function (ev) {
+            $(document).on('click', '.js-tdc-tags-save', function (ev) {
                 
                 $.ajax({
-                    url: yukon.url('/tools/data-viewer/tagsSave'),
-                    data: $('#tagsForm').serialize(),
+                    url: yukon.url('/tools/data-viewer/tags-save'),
+                    data: $('#tdc-tags-form').serialize(),
                     type: 'POST'
                 }).done(function (data, textStatus, jqXHR) {
                     $('#tdc-popup').dialog('close');
                 });
             });
             
-            $(document).on('click', '.js-tags-add', function (ev) {
-                submitFormViaAjax('tdc-popup', 'tagsForm', yukon.url('/tools/data-viewer/tagAdd'));
+            $(document).on('click', '.js-tdc-tags-add', function (ev) {
+              //  debugger;
+                submitFormViaAjax('tdc-popup', 'tdc-tags-form', yukon.url('/tools/data-viewer/tag-add'));
             });
             
-            $(document).on('click', '.js-tags-remove', function (ev) {
+            $(document).on('click', '.js-tdc-tags-remove', function (ev) {
                 var rowIndex = $(this).data('row');
                 $('#rowIndex').val(rowIndex);
-                submitFormViaAjax('tdc-popup', 'tagsForm', yukon.url('/tools/data-viewer/tagRemove'));
+                submitFormViaAjax('tdc-popup', 'tdc-tags-form', yukon.url('/tools/data-viewer/tag-remove'));
             });
             
-            $(document).on('click', '.js-ack-alarm', function (ev) {
+            $(document).on('click', '.js-tdc-ack-alarm', function (ev) {
                 var data = { pointId: $(this).data('pointId'), condition: $(this).data('condition') };
                 $('#' + data.condition).hide();
-                $('#' + data.condition).removeClass('js-ack-alarm');
-                $.post(yukon.url('/tools/data-viewer/acknowledgeAlarm'), data).done(function (json) {
-                    if ($('.js-ack-alarm').length === 0) $('.js-ack-alarms-for-point').hide();
+                $('#' + data.condition).removeClass('js-tdc-ack-alarm');
+                $.post(yukon.url('/tools/data-viewer/acknowledge-alarm'), data).done(function (json) {
+                    if ($('.js-tdc-ack-alarm').length === 0) $('.js-tdc-ack-alarms-for-point').hide();
                 });
             });
             
-            $(document).on('click', '.js-ack-alarms-for-point', function (ev) {
-                $.post(yukon.url('/tools/data-viewer/acknowledgeAlarmsForPoint'), { pointid: $(this).data('pointId') })
+            $(document).on('click', '.js-tdc-ack-alarms-for-point', function (ev) {
+                $.post(yukon.url('/tools/data-viewer/acknowledge-alarms-for-point'), { pointid: $(this).data('pointId') })
                 .done(function (data) {  
                     yukon.ui.alertSuccess(data.success);
                     $('#tdc-popup').dialog('close');
@@ -303,7 +298,7 @@ yukon.tdc = (function () {
         }
     };
     
-    return tdcMod;
+    return _mod;
 }());
 
-$(function () { yukon.tdc.init(); });
+$(function () { yukon.tools.tdc.init(); });

@@ -12,13 +12,13 @@
             <c:forEach var="alarm" items="${alarms}">
                 <tr>
                     <td class="alarm-text">${alarm.textMessage}</td>
-                    <td><cti:button id="${alarm.condition}" nameKey="alarm.acknowledge" icon="icon-tick" classes="fr js-ack-alarm" pointId="${alarm.pointId}" condition="${alarm.condition}" renderMode="buttonImage"/></td>
+                    <td><cti:button id="${alarm.condition}" nameKey="alarm.acknowledge" icon="icon-tick" classes="fr js-tdc-ack-alarm" pointId="${alarm.pointId}" condition="${alarm.condition}" renderMode="buttonImage"/></td>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
     <div class="action-area">
-        <cti:button nameKey="alarm.acknowledgeAll" pointId="${alarms.get(0).pointId}" classes="js-ack-alarms-for-point"/>
+        <cti:button nameKey="alarm.acknowledgeAll" pointId="${alarms.get(0).pointId}" classes="js-tdc-ack-alarms-for-point"/>
         <cti:button nameKey="close" onclick="$('#tdc-popup').dialog('close');"/>
     </div>
 </cti:msgScope>

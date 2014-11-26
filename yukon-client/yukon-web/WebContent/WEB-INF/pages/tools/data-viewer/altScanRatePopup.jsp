@@ -7,7 +7,7 @@
 
 <cti:msgScope paths="modules.tools.tdc">
     <cti:url var="saveUrl" value="/tools/data-viewer/altScanRateSend"/>
-    <form:form id="altScanRateForm" commandName="backingBean" action="${saveUrl}">
+    <form:form id="tdc-alt-scan-rate-form" commandName="backingBean" action="${saveUrl}">
         <cti:csrfToken/>
         <form:hidden path="deviceId" />
         <tags:nameValueContainer2>
@@ -23,7 +23,7 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
         <div class="action-area">
-            <cti:button nameKey="ok" classes="primary js-altScanRate-send" />
+            <cti:button nameKey="ok" classes="primary js-tdc-alt-scan-rate-send" />
             <cti:button nameKey="close" onclick="$('#tdc-popup').dialog('close');" />
         </div>
     </form:form>
