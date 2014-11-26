@@ -21,7 +21,7 @@
     <div id="filter-popup" class="dn" data-title="<cti:msg2 key=".filters"/>">
         <cti:flashScopeMessages/>
 
-        <form:form action="${submitUrl}" commandName="filter" method="get">
+        <form:form action="${baseUrlWithContextPath}" commandName="filter" method="get">
         
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".filter.name">

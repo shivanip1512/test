@@ -170,9 +170,9 @@ public class ControlAreaController extends DemandResponseControllerBase {
     @RequestMapping("/controlArea/list")
     public String list(ModelMap model,
             @ModelAttribute("filter") ControlAreaFilter filter,
+            BindingResult bindingResult,
             @DefaultItemsPerPage(25) PagingParameters paging,
             @DefaultSort(dir=Direction.asc, sort="CA_NAME") SortingParameters sorting,
-            BindingResult bindingResult, 
             FlashScope flashScope,
             YukonUserContext userContext) {
         
