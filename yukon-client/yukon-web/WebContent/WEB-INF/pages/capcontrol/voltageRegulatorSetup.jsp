@@ -124,6 +124,8 @@
                             var filterType;
                             window['pointPicker_' + rowNumber] = new Picker('OK', 'Cancel', '(none selected)', 'filterablePointPicker', '', 'pointPicker_' + rowNumber, 'pointName:'+ 'pointName[' + rowNumber + ']' + ';deviceName:'+ 'paoName[' + rowNumber + ']');
                             window['pointPicker_' + rowNumber].destinationFieldId = 'pointId[' + rowNumber + ']';
+                            <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="filterablePointPicker"/>
+                            window['pointPicker_' + rowNumber].outputColumns = ${outputColumns};
                             filterType = document.getElementById('filterType[' + rowNumber + ']').value;
                             window['pointPicker_' + rowNumber].extraArgs = filterType;
                             window['pointPicker_' + rowNumber].immediateSelectMode = true;

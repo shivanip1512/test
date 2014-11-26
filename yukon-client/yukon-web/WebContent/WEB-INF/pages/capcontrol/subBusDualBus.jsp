@@ -6,6 +6,8 @@
 <script type="text/javascript">
 var switchPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'twoStatePointPicker', '', 'switchPointPicker', 'pointName:switchPointName;deviceName:switchPointDevice');
 switchPointPicker.destinationFieldId = 'switch_point';
+<cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="twoStatePointPicker"/>
+switchPointPicker.outputColumns = ${outputColumns};
 </script>
 </f:verbatim>
 <f:subview id="altDualBusSetup" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">

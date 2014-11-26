@@ -7,6 +7,8 @@
     <script type="text/javascript">
         var specAreaVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'statusPointPicker', '', 'specAreaVoltReductionPointPicker', 'pointName:specAreaVoltReductionPoint;deviceName:areaDevice');
         specAreaVoltReductionPointPicker.destinationFieldId = 'specAreaVoltReductionPointValue';
+        <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="statusPointPicker"/>
+        specAreaVoltReductionPointPicker.outputColumns = ${outputColumns};
     </script>
 </f:verbatim>
 
