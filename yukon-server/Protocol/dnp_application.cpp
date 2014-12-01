@@ -84,6 +84,25 @@ void ApplicationLayer::setCommand( FunctionCode fc )
 }
 
 
+void ApplicationLayer::setCommand( FunctionCode fc, std::auto_ptr<ObjectBlock> dob )
+{
+    setCommand(fc);
+
+    _out_object_blocks.push(dob.release());
+}
+
+
+void ApplicationLayer::setCommand( FunctionCode fc, boost::ptr_deque<ObjectBlock> &dobs )
+{
+    setCommand(fc);
+
+    while( ! dobs.empty() )
+    {
+        _out_object_blocks.push(dobs.pop_front().release());
+    }
+}
+
+
 void ApplicationLayer::initUnsolicited( void )
 {
     eraseInboundObjectBlocks();
@@ -95,12 +114,6 @@ void ApplicationLayer::initUnsolicited( void )
 
     //  this and setCommand() are the only places where _iin is cleared
     _iin.raw = 0;
-}
-
-
-void ApplicationLayer::addObjectBlock( const ObjectBlock *objBlock )
-{
-    _out_object_blocks.push(objBlock);
 }
 
 
@@ -157,7 +170,6 @@ void ApplicationLayer::processInput( void )
     }
 
     //  ACH:  if class_1 || class_2 || class_3, we need to do something...  pass it up to the protocol layer, eh?
-    //  also, if need_time, do some time syncing, boieeeee
 
     int processed = 0;
 
@@ -166,7 +178,7 @@ void ApplicationLayer::processInput( void )
 
     while( processed < _response.buf_len )
     {
-        ObjectBlock *tmpOB = CTIDBG_new ObjectBlock;
+        ObjectBlock *tmpOB = new ObjectBlock;
 
         processed += tmpOB->restore(&(_response.buf[processed]), _response.buf_len - processed);
 

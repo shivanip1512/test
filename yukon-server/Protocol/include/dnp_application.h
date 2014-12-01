@@ -154,7 +154,8 @@ public:
     void setConfigData( const config_data* config );
 
     void setCommand( FunctionCode fc );
-    void addObjectBlock( const ObjectBlock *obj );
+    void setCommand( FunctionCode fc, std::auto_ptr<ObjectBlock> obj );
+    void setCommand( FunctionCode fc, boost::ptr_deque<ObjectBlock> &objs );
     void initForOutput( void );
     void initForSlaveOutput( void );
     void setSequenceNumber(int seqNbr);

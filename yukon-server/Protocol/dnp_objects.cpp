@@ -42,8 +42,6 @@ int Object::restore(const unsigned char *buf, int len )
 
 int Object::restoreBits( const unsigned char *buf, int bitoffset, int len )
 {
-    // FIXME is this unimplemented ?
-
     CTILOG_ERROR(dout, "function unimplemented");
 
     return (len * 8) - bitoffset;
@@ -97,27 +95,13 @@ ObjectBlock::ObjectBlock() :
 }
 
 
-ObjectBlock::ObjectBlock( QualifierType type )
+ObjectBlock::ObjectBlock( QualifierType type, int group, int variation ) :
+    _group(group),
+    _variation(variation),
+    _qualifier(type),
+    _start(0),
+    _unsolicited(false)
 {
-    //  this sets the object to take the group and variation from the first object added;
-    //    i don't know if this is necessary or desirable, but it's currently the way most
-    //    locations construct this object
-
-    init(type, -1, -1);
-}
-
-ObjectBlock::ObjectBlock( QualifierType type, int group, int variation )
-{
-    init(type, group, variation);
-}
-
-
-void ObjectBlock::init( QualifierType type, int group, int variation )
-{
-    _group     = group;
-    _variation = variation;
-    _unsolicited = false;
-
     switch( type )
     {
         case NoIndex_ByteQty:
@@ -129,16 +113,12 @@ void ObjectBlock::init( QualifierType type, int group, int variation )
         case NoIndex_ByteStartStop:
         case NoIndex_ShortStartStop:
         {
-            _qualifier = type;
-
             break;
         }
 
         default:
         {
             CTILOG_ERROR(dout, "Unsupported qualifier type "<< type);
-
-            _qualifier = type;
         }
     }
 }
@@ -168,171 +148,141 @@ void ObjectBlock::setUnsolicited()
 }
 
 
-bool ObjectBlock::addObject( const Object *object )
+std::auto_ptr<ObjectBlock> ObjectBlock::makeRangedBlock(std::auto_ptr<Object> object, const unsigned rangeStart)
 {
-    bool success = false;
+    std::auto_ptr<ObjectBlock> objBlock(
+            new ObjectBlock(
+                    NoIndex_ByteStartStop,
+                    object->getGroup(),
+                    object->getVariation()));
 
-    if( object )
-    {
-        switch( _qualifier )
-        {
-            case NoIndex_ByteQty:
-            case NoIndex_NoRange:
-            case NoIndex_ShortQty:
-            {
-                if( _group < 0 )
-                {
-                    _group     = object->getGroup();
-                    _variation = object->getVariation();
-                }
+    objBlock->_start = rangeStart;
 
-                if( object->getGroup()     == _group &&
-                    object->getVariation() == _variation )
-                {
-                    _objectList.push_back(object);
+    objBlock->_objectList.push_back(object.release());
 
-                    success = true;
-                }
-                else
-                {
-                    CTILOG_ERROR(dout,
-                            endl <<" attempt to insert mismatched group and variation into an object block"<<
-                            endl <<" current: ("<< _group <<", "<< _variation <<")  attempted: ("<< object->getGroup() <<", "<< object->getVariation() <<")"
-                            );
-                }
-
-                break;
-            }
-
-            case ByteIndex_ByteQty:
-            case ByteIndex_ShortQty:
-            case ShortIndex_ShortQty:
-            default:
-            {
-                CTILOG_ERROR(dout, "attempt to use invalid qualifier ("<< _qualifier <<")");
-            }
-        }
-    }
-
-    return success;
+    return objBlock;
 }
 
 
-bool ObjectBlock::addObjectIndex( const Object *object, int index )
+std::auto_ptr<ObjectBlock> ObjectBlock::makeNoIndexNoRange( int group, int variation )
 {
-    bool success = false;
-
-    if( object )
-    {
-        if( index > 0 )
-        {
-            //  MAGIC NUMBER WARNING:  turning 1-based offset into a 0-based offset
-            index--;
-
-            switch( _qualifier )
-            {
-                case ByteIndex_ByteQty:
-                case ByteIndex_ShortQty:
-                case ShortIndex_ShortQty:
-                {
-                    if( _group < 0 )
-                    {
-                        _group     = object->getGroup();
-                        _variation = object->getVariation();
-                    }
-
-                    if( object->getGroup()     == _group &&
-                        object->getVariation() == _variation )
-                    {
-                        _objectList.push_back(object);
-                        _objectIndices.push_back(index);
-
-                        success = true;
-                    }
-                    else
-                    {
-                        CTILOG_ERROR(dout,
-                                endl <<" attempt to insert mismatched group and variation into an object block"<<
-                                endl <<" current: ("<< _group <<", "<< _variation <<")  attempted: ("<< object->getGroup() <<", "<< object->getVariation() <<")"
-                                );
-                    }
-
-                    break;
-                }
-
-                default:
-                {
-                    CTILOG_ERROR(dout, "attempt to use invalid qualifier ("<< _qualifier <<")");
-                }
-            }
-        }
-        else
-        {
-            CTILOG_ERROR(dout, "invalid index ("<< index <<")" );
-        }
-    }
-
-    return success;
+    return std::auto_ptr<ObjectBlock>(
+                new ObjectBlock(
+                        NoIndex_NoRange,
+                        group,
+                        variation));
 }
 
 
-bool ObjectBlock::addObjectRange( Object *objectArray, const unsigned start, const unsigned stop )
+std::auto_ptr<ObjectBlock> ObjectBlock::makeIndexedBlock( std::auto_ptr<Object> object, unsigned index )
 {
-    bool success = false;
+    std::auto_ptr<ObjectBlock> objBlock(
+            new ObjectBlock(
+                    index < 256
+                        ? ByteIndex_ByteQty
+                        : ShortIndex_ShortQty,
+                    object->getGroup(),
+                    object->getVariation()));
 
-    switch( _qualifier )
+    if( index > 0 )
     {
-        case NoIndex_ByteStartStop:
-        case NoIndex_ShortStartStop:
+        //  MAGIC NUMBER WARNING:  turning 1-based offset into a 0-based offset
+        index--;
+    }
+    else
+    {
+        CTILOG_ERROR(dout, "invalid index (0)");
+    }
+
+    objBlock->_objectList.push_back(object.release());
+    objBlock->_objectIndices.push_back(index);
+
+    return objBlock;
+}
+
+
+std::auto_ptr<ObjectBlock> ObjectBlock::makeLongIndexedBlock( std::auto_ptr<Object> object, unsigned index )
+{
+    std::auto_ptr<ObjectBlock> objBlock(
+            new ObjectBlock(
+                    ShortIndex_ShortQty,
+                    object->getGroup(),
+                    object->getVariation()));
+
+    if( index > 0 )
+    {
+        //  MAGIC NUMBER WARNING:  turning 1-based offset into a 0-based offset
+        index--;
+    }
+    else
+    {
+        CTILOG_ERROR(dout, "invalid index (0)");
+    }
+
+    objBlock->_objectList.push_back(object.release());
+    objBlock->_objectIndices.push_back(index);
+
+    return objBlock;
+}
+
+
+template <class T>
+std::auto_ptr<ObjectBlock> ObjectBlock::makeLongIndexedBlock( boost::ptr_map<unsigned, T> &objects )
+{
+    std::auto_ptr<ObjectBlock> objBlock;
+
+    if( ! objects.empty() )
+    {
+        T &object = *(objects.begin()->second);
+
+        objBlock.reset(
+                new ObjectBlock(
+                        ShortIndex_ShortQty,
+                        object.getGroup(),
+                        object.getVariation()));
+
+        while( ! objects.empty() )
         {
-            if( objectArray )
+            boost::ptr_map<unsigned, T>::iterator itr = objects.begin();
+
+            unsigned index = itr->first;
+
+            if( index > 0 )
             {
-                _start = start;
-
-                for( unsigned index = start; index <= stop; ++index )
-                {
-                    Object *object = objectArray + index - start;
-
-                    if( _group < 0 )
-                    {
-                        _group     = object->getGroup();
-                        _variation = object->getVariation();
-                    }
-
-                    if( object->getGroup()     == _group &&
-                        object->getVariation() == _variation )
-                    {
-                        _objectList.push_back(object);
-
-                        success = true;
-                    }
-                    else
-                    {
-                        CTILOG_ERROR(dout,
-                                endl <<"attempt to insert mismatched group and variation into an object block"<<
-                                endl <<"current: ("<< _group <<", "<< _variation <<")  attempted: ("<< object->getGroup() <<", "<< object->getVariation() <<")"
-                                );
-
-                        success = false;
-
-                        // FIXME: is there a break from for loop missing here?
-                    }
-                }
+                //  MAGIC NUMBER WARNING:  turning 1-based offset into a 0-based offset
+                index--;
             }
             else
             {
-                CTILOG_ERROR(dout, "null object array ("<< _qualifier <<")");
+                CTILOG_ERROR(dout, "invalid index (0)");
             }
 
-            break;
-        }
-        default:
-        {
-            CTILOG_ERROR(dout, "attempt to use invalid qualifier ("<< _qualifier <<")");
+            objBlock->_objectList.push_back(objects.release(itr).release());
+            objBlock->_objectIndices.push_back(index);
         }
     }
 
-    return success;
+    return objBlock;
+}
+
+
+//  explicit instantiations for DNP Slave (since it is used internally in ctiprot.dll, no need to export with IM_EX_PROT)
+template std::auto_ptr<ObjectBlock> ObjectBlock::makeLongIndexedBlock( boost::ptr_map<unsigned, AnalogInput> &objects );
+template std::auto_ptr<ObjectBlock> ObjectBlock::makeLongIndexedBlock( boost::ptr_map<unsigned, BinaryInput> &objects );
+template std::auto_ptr<ObjectBlock> ObjectBlock::makeLongIndexedBlock( boost::ptr_map<unsigned, Counter> &objects );
+
+
+std::auto_ptr<ObjectBlock> ObjectBlock::makeQuantityBlock( std::auto_ptr<Object> object )
+{
+    std::auto_ptr<ObjectBlock> objBlock(
+            new ObjectBlock(
+                    NoIndex_ByteQty,
+                    object->getGroup(),
+                    object->getVariation()));
+
+    objBlock->_objectList.push_back(object.release());
+
+    return objBlock;
 }
 
 

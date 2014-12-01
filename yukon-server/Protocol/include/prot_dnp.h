@@ -35,11 +35,9 @@ private:
 
     DNP::ApplicationLayer _app_layer;
     unsigned short   _masterAddress, _slaveAddress;
-    int              _options;
-    unsigned long    _last_complaint;
+    CtiTime _nextTimeComplaint;
 
     typedef std::deque<Command>  Command_deq;
-    typedef Command_deq::iterator Command_deq_itr;
 
     Command     _command;
     Command_deq _additional_commands;

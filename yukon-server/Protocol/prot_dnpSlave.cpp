@@ -37,84 +37,54 @@ int DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
             case Command_Class1230Read:
             case Command_Class123Read:
             {
-                getApplicationLayer().setCommand(ApplicationLayer::ResponseResponse);
-                ObjectBlock         *dob1;
-                ObjectBlock         *dob2;
-                ObjectBlock         *dob3;
+                boost::ptr_map<unsigned, AnalogInput> analogs;
+                boost::ptr_map<unsigned, BinaryInput> digitals;
+                boost::ptr_map<unsigned, Counter>     counters;
 
-                AnalogInputChange *ainc;
-                BinaryInputChange *binc;
-                CounterEvent *counterevent;
-                AnalogInput *ain;
-                BinaryInput *bin;
-                Counter *counterin;
-
-                dob1 = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
-                dob2 = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
-                dob3 = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
-
-                for ( int i = 0; i < _input_point_list.size(); i++ )
+                for each( const input_point &ip in _input_point_list )
                 {
-                    input_point &ip =  _input_point_list[i];
-
-                    if( ip.type == AnalogInputType )
+                    switch( ip.type )
                     {
-                        if( ip.includeTime)
+                        case AnalogInputType:
                         {
-                            ainc = CTIDBG_new AnalogInputChange( AnalogInputChange::AIC_32BitWithTime);
-                            ainc->setTime(ip.timestamp);
-                            ainc->setValue(ip.ain.value);
-                            ainc->setOnlineFlag(ip.online);
-                            dob1->addObjectIndex(ainc, ip.control_offset);
-                        }
-                        else
-                        {
-                            ain = CTIDBG_new AnalogInput( AnalogInput::AI_32Bit );
+                            std::auto_ptr<AnalogInput> ain(new AnalogInput(AnalogInput::AI_32Bit));
                             ain->setValue(ip.ain.value);
                             ain->setOnlineFlag(ip.online);
-                            dob1->addObjectIndex(ain, ip.control_offset);
+
+                            analogs.insert(ip.control_offset, ain);
+
+                            break;
                         }
-                    }
-                    else if( ip.type == DigitalInput )
-                    {
-                        if( ip.includeTime)
+                        case DigitalInput:
                         {
-                            binc = CTIDBG_new BinaryInputChange( BinaryInputChange::BIC_WithTime);
-                            binc->setTime(ip.timestamp);
-                            binc->setStateValue(ip.din.trip_close);
-                            binc->setOnlineFlag(ip.online);
-                            dob2->addObjectIndex(binc, ip.control_offset);
-                        }
-                        else
-                        {
-                            bin = CTIDBG_new BinaryInput( BinaryInput::BI_WithStatus);
+                            std::auto_ptr<BinaryInput> bin(new BinaryInput(BinaryInput::BI_WithStatus));
                             bin->setStateValue(ip.din.trip_close);
                             bin->setOnlineFlag(ip.online);
-                            dob2->addObjectIndex(bin, ip.control_offset);
+
+                            digitals.insert(ip.control_offset, bin);
+
+                            break;
                         }
-                    }
-                    else if( ip.type == Counters )
-                    {
-                        if( ip.includeTime)
+                        case Counters:
                         {
-                            counterevent = CTIDBG_new CounterEvent( CounterEvent::CE_Delta32BitWithTime);
-                            counterevent->setTime(ip.timestamp);
-                            counterevent->setValue(ip.counterin.value);
-                            counterevent->setOnlineFlag(ip.online);
-                            dob3->addObjectIndex(counterevent, ip.control_offset);
-                        }
-                        else
-                        {
-                            counterin = CTIDBG_new Counter( Counter::C_Binary32Bit );
+                            std::auto_ptr<Counter> counterin(new Counter(Counter::C_Binary32Bit));
                             counterin->setValue(ip.counterin.value);
                             counterin->setOnlineFlag(ip.online);
-                            dob3->addObjectIndex(counterin, ip.control_offset);
+
+                            counters.insert(ip.control_offset, counterin);
+
+                            break;
                         }
                     }
                 }
-                addObjectBlock(dob1);
-                addObjectBlock(dob2);
-                addObjectBlock(dob3);
+
+                boost::ptr_deque<ObjectBlock> dobs;
+
+                if( ! analogs.empty() )     dobs.push_back(ObjectBlock::makeLongIndexedBlock(analogs));
+                if( ! digitals.empty() )    dobs.push_back(ObjectBlock::makeLongIndexedBlock(digitals));
+                if( ! counters.empty() )    dobs.push_back(ObjectBlock::makeLongIndexedBlock(counters));
+
+                getApplicationLayer().setCommand(ApplicationLayer::ResponseResponse, dobs);
 
                 break;
             }
@@ -156,17 +126,14 @@ void DnpSlaveProtocol::slaveTransactionComplete()
         addStringResults(new std::string("Operation failed"));
     }
     setSlaveCommand(Command_Complete);
-
-    return;
 }
 
 void DnpSlaveProtocol::addInputPoint(const input_point &ip)
 {
     _input_point_list.push_back(ip);
-    return;
 }
 
-bool DnpSlaveProtocol::setSlaveCommand( Command command )
+void DnpSlaveProtocol::setSlaveCommand( Command command )
 {
     setCommand(command);
 
@@ -174,19 +141,6 @@ bool DnpSlaveProtocol::setSlaveCommand( Command command )
     {
         _input_point_list.clear();
         getApplicationLayer().completeSlave();
-    }
-    return getCommand() != Command_Invalid;
-}
-
-void DnpSlaveProtocol::addObjectBlock(ObjectBlock *objBlock)
-{
-    if( !objBlock->empty() )
-    {
-        getApplicationLayer().addObjectBlock(objBlock);
-    }
-    else
-    {
-        delete objBlock;
     }
 }
 

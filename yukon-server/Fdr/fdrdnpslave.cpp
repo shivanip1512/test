@@ -261,7 +261,6 @@ bool DnpSlave::buildForeignSystemMessage(const CtiFDRDestination& destination,
 int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
                                          const char* data, unsigned int size)
 {
-    BOOL timeFlag = false;
     unsigned long function = getHeaderBytes(data, size);
 
     switch (function)
@@ -311,11 +310,7 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
              ********************************************************************************************************/
             if (size > FDR_DNP_HEADER_SIZE)
             {
-                /*if (isScanIntegrityRequest(data, size))
-                {
-                    timeFlag = false;
-                }*/
-                processScanSlaveRequest (connection, data, size, timeFlag);
+                processScanSlaveRequest (connection, data, size);
             }
             break;
         }
@@ -398,10 +393,8 @@ int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection, c
 
 }
 
-int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
-                                         const char* data, unsigned int size, bool includeTime)
+int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char* data, unsigned int size)
 {
-
     int retVal = 0;
 
     CtiXfer xfer = CtiXfer(NULL, 0, (BYTE*)data, getMessageSize(data));
@@ -433,8 +426,6 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection,
 
             iPoint.online = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp());
             iPoint.control_offset = dnpId.Offset;
-            iPoint.includeTime = includeTime;
-            iPoint.timestamp = fdrPoint->getLastTimeStamp();
 
             if (dnpId.PointType == StatusPointType )
             {

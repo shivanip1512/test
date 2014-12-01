@@ -11,13 +11,12 @@ class IM_EX_PROT DnpSlaveProtocol : public DnpProtocol
 
     typedef DnpProtocol Inherited;
     std::vector<input_point> _input_point_list;
-    void addObjectBlock(DNP::ObjectBlock *objBlock);
 
 public:
 
     DnpSlaveProtocol();
 
-    bool setSlaveCommand( Command command );
+    void setSlaveCommand( Command command );
     void setOptions( int options, int seqNumber=0 );
 
     YukonError_t slaveDecode( CtiXfer &xfer );
@@ -61,10 +60,7 @@ public:
 
         unsigned long control_offset;
         InputPointType type;
-        unsigned long expiration;
         bool online;
-        bool includeTime;
-        CtiTime timestamp;
     };
 };
 

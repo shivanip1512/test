@@ -19,6 +19,7 @@
 #include "std_helper.h"
 
 #include <boost/assign/list_of.hpp>
+#include <boost/range/algorithm/find.hpp>
 
 using std::endl;
 using std::string;
@@ -31,8 +32,7 @@ using boost::scoped_ptr;
 using namespace DNP;
 
 DnpProtocol::DnpProtocol() :
-    _command(Command_Invalid),
-    _last_complaint(0)
+    _command(Command_Invalid)
 {
     setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
 }
@@ -54,8 +54,6 @@ void DnpProtocol::setAddresses( unsigned short slaveAddress, unsigned short mast
 
 void DnpProtocol::setOptions( int options )
 {
-    _options = options;
-
     _app_layer.setOptions(options);
 }
 
@@ -109,7 +107,7 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
         {
             case Command_WriteTime:
             {
-                DNP::Time *time_now = CTIDBG_new DNP::Time(Time::T_TimeAndDate);
+                std::auto_ptr<DNP::Time> time_now(new DNP::Time(Time::T_TimeAndDate));
                 const CtiTime now = CtiTime::now();
 
                 if( _config->useLocalTime )
@@ -123,23 +121,15 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
                     time_now->setSeconds(now.seconds());
                 }
 
-                _app_layer.setCommand(ApplicationLayer::RequestWrite);
-
-                ObjectBlock *dob = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_ByteQty);
-
-                dob->addObject(time_now);
-
-                _app_layer.addObjectBlock(dob);
+                _app_layer.setCommand(ApplicationLayer::RequestWrite, ObjectBlock::makeQuantityBlock(std::auto_ptr<Object>(time_now)));
 
                 break;
             }
             case Command_ReadTime:
             {
-                _app_layer.setCommand(ApplicationLayer::RequestRead);
+                std::auto_ptr<ObjectBlock> dob(ObjectBlock::makeNoIndexNoRange(Time::Group, Time::T_TimeAndDate));
 
-                ObjectBlock *dob = CTIDBG_new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::T_TimeAndDate);
-
-                _app_layer.addObjectBlock(dob);
+                _app_layer.setCommand(ApplicationLayer::RequestRead, dob);
 
                 break;
             }
@@ -157,96 +147,104 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
             }
             case Command_UnsolicitedEnable:
             {
-                _app_layer.setCommand(ApplicationLayer::RequestEnableUnsolicited);
+                boost::ptr_deque<ObjectBlock> dobs;
 
                 if ( _config->enableUnsolicitedClass1 )
                 {
-                    _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
+                    dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class1));
                 }
                 if ( _config->enableUnsolicitedClass2 )
                 {
-                    _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
+                    dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class2));
                 }
                 if ( _config->enableUnsolicitedClass3 )
                 {
-                    _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
+                    dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class3));
                 }
+
+                _app_layer.setCommand(ApplicationLayer::RequestEnableUnsolicited, dobs);
 
                 break;
             }
             case Command_UnsolicitedDisable:
             {
-                _app_layer.setCommand(ApplicationLayer::RequestDisableUnsolicited);
+                boost::ptr_deque<ObjectBlock> dobs;
 
                 if ( _config->enableUnsolicitedClass1 )
                 {
-                    _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
+                    dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class1));
                 }
                 if ( _config->enableUnsolicitedClass2 )
                 {
-                    _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
+                    dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class2));
                 }
                 if ( _config->enableUnsolicitedClass3 )
                 {
-                    _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
+                    dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class3));
                 }
+
+                _app_layer.setCommand(ApplicationLayer::RequestDisableUnsolicited, dobs);
 
                 break;
             }
             case Command_ResetDeviceRestartBit:
             {
-                InternalIndications *restart = new InternalIndications(InternalIndications::II_InternalIndications);
+                std::auto_ptr<InternalIndications> restart(new InternalIndications(InternalIndications::II_InternalIndications));
                 restart->setValue(false);
 
-                ObjectBlock *iin = new ObjectBlock(ObjectBlock::NoIndex_ByteStartStop, restart->getGroup(), restart->getVariation());
-                iin->addObjectRange(restart, 7, 7);
-
-                _app_layer.setCommand(ApplicationLayer::RequestWrite);
-                _app_layer.addObjectBlock(iin);
+                _app_layer.setCommand(ApplicationLayer::RequestWrite, ObjectBlock::makeRangedBlock(std::auto_ptr<Object>(restart), 7));
 
                 break;
             }
             case Command_Class1230Read_WithTime:
             {
-                _app_layer.setCommand(ApplicationLayer::RequestRead);
+                boost::ptr_deque<ObjectBlock> dobs;
 
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::T_TimeAndDate));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class0));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Time::Group, Time::T_TimeAndDate));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class1));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class2));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class3));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class0));
+
+                _app_layer.setCommand(ApplicationLayer::RequestRead, dobs);
 
                 break;
             }
             case Command_Class1230Read:
             {
-                _app_layer.setCommand(ApplicationLayer::RequestRead);
+                boost::ptr_deque<ObjectBlock> dobs;
 
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class0));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class1));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class2));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class3));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class0));
+
+                _app_layer.setCommand(ApplicationLayer::RequestRead, dobs);
 
                 break;
             }
             case Command_Class123Read_WithTime:
             {
-                _app_layer.setCommand(ApplicationLayer::RequestRead);
+                boost::ptr_deque<ObjectBlock> dobs;
 
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Time::Group, Time::T_TimeAndDate));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Time::Group, Time::T_TimeAndDate));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class1));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class2));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class3));
+
+                _app_layer.setCommand(ApplicationLayer::RequestRead, dobs);
 
                 break;
             }
             case Command_Class123Read:
             {
-                _app_layer.setCommand(ApplicationLayer::RequestRead);
+                boost::ptr_deque<ObjectBlock> dobs;
 
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class1));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class2));
-                _app_layer.addObjectBlock(new ObjectBlock(ObjectBlock::NoIndex_NoRange, Class::Group, Class::Class3));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class1));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class2));
+                dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class3));
+
+                _app_layer.setCommand(ApplicationLayer::RequestRead, dobs);
 
                 break;
             }
@@ -255,24 +253,17 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
                 if( _command_parameters.size() == 1 &&
                    (_command_parameters[0].type == AnalogOutputPointType || _command_parameters[0].type == AnalogOutputFloatPointType ))
                 {
-                    _app_layer.setCommand(ApplicationLayer::RequestDirectOp);
-
-                    ObjectBlock  *dob  = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
-                    AnalogOutput *aout = NULL;
-                    if( _command_parameters[0].type == AnalogOutputPointType )
-                    {
-                        aout = CTIDBG_new AnalogOutput(AnalogOutput::AO_16Bit);
-                    }
-                    else
-                    {
-                        aout = CTIDBG_new AnalogOutput(AnalogOutput::AO_SingleFloat);
-                    }
+                    std::auto_ptr<AnalogOutput> aout(
+                        new AnalogOutput(
+                                _command_parameters[0].type == AnalogOutputPointType
+                                ? AnalogOutput::AO_16Bit
+                                : AnalogOutput::AO_SingleFloat));
 
                     aout->setControl(_command_parameters[0].aout.value);
 
-                    dob->addObjectIndex(aout, _command_parameters[0].control_offset);
-
-                    _app_layer.addObjectBlock(dob);
+                    _app_layer.setCommand(
+                            ApplicationLayer::RequestDirectOp,
+                            ObjectBlock::makeLongIndexedBlock(std::auto_ptr<Object>(aout), _command_parameters[0].control_offset));
                 }
                 else
                 {
@@ -290,33 +281,11 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
             {
                 if( _command_parameters.size() == 1 && _command_parameters[0].type == DigitalOutputPointType )
                 {
-                    if( _command == Command_SetDigitalOut_Direct )
-                    {
-                        _app_layer.setCommand(ApplicationLayer::RequestDirectOp);
-                    }
-                    else if( _command == Command_SetDigitalOut_SBO_SelectOnly || _command == Command_SetDigitalOut_SBO_Select )
-                    {
-                        _app_layer.setCommand(ApplicationLayer::RequestSelect);
-                    }
-                    else if( _command == Command_SetDigitalOut_SBO_Operate )
-                    {
-                        _app_layer.setCommand(ApplicationLayer::RequestOperate);
-                    }
-
-                    ObjectBlock         *dob;
-                    BinaryOutputControl *bout;
                     output_point &op = _command_parameters[0];
 
-                    if(op.control_offset > 255 )
-                    {
-                        dob = CTIDBG_new ObjectBlock(ObjectBlock::ShortIndex_ShortQty);
-                    }
-                    else
-                    {
-                        dob = CTIDBG_new ObjectBlock(ObjectBlock::ByteIndex_ByteQty);
-                    }
+                    std::auto_ptr<BinaryOutputControl> bout(
+                            new BinaryOutputControl(BinaryOutputControl::BOC_ControlRelayOutputBlock));
 
-                    bout = CTIDBG_new BinaryOutputControl(BinaryOutputControl::BOC_ControlRelayOutputBlock);
                     bout->setControlBlock(op.dout.on_time,
                                           op.dout.off_time,
                                           op.dout.count,
@@ -325,9 +294,27 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
                                           op.dout.clear,
                                           op.dout.trip_close);
 
-                    dob->addObjectIndex(bout, op.control_offset);
+                    std::auto_ptr<ObjectBlock> dob = ObjectBlock::makeIndexedBlock(std::auto_ptr<Object>(bout), op.control_offset);
 
-                    _app_layer.addObjectBlock(dob);
+                    switch( _command )
+                    {
+                        case Command_SetDigitalOut_Direct:
+                        {
+                            _app_layer.setCommand(ApplicationLayer::RequestDirectOp, dob);
+                            break;
+                        }
+                        case Command_SetDigitalOut_SBO_SelectOnly:
+                        case Command_SetDigitalOut_SBO_Select:
+                        {
+                            _app_layer.setCommand(ApplicationLayer::RequestSelect, dob);
+                            break;
+                        }
+                        case Command_SetDigitalOut_SBO_Operate:
+                        {
+                            _app_layer.setCommand(ApplicationLayer::RequestOperate, dob);
+                            break;
+                        }
+                    }
                 }
                 else
                 {
@@ -606,14 +593,13 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                         s.append(".");
                         s.append(CtiNumStr((int)time_sent->getMilliseconds()).zpad(3));
 
-                        if( ((_last_complaint + ComplaintInterval) < now.seconds())
-                            && ((t.seconds() - TimeDifferential) > now.seconds()
-                                || (t.seconds() + TimeDifferential) < now.seconds()) )
+                        if( _nextTimeComplaint <= now
+                            && ((t - TimeDifferential) > now || (t + TimeDifferential) < now) )
                         {
-                            _last_complaint = now.seconds();
+                            _nextTimeComplaint = nextScheduledTimeAlignedOnRate(now, ComplaintInterval);
 
                             CTILOG_WARN(dout, "large time differential for device \""<< _name <<"\" ("<< t <<"); "
-                                    "will not complain again until "<< CtiTime(_last_complaint + ComplaintInterval));
+                                    "will not complain again until "<< _nextTimeComplaint);
                         }
 
                         _string_results.push_back(CTIDBG_new string(s));
@@ -672,9 +658,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
             if( _app_layer.needsTime() && _command != Command_WriteTime )
             {
-                Command_deq_itr itr = std::find(_additional_commands.begin(),
-                                                _additional_commands.end(),
-                                                Command_WriteTime);
+                Command_deq::iterator itr = boost::range::find(_additional_commands, Command_WriteTime);
 
                 if( itr == _additional_commands.end() )
                 {
@@ -697,9 +681,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
                 if( _config->isAnyUnsolicitedEnabled() )
                 {
-                    Command_deq_itr itr = std::find(_additional_commands.begin(),
-                                                    _additional_commands.end(),
-                                                    Command_UnsolicitedEnable);
+                    Command_deq::iterator itr = boost::range::find(_additional_commands, Command_UnsolicitedEnable);
 
                     if( itr == _additional_commands.end() )
                     {
