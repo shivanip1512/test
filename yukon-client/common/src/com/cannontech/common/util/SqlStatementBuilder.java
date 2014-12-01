@@ -243,6 +243,13 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+     public SqlStatementBuilder gt_k(long constant) {
+         addString("> ");
+         addString(Long.toString(constant));
+         appendSpace();
+         return this;
+     }
+    
     @Override
     public SqlStatementBuilder gte(Object argument) {
         addString(">= ");
@@ -254,6 +261,13 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     public SqlStatementBuilder lte(Object argument) {
         addString("<= ");
         appendArgument(argument);
+        return this;
+    }
+    
+    public SqlStatementBuilder lte_k(long constant) {
+        addString("<= ");
+        addString(Long.toString(constant));
+        appendSpace();
         return this;
     }
     

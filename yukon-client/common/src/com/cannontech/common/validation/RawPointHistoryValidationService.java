@@ -218,13 +218,12 @@ public class RawPointHistoryValidationService {
         
         SqlStatementBuilder sql2 = new SqlStatementBuilder();
         sql2.append("select rph.ChangeId, rph.Value, rph.Timestamp, ");
-        sql2.append("  p.PAObjectID, ypo.Type, p.POINTTYPE, p.POINTID, p.POINTOFFSET, p.POINTTYPE");
+        sql2.append("  p.PAObjectID, ypo.Type, p.POINTTYPE, p.POINTID, p.POINTOFFSET");
         sql2.append("from RAWPOINTHISTORY rph");
         sql2.append("  join POINT p on rph.POINTID = p.POINTID");
         sql2.append("  join YukonPAObject ypo on ypo.PAObjectID = p.PAObjectID");
-        sql2.append("where rph.CHANGEID").gt(lastChangeIdProcessed);
-        sql2.append("  and rph.CHANGEID").lte(stopChangeId);
-
+        sql2.append("where rph.CHANGEID").gt_k(lastChangeIdProcessed);
+        sql2.append("  and rph.CHANGEID").lte_k(stopChangeId);
         final WaitableExecutor waitableExecutor = new WaitableExecutor(executorService);
 
         jdbcTemplate.query(sql2, new YukonRowCallbackHandler() {
