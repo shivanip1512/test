@@ -21,6 +21,7 @@ public interface RfnEventTestingService {
                                  boolean phaseA, boolean phaseB, boolean phaseC, boolean touRateA, boolean touRateB, boolean touRateC,
                                  boolean touRateD, boolean touRateE, boolean netFlow, boolean coincident, boolean harmonic, boolean cumulative);
     
+    void sendRfDaArchiveRequest(int serial, String manufacturer, String model);
     void sendLcrArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model);
     public int sendLcrReadArchive(int serialFrom, int serialTo, int days, DRReport drReport) throws IOException;
     void calculationStressTest();

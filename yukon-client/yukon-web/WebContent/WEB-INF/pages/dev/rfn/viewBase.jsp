@@ -99,6 +99,7 @@ $(function () { yukon.dev.rfn.init(); });
             <li><a href="viewLcrArchiveRequest"><i:inline key=".lcrArchiveRequest.label"/></a></li>
             <li><a href="viewLcrReadArchiveRequest"><i:inline key=".lcrReadArchiveRequest.label"/></a></li>
             <li><a href="viewLcrDataSimulator"><i:inline key=".lcrDataSimulator.label"/></a></li>
+            <li><a href="viewRfDaArchiveRequest"><i:inline key=".rfDaArchiveRequest.label"/></a></li>
         </ul>
         <div class="page-action-area stacked">
             <cti:button id="calc-stress-test" label="Calc Stress Test, DO NOT CLICK" classes="action red"/>

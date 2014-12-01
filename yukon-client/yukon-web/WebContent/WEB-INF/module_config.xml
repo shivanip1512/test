@@ -1491,6 +1491,7 @@
               <page name="rfnTest.viewEventArchive" type="DETAIL"/>
               <page name="rfnTest.viewAlarmArchive" type="DETAIL"/>
               <page name="rfnTest.viewDataSimulator" type="BASIC"/>
+              <page name="rfnTest.viewRfDaArchive" type="BASIC"/>
             </pages>
           </page>
           <page name="ecobee.mockTest" type="BASIC"/>

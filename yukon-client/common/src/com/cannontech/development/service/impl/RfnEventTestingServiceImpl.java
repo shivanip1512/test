@@ -35,6 +35,7 @@ import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
+import com.cannontech.da.rfn.message.archive.RfDaArchiveRequest;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.service.RfnEventTestingService;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
@@ -52,6 +53,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         
     private static final String meterReadingArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
     private static final String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
+    private static final String rfDaArchiveRequestQueueName = "yukon.qr.obj.da.rfn.RfDaArchiveRequest";
     private static final String eventArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.EventArchiveRequest";
     private static final String alarmArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.AlarmArchiveRequest";
     
@@ -250,6 +252,20 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         
         // Put request on queue
         sendArchiveRequest(lcrReadingArchiveRequestQueueName, archiveRequest);
+    }
+    
+    @Override
+    public void sendRfDaArchiveRequest(int serial, String manufacturer, String model) {
+        // Create archive request & fake identifier
+        RfDaArchiveRequest archiveRequest = new RfDaArchiveRequest();
+        RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(serial), manufacturer, model);
+        
+        // Set all data
+        archiveRequest.setRfnIdentifier(rfnIdentifier);
+        archiveRequest.setSensorId(1234);
+        
+        // Put request on queue
+        sendArchiveRequest(rfDaArchiveRequestQueueName, archiveRequest);
     }
     
     private void buildAndSendEvent(RfnTestEvent event, int serialNum) {

@@ -75,6 +75,7 @@ public class NmIntegrationController {
     private static final String gatewayArchiveReqQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayArchiveRequest";
     private static final String gatewayDataReqQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayDataRequest";
     private static final String gatewayDataQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayData";
+    private static final String rfDaArchiveQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.da.rfn.RfDaArchiveRequest";
     private static final DecimalFormat df = new DecimalFormat("##,###.## ms");
     
     @RequestMapping("viewBase")
@@ -139,6 +140,21 @@ public class NmIntegrationController {
                     "name", "LCR Reads Average Enqueue Time", 
                     "value", df.format(lraet)));
             data.add(lcrData);
+            
+            //RF DA Archive Stats
+            Map<String, Object> rfDaData = new LinkedHashMap<>();
+            ObjectName rfDaArchiveQueue = ObjectName.getInstance(rfDaArchiveQueueBean);
+            rfDaData.put("rfda-archive-enqueue-count", ImmutableMap.of(
+                    "name", "RF DA Archive Enqueue Count", 
+                    "value", jmxQueryService.get(rfDaArchiveQueue, "EnqueueCount")));
+            rfDaData.put("rfda-archive-queue-size", ImmutableMap.of(
+                    "name", "RF DA Queue Size", 
+                    "value", jmxQueryService.get(rfDaArchiveQueue, "QueueSize")));
+            Double rfdaaet = (Double) jmxQueryService.get(rfDaArchiveQueue, "AverageEnqueueTime");
+            rfDaData.put("rfda-archive-average-enqueue-time", ImmutableMap.of(
+                    "name", "RF DA Average Enqueue Time", 
+                    "value", df.format(rfdaaet)));
+            data.add(rfDaData);
             
             // Gateway Archive Stats
             Map<String, Object> gatewayArchiveData = new LinkedHashMap<>();
@@ -221,6 +237,11 @@ public class NmIntegrationController {
     @RequestMapping("viewLcrArchiveRequest")
     public String viewLcrArchiveRequest() {
         return "rfn/viewLcrArchive.jsp";
+    }
+    
+    @RequestMapping("viewRfDaArchiveRequest")
+    public String viewRfDaArchiveRequest() {
+        return "rfn/viewRfDaArchive.jsp";
     }
     
     @RequestMapping("sendPerformanceVerification")
@@ -308,6 +329,12 @@ public class NmIntegrationController {
         }
         
         return setupEventAlarmAttributes(model, event);
+    }
+    
+    @RequestMapping("sendRfDaArchiveRequest")
+    public String sendRfDaArchiveRequest(int serial, String manufacturer, String model) {
+        rfnEventTestingService.sendRfDaArchiveRequest(serial, manufacturer, model);
+        return "redirect:viewRfDaArchiveRequest";
     }
     
     @RequestMapping("calc-stress-test")
