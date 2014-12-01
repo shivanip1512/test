@@ -8,7 +8,14 @@ set JRE_HOME=%JRE_HOME:"=%
 set CURRENT_DIR=%cd%
 
 cd ..
+::\Yukon\Server\web
 set CATALINA_HOME=%cd%
+
+cd ..
+::\Yukon\Server
+set YUKON_SERVER_DIR=%cd%
+
+cd %CATALINA_HOME%
 
 set CATALINA_BASE=%CATALINA_HOME%
  
@@ -71,7 +78,7 @@ rem More extra parameters
 set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_STDOUTPUT=auto
 set PR_STDERROR=auto
-"%EXECUTABLE%"//US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp;-XX:MaxPermSize=128m;-XX:+HeapDumpOnOutOfMemoryError;-XX:HeapDumpPath=%CATALINA_BASE%\HeapDumps" --JvmMs 256 --JvmMx 512
+"%EXECUTABLE%"//US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp;-XX:MaxPermSize=128m;-XX:+HeapDumpOnOutOfMemoryError;-XX:HeapDumpPath=%YUKON_SERVER_DIR%\Log" --JvmMs 256 --JvmMx 512
 echo The service 'Yukon Web Application Service' has been installed.
 
 :end
