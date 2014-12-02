@@ -478,8 +478,6 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
             SetEvent(_stillAliveEvent);
 
             // figure out how many more bytes we now need
-            unsigned long headerBytes =
-                _parentInterface->getHeaderBytes(data, magicInitialMessageSize);
             totalMsgSize = _parentInterface->getMessageSize(data);
             if (totalMsgSize == 0)
             {

@@ -92,7 +92,7 @@ private:
         NoIndex_ByteStartStop  = 0x00,
         NoIndex_ShortStartStop = 0x01,
 
-        //  Normal constructor
+        //  makeNoIndexNoRange
         NoIndex_NoRange        = 0x06,
 
         //  makeQuantity

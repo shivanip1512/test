@@ -29,7 +29,6 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)=0;
 
         virtual unsigned int getMessageSize(const char* data) = 0;
-        virtual unsigned long getHeaderBytes(const char* data, unsigned int size)= 0;
         virtual unsigned int getMagicInitialMsgSize()=0;
 
         virtual BOOL init( void );

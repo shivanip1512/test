@@ -67,7 +67,7 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
 
         int processMessageFromForeignSystem(Cti::Fdr::ServerConnection& connection,
                                            const char* data, unsigned int size) override;
-        unsigned long getHeaderBytes(const char* data, unsigned int size) override;
+        unsigned long determineRequestFunction(const char* data, unsigned int size);
 
         unsigned int getMagicInitialMsgSize() override;
 

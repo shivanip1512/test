@@ -42,7 +42,6 @@ namespace Fdr {
 enum MiscDefines
 {
     DNPSLAVE_PORTNUMBER       = 2085,
-    FDR_DNP_HEADER_SIZE       = 10,
     FDR_DNP_REQ_FUNC_LOCATION = 12,
     FDR_DNP_HEADER_BYTE1 = 0x05,
     FDR_DNP_HEADER_BYTE2 = 0x64,
@@ -261,7 +260,7 @@ bool DnpSlave::buildForeignSystemMessage(const CtiFDRDestination& destination,
 int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
                                          const char* data, unsigned int size)
 {
-    unsigned long function = getHeaderBytes(data, size);
+    unsigned long function = determineRequestFunction(data, size);
 
     switch (function)
     {
@@ -308,10 +307,7 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
                 06 - qualifier - no index, packed.  no range field
                 1b b5 - CRC
              ********************************************************************************************************/
-            if (size > FDR_DNP_HEADER_SIZE)
-            {
-                processScanSlaveRequest (connection, data, size);
-            }
+            processScanSlaveRequest (connection, data, size);
             break;
         }
         case SINGLE_SOCKET_DNP_CONFIRM:
@@ -577,7 +573,7 @@ bool DnpSlave::YukonToForeignQuality(USHORT aQuality, CtiTime lastTimeStamp)
 
 
 
-unsigned long DnpSlave::getHeaderBytes(const char* data, unsigned int size)
+unsigned long DnpSlave::determineRequestFunction(const char* data, unsigned int size)
 {
     unsigned long retVal = -1;
     if (size >= FDR_DNP_REQ_FUNC_LOCATION)
@@ -624,7 +620,7 @@ unsigned int DnpSlave::getMessageSize(const char* data)
 
 unsigned int DnpSlave::getMagicInitialMsgSize()
 {
-    return FDR_DNP_HEADER_SIZE;
+    return Protocols::DNP::DatalinkPacket::HeaderLength;
 }
 
 

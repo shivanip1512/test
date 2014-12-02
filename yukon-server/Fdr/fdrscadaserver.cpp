@@ -30,7 +30,7 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(Cti::Fdr::ServerConnectio
 {
     bool retVal = false;
 
-    USHORT function = getHeaderBytes(data, size);
+    USHORT function = getScadaFunction(data, size);
 
     switch (function)
     {
@@ -105,7 +105,7 @@ int CtiFDRScadaServer::processMessageFromForeignSystem(Cti::Fdr::ServerConnectio
  *  must mask off unnecessary bits and do any necessary
  *  network-to-host conversion).
  */
-unsigned long CtiFDRScadaServer::getHeaderBytes(const char* data, unsigned int size)
+unsigned long CtiFDRScadaServer::getScadaFunction(const char* data, unsigned int size)
 {
     if (size < sizeof(USHORT))
     {
