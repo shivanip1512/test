@@ -34,6 +34,43 @@ struct Test_ServerConnection : Cti::Fdr::ServerConnection
     virtual int getPortNumber() { return 42;  }
 };
 
+BOOST_AUTO_TEST_CASE( test_datalink_request )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    /*
+    05 64   - header bytes
+    05  - length 5
+    c9  - DLC master, DL request, FCB 0, FCB invalid?, link status
+    02 00   - destination 2
+    1e 00   - source 30
+    */
+    byte_buffer request;
+    request << 0x05, 0x64, 0x05, 0xc9, 0x1e, 0x00, 0x02, 0x00, 0x59, 0x11;
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.data_as<char>(), request.size());
+
+    /*
+    05 64   - header bytes
+    05  - length 5
+    0b  - DLC remote, DL response, link status response
+    1e 00   - destination 30
+    02 00   - source 2
+    */
+    byte_buffer response;
+    response <<  0x05, 0x64, 0x05, 0x0b, 0x02, 0x00, 0x1e, 0x00, 0xce, 0x0f;
+
+    vector<int> expected(response.begin(), response.end());
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        connection.message.begin(),
+        connection.message.end(),
+        expected.begin(),
+        expected.end());
+}
+
 BOOST_AUTO_TEST_CASE( test_scan_request )
 {
     Test_FdrDnpSlave dnpSlave;
