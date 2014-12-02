@@ -69,7 +69,6 @@ yukon.tools.tdc = (function () {
             });
             
             $('.js-ack-all').click(function () {
-                debugger;
                 $.post(yukon.url('/tools/data-viewer/acknowledge-all'), {}).done(function (data) {
                     yukon.ui.alertSuccess(data.success);
                 });
@@ -269,7 +268,6 @@ yukon.tools.tdc = (function () {
             });
             
             $(document).on('click', '.js-tdc-tags-add', function (ev) {
-              //  debugger;
                 submitFormViaAjax('tdc-popup', 'tdc-tags-form', yukon.url('/tools/data-viewer/tag-add'));
             });
             
