@@ -846,6 +846,7 @@ yukon.ui = (function () {
             $('.main-container').addMessage({message: markup, messageClass: 'pending'});
         },
         
+        /** Remove all alert boxes from the page. */
         removeAlerts : function () { $('.main-container').removeMessages(); },
         
         /** Format a phone number input */
@@ -1318,44 +1319,40 @@ yukon.ui = (function () {
     $.fn.addMessage = function (args) {
         
         return this.each(function () {
-            var messages = [];
-            var create = !$(this).children('.user-message').length;
             
-            switch (typeof (args.message)) {
-            case 'string':
-                messages.push('<li>' + args.message + '</li>');
-                break;
-            case 'object':
+            var list, messages = [], type = typeof (args.message),
+                create = !$(this).children('.user-message').length,
+                alertBox = create ? $(this).prepend('<div class="user-message">') 
+                                  : $(this).children('.user-message');
+            
+            if (type === 'string') {
+                messages.push(args.message);
+            } else if (type === 'object') {
                 //array
-                if(typeof (args.message.length) != 'undefined'){
+                if (typeof (args.message.length) != 'undefined') {
                     for (var i = 0; i < args.message.length; i++) {
-                        messages.push('<li>' + args.message[i] + '</li>');
+                        messages.push(args.message[i]);
                     }
                 } else {
                     for (var key in args.message) {
-                        switch (typeof (args.message[key])){
-                        case 'number':
-                        case 'string':
-                            messages.push('<li>' + args.message[key] + '</li>');
-                            break;
-                        default:
-                            break;
+                        if (typeof (args.message[key]) === 'number' 
+                            || typeof (args.message[key]) === 'string') {
+                            messages.push(args.message[key]);
                         }
                     }
                 }
-                break;
-            default:
-                break;
             }
             
-            if (messages.length > 0) {
-                if (create) {
-                    $(this).prepend('<div class="user-message ' + args.messageClass + '"><ul class="simple-list">' 
-                            + messages.join('') + '</ul></div>');
-                } else {
-                    $(this).children('.user-message').removeClass('error success info warning pending')
-                    .addClass(args.messageClass).find('ul').html(messages.join(''));
+            alertBox.empty().removeClass('error success info warning pending').addClass(args.messageClass);
+            
+            if (messages.length > 1) {
+                list = $('<ul class="simple-list">');
+                for (var i = 0; i < messages.length; i++) {
+                    list.append('<li>' + messages[i] + '</li>');
                 }
+                alertBox.prepend(list);
+            } else {
+                alertBox.html(messages[0]);
             }
         });
     };
