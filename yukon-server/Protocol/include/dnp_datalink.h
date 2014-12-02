@@ -96,8 +96,7 @@ private:
     bool isValidDataPacket( const packet_t &p ) const;
     bool isValidAckPacket ( const packet_t &p ) const;
 
-    static unsigned calcPacketLength( unsigned headerLen );
-    static bool     isEntirePacket( const packet_t &p, unsigned long received );
+    static bool isEntirePacket( const packet_t &p, unsigned long received );
 
     static bool areFramingBytesValid( const packet_t &p );
 

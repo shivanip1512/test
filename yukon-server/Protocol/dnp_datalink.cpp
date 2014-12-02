@@ -474,7 +474,7 @@ void DatalinkLayer::constructSecondaryControlPacket( DatalinkLayer::packet_t &pa
 void DatalinkLayer::sendPacket( DatalinkLayer::packet_t &packet, CtiXfer &xfer )
 {
     xfer.setOutBuffer((unsigned char *)&packet);
-    xfer.setOutCount(calcPacketLength(packet.header.fmt.len));
+    xfer.setOutCount(DatalinkPacket::calcPacketLength(packet.header.fmt.len));
     xfer.setCRCFlag(0);
 
     xfer.setInBuffer(NULL);
@@ -493,7 +493,7 @@ void DatalinkLayer::recvPacket( DatalinkLayer::packet_t &packet, CtiXfer &xfer )
     else
     {
         //  this can safely calculate to 0 if we mistakenly got in here
-        _in_expected = calcPacketLength(packet.header.fmt.len) - _in_recv;
+        _in_expected = DatalinkPacket::calcPacketLength(packet.header.fmt.len) - _in_recv;
     }
 
     xfer.setInBuffer((unsigned char *)&packet + _in_recv);
@@ -984,43 +984,17 @@ bool DatalinkLayer::errorCondition( void )
 }
 
 
-unsigned DatalinkLayer::calcPacketLength( unsigned headerLen )
-{
-    unsigned packetLength = 0;
-
-    if( headerLen >= DatalinkPacket::HeaderCountedLength )
-    {
-        packetLength = DatalinkPacket::HeaderLength;
-
-        //  get the payload size by subtracting off the header bytes
-        unsigned dataLength = headerLen - DatalinkPacket::HeaderCountedLength;
-
-        if( dataLength )
-        {
-            unsigned numBlocks = (dataLength + DatalinkPacket::BlockLength - 1) / DatalinkPacket::BlockLength;
-
-            packetLength += dataLength;
-            packetLength += numBlocks * DatalinkPacket::CRCLength;  //  add on the CRC bytes
-        }
-    }
-
-    return packetLength;
-}
-
-
 bool DatalinkLayer::isEntirePacket( const DatalinkLayer::packet_t &packet, unsigned long in_recv )
 {
-    bool retVal = false;
-
     if( in_recv >= DatalinkPacket::HeaderLength )
     {
-        if( calcPacketLength(packet.header.fmt.len) <= in_recv )
+        if( DatalinkPacket::calcPacketLength(packet.header.fmt.len) <= in_recv )
         {
-            retVal = true;
+            return true;
         }
     }
 
-    return retVal;
+    return false;
 }
 
 
@@ -1131,7 +1105,7 @@ IM_EX_PROT bool DatalinkLayer::isPacketValid( const unsigned char *buf, const si
 
     const packet_t *p = reinterpret_cast<const packet_t *>(buf);
 
-    if( len < calcPacketLength(p->header.fmt.len) )
+    if( len < DatalinkPacket::calcPacketLength(p->header.fmt.len) )
     {
         return false;
     }
