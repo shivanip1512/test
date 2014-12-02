@@ -77,8 +77,6 @@ public enum YukonRoleProperty {
 
     HOME_URL(WEB_CLIENT, WEB_CLIENT.getBasePropertyId(), stringType()),
     STYLE_SHEET(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 2, stringType()),
-    NAV_BULLET_SELECTED(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 3, stringType()),
-    NAV_BULLET_EXPAND(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 4, stringType()),
     HEADER_LOGO(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 5, stringType()),
     LOG_IN_URL(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 6, stringType()),
     JAVA_WEB_START_LAUNCHER_ENABLED(WEB_CLIENT, WEB_CLIENT.getBasePropertyId() - 12, booleanType()),

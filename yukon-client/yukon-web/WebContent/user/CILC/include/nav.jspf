@@ -25,7 +25,7 @@ function dispStatusMsg(msgStr)
   						  {"user_reporting.jsp", "Reporting", "/user/CILC/"},
   						  {"user_get_data_now.jsp", "Get Data Now", "/user/CILC/"},
 						 };
-	String bulletImg = "<img src='../../WebConfig/" + YukonSpringHook.getBean(RolePropertyDao.class).getPropertyStringValue(YukonRoleProperty.NAV_BULLET_SELECTED, liteYukonUser) + "' width='9' height='9'>";
+	String bulletImg = "<img src='../../WebConfig/yukon/Bullet.gif' width='9' height='9'>";
 	
 	// List of String[] (link image, link html)
 	Hashtable links = new Hashtable();

@@ -218,8 +218,6 @@ public class DevStarsCreationServiceImpl extends DevObjectCreationBase implement
 
             setRoleProperty(roleGroup, YukonRoleProperty.HOME_URL, "/stars/consumer/general");
             setRoleProperty(roleGroup, YukonRoleProperty.STYLE_SHEET, " ");
-            setRoleProperty(roleGroup, YukonRoleProperty.NAV_BULLET_EXPAND, " ");
-            setRoleProperty(roleGroup, YukonRoleProperty.NAV_BULLET_SELECTED, " ");
             setRoleProperty(roleGroup, YukonRoleProperty.HEADER_LOGO, "yukon/DemoHeaderCES.gif");
             setRoleProperty(roleGroup, YukonRoleProperty.LOG_IN_URL, " ");
 

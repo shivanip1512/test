@@ -11,7 +11,7 @@
 						  {"WorkOrder.jsp", "View Work Orders"}
 						 };
 
-	String bulletImg = "<img src='../../WebConfig/" + YukonSpringHook.getBean(RolePropertyDao.class).getPropertyStringValue(YukonRoleProperty.NAV_BULLET_SELECTED, lYukonUser) + "' width='9' height='9'>";
+	String bulletImg = "<img src='../../WebConfig/yukon/Bullet.gif' width='9' height='9'>";
 	
 	// List of String[] (link image, link html)
 	Hashtable links = new Hashtable();
