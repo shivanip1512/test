@@ -5,7 +5,7 @@
 #include "cmdparse.h"
 
 #include <list>
-using std::list;
+
 #include "utility.h"
 
 // Versacom protocol debg settings for cparm "PROTOCOL_VERSACOM_DEBUG"
@@ -107,13 +107,6 @@ typedef enum
 
 class CtiRequestMsg;
 
-#ifdef _DLL_PROT
-   #define IM_EX_PROT   __declspec(dllexport)
-#else
-   #define IM_EX_PROT   __declspec(dllimport)
-#endif
-
-
 class IM_EX_PROT CtiProtocolVersacom : private boost::noncopyable
 {
 private:
@@ -130,7 +123,7 @@ protected:
    INT      _addressMode;           // Bookkeeping info used to build a full message
    INT      _last;
 
-   list< VSTRUCT* >  _vst;
+   std::list< VSTRUCT* >  _vst;
 
 private:
 

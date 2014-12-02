@@ -1,5 +1,7 @@
 #pragma once
 
+#include "dlldefs.h"
+
 namespace Cti {
 namespace Protocols {
 namespace DNP {
@@ -16,6 +18,8 @@ namespace DatalinkPacket {
         DataLengthMax       = 282,
         PayloadLengthMax    = 250,
     };
+
+    IM_EX_PROT unsigned calcPacketLength( unsigned headerLen );
 
 #pragma pack( push, 1 )
 

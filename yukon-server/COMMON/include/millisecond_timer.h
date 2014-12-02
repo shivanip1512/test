@@ -2,6 +2,8 @@
 
 #include "dlldefs.h"
 
+#include <windef.h>
+
 namespace Cti {
 namespace Timing {
 

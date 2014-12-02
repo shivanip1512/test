@@ -2,63 +2,17 @@
 
 #include "ctitime.h"
 #include "ctidate.h"
-#include <rw/rwtime.h>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/assign/list_of.hpp>
 
 #include "boost_test_helpers.h"
 
+#include <windows.h>
+
 using namespace boost::gregorian;
 using namespace boost::posix_time;
 
 BOOST_AUTO_TEST_SUITE( test_ctitime )
-
-/*
-BOOST_AUTO_TEST_CASE(test_ptime)
-{
-    ptime pt = from_time_t((time_t)0);
-    std::cout << to_simple_string(pt) << std::endl;
-}*/
-
-/* I dont think this belongs in the unit test - Jess*/
-/*BOOST_AUTO_TEST_CASE(test_rwtime_methods)
-{
-    int timeduration = 60*60;
-    RWTime rt1;
-    RWTime rt2((unsigned long)0);
-    RWTime rt3(RWTime::beginDST(2005));
-    RWTime rt4 = rt3 + timeduration;
-    RWTime rt5 = rt3 - timeduration;
-    cout << rt2.asString() << endl;
-    //cout << rt2.hour() << rt2.minute() << rt2.second() << endl;
-    cout << rt3.asString() << endl;
-    cout << rt4.asString() << endl;
-    cout << rt5.asString() << endl << endl;
-    rt3 = RWTime::endDST(2005);
-    rt4 = rt3 - timeduration;
-    rt5 = rt3 - 2*timeduration;
-    cout << rt3.asString() << endl;
-    cout << rt4.asString() << endl;
-    cout << rt5.asString() << endl << endl;
-
-    rt3 = RWTime(RWDate(3,4,2005), 2, 30, 0);
-    rt4 = rt3 + timeduration;
-    rt5 = rt3 - 2*timeduration;
-    cout << rt3.asString() << endl;
-    cout << rt4.asString() << endl;
-    cout << rt5.asString() << endl << endl;
-
-
-    rt3 = RWTime(RWDate(30,10,2005), 1, 30, 0);
-    rt4 = rt3 + timeduration;
-    rt5 = rt3 - 2*timeduration;
-    cout << rt3.asString() << endl;
-    cout << rt4.asString() << endl;
-    cout << rt5.asString() << endl << endl;
-
-}*/
-
-
 
 BOOST_AUTO_TEST_CASE(test_ctitime_specials)
 {

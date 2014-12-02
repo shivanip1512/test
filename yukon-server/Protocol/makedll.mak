@@ -62,6 +62,7 @@ prot_dnpSlave.obj \
 dnp_application.obj \
 dnp_transport.obj \
 dnp_datalink.obj \
+dnp_datalink_packet.obj \
 dnp_objects.obj \
 dnp_object_analoginput.obj \
 dnp_object_analogoutput.obj \

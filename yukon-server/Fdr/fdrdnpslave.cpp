@@ -598,23 +598,16 @@ unsigned long DnpSlave::determineRequestFunction(const char* data, unsigned int 
 
 unsigned int DnpSlave::getMessageSize(const char* data)
 {
-    BYTE msgSize = 0;
-    BYTE msgLength = 0;
-    if (data != NULL)
+    using namespace Protocols::DNP::DatalinkPacket;
+
+    if ( ! data )
     {
-        msgLength =  (BYTE)*(data + 2);
-
-        msgSize += msgLength;
-        msgSize += 5; //x05 x64 Len(1) headerCRC(2)
-
-        if (msgLength > 5)
-        {
-            msgSize += ( (msgLength - 5) / 16) * 2;
-
-            msgSize += 2; //finalCRC(2)
-        }
+        return 0;
     }
-    return msgSize;
+
+    const dlp_header &header = *reinterpret_cast<const dlp_header *>(data);
+
+    return calcPacketLength(header.fmt.len);
 }
 
 
