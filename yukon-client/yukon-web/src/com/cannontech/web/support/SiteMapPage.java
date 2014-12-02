@@ -138,7 +138,7 @@ public enum SiteMapPage implements DisplayableEnum {
     BULK_OPERATIONS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.home.pageName", "/bulk/bulkHome",
             MatchStyle.any, YukonRoleProperty.BULK_IMPORT_OPERATION, YukonRoleProperty.ADD_REMOVE_POINTS, YukonRoleProperty.FDR_TRANSLATION_MANAGER,
                             YukonRoleProperty.IMPORTER_ENABLED, YukonRoleProperty.CAP_CONTROL_IMPORTER, YukonRoleProperty.OPERATOR_IMPORT_CUSTOMER_ACCOUNT),
-    COMMANDER(SiteMapCategory.TOOLS, "yukon.web.modules.tools.commander.select.pageName", "/commander/select",
+    COMMANDER(SiteMapCategory.TOOLS, "yukon.web.modules.tools.commander.select.pageName", "/tools/commander",
             MatchStyle.all, YukonRoleProperty.ENABLE_WEB_COMMANDER),
     CREATE_BILLING_SCHEDULES(SiteMapCategory.TOOLS, "yukon.web.modules.tools.schedules.home.CREATE.pageDescription", "/group/scheduledGroupRequestExecution/home",
             MatchStyle.all, YukonRoleProperty.MANAGE_SCHEDULES),
