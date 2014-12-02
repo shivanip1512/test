@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/21/2014 2:58:22 PM                        */
+/* Created on:     12/2/2014 3:35:25 PM                         */
 /*==============================================================*/
 
 
@@ -8458,8 +8458,6 @@ INSERT INTO YukonGroupRole VALUES(-1083,-2,-206,-20602,' ');
 /* Web Client Customers Web Client role */
 insert into YukonGroupRole values (-1090,-2, -108, -10800, '/dashboard');
 insert into YukonGroupRole values (-1091,-2, -108, -10802, ' ');
-insert into YukonGroupRole values (-1092,-2, -108, -10803, ' ');
-insert into YukonGroupRole values (-1093,-2, -108, -10804, ' ');
 insert into YukonGroupRole values (-1094,-2, -108, -10805, ' ');
 insert into YukonGroupRole values (-1095,-2, -108, -10806, ' ');
 
@@ -9167,8 +9165,6 @@ INSERT INTO YukonRoleProperty VALUES(-10700,-107,'default','false','The default 
 /* Web Client Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-10800,-108,'home_url','/dashboard','The url to take the user immediately after logging into the Yukon web application');
 INSERT INTO YukonRoleProperty VALUES(-10802,-108,'style_sheet','yukon/CannonStyle.css','The web client cascading style sheet.');
-INSERT INTO YukonRoleProperty VALUES(-10803,-108,'nav_bullet_selected','yukon/Bullet.gif','The bullet used when an item in the nav is selected.');
-INSERT INTO YukonRoleProperty VALUES(-10804,-108,'nav_bullet_expand','yukon/BulletExpand.gif','The bullet used when an item in the nav can be expanded to show submenu.');
 INSERT INTO YukonRoleProperty VALUES(-10805,-108,'header_logo','yukon/DefaultHeader.gif','The main header logo');
 INSERT INTO YukonRoleProperty VALUES(-10806,-108,'log_in_url','/login.jsp','The url where the user login from. It is used as the url to send the users to when they log off.');
 INSERT INTO YukonRoleProperty VALUES(-10812, -108,'Java Web Start Launcher Enabled', 'true', 'Allow access to the Java Web Start Launcher for client applications.');
