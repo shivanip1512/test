@@ -43,8 +43,8 @@ AND VALUE != ' ';
 
 /* Start YUK-13878 */
 DELETE FROM PaoLocation
-WHERE Latitude  = NULL
-   OR Longitude = NULL;
+WHERE Latitude  IS NULL
+   OR Longitude IS NULL;
 
 ALTER TABLE PaoLocation
 ALTER COLUMN Latitude NUMERIC(9,6) NOT NULL;
