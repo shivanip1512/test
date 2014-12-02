@@ -352,7 +352,7 @@ void CtiFDRSimple::readThisConfig()
   {
       Cti::FormattedList loglist;
       loglist.add(keyDbReloadRate) << getReloadRate() <<" seconds";
-      loglist.add(keyDebugMode)    << (bool)isInterfaceInDebugMode();
+      loglist.add(keyDebugMode)    << isInterfaceInDebugMode();
 
       CTILOG_DEBUG(dout, "FDRSimple Configs:"<<
               loglist);

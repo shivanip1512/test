@@ -57,8 +57,8 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiFDRInterface&    setDbReloadReason(FDRDbReloadReason aLevel=DbChange);
         void                processFDRPointChange(int pointId, bool deleteType);
 
-        BOOL                isInterfaceInDebugMode() const;
-        void                setInterfaceDebugMode(const BOOL aChangeFlag = TRUE);
+        bool                isInterfaceInDebugMode() const;
+        void                setInterfaceDebugMode(const bool aChangeFlag);
 
         ULONG               getDebugLevel();
 
@@ -68,8 +68,8 @@ class IM_EX_FDRBASE CtiFDRInterface
         CtiFDRInterface&    setOutboundSendInterval (INT aInterval);
         int                 getTimeSyncVariation () const;
         CtiFDRInterface&    setTimeSyncVariation (INT aInterval);
-        BOOL                shouldUpdatePCTime() const;
-        void                setUpdatePCTimeFlag(const BOOL aChangeFlag = TRUE);
+        bool                shouldUpdatePCTime() const;
+        void                setUpdatePCTimeFlag(const bool aChangeFlag);
 
 
         virtual BOOL        init( void );
@@ -141,13 +141,13 @@ class IM_EX_FDRBASE CtiFDRInterface
         ULONG               iDebugLevel;
         int                 iReloadRate;
 
-        BOOL                iDebugMode;
+        bool                iDebugMode;
         int                 iQueueFlushRate;
 
         int                 iOutboundSendRate;
         int                 iOutboundSendInterval;
         int                 iTimeSyncVariation;
-        BOOL                iUpdatePCTimeFlag;
+        bool                iUpdatePCTimeFlag;
 
         /***********************
         * not sure if these should be here since not every interface has both

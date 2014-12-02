@@ -9,6 +9,8 @@
 #include "std_helper.h"
 
 #include <boost/scoped_ptr.hpp>
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/classification.hpp>
 
 namespace {
 boost::scoped_ptr<Cti::Fdr::DnpSlave> dnpSlaveInterface;
@@ -90,8 +92,6 @@ void DnpSlave::startup()
 */
 bool DnpSlave::readConfig()
 {
-    std::string   tempStr;
-
     const char *KEY_LISTEN_PORT_NUMBER          = "FDR_DNPSLAVE_PORT_NUMBER";
     const char *KEY_DB_RELOAD_RATE              = "FDR_DNPSLAVE_DB_RELOAD_RATE";
     const char *KEY_DEBUG_MODE                  = "FDR_DNPSLAVE_DEBUG_MODE";
@@ -107,47 +107,32 @@ bool DnpSlave::readConfig()
 
     _staleDataTimeOut = gConfigParms.getValueAsInt(KEY_STALEDATA_TIMEOUT, 3600);
 
+    setInterfaceDebugMode (gConfigParms.getValueAsString(KEY_DEBUG_MODE).length() > 0);
 
-    tempStr = gConfigParms.getValueAsString(KEY_DEBUG_MODE);
-    if (tempStr.length() > 0)
-    {
-        setInterfaceDebugMode (true);
-    }
-    else
-    {
-        setInterfaceDebugMode (false);
-    }
+    const std::string serverNames = gConfigParms.getValueAsString(KEY_FDR_DNPSLAVE_SERVER_NAMES);
 
-    tempStr = gConfigParms.getValueAsString(KEY_FDR_DNPSLAVE_SERVER_NAMES);
-    std::string serverNames = tempStr;
-    typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
-    boost::char_separator<char> sep(",");
-    tokenizer pairTok(serverNames, sep);
-    for (tokenizer::iterator pairIter = pairTok.begin();
-         pairIter != pairTok.end();
-         ++pairIter)
+    typedef boost::iterator_range<std::string::const_iterator> substring_range;
+    std::vector<substring_range> mappings;
+    boost::algorithm::split(mappings, serverNames, boost::is_any_of(","));
+
+    for each(const substring_range &mapping in mappings)
     {
-        boost::char_separator<char> innerSep("= ");
-        tokenizer innerTok(*pairIter, innerSep);
-        tokenizer::iterator first = innerTok.begin();
-        tokenizer::iterator end = innerTok.end();
-        if (first != end)
+        std::vector<std::string> name_address;
+        boost::algorithm::split(name_address, mapping, boost::is_any_of("= "));
+
+        if (name_address.size() >= 2)
         {
-            tokenizer::iterator second = first;
-            ++second;
-            if (second != end)
+            const std::string &serverAddress = name_address[0],
+                              &serverName    = name_address[1];
+
+            _serverNameLookup[serverName] = serverAddress;
+
+            if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
             {
-                std::string serverName = *first;
-                std::string serverAddress = *second;
-                _serverNameLookup[serverAddress] = serverName;
-                if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
-                {
-                    CTILOG_DEBUG(dout, logNow() << "Added server mapping: "<< serverAddress <<" -> "<< serverName);
-                }
+                CTILOG_DEBUG(dout, logNow() << "Added server mapping: "<< serverAddress <<" -> "<< serverName);
             }
         }
     }
-
 
     if (getDebugLevel() & STARTUP_FDR_DEBUGLEVEL)
     {
@@ -156,7 +141,7 @@ bool DnpSlave::readConfig()
         loglist.add(KEY_LISTEN_PORT_NUMBER) << getPortNumber();
         loglist.add(KEY_DB_RELOAD_RATE)     << getReloadRate();
         loglist.add(KEY_LINK_TIMEOUT)       << getLinkTimeout();
-        loglist.add(KEY_DEBUG_MODE)         << (bool)isInterfaceInDebugMode();
+        loglist.add(KEY_DEBUG_MODE)         << isInterfaceInDebugMode();
 
         CTILOG_INFO(dout, "FDRDnpSlave Configs"
                 << loglist);
@@ -271,48 +256,16 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
         }
         case SINGLE_SOCKET_DNP_READ:
         {
-            /********************************************************************************************************
-              here should add something to _dnpData.slaveDecode()  However, for now, this will process any read command
-              as a scan1230 request.
-              NOTE:  scan integrity dnp message
-                05 64 17 c4 1e 00 02 00 78 b5 c0 ca 01 32 01 06 3c 02 06 3c 03 06 3c 04 06 3c 9d f5 01 06 75 e1
-
-                SCAN INTEGRITY:
-                05 64 17 c4 1e 00 01 00 d3 05
-                c0 c3
-                01 - read
-                32 01 - data object 50 variation 1 - TIME AND DATE
-                06 - qualifier - no index, packed.  no range field
-                3c 02 - data object 60 variation 2 - class 1 data
-                06 - qualifier - no index, packed.  no range field
-                3c 03 - data object 60 variation 3 - class 2 data
-                06 - qualifier - no index, packed.  no range field
-                3c 04 - data object 60 variation 4 - class 3 data
-                06 - qualifier - no index, packed.  no range field
-                3c <ce 3c - 16byte CRC> 01 - data object 60 variation 1 - class 0 data
-                06 - qualifier - no index, packed.  no range field
-                75 e1 - CRC
-
-                SCAN GENERAL
-                05 64 14 c4 1e 00 01 00 83 96
-                c0 c9
-                01
-                32 01 - data object 50 variation 1 - TIME AND DATE
-                06 - qualifier - no index, packed.  no range field
-                3c 02 - data object 60 variation 2 - class 1 data
-                06 - qualifier - no index, packed.  no range field
-                3c 03 - data object 60 variation 3 - class 2 data
-                06 - qualifier - no index, packed.  no range field
-                3c 04 - data object 60 variation 4 - class 3 data
-                06 - qualifier - no index, packed.  no range field
-                1b b5 - CRC
-             ********************************************************************************************************/
             processScanSlaveRequest (connection, data, size);
             break;
         }
+        case SINGLE_SOCKET_DNP_DIRECT_OP:
+        {
+            //processControlRequest(connection, data, size);
+            //break;
+        }
         case SINGLE_SOCKET_DNP_CONFIRM:
         case SINGLE_SOCKET_DNP_WRITE:
-        case SINGLE_SOCKET_DNP_DIRECT_OP:
         default:
         {
             if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
@@ -391,8 +344,6 @@ int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection, c
 
 int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char* data, unsigned int size)
 {
-    int retVal = 0;
-
     CtiXfer xfer = CtiXfer(NULL, 0, (BYTE*)data, getMessageSize(data));
     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
     {
@@ -423,26 +374,32 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
             iPoint.online = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp());
             iPoint.control_offset = dnpId.Offset;
 
-            if (dnpId.PointType == StatusPointType )
+            switch (dnpId.PointType)
             {
-                iPoint.din.trip_close = (fdrPoint->getValue() == 0)?(BinaryOutputControl::Trip):(BinaryOutputControl::Close);
-                iPoint.type = DnpSlaveProtocol::DigitalInput;
+                case StatusPointType:
+                {
+                    iPoint.din.trip_close = (fdrPoint->getValue() == 0)?(BinaryOutputControl::Trip):(BinaryOutputControl::Close);
+                    iPoint.type = DnpSlaveProtocol::DigitalInput;
+                    break;
+                }
+                case AnalogPointType:
+                {
+                    iPoint.ain.value =  (fdrPoint->getValue() * dnpId.Multiplier);
+                    iPoint.type = DnpSlaveProtocol::AnalogInputType;
+                    break;
+                }
+                case PulseAccumulatorPointType:
+                {
+                    iPoint.counterin.value =  (fdrPoint->getValue() * dnpId.Multiplier);
+                    iPoint.type = DnpSlaveProtocol::Counters;
+                    break;
+                }
+                default:
+                {
+                    continue;
+                }
             }
-            else if (dnpId.PointType == AnalogPointType )
-            {
-                iPoint.ain.value =  (fdrPoint->getValue() * dnpId.Multiplier);
-                iPoint.type = DnpSlaveProtocol::AnalogInputType;
-            }
-            else if (dnpId.PointType == PulseAccumulatorPointType )
-            {
-                iPoint.counterin.value =  (fdrPoint->getValue() * dnpId.Multiplier);
-                iPoint.type = DnpSlaveProtocol::Counters;
-            }
-            else
-            {
-                continue;
 
-            }
             _dnpSlave.addInputPoint(iPoint);
         }
     }
@@ -479,11 +436,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
          }
      }
 
-
-
-
-    return retVal;
-
+    return 0;
 }
 
 

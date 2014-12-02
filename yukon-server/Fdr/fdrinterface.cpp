@@ -296,7 +296,7 @@ CtiFDRInterface &CtiFDRInterface::setDbReloadReason(FDRDbReloadReason aReason)
 *
 *************************************************************************
 */
-BOOL CtiFDRInterface::isInterfaceInDebugMode() const
+bool CtiFDRInterface::isInterfaceInDebugMode() const
 {
     return iDebugMode;
 }
@@ -308,7 +308,7 @@ BOOL CtiFDRInterface::isInterfaceInDebugMode() const
 *
 *************************************************************************
 */
-void CtiFDRInterface::setInterfaceDebugMode(const BOOL aChangeFlag)
+void CtiFDRInterface::setInterfaceDebugMode(const bool aChangeFlag)
 {
     iDebugMode = aChangeFlag;
 }
@@ -421,12 +421,12 @@ CtiFDRInterface& CtiFDRInterface::setTimeSyncVariation (INT aVariation)
     return *this;
 }
 
-BOOL CtiFDRInterface::shouldUpdatePCTime() const
+bool CtiFDRInterface::shouldUpdatePCTime() const
 {
     return iUpdatePCTimeFlag;
 }
 
-void CtiFDRInterface::setUpdatePCTimeFlag(const BOOL aChangeFlag)
+void CtiFDRInterface::setUpdatePCTimeFlag(const bool aChangeFlag)
 {
     iUpdatePCTimeFlag = aChangeFlag;
 }

@@ -168,8 +168,8 @@ bool CtiFDRAcsMulti::readConfig()
         loglist.add(KEY_TIMESYNC_VARIATION)     << getTimeSyncVariation();
         loglist.add(KEY_POINT_TIME_VARIATION)   << getPointTimeVariation();
         loglist.add(KEY_LINK_TIMEOUT)           << getLinkTimeout();
-        loglist.add(KEY_TIMESYNC_UPDATE)        << (bool)shouldUpdatePCTime();
-        loglist.add(KEY_DEBUG_MODE)             << (bool)isInterfaceInDebugMode();
+        loglist.add(KEY_TIMESYNC_UPDATE)        << shouldUpdatePCTime();
+        loglist.add(KEY_DEBUG_MODE)             << isInterfaceInDebugMode();
 
         CTILOG_INFO(dout, "FDR-ACS Configs"<<
                 loglist);
