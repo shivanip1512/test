@@ -618,7 +618,7 @@ unsigned int DnpSlave::getMessageSize(const char* data)
 }
 
 
-unsigned int DnpSlave::getMagicInitialMsgSize()
+unsigned int DnpSlave::getHeaderLength()
 {
     return Protocols::DNP::DatalinkPacket::HeaderLength;
 }

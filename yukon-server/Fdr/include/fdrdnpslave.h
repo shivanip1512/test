@@ -69,8 +69,7 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
                                            const char* data, unsigned int size) override;
         unsigned long determineRequestFunction(const char* data, unsigned int size);
 
-        unsigned int getMagicInitialMsgSize() override;
-
+        unsigned int getHeaderLength() override;
 
     private:
         DnpId   ForeignToYukonId(CtiFDRDestination pointDestination);

@@ -439,20 +439,19 @@ INT CtiFDRClientServerConnection::writeSocket(CHAR *aBuffer, ULONG length, ULONG
 void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
 {
     RWRunnableSelf  pSelf = rwRunnable( );
-    const unsigned int maxBufferSize = 8172;
-    const unsigned int magicInitialMessageSize = _parentInterface->getMagicInitialMsgSize();
-    CHAR            data[maxBufferSize];
-    INT retVal=0;
-    ULONG   bytesRead=0,totalMsgSize=0;
-    int connectionBadCount=0;
+
+    const unsigned int MaxBufferSize = 8172;
+    char data[MaxBufferSize];
+
+    const unsigned int hdrLen = _parentInterface->getHeaderLength();
+
+    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+    {
+        CTILOG_DEBUG(dout, logNow() <<"threadFunctionGetDataFrom initializing");
+    }
 
     try
     {
-        if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
-        {
-            CTILOG_DEBUG(dout, logNow() <<"threadFunctionGetDataFrom initializing");
-        }
-
         for ( ; ; )
         {
             if(isFailed())
@@ -462,13 +461,16 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
                 break;
             }
 
-            memset (&data, '\0', maxBufferSize);
+            std::fill(data, data + MaxBufferSize, 0);
+
             // attempt to find out what type of message we're dealing with
-            retVal = readSocket((CHAR*)&data, magicInitialMessageSize, bytesRead);
+            unsigned long hdrBytesRead;
+            const int hdrReadStatus = readSocket(data, hdrLen, hdrBytesRead);
+
             pSelf.serviceCancellation();
 
             // this where we re-initialize if needed
-            if (retVal == SOCKET_ERROR)
+            if (hdrReadStatus == SOCKET_ERROR)
             {
                 // most likely our shutdown event, but it could be a real error
                 break;
@@ -477,25 +479,25 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
             // restart connection timeout
             SetEvent(_stillAliveEvent);
 
-            // figure out how many more bytes we now need
-            totalMsgSize = _parentInterface->getMessageSize(data);
-            if (totalMsgSize == 0)
+            // figure out how many more bytes we need
+            const unsigned long len = _parentInterface->getMessageSize(data);
+            if (len == 0)
             {
-                CTILOG_WARN(dout, logNow() <<"getMessageSize() returned 0, but "<< magicInitialMessageSize <<" bytes were already read");
+                CTILOG_WARN(dout, logNow() <<"getMessageSize() returned 0, but "<< hdrLen <<" bytes were already read");
                 break;
             }
 
-            // make sure we have a number
-            // (greater than four, we already read magicInitialMessageSize)
-            if (totalMsgSize > magicInitialMessageSize)
+            // make sure we have a number greater than headerLength before we try to read
+            if (len > hdrLen)
             {
-                retVal = readSocket((CHAR*)&data + magicInitialMessageSize,
-                                    totalMsgSize - magicInitialMessageSize,
-                                    bytesRead);
+                unsigned long msgBytesRead;
+                const int msgReadStatus = readSocket(data + hdrLen,
+                                                     len  - hdrLen,
+                                                     msgBytesRead);
                 pSelf.serviceCancellation( );
 
                 // this where we re-initialize if needed
-                if (retVal == SOCKET_ERROR)
+                if (msgReadStatus == SOCKET_ERROR)
                 {
                     // most likely our shutdown event, but it could be a real error
                     // we'll log it this time because it is less likely to occur
@@ -503,15 +505,15 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
                     break;
                 }
             }
-           _parentInterface->processMessageFromForeignSystem (*this, data, totalMsgSize);
+
+            _parentInterface->processMessageFromForeignSystem (*this, data, len);
         }
     }
-
     catch ( RWCancellation &cancellationMsg )
     {
         // just let it fall through
     }
-    // try and catch the thread death
+    // catch any thread death
     catch ( ... )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, logNow() <<"threadFunctionGetDataFrom is dead");

@@ -28,7 +28,7 @@ class IM_EX_FDRBASE CtiFDRScadaServer : public CtiFDRSocketServer
           Cti::Fdr::ServerConnection& connection, const char* data, unsigned int size);
         virtual unsigned int getMessageSize(const char* data) = 0;
         unsigned long getScadaFunction(const char* data, unsigned int size);
-        virtual unsigned int getMagicInitialMsgSize()=0;
+        //  virtual unsigned int getHeaderLength()=0;  //  implied
 
     protected:
 

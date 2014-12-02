@@ -60,7 +60,7 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         virtual std::string decodeClientName(CHAR *data);
         bool readConfig() override;
         virtual unsigned int getMessageSize(const char* data);
-        virtual unsigned int getMagicInitialMsgSize(){return VALMET_MULTI_HEADER_SIZE;};
+        virtual unsigned int getHeaderLength()  {  return VALMET_MULTI_HEADER_SIZE;  }
 
         virtual BOOL run( void );
         virtual BOOL stop( void );
