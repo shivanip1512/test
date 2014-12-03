@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentMap;
 
 import javax.annotation.PostConstruct;
@@ -440,43 +439,50 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         log.info("Received " + meterNumbers.length + " Meter(s) for Outage Verification Testing from " + mspVendor.getCompanyName());
         multispeakEventLogService.initiateODEventRequest(meterNumbers.length, "initiateOutageDetectionEventRequest", mspVendor.getCompanyName());
         
-        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
         List<YukonMeter> rfnPaosToPing = Lists.newArrayList();
         List<CommandRequestDevice> plcCommandRequests = Lists.newArrayList();
 
+        Map<String, YukonMeter> meterNumberToMeterMap = meterDao.getMetersMapForMeterNumbers(Lists.newArrayList(meterNumbers));
+
+        boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
+        
         for (String meterNumber : meterNumbers) {
-            try {
-                YukonMeter meter = mspMeterDao.getMeterForMeterNumber(meterNumber);
-
-                // TODO validate is OD supported meter ???
-                
-                if (meter instanceof RfnMeter) {
-                    rfnPaosToPing.add(meter);
-                    multispeakEventLogService.initiateODEvent(meterNumber, meter, transactionId, "initiateOutageDetectionEventRequest", mspVendor.getCompanyName());
-                    continue;
-                }
-
-                // Assume plc if we made it this far, validate meter can receive porter command requests and command string exists, then perform action
-                boolean supportsPing = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
-                if (!supportsPing) {
-                    ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
-                                                                  "MeterNumber (" + meterNumber + ") - Meter cannot receive requests from porter. ",
-                                                                  "Meter", "ODEvent", mspVendor.getCompanyName());
-                    errorObjects.add(err);
-                } else { // build up a list of plc command requests (to be sent later)
-                    CommandRequestDevice request = new CommandRequestDevice();
-                    request.setDevice(SimpleDevice.of(meter.getPaoIdentifier()));
-                    request.setCommandCallback(new CommandCallbackBase("ping"));
-                    plcCommandRequests.add(request);
-                    multispeakEventLogService.initiateODEvent(meterNumber, meter, transactionId, "initiateOutageDetectionEventRequest", mspVendor.getCompanyName());
-                }
-            } catch (NotFoundException e) {
+            YukonMeter meter = meterNumberToMeterMap.remove(meterNumber);
+            if (meter == null) {
                 multispeakEventLogService.meterNotFound(meterNumber, "initiateOutageDetectionEventRequest", mspVendor.toString());
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "ODEvent", mspVendor.getCompanyName());
                 errorObjects.add(err);
-                log.error(e);
+                continue;
             }
 
+            if (excludeDisabled && meter.isDisabled()) {
+                log.debug("Meter " + meter.getMeterNumber() + " is disabled, skipping.");
+                continue;
+            }
+
+            // TODO validate is OD supported meter ???
+
+            if (meter instanceof RfnMeter) {
+                rfnPaosToPing.add(meter);
+                multispeakEventLogService.initiateODEvent(meterNumber, meter, transactionId, "initiateOutageDetectionEventRequest", mspVendor.getCompanyName());
+                continue;
+            }
+
+            // Assume plc if we made it this far, validate meter can receive porter command requests and command string exists, then perform action
+            boolean supportsPing = paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
+            if (supportsPing) { // build up a list of plc command requests (to be sent later)
+                CommandRequestDevice request = new CommandRequestDevice();
+                request.setDevice(SimpleDevice.of(meter.getPaoIdentifier()));
+                request.setCommandCallback(new CommandCallbackBase("ping"));
+                plcCommandRequests.add(request);
+                multispeakEventLogService.initiateODEvent(meterNumber, meter, transactionId, "initiateOutageDetectionEventRequest", mspVendor.getCompanyName());
+            } else {
+                ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
+                                                              "MeterNumber (" + meterNumber + ") - Meter cannot receive requests from porter. ",
+                                                              "Meter", "ODEvent", mspVendor.getCompanyName());
+                errorObjects.add(err);
+            }
         }
 
         // perform read attribute(?) on list of meters
@@ -488,9 +494,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     /**
-     * Performs the PLC meter disconnect. 
+     * Performs the PLC meter outage ping. 
      * Returns immediately, does not wait for a response. 
-     * Callback will initiate a cdEventNotification on receivedValue.
+     * Callback will initiate a ODEventNotification on receivedLastResultString.
      */
     private void doPlcOutagePing(List<CommandRequestDevice> plcCommandRequests, final MultispeakVendor mspVendor,
             final String transactionId, final String responseUrl) {
@@ -552,9 +558,12 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     /**
-     * Performs the RFN meter disconnect. 
+     * Performs the RFN meter outage analysis.
+     * If MSP_RFN_PING_FORCE_CHANNEL_READ setting is set to
+     *   true = perform a real time attribute read using Outage_Status attribute.
+     *          Callback will initiate a ODEventNotification on receivedLastValue or receivedError.
+     *  false = use the last known value of Outage_Status to determine odEvent state.
      * Returns immediately, does not wait for a response. 
-     * Callback will initiate a cdEventNotification on success or error.
      */
     private void doRfnOutagePing(final List<YukonMeter> meters, final MultispeakVendor mspVendor, final String transactionId, final String responseUrl) {
 
@@ -697,6 +706,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         outageDetectionEvent.setOutageLocation(outageLocation);
 
         // set defaults, may be overwritten below
+        outageDetectionEvent.setComments(resultString);
         outageDetectionEvent.setOutageEventType(outageEventType);
         outageDetectionEvent.setErrorString(outageEventType.getValue() + ": " + resultString);
 
@@ -707,7 +717,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     public synchronized ErrorObject[] meterReadEvent(final MultispeakVendor mspVendor, String[] meterNumbers,
             final String transactionID, final String responseUrl) {
         
-        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
         log.info("Received " + meterNumbers.length + " Meter(s) for MeterReading from " + mspVendor.getCompanyName());
         multispeakEventLogService.initiateMeterReadRequest(meterNumbers.length, "initiateMeterReadByMeterNumber", mspVendor.getCompanyName());
@@ -719,18 +729,27 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }
 
         List<YukonMeter> allPaosToRead = Lists.newArrayListWithCapacity(meterNumbers.length);
+        
+        Map<String, YukonMeter> meterNumberToMeterMap = meterDao.getMetersMapForMeterNumbers(Lists.newArrayList(meterNumbers));
+        boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
+        
         for (String meterNumber : meterNumbers) {
 
-            try {
-                YukonMeter meter = mspMeterDao.getMeterForMeterNumber(meterNumber); // TODO probably need a better load method
-                allPaosToRead.add(meter);
-                multispeakEventLogService.initiateMeterRead(meterNumber, meter, transactionID, "initiateMeterReadByMeterNumber", mspVendor.getCompanyName());
-            } catch (NotFoundException e) {
+            YukonMeter meter = meterNumberToMeterMap.remove(meterNumber);
+            if (meter == null) {
                 multispeakEventLogService.meterNotFound(meterNumber, "initiateMeterReadByMeterNumber", mspVendor.getCompanyName());
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", mspVendor.getCompanyName());
                 errorObjects.add(err);
-                log.error(e);
+                continue;
             }
+
+            if (excludeDisabled && meter.isDisabled()) {
+                log.debug("Meter " + meter.getMeterNumber() + " is disabled, skipping.");
+                continue;
+            }
+
+            allPaosToRead.add(meter);
+            multispeakEventLogService.initiateMeterRead(meterNumber, meter, transactionID, "initiateMeterReadByMeterNumber", mspVendor.getCompanyName());
         }
 
         final ImmutableMap<PaoIdentifier, YukonMeter> meterLookup = PaoUtils.indexYukonPaos(allPaosToRead);
@@ -835,7 +854,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     public synchronized ErrorObject[] blockMeterReadEvent(final MultispeakVendor mspVendor, String meterNumber,
             final FormattedBlockProcessingService<Block> blockProcessingService, final String transactionId,
             final String responseUrl) {
-        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
         log.info("Received " + meterNumber + " for BlockMeterReading from " + mspVendor.getCompanyName());
         multispeakEventLogService.initiateMeterReadRequest(1, "initiateMeterReadByMeterNoAndType", mspVendor.getCompanyName());
@@ -969,7 +988,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         log.info("Received " + cdEvents.length + " Meter(s) for Connect/Disconnect from " + mspVendor.getCompanyName());
         multispeakEventLogService.initiateCDRequest(cdEvents.length, "initiateConnectDisconnect", mspVendor.getCompanyName());
         
-        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
         List<CommandRequestDevice> plcCommandRequests = Lists.newArrayList();
 
         for (ConnectDisconnectEvent cdEvent : cdEvents) {
@@ -1720,7 +1739,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
     @Override
     public ErrorObject[] meterRemove(MultispeakVendor mspVendor, Meter[] removeMeters) {
-        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
         for (Meter mspMeter : removeMeters) {
             // Lookup meter in Yukon by msp meter number
@@ -1750,7 +1769,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
     @Override
     public ErrorObject[] serviceLocationChanged(final MultispeakVendor mspVendor, ServiceLocation[] serviceLocations) {
-        final Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        final ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
         final MspPaoNameAliasEnum paoAlias = multispeakFuncs.getPaoNameAlias();
 
         for (final ServiceLocation mspServiceLocation : serviceLocations) {
@@ -2160,7 +2179,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
      */
     private ErrorObject[] addToGroup(String[] meterNos, SystemGroupEnum systemGroup, String mspMethod,
             MultispeakVendor mspVendor) {
-        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
         for (String meterNumber : meterNos) {
             try {
@@ -2186,7 +2205,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     private ErrorObject[] removeFromGroup(String[] meterNos, SystemGroupEnum systemGroup, String mspMethod,
             MultispeakVendor mspVendor) {
 
-        Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
+        ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
         for (String meterNumber : meterNos) {
             try {

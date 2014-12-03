@@ -341,6 +341,17 @@ public class MeterDaoImpl implements MeterDao {
     }
     
     @Override
+    public Map<String, YukonMeter> getMetersMapForMeterNumbers(final List<String> meterNumbers) {
+        List<YukonMeter> meters = getMetersForMeterNumbers(meterNumbers);
+        return Maps.uniqueIndex(meters, new Function<YukonMeter, String>() {
+            @Override
+            public String apply(YukonMeter meter) {
+                return meter.getMeterNumber();
+            }
+        });
+    }
+
+    @Override
     public int getMeterCount() {
         SqlStatementBuilder sql = new SqlStatementBuilder("SELECT COUNT(*) FROM DeviceMeterGroup");
         return jdbcTemplate.queryForInt(sql);
