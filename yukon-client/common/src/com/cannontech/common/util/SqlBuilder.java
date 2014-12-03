@@ -72,7 +72,15 @@ public interface SqlBuilder {
     
     public SqlBuilder eq(Object argument);
     
+    public SqlBuilder eq_k(int constant);
+    
+    public SqlBuilder eq_k(Enum<?> constant);
+    
     public SqlBuilder neq(Object argument);
+    
+    public SqlBuilder neq_k(int constant);
+    
+    public SqlBuilder neq_k(Enum<?> constant);
     
     public SqlBuilder lt(Object argument);
     
@@ -81,6 +89,16 @@ public interface SqlBuilder {
     public SqlBuilder gte(Object argument);
     
     public SqlBuilder lte(Object argument);
+    
+    /**Appends the constant to the current query as a string 
+     * rather than as a variable.Preferably use the gt/lte methods
+     * NOTE:Contact Stacey before using these methods  
+     * @param long
+     * @return
+     */
+    public SqlBuilder gt_k(long constant);
+    
+    public SqlBuilder lte_k(long constant);
     
     /**
      * Appends the list of arguments to the current query using the IN syntax.
@@ -95,7 +113,7 @@ public interface SqlBuilder {
      * Append a list of enums as constants.
      */
     public SqlBuilder in_k(Iterable<? extends Enum<?>> list);
-
+    
     public SqlBuilder in(SqlFragmentSource sqlFragmentSource);
     
     /**

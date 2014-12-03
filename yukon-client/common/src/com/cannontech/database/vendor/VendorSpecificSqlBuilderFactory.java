@@ -199,6 +199,36 @@ public class VendorSpecificSqlBuilderFactory {
         public SqlBuilder appendArgument_k(Enum<?> constant) {
             return this;
         }
+        
+        @Override
+        public SqlBuilder gt_k(long constant) {
+            return this;
+        }
+
+        @Override
+        public SqlBuilder eq_k(int constant) {
+            return this;
+        }
+
+        @Override
+        public SqlBuilder eq_k(Enum<?> constant) {
+            return this;
+        }
+
+        @Override
+        public SqlBuilder neq_k(int constant) {
+            return this;
+        }
+
+        @Override
+        public SqlBuilder neq_k(Enum<?> constant) {
+            return this;
+        }
+
+        @Override
+        public SqlBuilder lte_k(long constant) {
+            return this;
+        }
     }
     
     @Autowired

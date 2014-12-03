@@ -192,6 +192,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    @Override
     public SqlStatementBuilder eq_k(int constant) {
         addString("= ");
         addString(Integer.toString(constant));
@@ -199,6 +200,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    @Override
     public SqlStatementBuilder eq_k(Enum<?> constant) {
         addString("=");
         return appendArgument_k(constant);
@@ -211,6 +213,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    @Override
     public SqlStatementBuilder neq_k(int constant) {
         addString("!= ");
         addString(Integer.toString(constant));
@@ -218,6 +221,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    @Override
     public SqlStatementBuilder neq_k(Enum<?> constant) {
         addString("!= '");
         if (constant instanceof DatabaseRepresentationSource) {
@@ -243,6 +247,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    @Override
      public SqlStatementBuilder gt_k(long constant) {
          addString("> ");
          addString(Long.toString(constant));
@@ -264,6 +269,7 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         return this;
     }
     
+    @Override
     public SqlStatementBuilder lte_k(long constant) {
         addString("<= ");
         addString(Long.toString(constant));
