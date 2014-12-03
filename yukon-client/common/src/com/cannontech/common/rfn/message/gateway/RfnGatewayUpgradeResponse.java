@@ -14,9 +14,9 @@ public class RfnGatewayUpgradeResponse implements RfnIdentifyingMessage, Seriali
     private String upgradeId;
     private RfnIdentifier rfnIdentifier;
     private RfnGatewayUpgradeResponseType responseType = RfnGatewayUpgradeResponseType.UNKNOWN;
-    private short gatewayMessageType = -1;
-    private byte gatewayMessageStatus = -1;
-    private int fragmentId = -1;
+    private Short gatewayMessageType;
+    private Byte gatewayMessageStatus;
+    private Integer fragmentId;
     
     public String getUpgradeId() {
         return upgradeId;
@@ -43,27 +43,27 @@ public class RfnGatewayUpgradeResponse implements RfnIdentifyingMessage, Seriali
         this.responseType = responseType;
     }
     
-    public short getGatewayMessageType() {
+    public Short getGatewayMessageType() {
         return gatewayMessageType;
     }
     
-    public void setGatewayMessageType(short gatewayMessageType) {
+    public void setGatewayMessageType(Short gatewayMessageType) {
         this.gatewayMessageType = gatewayMessageType;
     }
     
-    public byte getGatewayMessageStatus() {
+    public Byte getGatewayMessageStatus() {
         return gatewayMessageStatus;
     }
     
-    public void setGatewayMessageStatus(byte gatewayMessageStatus) {
+    public void setGatewayMessageStatus(Byte gatewayMessageStatus) {
         this.gatewayMessageStatus = gatewayMessageStatus;
     }
     
-    public int getFragmentId() {
+    public Integer getFragmentId() {
         return fragmentId;
     }
     
-    public void setFragmentId(int fragmentId) {
+    public void setFragmentId(Integer fragmentId) {
         this.fragmentId = fragmentId;
     }
 
@@ -71,9 +71,11 @@ public class RfnGatewayUpgradeResponse implements RfnIdentifyingMessage, Seriali
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + fragmentId;
-        result = prime * result + gatewayMessageStatus;
-        result = prime * result + gatewayMessageType;
+        result = prime * result + ((fragmentId == null) ? 0 : fragmentId.hashCode());
+        result =
+            prime * result + ((gatewayMessageStatus == null) ? 0 : gatewayMessageStatus.hashCode());
+        result =
+            prime * result + ((gatewayMessageType == null) ? 0 : gatewayMessageType.hashCode());
         result = prime * result + ((responseType == null) ? 0 : responseType.hashCode());
         result = prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
         result = prime * result + ((upgradeId == null) ? 0 : upgradeId.hashCode());
@@ -89,11 +91,20 @@ public class RfnGatewayUpgradeResponse implements RfnIdentifyingMessage, Seriali
         if (getClass() != obj.getClass())
             return false;
         RfnGatewayUpgradeResponse other = (RfnGatewayUpgradeResponse) obj;
-        if (fragmentId != other.fragmentId)
+        if (fragmentId == null) {
+            if (other.fragmentId != null)
+                return false;
+        } else if (!fragmentId.equals(other.fragmentId))
             return false;
-        if (gatewayMessageStatus != other.gatewayMessageStatus)
+        if (gatewayMessageStatus == null) {
+            if (other.gatewayMessageStatus != null)
+                return false;
+        } else if (!gatewayMessageStatus.equals(other.gatewayMessageStatus))
             return false;
-        if (gatewayMessageType != other.gatewayMessageType)
+        if (gatewayMessageType == null) {
+            if (other.gatewayMessageType != null)
+                return false;
+        } else if (!gatewayMessageType.equals(other.gatewayMessageType))
             return false;
         if (responseType != other.responseType)
             return false;
@@ -121,4 +132,5 @@ public class RfnGatewayUpgradeResponse implements RfnIdentifyingMessage, Seriali
                     gatewayMessageStatus,
                     fragmentId);
     }
+
 }
