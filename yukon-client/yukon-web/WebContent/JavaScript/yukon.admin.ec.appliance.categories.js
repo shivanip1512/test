@@ -43,8 +43,9 @@ yukon.admin.ec.ac = (function () {
                 
             }
         }
-        
-        _updateKey();
+        if (!form.data('multiple')) {
+            _updateKey();
+        }
     },
     
     mod = {};
