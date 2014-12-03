@@ -285,6 +285,27 @@
                                 <bean class="com.cannontech.web.input.type.BooleanType" />
                             </property>
                         </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="dataRangeDaysOffset"/>
+                        	<property name="displayName" value="Days Offset"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.IntegerType"/>
+                        	</property>
+                        </bean>
+                        <bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="dataRangeTime"/>
+                        	<property name="displayName" value="Time"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.LocalTimeType"/>
+                        	</property>
+                        </bean>
+                       	<bean class="com.cannontech.web.input.InputBase">
+                        	<property name="field" value="dataRangeIsTimeSelected"/>
+                        	<property name="displayName" value="Time Selected"/>
+                        	<property name="type">
+                        		<bean class="com.cannontech.web.input.type.BooleanType"/>
+                        	</property>
+                        </bean>
     				</list>
     			</property>
     		</bean>

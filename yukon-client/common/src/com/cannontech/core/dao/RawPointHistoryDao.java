@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.joda.time.Instant;
+import org.joda.time.LocalTime;
 
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -170,6 +171,16 @@ public interface RawPointHistoryDao {
         Double minimumValue,
         Set<PointQuality> excludeQualities);
 
+    /**
+     * This method returns RawPointHistory data for a list of PAOs and a given Attribute for a specific time. 
+     * Only returns data with a value greater than the specified minimum value. 
+     * 
+     * @return ListMultimap containing RPH values for each PAO
+     */
+    ListMultimap<PaoIdentifier, PointValueQualityHolder> getAttributeData(Iterable<? extends YukonPao> paos,
+        Attribute attribute, ReadableRange<Instant> dateRange, LocalTime time, ReadableRange<Long> changeIdRange,
+        boolean excludeDisabledPaos, Order order, Double minimumValue, Set<PointQuality> excludeQualities);
+    
     /**
      * This method returns RawPointHistory data for a list of PAOs and a given Attribute. This data will be returned
      * as a ListMultimap such that the RPH values for each PAO will be accessible (and ordered) on their own.

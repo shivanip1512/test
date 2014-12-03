@@ -12,6 +12,8 @@
 
 <cti:standardPage page="bulk.archivedValueExporter" module="tools">
 
+    <cti:includeScript link="YUKON_TIME_FORMATTER"/>
+
     <cti:toJson id="module-config" object="${jsConfig}"/>
 
     <div id="create-format-dialog" title="<cti:msg2 key=".createNewFormat.title"/>" class="dn">
@@ -32,21 +34,21 @@
                 <div class="empty-list stacked"><i:inline key=".noFormatsCreated"/></div>
                 <cti:button nameKey="create" icon="icon-plus-green" id="b-create"/>
             </c:if>
-            <form:form id="exporterForm" commandName="archivedValuesExporter" action="${action}">
+            <form:form id="exporter-form" commandName="archivedValuesExporter" action="${action}">
                 <cti:csrfToken/>
-                <form:hidden path="archivedValuesExportFormatType"/>
-                <cti:deviceCollection deviceCollection="${archivedValuesExporter.deviceCollection}" />
-                <tags:nameValueContainer2 id="formatContainer" tableClass="with-form-controls">
+                <form:hidden id="format-type" path="archivedValuesExportFormatType"/>
+                <cti:deviceCollection deviceCollection="${archivedValuesExporter.deviceCollection}"/>
+                <tags:nameValueContainer2 tableClass="with-form-controls">
                     <c:if test="${not empty allFormats}">
                         <tags:nameValue2 nameKey=".existingFormat">
-                            <form:select path="formatId" cssClass="fl">
-                                <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName" />
+                            <form:select id="format-id" path="formatId" cssClass="fl">
+                                <form:options items="${allFormats}" itemValue="formatId" title="formatName" itemLabel="formatName"/>
                             </form:select>
                             <c:if test="${not empty allFormats}">
-                                <cti:button nameKey="edit" icon="icon-pencil" id="b-edit" />
-                                <cti:button nameKey="copy" icon="icon-page-copy" id="b-copy" />
+                                <cti:button nameKey="edit" icon="icon-pencil" id="b-edit"/>
+                                <cti:button nameKey="copy" icon="icon-page-copy" id="b-copy"/>
                             </c:if>
-                            <cti:button nameKey="create" icon="icon-plus-green" id="b-create" />
+                            <cti:button nameKey="create" icon="icon-plus-green" id="b-create"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey="yukon.web.defaults.devices">
                             <a href="javascript:void(0);" class="selectDevices clearfix fl" title="<cti:msg2 key=".chooseDevices.tooltip"/>">
@@ -86,8 +88,8 @@
                             <c:set var="disableRunSchedule" value="false"/>
                         </c:otherwise>
                     </c:choose>
-                    <cti:button id="runButton" nameKey="run" title="${runScheduleTitle}" disabled="${disableRunSchedule}" classes="fl" icon="icon-page-white-excel"/>
-                    <cti:button id="scheduleButton" nameKey="schedule" title="${runScheduleTitle}" disabled="${disableRunSchedule}" classes="fl" icon="icon-calendar-view-day"/>
+                    <cti:button id="run-btn" nameKey="run" title="${runScheduleTitle}" disabled="${disableRunSchedule}" classes="fl" icon="icon-page-white-excel"/>
+                    <cti:button id="schedule-btn" nameKey="schedule" title="${runScheduleTitle}" disabled="${disableRunSchedule}" classes="fl" icon="icon-calendar-view-day"/>
                 </c:if>
             </div>
         </tags:sectionContainer2>
@@ -100,88 +102,79 @@
         <%@ include file="scheduledJobsTable.jsp" %>
     </div>
 
-    <div id="runDialog" class="dn">
+    <div id="run-dialog" class="dn">
          <cti:flashScopeMessages />
-         <form:form id="runForm" commandName="archivedValuesExporter" >
+         <form:form commandName="archivedValuesExporter" >
             <cti:csrfToken/>
-             <div id="runInputsDiv">
-                <div id="endDateDiv" class="END_DATE">
-                    <cti:msg2 key=".endDate" var="endDate" />
-                    <form:radiobutton path="runDataRange.dataRangeType" label="${endDate}" value="END_DATE" /> <br>
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".endDate"> <dt:date path="runDataRange.endDate" /> </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                    <br>
+             <div class="js-run-inputs">
+                <div class="stacked js-fixed">
+                    <cti:msg2 key=".endDate" var="endDate"/>
+                    <span class="fl">
+                        <form:radiobutton path="runDataRange.dataRangeType" label="${endDate}" value="END_DATE" />&nbsp;
+                    </span>
+                    <dt:date path="runDataRange.endDate" cssClass="js-focus" />
                 </div>
-                
-                <div id="dateRangeDiv" class="DATE_RANGE">
+
+                 <div class="stacked js-dynamic clearfix">
                     <cti:msg2 key=".dateRange" var="dateRange"/>
-                    <form:radiobutton path="runDataRange.dataRangeType" label="${dateRange}" value="DATE_RANGE" /> <br>
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".startDate"> <dt:date path="runDataRange.localDateRange.startDate" /> </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".endDate"> <dt:date path="runDataRange.localDateRange.endDate" /> </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                    <br>
+                    <span class="fl">
+                        <form:radiobutton path="runDataRange.dataRangeType" label="${dateRange}" value="DATE_RANGE"/>&nbsp;
+                    </span>
+                    <dt:dateRange startPath="runDataRange.localDateRange.startDate" endPath="runDataRange.localDateRange.endDate" cssClass="js-focus"/>
                 </div>
-                
-                <div id="daysPreviousDiv" class="DAYS_PREVIOUS">
+
+                <div class="stacked js-dynamic clearfix">
                     <cti:msg2 key=".previousDays" var="daysPrevious"  />
-                    <form:radiobutton path="runDataRange.dataRangeType" label="${daysPrevious}" value="DAYS_PREVIOUS" /> <br>
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".daysPrevious"> <form:input  path="runDataRange.daysPrevious"/> </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                   <br>
+                    <form:radiobutton path="runDataRange.dataRangeType" label="${daysPrevious}" value="DAYS_PREVIOUS"/>&nbsp;
+                    <form:input path="runDataRange.daysPrevious" size="4" maxlength="4"/>
                 </div>
-                
-                <div id="sinceLastChangeIdDiv" class="SINCE_LAST_CHANGE_ID">
-                    <cti:msg2 key=".sinceLastChange" var="sinceLastChange" />
-                    <form:radiobutton path="runDataRange.dataRangeType" label="${sinceLastChange}" value="SINCE_LAST_CHANGE_ID" /> <br>
+
+                 <div class="stacked js-dynamic">
+                    <hr>
+                    <label class="form-control dib fl">
+                        <form:checkbox path="runDataRange.timeSelected" cssClass="js-time-check"/>
+                        <i:inline key=".time"/>&nbsp;<cti:msg2 key=".sinceLastChange" var="sinceLastChange"/>
+                    </label>
+                    <dt:time path="runDataRange.time" cssClass="js-time"/>
                 </div>
              </div>
          </form:form>
     </div>
-    
-    <div id="scheduleDialog" class="dn">
+
+    <div id="schedule-dialog" class="dn">
          <cti:flashScopeMessages />
          <form:form id="scheduleForm" commandName="archivedValuesExporter" >
             <cti:csrfToken/>
-             <div id="scheduleInputsDiv">
-                <div id="endDateDiv" class="END_DATE">
-                    <cti:msg2 key=".endDate" var="endDate" />
-                    <form:radiobutton path="scheduleDataRange.dataRangeType" label="${endDate}" value="END_DATE" /> <br>
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".endDate"> <dt:date path="scheduleDataRange.endDate" /> </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                    <br>
+             <div class="js-schedule-inputs">
+                <div class="stacked js-fixed">
+                    <cti:msg2 key=".daysOffset" var="daysOffset"/>
+                    <form:radiobutton path="scheduleDataRange.dataRangeType" label="${daysOffset}" value="DAYS_OFFSET"/>&nbsp;
+                    <form:input path="scheduleDataRange.daysOffset" maxlength="4" size="4" cssClass="js-focus"/>
                 </div>
-                
-                <div id="dateRangeDiv" class="DATE_RANGE">
-                    <cti:msg2 key=".dateRange" var="dateRange"/>
-                    <form:radiobutton path="scheduleDataRange.dataRangeType" label="${dateRange}" value="DATE_RANGE" /> <br>
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".startDate"> <dt:date path="scheduleDataRange.localDateRange.startDate" /> </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".endDate"> <dt:date path="scheduleDataRange.localDateRange.endDate" /> </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                    <br>
+
+                <div class="stacked js-dynamic">
+                    <cti:msg2 key=".previousDays" var="daysPrevious"/>
+                    <form:radiobutton path="scheduleDataRange.dataRangeType" label="${daysPrevious}" value="DAYS_PREVIOUS"/>&nbsp;
+                    <form:input path="scheduleDataRange.daysPrevious" maxlength="4" size="4" cssClass="js-focus"/>
                 </div>
-                
-                <div id="daysPreviousDiv" class="DAYS_PREVIOUS">
-                    <cti:msg2 key=".previousDays" var="daysPrevious"  />
-                    <form:radiobutton path="scheduleDataRange.dataRangeType" label="${daysPrevious}" value="DAYS_PREVIOUS" /> <br>
-                    <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".daysPrevious"> <form:input  path="scheduleDataRange.daysPrevious"/> </tags:nameValue2>
-                    </tags:nameValueContainer2>
-                   <br>
+
+                <div class="stacked js-dynamic">
+                    <cti:msg2 key=".sinceLastChange" var="sinceLastChange"/>
+                    <form:radiobutton path="scheduleDataRange.dataRangeType" label="${sinceLastChange}" value="SINCE_LAST_CHANGE_ID"/>
                 </div>
-                
-                <div id="sinceLastChangeIdDiv" class="SINCE_LAST_CHANGE_ID">
-                    <cti:msg2 key=".sinceLastChange" var="sinceLastChange" />
-                    <form:radiobutton path="scheduleDataRange.dataRangeType" label="${sinceLastChange}" value="SINCE_LAST_CHANGE_ID" /> <br>
+
+                <div class="stacked js-dynamic">
+                    <hr>
+                    <label class="form-control dib fl">
+                        <form:checkbox path="scheduleDataRange.timeSelected" cssClass="js-time-check"/>
+                        <i:inline key=".time"/>&nbsp;<cti:msg2 key=".sinceLastChange" var="sinceLastChange"/>
+                    </label>
+                    <dt:time path="scheduleDataRange.time" cssClass="js-time"/>
                 </div>
              </div>
          </form:form>
     </div>
-    
+
     <cti:includeScript link="/JavaScript/yukon.data.exporter.js"/>
-    
+    <dt:pickerIncludes/>
 </cti:standardPage>

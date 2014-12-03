@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.archivedValueExporter.dao.ArchiveValuesExportFormatDao;
@@ -58,7 +59,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		
 		//If using SINCE_LAST_CHANGE_ID, update last id for this job
 		if(dataRange.getDataRangeType() == DataRangeType.SINCE_LAST_CHANGE_ID) {
-			scheduledFileExportDao.setRphIdForJob(this.getJob().getId(), dataRange.getChangeIdRange().getLastChangeId());
+			scheduledFileExportDao.setRphIdForJob(getJob().getId(), dataRange.getChangeIdRange().getLastChangeId());
 		}
 		
 		// Create and Write to the archive file
@@ -76,7 +77,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		
 		// Create a new History entry record
 	      ExportHistoryEntry historyEntry = createExportHistoryEntry(FileExportType.ARCHIVED_DATA_EXPORT, 
-              archiveFile, exportFile, this.getJob().getJobGroupId());
+              archiveFile, exportFile, getJob().getJobGroupId());
 
 		//Send notification emails
         prepareAndSendNotificationEmails(historyEntry);
@@ -97,7 +98,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		if(dataRange.getDataRangeType() == DataRangeType.END_DATE) {
 			dataRange.setEndDate(LocalDate.now());
 		} else if(dataRange.getDataRangeType() == DataRangeType.SINCE_LAST_CHANGE_ID) {
-			long firstChangeId = scheduledFileExportDao.getLastRphIdByJobId(this.getJob().getId());
+			long firstChangeId = scheduledFileExportDao.getLastRphIdByJobId(getJob().getId());
 			long lastChangeId = rawPointHistoryDao.getMaxChangeId();
 			ChangeIdRange changeIdRange = new ChangeIdRange();
 			changeIdRange.setFirstChangeId(firstChangeId);
@@ -206,4 +207,28 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 	public DataRange getDataRange() {
 		return dataRange;
 	}
+	
+    public LocalTime getDataRangeTime() {
+        return dataRange.getTime();
+    }
+
+    public void setDataRangeTime(LocalTime time) {
+        dataRange.setTime(time);
+    }
+    
+    public int getDataRangeDaysOffset() {
+        return dataRange.getDaysOffset();
+    }
+
+    public void setDataRangeDaysOffset(int daysOffset) {
+        dataRange.setDaysOffset(daysOffset);
+    }
+    
+    public boolean getDataRangeIsTimeSelected() {
+        return dataRange.isTimeSelected();
+    }
+
+    public void setDataRangeIsTimeSelected(boolean timeSelected) {
+        dataRange.setTimeSelected(timeSelected);
+    }
 }

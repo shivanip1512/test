@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -171,7 +172,6 @@ public class DataExporterScheduleController {
         // Build parameters
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         DataRange dataRange = getDataRangeFromRequest(request);
-
         Set<Attribute> attributeSet = Sets.newHashSet();
         if (attributes != null) {
             for (String attribute : attributes) {
@@ -238,7 +238,16 @@ public class DataExporterScheduleController {
         
         String dataRangeTypeString = ServletRequestUtils.getStringParameter(request, "dataRange.dataRangeType");
         dataRange.setDataRangeType(DataRangeType.valueOf(dataRangeTypeString));
-
+        boolean timeSelected = ServletRequestUtils.getBooleanParameter(request, "dataRange.timeSelected");
+        dataRange.setTimeSelected(timeSelected);
+        if (timeSelected) {
+            String time = ServletRequestUtils.getStringParameter(request, "dataRange.time");
+            LocalTime localTime = LocalTime.parse(time);
+            dataRange.setTime(localTime);
+        } else {
+            dataRange.setTime(null);
+        }
+        
         if (dataRange.getDataRangeType() == DataRangeType.DATE_RANGE) {
             LocalDateRange localDateRange = new LocalDateRange();
             LocalDate startDate = LocalDate.parse(ServletRequestUtils.getStringParameter(request, "dataRange.dateRange.startDate"));
@@ -253,6 +262,9 @@ public class DataExporterScheduleController {
             // don't worry about this, task will set it when run
         } else if (dataRange.getDataRangeType() == DataRangeType.SINCE_LAST_CHANGE_ID) {
             // don't worry about this, task will set it when run
+        } else if (dataRange.getDataRangeType() == DataRangeType.DAYS_OFFSET) {
+            int daysOffset = ServletRequestUtils.getIntParameter(request, "dataRange.daysOffset");
+            dataRange.setDaysOffset(daysOffset);
         }
         
         return dataRange;
@@ -270,17 +282,18 @@ public class DataExporterScheduleController {
         binder.registerCustomEditor(DataRangeType.class, new EnumPropertyEditor<>(DataRangeType.class));
 
         PropertyEditor localDatePropertyEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
+        PropertyEditor localTimeEditor = datePropertyEditorFactory.getLocalTimePropertyEditor(DateFormatEnum.TIME24H, userContext);
         binder.registerCustomEditor(LocalDate.class, "runDataRange.endDate", localDatePropertyEditor);
         binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.endDate", localDatePropertyEditor);
+        binder.registerCustomEditor(LocalTime.class, "runDataRange.time", localTimeEditor);
 
-        PropertyEditor dayStartDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
-        PropertyEditor dayEndDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
 
-        binder.registerCustomEditor(LocalDate.class, "runDataRange.localDateRange.startDate", dayStartDateEditor);
-        binder.registerCustomEditor(LocalDate.class, "runDataRange.localDateRange.endDate", dayEndDateEditor);
+        binder.registerCustomEditor(LocalDate.class, "runDataRange.localDateRange.startDate", localDatePropertyEditor);
+        binder.registerCustomEditor(LocalDate.class, "runDataRange.localDateRange.endDate", localDatePropertyEditor);
 
-        binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.localDateRange.startDate", dayStartDateEditor);
-        binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.localDateRange.endDate", dayEndDateEditor);
+        binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.localDateRange.startDate", localDatePropertyEditor);
+        binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.localDateRange.endDate", localDatePropertyEditor);
+        binder.registerCustomEditor(LocalTime.class, "scheduleDataRange.time", localTimeEditor);
     }
 
 }

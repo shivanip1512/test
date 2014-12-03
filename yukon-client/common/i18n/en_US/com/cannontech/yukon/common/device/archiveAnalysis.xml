@@ -138,6 +138,9 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dateRange">Date Range</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.previousDays">Previous Days</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.sinceLastChange">Since Last Run</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.time">Include Exact Time Only</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.readingsAt">readings at</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.daysOffset">Days Offset</entry>
 
     <!-- exporter.jsp -->
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.saveFormat.label">Save Format</entry>
@@ -355,6 +358,7 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataRangeType.DATE_RANGE">Date Range</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataRangeType.DAYS_PREVIOUS">Days Previous</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataRangeType.SINCE_LAST_CHANGE_ID">Since Last Run</entry>
+    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.dataRangeType.DAYS_OFFSET">Days Offset</entry>
 
     <!-- preview  -->
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.previewUOMValue">kWh</entry>

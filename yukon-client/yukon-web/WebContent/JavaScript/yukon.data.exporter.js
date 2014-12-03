@@ -14,27 +14,27 @@ yukon.dataExporter = (function () {
     
 	/** Displays the dynamic attributes. */
     _showAttributeRow = function() {
-        if ($('#archivedValuesExportFormatType').val() == 'DYNAMIC_ATTRIBUTE') {
-            $('#attributeRow').show();
+        if ($('#format-type').val() == 'DYNAMIC_ATTRIBUTE') {
+            $('#attributeRow').removeClass('dn');
         } else {
-            $('#attributeRow').hide();
+            $('#attributeRow').addClass('dn');
         }
     },
     
     /** Exports the format. */
     _runOkPressed = function() {
-        $('#runDialog').dialog('close');
-        $('#runInputsDiv').clone().appendTo($('#exporterForm'));
+        $('#run-dialog').dialog('close');
+        $('.js-run-inputs').clone().appendTo('#exporter-form');
         _submitForm('generateReport');
-        $('#exporterForm #runInputsDiv').remove();
+        $('#exporter-form').find('.js-run-inputs').remove();
     },
     
     /** Opens the schedule details form. */
     _scheduleOkPressed = function() {
-        $('#scheduleDialog').dialog('close');
-        $('#scheduleInputsDiv').clone().appendTo($('#exporterForm'));
+        $('#schedule-dialog').dialog('close');
+        $('.js-schedule-inputs').clone().appendTo('#exporter-form');
         _submitForm('scheduleReport');
-        $('#exporterForm #scheduleInputsDiv').remove();
+        $('#exporter-form').find('.js-schedule-inputs').remove();
     },
     
     /** Handles the OK click of Export/Schedule dialog.
@@ -42,31 +42,36 @@ yukon.dataExporter = (function () {
      * @param {string} titleMsg - Title of dialog.
      * @param {string} okFunction - Function name that needs to be invoked on OK button click.
      **/
-    _createOkCancelDialog = function(dialogIdentifier, titleMsg, okFunction) {
-        var buttons = [];
-        buttons.push({'text' : _config.text.ok, 'class' : 'primary', 'click' : okFunction });
+    _createOkCancelDialog = function(dialog, titleMsg, okFunction) {
+        var dialog = $(dialog),
+            buttons = [];
+        
         buttons.push({'text' : _config.text.cancel, 'click' : function() { $(this).dialog('close'); }});
+        buttons.push({'text' : _config.text.ok, 'class' : 'primary', 'click' : okFunction });
         var dialogOpts = {
                   'title' : titleMsg,
-                  'width' : 'auto',
+                  'width' : 450,
                   'height' : 'auto',
                   'modal' : true,
                   'buttons' : buttons };
-        if ($('#archivedValuesExportFormatType').val() == 'FIXED_ATTRIBUTE' && titleMsg == _config.text.schedule) {
-            //format=fixed and scheduling, no further user feedback required
-            //DataRangeType.END_DATE is the only option
-            $(dialogIdentifier).dialog(dialogOpts);
-            okFunction();
+        if ($('#format-type').val() == 'FIXED_ATTRIBUTE') {
+            dialog.find('.js-dynamic').addClass('dn');
+            dialog.find('.js-fixed').removeClass('dn');
+            
         } else {
-            $(dialogIdentifier).dialog(dialogOpts);
+            dialog.find('.js-fixed').addClass('dn');
+            dialog.find('.js-dynamic').removeClass('dn');
         }
+        dialog.dialog(dialogOpts);
+        dialog.find('input[type="radio"]:visible').first().prop('checked', true);
+        dialog.find('.js-focus:visible').first().focus();
     },
     
     /** Submits the form.
      *  @param {Object} action - action url
      */
     _submitForm = function(action) {
-        var exporterForm = $('#exporterForm');
+        var exporterForm = $('#exporter-form');
         exporterForm.attr('action', action);
         exporterForm[0].submit();
     },
@@ -86,13 +91,13 @@ yukon.dataExporter = (function () {
             var dataRangeTypeInput = dataRangeTypeDiv + ' [name $= \'DataRange.dataRangeType\'] ';
 
             if (archivedValuesExporterFormat == 'FIXED_ATTRIBUTE' && $.inArray(dataRangeType, fixedDataRangeTypes) != -1 ) {
-                $(dataRangeTypeDiv).show();
+                $(dataRangeTypeDiv).removeClass('dn');
                 $(dataRangeTypeInput).click();
             } else if (archivedValuesExporterFormat == 'DYNAMIC_ATTRIBUTE' && $.inArray(dataRangeType, dynamicDataRangeTypes) != -1) {
-                $(dataRangeTypeDiv).show();
+                $(dataRangeTypeDiv).removeClass('dn');
                 $(dataRangeTypeInput).click();
             } else {
-                $(dataRangeTypeDiv).hide();
+                $(dataRangeTypeDiv).addClass('dn');
             }
         }
     };
@@ -114,36 +119,31 @@ yukon.dataExporter = (function () {
             
             _showAttributeRow();
             
-            _toggleForm('#runDialog', $('#archivedValuesExportFormatType').val(), _config.dataRangeTypes, _config.fixedRunDataRangeTypes, _config.dynamicRunDataRangeTypes);
-            _toggleForm('#scheduleDialog', $('#archivedValuesExportFormatType').val(), _config.dataRangeTypes, _config.fixedScheduleDataRangeTypes, _config.dynamicScheduleDataRangeTypes);
+            _toggleForm('#run-dialog', $('#format-type').val(), _config.dataRangeTypes, _config.fixedRunDataRangeTypes, _config.dynamicRunDataRangeTypes);
+            _toggleForm('#schedule-dialog', $('#format-type').val(), _config.dataRangeTypes, _config.fixedScheduleDataRangeTypes, _config.dynamicScheduleDataRangeTypes);
             
-            $('#runButton').click(function(event) {
-                _createOkCancelDialog('#runDialog', _config.text.run, function() {
-                    _runOkPressed();
-                });
+            $('#run-btn').click(function(event) {
+                _createOkCancelDialog('#run-dialog', _config.text.run, _runOkPressed);
             });
-            $('#scheduleButton').click(function(event) {
-                _createOkCancelDialog('#scheduleDialog', _config.text.schedule, function() {
-                    _scheduleOkPressed();
-                });
+            $('#schedule-btn').click(function(event) {
+                _createOkCancelDialog('#schedule-dialog', _config.text.schedule, _scheduleOkPressed);
             });
             
             $('#b-edit').click(function(ev) {
-                var formatId = $('#formatId').val();
-                window.location.href = 'format/' + formatId;
+                window.location.href = 'format/' + $('#format-id').val();
             });
             $('#b-copy').click(function(ev) {
-                var formatId = $('#formatId').val();
-                window.location.href = 'format/' + formatId + '/copy';
+                window.location.href = 'format/' + $('#format-id').val() + '/copy';
             });
             $('#b-create').click(function(ev) {
                 
-                var buttons = [{text: _config.text.cancel, click: function() { $(this).dialog('close'); }},
-                               {text: _config.text.create, 
-                                click: function() {
-                                    window.location.href = 'format/create?formatType=' + $('input[name=newFormatType]:checked').val();
-                                },
-                                'class': 'primary action'}];
+                var buttons = [{text: _config.text.create, 
+                                    click: function() {
+                                        window.location.href = 'format/create?formatType=' + $('input[name=newFormatType]:checked').val();
+                                    },
+                                    'class': 'primary action'},
+                                {text: _config.text.cancel, click: function() { $(this).dialog('close'); }}
+                               ];
                 
                 $('#create-format-dialog').dialog({
                     'buttons': buttons, 
@@ -156,9 +156,17 @@ yukon.dataExporter = (function () {
                 _submitForm('selectDevices');
             });
             
-            $('#formatId').change(function(event) {
-                _toggleForm('#runDialog', $('#archivedValuesExportFormatType').val(), _config.dataRangeTypes, _config.fixedRunDataRangeTypes, _config.dynamicRunDataRangeTypes);
-                _toggleForm('#scheduleDialog', $('#archivedValuesExportFormatType').val(), _config.dataRangeTypes, _config.fixedScheduleDataRangeTypes, _config.dynamicScheduleDataRangeTypes);
+            $('.js-time-check').each( function () {
+                $(this).closest('.js-dynamic,.js-fixed').find('.js-time').prop('disabled', ! $(this).is(':checked'));
+            });
+            
+            $('.js-time-check').click(function () {
+                $(this).closest('.js-dynamic,.js-fixed').find('.js-time').prop('disabled', ! $(this).is(':checked'));
+            });
+            
+            $('#format-id').change(function(event) {
+                _toggleForm('#run-dialog', $('#format-type').val(), _config.dataRangeTypes, _config.fixedRunDataRangeTypes, _config.dynamicRunDataRangeTypes);
+                _toggleForm('#schedule-dialog', $('#format-type').val(), _config.dataRangeTypes, _config.fixedScheduleDataRangeTypes, _config.dynamicScheduleDataRangeTypes);
                 _showAttributeRow();
                 _submitForm('view');
             });

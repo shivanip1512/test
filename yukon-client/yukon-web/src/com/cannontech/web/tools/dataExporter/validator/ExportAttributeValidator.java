@@ -18,7 +18,7 @@ public class ExportAttributeValidator extends SimpleValidator<ExportAttribute> {
     protected void doValidation(ExportAttribute target, Errors errors) {
         
         if (target.getDaysPrevious() == null || target.getDaysPrevious() < 1) {
-            errors.rejectValue("exportAttribute.daysPrevious", invalidDaysPreviousMsgKey);
+            errors.rejectValue("daysPrevious", invalidDaysPreviousMsgKey);
         }
     }
 }

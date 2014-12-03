@@ -7,6 +7,7 @@ public enum DataRangeType implements DisplayableEnum {
     DAYS_PREVIOUS,
     END_DATE,
     SINCE_LAST_CHANGE_ID,
+    DAYS_OFFSET
     ;
 
     private static final String keyPrefix = "yukon.web.modules.tools.bulk.archivedValueExporter.dataRangeType.";

@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -144,7 +145,8 @@ public class DataExporterHomeController {
         }
 
         scheduledJobsTable(model);
-
+        model.addAttribute("now", Instant.now());
+        
         return "data-exporter/home.jsp";
     }
     
@@ -248,17 +250,19 @@ public class DataExporterHomeController {
         binder.registerCustomEditor(DataRangeType.class, new EnumPropertyEditor<>(DataRangeType.class));
         
         PropertyEditor localDatePropertyEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
+        PropertyEditor localTimeEditor = datePropertyEditorFactory.getLocalTimePropertyEditor(DateFormatEnum.TIME24H, userContext);
+
         binder.registerCustomEditor(LocalDate.class, "runDataRange.endDate", localDatePropertyEditor);
         binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.endDate", localDatePropertyEditor);
         
-        PropertyEditor dayStartDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
-        PropertyEditor dayEndDateEditor = datePropertyEditorFactory.getLocalDatePropertyEditor(DateFormatEnum.DATE, userContext);
+        binder.registerCustomEditor(LocalDate.class, "runDataRange.localDateRange.startDate", localDatePropertyEditor);
+        binder.registerCustomEditor(LocalDate.class, "runDataRange.localDateRange.endDate", localDatePropertyEditor);
 
-        binder.registerCustomEditor(LocalDate.class, "runDataRange.localDateRange.startDate", dayStartDateEditor);
-        binder.registerCustomEditor(LocalDate.class, "runDataRange.localDateRange.endDate", dayEndDateEditor);
+        binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.localDateRange.startDate", localDatePropertyEditor);
+        binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.localDateRange.endDate", localDatePropertyEditor);
+        binder.registerCustomEditor(LocalTime.class, "scheduleDataRange.time", localTimeEditor);
+        binder.registerCustomEditor(LocalTime.class, "runDataRange.time", localTimeEditor);
 
-        binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.localDateRange.startDate", dayStartDateEditor);
-        binder.registerCustomEditor(LocalDate.class, "scheduleDataRange.localDateRange.endDate", dayEndDateEditor);
     }
     
 }
