@@ -42,7 +42,6 @@ import com.cannontech.multispeak.data.MspScadaAnalogReturnList;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.ScadaAnalog;
 import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -294,35 +293,22 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
     @Override
     public MspScadaAnalogReturnList retrieveLatestScadaAnalogs(LiteYukonUser user) {
 
-        List<LiteYukonPAObject> programs = getAuthorizedProgramsList(user);
-        
         final Date timerStart = new Date();
-        
-        EnumMap<BuiltInAttribute, Map<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
-        int estimatedSize = 0;
 
-        BiMap<PaoIdentifier, LitePoint> deviceToPoint = HashBiMap.create();
+        List<LiteYukonPAObject> programs = getAuthorizedProgramsList(user);
         EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.CONNECTED_LOAD, 
                                                                 BuiltInAttribute.DIVERSIFIED_LOAD,
                                                                 BuiltInAttribute.MAX_LOAD_REDUCTION,
                                                                 BuiltInAttribute.AVAILABLE_LOAD_REDUCTION);
-        // load up results for each attribute
-        for (BuiltInAttribute attribute : attributesToLoad) {
-            Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(programs, attribute, false, null);
-            resultsPerAttribute.put(attribute, resultsForAttribute);
-            estimatedSize += resultsForAttribute.size();
-            deviceToPoint.putAll(attributeService.getPoints(programs, attribute));
-        }
+        List<ScadaAnalog> scadaAnalogs = Lists.newArrayListWithExpectedSize(4*programs.size());
 
-        List<ScadaAnalog> scadaAnalogs = Lists.newArrayListWithExpectedSize(estimatedSize);
-        
         // loop over programs, results will be returned in whatever order getProgramList returns the programs in
-        for (LiteYukonPAObject program : programs) {
-            for (BuiltInAttribute attribute : attributesToLoad) {
-                
-                LitePoint litePoint = deviceToPoint.get(program.getPaoIdentifier());
-                PointValueQualityHolder pointValueQualityHolder = 
-                    resultsPerAttribute.get(attribute).remove(program.getPaoIdentifier()); // remove to keep our memory consumption somewhat in check
+        for (BuiltInAttribute attribute : attributesToLoad) {
+            BiMap<PaoIdentifier, LitePoint> programToPoint = attributeService.getPoints(programs, attribute);
+            Map<PaoIdentifier, PointValueQualityHolder> resultsForAttribute = rawPointHistoryDao.getSingleAttributeData(programs, attribute, false, null);
+            for (LiteYukonPAObject program : programs) {
+                LitePoint litePoint = programToPoint.get(program.getPaoIdentifier());
+                PointValueQualityHolder pointValueQualityHolder = resultsForAttribute.remove(program.getPaoIdentifier());
                 
                 if (pointValueQualityHolder != null) {
                     ScadaAnalog scadaAnalog = scadaAnalogProcessingServiceImpl.createScadaAnalog(program, litePoint, pointValueQualityHolder);
