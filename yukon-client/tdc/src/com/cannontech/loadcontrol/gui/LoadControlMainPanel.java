@@ -8,13 +8,10 @@ import javax.swing.JOptionPane;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.panel.CompositeJSplitPane;
 import com.cannontech.common.gui.panel.ManualChangeJPanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.debug.gui.ObjectInfoDialog;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
@@ -42,7 +39,6 @@ import com.cannontech.loadcontrol.messages.LMManualControlRequest;
 import com.cannontech.loadcontrol.popup.ControlAreaPopUpMenu;
 import com.cannontech.loadcontrol.popup.GroupPopUpMenu;
 import com.cannontech.loadcontrol.popup.ProgramPopUpMenu;
-import com.cannontech.message.util.ClientConnection;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.tdc.TDCMainPanel;
 import com.cannontech.tdc.data.Display;
@@ -53,8 +49,6 @@ public class LoadControlMainPanel extends javax.swing.JPanel implements ButtonBa
 		javax.swing.event.ListSelectionListener, javax.swing.event.PopupMenuListener, javax.swing.event.TableModelListener,
 		IControlAreaListener 
 {
-	//an int read in as a CParm used to turn on/off features
-	private static int userRightsInt = 0;
 	
 	//All the possible TableModels the BottomTable can have
 	private GroupTableModel groupTableModel = null;
@@ -983,8 +977,6 @@ public javax.swing.JTable[] getJTables()
    
 public javax.swing.JPanel getMainJPanel()
 {
-	initClientConnection();
-
 	return this;
 }
 /**
@@ -1113,15 +1105,6 @@ private void handleException(java.lang.Throwable exception)
 	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
 
 	getMessagePanel().messageEvent( new com.cannontech.common.util.MessageEvent(this, "The following exception occurred : " + exception.getMessage(), com.cannontech.common.util.MessageEvent.ERROR_MESSAGE) );
-}
-/**
- * Insert the method's description here.
- * Creation date: (8/7/00 4:11:33 PM)
- */
-private void initClientConnection()
-{
-	//hex value representing the privileges of the user on this machine
-        userRightsInt = 0;
 }
 /**
  * Initializes connections

@@ -84,7 +84,6 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
 	protected transient TDCMainFrameSpawnListener spawnTDCEventMulticaster = null;
 	private javax.swing.ButtonGroup viewTypeButtonGroup = new javax.swing.ButtonGroup();
 	private javax.swing.JSeparator separatorViews = null;
-	private static String noCreationAllowed = "cant_create";
 	private TDCClient tdcClient = null;
 	public static MessageBoxFrame messageLog = MessageBoxFrame.getInstance();
 	public static String startingDisplayName = null;
@@ -1872,14 +1871,6 @@ private javax.swing.JMenuItem getJMenuItemCreate() {
 			ivjJMenuItemCreate.setForeground(java.awt.SystemColor.controlText);
 			ivjJMenuItemCreate.setFont(new java.awt.Font("dialog", 0, 12));
 			ivjJMenuItemCreate.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_N, java.awt.Event.CTRL_MASK));
-			// user code begin {1}
-
-			// if the config file is not set for creation of displays,
-			// then disable the create menu item
-			if( !noCreationAllowed.equalsIgnoreCase( LUDICROUS_SPEED ) )
-				ivjJMenuItemCreate.setEnabled( false );
-				
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
 			// user code end
