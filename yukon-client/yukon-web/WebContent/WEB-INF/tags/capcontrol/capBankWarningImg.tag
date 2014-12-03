@@ -3,10 +3,10 @@
 
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
-<span class="dn js-tooltip">
+<span id="bank-warning-msg-${paoId}" class="dn">
     <cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG_MESSAGE"/> 
 </span>
-<span class="dn js-warning-image js-has-tooltip" data-pao-id="${paoId}">
+<span class="dn js-warning-image" data-pao-id="${paoId}" data-tooltip="#bank-warning-msg-${paoId}">
     <cti:icon icon="icon-error"/>
 </span>
 

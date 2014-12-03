@@ -8,10 +8,10 @@
 
 <c:if test="${not alertBox}">
 
-    <span class="js-tooltip" id="warningPopup_${paoId}" style="display: none;">
+    <span id="cc-warning-msg-${paoId}" class="dn">
         <cti:capControlValue paoId="${paoId}" type="${type}" format="WARNING_FLAG_MESSAGE"/> 
     </span>
-    <span data-pao-id="${paoId}" class="dn js-has-tooltip js-warning-image">
+    <span data-pao-id="${paoId}" class="dn js-warning-image" data-tooltip="#cc-warning-msg-${paoId}">
         <cti:icon classes="row-icon" icon="icon-error"/>
     </span>
 </c:if>

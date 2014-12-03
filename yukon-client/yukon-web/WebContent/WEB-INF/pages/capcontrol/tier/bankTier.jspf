@@ -19,13 +19,13 @@
                 <th><i:inline key=".cbcName"/></th>
                 <th class="wsnw">
                     <i:inline key=".cbName"/>
-                    <div class="dn js-tooltip"><cti:msg2 key=".cbOrderInfo.tooltip"/></div>
-                    <cti:icon icon="icon-information" classes="M0 vatt fn js-has-tooltip"/>
+                    <div id="bank-order-info" class="dn"><cti:msg2 key=".cbOrderInfo.tooltip"/></div>
+                    <cti:icon icon="icon-information" classes="M0 vatt fn" data-tooltip="#bank-order-info"/>
                 </th>
                 <th class="wsnw">
                     <i:inline key=".state"/>
-                    <div class="dn js-tooltip"><cti:msg2 key=".stateInfoToolTip"/></div>
-                    <cti:icon nameKey="stateInfo" icon="icon-information" classes="M0 vatt fn js-has-tooltip"/>
+                    <div id="bank-state-info" class="dn"><cti:msg2 key=".stateInfoToolTip"/></div>
+                    <cti:icon nameKey="stateInfo" icon="icon-information" classes="M0 vatt fn" data-tooltip="#bank-state-info"/>
                 </th>
                 <th><i:inline key=".timestamp"/></th>
                 <th class="tar"><i:inline key=".bankSize"/></th>
@@ -91,7 +91,7 @@
 
                 <%-- Timestamp --%>
                 <td>
-                    <div class="js-tooltip dn">
+                    <div id="bank-timestamp-${bankId}" class="dn">
                         <table class='compact-results-table'>
                             <tr>
                                 <th><i:inline key=".kvar"/></th>
@@ -123,7 +123,7 @@
                             </tr>
                         </table>
                     </div>
-                    <span class="js-has-tooltip">
+                    <span data-tooltip="#bank-timestamp-${bankId}">
                         <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DATE_TIME"/> 
                     </span>
                 </td>

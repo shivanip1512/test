@@ -3,11 +3,11 @@
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<span class="dn js-tooltip">
+<span id="dual-bus-msg-${paoId}" class="dn">
     <cti:capControlValue paoId="${paoId}" type="${type}" format="DUALBUS_MESSAGE"/>
 </span>
 
-<span class="dn js-dual-bus js-has-tooltip" data-pao-id="${paoId}">
+<span class="dn js-dual-bus" data-pao-id="${paoId}" data-tooltip="#dual-bus-msg-${paoId}">
     <cti:icon icon="icon-bullet-orange"/>
 </span>
 

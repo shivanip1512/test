@@ -110,12 +110,12 @@
                                             ${fn:escapeXml(catType)}
                                         </td>
                                         <td>
-                                            <div class="js-tooltip dn">
+                                            <div id="category-assignments-${category.categoryId}" class="dn">
                                                 <c:forEach var="configName" items="${category.configNames}">
                                                     <div class="detail">${fn:escapeXml(configName)}</div>
                                                 </c:forEach>
                                             </div>
-                                            <div class="js-has-tooltip">
+                                            <div data-tooltip="#category-assignments-${category.categoryId}">
                                                 ${fn:length(category.configNames)}
                                             </div>
                                         </td>

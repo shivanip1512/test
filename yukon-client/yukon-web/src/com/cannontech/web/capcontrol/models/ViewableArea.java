@@ -21,6 +21,10 @@ public class ViewableArea {
 		return subStations;
 	}
 
+    public int getStationCount() {
+        return subStations.size();
+    }
+
 	public void setSubStations(List<ViewableSubStation> subStations) {
 		this.subStations = subStations;
 	}

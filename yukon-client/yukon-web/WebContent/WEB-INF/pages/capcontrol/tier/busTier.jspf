@@ -83,14 +83,12 @@
                     <c:set var="isPowerFactorControlled" value="${viewableSubBus.subBus.powerFactorControlled}"/>
                     <c:choose>
                         <c:when test="${viewableSubBus.subBus.controlMethod.busControlled}">
-                            <c:set var="hasTooltip" value=""/>
                             <c:if test="${viewableSubBus.showTargetTooltip}">
-                                <c:set var="hasTooltip" value="js-has-tooltip"/>
-                                <div class="js-tooltip dn">
+                                <div id="bus-target-msg-${subbusId}">
                                     <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_MESSAGE"/>
                                 </div>
                             </c:if>
-                            <span class="${hasTooltip}">
+                            <span data-tooltip="#bus-target-msg-${subbusId}">
                                 <c:choose>
                                     <c:when test="${viewableSubBus.ivvcControlled}">
                                         <span class="ivvcTargetLabel"><i:inline key=".ivvcUpper"/></span>
@@ -115,15 +113,13 @@
                 
                 <%-- kVAR Load / Est. --%>
                 <td>
-                    <c:set var="hasTooltip" value=""/>
                     <c:if test="${viewableSubBus.subBus.usePhaseData}">
-                        <c:set var="hasTooltip" value="js-has-tooltip"/>
-                        <div class="js-tooltip dn" id="subVarLoadPopup_${subbusId}" > 
+                        <div id="bus-kvar-msg-${subbusId}" class="dn">
                             <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD_MESSAGE"/>
                         </div>
                     </c:if>
 
-                    <span class="${hasTooltip}">
+                    <span data-tooltip="#bus-kvar-msg-${subbusId}">
                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="KVAR_LOAD"/>
                         <cti:classUpdater type="SUBBUS" identifier="${subbusId}/KVAR_LOAD_QUALITY">
                             <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>

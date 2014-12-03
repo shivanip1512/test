@@ -379,19 +379,13 @@ yukon.ui = (function () {
             $('.js-init-tabs').tabs().show();
                 
             /** Add fancy tooltip support (tipsy)
-             *  To give an item a custom tooltip, give it a class of 'js-has-tooltip'
-             *  and precede it, in the markup, with an item of class js-tooltip that
-             *  has the content in HTML. The code below searches backward in the
-             *  document for the element with class js-tooltip
-             * 
-             *  tipsy initialization:
-             *    attaches tooltip handlers to all elements with a class of js-has-tooltip
-             *    or a title attribute
+             *  To give an item a custom tooltip, give it an attribute 'data-tooltip'
+             *  with a value that is a selector for an element that has the content in HTML.
              */
             // some pages do not include the tipsy libary
             if ('undefined' !== typeof $.fn.tipsy) {
                 // use browser-native tooltips for all but the fancy HTML ones
-                $('.js-has-tooltip').each(function (index, element) {
+                $('[data-tooltip]').each(function (index, element) {
                     $(element).tipsy({
                         html: true,
                         // some tooltips actually are around 175 px in height
@@ -399,20 +393,28 @@ yukon.ui = (function () {
                         opacity: 1.0,
                         title: function () {
                             var elem = $(this),
-                            tip,
-                            toolTipped = elem.closest('.js-has-tooltip');
-                            if ( 0 < toolTipped.length ) {
-                                tip = toolTipped.prevAll('.js-tooltip').first();
-                                if (0 < tip.length) { // if a .js-tooltip was found...
-                                    // voodoo so inner div has full height of its container
-                                    setTimeout(function () { $('.tipsy-inner').addClass('clearfix'); }, 100);
-                                    return tip.html();
-                                }
+                            toolTipped = elem.closest('[data-tooltip]'),
+                            tip = $(toolTipped.data('tooltip'));
+                            if (toolTipped.length && tip.length) {
+                                // voodoo so inner div has full height of its container
+                                setTimeout(function () { $('.tipsy-inner').addClass('clearfix'); }, 100);
+                                return tip.html();
                             }
+                            return '';
                         },
-                        delayIn: 300,
+                        delayIn: 150,
                         fade: true
                     });
+                });
+
+                /**
+                 * To have an element's tooltip display when the row is hovered, the row must have attribute data-has-row-tooltip
+                 * and the element that would normally have the tooltip must have data-row-tooltip
+                 */
+                $('[data-has-row-tooltip]').hover( function () {
+                    $(this).find('[data-row-tooltip]').tipsy('show');
+                }, function () {
+                    $(this).find('[data-row-tooltip]').tipsy('hide');
                 });
             }
                 

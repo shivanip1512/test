@@ -68,14 +68,12 @@
                     <c:set var="isPowerFactorControlled" value="${viewfeeder.feeder.powerFactorControlled}"/>
                     <c:choose>
                         <c:when test="${viewfeeder.individualFeederControlled || viewfeeder.ivvcControlled}">
-                            <c:set var="hasTooltip" value=""/>
                             <c:if test="${viewfeeder.showTargetTooltip}">
-                                <c:set var="hasTooltip" value="js-has-tooltip"/>
-                                <div class="js-tooltip dn">
-                                    <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_MESSAGE"/>    
+                                <div id="feeder-target-msg-${feederId}" class="dn">
+                                    <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_MESSAGE"/>
                                 </div>
                             </c:if>
-                            <span class="${hasTooltip}">
+                            <span data-tooltip="#feeder-target-msg-${feederId}">
                                 <c:choose>
                                     <c:when test="${viewfeeder.ivvcControlled}">
                                         <span class="ivvcTargetLabel"><i:inline key=".ivvcUpper"/></span>
@@ -101,10 +99,10 @@
                 <td class="wsnw">
                     <c:choose>
                         <c:when test="${viewfeeder.feeder.usePhaseData}">
-                            <div class="js-tooltip dn">
+                            <div id="feeder-kvar-msg-${feederId}" class="dn">
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_MESSAGE"/> 
                             </div>
-                            <span class="js-has-tooltip">
+                            <span data-tooltip="#feeder-kvar-msg-${feederId}">
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD"/>
                                 <cti:classUpdater type="FEEDER" identifier="${feederId}/KVAR_LOAD_QUALITY">
                                     <cti:icon nameKey="questionableQuality" icon="icon-bullet-red" classes="thin fn M0"/>
