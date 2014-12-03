@@ -36,6 +36,7 @@ public abstract class DeviceGroupModelBase extends BareReportModelBase<DeviceGro
     
     protected abstract boolean isIncludeSubGroups();
     
+    @Override
     public void doLoadData() {
         
         Set<SimpleDevice> devicesToLoad;

@@ -19,8 +19,10 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.PaoLoadingService;
+import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -90,22 +92,23 @@ public class PaoLoadingServiceImpl implements PaoLoadingService {
     
     public static <T> Map<PaoIdentifier, T> loadDevices(Iterable<? extends YukonPao> paos, Iterable<PaoLoader<T>> loaders) {
         
-        Set<PaoIdentifier> allIdentifiers = Sets.newHashSet();
-        for (YukonPao pao : paos) {
-            allIdentifiers.add(pao.getPaoIdentifier());
-        }
-        int requestedDevices = allIdentifiers.size(); // count the "unloaded" because paos is an iterable
-        Map<PaoIdentifier, T> result = Maps.newHashMapWithExpectedSize(requestedDevices);
+        Set<PaoIdentifier> allIdentifiers = Sets.newHashSet(Iterables.transform(paos, YukonPao.TO_PAO_IDENTIFIER));
+
+        Map<PaoIdentifier, T> result = Maps.newHashMapWithExpectedSize(allIdentifiers.size());
         
         for (PaoLoader<T> loader : loaders) {
             Set<PaoIdentifier> unloadedDevices = Sets.difference(allIdentifiers, result.keySet());
-            if (unloadedDevices.isEmpty()) break;
+            if (unloadedDevices.isEmpty()) {
+                break;
+            }
             Map<PaoIdentifier, T> namesForYukonDevices = loader.getForPaos(unloadedDevices);
             result.putAll(namesForYukonDevices);
         }
         
-        if (!result.keySet().equals(allIdentifiers)) {
-            throw new RuntimeException("Unable to load some of the " + requestedDevices + " requested devices");
+        Set<PaoIdentifier> missingPaos = Sets.difference(allIdentifiers, result.keySet());
+        if (!missingPaos.isEmpty()) {
+            throw new RuntimeException("Unable to load " + missingPaos.size() +  " of the " + allIdentifiers.size() 
+                + " requested devices: " + Joiner.on(", ").join(missingPaos));
         }
         
         return result;

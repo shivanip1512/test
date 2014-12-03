@@ -12,6 +12,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.MutableDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.ObjectFormattingService;
+import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -57,6 +58,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
         sql.append("FROM YukonPaObject ypo");
         sql.append("WHERE ");
         sql.append(getChildWhereForBin(bin, "ypo.paobjectid"));
+        sql.append("AND Category").eq_k(PaoCategory.DEVICE);
         
         YukonDeviceRowMapper mapper = new YukonDeviceRowMapper();
         List<SimpleDevice> devices = jdbcTemplate.query(sql.getSql(), mapper, sql.getArguments());
@@ -73,6 +75,7 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
         List<T> allBins = getAllBins();
         
         List<DeviceGroup> result = new MappingList<T, DeviceGroup>(allBins, new ObjectMapper<T, DeviceGroup>() {
+            @Override
             public DeviceGroup map(T from) {
                 BinnedDeviceGroup binnedDeviceGroup = createGroupForBin(group,
                                                                         from);
