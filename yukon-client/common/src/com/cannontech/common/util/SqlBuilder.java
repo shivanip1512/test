@@ -98,6 +98,12 @@ public interface SqlBuilder {
      */
     public SqlBuilder gt_k(long constant);
     
+    /**Appends the constant to the current query as a string 
+     * rather than as a variable.Preferably use the gt/lte methods
+     * NOTE:Contact Stacey before using these methods  
+     * @param long
+     * @return
+     */
     public SqlBuilder lte_k(long constant);
     
     /**
