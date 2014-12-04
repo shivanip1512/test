@@ -620,6 +620,13 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+        <point name="Device Temperature">
+            <uom>&#176;C</uom>
+            <multiplier value="1"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+            </modifiers>
+        </point>
     </pointGroup>
 
     <pointGroup>
@@ -2526,6 +2533,21 @@
                 <modifier>Max</modifier>
                 <modifier>TOU Rate D</modifier>
             </modifiers>
+        </point>
+        <point name="Demand at Peak kVa Coincidental">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+            <baseUom>VA</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
+            </baseModifiers>
         </point>
     </pointGroup>
     

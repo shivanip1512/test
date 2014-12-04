@@ -51,6 +51,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_ANGLE_PHASE_B">Current Angle (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_ANGLE_PHASE_C">Current Angle (Phase C)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DEMAND">Demand</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DEMAND_PEAK_KVA_COIN">Demand at Peak kVa Coincidental</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DISCONNECT_STATUS">Disconnect Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.FAULT_STATUS">Fault Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.GENERAL_ALARM_FLAG">General Alarm Flag</entry>

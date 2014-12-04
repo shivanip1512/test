@@ -40,6 +40,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     CURRENT_ANGLE_PHASE_C("Current Angle (Phase C)"),
     CURRENT_WITHOUT_VOLTAGE_FLAG("Current Without Voltage"),
     DEMAND("Demand"),
+    DEMAND_PEAK_KVA_COIN("Demand at Peak kVa Coincidental"),
     DISCONNECT_STATUS("Disconnect Status"),
     FAULT_STATUS("Fault Status"),
     FORWARD_INDUCTIVE_KVARH("Forward Inductive kVArh"),
@@ -510,6 +511,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
         demandAttributes = ImmutableSet.of(
                 DEMAND,
+                DEMAND_PEAK_KVA_COIN,
                 IED_DEMAND_RESET_COUNT,
                 PEAK_DEMAND,
                 PEAK_DEMAND_FROZEN,

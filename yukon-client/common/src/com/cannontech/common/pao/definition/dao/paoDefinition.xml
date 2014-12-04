@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!-- RF Devices: highest Analog OFFSET=259 @ 2014-08-10 -->
+<!-- RF Devices: highest Analog OFFSET=260 @ 2014-12-04 -->
 <!-- RF Devices: highest Status OFFSET=79 @ 2014-04-30T -->
 
 <!--  Point Name naming convention: 
@@ -9353,6 +9353,12 @@
                 <unitofmeasure value="kVA" />
                 <decimalplaces value="3" />
             </point>
+            <point type="Analog" offset="260">
+                <name>Demand at Peak kVa Coincidental</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kW" />
+                <decimalplaces value="3" />
+            </point>
         </points>
         <attributes>
             <attribute name="RECEIVED_KWH">
@@ -9462,6 +9468,9 @@
             </attribute>
             <attribute name="PEAK_KVA_RATE_D">
                 <basicLookup point="Peak kVA Rate D"/>
+            </attribute>
+            <attribute name="DEMAND_PEAK_KVA_COIN">
+                <basicLookup point="Demand at Peak kVa Coincidental"/>
             </attribute>
         </attributes>
     </pao>
