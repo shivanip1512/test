@@ -448,7 +448,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
         
         for (String meterNumber : meterNumbers) {
-            YukonMeter meter = meterNumberToMeterMap.remove(meterNumber);
+            YukonMeter meter = meterNumberToMeterMap.get(meterNumber);
             if (meter == null) {
                 multispeakEventLogService.meterNotFound(meterNumber, "initiateOutageDetectionEventRequest", mspVendor.toString());
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "ODEvent", mspVendor.getCompanyName());
@@ -735,7 +735,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         
         for (String meterNumber : meterNumbers) {
 
-            YukonMeter meter = meterNumberToMeterMap.remove(meterNumber);
+            YukonMeter meter = meterNumberToMeterMap.get(meterNumber);
             if (meter == null) {
                 multispeakEventLogService.meterNotFound(meterNumber, "initiateMeterReadByMeterNumber", mspVendor.getCompanyName());
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", mspVendor.getCompanyName());
@@ -2439,7 +2439,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         return tempPaoName;
     }
-
     /**
      * Extra SystemLog logging that will be completely removed upon completion of MultiSpeak EventLogs.
      * Only use this method if you intend for the logging to be removed with EventLogs completion.
