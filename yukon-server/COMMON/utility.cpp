@@ -1771,21 +1771,6 @@ ULONG MilliTime (PULONG MilliSeconds)
    return(TimeB.time * 1000L + TimeB.millitm);
 }
 
-BOOL searchFuncForOutMessageDevID(void *pId, void* d)
-{
-    LONG Id = (LONG)pId;
-    OUTMESS *OutMessage = (OUTMESS *)d;
-
-    return(OutMessage->DeviceID == Id);
-}
-
-BOOL searchFuncForOutMessageRteID(void *pId, void* d)
-{
-    LONG Id = (LONG)pId;
-    OUTMESS *OutMessage = (OUTMESS *)d;
-
-    return(OutMessage->Request.RouteID == Id);
-}
 
 BOOL searchFuncForOutMessageUniqueID(void *pId, void* d)
 {

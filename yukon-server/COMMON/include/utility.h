@@ -44,8 +44,6 @@ IM_EX_CTIBASE CtiTime nextScheduledTimeAlignedOnRate( const CtiTime &origin, LON
 
 IM_EX_CTIBASE void autopsy(const char *calleefile, int calleeline);       // Usage is: autopsy( __FILE__, __LINE__);
 
-IM_EX_CTIBASE BOOL searchFuncForOutMessageDevID(void *pId, void* d);
-IM_EX_CTIBASE BOOL searchFuncForOutMessageRteID(void *pId, void* d);
 IM_EX_CTIBASE BOOL searchFuncForOutMessageUniqueID(void *pId, void* d);
 
 IM_EX_CTIBASE void applyPortQueueOutMessageReport(void *ptr, void* d);

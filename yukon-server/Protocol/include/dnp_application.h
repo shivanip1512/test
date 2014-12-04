@@ -124,7 +124,8 @@ private:
 
     void generateAck( acknowledge_t *app_packet, const control_header ctrl );
 
-    void processInput( void );
+    void processResponse( void );
+
     void eraseOutboundObjectBlocks( void );
     void eraseInboundObjectBlocks( void );
 

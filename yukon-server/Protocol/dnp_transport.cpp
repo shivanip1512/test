@@ -30,10 +30,6 @@ TransportLayer::TransportLayer(const TransportLayer &aRef)
     *this = aRef;
 }
 
-TransportLayer::~TransportLayer()
-{
-}
-
 TransportLayer &TransportLayer::operator=(const TransportLayer &aRef)
 {
     if( this != &aRef )

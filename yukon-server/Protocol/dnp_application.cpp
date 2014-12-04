@@ -117,7 +117,7 @@ void ApplicationLayer::initUnsolicited( void )
 }
 
 
-void ApplicationLayer::processInput( void )
+void ApplicationLayer::processResponse( void )
 {
     if( gDNPVerbose )
     {
@@ -513,7 +513,7 @@ YukonError_t ApplicationLayer::decode( CtiXfer &xfer, YukonError_t status )
                     _response.buf_len = _transport.getInputSize() - RspHeaderSize;
 
                     //  add filtering for duplicate/unexpected/bad sequence packets
-                    processInput();
+                    processResponse();
 
                     if( _response.ctrl.app_confirm )
                     {

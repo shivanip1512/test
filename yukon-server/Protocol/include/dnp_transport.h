@@ -54,8 +54,6 @@ public:
 
     TransportLayer( const TransportLayer &aRef );
 
-    virtual ~TransportLayer();
-
     TransportLayer &operator=( const TransportLayer &aRef );
 
     void setAddresses( unsigned short dst, unsigned short src );
@@ -71,7 +69,6 @@ public:
     bool errorCondition( void );
 
     int  getInputSize( void );
-
 
     void setIoStateComplete();
 };

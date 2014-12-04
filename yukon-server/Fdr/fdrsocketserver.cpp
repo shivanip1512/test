@@ -603,8 +603,6 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnectionSPtr connecti
 {
     int portNumber = connection->getPortNumber();
     return sendAllPoints(portNumber);
-
-    bool retVal;
 }
 
 void CtiFDRSocketServer::processCommandFromDispatch(CtiCommandMsg* commandMsg)
