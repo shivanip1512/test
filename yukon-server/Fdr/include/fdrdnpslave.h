@@ -72,11 +72,11 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         unsigned int getHeaderLength() override;
 
     private:
-        DnpId   ForeignToYukonId(CtiFDRDestination pointDestination);
-        bool    YukonToForeignQuality (USHORT aQuality, CtiTime lastTimeStamp);
-        int processScanSlaveRequest (Cti::Fdr::ServerConnection& connection,
-                                         const char* data, unsigned int size);
-        int processDataLinkConfirmationRequest(Cti::Fdr::ServerConnection& connection, const char* data);
+        DnpId ForeignToYukonId(CtiFDRDestination pointDestination);
+        bool  YukonToForeignQuality(const int aQuality, const CtiTime lastTimeStamp, const CtiTime Now);
+        int processScanSlaveRequest(ServerConnection &connection, const char *data, unsigned int size);
+        int processControlRequest  (ServerConnection &connection, const char *data, unsigned int size);
+        int processDataLinkConfirmationRequest(ServerConnection& connection, const char* data);
 
         std::string dumpDNPMessage(const char* data, unsigned int size);
 

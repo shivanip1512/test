@@ -1,8 +1,9 @@
 #include "millisecond_timer.h"
 #include "ctitime.h"
 
-#include "boost/function.hpp"
-#include "boost/bind.hpp"
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
+#include <boost/optional.hpp>
 
 #include <vector>
 
@@ -38,6 +39,74 @@ struct byte_buffer
 };
 
 namespace Test {
+
+namespace {
+
+char fromAscii(char c)
+{
+    if( c >= 'a' && c <= 'f' )  return c - 'a' + 10;
+
+    if( c >= 'A' && c <= 'F' )  return c - 'A' + 10;
+
+    if( c >= '0' && c <= '9' )  return c - '0';
+
+    return 0;
+}
+
+}
+
+struct byte_str
+{
+    typedef std::vector<unsigned char> uchar_vector;
+
+    uchar_vector bytes;
+
+    byte_str(const char *str)
+    {
+        if( ! str )
+        {
+            return;
+        }
+
+        boost::optional<unsigned char> byte;
+
+        while( *str )
+        {
+            if( *str != ' ' )
+            {
+                if( byte )
+                {
+                    *byte <<= 4;
+                    *byte |= fromAscii(*str);
+                }
+                else
+                {
+                    byte = fromAscii(*str);
+                }
+            }
+
+            ++str;
+
+            if( *str == ' ' || ! *str )
+            {
+                if( byte )
+                {
+                    bytes.push_back(*byte);
+                    byte.reset();
+                }
+            }
+        }
+    }
+
+    uchar_vector::const_iterator begin() const {  return bytes.begin();  }
+    uchar_vector::const_iterator end()   const {  return bytes.end();  }
+
+    const size_t size() const   {  return bytes.size();  }
+
+    const unsigned char *data()      const  {  return &bytes.front();  }
+    const char          *char_data() const  {  return reinterpret_cast<const char *>(data());  }
+};
+
 namespace {  //  hack to get around multiple linkages when included in multiple translation units
 
 class Override_CtiTime_Now

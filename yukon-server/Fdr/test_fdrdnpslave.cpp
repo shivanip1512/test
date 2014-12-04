@@ -6,7 +6,7 @@
 
 BOOST_AUTO_TEST_SUITE( test_fdrdnpslave )
 
-using Cti::byte_buffer;
+using Cti::Test::byte_str;
 
 using std::vector;
 
@@ -45,12 +45,12 @@ BOOST_AUTO_TEST_CASE( test_datalink_request )
     02 00   - destination 2
     1e 00   - source 30
     */
-    byte_buffer request;
-    request << 0x05, 0x64, 0x05, 0xc9, 0x1e, 0x00, 0x02, 0x00, 0x59, 0x11;
+    const byte_str request(
+            "05 64 05 c9 1e 00 02 00 59 11");
 
     Test_ServerConnection connection;
 
-    dnpSlave.processMessageFromForeignSystem(connection, request.data_as<char>(), request.size());
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
     /*
     05 64   - header bytes
@@ -59,16 +59,41 @@ BOOST_AUTO_TEST_CASE( test_datalink_request )
     1e 00   - destination 30
     02 00   - source 2
     */
-    byte_buffer response;
-    response <<  0x05, 0x64, 0x05, 0x0b, 0x02, 0x00, 0x1e, 0x00, 0xce, 0x0f;
+    const byte_str expected(
+            "05 64 05 0b 02 00 1e 00 ce 0f");
 
-    vector<int> expected(response.begin(), response.end());
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+}
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        connection.message.begin(),
-        connection.message.end(),
-        expected.begin(),
-        expected.end());
+BOOST_AUTO_TEST_CASE( test_datalink_reset )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    /*
+    05 64   - header bytes
+    05  - length 5
+    c0  - DLC master, DL request, FCB 0, FCB invalid?, reset link
+    02 00   - destination 2
+    1e 00   - source 30
+    */
+    const byte_str request(
+            "05 64 05 c0 1e 00 02 00 43 6e");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    /*
+    05 64   - header bytes
+    05  - length 5
+    0b  - DLC remote, DL response, ACK
+    1e 00   - destination 30
+    02 00   - source 2
+    */
+    const byte_str expected(
+            "05 64 05 00 02 00 1e 00 8d 3f");
+
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
 }
 
 BOOST_AUTO_TEST_CASE( test_getMessageSize )
@@ -76,29 +101,29 @@ BOOST_AUTO_TEST_CASE( test_getMessageSize )
     Test_FdrDnpSlave dnpSlave;
 
     {
-        const char packet[10] = {
-                0x05, 0x64, 0x05, 0xc9, 0x1e, 0x00, 0x02, 0x00, 0x59, 0x11};
+        const byte_str packet(
+                "05 64 05 c9 1e 00 02 00 59 11");
 
-        BOOST_CHECK_EQUAL(dnpSlave.getMessageSize(packet), 10);
+        BOOST_CHECK_EQUAL(dnpSlave.getMessageSize(packet.char_data()), 10);
     }
 
     {
-        const char packet[32] = {  //  10 + 18 + 4
-                0x05, 0x64, 0x17, 0xc4, 0x1e, 0x00, 0x02, 0x00, 0x78, 0xb5,
-                0xc0, 0xca, 0x01, 0x32, 0x01, 0x06, 0x3c, 0x02, 0x06, 0x3c, 0x03, 0x06, 0x3c, 0x04, 0x06, 0x3c, 0x9d, 0xf5,
-                0x01, 0x06, 0x75, 0xe1};
+        const byte_str packet(  //  10 + 18 + 4
+                "05 64 17 c4 1e 00 02 00 78 b5 "
+                "c0 ca 01 32 01 06 3c 02 06 3c 03 06 3c 04 06 3c 9d f5 "
+                "01 06 75 e1");
 
-        BOOST_CHECK_EQUAL(dnpSlave.getMessageSize(packet), 32);
+        BOOST_CHECK_EQUAL(dnpSlave.getMessageSize(packet.char_data()), 32);
     }
 
     {
-        const char packet[53] = {  //  10 + 18 + 18 + 7
-                0x05, 0x64, 0x2a, 0x44, 0x02, 0x00, 0x1e, 0x00, 0x4f, 0x36,
-                0xc0, 0xca, 0x81, 0x00, 0x00, 0x1e, 0x01, 0x28, 0x01, 0x00, 0x03, 0x00, 0x00, 0x3f, 0x01, 0x00, 0xd9, 0xf6,
-                0x00, 0x01, 0x02, 0x28, 0x01, 0x00, 0x01, 0x00, 0x00, 0x14, 0x01, 0x28, 0x01, 0x00, 0x00, 0x00, 0x57, 0xa8,
-                0x00, 0x13, 0x00, 0x00, 0x00, 0x99, 0x52};
+        const byte_str packet(  //  10 + 18 + 18 + 7
+                "05 64 2a 44 02 00 1e 00 4f 36 "
+                "c0 ca 81 00 00 1e 01 28 01 00 03 00 00 3f 01 00 d9 f6 "
+                "00 01 02 28 01 00 01 00 00 14 01 28 01 00 00 00 57 a8 "
+                "00 13 00 00 00 99 52");
 
-        BOOST_CHECK_EQUAL(dnpSlave.getMessageSize(packet), 53);
+        BOOST_CHECK_EQUAL(dnpSlave.getMessageSize(packet.char_data()), 53);
     }
 }
 
@@ -187,25 +212,20 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
         dnpSlave.translateSinglePoint(fdrPoint, true);
     }
 
-    byte_buffer request;
-    request << 0x05, 0x64, 0x17, 0xc4, 0x1e, 0x00, 0x02, 0x00, 0x78, 0xb5,
-               0xc0, 0xca, 0x01, 0x32, 0x01, 0x06, 0x3c, 0x02, 0x06, 0x3c,
-               0x03, 0x06, 0x3c, 0x04, 0x06, 0x3c, 0x9d, 0xf5, 0x01, 0x06,
-               0x75, 0xe1;
+    const byte_str request(
+            "05 64 17 c4 1e 00 02 00 78 b5 "
+            "c0 ca 01 32 01 06 3c 02 06 3c 03 06 3c 04 06 3c 9d f5 "
+            "01 06 75 e1");
 
     Test_ServerConnection connection;
 
-    dnpSlave.processMessageFromForeignSystem(connection, request.data_as<char>(), request.size());
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
-    byte_buffer response;
-    response <<  0x05, 0x64, 0x2a, 0x44, 0x02, 0x00, 0x1e, 0x00, 0x4f, 0x36,
-                 0xc0, 0xca, 0x81, 0x00, 0x00, 0x1e, 0x01, 0x28, 0x01, 0x00,
-                 0x03, 0x00, 0x00, 0x3f, 0x01, 0x00, 0xd9, 0xf6, 0x00, 0x01,
-                 0x02, 0x28, 0x01, 0x00, 0x01, 0x00, 0x00, 0x14, 0x01, 0x28,
-                 0x01, 0x00, 0x00, 0x00, 0x57, 0xa8, 0x00, 0x13, 0x00, 0x00,
-                 0x00, 0x99, 0x52;
-
-    vector<int> expected(response.begin(), response.end());
+    const byte_str expected(
+            "05 64 2a 44 02 00 1e 00 4f 36 "
+            "c0 ca 81 00 00 1e 01 28 01 00 03 00 00 3f 01 00 d9 f6 "
+            "00 01 02 28 01 00 01 00 00 14 01 28 01 00 00 00 57 a8 00 13 00 00 "
+            "00 99 52");
 
     /*
     05 64   - header bytes
@@ -236,11 +256,63 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
     13 00 00 00 - value 19
     */
 
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        connection.message.begin(),
-        connection.message.end(),
-        expected.begin(),
-        expected.end());
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+}
+
+
+BOOST_AUTO_TEST_CASE( test_control_request )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.setSendToList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(53);
+        fdrPoint->setOffset(12);
+        fdrPoint->setPointType(StatusPointType);
+        fdrPoint->setValue(0);
+
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, true);
+    }
+
+    const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 17 01 00 41 01 00 00 00 00 00 00 84 a9 "
+            "00 00 00 ff ff");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 a7 b3 "
+            "00 00 00 00 00 ff ff");
+
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
 }
 
 

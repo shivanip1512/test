@@ -62,8 +62,9 @@ enum DnpApplicationFunctionCodes
 const std::string DNPInMessageString  = "DNP InMessage";
 const std::string DNPOutMessageString = "DNP OutMessage";
 
-using Protocols::DnpSlaveProtocol;
-using namespace Protocols::DNP;
+using Cti::Protocols::DnpProtocol;
+using Cti::Protocols::DnpSlaveProtocol;
+using namespace Cti::Protocols::DNP;
 
 // Constructors, Destructor, and Operators
 DnpSlave::DnpSlave() :
@@ -99,17 +100,23 @@ bool DnpSlave::readConfig()
     const char *KEY_LINK_TIMEOUT                = "FDR_DNPSLAVE_LINK_TIMEOUT_SECONDS";
     const char *KEY_STALEDATA_TIMEOUT           = "FDR_DNPSLAVE_STALEDATA_TIMEOUT";
 
-    setPortNumber(gConfigParms.getValueAsInt( KEY_LISTEN_PORT_NUMBER, DNPSLAVE_PORTNUMBER));
+    setPortNumber(
+            gConfigParms.getValueAsInt(KEY_LISTEN_PORT_NUMBER, DNPSLAVE_PORTNUMBER));
 
-    setReloadRate(gConfigParms.getValueAsInt(KEY_DB_RELOAD_RATE, 86400));
+    setReloadRate(
+            gConfigParms.getValueAsInt(KEY_DB_RELOAD_RATE, 86400));
 
-    setLinkTimeout(gConfigParms.getValueAsInt(KEY_LINK_TIMEOUT, 60));
+    setLinkTimeout(
+            gConfigParms.getValueAsInt(KEY_LINK_TIMEOUT, 60));
 
-    _staleDataTimeOut = gConfigParms.getValueAsInt(KEY_STALEDATA_TIMEOUT, 3600);
+    _staleDataTimeOut =
+            gConfigParms.getValueAsInt(KEY_STALEDATA_TIMEOUT, 3600);
 
-    setInterfaceDebugMode (gConfigParms.getValueAsString(KEY_DEBUG_MODE).length() > 0);
+    setInterfaceDebugMode(
+            gConfigParms.getValueAsString(KEY_DEBUG_MODE).length() > 0);
 
-    const std::string serverNames = gConfigParms.getValueAsString(KEY_FDR_DNPSLAVE_SERVER_NAMES);
+    const std::string serverNames =
+            gConfigParms.getValueAsString(KEY_FDR_DNPSLAVE_SERVER_NAMES);
 
     typedef boost::iterator_range<std::string::const_iterator> substring_range;
     std::vector<substring_range> mappings;
@@ -176,7 +183,6 @@ CtiFDRClientServerConnectionSPtr DnpSlave::createNewConnection(SOCKET newSocket)
 
     return newConnection;
 }
-
 
 
 bool DnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
@@ -261,8 +267,8 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
         }
         case SINGLE_SOCKET_DNP_DIRECT_OP:
         {
-            //processControlRequest(connection, data, size);
-            //break;
+            processControlRequest(connection, data, size);
+            break;
         }
         case SINGLE_SOCKET_DNP_CONFIRM:
         case SINGLE_SOCKET_DNP_WRITE:
@@ -338,8 +344,6 @@ int DnpSlave::processDataLinkConfirmationRequest(ServerConnection& connection, c
         retVal = -1;
     }
     return retVal;
-
-
 }
 
 int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char* data, unsigned int size)
@@ -358,6 +362,8 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
     src.ch[1] = data[7];
     int seqnumber = (data[11] & 0x0F);
 
+    const CtiTime Now;
+
     for each( SendMap::value_type mapping in _sendMap )
     {
         const DnpId &dnpId = mapping.second;
@@ -371,7 +377,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
 
             DnpSlaveProtocol::input_point iPoint;
 
-            iPoint.online = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp());
+            iPoint.online = YukonToForeignQuality(fdrPoint->getQuality(), fdrPoint->getLastTimeStamp(), Now);
             iPoint.control_offset = dnpId.Offset;
 
             switch (dnpId.PointType)
@@ -440,7 +446,123 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
 }
 
 
+int DnpSlave::processControlRequest (ServerConnection& connection, const char* data, unsigned int size)
+{
+    CtiXfer xfer = CtiXfer(NULL, 0, (BYTE*)data, getMessageSize(data));
+    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+    {
+        CTILOG_DEBUG(dout, logNow() <<" received DNP control request message"<<
+                arrayToRange(reinterpret_cast<const unsigned char*>(data), size));
+    }
 
+    //  Example control request:
+    //
+    //  05 64 18 C4 F6 01 E8 03 36 79
+    //  C0 C1 05 0C 01 17 01 00 41 01 00 00 00 00 00 00 84 A9
+    //  00 00 00 FF FF
+
+    // [10] C0 - transport header
+    // [11] C1 - application header
+    // [12] 05 - ctrl code: Direct Operate
+    // [13] 0C 01 - binary output, variation 1 (control relay output block)
+    // [15] 17 - 1 octet index, 1 octet quantity
+    // [16] 01 - 1 element
+    // [17] 00 - index 1
+    // [18] 41 - control code
+    // [19] 01 - count
+    // [20] 00 00 00 00 - on time
+    // [24] 00 00 //  84 A9 CRC
+    // [28] 00 00 - off time
+    // [30] 00 - status //  FF FF  CRC
+
+    const unsigned
+        dest = *reinterpret_cast<const unsigned short *>(data + 4),
+        src  = *reinterpret_cast<const unsigned short *>(data + 6),
+        appSequence   = (data[11] & 0x0F),
+        group         = data[13],
+        variation     = data[14],
+        qualifier     = data[15],
+        elements      = data[16],
+        controlOffset = data[17],
+        controlCode   = data[18],
+        count         = data[19],
+        onTime  = ntohl(*reinterpret_cast<const unsigned long *>(data + 20)),
+        offTime = ntohs(*reinterpret_cast<const unsigned short *>(data + 24)) << 16 |
+                  ntohs(*reinterpret_cast<const unsigned short *>(data + 28)),
+        status  = data[30];
+
+    //  look for the point with the correct control offset
+    for each( SendMap::value_type mapping in _sendMap )
+    {
+        const DnpId &dnpId = mapping.second;
+        if (dnpId.PointType   == StatusPointType
+            && dnpId.SlaveId  == dest
+            && dnpId.MasterId == src
+            && dnpId.Offset   == controlOffset)
+        {
+            const CtiFDRDestination &fdrdest = mapping.first;
+            CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
+
+            CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
+            if (!findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
+                continue;
+
+            DnpSlaveProtocol::input_point iPoint;
+
+            iPoint.type = DnpSlaveProtocol::DigitalInput;
+            iPoint.control_offset = controlOffset;
+            iPoint.din.control    = static_cast<BinaryOutputControl::ControlCode>(controlCode & 0x0f);
+            iPoint.din.queue      = controlCode & 0x10;
+            iPoint.din.clear      = controlCode & 0x20;
+            iPoint.din.trip_close = static_cast<BinaryOutputControl::TripClose>  ((controlCode & 0xc0) >> 6);
+            iPoint.din.count      = count;
+            iPoint.din.on_time    = onTime;
+            iPoint.din.off_time   = offTime;
+
+            //if (!fdrPoint->isControllable())
+            //{
+            //    iPoint.din.status = CANNOT_CONTROL_OR_SOMETHING;
+            //}
+
+            _dnpSlave.addInputPoint(iPoint);
+
+            _dnpSlave.setAddresses(src, dest);
+            _dnpSlave.setSlaveCommand(DnpProtocol::Command_SetDigitalOut_Direct);
+            _dnpSlave.setOptions(DnpSlaveProtocol::Options_SlaveResponse, appSequence);
+
+            //  reply with success
+            while( !_dnpSlave.isTransactionComplete() )
+             {
+                 if( _dnpSlave.slaveGenerate(xfer) == 0 )
+                 {
+                     if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
+                     {
+                         int bufferSize = xfer.getOutCount();
+                         char* buffer = new CHAR[bufferSize];
+                         std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
+                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                         {
+                             CTILOG_DEBUG(dout, logNow() <<" sending DNP scan response message."<<
+                                     arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
+                         }
+                         connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
+                     }
+
+                     _dnpSlave.slaveDecode(xfer);
+                 }
+                 else
+                 {
+                     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                     {
+                         CTILOG_DEBUG(dout, logNow() <<" was not able to generate control response.");
+                     }
+                 }
+             }
+        }
+    }
+
+    return 0;
+}
 
 
 DnpId DnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
@@ -507,21 +629,18 @@ DnpId DnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
     return dnpId;
 }
 
-bool DnpSlave::YukonToForeignQuality(USHORT aQuality, CtiTime lastTimeStamp)
+bool DnpSlave::YukonToForeignQuality(const int aQuality, const CtiTime lastTimeStamp, const CtiTime Now)
 {
-
-    bool goodQuality = false;
-    CtiTime staleTime = CtiTime(CtiTime().seconds() - _staleDataTimeOut);
-
-    if (aQuality == ManualQuality ||
-        aQuality == NormalQuality)
+    switch (aQuality)
     {
-        if (lastTimeStamp >= staleTime)
+        case ManualQuality:
+        case NormalQuality:
         {
-            goodQuality = true;
+            return lastTimeStamp >= (Now - _staleDataTimeOut);
         }
     }
-    return goodQuality;
+
+    return false;
 }
 
 

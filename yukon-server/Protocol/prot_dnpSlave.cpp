@@ -9,7 +9,7 @@
 namespace Cti {
 namespace Protocols {
 
-using namespace DNP;
+using namespace Cti::Protocols::DNP;
 
 DnpSlaveProtocol::DnpSlaveProtocol()
 {
@@ -84,9 +84,44 @@ int DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
                 if( ! digitals.empty() )    dobs.push_back(ObjectBlock::makeLongIndexedBlock(digitals));
                 if( ! counters.empty() )    dobs.push_back(ObjectBlock::makeLongIndexedBlock(counters));
 
-                getApplicationLayer().setCommand(ApplicationLayer::ResponseResponse, dobs);
+                getApplicationLayer().setCommand(
+                        ApplicationLayer::ResponseResponse,
+                        dobs);
 
                 break;
+            }
+            case Command_SetDigitalOut_Direct:
+            {
+                if( ! _input_point_list.empty()
+                    && _input_point_list[0].type == DigitalInput )
+                {
+                    input_point &p = _input_point_list[0];
+
+                    std::auto_ptr<BinaryOutputControl> boc(new BinaryOutputControl(BinaryOutputControl::BOC_ControlRelayOutputBlock));
+
+                    boc->setControlBlock(
+                            p.din.on_time,
+                            p.din.off_time,
+                            p.din.count,
+                            p.din.control,
+                            p.din.queue,
+                            p.din.clear,
+                            p.din.trip_close);
+                    //  status defaults to 0
+
+                    getApplicationLayer().setCommand(
+                            ApplicationLayer::ResponseResponse,
+                            ObjectBlock::makeIndexedBlock(
+                                    std::auto_ptr<Object>(boc),
+                                    p.control_offset));
+
+                    break;
+                }
+                else
+                {
+                    CTILOG_ERROR(dout, "Input point invalid for control");
+                    setSlaveCommand(Command_Invalid);
+                }
             }
             case Command_UnsolicitedInbound:
             case Command_WriteTime:
@@ -95,7 +130,6 @@ int DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
             case Command_UnsolicitedEnable:
             case Command_UnsolicitedDisable:
             case Command_SetAnalogOut:
-            case Command_SetDigitalOut_Direct:
             case Command_SetDigitalOut_SBO_SelectOnly:
             case Command_SetDigitalOut_SBO_Select:
             case Command_SetDigitalOut_SBO_Operate:
