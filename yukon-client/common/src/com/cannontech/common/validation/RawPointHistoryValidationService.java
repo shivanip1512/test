@@ -217,7 +217,7 @@ public class RawPointHistoryValidationService {
         }
         
         SqlStatementBuilder sql2 = new SqlStatementBuilder();
-        sql2.append("select rph.Value, rph.Timestamp, ");
+        sql2.append("select rph.CHANGEID, rph.Value, rph.Timestamp, ");
         sql2.append("  p.PAObjectID, ypo.Type, p.POINTTYPE, p.POINTID, p.POINTOFFSET");
         sql2.append("from POINT p");
         sql2.append("  join YukonPAObject ypo on ypo.PAObjectID = p.PAObjectID");
