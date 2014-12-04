@@ -100,7 +100,7 @@
                                               </select>
                                               </span>
                                               </div>
-                                              <input type="image" src="/WebConfig/yukon/Buttons/GoButton.gif" name="image" border="0" class="fl">
+                                              <button type="submit" class="button"><span class="b-label">Go</span></button>
                                           </td>
                                       </tr>
                                     </table>

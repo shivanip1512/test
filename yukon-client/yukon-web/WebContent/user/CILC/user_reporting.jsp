@@ -185,7 +185,8 @@ function loadTarget(form)
                                         <table class="TableCell" align="left">
                                           <tr> 
                                             <td align="center"> 
-                                              <input type="image" src="<%=request.getContextPath()%>/WebConfig/yukon/Buttons/GoButton.gif" name="View" border="0" alt="View" align="middle"">
+                                              <button type="submit" class="button"><span class="b-label">Go</span></button>
+                                            </td>
                                           </tr>
                                         </table>
                                       </td>

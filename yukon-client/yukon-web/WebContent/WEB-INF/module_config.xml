@@ -659,7 +659,6 @@
   <module name="commercialcurtailment">
     <skin name="STANDARD" />
     <css file="/cc/base.css" />
-    <css file="/WebConfig/yukon/styles/commcurtaillogos.css" />
     <pages>
         <page name="home" type="BASIC">
         </page>
@@ -669,7 +668,6 @@
   <module name="commercialcurtailment_user">
     <skin name="STANDARD" />
     <css file="/cc/base.css" />
-    <css file="/WebConfig/yukon/styles/commcurtaillogos.css" />
     <pages>
       <page name="programEvents" type="BASIC"/>
     </pages>
@@ -751,10 +749,9 @@
 
   <module name="operations">
     <skin name="STANDARD" />
-    <css file="/WebConfig/yukon/styles/operationsStyles.css" />
     <pages>
-          <page name="dashboard" type="BASIC" hideFavorite="true"/>
-      </pages>
+      <page name="dashboard" type="BASIC" hideFavorite="true"/>
+    </pages>
   </module>
 
     <module name="adminSetup">
