@@ -4,7 +4,7 @@
 
 #include "boost_test_helpers.h"
 
-using Cti::byte_buffer;
+using Cti::Test::byte_str;
 using namespace Cti::Protocols;
 typedef Interface::pointlist_t  pointlist_t;
 typedef Interface::stringlist_t stringlist_t;
@@ -32,13 +32,12 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x08, 0xC4, 0x04, 0x00, 0x03, 0x00, 0xB4, 0xB8,
-                   0xC0, 0xC1, 0x01, 0x23, 0x0B;
+        const byte_str expected(
+                "05 64 08 C4 04 00 03 00 B4 B8 "
+                "C0 C1 01 23 0B");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -59,8 +58,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
     {
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x0A, 0x44, 0x03, 0x00, 0x04, 0x00, 0x7C, 0xAE;
+            const byte_str response(
+                    "05 64 0A 44 03 00 04 00 7C AE");
 
             std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
@@ -82,8 +81,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
     {
         {
-            byte_buffer response;
-            response << 0xC1, 0xC1, 0x81, 0x90, 0x04, 0x0D, 0x14;
+            const byte_str response(
+                    "C1 C1 81 90 04 0D 14");
 
             std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
@@ -102,14 +101,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x0E, 0xC4, 0x04, 0x00, 0x03, 0x00, 0x6D, 0xD3,
-                   0xC0, 0xC2, 0x02, 0x50, 0x01, 0x00, 0x07, 0x07, 0x00, 0x08,
-                   0x65;
+        const byte_str expected(
+                "05 64 0E C4 04 00 03 00 6D D3 "
+                "C0 C2 02 50 01 00 07 07 00 08 "
+                "65");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -130,8 +128,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
     {
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x0A, 0x44, 0x03, 0x00, 0x04, 0x00, 0x7C, 0xAE;
+            const byte_str response(
+                    "05 64 0A 44 03 00 04 00 7C AE");
 
             std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
@@ -153,8 +151,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
     {
         {
-            byte_buffer response;
-            response << 0xC2, 0xC2, 0x81, 0x10, 0x00, 0x11, 0xb9;
+            const byte_str response(
+                    "C2 C2 81 10 00 11 b9");
 
             std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
@@ -234,11 +232,11 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x17, 0xc4, 0xd2, 0x04, 0x01, 0x00, 0x85, 0x40,
-                   0xc0, 0xc1, 0x01, 0x32, 0x01, 0x06, 0x3c, 0x02, 0x06, 0x3c,
-                   0x03, 0x06, 0x3c, 0x04, 0x06, 0x3c, 0xfe, 0xe0, 0x01, 0x06,
-                   0x75, 0xe1;
+        const byte_str request(
+                "05 64 17 c4 d2 04 01 00 85 40 "
+                "c0 c1 01 32 01 06 3c 02 06 3c "
+                "03 06 3c 04 06 3c fe e0 01 06 "
+                "75 e1");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
@@ -261,10 +259,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
     }
     {
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x27, 0x44, 0x01, 0x00, 0xd2, 0x04, 0x79, 0x6f;
+            const byte_str response(
+                    "05 64 27 44 01 00 d2 04 79 6f");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -283,13 +281,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
     }
     {
         {
-            byte_buffer response;
-            response << 0xc0, 0xca, 0x81, 0x0f, 0x00, 0x1e, 0x01, 0x18, 0x01, 0x00,
-                        0x03, 0x00, 0x3f, 0x01, 0x00, 0x00, 0x40, 0xbe, 0x01, 0x02,
-                        0x18, 0x01, 0x00, 0x01, 0x00, 0x14, 0x01, 0x18, 0x01, 0x00,
-                        0x00, 0x00, 0x13, 0x00, 0x95, 0x4f, 0x00, 0x00, 0xff, 0xff;
+            const byte_str response(
+                    "c0 ca 81 0f 00 1e 01 18 01 00 "
+                    "03 00 3f 01 00 00 40 be 01 02 "
+                    "18 01 00 01 00 14 01 18 01 00 "
+                    "00 00 13 00 95 4f 00 00 ff ff");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -391,15 +389,14 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x17, 0xc4, 0xd2, 0x04, 0x01, 0x00, 0x85, 0x40,
-                   0xc0, 0xc1, 0x01, 0x32, 0x01, 0x06, 0x3c, 0x02, 0x06, 0x3c,
-                   0x03, 0x06, 0x3c, 0x04, 0x06, 0x3c, 0xfe, 0xe0, 0x01, 0x06,
-                   0x75, 0xe1;
+        const byte_str expected(
+                "05 64 17 c4 d2 04 01 00 85 40 "
+                "c0 c1 01 32 01 06 3c 02 06 3c "
+                "03 06 3c 04 06 3c fe e0 01 06 "
+                "75 e1");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -418,10 +415,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
     }
     {
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x27, 0x44, 0x01, 0x00, 0xd2, 0x04, 0x79, 0x6f;
+            const byte_str response(
+                    "05 64 27 44 01 00 d2 04 79 6f");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -440,13 +437,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_no_ack_required)
     }
     {
         {
-            byte_buffer response;
-            response << 0xc0, 0xca, 0x81, 0x0f, 0x00, 0x1e, 0x01, 0x18, 0x01, 0x00,
-                        0x03, 0x00, 0x3f, 0x01, 0x00, 0x00, 0x40, 0xbe, 0x01, 0x02,
-                        0x18, 0x01, 0x00, 0x01, 0x00, 0x14, 0x01, 0x18, 0x01, 0x00,
-                        0x00, 0x00, 0x13, 0x00, 0x95, 0x4f, 0x00, 0x00, 0xff, 0xff;
+            const byte_str response(
+                    "c0 ca 81 0f 00 1e 01 18 01 00 "
+                    "03 00 3f 01 00 00 40 be 01 02 "
+                    "18 01 00 01 00 14 01 18 01 00 "
+                    "00 00 13 00 95 4f 00 00 ff ff");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -548,11 +545,11 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x17, 0xc4, 0xd2, 0x04, 0x01, 0x00, 0x85, 0x40,
-                   0xc0, 0xc1, 0x01, 0x32, 0x01, 0x06, 0x3c, 0x02, 0x06, 0x3c,
-                   0x03, 0x06, 0x3c, 0x04, 0x06, 0x3c, 0xfe, 0xe0, 0x01, 0x06,
-                   0x75, 0xe1;
+        const byte_str request(
+                "05 64 17 c4 d2 04 01 00 85 40 "
+                "c0 c1 01 32 01 06 3c 02 06 3c "
+                "03 06 3c 04 06 3c fe e0 01 06 "
+                "75 e1");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
@@ -575,10 +572,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
     }
     {
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x27, 0x44, 0x01, 0x00, 0xd2, 0x04, 0x79, 0x6f;
+            const byte_str response(
+                    "05 64 27 44 01 00 d2 04 79 6f");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -597,13 +594,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
     }
     {
         {
-            byte_buffer response;
-            response << 0xc0, 0xea, 0x81, 0x0f, 0x00, 0x1e, 0x01, 0x18, 0x01, 0x00,
-                        0x03, 0x00, 0x3f, 0x01, 0x00, 0x00, 0x9e, 0xb9, 0x01, 0x02,
-                        0x18, 0x01, 0x00, 0x01, 0x00, 0x14, 0x01, 0x18, 0x01, 0x00,
-                        0x00, 0x00, 0x13, 0x00, 0x95, 0x4f, 0x00, 0x00, 0xff, 0xff;
+            const byte_str response(
+                    "c0 ea 81 0f 00 1e 01 18 01 00 "
+                    "03 00 3f 01 00 00 9e b9 01 02 "
+                    "18 01 00 01 00 14 01 18 01 00 "
+                    "00 00 13 00 95 4f 00 00 ff ff");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -620,14 +617,12 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_ack_required)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        const unsigned char request[] = "\x05\x64\x08\xc4\xd2\x04\x01\x00\xa6\x7c"
-                                        "\xc0\xca\x00\x42\xe2";
-
-        const unsigned request_len = sizeof(request) / sizeof(*request) - 1;  //  trim off the implicit null
+        const byte_str expected(
+                "05 64 08 c4 d2 04 01 00 a6 7c "
+                "c0 ca 00 42 e2");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request, request + request_len);
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -730,15 +725,14 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x17, 0xc4, 0xd2, 0x04, 0x01, 0x00, 0x85, 0x40,
-                   0xc0, 0xc1, 0x01, 0x32, 0x01, 0x06, 0x3c, 0x02, 0x06, 0x3c,
-                   0x03, 0x06, 0x3c, 0x04, 0x06, 0x3c, 0xfe, 0xe0, 0x01, 0x06,
-                   0x75, 0xe1;
+        const byte_str expected(
+                "05 64 17 c4 d2 04 01 00 85 40 "
+                "c0 c1 01 32 01 06 3c 02 06 3c "
+                "03 06 3c 04 06 3c fe e0 01 06 "
+                "75 e1");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -758,10 +752,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
     }
     {
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x27, 0x44, 0x01, 0x00, 0xd2, 0x04, 0x79, 0x6f;
+            const byte_str response(
+                    "05 64 27 44 01 00 d2 04 79 6f");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -781,13 +775,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
     }
     {
         {
-            byte_buffer response;
-            response << 0xc0, 0xf5, 0x82, 0x0f, 0x00, 0x1e, 0x01, 0x18, 0x01, 0x00,
-                        0x04, 0x00, 0x3f, 0x01, 0x00, 0x00, 0x25, 0xc7, 0x01, 0x02,
-                        0x18, 0x01, 0x00, 0x02, 0x00, 0x14, 0x01, 0x18, 0x01, 0x00,
-                        0x10, 0x00, 0x13, 0x00, 0x20, 0xd3, 0x00, 0x00, 0xff, 0xff;
+            const byte_str response(
+                    "c0 f5 82 0f 00 1e 01 18 01 00 "
+                    "04 00 3f 01 00 00 25 c7 01 02 "
+                    "18 01 00 02 00 14 01 18 01 00 "
+                    "10 00 13 00 20 d3 00 00 ff ff");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -805,13 +799,12 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x08, 0xc4, 0xd2, 0x04, 0x01, 0x00, 0xa6, 0x7c,
-                   0xc0, 0xd5, 0x00, 0x9f, 0xd5;
+        const byte_str expected(
+                "05 64 08 c4 d2 04 01 00 a6 7c "
+                "c0 d5 00 9f d5");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -831,10 +824,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
     }
     {
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x27, 0x44, 0x01, 0x00, 0xd2, 0x04, 0x79, 0x6f;
+            const byte_str response(
+                    "05 64 27 44 01 00 d2 04 79 6f");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -854,13 +847,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
     }
     {
         {
-            byte_buffer response;
-            response << 0xc0, 0xea, 0x81, 0x0f, 0x00, 0x1e, 0x01, 0x18, 0x01, 0x00,
-                        0x03, 0x00, 0x3f, 0x01, 0x00, 0x00, 0x9e, 0xb9, 0x01, 0x02,
-                        0x18, 0x01, 0x00, 0x01, 0x00, 0x14, 0x01, 0x18, 0x01, 0x00,
-                        0x00, 0x00, 0x13, 0x00, 0x95, 0x4f, 0x00, 0x00, 0xff, 0xff;
+            const byte_str response(
+                    "c0 ea 81 0f 00 1e 01 18 01 00 "
+                    "03 00 3f 01 00 00 9e b9 01 02 "
+                    "18 01 00 01 00 14 01 18 01 00 "
+                    "00 00 13 00 95 4f 00 00 ff ff");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -878,13 +871,12 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time_interrupting_unsolic
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x08, 0xc4, 0xd2, 0x04, 0x01, 0x00, 0xa6, 0x7c,
-                   0xc0, 0xca, 0x00, 0x42, 0xe2;
+        const byte_str expected(
+                "05 64 08 c4 d2 04 01 00 a6 7c "
+                "c0 ca 00 42 e2");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -1016,14 +1008,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x14, 0xc4, 0xd2, 0x04, 0x01, 0x00, 0xd5, 0xd3,
-                   0xc0, 0xc1, 0x01, 0x3c, 0x02, 0x06, 0x3c, 0x03, 0x06, 0x3c,
-                   0x04, 0x06, 0x3c, 0x01, 0x06, 0x7a, 0x6f;
+        const byte_str expected(
+                "05 64 14 c4 d2 04 01 00 d5 d3 "
+                "c0 c1 01 3c 02 06 3c 03 06 3c "
+                "04 06 3c 01 06 7a 6f");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -1042,10 +1033,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
     }
     {
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x27, 0x44, 0x01, 0x00, 0xd2, 0x04, 0x79, 0x6f;
+            const byte_str response(
+                    "05 64 27 44 01 00 d2 04 79 6f");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -1064,13 +1055,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan)
     }
     {
         {
-            byte_buffer response;
-            response << 0xc0, 0xca, 0x81, 0x0f, 0x00, 0x1e, 0x01, 0x18, 0x01, 0x00,
-                        0x03, 0x00, 0x3f, 0x01, 0x00, 0x00, 0x40, 0xbe, 0x01, 0x02,
-                        0x18, 0x01, 0x00, 0x01, 0x00, 0x14, 0x01, 0x18, 0x01, 0x00,
-                        0x00, 0x00, 0x13, 0x00, 0x95, 0x4f, 0x00, 0x00, 0xff, 0xff;
+            const byte_str response(
+                    "c0 ca 81 0f 00 1e 01 18 01 00 "
+                    "03 00 3f 01 00 00 40 be 01 02 "
+                    "18 01 00 01 00 14 01 18 01 00 "
+                    "00 00 13 00 95 4f 00 00 ff ff");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -1172,14 +1163,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x14, 0xc4, 0xd2, 0x04, 0x01, 0x00, 0xd5, 0xd3,
-                   0xc0, 0xc1, 0x01, 0x3c, 0x02, 0x06, 0x3c, 0x03, 0x06, 0x3c,
-                   0x04, 0x06, 0x3c, 0x01, 0x06, 0x7a, 0x6f;
+        const byte_str expected(
+                "05 64 14 c4 d2 04 01 00 d5 d3 "
+                "c0 c1 01 3c 02 06 3c 03 06 3c "
+                "04 06 3c 01 06 7a 6f");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -1198,10 +1188,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
     }
     {
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x27, 0x44, 0x01, 0x00, 0xd2, 0x04, 0x79, 0x6f;
+            const byte_str response(
+                    "05 64 27 44 01 00 d2 04 79 6f");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -1220,13 +1210,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_no_ack_required)
     }
     {
         {
-            byte_buffer response;
-            response << 0xc0, 0xca, 0x81, 0x0f, 0x00, 0x1e, 0x01, 0x18, 0x01, 0x00,
-                        0x03, 0x00, 0x3f, 0x01, 0x00, 0x00, 0x40, 0xbe, 0x01, 0x02,
-                        0x18, 0x01, 0x00, 0x01, 0x00, 0x14, 0x01, 0x18, 0x01, 0x00,
-                        0x00, 0x00, 0x13, 0x00, 0x95, 0x4f, 0x00, 0x00, 0xff, 0xff;
+            const byte_str response(
+                    "c0 ca 81 0f 00 1e 01 18 01 00 "
+                    "03 00 3f 01 00 00 40 be 01 02 "
+                    "18 01 00 01 00 14 01 18 01 00 "
+                    "00 00 13 00 95 4f 00 00 ff ff");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -1328,14 +1318,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x14, 0xc4, 0xd2, 0x04, 0x01, 0x00, 0xd5, 0xd3,
-                   0xc0, 0xc1, 0x01, 0x3c, 0x02, 0x06, 0x3c, 0x03, 0x06, 0x3c,
-                   0x04, 0x06, 0x3c, 0x01, 0x06, 0x7a, 0x6f;
+        const byte_str expected(
+                "05 64 14 c4 d2 04 01 00 d5 d3 "
+                "c0 c1 01 3c 02 06 3c 03 06 3c "
+                "04 06 3c 01 06 7a 6f");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -1354,10 +1343,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
     }
     {
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x27, 0x44, 0x01, 0x00, 0xd2, 0x04, 0x79, 0x6f;
+            const byte_str response(
+                    "05 64 27 44 01 00 d2 04 79 6f");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -1376,13 +1365,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
     }
     {
         {
-            byte_buffer response;
-            response << 0xc0, 0xea, 0x81, 0x0f, 0x00, 0x1e, 0x01, 0x18, 0x01, 0x00,
-                        0x03, 0x00, 0x3f, 0x01, 0x00, 0x00, 0x9e, 0xb9, 0x01, 0x02,
-                        0x18, 0x01, 0x00, 0x01, 0x00, 0x14, 0x01, 0x18, 0x01, 0x00,
-                        0x00, 0x00, 0x13, 0x00, 0x95, 0x4f, 0x00, 0x00, 0xff, 0xff;
+            const byte_str response(
+                    "c0 ea 81 0f 00 1e 01 18 01 00 "
+                    "03 00 3f 01 00 00 9e b9 01 02 "
+                    "18 01 00 01 00 14 01 18 01 00 "
+                    "00 00 13 00 95 4f 00 00 ff ff");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -1399,14 +1388,12 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_ack_required)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        const unsigned char request[] = "\x05\x64\x08\xc4\xd2\x04\x01\x00\xa6\x7c"
-                                        "\xc0\xca\x00\x42\xe2";
-
-        const unsigned request_len = sizeof(request) / sizeof(*request) - 1;  //  trim off the implicit null
+        const byte_str expected(
+                "05 64 08 c4 d2 04 01 00 a6 7c "
+                "c0 ca 00 42 e2");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request, request + request_len);
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -1509,14 +1496,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x14, 0xc4, 0xd2, 0x04, 0x01, 0x00, 0xd5, 0xd3,
-                   0xc0, 0xc1, 0x01, 0x3c, 0x02, 0x06, 0x3c, 0x03, 0x06, 0x3c,
-                   0x04, 0x06, 0x3c, 0x01, 0x06, 0x7a, 0x6f;
+        const byte_str expected(
+                "05 64 14 c4 d2 04 01 00 d5 d3 "
+                "c0 c1 01 3c 02 06 3c 03 06 3c "
+                "04 06 3c 01 06 7a 6f");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -1536,10 +1522,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
     }
     {
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x27, 0x44, 0x01, 0x00, 0xd2, 0x04, 0x79, 0x6f;
+            const byte_str response(
+                    "05 64 27 44 01 00 d2 04 79 6f");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -1559,13 +1545,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
     }
     {
         {
-            byte_buffer response;
-            response << 0xc0, 0xf5, 0x82, 0x0f, 0x00, 0x1e, 0x01, 0x18, 0x01, 0x00,
-                        0x04, 0x00, 0x3f, 0x01, 0x00, 0x00, 0x25, 0xc7, 0x01, 0x02,
-                        0x18, 0x01, 0x00, 0x02, 0x00, 0x14, 0x01, 0x18, 0x01, 0x00,
-                        0x10, 0x00, 0x13, 0x00, 0x20, 0xd3, 0x00, 0x00, 0xff, 0xff;
+            const byte_str response(
+                    "c0 f5 82 0f 00 1e 01 18 01 00 "
+                    "04 00 3f 01 00 00 25 c7 01 02 "
+                    "18 01 00 02 00 14 01 18 01 00 "
+                    "10 00 13 00 20 d3 00 00 ff ff");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -1583,13 +1569,12 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x08, 0xc4, 0xd2, 0x04, 0x01, 0x00, 0xa6, 0x7c,
-                   0xc0, 0xd5, 0x00, 0x9f, 0xd5;
+        const byte_str expected(
+                "05 64 08 c4 d2 04 01 00 a6 7c "
+                "c0 d5 00 9f d5");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -1609,10 +1594,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
     }
     {
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x27, 0x44, 0x01, 0x00, 0xd2, 0x04, 0x79, 0x6f;
+            const byte_str response(
+                    "05 64 27 44 01 00 d2 04 79 6f");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -1632,13 +1617,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
     }
     {
         {
-            byte_buffer response;
-            response << 0xc0, 0xea, 0x81, 0x0f, 0x00, 0x1e, 0x01, 0x18, 0x01, 0x00,
-                        0x03, 0x00, 0x3f, 0x01, 0x00, 0x00, 0x9e, 0xb9, 0x01, 0x02,
-                        0x18, 0x01, 0x00, 0x01, 0x00, 0x14, 0x01, 0x18, 0x01, 0x00,
-                        0x00, 0x00, 0x13, 0x00, 0x95, 0x4f, 0x00, 0x00, 0xff, 0xff;
+            const byte_str response(
+                    "c0 ea 81 0f 00 1e 01 18 01 00 "
+                    "03 00 3f 01 00 00 9e b9 01 02 "
+                    "18 01 00 01 00 14 01 18 01 00 "
+                    "00 00 13 00 95 4f 00 00 ff ff");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -1656,13 +1641,12 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_interrupting_unsolicited)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x08, 0xc4, 0xd2, 0x04, 0x01, 0x00, 0xa6, 0x7c,
-                   0xc0, 0xca, 0x00, 0x42, 0xe2;
+        const byte_str expected(
+                "05 64 08 c4 d2 04 01 00 a6 7c "
+                "c0 ca 00 42 e2");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -1797,10 +1781,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
     }
     {
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x27, 0x44, 0x01, 0x00, 0xd2, 0x04, 0x79, 0x6f;
+            const byte_str response(
+                    "05 64 27 44 01 00 d2 04 79 6f");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -1820,13 +1804,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
     }
     {
         {
-            byte_buffer response;
-            response << 0xc0, 0xf5, 0x82, 0x0f, 0x00, 0x1e, 0x01, 0x18, 0x01, 0x00,
-                        0x04, 0x00, 0x3f, 0x01, 0x00, 0x00, 0x25, 0xc7, 0x01, 0x02,
-                        0x18, 0x01, 0x00, 0x02, 0x00, 0x14, 0x01, 0x18, 0x01, 0x00,
-                        0x10, 0x00, 0x13, 0x00, 0x20, 0xd3, 0x00, 0x00, 0xff, 0xff;
+            const byte_str response(
+                    "c0 f5 82 0f 00 1e 01 18 01 00 "
+                    "04 00 3f 01 00 00 25 c7 01 02 "
+                    "18 01 00 02 00 14 01 18 01 00 "
+                    "10 00 13 00 20 d3 00 00 ff ff");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -1844,13 +1828,12 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x08, 0xc4, 0xd2, 0x04, 0x01, 0x00, 0xa6, 0x7c,
-                   0xc0, 0xd5, 0x00, 0x9f, 0xd5;
+        const byte_str expected(
+                "05 64 08 c4 d2 04 01 00 a6 7c "
+                "c0 d5 00 9f d5");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -1943,13 +1926,12 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x08, 0xC4, 0x04, 0x00, 0x03, 0x00, 0xB4, 0xB8,
-                   0xC0, 0xC1, 0x01, 0x23, 0x0B;
+        const byte_str expected(
+                "05 64 08 C4 04 00 03 00 B4 B8 "
+                "C0 C1 01 23 0B");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -1970,8 +1952,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
         BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
 
         {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x0A, 0x44, 0x03, 0x00, 0x04, 0x00, 0x7C, 0xAE;
+            const byte_str response(
+                    "05 64 0A 44 03 00 04 00 7C AE");
 
             std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
@@ -1995,8 +1977,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
         {
             // NEEDTIME and RESTART are enable in this response,
             // RESTART has priority however NEEDTIME is expected to be scheduled
-            byte_buffer response;
-            response << 0xC1, 0xC1, 0x81, 0x90, 0x04, 0x0D, 0x14;
+            const byte_str response(
+                    "C1 C1 81 90 04 0D 14");
 
             std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
@@ -2015,14 +1997,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
 
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x0E, 0xC4, 0x04, 0x00, 0x03, 0x00, 0x6D, 0xD3,
-                   0xC0, 0xC2, 0x02, 0x50, 0x01, 0x00, 0x07, 0x07, 0x00, 0x08,
-                   0x65;
+        const byte_str expected(
+                "05 64 0E C4 04 00 03 00 6D D3 "
+                "C0 C2 02 50 01 00 07 07 00 08 "
+                "65");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -2043,8 +2024,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
         BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
 
     {
-            byte_buffer response;
-            response << 0x05, 0x64, 0x0A, 0x44, 0x03, 0x00, 0x04, 0x00, 0x7C, 0xAE;
+            const byte_str response(
+                    "05 64 0A 44 03 00 04 00 7C AE");
 
             std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
@@ -2067,8 +2048,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
 
         {
             // NEEDTIME is set again in this response
-            byte_buffer response;
-            response << 0xC2, 0xC2, 0x81, 0x10, 0x00, 0x11, 0xb9;
+            const byte_str response(
+                    "C2 C2 81 10 00 11 b9");
 
             std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
@@ -2097,11 +2078,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
         // Millis timestamp on 48-bits
         // 1401207779 * 1000 = 1401207779000 => 0x01463E7DEEB8 => 0xB8, 0xEE, 0x7D, 0x3E, 0x46, 0x01
 
-        byte_buffer request;
-        request << 0x05, 0x64, 0x12, 0xc4, 0x04, 0x00, 0x03, 0x00, 0x1E, 0x7C,
-                   0xC0, 0xC3, 0x02, 0x32, 0x01, 0x07, 0x01, 0xB8, 0xEE, 0x7D, 0x3E, 0x46, 0x01, 0x57, 0x3B;
-
-        const std::vector<int> expected(request.begin(), request.end());
+        const byte_str expected(
+                "05 64 12 c4 04 00 03 00 1E 7C "
+                "C0 C3 02 32 01 07 01 B8 EE 7D 3E 46 01 57 3B");
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -2120,12 +2099,11 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
         BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
 
         {
-            byte_buffer response;
-
             // Header block, expecting 10-bytes, (all user data without the CRC)
             // src address 0x0003
             // dst address 0x0004
-            response << 0x05, 0x64, 0x0A, 0x44, 0x03, 0x00, 0x04, 0x00, 0x7C, 0xAE;
+            const byte_str response(
+                    "05 64 0A 44 03 00 04 00 7C AE");
 
             std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
@@ -2144,8 +2122,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
 
         {
             // this time leave internal indication to zero
-            byte_buffer response;
-            response << 0xC0, 0xC3, 0x81, 0x00, 0x00, 0xDD, 0xE2;
+            const byte_str response(
+                    "C0 C3 81 00 00 DD E2");
 
             std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
@@ -2255,15 +2233,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request <<
-            0x05, 0x64, 0x18, 0xC4, 0xF6, 0x01, 0xE8, 0x03, 0x36, 0x79,
-            0xC0, 0xC1, 0x05, 0x0C, 0x01, 0x17, 0x01, 0x00, 0x41, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x84, 0xA9,
-            0x00, 0x00, 0x00, 0xFF, 0xFF;
+        const byte_str expected(
+                "05 64 18 C4 F6 01 E8 03 36 79 "
+                "C0 C1 05 0C 01 17 01 00 41 01 00 00 00 00 00 00 84 A9 "
+                "00 00 00 FF FF");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -2281,11 +2257,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
     }
     {
         {
-            byte_buffer response;
-            response <<
-                0x05, 0x64, 0x1A, 0x44, 0xE8, 0x03, 0xF6, 0x01, 0x20, 0xBB;
+            const byte_str response(
+                    "05 64 1A 44 E8 03 F6 01 20 BB");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -2303,12 +2278,11 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_inhibited_by_local_automation)
     }
     {
         {
-            byte_buffer response;
-            response <<
-                0xDE, 0xC3, 0x81, 0x00, 0x00, 0x0C, 0x01, 0x17, 0x01, 0x00, 0x41, 0x01, 0x00, 0x00, 0x00, 0x00, 0x09, 0xD9,
-                0x00, 0x00, 0x00, 0x00, 0x0A, 0xCA, 0x6C;
+            const byte_str response(
+                    "DE C3 81 00 00 0C 01 17 01 00 41 01 00 00 00 00 09 D9 "
+                    "00 00 00 00 0A CA 6C");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -2365,15 +2339,13 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
         BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
         BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
 
-        byte_buffer request;
-        request <<
-            0x05, 0x64, 0x18, 0xC4, 0xF6, 0x01, 0xE8, 0x03, 0x36, 0x79,
-            0xC0, 0xC1, 0x05, 0x0C, 0x01, 0x17, 0x01, 0x00, 0x41, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x84, 0xA9,
-            0x00, 0x00, 0x00, 0xFF, 0xFF;
+        const byte_str expected(
+                "05 64 18 C4 F6 01 E8 03 36 79 "
+                "C0 C1 05 0C 01 17 01 00 41 01 00 00 00 00 00 00 84 A9 "
+                "00 00 00 FF FF");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-        const std::vector<int> expected(request.begin(), request.end());
 
         BOOST_CHECK_EQUAL_RANGES(expected, output);
     }
@@ -2391,11 +2363,10 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
     }
     {
         {
-            byte_buffer response;
-            response <<
-                0x05, 0x64, 0x1A, 0x44, 0xE8, 0x03, 0xF6, 0x01, 0x20, 0xBB;
+            const byte_str response(
+                    "05 64 1A 44 E8 03 F6 01 20 BB");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
@@ -2413,12 +2384,11 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
     }
     {
         {
-            byte_buffer response;
-            response <<
-                0xDE, 0xC3, 0x81, 0x00, 0x00, 0x0C, 0x01, 0x17, 0x01, 0x00, 0x41, 0x01, 0x00, 0x00, 0x00, 0x00, 0x09, 0xD9,
-                0x00, 0x00, 0x00, 0x00, 0x04, 0x87, 0x26;
+            const byte_str response(
+                    "DE C3 81 00 00 0C 01 17 01 00 41 01 00 00 00 00 09 D9 "
+                    "00 00 00 00 04 87 26");
 
-            response.copy_to(xfer.getInBuffer());
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
 
             xfer.setInCountActual(response.size());
         }
