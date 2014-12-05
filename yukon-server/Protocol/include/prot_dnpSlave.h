@@ -50,6 +50,7 @@ public:
                 bool queue;
                 bool clear;
                 unsigned char count;
+                DNP::BinaryOutputControl::Status status;
             } din;
 
             struct ci_point

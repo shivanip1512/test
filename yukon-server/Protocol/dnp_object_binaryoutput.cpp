@@ -189,6 +189,12 @@ void BinaryOutputControl::setControlBlock(unsigned long onTime, unsigned long of
 }
 
 
+void BinaryOutputControl::setStatus(Status s)
+{
+    _crob_or_pcb.block.status = s;
+}
+
+
 int BinaryOutputControl::restore(const unsigned char *buf, int len)
 {
     int pos = 0;

@@ -284,6 +284,7 @@ BOOST_AUTO_TEST_CASE( test_control_request )
         fdrPoint->setOffset(12);
         fdrPoint->setPointType(StatusPointType);
         fdrPoint->setValue(0);
+        fdrPoint->setControllable(true);
 
         CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
 
@@ -311,6 +312,197 @@ BOOST_AUTO_TEST_CASE( test_control_request )
             "05 64 1a 44 e8 03 f6 01 20 bb "
             "c0 c1 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 a7 b3 "
             "00 00 00 00 00 ff ff");
+
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+}
+
+
+BOOST_AUTO_TEST_CASE( test_control_request_shortIndexShortQuantity )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.setSendToList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(53);
+        fdrPoint->setOffset(12);
+        fdrPoint->setPointType(StatusPointType);
+        fdrPoint->setValue(0);
+        fdrPoint->setControllable(true);
+
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, true);
+    }
+
+    const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 28 00 01 00 00 41 01 00 00 00 00 de cf "
+            "00 00 00 00 00 ff ff");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 a7 b3 "
+            "00 00 00 00 00 ff ff");
+
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+}
+
+
+BOOST_AUTO_TEST_CASE( test_control_request_controlDisabled )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.setSendToList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(53);
+        fdrPoint->setOffset(12);
+        fdrPoint->setPointType(StatusPointType);
+        fdrPoint->setValue(0);
+        fdrPoint->setControllable(false);
+
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, true);
+    }
+
+    const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 17 01 00 41 01 00 00 00 00 00 00 84 a9 "
+            "00 00 00 ff ff");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 a7 b3 "
+            "00 00 00 00 04 87 26");
+
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+}
+
+
+BOOST_AUTO_TEST_CASE( test_control_request_invalidObject )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.setSendToList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(53);
+        fdrPoint->setOffset(12);
+        fdrPoint->setPointType(StatusPointType);
+        fdrPoint->setValue(0);
+        fdrPoint->setControllable(true);
+
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, true);
+    }
+
+    const byte_str request(
+            "05 64 0e c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 01 01 17 01 00 00 8e 4e");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    const std::vector<unsigned char> expected;  //  empty
+
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+}
+
+
+BOOST_AUTO_TEST_CASE( test_control_noPoints )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 17 01 00 41 01 00 00 00 00 00 00 84 a9 "
+            "00 00 00 ff ff");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 a7 b3 "
+            "00 00 00 00 04 87 26");
 
     BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
 }

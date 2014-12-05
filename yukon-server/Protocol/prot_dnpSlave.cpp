@@ -107,7 +107,8 @@ int DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
                             p.din.queue,
                             p.din.clear,
                             p.din.trip_close);
-                    //  status defaults to 0
+                    boc->setStatus(
+                            p.din.status);
 
                     getApplicationLayer().setCommand(
                             ApplicationLayer::ResponseResponse,

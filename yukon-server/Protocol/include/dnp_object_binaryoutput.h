@@ -150,6 +150,7 @@ public:
     };
 
     void setControlBlock(unsigned long onTime, unsigned long offTime, unsigned char count, ControlCode code, bool queue, bool clear, TripClose tripclose);
+    void setStatus(Status s);
 
     int restore(const unsigned char *buf, int len);
     int restoreBits(const unsigned char *buf, int bitoffset, int len);

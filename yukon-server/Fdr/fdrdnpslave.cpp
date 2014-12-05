@@ -257,31 +257,24 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
     {
         case SINGLE_SOCKET_DNP_DATALINK_REQ:
         {
-            processDataLinkConfirmationRequest (connection, data);
-            break;
+            return processDataLinkConfirmationRequest (connection, data);
         }
         case SINGLE_SOCKET_DNP_READ:
         {
-            processScanSlaveRequest (connection, data, size);
-            break;
+            return processScanSlaveRequest (connection, data, size);
         }
         case SINGLE_SOCKET_DNP_DIRECT_OP:
         {
-            processControlRequest(connection, data, size);
-            break;
-        }
-        case SINGLE_SOCKET_DNP_CONFIRM:
-        case SINGLE_SOCKET_DNP_WRITE:
-        default:
-        {
-            if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-            {
-                CTILOG_DEBUG(dout, logNow() << " received an unsupported DNP message, response not generated.");
-            }
-            break;
+            return processControlRequest(connection, data, size);
         }
     }
-    return 0;
+
+    if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+    {
+        CTILOG_DEBUG(dout, logNow() << " received an unsupported DNP message, response not generated.");
+    }
+
+    return -1;
 }
 
 
@@ -446,6 +439,70 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
 }
 
 
+struct ControlParameters
+{
+    unsigned offset;
+    unsigned code;
+    unsigned count;
+    unsigned onTime;
+    unsigned offTime;
+    unsigned status;
+};
+
+
+ControlParameters extractByteIndexByteQuantity(const char *data)
+{
+    // [16] 01 - 1 element
+    // [17] 00 - index 1
+    // [18] 41 - control code
+    // [19] 01 - count
+    // [20] 00 00 00 00 - on time
+    // [24] 00 00 //  84 A9 CRC
+    // [28] 00 00 - off time
+    // [30] 00 - status //  FF FF  CRC
+
+    const unsigned elements = data[16];
+
+    ControlParameters c;
+
+    c.offset  = data[17],
+    c.code    = data[18],
+    c.count   = data[19],
+    c.onTime  = ntohl(*reinterpret_cast<const unsigned long *> (data + 20)),
+    c.offTime = ntohs(*reinterpret_cast<const unsigned short *>(data + 24)) << 16 |
+                ntohs(*reinterpret_cast<const unsigned short *>(data + 28)),
+    c.status  = data[30];
+
+    return c;
+}
+
+
+ControlParameters extractShortIndexShortQuantity(const char *data)
+{
+    // [16] 00 01 - 1 element
+    // [18] 00 00 - index 1
+    // [20] 41 - control code
+    // [21] 01 - count
+    // [22] 00 00 00 00 - on time
+    // [26] //  84 A9 CRC
+    // [28] 00 00 00 00 - off time
+    // [32] 00 - status //  FF FF  CRC
+
+    const unsigned elements = ntohs(*reinterpret_cast<const unsigned short *>(data + 16));
+
+    ControlParameters c;
+
+    c.offset  = ntohs(*reinterpret_cast<const unsigned short *>(data + 18));
+    c.code    = data[20],
+    c.count   = data[21],
+    c.onTime  = ntohl(*reinterpret_cast<const unsigned long *>(data + 22)),
+    c.offTime = ntohs(*reinterpret_cast<const unsigned long *>(data + 28)),
+    c.status  = data[32];
+
+    return c;
+}
+
+
 int DnpSlave::processControlRequest (ServerConnection& connection, const char* data, unsigned int size)
 {
     CtiXfer xfer = CtiXfer(NULL, 0, (BYTE*)data, getMessageSize(data));
@@ -466,14 +523,14 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
     // [12] 05 - ctrl code: Direct Operate
     // [13] 0C 01 - binary output, variation 1 (control relay output block)
     // [15] 17 - 1 octet index, 1 octet quantity
-    // [16] 01 - 1 element
-    // [17] 00 - index 1
-    // [18] 41 - control code
-    // [19] 01 - count
-    // [20] 00 00 00 00 - on time
-    // [24] 00 00 //  84 A9 CRC
-    // [28] 00 00 - off time
-    // [30] 00 - status //  FF FF  CRC
+
+    //  qualifier 28:
+    //
+    //  05 64 18 C4 F6 01 E8 03 36 79
+    //  C0 C1 05 0C 01 28 00 01 00 00 41 01 00 00 00 00 84 A9
+    //  00 00 00 00 00 FF FF
+
+    // [15] 28 - 2 octet index, 2 octet quantity
 
     const unsigned
         dest = *reinterpret_cast<const unsigned short *>(data + 4),
@@ -481,15 +538,45 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
         appSequence   = (data[11] & 0x0F),
         group         = data[13],
         variation     = data[14],
-        qualifier     = data[15],
-        elements      = data[16],
-        controlOffset = data[17],
-        controlCode   = data[18],
-        count         = data[19],
-        onTime  = ntohl(*reinterpret_cast<const unsigned long *>(data + 20)),
-        offTime = ntohs(*reinterpret_cast<const unsigned short *>(data + 24)) << 16 |
-                  ntohs(*reinterpret_cast<const unsigned short *>(data + 28)),
-        status  = data[30];
+        qualifier     = data[15];
+
+    if (group != 0x0c || variation != 0x01)
+    {
+        CTILOG_ERROR(dout, logNow() << " unknown"
+                                       " group " << group <<
+                                       " variation " << variation);
+        return -1;
+    }
+
+    ControlParameters control;
+
+    switch(qualifier)
+    {
+        case 0x17:
+            control = extractByteIndexByteQuantity(data);
+            break;
+
+        case 0x28:
+            control = extractShortIndexShortQuantity(data);
+            break;
+
+        default:
+            CTILOG_ERROR(dout, logNow() << " unknown qualifier " << qualifier);
+            return -1;
+    }
+
+    DnpSlaveProtocol::input_point iPoint;
+
+    iPoint.type = DnpSlaveProtocol::DigitalInput;
+    iPoint.control_offset = control.offset;
+    iPoint.din.control    = static_cast<BinaryOutputControl::ControlCode>(control.code & 0x0f);
+    iPoint.din.queue      = control.code & 0x10;
+    iPoint.din.clear      = control.code & 0x20;
+    iPoint.din.trip_close = static_cast<BinaryOutputControl::TripClose>  ((control.code & 0xc0) >> 6);
+    iPoint.din.count      = control.count;
+    iPoint.din.on_time    = control.onTime;
+    iPoint.din.off_time   = control.offTime;
+    iPoint.din.status     = BinaryOutputControl::Status_NotSupported;
 
     //  look for the point with the correct control offset
     for each( SendMap::value_type mapping in _sendMap )
@@ -498,7 +585,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
         if (dnpId.PointType   == StatusPointType
             && dnpId.SlaveId  == dest
             && dnpId.MasterId == src
-            && dnpId.Offset   == controlOffset)
+            && dnpId.Offset   == control.offset)
         {
             const CtiFDRDestination &fdrdest = mapping.first;
             CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
@@ -507,57 +594,43 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
             if (!findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
                 continue;
 
-            DnpSlaveProtocol::input_point iPoint;
+            if( fdrPoint->isControllable() )
+            {
+                //  do control
+                iPoint.din.status = BinaryOutputControl::Status_Success;
+            }
+        }
+    }
 
-            iPoint.type = DnpSlaveProtocol::DigitalInput;
-            iPoint.control_offset = controlOffset;
-            iPoint.din.control    = static_cast<BinaryOutputControl::ControlCode>(controlCode & 0x0f);
-            iPoint.din.queue      = controlCode & 0x10;
-            iPoint.din.clear      = controlCode & 0x20;
-            iPoint.din.trip_close = static_cast<BinaryOutputControl::TripClose>  ((controlCode & 0xc0) >> 6);
-            iPoint.din.count      = count;
-            iPoint.din.on_time    = onTime;
-            iPoint.din.off_time   = offTime;
+    _dnpSlave.addInputPoint(iPoint);
 
-            //if (!fdrPoint->isControllable())
-            //{
-            //    iPoint.din.status = CANNOT_CONTROL_OR_SOMETHING;
-            //}
+    _dnpSlave.setAddresses(src, dest);
+    _dnpSlave.setSlaveCommand(DnpProtocol::Command_SetDigitalOut_Direct);
+    _dnpSlave.setOptions(DnpSlaveProtocol::Options_SlaveResponse, appSequence);
 
-            _dnpSlave.addInputPoint(iPoint);
+    //  reply with success
+    while( !_dnpSlave.isTransactionComplete() )
+    {
+        if( _dnpSlave.slaveGenerate(xfer) == 0 )
+        {
+            if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
+            {
+                int bufferSize = xfer.getOutCount();
+                char* buffer = new CHAR[bufferSize];
+                std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
+                if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                {
+                    CTILOG_DEBUG(dout, logNow() <<" sending DNP scan response message."<<
+                                        arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
+                }
+                connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
+            }
 
-            _dnpSlave.setAddresses(src, dest);
-            _dnpSlave.setSlaveCommand(DnpProtocol::Command_SetDigitalOut_Direct);
-            _dnpSlave.setOptions(DnpSlaveProtocol::Options_SlaveResponse, appSequence);
-
-            //  reply with success
-            while( !_dnpSlave.isTransactionComplete() )
-             {
-                 if( _dnpSlave.slaveGenerate(xfer) == 0 )
-                 {
-                     if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
-                     {
-                         int bufferSize = xfer.getOutCount();
-                         char* buffer = new CHAR[bufferSize];
-                         std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
-                         if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-                         {
-                             CTILOG_DEBUG(dout, logNow() <<" sending DNP scan response message."<<
-                                     arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
-                         }
-                         connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
-                     }
-
-                     _dnpSlave.slaveDecode(xfer);
-                 }
-                 else
-                 {
-                     if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-                     {
-                         CTILOG_DEBUG(dout, logNow() <<" was not able to generate control response.");
-                     }
-                 }
-             }
+            _dnpSlave.slaveDecode(xfer);
+        }
+        else if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+        {
+            CTILOG_DEBUG(dout, logNow() <<" was not able to generate control response.");
         }
     }
 
