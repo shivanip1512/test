@@ -8,7 +8,7 @@ using namespace std;
 
 using Cti::Protocols::KlondikeProtocol;
 
-using Cti::byte_buffer;
+using Cti::Test::byte_str;
 
 BOOST_AUTO_TEST_SUITE( test_prot_klondike )
 
@@ -61,17 +61,13 @@ struct Test_Klondike : public KlondikeProtocol
 };
 
 
-void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, const byte_buffer &outbound, const byte_buffer &inbound)
+void do_xfer(Test_Klondike &tk, Test_Wrap &tw, CtiXfer &xfer, const byte_str &outbound, const byte_str &inbound)
 {
     //  first do the send...
     BOOST_CHECK_EQUAL(tk.generate(xfer), ClientErrors::None);
 
     // check what was assigned into our Test_Wrap object
-    BOOST_CHECK_EQUAL_COLLECTIONS(
-        tw.sent.begin(),
-        tw.sent.end(),
-        outbound.begin(),
-        outbound.end());
+    BOOST_CHECK_EQUAL_RANGES(tw.sent, outbound);
 
     BOOST_CHECK_EQUAL(tk.decode(xfer, ClientErrors::None), ClientErrors::None);
     BOOST_CHECK(!tk.errorCondition());
@@ -114,8 +110,8 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_timesync_and_queue_loading)
 
     test_klondike.time = 0x456789ab;
 
-    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x21, 0xab, 0x89, 0x67, 0x45),
-                                            (byte_buffer() << 0x80, 0x21, 0x00, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, byte_str("21 ab 89 67 45"),
+                                            byte_str("80 21 00 00"));
 
     //  then queue up a queued command
     Test_Klondike::byte_buffer_t timesync_standin;
@@ -134,12 +130,12 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_timesync_and_queue_loading)
     BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_LoadQueue), ClientErrors::None);
 
     //  verify it grabs the status from the CCU first
-    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x11),
-                                            (byte_buffer() << 0x81, 0x11, 0x00, 0x00, 0x04, 0x37, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, byte_str("11"),
+                                            byte_str("81 11 00 00 04 37 00"));
 
     //  then loads the queued request
-    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x13, 0x37, 0x00, 0x01, 0x0f, 0x10, 0x00, 0x03, 0x12, 0x34, 0x56),
-                                            (byte_buffer() << 0x81, 0x13, 0x08, 0x00, 0x01, 0x03));
+    do_xfer(test_klondike, test_wrap, xfer, byte_str("13 37 00 01 0f 10 00 03 12 34 56"),
+                                            byte_str("81 13 08 00 01 03"));
 }
 
 
@@ -158,23 +154,23 @@ BOOST_AUTO_TEST_CASE(test_prot_klondike_route_loading)
 
     test_klondike.addRoute(1, 27, 3, 6);
 
-    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x34, 0x00),
-                                            (byte_buffer() << 0x80, 0x21, 0x00, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, byte_str("34 00"),
+                                            byte_str("80 21 00 00"));
 
     //  fixed, variable, stages, bus
 
-    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x31, 0x01, 0x00, 0xdb, 0x31),
-                                            (byte_buffer() << 0x80, 0x21, 0x00, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, byte_str("31 01 00 db 31"),
+                                            byte_str("80 21 00 00"));
 
     BOOST_CHECK_EQUAL(test_klondike.setCommand(KlondikeProtocol::Command_LoadRoutes), ClientErrors::None);
 
     test_klondike.addRoute(2, 16, 5, 2);
 
-    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x34, 0x00),
-                                            (byte_buffer() << 0x80, 0x21, 0x00, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, byte_str("34 00"),
+                                            byte_str("80 21 00 00"));
 
-    do_xfer(test_klondike, test_wrap, xfer, (byte_buffer() << 0x31, 0x02, 0x00, 0xdb, 0x31, 0x01, 0x85, 0x12),
-                                            (byte_buffer() << 0x80, 0x21, 0x00, 0x00));
+    do_xfer(test_klondike, test_wrap, xfer, byte_str("31 02 00 db 31 01 85 12"),
+                                            byte_str("80 21 00 00"));
 }
 
 
