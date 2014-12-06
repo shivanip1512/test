@@ -3155,7 +3155,7 @@ INT CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapp
 {
     INT status = ClientErrors::None;
 
-    CtiCommandMsg::CtiOpArgList_t &Op = pCmd->getOpArgList();
+    CtiCommandMsg::OpArgList &Op = pCmd->getOpArgList();
 
     if( Op[1] == CtiCommandMsg::OP_DEVICEID )    // All points on a device must be marked as nonUpdated
     {
@@ -6947,7 +6947,7 @@ bool CtiVanGogh::checkMessageForPreLoad(CtiMessage *MsgPtr)
             }
             else if(pCmdMsg->getOperation() == CtiCommandMsg::UpdateFailed)
             {
-                CtiCommandMsg::CtiOpArgList_t &Op = pCmdMsg->getOpArgList();
+                CtiCommandMsg::OpArgList &Op = pCmdMsg->getOpArgList();
 
                 if( Op[1] == CtiCommandMsg::OP_DEVICEID )    // All points on a device must be marked as nonUpdated
                 {
@@ -7086,7 +7086,7 @@ void CtiVanGogh::findPreLoadPointId(CtiMessage *MsgPtr, std::set<long> &ptIdList
             }
             else if(pCmdMsg->getOperation() == CtiCommandMsg::UpdateFailed)
             {
-                CtiCommandMsg::CtiOpArgList_t &Op = pCmdMsg->getOpArgList();
+                CtiCommandMsg::OpArgList &Op = pCmdMsg->getOpArgList();
 
                 if( Op[1] == CtiCommandMsg::OP_DEVICEID )    // All points on a device must be marked as nonUpdated
                 {

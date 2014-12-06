@@ -14,6 +14,15 @@ struct Test_FdrDnpSlave : Cti::Fdr::DnpSlave
 {
     using DnpSlave::translateSinglePoint;
     using DnpSlave::processMessageFromForeignSystem;
+
+    boost::ptr_vector<CtiMessage> dispatchMessages;
+
+    bool sendMessageToDispatch (CtiMessage *aMessage) override
+    {
+        dispatchMessages.push_back(aMessage);
+
+        return true;
+    };
 };
 
 struct Test_ServerConnection : Cti::Fdr::ServerConnection
@@ -314,6 +323,17 @@ BOOST_AUTO_TEST_CASE( test_control_request )
             "00 00 00 00 00 ff ff");
 
     BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+
+    BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
+
+    const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+
+    CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+    BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
+    BOOST_CHECK_EQUAL(opArgs[0], -1);
+    BOOST_CHECK_EQUAL(opArgs[1],  0);
+    BOOST_CHECK_EQUAL(opArgs[2], 43);  //  point id
+    BOOST_CHECK_EQUAL(opArgs[3],  1);  //  control state
 }
 
 

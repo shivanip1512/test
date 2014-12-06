@@ -590,13 +590,33 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
             const CtiFDRDestination &fdrdest = mapping.first;
             CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
 
-            CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
-            if (!findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
-                continue;
+            {
+                CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
+
+                if ( ! findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
+                {
+                    continue;
+                }
+            }
 
             if( fdrPoint->isControllable() )
             {
-                //  do control
+                // build the command message and send the control
+                std::auto_ptr<CtiCommandMsg> cmdMsg(
+                        new CtiCommandMsg(CtiCommandMsg::ControlRequest));
+
+                cmdMsg->insert(-1);     // This is the dispatch token and is unimplemented at this time
+                cmdMsg->insert(0);      // device id, unknown at this point, dispatch will find it
+                cmdMsg->insert(fdrPoint->getPointID());  // point for control
+                cmdMsg->insert(iPoint.din.trip_close == BinaryOutputControl::Close);  //  Open => 0, Close => 1
+
+                sendMessageToDispatch(cmdMsg.release());
+
+                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                {
+                    CTILOG_DEBUG(dout, logNow() << " Control " << (iPoint.din.trip_close == BinaryOutputControl::Close ? "close" : "open") << " sent to pointid " << fdrPoint->getPointID());
+                }
+
                 iPoint.din.status = BinaryOutputControl::Status_Success;
             }
         }

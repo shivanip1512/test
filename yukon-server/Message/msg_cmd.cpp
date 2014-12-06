@@ -103,7 +103,7 @@ CtiCommandMsg& CtiCommandMsg::setOperation(const INT &aInt)
    return *this;
 }
 
-CtiCommandMsg& CtiCommandMsg::setOpArgList(const CtiOpArgList_t &aRef)
+CtiCommandMsg& CtiCommandMsg::setOpArgList(const OpArgList &aRef)
 {
    iOpArgList = aRef;
    return *this;

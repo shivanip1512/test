@@ -75,7 +75,7 @@ void DispatchConnection::requestPointValues(const std::set<long>& pointIds)
     CtiCommandMsg* cmdMsg = new CtiCommandMsg();
     cmdMsg->setOperation(CtiCommandMsg::PointDataRequest);
 
-    CtiCommandMsg::CtiOpArgList_t points;
+    CtiCommandMsg::OpArgList points;
     for each (int pointId in pointIds)
     {
         points.push_back(pointId);

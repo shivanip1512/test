@@ -607,7 +607,7 @@ bool CtiFDRSocketServer::sendAllPoints(CtiFDRClientServerConnectionSPtr connecti
 
 void CtiFDRSocketServer::processCommandFromDispatch(CtiCommandMsg* commandMsg)
 {
-    const CtiCommandMsg::CtiOpArgList_t portList = commandMsg->getOpArgList();
+    const CtiCommandMsg::OpArgList portList = commandMsg->getOpArgList();
 
     //There is only one.
     const int portNumber = portList[0];

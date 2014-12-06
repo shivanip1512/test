@@ -14,7 +14,7 @@ public:
 
 public:
     typedef  CtiMessage           Inherited;
-    typedef  std::vector< int >   CtiOpArgList_t;
+    typedef  std::vector< int >   OpArgList;
 
 
     CtiCommandMsg(int Op = NoOp, int Pri = 7);
@@ -24,15 +24,15 @@ public:
 
     CtiCommandMsg&    operator=(const CtiCommandMsg& aRef);
 
-    CtiOpArgList_t    getOpArgList() const;
-    CtiOpArgList_t&   getOpArgList();
+    OpArgList    getOpArgList() const;
+    OpArgList&   getOpArgList();
     std::string       getOpString() const;
 
-    CtiCommandMsg&    setOpArgList(const CtiOpArgList_t &aRef);
+    CtiCommandMsg&    setOpArgList(const OpArgList &aRef);
     CtiCommandMsg&    setOpString(const std::string &aRef);
     CtiCommandMsg&    setOperation(const INT &aInt);
 
-    CtiOpArgList_t&   insert(int i);
+    OpArgList&   insert(int i);
 
     CtiMessage*       replicateMessage() const;
 
