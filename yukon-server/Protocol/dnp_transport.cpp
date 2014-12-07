@@ -17,8 +17,6 @@ TransportLayer::TransportLayer() :
     _current_payload_length(0),
     _sequence_in(0),
     _sequence_out(0),
-    _source_address(0),
-    _destination_address(0),
     _ioState(Uninitialized)
 {
     memset( &_payload_in,  0, sizeof(payload_t) );
@@ -42,24 +40,9 @@ TransportLayer &TransportLayer::operator=(const TransportLayer &aRef)
 }
 
 
-void TransportLayer::setAddresses(unsigned short dst, unsigned short src)
-{
-    _datalink.setAddresses(dst, src);
-}
-
-
-void TransportLayer::setOptions(int options)
-{
-    _datalink.setOptions(options);
-}
-
-
-int TransportLayer::initForOutput(unsigned char *buf, unsigned len, unsigned short dstAddr, unsigned short srcAddr)
+int TransportLayer::initForOutput(unsigned char *buf, unsigned len)
 {
     int retVal = ClientErrors::None;
-
-    _source_address      = srcAddr;
-    _destination_address = dstAddr;
 
     _payload_out.data   = buf;
     _payload_out.length = len;
@@ -103,7 +86,7 @@ int TransportLayer::initForInput(unsigned char *buf, unsigned max_len)
 }
 
 
-YukonError_t TransportLayer::generate( CtiXfer &xfer )
+YukonError_t TransportLayer::generate( DatalinkLayer &_datalink, CtiXfer &xfer )
 {
     YukonError_t retVal = ClientErrors::None;
 
@@ -155,7 +138,7 @@ YukonError_t TransportLayer::generate( CtiXfer &xfer )
 }
 
 
-YukonError_t TransportLayer::decode( CtiXfer &xfer, YukonError_t status )
+YukonError_t TransportLayer::decode( DatalinkLayer &_datalink, CtiXfer &xfer, YukonError_t status )
 {
     YukonError_t retVal = ClientErrors::None;
 
@@ -342,7 +325,6 @@ int TransportLayer::getInputSize( void )
 void TransportLayer::setIoStateComplete()
 {
     _ioState = Complete;
-    _datalink.setIoStateComplete();
 }
 
 }

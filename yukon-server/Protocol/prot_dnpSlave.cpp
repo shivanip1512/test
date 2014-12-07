@@ -13,7 +13,10 @@ using namespace Cti::Protocols::DNP;
 
 DnpSlaveProtocol::DnpSlaveProtocol()
 {
-   getApplicationLayer().completeSlave();
+   _app_layer.completeSlave();
+   _transport.setIoStateComplete();
+   _datalink .setIoStateComplete();
+
    setOptions(DnpSlaveProtocol::Options_SlaveResponse);
 }
 
@@ -25,12 +28,12 @@ YukonError_t DnpSlaveProtocol::slaveDecode( CtiXfer &xfer )
         return ClientErrors::None;
     }
 
-    return getApplicationLayer().decode(xfer, ClientErrors::None);
+    return _app_layer.decode(_datalink, _transport, xfer, ClientErrors::None);
 }
 
 int DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
 {
-    if( getApplicationLayer().isTransactionComplete() )
+    if( _app_layer.isTransactionComplete() )
     {
         switch( getCommand() )
         {
@@ -84,7 +87,7 @@ int DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
                 if( ! digitals.empty() )    dobs.push_back(ObjectBlock::makeLongIndexedBlock(digitals));
                 if( ! counters.empty() )    dobs.push_back(ObjectBlock::makeLongIndexedBlock(counters));
 
-                getApplicationLayer().setCommand(
+                _app_layer.setCommand(
                         ApplicationLayer::ResponseResponse,
                         dobs);
 
@@ -110,7 +113,7 @@ int DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
                     boc->setStatus(
                             p.din.status);
 
-                    getApplicationLayer().setCommand(
+                    _app_layer.setCommand(
                             ApplicationLayer::ResponseResponse,
                             ObjectBlock::makeIndexedBlock(
                                     std::auto_ptr<Object>(boc),
@@ -143,10 +146,10 @@ int DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
         }
 
         //  finalize the request
-        getApplicationLayer().initForSlaveOutput();
+        _app_layer.initForSlaveOutput();
     }
 
-    int retVal = getApplicationLayer().generate(xfer);
+    int retVal = _app_layer.generate(_datalink, _transport, xfer);
     if( retVal )
     {
         slaveTransactionComplete();
@@ -156,7 +159,7 @@ int DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
 
 void DnpSlaveProtocol::slaveTransactionComplete()
 {
-    if( getApplicationLayer().errorCondition() )
+    if( _app_layer.errorCondition() )
     {
         addStringResults(new std::string("Operation failed"));
     }
@@ -175,14 +178,16 @@ void DnpSlaveProtocol::setSlaveCommand( Command command )
     if( getCommand() == Command_Complete)
     {
         _input_point_list.clear();
-        getApplicationLayer().completeSlave();
+        _app_layer.completeSlave();
+        _transport.setIoStateComplete();
+        _datalink .setIoStateComplete();
     }
 }
 
 void DnpSlaveProtocol::setOptions( int options, int seqNumber )
 {
     Inherited::setOptions(options);
-    getApplicationLayer().setSequenceNumber(seqNumber);
+    _app_layer.setSequenceNumber(seqNumber);
 }
 
 }

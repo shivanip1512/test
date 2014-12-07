@@ -45,16 +45,13 @@ DnpProtocol::~DnpProtocol()
 
 void DnpProtocol::setAddresses( unsigned short slaveAddress, unsigned short masterAddress )
 {
-    _masterAddress = masterAddress;
-    _slaveAddress  = slaveAddress;
-
-    _app_layer.setAddresses(_slaveAddress, _masterAddress);
+    _datalink.setAddresses(slaveAddress, masterAddress);
 }
 
 
 void DnpProtocol::setOptions( int options )
 {
-    _app_layer.setOptions(options);
+    _datalink.setOptions(options);
 }
 
 
@@ -344,7 +341,7 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
         }
     }
 
-    return _app_layer.generate(xfer);
+    return _app_layer.generate(_datalink, _transport, xfer);
 }
 
 
@@ -353,7 +350,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
     YukonError_t retVal;
     bool final = true;
 
-    retVal = _app_layer.decode(xfer, status);
+    retVal = _app_layer.decode(_datalink, _transport, xfer, status);
 
     if( _app_layer.errorCondition() )
     {

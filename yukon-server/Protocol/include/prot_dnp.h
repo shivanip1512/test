@@ -31,10 +31,14 @@ private:
     enum   Command;
     struct output_point;
 
-private:
+protected:
 
+    //  temporary direct access for DNP Slave
     DNP::ApplicationLayer _app_layer;
-    unsigned short   _masterAddress, _slaveAddress;
+    DNP::TransportLayer   _transport;
+    DNP::DatalinkLayer    _datalink;
+
+private:
     CtiTime _nextTimeComplaint;
 
     typedef std::deque<Command>  Command_deq;

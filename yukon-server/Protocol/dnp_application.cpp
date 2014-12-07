@@ -14,8 +14,6 @@ namespace Protocols {
 namespace DNP {
 
 ApplicationLayer::ApplicationLayer() :
-    _dstAddr(0),
-    _srcAddr(0),
     _request_function(RequestConfirm),
     _seqno(0),
     _appState(Uninitialized),
@@ -48,20 +46,6 @@ ApplicationLayer &ApplicationLayer::operator=(const ApplicationLayer &aRef)
     return *this;
 }
 
-
-void ApplicationLayer::setAddresses( unsigned short dstAddr, unsigned short srcAddr )
-{
-    _dstAddr = dstAddr;
-    _srcAddr = srcAddr;
-
-    _transport.setAddresses(_dstAddr, _srcAddr);
-}
-
-
-void ApplicationLayer::setOptions( int options )
-{
-    _transport.setOptions(options);
-}
 
 void ApplicationLayer::setConfigData( const config_data* config )
 {
@@ -267,7 +251,6 @@ void ApplicationLayer::initForSlaveOutput( void )
 void ApplicationLayer::completeSlave( void )
 {
     _appState = Complete;
-    _transport.setIoStateComplete();
 }
 
 
@@ -379,7 +362,7 @@ YukonError_t ApplicationLayer::errorCondition( void ) const
 }
 
 
-YukonError_t ApplicationLayer::generate( CtiXfer &xfer )
+YukonError_t ApplicationLayer::generate( DatalinkLayer &_datalink, TransportLayer &_transport, CtiXfer &xfer )
 {
     YukonError_t retVal = ClientErrors::None;
 
@@ -389,7 +372,7 @@ YukonError_t ApplicationLayer::generate( CtiXfer &xfer )
         {
             case SendFirstResponse:
             {
-                _transport.initForOutput((unsigned char *)&_response, _response.buf_len + RspHeaderSize, _dstAddr, _srcAddr);
+                _transport.initForOutput((unsigned char *)&_response, _response.buf_len + RspHeaderSize);
             }
             case SendResponse:
             {
@@ -398,7 +381,7 @@ YukonError_t ApplicationLayer::generate( CtiXfer &xfer )
             case SendRequest:
             {
                 //  _request was initialized by DNPInterface::generate()
-                _transport.initForOutput((unsigned char *)&_request, _request.buf_len + ReqHeaderSize, _dstAddr, _srcAddr);
+                _transport.initForOutput((unsigned char *)&_request, _request.buf_len + ReqHeaderSize);
 
                 break;
             }
@@ -416,7 +399,7 @@ YukonError_t ApplicationLayer::generate( CtiXfer &xfer )
             {
                 generateAck(&_acknowledge, _response.ctrl);
 
-                _transport.initForOutput((unsigned char *)&_acknowledge, sizeof(_acknowledge), _dstAddr, _srcAddr);
+                _transport.initForOutput((unsigned char *)&_acknowledge, sizeof(_acknowledge));
 
                 break;
             }
@@ -438,20 +421,20 @@ YukonError_t ApplicationLayer::generate( CtiXfer &xfer )
 
     if( !retVal )
     {
-        retVal = _transport.generate(xfer);
+        retVal = _transport.generate(_datalink, xfer);
     }
 
     return retVal;
 }
 
 
-YukonError_t ApplicationLayer::decode( CtiXfer &xfer, YukonError_t status )
+YukonError_t ApplicationLayer::decode( DatalinkLayer &_datalink, TransportLayer &_transport, CtiXfer &xfer, YukonError_t status )
 {
     YukonError_t retVal = ClientErrors::None;
 
-    if( retVal = _transport.decode(xfer, status) )
+    if( retVal = _transport.decode(_datalink, xfer, status) )
     {
-        if (!_config)
+        if( ! _config )
         {
             throw MissingConfigException();
         }

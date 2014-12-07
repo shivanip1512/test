@@ -23,7 +23,6 @@ protected:
     static IM_EX_PROT std::vector<unsigned char> extractPayload(const packet_sequence_t &packet_sequence);
 
 private:
-    DatalinkLayer  _datalink;
 
     struct payload_t
     {
@@ -36,7 +35,6 @@ private:
     payload_t _payload_out;
 
     unsigned int    _current_payload_length, _sequence_in, _sequence_out;
-    unsigned short  _source_address, _destination_address;
 
     enum IOState
     {
@@ -56,14 +54,11 @@ public:
 
     TransportLayer &operator=( const TransportLayer &aRef );
 
-    void setAddresses( unsigned short dst, unsigned short src );
-    void setOptions  ( int options );
-
-    int initForOutput( unsigned char *buf, unsigned len, unsigned short dstAddr, unsigned short srcAddr );
+    int initForOutput( unsigned char *buf, unsigned len );
     int initForInput ( unsigned char *buf, unsigned len );
 
-    YukonError_t generate( CtiXfer &xfer );
-    YukonError_t decode  ( CtiXfer &xfer, YukonError_t status );
+    YukonError_t generate( DatalinkLayer &datalink, CtiXfer &xfer );
+    YukonError_t decode  ( DatalinkLayer &datalink, CtiXfer &xfer, YukonError_t status );
 
     bool isTransactionComplete( void );
     bool errorCondition( void );

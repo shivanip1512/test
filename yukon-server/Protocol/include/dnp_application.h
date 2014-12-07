@@ -24,8 +24,6 @@ public:
 
 private:
 
-    short _dstAddr, _srcAddr;
-
     const DNP::config_data* _config;
 
 #pragma pack( push, 1 )
@@ -129,15 +127,11 @@ private:
     void eraseOutboundObjectBlocks( void );
     void eraseInboundObjectBlocks( void );
 
-protected:
-    TransportLayer _transport;
-
     enum
     {
         ReqHeaderSize = 2,
         RspHeaderSize = 4
     };
-
 
 public:
     ApplicationLayer();
@@ -149,9 +143,6 @@ public:
     ApplicationLayer &operator=(const ApplicationLayer &aRef);
 
     //  initialization functions
-    void setAddresses( unsigned short dstAddr, unsigned short srcAddr );
-    void setOptions( int options );
-
     void setConfigData( const config_data* config );
 
     void setCommand( FunctionCode fc );
@@ -164,8 +155,8 @@ public:
     void initUnsolicited( void );
 
     //  comm functions
-    YukonError_t generate( CtiXfer &xfer );
-    YukonError_t decode  ( CtiXfer &xfer, YukonError_t status );
+    YukonError_t generate( DatalinkLayer &datalink, TransportLayer &transport, CtiXfer &xfer );
+    YukonError_t decode  ( DatalinkLayer &datalink, TransportLayer &transport,  CtiXfer &xfer, YukonError_t status );
 
     //  checking completion
     bool isTransactionComplete( void ) const;
