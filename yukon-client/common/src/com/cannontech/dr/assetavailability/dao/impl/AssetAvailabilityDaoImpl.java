@@ -266,26 +266,26 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
          */
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT Applianceid, InventoryID, oneway, communicating,");
+        sql.append("SELECT applianceid, oneway, communicating,");
         sql.append("(SELECT CASE WHEN relay=1 AND Relay1Runtime").gt(runtimeWindowEnd).append("THEN 'TRUE'");
         sql.append("WHEN relay=2 AND Relay2Runtime").gt(runtimeWindowEnd).append("THEN 'TRUE'");
         sql.append("WHEN relay=3 AND Relay3Runtime").gt(runtimeWindowEnd).append("THEN 'TRUE'");
         sql.append("WHEN relay=4 AND Relay4Runtime").gt(runtimeWindowEnd).append("THEN 'TRUE' ELSE 'FALSE' END");
         sql.append(getTable().getSql()).append(") AS running,");
         sql.append("optedout FROM");
-        sql.append("(SELECT hdconf.ApplianceId AS applianceid, inv.deviceid,inv.InventoryID, hdconf.LoadNumber AS relay,");
+        sql.append("(SELECT hdconf.ApplianceId AS applianceid, hdconf.LoadNumber AS relay,");
         sql.append("(SELECT CASE WHEN LastCommunication").gt(communicatingWindowEnd);
         sql.append("THEN 'TRUE' ELSE 'FALSE' END");
         sql.append(getTable().getSql()).append(")AS communicating,");
         sql.append("Relay1Runtime, Relay2Runtime, Relay3Runtime, Relay4Runtime,");
-        sql.append("(SELECT CASE WHEN inv.inventoryid IN");
+        sql.append("(SELECT CASE WHEN inv.InventoryId IN");
         sql.append("(SELECT DISTINCT ib.InventoryId FROM InventoryBase ib JOIN OptOutEvent ooe ON ");
         sql.append("ooe.InventoryId = ib.InventoryId WHERE ooe.StartDate").lt(currentTime);
         sql.append("and ooe.StopDate").gt(currentTime).append("and ooe.EventState").eq_k(
             OptOutEventState.START_OPT_OUT_SENT);
         sql.append(") then 'TRUE' else 'FALSE' end ");
         sql.append(getTable().getSql()).append(")AS optedout,");
-        sql.append("(SELECT CASE WHEN inv.deviceid=0 THEN 'TRUE' ELSE 'FALSE' END");
+        sql.append("(SELECT CASE WHEN inv.DeviceID=0 THEN 'TRUE' ELSE 'FALSE' END");
         sql.append(getTable().getSql()).append(")AS oneway");
         sql.append("FROM LMHardwareBase lmbase ,LMHardwareConfiguration hdconf, InventoryBase inv");
         sql.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
@@ -302,7 +302,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
             public void processRow(YukonResultSet rs) throws SQLException {
-                int applianceId = rs.getInt("ApplianceId");
+                int applianceId = rs.getInt("applianceId");
                 allApplianceIds.add(applianceId);
                 if (rs.getBoolean("optedout")) {
                     optedOut.add(applianceId);
