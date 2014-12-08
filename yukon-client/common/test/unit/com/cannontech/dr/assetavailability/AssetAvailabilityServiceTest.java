@@ -86,15 +86,6 @@ public class AssetAvailabilityServiceTest {
     }
     
     @Test
-    public void getApplianceAssetAvailability_ByLoadGroupIds() {
-        AssetAvailabilityService assetAvailabilityService = buildServiceWithOneInEachState();
-        Set<Integer> loadGroups = Sets.newHashSet(100, 101);
-        ApplianceAssetAvailabilitySummary applianceSummary = assetAvailabilityService.getApplianceAssetAvailability(loadGroups);
-        
-        testApplianceAssetAvailabilitySummary(applianceSummary);
-    }
-    
-    @Test
     public void getAssetAvailabilityFromDrGroup() {
         PaoIdentifier drPaoIdentifier = new PaoIdentifier(107, PaoType.LM_CONTROL_AREA); //107 = area containing all inventory
         

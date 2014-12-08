@@ -11,9 +11,11 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
@@ -53,5 +55,11 @@ public class MockAssetAvailabilityDao implements AssetAvailabilityDao {
         assetAvailabilitySummary.setOptedOutSize(4);
         
         return assetAvailabilitySummary;
+    }
+
+    @Override
+    public ApplianceAssetAvailabilitySummary getApplianceAssetAvailabilitySummary(PaoIdentifier drPaoIdentifier,
+            Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime) {
+        return null;
     }
 }

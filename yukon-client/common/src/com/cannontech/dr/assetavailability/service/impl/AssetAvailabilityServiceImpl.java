@@ -2,7 +2,6 @@ package com.cannontech.dr.assetavailability.service.impl;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -40,9 +39,6 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Joiner;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
-import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -90,110 +86,21 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
 
         return assetAvailabilitySummary;
     }
-    
-    
-    
-    
+ 
     @Override
     public ApplianceAssetAvailabilitySummary getApplianceAssetAvailability(PaoIdentifier drPaoIdentifier) {
         log.debug("Calculating appliance-level asset availability summary for " + drPaoIdentifier.getPaoType() 
                 + " " + drPaoIdentifier.getPaoId());
-        Set<Integer> loadGroupIds = drGroupDeviceMappingDao.getLoadGroupIdsForDrGroup(drPaoIdentifier);
-        return getApplianceAssetAvailability(loadGroupIds);
-    }
-    
-    @Override
-    public ApplianceAssetAvailabilitySummary getApplianceAssetAvailability(Iterable<Integer> loadGroupIds) {
-        log.debug("Calculating appliance-level asset availability summary for load groups");
-        if(log.isTraceEnabled()) {
-            log.trace("Load group ids: " + Joiner.on(", ").join(loadGroupIds));
-        }
-        //Get all inventory & associated paos
-        Map<Integer, Integer> inventoryAndDevices = drGroupDeviceMappingDao.getInventoryAndDeviceIdsForLoadGroups(loadGroupIds);
-        Set<Integer> inventoryIds = inventoryAndDevices.keySet();
-        
-        //Get appliances
-        InventoryRelayAppliances inventoryRelayAppliances = lmHardwareConfigurationDao.getInventoryRelayAppliances(inventoryIds);
-        Multimap<Integer, Integer> inventoryToApplianceMultimap = inventoryRelayAppliances.getInventoryToApplianceMultimap();
-        Set<Integer> allApplianceIds = Sets.newHashSet(inventoryToApplianceMultimap.values());
-        ApplianceAssetAvailabilitySummary summary = new ApplianceAssetAvailabilitySummary(allApplianceIds);
-        
-        //Get opted out appliances
-        Set<Integer> optedOutInventory = optOutEventDao.getOptedOutInventoryByLoadGroups(loadGroupIds);
-        Set<Integer> optedOutAppliances = getAppliancesFromInventory(inventoryToApplianceMultimap, optedOutInventory);
-        summary.addOptedOut(optedOutAppliances);
-        
-        //1-way inventory (and attached appliances) are always considered communicating and running
-        Set<Integer> oneWayInventory = getOneWayInventory(inventoryAndDevices);
-        Set<Integer> oneWayAppliances = getAppliancesFromInventory(inventoryToApplianceMultimap, oneWayInventory);
-        summary.addCommunicating(oneWayAppliances);
-        summary.addRunning(oneWayAppliances);
-        
-        //remove 1-way inventory from inventoryAndDevices map
-        Predicate<Integer> notOneWay = Predicates.not(Predicates.in(oneWayInventory));
-        inventoryAndDevices = Maps.filterKeys(inventoryAndDevices, notOneWay);
-        
-        //If all devices are one-way, we don't need to check any points for running/communicating
-        if(inventoryAndDevices.isEmpty()) {
-            return summary;
-        }
-        
-        //Get last communication and runtimes for 2-way devices
-        Set<Integer> twoWayDevices = Sets.newHashSet(inventoryAndDevices.values());
-        Map<Integer, AllRelayCommunicationTimes> allTimes = lcrCommunicationsDao.findAllRelayCommunicationTimes(twoWayDevices);
-        
-        //Get communications window
         Instant now = Instant.now();
         Instant communicatingWindowEnd = now.minus(getCommunicationWindowDuration());
-        
-        //Determine if devices are in communications window
-        Set<Integer> communicatedDevices = new HashSet<>();
-        for(Map.Entry<Integer, AllRelayCommunicationTimes> entry : allTimes.entrySet()) {
-            AllRelayCommunicationTimes times = entry.getValue();
-            if(times != null) {
-                Instant lastCommunicationTime = times.getLastCommunicationTime();
-                if (lastCommunicationTime != null && lastCommunicationTime.isAfter(communicatingWindowEnd)) {
-                    communicatedDevices.add(entry.getKey());
-                }
-            }
-        }
-        
-        Map<Integer, Integer> devicesAndInventory = HashBiMap.create(inventoryAndDevices).inverse();
-        
-        //Add communicating appliances based on inventory
-        Set<Integer> communicatedInventory = getInventoryFromDevices(communicatedDevices, devicesAndInventory);
-        Set<Integer> communicatedAppliances = getAppliancesFromInventory(inventoryToApplianceMultimap, communicatedInventory);
-        summary.addCommunicating(communicatedAppliances);
-        
-        //Get runtime window
         Instant runtimeWindowEnd = now.minus(getRuntimeWindowDuration());
         
-        //Get appliances in runtime window
-        Set<Integer> runningAppliances = new HashSet<>();
-        for(Map.Entry<Integer, Integer> entry : inventoryAndDevices.entrySet()) {
-            int deviceId = entry.getValue();
-            int inventoryId = entry.getKey();
-            AllRelayCommunicationTimes times = allTimes.get(deviceId);
-            if(times != null) {
-                Map<Integer, Integer> relayApplianceMap = inventoryRelayAppliances.getRelayApplianceMap(inventoryId);
-                Map<Integer, Instant> relayRuntimes = times.getRelayRuntimeMap();
-                if(relayApplianceMap != null) {
-                    for(Integer relay : relayApplianceMap.keySet()) {
-                        if(relayRuntimes != null && relayRuntimes.get(relay) != null && 
-                           relayRuntimes.get(relay).isAfter(runtimeWindowEnd)) {
-                            //runtime exists for this relay, but is it in the window?
-                            Integer applianceId = inventoryRelayAppliances.getApplianceId(inventoryId, relay);
-                            runningAppliances.add(applianceId);
-                        }
-                    }
-                }
-            }
-        }
-        summary.addRunning(runningAppliances);
-        
+        ApplianceAssetAvailabilitySummary summary =
+            assetAvailabilityDao.getApplianceAssetAvailabilitySummary(drPaoIdentifier, communicatingWindowEnd,
+                runtimeWindowEnd,now);
         return summary;
-    }
-    
+   }
+   
     @Override
     public SimpleAssetAvailability getAssetAvailability(int inventoryId) {
         log.debug("Calculating simple asset availability for inventory " + inventoryId);
@@ -378,29 +285,6 @@ public class AssetAvailabilityServiceImpl implements AssetAvailabilityService {
             return AssetAvailabilityStatus.INACTIVE;
         }
         return AssetAvailabilityStatus.UNAVAILABLE;
-    }
-    
-    /**
-     * Uses the InventoryToApplianceMultimap to get the set of all appliances attached to the specified inventory.
-     */
-    private Set<Integer> getAppliancesFromInventory(Multimap<Integer, Integer> inventoryToApplianceMultimap, Iterable<Integer> inventoryIds) {
-        Set<Integer> applianceIds = Sets.newHashSet();
-        for(int inventoryId : inventoryIds) {
-            applianceIds.addAll(inventoryToApplianceMultimap.get(inventoryId));
-        }
-        return applianceIds;
-    }
-    
-    /**
-     * Uses the map of devices to inventory to output a set of inventoryIds matching the specified deviceIds.
-     */
-    private Set<Integer> getInventoryFromDevices(Iterable<Integer> devices, Map<Integer, Integer> devicesAndInventory) {
-        Set<Integer> inventory = Sets.newHashSet();
-        for(Integer deviceId : devices) {
-            Integer inventoryId = devicesAndInventory.get(deviceId);
-            inventory.add(inventoryId);
-        }
-        return inventory;
     }
     
     private Duration getCommunicationWindowDuration() {

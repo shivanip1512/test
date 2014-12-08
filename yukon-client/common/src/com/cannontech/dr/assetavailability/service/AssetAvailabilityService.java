@@ -1,6 +1,5 @@
 package com.cannontech.dr.assetavailability.service;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,11 +41,6 @@ public interface AssetAvailabilityService {
      * @return AssetAvailabilitySummary which has count based on status.
      */
     public AssetAvailabilitySummary getAssetAvailabilityFromDrGroup(PaoIdentifier drPaoIdentifier);
-    
-    /**
-     * Gets an asset availability summary of all appliances attached to inventory in any of the specified load groups.
-     */
-    public ApplianceAssetAvailabilitySummary getApplianceAssetAvailability(Iterable<Integer> loadGroupIds);
     
     /**
      * Gets an asset availability summary of all appliances in all load groups in the specified DR grouping.

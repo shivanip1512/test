@@ -11,6 +11,7 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
@@ -22,6 +23,7 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
+import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
@@ -236,6 +238,95 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         return assetAvailabilitySummary;
     }
     
+    @Override
+    public ApplianceAssetAvailabilitySummary getApplianceAssetAvailabilitySummary(PaoIdentifier drPaoIdentifier,
+            Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime) {
+
+        /*
+         * This query returns the appliance and its status. Columns returned
+         * ApplianceId: applianceId
+         * InventoryID: inventoryId
+         * onway: Boolean values indicating its one way or not,
+         * communicating: Boolean values indicating its communicating or not,
+         * running: Boolean values indicating its running or not,
+         * optedout: Boolean values indicating its optedout or not.
+         * First the appliance to check is fetched, so all the appliances attached to the given program is
+         * found.
+         * 1. oneway: If a deviceId is 0 then its considered as oneway device
+         * 2. communication: If LastCommunication is greater than the communicatingWindowEnd then its
+         * considered
+         * communicating.
+         * 3. running: For this each relay value is checked, if a appliance is attached to a relay then relay
+         * runtime
+         * for that is checked. If that relay runtime is greater than runtimeWindowEnd then that appliance is
+         * considered running.
+         * 4. optedout: If the inventory is in OptOutEvent table with StartDate less than current time and
+         * stopDate greater than currentTime and eventState as START_OPT_OUT_SENT. Then that inventory is
+         * considered to be opted out.
+         */
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Applianceid, InventoryID, oneway, communicating,");
+        sql.append("(SELECT CASE WHEN relay=1 AND Relay1Runtime").gt(runtimeWindowEnd).append("THEN 'TRUE'");
+        sql.append("WHEN relay=2 AND Relay2Runtime").gt(runtimeWindowEnd).append("THEN 'TRUE'");
+        sql.append("WHEN relay=3 AND Relay3Runtime").gt(runtimeWindowEnd).append("THEN 'TRUE'");
+        sql.append("WHEN relay=4 AND Relay4Runtime").gt(runtimeWindowEnd).append("THEN 'TRUE' ELSE 'FALSE' END");
+        sql.append(getTable().getSql()).append(") AS running,");
+        sql.append("optedout FROM");
+        sql.append("(SELECT hdconf.ApplianceId AS applianceid, inv.deviceid,inv.InventoryID, hdconf.LoadNumber AS relay,");
+        sql.append("(SELECT CASE WHEN LastCommunication").gt(communicatingWindowEnd);
+        sql.append("THEN 'TRUE' ELSE 'FALSE' END");
+        sql.append(getTable().getSql()).append(")AS communicating,");
+        sql.append("Relay1Runtime, Relay2Runtime, Relay3Runtime, Relay4Runtime,");
+        sql.append("(SELECT CASE WHEN inv.inventoryid IN");
+        sql.append("(SELECT DISTINCT ib.InventoryId FROM InventoryBase ib JOIN OptOutEvent ooe ON ");
+        sql.append("ooe.InventoryId = ib.InventoryId WHERE ooe.StartDate").lt(currentTime);
+        sql.append("and ooe.StopDate").gt(currentTime).append("and ooe.EventState").eq_k(
+            OptOutEventState.START_OPT_OUT_SENT);
+        sql.append(") then 'TRUE' else 'FALSE' end ");
+        sql.append(getTable().getSql()).append(")AS optedout,");
+        sql.append("(SELECT CASE WHEN inv.deviceid=0 THEN 'TRUE' ELSE 'FALSE' END");
+        sql.append(getTable().getSql()).append(")AS oneway");
+        sql.append("FROM LMHardwareBase lmbase ,LMHardwareConfiguration hdconf, InventoryBase inv");
+        sql.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceID=dynlcr.DeviceId)");
+        sql.append("WHERE lmbase.inventoryId=hdconf.inventoryId AND hdconf.inventoryId=inv.inventoryId");
+        sql.append("AND hdconf.applianceId IN (SELECT applianceId FROM ApplianceBase WHERE ProgramID IN (");
+        sql.append("SELECT ProgramID FROM LMProgramWebPublishing WHERE DeviceId").eq(drPaoIdentifier.getPaoId());
+        sql.append("))) selectedtable");
+
+        final List<Integer> communicating = new ArrayList<Integer>();
+        final List<Integer> running = new ArrayList<Integer>();
+        final List<Integer> optedOut = new ArrayList<Integer>();
+        final List<Integer> allApplianceIds = new ArrayList<Integer>();
+
+        yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                int applianceId = rs.getInt("ApplianceId");
+                allApplianceIds.add(applianceId);
+                if (rs.getBoolean("optedout")) {
+                    optedOut.add(applianceId);
+                }
+                if (rs.getBoolean("oneway")) {
+                    communicating.add(applianceId);
+                    running.add(applianceId);
+                } else {
+                    if (rs.getBoolean("communicating")) {
+                        communicating.add(applianceId);
+                    }
+                    if (rs.getBoolean("running")) {
+                        running.add(applianceId);
+                    }
+                }
+            }
+        });
+        ApplianceAssetAvailabilitySummary summary = new ApplianceAssetAvailabilitySummary(allApplianceIds);
+        summary.addOptedOut(optedOut);
+        summary.addCommunicating(communicating);
+        summary.addRunning(running);
+
+        return summary;
+    }
 
     private SqlFragmentSource castToNumeric(String sortingOrder) {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();

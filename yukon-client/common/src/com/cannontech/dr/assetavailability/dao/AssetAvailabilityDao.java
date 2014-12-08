@@ -1,12 +1,12 @@
 package com.cannontech.dr.assetavailability.dao;
 
-import java.util.List;
-
 import org.joda.time.Instant;
 
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.dr.assetavailability.ApplianceAssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
@@ -45,5 +45,17 @@ public interface AssetAvailabilityDao {
      */
     AssetAvailabilitySummary getAssetAvailabilitySummary(Iterable<Integer> loadGroupIds,
             Instant communicatingWindowEnd, Instant runtimeWindowEnd, Instant currentTime);
+    
+    /**
+     * Creates an ApplianceAssetAvailabilitySummary which has status of appliance
+     * 
+     * @param drPaoIdentifier -- Pao identifier for which appliances and status has to be fetched.
+     * @param communicatingWindowEnd -- communicating window end time.
+     * @param runtimeWindowEnd -- runtime window end time.
+     * @param currentTime -- current Time.
+     * @return ApplianceAssetAvailabilitySummary that has appliances and their status.
+     */    
+    ApplianceAssetAvailabilitySummary getApplianceAssetAvailabilitySummary(PaoIdentifier drPaoIdentifier,
+            Instant communicatingWindowEnd, Instant runtimeWindowEnd,Instant currentTime);
 
 }
