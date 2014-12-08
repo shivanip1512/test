@@ -4,6 +4,7 @@
 
 #include "database_writer.h"
 #include "database_util.h"
+#include "database_exceptions.h"
 #include "ctidate.h"
 
 #include "dsm2err.h"  //  for GetErrorType, please fix me
@@ -227,10 +228,13 @@ bool PaoStatisticsRecord::TryInsert(Database::DatabaseWriter &writer)
         return false;
     }
 
-    if( ! Cti::Database::executeCommand( writer, __FILE__, __LINE__,
-                                         Cti::Database::LogDebug::Disable,
-                                         Cti::Database::SwallowException::Enable))
+    try
     {
+        writer.executeWithDatabaseException();
+    }
+    catch ( Database::DatabaseException & )
+    {
+        // Swallow the database exception without logging
         return false;
     }
 

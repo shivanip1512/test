@@ -14,8 +14,7 @@ enum CommandParamEnum
 {
     LogDebug,
     LogNoRowsAffected,
-    TryInsertFirst,
-    SwallowException
+    TryInsertFirst
 };
 
 /**
@@ -66,14 +65,6 @@ private:
 typedef Detail::CommandParam <Detail::LogDebug>          LogDebug;
 typedef Detail::CommandParam <Detail::LogNoRowsAffected> LogNoRowsAffected;
 typedef Detail::CommandParam <Detail::TryInsertFirst>    TryInsertFirst;
-typedef Detail::CommandParam <Detail::SwallowException>  SwallowException;
-
-/**
- * Execute a read or a write command
- * @return true if no error, false otherwise
- */
-template <class T>
-bool IM_EX_CTIBASE executeCommand( T& command, const char* file, const int line, const LogDebug::Options logDebug, const SwallowException::Options swallowException );
 
 /**
  * Execute a read or a write command

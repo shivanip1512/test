@@ -13,39 +13,6 @@ namespace Database {
  * @return true if no error, false otherwise
  */
 template <class T>
-bool executeCommand( T& command, const char* file, const int line, const LogDebug::Options logDebug, const SwallowException::Options swallowException )
-{
-    if( logDebug == LogDebug::Enable )
-    {
-        CTILOG_DEBUG(dout, "DB command:\n" << command.asString());
-    }
-
-    if ( swallowException == SwallowException::Enable )
-    {
-        if( ! command.executeSwallowDatabaseException() )
-        {
-            return false;
-        }
-    }
-    else
-    {
-        if( ! command.execute() )
-        {
-            CTILOG_ERROR(dout, "DB command:\n" << command.asString());
-            return false;
-        }
-    }
-
-    return true;
-}
-
-template bool DLLEXPORT executeCommand<DatabaseWriter>( DatabaseWriter &command, const char* file, const int line, const LogDebug::Options logDebug, const SwallowException::Options swallowException);
-
-/**
- * Execute a read or a write command
- * @return true if no error, false otherwise
- */
-template <class T>
 bool executeCommand( T& command, const char* file, const int line, const LogDebug::Options logDebug )
 {
     if( logDebug == LogDebug::Enable )
@@ -117,8 +84,8 @@ bool executeUpdater( DatabaseWriter& updater, const char* file, const int line, 
 }
 
 /**
- * Execute a database insert command
- * @return normalized error code, or null if no error
+ * Execute a database write command with exceptions, rethrow the 
+ *      caught exception. 
  */
 void executeWriter( DatabaseWriter &writer, const char* file, const int line, const LogDebug::Options logDebug )
 {
@@ -131,9 +98,9 @@ void executeWriter( DatabaseWriter &writer, const char* file, const int line, co
     {
         writer.executeWithDatabaseException();
     }
-    catch( DatabaseException& )
+    catch( DatabaseException& x )
     {
-        CTILOG_ERROR(dout, "DB command:\n" << writer.asString());
+        CTILOG_EXCEPTION_ERROR(dout, x, "DB Writer execute failed for SQL query: " << writer.asString());
         throw;
     }
 }

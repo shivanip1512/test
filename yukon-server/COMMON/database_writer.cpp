@@ -46,20 +46,6 @@ bool DatabaseWriter::execute()
     return retVal;
 }
 
-bool DatabaseWriter::executeSwallowDatabaseException()
-{
-    bool retVal = true;
-    try
-    {
-        _command.Execute();
-    }
-    catch(SAException &x)
-    {
-        retVal = false;
-    }
-    return retVal;
-}
-
 void DatabaseWriter::executeWithDatabaseException()
 {
     try
@@ -68,8 +54,6 @@ void DatabaseWriter::executeWithDatabaseException()
     }
     catch(SAException &x)
     {
-        CTILOG_EXCEPTION_ERROR(dout, x, "DB Writer execute failed for SQL query: "<< asString());
-
         DatabaseConnection::throwDatabaseException(_command.Connection(), x);
     }
 }
