@@ -112,21 +112,21 @@ public class AssetAvailabilityServiceTest {
         Assert.assertTrue("Active appliance ids mismatch: " + applianceSummary.getActive(), applianceSummary.getActive().equals(expectedActive));
         Assert.assertEquals("Incorrect number of active appliances.", 2, applianceSummary.getActiveSize()); //exclude opted-out
         Assert.assertEquals("Incorrect number of active appliances.", 2, applianceSummary.getActiveSize(false)); //exclude opted-out
-        Assert.assertEquals("Incorrect number of active appliances.", 4, applianceSummary.getActiveSize(true)); //include opted-out
+        Assert.assertEquals("Incorrect number of active appliances.", 2, applianceSummary.getActiveSize(true)); //include opted-out
         
         //Inactive appliances
         Set<Integer> expectedInactive = Sets.newHashSet(10031, 10041); //10071 is inactive, but opted out
         Assert.assertTrue("Inactive appliance ids mismatch.", applianceSummary.getInactive().equals(expectedInactive));
         Assert.assertEquals("Incorrect number of inactive appliances", 2, applianceSummary.getInactiveSize()); //exclude opted-out
         Assert.assertEquals("Incorrect number of inactive appliances.", 2, applianceSummary.getInactiveSize(false)); //exclude opted-out
-        Assert.assertEquals("Incorrect number of inactive appliances.", 3, applianceSummary.getInactiveSize(true)); //include opted-out
+        Assert.assertEquals("Incorrect number of inactive appliances.", 2, applianceSummary.getInactiveSize(true)); //include opted-out
         
         //Unavailable appliances
         Set<Integer> expectedUnavailable = Sets.newHashSet(10051); //10081 is unavailable, but opted out
         Assert.assertTrue("Unavailable appliance ids mismatch.", applianceSummary.getUnavailable().equals(expectedUnavailable));
         Assert.assertEquals("Incorrect number of unavailable appliances", 1, applianceSummary.getUnavailableSize()); //exclude opted-out
         Assert.assertEquals("Incorrect number of unavailable appliances", 1, applianceSummary.getUnavailableSize(false)); //exclude opted-out
-        Assert.assertEquals("Incorrect number of unavailable appliances", 2, applianceSummary.getUnavailableSize(true)); //include opted-out
+        Assert.assertEquals("Incorrect number of unavailable appliances", 5, applianceSummary.getUnavailableSize(true)); //include opted-out
     }
     
     
