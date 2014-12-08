@@ -320,7 +320,7 @@ public abstract class ScheduledFileExportTask extends YukonTaskBase {
 		String baseUrl = configurationSource.getString(MasterConfigStringKeysEnum.YUKON_EXTERNAL_URL, defaultYukonExternalUrl);
 		
 		int historyId = historyEntry == null ? 0 : historyEntry.getId();
-		String historyLink = baseUrl + HISTORY_URL_PART + historyId;
+		String historyLink = baseUrl + HISTORY_URL_PART + historyId + "&exportType=" + historyEntry.getType();
 		String body = getMessage("yukon.web.modules.tools.scheduledFileExport.notification.body", name, historyLink);
 		return body;
 	}

@@ -202,7 +202,7 @@
     <entry key="yukon.web.modules.support.fileExportHistory.fileNotFound">There is no archived copy of the specified file.</entry>
     <entry key="yukon.web.modules.support.fileExportHistory.ioError">An error caused the archived file download to fail.</entry>
     <entry key="yukon.web.modules.support.fileExportHistory.singleEntry"><![CDATA[
-    	You are viewing a single entry. <a href="list">View all</a> or <a href="list?schedule={0}">view all with this schedule</a>.
+    	You are viewing a single entry. <a href="list">View all</a> or <a href="list?exportType={0}&jobGroupId={1}">view all with this schedule</a>.
     ]]></entry>
     <entry key="yukon.web.modules.support.fileExportHistory.noExports">No exports found</entry>
     
