@@ -23,6 +23,7 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
@@ -107,23 +108,34 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
 
     @Override
     public Map<RphTag, Integer> getAllValidationTagCounts() {
-        Map<RphTag, Integer> countMap = Maps.newHashMapWithExpectedSize(RphTag.getAllValidation().size());
-
-        for (RphTag rphTag : RphTag.getAllValidation()) {
+        final Map<RphTag, Integer> countMap = Maps.newHashMapWithExpectedSize(RphTag.getAllValidation().size());
+        
+        //the countmap is initially initialized to zero such that
+        //even if the database does have count for some attributes for example 'UDC'
+        //it doesn't return a null value for the count 
+        for(RphTag rphtag:RphTag.getAllValidation()){
+            countMap.put(rphtag,0);
+        }
+        
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT COUNT(*)");
+            sql.append("SELECT rt.Tagname, COUNT(*) as counter");
             sql.append("FROM RphTag rt");
-            sql.append("WHERE rt.TagName").eq(rphTag);
-            sql.append("AND rt.ChangeId NOT IN (");
+            sql.append("Where rt.ChangeId NOT IN (");
             sql.append("	SELECT rt3.ChangeId");
             sql.append("	FROM RphTag rt3");
-            sql.append("	WHERE rt3.TagName").eq(RphTag.OK);
+            sql.append("	WHERE rt3.TagName").eq_k(RphTag.OK);
             sql.append(")");
-
-            int c = yukonJdbcTemplate.queryForInt(sql);
-            countMap.put(rphTag, c);
-        }
-
+            sql.append("group by TagName");
+            
+            yukonJdbcTemplate.query(sql,new YukonRowCallbackHandler(){
+                @Override
+                public void processRow(YukonResultSet rs) throws SQLException {
+                 
+                    countMap.put(rs.getEnum("Tagname", RphTag.class), rs.getInt("counter"));
+                    
+                }
+            });
+            
         return countMap;
     }
     
@@ -137,7 +149,7 @@ public class RphTagUiDaoImpl implements RphTagUiDao {
         sql.append("AND rt.ChangeId NOT IN (");
         sql.append("    SELECT rt3.ChangeId");
         sql.append("    FROM RphTag rt3");
-        sql.append("    WHERE rt3.TagName").eq(RphTag.OK);
+        sql.append("    WHERE rt3.TagName").eq_k(RphTag.OK);
         sql.append(")");
         int c = yukonJdbcTemplate.queryForInt(sql);
         
