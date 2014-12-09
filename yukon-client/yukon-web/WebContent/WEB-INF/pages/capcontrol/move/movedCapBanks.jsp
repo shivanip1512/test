@@ -27,8 +27,8 @@
                 </thead>
                 <tbody>
                     <c:forEach var="movedCapbank" items="${movedBanks}">
-                        <tr data-bank-id="${movedCapbank.capbank.ccId}">
-                            <td>${fn:escapeXml(movedCapbank.capbank.ccName)}</td>
+                        <tr data-bank-id="${movedCapbank.ccId}">
+                            <td>${fn:escapeXml(movedCapbank.ccName)}</td>
                             <td>
                                 <cti:url var="originalSubUrl" value="/capcontrol/tier/feeders">
                                     <cti:param name="substationId" value="${movedCapbank.originalSubstationId}" />

@@ -31,6 +31,42 @@
     </div>
 </tags:sectionContainer>
 
+<script>
+$(function () {
+    $('.js-resizable').each(function (index, elem) {
+        var item = $(elem),
+            naturalHeight = item.height();
+
+        item.css({
+            'height': '200px',
+        });
+
+        item.resizable({
+            'handles': 's',
+            'minHeight': 50,
+            'maxHeight': naturalHeight + 20
+        });
+    });
+});
+</script>
+<style>
+    .ui-resizable-handle {border: 1px solid red; position: absolute; bottom:0; height: 20px; background: blue;}
+    .full-height {height:100%;}
+</style>
+<tags:sectionContainer title="Sizable Scrolling container">
+    <div class="js-resizable">
+        <div class="oa pr full-height">
+            Work in progress
+            <ul>
+                <c:forEach var="i" begin="1" end="30" step="1">
+                    <li> ${i}. Item</li>
+                </c:forEach>
+            </ul>
+        </div>
+    </div>
+</tags:sectionContainer>
+
+
 <tags:sectionContainer title="Containers Side by Side Test">
     <div class="column-6-6-6-6">
         <div class="column one">

@@ -43,6 +43,7 @@ public class AreaController {
     @RequestMapping("substations")
     public String substations(HttpServletRequest request, ModelMap model, LiteYukonUser user,
             @RequestParam("bc_areaId") int areaId) {
+
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         
         boolean hasAreaControl = rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_AREA_CONTROLS, user);
@@ -74,7 +75,7 @@ public class AreaController {
         model.addAttribute("subBusList", viewableSubBusList);
         
         List<Feeder> feederList = cache.getFeedersByArea(areaId);
-        List<ViewableFeeder> viewableFeederList = capControlWebUtilsService.createViewableFeeder(feederList,cache);
+        List<ViewableFeeder> viewableFeederList = capControlWebUtilsService.createViewableFeeder(feederList);
         model.addAttribute("feederList", viewableFeederList);
 
         List<CapBankDevice> capBankList = cache.getCapBanksByArea(areaId);

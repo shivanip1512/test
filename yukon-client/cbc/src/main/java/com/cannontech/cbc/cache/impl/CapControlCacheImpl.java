@@ -31,8 +31,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.pao.CapControlType;
-import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
-import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.message.capcontrol.model.CapControlCommand;
 import com.cannontech.message.capcontrol.model.CommandType;
@@ -853,24 +851,22 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     @Override
     public synchronized List<SubStation> getSubstationsByArea(int areaId) throws NotFoundException {
         try {
-            getArea(areaId);
-            List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubStations(areaId);
-            List<Integer>intList = CCSubAreaAssignment.getAsIntegerList(allAreaSubs);
+            Area area = getArea(areaId);
+
             List<SubStation> subList = new ArrayList<SubStation>();
-            for (Integer id : intList) {
-                SubStation sub = substations.get(id);
+            for (int stationId : area.getStations()) {
+                SubStation sub = substations.get(stationId);
                 if (sub != null) {
                     subList.add(sub);
                 }
             }
             return subList;
         } catch (NotFoundException areaNotFoundTryingSpecialArea) {
-            getSpecialArea(areaId);
-            List<CCSubSpecialAreaAssignment> allAreaSubs = CCSubSpecialAreaAssignment.getAllSpecialAreaSubs(areaId);
-            List<Integer>intList = CCSubSpecialAreaAssignment.getAsIntegerList(allAreaSubs);
+            SpecialArea specialArea = getSpecialArea(areaId);
+
             List<SubStation> subList = new ArrayList<SubStation>();
-            for (Integer id : intList) {
-                SubStation sub = substations.get(id);
+            for (int stationId : specialArea.getCcSubIds()) {
+                SubStation sub = substations.get(stationId);
                 if (sub != null) {
                     subList.add(sub);
                 }

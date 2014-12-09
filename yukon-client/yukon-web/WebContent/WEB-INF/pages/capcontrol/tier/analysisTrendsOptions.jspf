@@ -23,19 +23,21 @@ function showTrends(title, url) {
 
 <div id="trend-popup" class="dn dialog-no-buttons"></div>
 
-<tags:sectionContainer2 nameKey="busContainer" styleClass="padBottom">
+<tags:sectionContainer2 nameKey="busContainer">
     <div>
         <input type="checkbox" id="analysisBusSelectAll" onclick="yukon.da.checkAll(this, 'table.analysisBuses input[type=checkbox]');">
         <label for="analysisBusSelectAll"><i:inline key=".selectAllBuses"/></label>
     </div>
-    <cti:dataGrid cols="4" tableClasses="checkBoxList analysisBuses analysisCheckboxes">
-        <c:forEach var="bus" items="${subBusList}">
-            <cti:dataGridCell>
-                <input type="checkbox" value="${bus.subBus.ccId}" id="analysisBus_${bus.subBus.ccId}">
-                <label for="analysisBus_${bus.subBus.ccId}"><spring:escapeBody htmlEscape="true">${bus.subBus.ccName}</spring:escapeBody></label>
-            </cti:dataGridCell>
-        </c:forEach>
-    </cti:dataGrid>
+    <div class="scroll-md">
+        <cti:dataGrid cols="4" tableClasses="checkBoxList analysisBuses analysisCheckboxes">
+            <c:forEach var="bus" items="${subBusList}">
+                <cti:dataGridCell>
+                    <input type="checkbox" value="${bus.ccId}" id="analysisBus_${bus.ccId}">
+                    <label for="analysisBus_${bus.ccId}">${fn:escapeXml(bus.ccName)}</label>
+                </cti:dataGridCell>
+            </c:forEach>
+        </cti:dataGrid>
+    </div>
 </tags:sectionContainer2>
 
 <tags:sectionContainer2 nameKey="feedersContainer" styleClass="padBottom">
@@ -43,14 +45,16 @@ function showTrends(title, url) {
         <input type="checkbox" id="analysisFeederSelectAll" onclick="yukon.da.checkAll(this, 'table.analysisFeeders input[type=checkbox]');">
         <label for="analysisFeederSelectAll"><i:inline key=".selectAllFeeders"/></label>
     </div>
-    <cti:dataGrid cols="4" tableClasses="checkBoxList analysisFeeders analysisCheckboxes">
-        <c:forEach var="feeder" items="${feederList}">
-            <cti:dataGridCell>
-                <input type="checkbox" value="${feeder.feeder.ccId}" id="analysisFeeder_${feeder.feeder.ccId}">
-                <label for="analysisFeeder_${feeder.feeder.ccId}"><spring:escapeBody htmlEscape="true">${feeder.feeder.ccName}</spring:escapeBody></label>
-            </cti:dataGridCell>
-        </c:forEach>
-    </cti:dataGrid>
+    <div class="scroll-md">
+        <cti:dataGrid cols="4" tableClasses="checkBoxList analysisFeeders analysisCheckboxes">
+            <c:forEach var="feeder" items="${feederList}">
+                <cti:dataGridCell>
+                    <input type="checkbox" value="${feeder.ccId}" id="analysisFeeder_${feeder.ccId}">
+                    <label for="analysisFeeder_${feeder.ccId}">${fn:escapeXml(feeder.ccName)}</label>
+                </cti:dataGridCell>
+            </c:forEach>
+        </cti:dataGrid>
+    </div>
 </tags:sectionContainer2>
 
 

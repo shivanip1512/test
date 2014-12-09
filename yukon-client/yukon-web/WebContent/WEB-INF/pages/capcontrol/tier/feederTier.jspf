@@ -36,10 +36,9 @@
              </tr>
         </thead>
         <c:forEach var="viewfeeder" items="${feederList}">
-            <c:set var="feederId" value="${viewfeeder.feeder.ccId}"/>
-            <c:set var="parentId" value="${viewfeeder.feeder.parentID}"/>
+            <c:set var="feederId" value="${viewfeeder.ccId}"/>
 
-            <tr data-feeder-id="${feederId}" data-parent-id="${parentId}" data-pao-id="${feederId}">
+            <tr data-feeder-id="${feederId}" data-parent-id="${viewfeeder.parentId}" data-pao-id="${feederId}">
                 <%-- Icons --%>
                 <td>
                     <capTags:warningImg paoId="${feederId}" type="FEEDER"/>
@@ -52,7 +51,7 @@
                         <cti:param name="type" value="2"/>
                         <cti:param name="itemid" value="${feederId}"/>
                     </cti:url>
-                    <a href="${editUrl}">${fn:escapeXml(viewfeeder.feeder.ccName)}</a>
+                    <a href="${editUrl}">${fn:escapeXml(viewfeeder.ccName)}</a>
                 </td>
 
                 <%-- State --%>
@@ -65,7 +64,6 @@
 
                 <%-- Target --%>
                 <td>
-                    <c:set var="isPowerFactorControlled" value="${viewfeeder.feeder.powerFactorControlled}"/>
                     <c:choose>
                         <c:when test="${viewfeeder.individualFeederControlled || viewfeeder.ivvcControlled}">
                             <c:if test="${viewfeeder.showTargetTooltip}">
@@ -98,7 +96,7 @@
                 <%-- kVAR Load / Est. --%>
                 <td class="wsnw">
                     <c:choose>
-                        <c:when test="${viewfeeder.feeder.usePhaseData}">
+                        <c:when test="${viewfeeder.usePhaseData}">
                             <div id="feeder-kvar-msg-${feederId}" class="dn">
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="KVAR_LOAD_MESSAGE"/> 
                             </div>
@@ -179,7 +177,7 @@
         <select id='feederFilter' class="js-feeder-filter">
             <option value="0"><cti:msg2 key=".allFeeders"/></option>
             <c:forEach var="feeder" items="${feederList}">
-                <option value="${feeder.feeder.ccId}"><spring:escapeBody htmlEscape="true">${feeder.feeder.ccName}</spring:escapeBody></option>
+                <option value="${feeder.ccId}">${fn:escapeXml(feeder.ccName)}</option>
             </c:forEach>
         </select>
     </tags:boxContainerFooter>

@@ -24,22 +24,19 @@
             <cti:param name="type" value="2" />
             <cti:param name="itemid" value="${bc_areaId}" />
         </cti:url>
-        <cm:dropdownOption  key="components.button.${editKey}.label" icon="icon-pencil" href="${editUrl}" />
-    </div>
-
-    <div class="dn">
+        <cm:dropdownOption key="components.button.${editKey}.label" icon="icon-pencil" href="${editUrl}" />
 
         <c:if test="${showAnalysis}">
             <i:simplePopup titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
                  <%@ include file="analysisTrendsOptions.jspf" %>
             </i:simplePopup>
-            <cti:button nameKey="analysis" id="analysisTrendsButton" icon="icon-chart-line"/>
+            <cm:dropdownOption id="analysisTrendsButton" key="modules.capcontrol.analysis.label" icon="icon-chart-line"/>
         </c:if>
 
         <i:simplePopup titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
              <%@ include file="recentEventsOptions.jspf" %>
         </i:simplePopup>
-        <cti:button nameKey="recentEvents" id="recentEventsButton" icon="icon-application-view-columns"/>
+        <cm:dropdownOption id="recentEventsButton" key="modules.capcontrol.recentEvents.label" icon="icon-application-view-columns"/>
     </div>
 
     <flot:defaultIncludes/>
@@ -126,7 +123,7 @@
         </div>
     </div>
 
-    <tags:boxContainer2 nameKey="substationsContainer"  arguments="${bc_areaName}">
+    <tags:sectionContainer2 nameKey="substationsContainer"  arguments="${bc_areaName}">
         
         <table id="subTable" class="compact-results-table">
             <thead>
@@ -156,11 +153,11 @@
                     </td>
                     <td>
                         <a href="${feederLink}" id="anc_${substationId}">
-                            <spring:escapeBody>${subStation.ccName}</spring:escapeBody>
+                            ${fn:escapeXml(subStation.ccName)}
                         </a>
-                        <span class="error textFieldLabel">
+                        <div class="error textFieldLabel">
                             <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="SA_ENABLED_MSG" />
-                        </span>
+                        </div>
                     </td>
 
                     <td class="wsnw">
@@ -183,6 +180,6 @@
             
         </table>
     
-    </tags:boxContainer2>
+    </tags:sectionContainer2>
     
 </cti:standardPage>

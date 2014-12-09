@@ -35,16 +35,16 @@
         </thead>
 
         <c:forEach var="viewableCapBank" items="${capBankList}">
-            <c:set var="bankId" value="${viewableCapBank.capBankDevice.ccId}"/>
-            <c:set var="parentId" value="${viewableCapBank.capBankDevice.parentID}"/>
-            <cti:msg2 var="moveBankTitle" key=".moveBankTitle" arguments="${viewableCapBank.capBankDevice.ccName}"/>
-            <cti:msg2 var="cbcInfoTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.controlDevice.paoName}" javaScriptEscape="true"/>
-            <cti:msg2 var="bankInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}" javaScriptEscape="true"/>
+            <c:set var="bankId" value="${viewableCapBank.ccId}"/>
+            <c:set var="parentId" value="${viewableCapBank.parentID}"/>
+            <cti:msg2 var="moveBankTitle" key=".moveBankTitle" arguments="${viewableCapBank.ccName}"/>
+            <cti:msg2 var="cbcInfoTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.cbcName}" javaScriptEscape="true"/>
+            <cti:msg2 var="bankInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.ccName}" javaScriptEscape="true"/>
 
             <tr class="bank"
                 data-bank-id="${bankId}"
-                data-cbc-id="${viewableCapBank.controlDevice.liteID}"
-                data-parent-id="${parentId}" 
+                data-cbc-id="${viewableCapBank.cbcId}"
+                data-parent-id="${parentId}"
                 data-move-bank-title="${fn:escapeXml(moveBankTitle)}"
                 data-cbc-info-title="${fn:escapeXml(cbcInfoTitle)}"
                 data-bank-info-title="${fn:escapeXml(bankInfoTitle)}"
@@ -56,13 +56,13 @@
                 </td>
                 <td>
                     <c:choose>
-                        <c:when test="${viewableCapBank.capBankDevice.controlDeviceID != 0}">
+                        <c:when test="${viewableCapBank.cbcId != 0}">
                             <cti:url var="editUrl" value="/editor/cbcBase.jsf">
                                 <cti:param name="type" value="2" />
-                                <cti:param name="itemid" value="${viewableCapBank.capBankDevice.controlDeviceID}" />
+                                <cti:param name="itemid" value="${viewableCapBank.cbcId}" />
                             </cti:url>
                             <a href="${editUrl}">
-                                ${fn:escapeXml(viewableCapBank.controlDevice.paoName)}
+                                ${fn:escapeXml(viewableCapBank.cbcName)}
                             </a> 
                         </c:when>
                         <c:otherwise>
@@ -135,7 +135,7 @@
 
                 <%-- Parent Feeder --%>
                 <td>
-                    <c:set var="movedClass" value="${viewableCapBank.capBankDevice.bankMoved ? 'warning' : ''}" />
+                    <c:set var="movedClass" value="${viewableCapBank.bankMoved ? 'warning' : ''}" />
                     <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PARENT" styleClass="${movedClass}"/>
                 </td>
 
@@ -154,20 +154,20 @@
                             <li class="divider" />
                         </c:if>
                          <cti:checkRolesAndProperties value="SHOW_CB_ADDINFO">
-                            <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.capBankDevice.ccName}" javaScriptEscape="true"/>
+                            <cti:msg2 var="addInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.ccName}" javaScriptEscape="true"/>
                             <cm:dropdownOption key=".capBank.info" icon="icon-magnifier" classes="js-bank-info"
                                 href="javascript:void(0);" />
                         </cti:checkRolesAndProperties>
                         <c:if test="${viewableCapBank.twoWayCbc}">
-                                <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.controlDevice.paoName}" javaScriptEscape="true"/>
+                                <cti:msg2 var="cbcPointsTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.cbcName}" javaScriptEscape="true"/>
                                 <cm:dropdownOption key=".cbc.info" icon="icon-magnifier" classes="js-cbc-info" href="javascript:void(0);" />
                         </c:if>
                         <c:if test="${hasCapbankControl}">
                             <li class="divider" />
-                            <c:if test="${not viewableCapBank.capBankDevice.bankMoved}">
+                            <c:if test="${not viewableCapBank.bankMoved}">
                                 <cm:dropdownOption key=".bankMove" icon="icon-bullet-go" classes="js-move-bank" href="javascript:void(0);" />
                             </c:if>
-                            <c:if test="${viewableCapBank.capBankDevice.bankMoved}">
+                            <c:if test="${viewableCapBank.bankMoved}">
                                 <cm:dropdownOption classes="js-return" key=".command.RETURN_CAP_TO_ORIGINAL_FEEDER" icon="icon-bullet-go-left" />
                                 <cm:dropdownOption classes="js-assign" key=".command.assignBankHere" icon="icon-bullet-go-down" />
                             </c:if>

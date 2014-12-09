@@ -8,10 +8,10 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:msgScope paths="modules.capcontrol.areas, modules.capcontrol">
-<c:if test="${searchResults.hitCount == 0}">
+<c:if test="${empty areas}">
     <span class="empty-list"><i:inline key=".noResults"/></span>
 </c:if>
-<c:if test="${searchResults.hitCount > 0}">
+<c:if test="${not empty areas}">
     <table id="areaTable" class="compact-results-table dashed">
         <thead>
             <tr>
@@ -28,39 +28,38 @@
         <tfoot></tfoot>
         <tbody>
 
-            <c:forEach var="viewableArea" items="${searchResults.resultList}">
+            <c:forEach var="viewableArea" items="${areas}">
                 <%--Setup Variables --%>
-                <c:set var="thisAreaId" value="${viewableArea.area.ccId}"/>
+                <c:set var="areaId" value="${viewableArea.ccId}"/>
 
                 <cti:url var="substationUrl" value="/capcontrol/tier/substations">
-                    <cti:param name="bc_areaId" value="${thisAreaId}"/>
+                    <cti:param name="bc_areaId" value="${areaId}"/>
                 </cti:url>
                 <tr data-has-row-tooltip>
                     <td>
-                        <capTags:warningImg paoId="${thisAreaId}" type="${areaType.updaterType}"/>
-                        <span id="station-count-${thisAreaId}" class="dn"><i:inline key=".stationCount" arguments="${viewableArea.stationCount}"/></span>
+                        <capTags:warningImg paoId="${areaId}" type="${areaType.updaterType}"/>
+                        <span id="station-count-${areaId}" class="dn"><i:inline key=".stationCount" arguments="${viewableArea.stationCount}"/></span>
                     </td>
-                    <td data-tooltip="#station-count-${thisAreaId}" data-row-tooltip>
-                        <a href="${substationUrl}">${fn:escapeXml(viewableArea.area.ccName)}</a>
+                    <td data-tooltip="#station-count-${areaId}" data-row-tooltip>
+                        <a href="${substationUrl}">${fn:escapeXml(viewableArea.ccName)}</a>
                     </td>
                     <td>
-                        <c:if test="${hasAreaControl}"><a id="areaState_${thisAreaId}" href="javascript:void(0);" class="subtle-link"></c:if>
+                        <c:if test="${hasAreaControl}"><a id="areaState_${areaId}" href="javascript:void(0);" class="subtle-link"></c:if>
                         <c:if test="${!hasAreaControl}"><span></c:if>
-                            <span class="box state-box js-state" data-pao-id="${thisAreaId}">&nbsp;</span>
-                            <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="${areaType.updaterType}/${thisAreaId}/STATE_FLAGS"/>
-                            <cti:capControlValue paoId="${thisAreaId}" type="${areaType.updaterType}" format="STATE" />
+                            <span class="box state-box js-state" data-pao-id="${areaId}">&nbsp;</span>
+                            <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="${areaType.updaterType}/${areaId}/STATE_FLAGS"/>
+                            <cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="STATE" />
                         <c:if test="${hasAreaControl}"></a></c:if>
                         <c:if test="${!hasAreaControl}"></span></c:if>
                     </td>
-                    <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${areaType.updaterType}" format="KVARS_AVAILABLE"/></td>
-                    <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${areaType.updaterType}" format="KVARS_UNAVAILABLE"/></td>
-                    <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${areaType.updaterType}" format="KVARS_CLOSED"/></td>
-                    <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${areaType.updaterType}" format="KVARS_TRIPPED"/></td>
-                    <td class="tar"><cti:capControlValue paoId="${thisAreaId}" type="${areaType.updaterType}" format="PFACTOR"/></td>
+                    <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_AVAILABLE"/></td>
+                    <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_UNAVAILABLE"/></td>
+                    <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_CLOSED"/></td>
+                    <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_TRIPPED"/></td>
+                    <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="PFACTOR"/></td>
                 </tr>
             </c:forEach>
         </tbody>
     </table>
-    <tags:pagingResultsControls result="${searchResults}" adjustPageCount="true"/>
 </c:if>
 </cti:msgScope>

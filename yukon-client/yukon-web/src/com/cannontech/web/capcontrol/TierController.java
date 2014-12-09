@@ -11,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -20,8 +19,6 @@ import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CapControlUtils;
-import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -59,15 +56,13 @@ public class TierController {
 
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
 
-        Map<AreaType, SearchResults<ViewableArea>> areasByType = new LinkedHashMap<>();
+        Map<AreaType, List<ViewableArea>> areasByType = new LinkedHashMap<>();
 
         List<ViewableArea> viewableAreas = capControlWebUtilsService.createViewableAreas(cache.getAreas(), cache, false);
-        SearchResults<ViewableArea> results = SearchResults.pageBasedForWholeList(1, 10, viewableAreas);
-        areasByType.put(AreaType.NORMAL, results);
+        areasByType.put(AreaType.NORMAL, viewableAreas);
 
         List<ViewableArea> viewableSpecialAreas = capControlWebUtilsService.createViewableAreas(cache.getSpecialAreas(), cache, true);
-        SearchResults<ViewableArea> specialResults = SearchResults.pageBasedForWholeList(1, 10, viewableSpecialAreas);
-        areasByType.put(AreaType.SPECIAL, specialResults);
+        areasByType.put(AreaType.SPECIAL, viewableSpecialAreas);
 
         model.addAttribute("areasMap", areasByType);
 
@@ -78,26 +73,6 @@ public class TierController {
         CBCNavigationUtil.setNavigation(requestURI , request.getSession());
 
         return "tier/areaTier.jsp";
-    }
-
-    @RequestMapping("areas/{type}")
-    public String areasList(LiteYukonUser user, ModelMap model, @PathVariable AreaType type, PagingParameters pagingParams) {
-        CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
-
-        SearchResults<ViewableArea> results = null;
-        List<ViewableArea> viewableAreas = null;
-        if (type == AreaType.SPECIAL) {
-            viewableAreas = capControlWebUtilsService.createViewableAreas(cache.getSpecialAreas(), cache, true);
-        } else {
-            viewableAreas = capControlWebUtilsService.createViewableAreas(cache.getAreas(), cache, false);
-        }
-        results = SearchResults.pageBasedForWholeList(pagingParams, viewableAreas);
-        model.addAttribute("searchResults", results);
-        model.addAttribute("areaType", type);
-
-        setUpAreas(model, user);
-
-        return "tier/areaTierTable.jsp";
     }
 
     private final void setUpAreas(ModelMap model, LiteYukonUser user) {
@@ -171,7 +146,7 @@ public class TierController {
         model.addAttribute("subBusList", viewableSubBusList);
         
         List<Feeder> feederList = cache.getFeedersBySubStation(cachedSubstation);
-        List<ViewableFeeder> viewableFeederList = capControlWebUtilsService.createViewableFeeder(feederList,cache);
+        List<ViewableFeeder> viewableFeederList = capControlWebUtilsService.createViewableFeeder(feederList);
         model.addAttribute("feederList", viewableFeederList);
 
         List<CapBankDevice> capBankList = cache.getCapBanksBySubStation(cachedSubstation);
@@ -196,21 +171,21 @@ public class TierController {
         boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         model.addAttribute("hasEditingRole", hasEditingRole);
         
-        for (ViewableSubBus subbus : viewableSubBusList) {
-            if (!CapControlUtils.isStrategyAttachedToSubBusOrSubBusParentArea(subbus.getSubBus())) {
-                SubStation subBusSubstation = cache.getSubstation(subbus.getSubBus().getParentID());
+        for (ViewableSubBus bus : viewableSubBusList) {
+            if (!CapControlUtils.isStrategyAttachedToSubBusOrSubBusParentArea(cache.getSubBus(bus.getCcId()))) {
+                SubStation subBusSubstation = cache.getSubstation(cache.getSubBus(bus.getCcId()).getParentID());
                 int parentAreaId;
                 if (subBusSubstation.getSpecialAreaEnabled()) {
                     parentAreaId = subBusSubstation.getSpecialAreaId();
                 } else {
-                    parentAreaId = cache.getParentAreaId(subbus.getSubBus().getCcId());
+                    parentAreaId = cache.getParentAreaId(bus.getCcId());
                 }
                 StreamableCapObject streamable = cache.getStreamableArea(parentAreaId);
 
                 String areaLinkHtml = capControlWebUtilsService.getCapControlFacesEditorLinkHtml(request,
-                    streamable.getCcId(), userContext);
+                    streamable.getCcId());
                 String subBusLinkHtml = capControlWebUtilsService.getCapControlFacesEditorLinkHtml(request,
-                    subbus.getSubBus().getCcId(), userContext);
+                    bus.getCcId());
                 areaLinkHtml = "<strong>" + areaLinkHtml + "</strong>";
                 subBusLinkHtml = "<strong>" + subBusLinkHtml + "</strong>";
                 WebMessageSourceResolvable noStrategyMessage =

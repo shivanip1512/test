@@ -11,7 +11,6 @@ import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.NavigableArea;
 import com.cannontech.web.capcontrol.models.NavigableCapBank;
 import com.cannontech.web.capcontrol.models.NavigableFeeder;
@@ -21,18 +20,16 @@ import com.cannontech.web.capcontrol.models.ViewableArea;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
 import com.cannontech.web.capcontrol.models.ViewableSubBus;
-import com.cannontech.web.capcontrol.models.ViewableSubStation;
 
 public interface CapControlWebUtilsService {
+
     List<ViewableSubBus> createViewableSubBus(List<SubBus> subBusList);
 
-    List<ViewableFeeder> createViewableFeeder(List<Feeder> feeders, CapControlCache cache);
+    List<ViewableFeeder> createViewableFeeder(List<Feeder> feeders);
 
     List<ViewableCapBank> createViewableCapBank(List<CapBankDevice> capBanks);
 
     List<ViewableArea> createViewableAreas(List<? extends StreamableCapObject> areas, CapControlCache cache, boolean isSpecialArea);
-
-    List<ViewableSubStation> createViewableSubStation(List<SubStation> subStations, CapControlCache cache);
 
     List<NavigableArea> buildSimpleHierarchy();
 
@@ -44,5 +41,5 @@ public interface CapControlWebUtilsService {
 
     List<NavigableCapBank> getSimpleCapBanks(Feeder feeder);
 
-    String getCapControlFacesEditorLinkHtml(HttpServletRequest request, int ccId, YukonUserContext userContext);
+    String getCapControlFacesEditorLinkHtml(HttpServletRequest request, int ccId);
 }

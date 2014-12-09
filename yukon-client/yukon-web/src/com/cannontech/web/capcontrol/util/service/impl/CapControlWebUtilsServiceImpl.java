@@ -1,36 +1,26 @@
 package com.cannontech.web.capcontrol.util.service.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
-import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.util.CapControlUtils;
-import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.service.PaoLoadingService;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DBEditorTypes;
-import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.models.NavigableArea;
 import com.cannontech.web.capcontrol.models.NavigableCapBank;
 import com.cannontech.web.capcontrol.models.NavigableFeeder;
@@ -40,68 +30,40 @@ import com.cannontech.web.capcontrol.models.ViewableArea;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
 import com.cannontech.web.capcontrol.models.ViewableSubBus;
-import com.cannontech.web.capcontrol.models.ViewableSubStation;
 import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableSet;
 
 public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService {
 
-    private final ImmutableSet<ControlAlgorithm> showToolTipAlgorithms = ImmutableSet.of(ControlAlgorithm.PFACTOR_KW_KVAR);
-    
+    private static final ImmutableSet<ControlAlgorithm> showToolTipAlgorithms = ImmutableSet.of(ControlAlgorithm.PFACTOR_KW_KVAR);
+
     @Autowired private CapControlCache capControlCache;
-    @Autowired private PaoDao paoDao;
     @Autowired private PaoLoadingService paoLoadingService;
-    @Autowired private PointDao pointDao;
-    @Autowired private StrategyDao strategyDao;
+    @Autowired private IDatabaseCache dbCache;
 
     @Override
     public List<ViewableSubBus> createViewableSubBus(List<SubBus> subBusList) {
-        List<ViewableSubBus> viewableList = new ArrayList<ViewableSubBus>(subBusList.size());
+
+        List<ViewableSubBus> viewableList = new ArrayList<>();
         
-        for(SubBus subBus: subBusList) {
+        for (SubBus subBus: subBusList) {
             ViewableSubBus viewable = new ViewableSubBus();
-            viewable.setSubBus(subBus);
-            viewable.setIvvcControlled(subBus.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR);
+            viewable.setSubBusInfo(subBus);
             viewable.setShowTargetTooltip(showToolTipAlgorithms.contains(subBus.getControlUnits()));
-            
-            int alternateStationId = 0;
-            int alternateAreaId = 0;
             
             if (subBus.getAlternateBusId() > 0) {
                 SubBus linkedSub = capControlCache.getSubBus(subBus.getAlternateBusId());
+                
                 try {
-                    SubStation station = capControlCache.getSubstation(linkedSub.getParentID());
-                    alternateStationId = station.getCcId();
-                    alternateAreaId = station.getParentID();
+                    SubStation linkedStation = capControlCache.getSubstation(linkedSub.getParentID());
+                    viewable.setAlternateStationId(linkedStation.getCcId());
+                    viewable.setAlternateAreaId(linkedStation.getParentID());
                 } catch (NotFoundException exception) {
-                    //Dual bus alternate bus is currently an orphan.
+                    //Alternate dual bus is currently an orphan.
                 }
             }
 
-            viewable.setAlternateStationId(alternateStationId);
-            viewable.setAlternateAreaId(alternateAreaId);
-
-            if(subBus.getCurrentVarLoadPointID() != 0) {
-                LitePoint point = pointDao.getLitePoint(subBus.getCurrentVarLoadPointID());
-                viewable.setVarPoint(point);
-            }
-            if(subBus.getCurrentVoltLoadPointID() != 0) {
-                LitePoint point = pointDao.getLitePoint(subBus.getCurrentVoltLoadPointID());
-                viewable.setVoltPoint(point);
-            }
-            if(subBus.getCurrentWattLoadPointID() != 0) {
-                LitePoint point = pointDao.getLitePoint(subBus.getCurrentWattLoadPointID());
-                viewable.setWattPoint(point);
-            }
-
-            if(subBus.getStrategyId() > 0) {
-                //Check to see if we are an IVVC enabled
-                CapControlStrategy strategy = strategyDao.getForId(subBus.getStrategyId());
-                if(strategy.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR) {
-                    viewable.setIvvcControlled(true);
-                }
-            }
-            
             viewableList.add(viewable);
         }
         
@@ -109,25 +71,16 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
     }
     
     @Override
-    public List<ViewableFeeder> createViewableFeeder(List<Feeder> feeders, CapControlCache cache) {
+    public List<ViewableFeeder> createViewableFeeder(List<Feeder> feeders) {
+
         List<ViewableFeeder> viewableList = new ArrayList<ViewableFeeder>(feeders.size());
         
         for (Feeder feeder: feeders) {
-            String subBusName = cache.getSubBusNameForFeeder(feeder);
             ViewableFeeder viewable = new ViewableFeeder();
-            
-            viewable.setFeeder(feeder);
-            viewable.setSubBusName(subBusName);
+            viewable.setFeederInfo(feeder);
             ControlAlgorithm algorithm = feeder.getControlUnits();
-            viewable.setIvvcControlled(algorithm == ControlAlgorithm.INTEGRATED_VOLT_VAR);
             viewable.setShowTargetTooltip(showToolTipAlgorithms.contains(algorithm));
-            
-            if (feeder.getOriginalParentId() > 0) {
-                viewable.setMovedFeeder(true); 
-            } else {
-                viewable.setMovedFeeder(false);
-            }
-            
+
             viewableList.add(viewable);
         }
         
@@ -136,16 +89,17 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
     
     @Override
     public List<ViewableCapBank> createViewableCapBank(List<CapBankDevice> capBanks) {
+
         List<ViewableCapBank> viewableList = new ArrayList<ViewableCapBank>(capBanks.size());
-        for (CapBankDevice cbc: capBanks) {
-            LiteYukonPAObject controller = paoDao.getLiteYukonPAO(cbc.getControlDeviceID());
+        Map<Integer, LiteYukonPAObject> allPaos = dbCache.getAllPaosMap();
+
+        for (CapBankDevice bank: capBanks) {
+            LiteYukonPAObject cbc = allPaos.get(bank.getControlDeviceID());
             ViewableCapBank viewable = new ViewableCapBank();
-            
-            viewable.setCapBankDevice(cbc);
-            viewable.setControlDevice(controller);
-            viewable.setTwoWayCbc(CapControlUtils.isTwoWay(controller));
-            viewable.setDevice701x(CapControlUtils.is701xDevice(controller));
-            
+
+            viewable.setBankInfo(bank);
+            viewable.setCbcInfo(cbc);
+
             viewableList.add(viewable);
         }
         
@@ -156,40 +110,19 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
     public List<ViewableArea> createViewableAreas(List<? extends StreamableCapObject> areas, CapControlCache cache, boolean isSpecialArea) {
         List<ViewableArea> viewableList = new ArrayList<ViewableArea>(areas.size());
         
-        for (StreamableCapObject area: areas) {         
-            ViewableArea viewable = new ViewableArea();
-            List<ViewableSubStation> viewableSubStations = null;
-            
+        for (StreamableCapObject area: areas) {
+            ViewableArea viewableArea = new ViewableArea();
+
             List<SubStation> subStations = null;
             if(isSpecialArea) {
                 subStations = cache.getSubstationsBySpecialArea(area.getCcId());
             } else {
                 subStations = cache.getSubstationsByArea(area.getCcId());
             }
-            viewableSubStations = createViewableSubStation(subStations, cache);
 
-            viewable.setArea(area);
-            viewable.setSubStations(viewableSubStations);
-            viewableList.add(viewable);
-        }
-        
-        return viewableList;
-    }
-    
-    @Override
-    public List<ViewableSubStation> createViewableSubStation(List<SubStation> subStations, CapControlCache cache) {
-        List<ViewableSubStation> viewableList = new ArrayList<ViewableSubStation>(subStations.size());
-        
-        for(SubStation subStation : subStations) {
-            ViewableSubStation viewable = new ViewableSubStation();
-            List<CapBankDevice> capBanks = cache.getCapBanksBySubStation(subStation);
-            List<Feeder> feeders = cache.getFeedersBySubStation(subStation);
-            
-            viewable.setName(subStation.getCcName());
-            viewable.setFeederCount(feeders.size());
-            viewable.setCapBankCount(capBanks.size());
-            
-            viewableList.add(viewable);
+            viewableArea.setAreaInfo(area);
+            viewableArea.setStationCount(subStations.size());
+            viewableList.add(viewableArea);
         }
         
         return viewableList;
@@ -256,26 +189,21 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
     }
     
     @Override
-    public String getCapControlFacesEditorLinkHtml(HttpServletRequest request, int ccId, YukonUserContext userContext) {
-        String name = getPaoNameWithId(ccId);
+    public String getCapControlFacesEditorLinkHtml(HttpServletRequest request, int ccId) {
+        String name = getPaoNameForId(ccId);
         String url = request.getContextPath() + "/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL
                 + "&amp;itemid=" + ccId;
-        String html = getLinkHtml(url, name, new HashMap<String, String>());
+        String html = getLinkHtml(url, name);
         return html;
     }
     
-    private String getPaoNameWithId(int paoId) throws NotFoundException {
-        YukonPao yukonPao = paoDao.getYukonPao(paoId);
-        DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(yukonPao);
-        return displayablePao.getName();
+    private String getPaoNameForId(int paoId) throws NotFoundException {
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(paoId);
+        return pao.getPaoName();
     }
     
-    private String getLinkHtml(String url, String value, Map<String, String> argMap) {
-        String html = "<a href=\"" + url;
-        for (Entry<String, String> argEntry : argMap.entrySet()) {
-            html += "?" + argEntry.getKey() + "=" + argEntry.getValue();
-        }
-        html += "\">" + value + "</a>";
+    private String getLinkHtml(String url, String value) {
+        String html = "<a href=\"" + url + "\">" + StringUtils.escapeXmlAndJavascript(value) + "</a>";
         return html;
     }
 }

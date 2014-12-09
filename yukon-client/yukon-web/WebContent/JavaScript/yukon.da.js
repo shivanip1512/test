@@ -72,11 +72,11 @@ yukon.da = (function () {
             var banks = $('[data-bank-id]');
             banks.each( function(index, item){
                 var row = $(item),
-                    bankId = row.attr('data-bank-id'),
-                    cbcId = row.attr('data-cbc-id'),
-                    moveBankTitle = row.attr('data-move-bank-title'),
-                    cbcInfoTitle = row.attr('data-cbc-info-title'),
-                    bankInfoTitle = row.attr('data-bank-info-title'),
+                    bankId = row.data('bankId'),
+                    cbcId = row.data('cbcId'),
+                    moveBankTitle = row.data('moveBankTitle'),
+                    cbcInfoTitle = row.data('cbcInfoTitle'),
+                    bankInfoTitle = row.data('bankInfoTitle'),
                     menu = row.find('.dropdown-trigger .dropdown-menu'),
                     moveBankOpener = menu.find('.js-move-bank'),
                     assignMovedBankOpener = menu.find('.js-assign,.js-return'),
@@ -174,7 +174,7 @@ yukon.da = (function () {
                 if (busId === 0) {
                     rows.each(function (index, item) {
                         var row = $(item),
-                            rowId = + row.attr('data-bus-id');
+                            rowId = + row.data('busId');
                         busIds.push(rowId);
                     });
                 } else {
@@ -192,7 +192,7 @@ yukon.da = (function () {
                 if (feederId === 0) {
                     rows.each(function (index, item) {
                         var row = $(item),
-                            rowId = + row.attr('data-feeder-id');
+                        rowId = + row.data('feederId');
                         feederIds.push(rowId);
                     });
                 } else {
@@ -214,7 +214,7 @@ yukon.da = (function () {
 
             busRows.each( function (index, item) {
                 var row = $(item),
-                    busId = + row.attr('data-bus-id');
+                    busId = + row.data('busId');
 
                 if (busIds.indexOf(busId) !== -1) {
                     row.show();
@@ -225,8 +225,8 @@ yukon.da = (function () {
 
             feederRows.each(function (index, item) {
                 var row = $(item),
-                    busId = + row.attr('data-parent-id'),
-                    feederId = + row.attr('data-feeder-id');
+                    busId = + row.data('parentId'),
+                    feederId = + row.data('feederId');
 
                 if (busIds.indexOf(busId) !== -1) {
                     feederIds.push( feederId );
@@ -258,7 +258,7 @@ yukon.da = (function () {
 
             feederRows.each(function (index, item) {
                 var row = $(item);
-                    feederId = + row.attr('data-feeder-id');
+                    feederId = + row.data('feederId');
 
                 if (feederIds.indexOf(feederId) !== -1) {
                     row.show();
@@ -269,7 +269,7 @@ yukon.da = (function () {
 
             bankRows.each(function (index, item) {
                 var row = $(item),
-                    feederId = + row.attr('data-parent-id');
+                    feederId = + row.data('parentId');
 
                 if (feederIds.indexOf(feederId) !== -1) {
                     row.show();
@@ -293,7 +293,7 @@ yukon.da = (function () {
             var paoIds = [];
 
             $('[data-pao-id]').each(function() {
-                paoIds.push($(this).attr('data-pao-id'));
+                paoIds.push($(this).data('paoId'));
             });
 
             $.ajax({

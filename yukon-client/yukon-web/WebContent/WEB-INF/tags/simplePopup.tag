@@ -16,12 +16,9 @@
     <jsp:doBody/>
 </div>
 <script type="text/javascript">
-var windowHeight = $(window).height(),
-position = {my: 'top', at: 'top+' + windowHeight / 5 },
-defaults = { width: 'auto', 
+var defaults = { width: 'auto',
              autoOpen: false,
-             title: '${cti:escapeJavaScript(title)}',
-             position : position
+             title: '${cti:escapeJavaScript(title)}'
 };
 
 <c:if test="${not empty pageScope.options}">

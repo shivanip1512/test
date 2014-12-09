@@ -1,80 +1,44 @@
 package com.cannontech.web.capcontrol.models;
 
-
-import java.util.List;
-
-import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 
 public class ViewableSubBus {
 
-	private SubBus subBus = null;
-	private LitePoint varPoint = null;
-	private LitePoint voltPoint = null;
-	private LitePoint wattPoint = null;
-	private int alternateStationId;
-	private int alternateAreaId;
-	private List<ViewableFeeder> feeders = null;
-	private boolean ivvcControlled = false;
-	private boolean showTargetTooltip = true;
-	
-	public SubBus getSubBus() {
-		return this.subBus;
-	}
-	
-	public void setSubBus(SubBus subBus) {
-		this.subBus = subBus;
-	}
+    private int ccId;
+    private String ccName;
+    private boolean usePhaseData;
+    private boolean busControlled;
+    private boolean ivvcControlled;
+    private boolean showTargetTooltip;
+    private int alternateAreaId;
+    private int alternateStationId;
 
-	public LitePoint getVarPoint() {
-		return varPoint;
-	}
-
-	public void setVarPoint(LitePoint varPoint) {
-		this.varPoint = varPoint;
-	}
-
-	public LitePoint getVoltPoint() {
-		return voltPoint;
-	}
-
-	public void setVoltPoint(LitePoint voltPoint) {
-		this.voltPoint = voltPoint;
-	}
-
-	public LitePoint getWattPoint() {
-		return wattPoint;
-	}
-
-	public void setWattPoint(LitePoint wattPoint) {
-		this.wattPoint = wattPoint;
-	}
-	
-    public List<ViewableFeeder> getFeeders() {
-        return feeders;
+    public void setSubBusInfo(SubBus bus) {
+        ccId = bus.getCcId();
+        ccName = bus.getCcName();
+        usePhaseData = bus.getUsePhaseData();
+        busControlled = bus.getControlMethod().isBusControlled();
+        ivvcControlled = bus.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR;
     }
 
-    public void setFeeders(List<ViewableFeeder> feeders) {
-        this.feeders = feeders;
+    public final int getCcId() {
+        return ccId;
     }
 
-    public int getAlternateStationId() {
-        return alternateStationId;
+    public final String getCcName() {
+        return ccName;
     }
 
-    public void setAlternateStationId(int alternateStationId) {
-        this.alternateStationId = alternateStationId;
+    public final boolean isUsePhaseData() {
+        return usePhaseData;
     }
 
-    public int getAlternateAreaId() {
-        return alternateAreaId;
+    public final boolean isBusControlled() {
+        return busControlled;
     }
 
-    public void setAlternateAreaId(int alternateAreaId) {
-        this.alternateAreaId = alternateAreaId;
-    }
-
-    public boolean isIvvcControlled() {
+    public final boolean isIvvcControlled() {
         return ivvcControlled;
     }
 
@@ -82,7 +46,7 @@ public class ViewableSubBus {
         this.ivvcControlled = ivvcControlled;
     }
 
-    public boolean isShowTargetTooltip() {
+    public final boolean isShowTargetTooltip() {
         return showTargetTooltip;
     }
 
@@ -90,4 +54,19 @@ public class ViewableSubBus {
         this.showTargetTooltip = showTargetTooltip;
     }
 
+    public final int getAlternateAreaId() {
+        return alternateAreaId;
+    }
+
+    public void setAlternateAreaId(int alternateAreaId) {
+        this.alternateAreaId = alternateAreaId;
+    }
+
+    public final int getAlternateStationId() {
+        return alternateStationId;
+    }
+
+    public void setAlternateStationId(int alternateStationId) {
+        this.alternateStationId = alternateStationId;
+    }
 }

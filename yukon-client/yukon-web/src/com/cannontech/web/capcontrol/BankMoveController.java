@@ -111,11 +111,18 @@ public class BankMoveController {
                 if (capBank.isBankMoved()) {
                     MovedBank movedBank = new MovedBank(capBank);
 
-                    movedBank.setCurrentFeederName(updaterHelper.getCapBankValueAt(capBank, UpdaterHelper.UpdaterDataType.CB_PARENT_COLUMN, context).toString());
-                    movedBank.setOriginalFeederName(filterCapControlCache.getFeeder(capBank.getOrigFeederID()).getCcName());
+                    int currentFeederId = capBank.getParentID();
+                    int originalFeederId = capBank.getOrigFeederID();
 
-                    SubStation originalSub = filterCapControlCache.getParentSubstation(capBank.getOrigFeederID());
-                    SubStation currentSub = filterCapControlCache.getParentSubstation(capBank.getParentID());
+                    Feeder currentFeeder = filterCapControlCache.getFeeder(currentFeederId);
+                    Feeder originalFeeder = filterCapControlCache.getFeeder(originalFeederId);
+
+                    movedBank.setCurrentFeederName(currentFeeder.getCcName());
+                    movedBank.setOriginalFeederName(originalFeeder.getCcName());
+
+                    SubStation currentSub = filterCapControlCache.getParentSubstation(originalFeederId);
+                    SubStation originalSub = filterCapControlCache.getParentSubstation(currentFeederId);
+
                     movedBank.setCurrentSubstationId(currentSub.getCcId());
                     movedBank.setOriginalSubstationId(originalSub.getCcId());
 

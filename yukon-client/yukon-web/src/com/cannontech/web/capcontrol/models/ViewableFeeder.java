@@ -1,65 +1,50 @@
 package com.cannontech.web.capcontrol.models;
 
-import java.util.List;
-
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 
 public class ViewableFeeder {
 
-	private Feeder feeder = null;
-	private String subBusName = null;
-	private boolean movedFeeder = false;
-	private List<ViewableCapBank> capbanks = null;
-	private boolean ivvcControlled = false;
+    private int ccId;
+    private String ccName;
+    private int parentId;
+    private boolean ivvcControlled = false;
     private boolean showTargetTooltip = true;
-	
-	public Feeder getFeeder() {
-		return feeder;
-	}
+    private boolean individualFeederControlled;
+    private boolean usePhaseData;
 
-	public void setFeeder(Feeder feeder) {
-		this.feeder = feeder;
-	}
-
-	public String getSubBusName() {
-		return subBusName;
-	}
-
-	public void setSubBusName(String subBusName) {
-		this.subBusName = subBusName;
-	}
-	
-	public void setCapBanks(List<ViewableCapBank> capbanks) {
-	    this.capbanks = capbanks;
-	}
-	
-	public List<ViewableCapBank> getCapBanks() {
-        return capbanks;
+    public void setFeederInfo(Feeder feeder) {
+        ccId = feeder.getCcId();
+        ccName  = feeder.getCcName();
+        parentId = feeder.getParentID();
+        ivvcControlled = feeder.getControlUnits() == ControlAlgorithm.INTEGRATED_VOLT_VAR;
+        individualFeederControlled = feeder.getControlmethod() == ControlMethod.INDIVIDUAL_FEEDER;
+        usePhaseData = feeder.getUsePhaseData();
     }
 
-    public boolean isMovedFeeder() {
-        return movedFeeder;
+    public final boolean isUsePhaseData() {
+        return usePhaseData;
     }
 
-    public void setMovedFeeder(boolean movedFeeder) {
-        this.movedFeeder = movedFeeder;
+    public final int getCcId() {
+        return ccId;
+    }
+
+    public final String getCcName() {
+        return ccName;
+    }
+
+    public final int getParentId() {
+        return parentId;
     }
 
     public boolean isIvvcControlled() {
         return ivvcControlled;
     }
 
-    public void setIvvcControlled(boolean ivvcControlled) {
-        this.ivvcControlled = ivvcControlled;
-    }
-    
     public boolean isIndividualFeederControlled() {
-    	try {
-	    	return getFeeder().getControlmethod() == ControlMethod.INDIVIDUAL_FEEDER;
-    	} catch (IllegalArgumentException e) {
-			return false;
-		}
+        return individualFeederControlled;
     }
 
     public boolean isShowTargetTooltip() {
@@ -69,5 +54,4 @@ public class ViewableFeeder {
     public void setShowTargetTooltip(boolean showTargetTooltip) {
         this.showTargetTooltip = showTargetTooltip;
     }
-
 }

@@ -1,31 +1,31 @@
 package com.cannontech.web.capcontrol.models;
 
-import java.util.List;
-
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 
 public class ViewableArea {
 
-	private StreamableCapObject area = null;
-	private List<ViewableSubStation> subStations = null;	
-	
-	public StreamableCapObject getArea() {
-		return area;
-	}
+    private int ccId;
+    private String ccName;
+    private int stationCount;
 
-	public void setArea(StreamableCapObject area) {
-		this.area = area;
-	}
-
-	public List<ViewableSubStation> getSubStations() {
-		return subStations;
-	}
-
-    public int getStationCount() {
-        return subStations.size();
+    public void setAreaInfo(StreamableCapObject area) {
+        ccId = area.getCcId();
+        ccName = area.getCcName();
     }
 
-	public void setSubStations(List<ViewableSubStation> subStations) {
-		this.subStations = subStations;
-	}
+    public final int getCcId() {
+        return ccId;
+    }
+
+    public final String getCcName() {
+        return ccName;
+    }
+
+    public int getStationCount() {
+        return stationCount;
+    }
+
+    public void setStationCount(int stationCount) {
+        this.stationCount = stationCount;
+    }
 }

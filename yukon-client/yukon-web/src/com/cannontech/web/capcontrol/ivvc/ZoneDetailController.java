@@ -65,14 +65,12 @@ import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.capcontrol.model.DynamicCommand;
 import com.cannontech.message.capcontrol.model.DynamicCommand.DynamicCommandType;
 import com.cannontech.message.capcontrol.model.DynamicCommand.Parameter;
-import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.message.capcontrol.streamable.VoltageRegulatorFlags;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
-import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -80,7 +78,6 @@ import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.PaoIdentifierPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
 
@@ -315,7 +312,6 @@ public class ZoneDetailController {
         
         setupZoneDetails(model, cache, zoneDto);
         setupIvvcEvents(model, zoneDto.getZoneId(), zoneDto.getSubstationBusId());
-        setupCapBanks(model, cache, zoneDto);
         setupBreadCrumbs(model, cache, zoneDto);
         setupRegulatorPointMappings(model, zoneDto);
         setupRegulatorCommands(model, zoneDto);
@@ -435,41 +431,6 @@ public class ZoneDetailController {
         return result;
     }
 
-    private void setupCapBanks(ModelMap model, CapControlCache cache, AbstractZone zoneDto) {
-        
-        List<Integer> capBankIdList = zoneService.getCapBankIdsForZoneId(zoneDto.getZoneId());
-        List<Integer> unassignedBankIds = zoneService.getUnassignedCapBankIdsForSubBusId(zoneDto.getSubstationBusId());
-        
-        //Add unassigned banks to main list, we want to display them.
-        capBankIdList.addAll(unassignedBankIds);
-        
-        List<CapBankDevice> capBankList = Lists.newArrayList();
-        for (Integer bankId : capBankIdList) {
-            CapBankDevice bank = cache.getCapBankDevice(bankId);
-            capBankList.add(bank);
-        }
-        
-        List<ViewableCapBank> viewableCapBankList = capControlWebUtilsService.createViewableCapBank(capBankList);
-        for (ViewableCapBank bank:viewableCapBankList) {
-            List<Integer> monitorPoints = zoneService.getMonitorPointsForBank(bank.getCapBankDevice().getCcId());
-            if (monitorPoints.size() > 0) {
-                //Grabbing the first one to display, list is sorted on display order
-                bank.setVoltagePointId(monitorPoints.get(0));
-            }
-            
-            if (unassignedBankIds.contains(bank.getCapBankDevice().getCcId())) {
-                bank.setNotAssignedToZone(true);
-            } else {
-                bank.setNotAssignedToZone(false);
-            }
-        }
-
-        Collections.sort(viewableCapBankList);
-
-        model.addAttribute("unassignedBanksExist",unassignedBankIds.size()>0);
-        model.addAttribute("capBankList", viewableCapBankList);
-    }
-    
     private void setupRegulatorPointMappings(ModelMap model, AbstractZone abstractZone) {
         
         Map<Phase, RegulatorToZoneMapping> regulators = abstractZone.getRegulators();

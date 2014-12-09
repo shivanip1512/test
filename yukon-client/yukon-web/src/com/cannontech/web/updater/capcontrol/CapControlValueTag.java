@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Required;
@@ -40,7 +41,11 @@ public class CapControlValueTag extends YukonTagSupport {
         UpdateValue value = updaterService.getFirstValue(id, getUserContext());
 
         JspWriter out = getJspContext().getOut();
-        out.print("<span data-updater=\"" + StringEscapeUtils.escapeHtml4(value.getIdentifier().getFullIdentifier()) + "\" " + "class=\"" + styleClass + "\"" + ">");
+        out.print("<span data-updater=\"" + StringEscapeUtils.escapeHtml4(value.getIdentifier().getFullIdentifier()) + "\"");
+        if (StringUtils.isNotBlank(styleClass)) {
+            out.print(" class=\"" + styleClass + "\"");
+        }
+        out.print(">");
         out.print(StringEscapeUtils.escapeHtml4(value.getValue()));
         out.print("</span>");
     }
@@ -51,7 +56,7 @@ public class CapControlValueTag extends YukonTagSupport {
     }
     
     public void setType(final String type) {
-        this.isTypeSet = true;
+        isTypeSet = true;
         this.type = type;
     }
     

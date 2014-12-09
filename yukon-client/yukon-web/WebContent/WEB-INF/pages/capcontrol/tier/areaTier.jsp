@@ -15,10 +15,10 @@
     </c:if>
 
     <c:forEach var="item" items="${areasMap}">
-        <c:set var="searchResults" value="${item.value}" />
+        <c:set var="areas" value="${item.value}" />
         <c:set var="areaType" value="${item.key}" />
         <tags:sectionContainer2 nameKey="areasContainer.${areaType.type}" styleClass="stacked-md">
-            <div data-url="areas/${areaType}">
+            <div class="scroll-xl">
                 <%@ include file="areaTierTable.jsp" %>
             </div>
         </tags:sectionContainer2>
