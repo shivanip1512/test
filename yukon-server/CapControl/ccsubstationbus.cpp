@@ -2619,6 +2619,7 @@ double CtiCCSubstationBus::calculateKVARSolution(const string& controlUnits, dou
     else if( ciStringEqual(controlUnits,ControlStrategy::VoltsControlUnit) ||
              ciStringEqual(controlUnits,ControlStrategy::MultiVoltControlUnit)||
              ciStringEqual(controlUnits,ControlStrategy::MultiVoltVarControlUnit)||
+             ciStringEqual(controlUnits,ControlStrategy::TimeOfDayControlUnit)||
              ciStringEqual(controlUnits,ControlStrategy::IntegratedVoltVarControlUnit) )
     {
         returnKVARSolution = 0;
