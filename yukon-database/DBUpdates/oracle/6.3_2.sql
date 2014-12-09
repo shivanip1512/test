@@ -78,6 +78,29 @@ END;
 /
 /* End YUK-13905 */
 
+/* Start YUK-13910 */
+ALTER TABLE RawPointHistoryDependentJob
+ADD JobGroupId INT;
+ 
+UPDATE RawPointHistoryDependentJob 
+SET JobGroupId = 
+    (SELECT JobGroupId FROM Job WHERE Job.JobId = RawPointHistoryDependentJob.JobId);
+
+ALTER TABLE RawPointHistoryDependentJob
+MODIFY JobGroupId INT NOT NULL;
+
+ALTER TABLE Job
+ADD CONSTRAINT AK_Job_JobId_JobGroupId UNIQUE (JobId, JobGroupId);
+
+ALTER TABLE RawPointHistoryDependentJob
+    DROP CONSTRAINT FK_RPHDependentJob_Job;
+
+ALTER TABLE RawPointHistoryDependentJob
+   ADD CONSTRAINT FK_RPHDependentJob_Job FOREIGN KEY (JobId, JobGroupId)
+      REFERENCES Job (JobId, JobGroupId)
+      ON DELETE CASCADE;
+/* End YUK-13910 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/2/2014 3:34:46 PM                         */
+/* Created on:     12/9/2014 5:23:54 PM                         */
 /*==============================================================*/
 
 
@@ -5737,6 +5737,10 @@ INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-3, 'spSmartInde
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-2, 'rfnPerformanceVerificationEmailJobDefinition', 'N', -2);
 INSERT INTO Job (Jobid, BeanName, Disabled, JobGroupId) VALUES (-1, 'rfnPerformanceVerificationJobDefinition', 'N', -1);
 
+alter table JOB
+   add constraint AK_Job_JobId_JobGroupId unique (JobID, JobGroupId)
+go
+
 /*==============================================================*/
 /* Table: JOBPROPERTY                                           */
 /*==============================================================*/
@@ -7748,6 +7752,7 @@ go
 create table RawPointHistoryDependentJob (
    JobId                int                  not null,
    RawPointHistoryId    numeric              not null,
+   JobGroupId           int                  not null,
    constraint PK_RawPointHistoryDependentJob primary key (JobId)
 )
 go
@@ -13297,8 +13302,9 @@ alter table RPHTag
 go
 
 alter table RawPointHistoryDependentJob
-   add constraint FK_RPHDependentJob_Job foreign key (JobId)
-      references JOB (JobID)
+   add constraint FK_RPHDependentJob_Job foreign key (JobId, JobGroupId)
+      references JOB (JobID, JobGroupId)
+         on delete cascade
 go
 
 alter table Regulator

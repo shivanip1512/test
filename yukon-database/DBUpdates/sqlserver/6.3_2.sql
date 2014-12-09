@@ -87,6 +87,31 @@ END
 DROP TABLE #DemandProfileCategories;
 /* End YUK-13905 */
 
+/* Start YUK-13910 */
+ALTER TABLE RawPointHistoryDependentJob
+ADD JobGroupId INT;
+GO
+ 
+UPDATE RawPointHistoryDependentJob 
+SET JobGroupId = 
+    (SELECT JobGroupId FROM Job WHERE Job.JobId = RawPointHistoryDependentJob.JobId);
+
+ALTER TABLE RawPointHistoryDependentJob
+ALTER COLUMN JobGroupId INT NOT NULL;
+GO
+
+ALTER TABLE Job
+ADD CONSTRAINT AK_Job_JobId_JobGroupId UNIQUE (JobId, JobGroupId);
+GO
+
+ALTER TABLE RawPointHistoryDependentJob
+    DROP CONSTRAINT FK_RPHDependentJob_Job;
+
+ALTER TABLE RawPointHistoryDependentJob
+   ADD CONSTRAINT FK_RPHDependentJob_Job FOREIGN KEY (JobId)
+      REFERENCES Job (JobId, JobGroupId)
+      ON DELETE CASCADE;
+/* End YUK-13910 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
