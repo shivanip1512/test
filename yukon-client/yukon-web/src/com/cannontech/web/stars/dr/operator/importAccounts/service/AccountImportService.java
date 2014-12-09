@@ -566,7 +566,7 @@ public class AccountImportService {
                         }
 
 
-                        if(isZigbeeDevice(deviceType, result, lineNoKey, hwFields)) {
+                        if(isZigbeeDevice(deviceType, result, lineNoKey, hwFields,Boolean.FALSE)) {
                             continue;
                         }
 
@@ -802,7 +802,7 @@ public class AccountImportService {
                         continue;
                     }
 
-                    if(isZigbeeDevice(deviceType, result, lineNoKey, hwFields)) {
+                    if(isZigbeeDevice(deviceType, result, lineNoKey, hwFields,Boolean.TRUE)) {
                         continue;
                     }
 
@@ -1148,20 +1148,31 @@ public class AccountImportService {
      * @param result - Account Import Result for the current import operation
      * @param lineNoKey - Key or index of line number in the import sheet
      * @param hwFields - The string array holding the hardware sheet details
+     * @param isHwFile - Boolean value indicating its a hardware file or not.
      * @return - boolean true if the device type corresponds to zibgee device
      */
     private boolean isZigbeeDevice(YukonListEntry deviceType, AccountImportResult result, Integer lineNoKey,
-            String[] hwFields) {
+            String[] hwFields, Boolean isHwFile) {
 
         boolean isZigbee = false;
         try {
             if (HardwareType.valueOf(deviceType.getYukonDefID()).isZigbee()) {
-                result.custFileErrors++;
-                String[] value = result.getCustLines().get(lineNoKey);
-                value[1] =
-                    "[line: " + lineNoKey.intValue() + " error: Cannot import Zigbee device type \""
-                        + hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
-                result.getCustLines().put(lineNoKey, value);
+                String[] value;
+                if (!isHwFile) {
+                    result.custFileErrors++;
+                    value = result.getCustLines().get(lineNoKey);
+                    value[1] =
+                        "[line: " + lineNoKey.intValue() + " error: Cannot import Zigbee device type \""
+                            + hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
+                    result.getCustLines().put(lineNoKey, value);
+                } else {
+                    result.hwFileErrors++;
+                    value = result.getHwLines().get(lineNoKey);
+                    value[1] =
+                        "[line: " + lineNoKey.intValue() + " error: Cannot import Zigbee device type \""
+                            + hwFields[ImportFields.IDX_DEVICE_TYPE] + "\"]";
+                    result.getHwLines().put(lineNoKey, value);
+                }
                 addToLog(lineNoKey, value, importLog);
                 isZigbee = true;
             }
@@ -1169,8 +1180,7 @@ public class AccountImportService {
             log.warn("Hardware Device type is not valid", exception);
         }
         return isZigbee;
-    }
-    
+    }  
 
     private void setCustomerFields(String[] fields, String[] columns, int[] colIdx, AccountImportResult result) {
         
