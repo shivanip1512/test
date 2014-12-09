@@ -107,7 +107,8 @@ public class GatewayCertificateController {
                 int updateId = certificateUpdateDao.getLatestUpdateForCertificate(certificateId);
                 CertificateUpdate update = certificateUpdateService.getCertificateUpdate(updateId);
                 
-                resp.setContentType("application/json");
+                // content type must be text or html or IE will throw up a save/open dialog
+                resp.setContentType("text/html");
                 JsonUtils.getWriter().writeValue(resp.getOutputStream(), update);
                 return null;
             } catch (IOException e) {

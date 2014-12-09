@@ -217,11 +217,12 @@ yukon.assets.gateway.list = (function () {
                 $('#gateway-cert-form').ajaxSubmit({
                     url: yukon.url('/stars/gateways/cert-update'), 
                     type: 'post',
-                    success: function (update, status, xhr, $form) {
+                    success: function (updateText, status, xhr, $form) {
                         
                         popup.dialog('close');
                         
                         var 
+                        update = JSON.parse(updateText),
                         row = $('.js-new-cert-update').clone()
                               .removeClass('js-new-cert-update')
                               .attr('data-yui', update.yukonUpdateId);
@@ -229,7 +230,7 @@ yukon.assets.gateway.list = (function () {
                         _updateCertRow(row, update);
                         
                         $('.js-no-cert-updates').hide();
-                        $('#cert-table tbody').append(row);
+                        $('#cert-table tbody').prepend(row);
                         $('#cert-table').show();
                     },
                     error: function (xhr, status, error, $form) {

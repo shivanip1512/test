@@ -35,7 +35,7 @@
         </thead>
         <tfoot></tfoot>
         <tbody>
-            <c:forEach var="gatewayEntry" items="${update.failed}">
+            <c:forEach var="gatewayEntry" items="${update.failedStatusMap}">
                 <tr data-gateway-id="${gatewayEntry.key.paoIdentifier.paoId}">
                     <cti:url var="url" value="/stars/gateways/${gatewayEntry.key.paoIdentifier.paoId}"/>
                     <td><a href="${url}">${fn:escapeXml(gatewayEntry.key.name)}</a></td>

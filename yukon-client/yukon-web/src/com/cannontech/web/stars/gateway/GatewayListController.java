@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.gateway;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,12 @@ public class GatewayListController {
         model.addAttribute("gateways", gateways);
         
         List<CertificateUpdate> certUpdates = certificateUpdateService.getAllCertificateUpdates();
+        Collections.sort(certUpdates, new Comparator<CertificateUpdate>() {
+            @Override
+            public int compare(CertificateUpdate o1, CertificateUpdate o2) {
+                return o2.getTimestamp().compareTo(o1.getTimestamp());
+            }
+        });
         model.addAttribute("certUpdates", certUpdates);
         
         helper.addText(model, userContext);

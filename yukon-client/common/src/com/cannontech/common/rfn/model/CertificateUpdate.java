@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.Instant;
 
@@ -53,7 +54,11 @@ public class CertificateUpdate {
         this.pending = pending;
     }
     
-    public Map<RfnGateway, GatewayCertificateUpdateStatus> getFailed() {
+    public Set<RfnGateway> getFailed() {
+        return failed.keySet();
+    }
+    
+    public Map<RfnGateway, GatewayCertificateUpdateStatus> getFailedStatusMap() {
         return failed;
     }
     
