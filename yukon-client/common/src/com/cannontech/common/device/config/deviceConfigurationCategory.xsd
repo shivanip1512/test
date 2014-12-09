@@ -13,7 +13,8 @@
             <xs:enumeration value="mct440PhaseLoss"/>
             <xs:enumeration value="mct440Tou"/>
             <xs:enumeration value="dnp"/>
-            <xs:enumeration value="demandProfile"/>
+            <xs:enumeration value="demand"/>
+            <xs:enumeration value="profile"/>
             <xs:enumeration value="demandFreeze"/>
             <xs:enumeration value="mct470ProfileChannels"/>
             <xs:enumeration value="mct470ConfigurationByte"/>

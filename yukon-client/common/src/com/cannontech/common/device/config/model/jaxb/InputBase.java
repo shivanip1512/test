@@ -29,10 +29,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "InputBase")
 @XmlSeeAlso({
-    InputMap.Entry.class,
-    InputMap.class,
     InputEnum.class,
     InputFloat.class,
+    InputMap.Entry.class,
+    InputMap.class,
     InputIndexed.class,
     InputInteger.class,
     InputBoolean.class

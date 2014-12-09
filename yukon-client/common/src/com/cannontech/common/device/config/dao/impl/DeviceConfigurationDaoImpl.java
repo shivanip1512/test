@@ -1013,7 +1013,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         sql.append("    JOIN DeviceConfiguration DC ON DC.DeviceConfigurationId = DCM.DeviceConfigurationId");
         sql.append("    JOIN DeviceConfigCategory DCC ON DCM.DeviceConfigCategoryId = DCC.DeviceConfigCategoryId");
         sql.append("WHERE DC.DeviceConfigurationId").eq(configId).append("AND DCI.ItemName").eq(itemName);
-        sql.append("    AND DCC.CategoryType").eq_k(categoryType);
+        sql.append("    AND DCC.CategoryType").eq(categoryType.value());
         
         try {
             return jdbcTemplate.queryForString(sql);

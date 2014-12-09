@@ -140,8 +140,11 @@
         <boolean field="enableUnsolicitedMessagesClass3" default="true"/>
     </category>
 
-    <category type="demandProfile">
+    <category type="demand">
         <enum field="demandInterval" type="Interval" default="5"/>
+    </category>
+
+    <category type="profile">
         <enum field="profileInterval" type="Interval" default="60"/>
     </category>
 

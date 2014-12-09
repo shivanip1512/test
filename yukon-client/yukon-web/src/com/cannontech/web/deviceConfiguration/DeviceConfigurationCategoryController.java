@@ -437,7 +437,7 @@ public class DeviceConfigurationCategoryController {
      * @param categoryEditBean the backing bean containing the category data.
      * @param userContext the user context
      */
-    public void setupModelMap(ModelMap model, 
+    private void setupModelMap(ModelMap model, 
             PageEditMode mode,
             CategoryEditBean categoryEditBean,
             Integer configId,

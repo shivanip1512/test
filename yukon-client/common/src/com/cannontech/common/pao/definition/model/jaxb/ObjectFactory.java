@@ -30,27 +30,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AttributesType }
+     * Create an instance of {@link DeviceCategories }
      * 
      */
-    public AttributesType createAttributesType() {
-        return new AttributesType();
-    }
-
-    /**
-     * Create an instance of {@link AttributesType.Attribute }
-     * 
-     */
-    public AttributesType.Attribute createAttributesTypeAttribute() {
-        return new AttributesType.Attribute();
-    }
-
-    /**
-     * Create an instance of {@link TagType }
-     * 
-     */
-    public TagType createTagType() {
-        return new TagType();
+    public DeviceCategories createDeviceCategories() {
+        return new DeviceCategories();
     }
 
     /**
@@ -86,6 +70,30 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link TagType }
+     * 
+     */
+    public TagType createTagType() {
+        return new TagType();
+    }
+
+    /**
+     * Create an instance of {@link AttributesType }
+     * 
+     */
+    public AttributesType createAttributesType() {
+        return new AttributesType();
+    }
+
+    /**
+     * Create an instance of {@link AttributesType.Attribute }
+     * 
+     */
+    public AttributesType.Attribute createAttributesTypeAttribute() {
+        return new AttributesType.Attribute();
+    }
+
+    /**
      * Create an instance of {@link CommandsType }
      * 
      */
@@ -99,14 +107,6 @@ public class ObjectFactory {
      */
     public CommandsType.Command createCommandsTypeCommand() {
         return new CommandsType.Command();
-    }
-
-    /**
-     * Create an instance of {@link DeviceCategories }
-     * 
-     */
-    public DeviceCategories createDeviceCategories() {
-        return new DeviceCategories();
     }
 
     /**
@@ -134,19 +134,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link AttributesType.Attribute.BasicLookup }
+     * Create an instance of {@link DeviceCategories.Category }
      * 
      */
-    public AttributesType.Attribute.BasicLookup createAttributesTypeAttributeBasicLookup() {
-        return new AttributesType.Attribute.BasicLookup();
-    }
-
-    /**
-     * Create an instance of {@link TagType.Tag }
-     * 
-     */
-    public TagType.Tag createTagTypeTag() {
-        return new TagType.Tag();
+    public DeviceCategories.Category createDeviceCategoriesCategory() {
+        return new DeviceCategories.Category();
     }
 
     /**
@@ -238,6 +230,22 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link TagType.Tag }
+     * 
+     */
+    public TagType.Tag createTagTypeTag() {
+        return new TagType.Tag();
+    }
+
+    /**
+     * Create an instance of {@link AttributesType.Attribute.BasicLookup }
+     * 
+     */
+    public AttributesType.Attribute.BasicLookup createAttributesTypeAttributeBasicLookup() {
+        return new AttributesType.Attribute.BasicLookup();
+    }
+
+    /**
      * Create an instance of {@link CommandsType.Command.Cmd }
      * 
      */
@@ -251,14 +259,6 @@ public class ObjectFactory {
      */
     public CommandsType.Command.PointRef createCommandsTypeCommandPointRef() {
         return new CommandsType.Command.PointRef();
-    }
-
-    /**
-     * Create an instance of {@link DeviceCategories.Category }
-     * 
-     */
-    public DeviceCategories.Category createDeviceCategoriesCategory() {
-        return new DeviceCategories.Category();
     }
 
 }

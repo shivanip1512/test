@@ -224,12 +224,15 @@
     <entry key="yukon.web.modules.tools.configs.category.dnp.enableUnsolicitedMessagesClass3">Enable Unsolicited Class 3 Messages</entry>
     <entry key="yukon.web.modules.tools.configs.category.dnp.enableUnsolicitedMessagesClass3.description">When true, allow sending of unsolicited class 3 messages following a device restart, else disallow. Default: true.</entry>
 
-    <entry key="yukon.web.modules.tools.configs.category.demandProfile.title">Demand and Profile</entry>
-    <entry key="yukon.web.modules.tools.configs.category.demandProfile.definition">General demand and profile settings.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.demandProfile.demandInterval">Demand Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.category.demandProfile.demandInterval.description">Interval in minutes over which most recent demand is calculated.</entry>
-    <entry key="yukon.web.modules.tools.configs.category.demandProfile.profileInterval">Profile Interval</entry>
-    <entry key="yukon.web.modules.tools.configs.category.demandProfile.profileInterval.description">Interval in minutes over which profile values are kept.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.demand.title">Demand</entry>
+    <entry key="yukon.web.modules.tools.configs.category.demand.definition">General demand settings.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.demand.demandInterval">Demand Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.demand.demandInterval.description">Interval in minutes over which most recent demand is calculated.</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.profile.title">Profile</entry>
+    <entry key="yukon.web.modules.tools.configs.category.profile.definition">General profile settings.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.profile.profileInterval">Profile Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.profile.profileInterval.description">Interval in minutes over which profile values are kept.</entry>
 
     <entry key="yukon.web.modules.tools.configs.category.demandFreeze.title">Demand Freeze</entry>
     <entry key="yukon.web.modules.tools.configs.category.demandFreeze.definition">Demand freeze settings for meters.</entry>

@@ -307,6 +307,7 @@
     <pao id="MCT_430_CONFIGURATION" abstract="true"
         inherits="SUPPORTS_DEVICE_CONFIGURATION, TIMEZONE_CONFIGURATION_CATEGORY, ADDRESSING_CONFIGURATION_CATEGORY">
         <configuration>
+            <category type="demand" />
             <category type="mct430ProfileChannels" />
             <category type="mct430ConfigurationByte" />
             <category type="mct430PrecannedTable" />
@@ -326,7 +327,8 @@
     <pao id="MCT_470_CONFIGURATION" abstract="true"
         inherits="SUPPORTS_DEVICE_CONFIGURATION, TIMEZONE_CONFIGURATION_CATEGORY, ADDRESSING_CONFIGURATION_CATEGORY">
         <configuration>
-            <category type="demandProfile" />
+            <category type="demand" />
+            <category type="profile" />
             <category type="mct470ProfileChannels" />
             <category type="mct470ConfigurationByte" />
             <category type="mct470PrecannedTable" />
@@ -339,7 +341,8 @@
         inherits="DEMAND_FREEZE_CONFIGURATION">
         <configuration>
             <category type="rfnOvUv" />
-            <category type="demandProfile" />
+            <category type="demand" />
+            <category type="profile" />
             <category type="tou" />
         </configuration>
     </pao>

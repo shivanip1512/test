@@ -23,7 +23,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="mct440PhaseLoss"/>
  *     &lt;enumeration value="mct440Tou"/>
  *     &lt;enumeration value="dnp"/>
- *     &lt;enumeration value="demandProfile"/>
+ *     &lt;enumeration value="demand"/>
+ *     &lt;enumeration value="profile"/>
  *     &lt;enumeration value="demandFreeze"/>
  *     &lt;enumeration value="mct470ProfileChannels"/>
  *     &lt;enumeration value="mct470ConfigurationByte"/>
@@ -66,8 +67,10 @@ public enum CategoryType {
     MCT_440_TOU("mct440Tou"),
     @XmlEnumValue("dnp")
     DNP("dnp"),
-    @XmlEnumValue("demandProfile")
-    DEMAND_PROFILE("demandProfile"),
+    @XmlEnumValue("demand")
+    DEMAND("demand"),
+    @XmlEnumValue("profile")
+    PROFILE("profile"),
     @XmlEnumValue("demandFreeze")
     DEMAND_FREEZE("demandFreeze"),
     @XmlEnumValue("mct470ProfileChannels")
@@ -104,6 +107,9 @@ public enum CategoryType {
         value = v;
     }
 
+    /**
+     * CategoryType as stored in DB
+     */
     public String value() {
         return value;
     }
