@@ -1219,6 +1219,403 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,     11 );
         }
     }
+    BOOST_AUTO_TEST_CASE(test_putconfig_install_mct470)
+    {
+        using namespace Cti::Config;
+
+        mct._type = TYPEMCT470;
+
+        Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
+
+        config.insertValue("timeZoneOffset", "-6");
+
+        config.insertValue("timeAdjustTolerance", "3");
+
+        config.insertValue("serviceProviderId", "127");
+
+        config.insertValue("demandInterval",  "87");
+        config.insertValue("profileInterval", "98");
+
+        config.insertValue("channel1PhysicalChannel",   "7");
+        config.insertValue("channel1Type",              "1");  //  Electronic
+        config.insertValue("channel1PeakKWResolution",  "10.0");
+        config.insertValue("channel1LastIntervalDemandResolution", "1");
+        config.insertValue("channel1ProfileResolution", "0.1");
+        //---
+        config.insertValue("channel2PhysicalChannel",   "6");
+        config.insertValue("channel2Type",              "1");  //  Electronic
+        config.insertValue("channel2PeakKWResolution",  "10.0");
+        config.insertValue("channel2LastIntervalDemandResolution", "1");
+        config.insertValue("channel2ProfileResolution", "0.1");
+        //---
+        config.insertValue("channel3PhysicalChannel",   "5");
+        config.insertValue("channel3Type",              "0");  //  Disabled
+        config.insertValue("channel3PeakKWResolution",  "10.0");
+        config.insertValue("channel3LastIntervalDemandResolution", "1");
+        config.insertValue("channel3ProfileResolution", "0.1");
+        //---
+        config.insertValue("channel4PhysicalChannel",   "4");
+        config.insertValue("channel4Type",              "0");  //  Disabled
+        config.insertValue("channel4PeakKWResolution",  "10.0");
+        config.insertValue("channel4LastIntervalDemandResolution", "1");
+        config.insertValue("channel4ProfileResolution", "0.1");
+
+        config.insertValue("tableReadInterval", "5");
+        config.insertValue("tableType",         "11");
+        config.insertValue("meterNumber",       "6");
+
+        // Schedule 1
+        config.insertValue( MCTStrings::Schedule1Time1, "00:01" );
+        config.insertValue( MCTStrings::Schedule1Time2, "10:06" );
+        config.insertValue( MCTStrings::Schedule1Time3, "12:22" );
+        config.insertValue( MCTStrings::Schedule1Time4, "23:33" );
+        config.insertValue( MCTStrings::Schedule1Time5, "23:44" );
+
+        config.insertValue( MCTStrings::Schedule1Rate0, "A" );
+        config.insertValue( MCTStrings::Schedule1Rate1, "B" );
+        config.insertValue( MCTStrings::Schedule1Rate2, "C" );
+        config.insertValue( MCTStrings::Schedule1Rate3, "D" );
+        config.insertValue( MCTStrings::Schedule1Rate4, "A" );
+        config.insertValue( MCTStrings::Schedule1Rate5, "B" );
+
+        // Schedule 2
+        config.insertValue( MCTStrings::Schedule2Time1, "01:23" );
+        config.insertValue( MCTStrings::Schedule2Time2, "03:12" );
+        config.insertValue( MCTStrings::Schedule2Time3, "04:01" );
+        config.insertValue( MCTStrings::Schedule2Time4, "05:23" );
+        config.insertValue( MCTStrings::Schedule2Time5, "16:28" );
+
+        config.insertValue( MCTStrings::Schedule2Rate0, "D" );
+        config.insertValue( MCTStrings::Schedule2Rate1, "A" );
+        config.insertValue( MCTStrings::Schedule2Rate2, "B" );
+        config.insertValue( MCTStrings::Schedule2Rate3, "C" );
+        config.insertValue( MCTStrings::Schedule2Rate4, "D" );
+        config.insertValue( MCTStrings::Schedule2Rate5, "A" );
+
+        // Schedule 3
+        config.insertValue( MCTStrings::Schedule3Time1, "01:02" );
+        config.insertValue( MCTStrings::Schedule3Time2, "02:03" );
+        config.insertValue( MCTStrings::Schedule3Time3, "04:05" );
+        config.insertValue( MCTStrings::Schedule3Time4, "05:06" );
+        config.insertValue( MCTStrings::Schedule3Time5, "06:07" );
+
+        config.insertValue( MCTStrings::Schedule3Rate0, "C" );
+        config.insertValue( MCTStrings::Schedule3Rate1, "D" );
+        config.insertValue( MCTStrings::Schedule3Rate2, "A" );
+        config.insertValue( MCTStrings::Schedule3Rate3, "B" );
+        config.insertValue( MCTStrings::Schedule3Rate4, "C" );
+        config.insertValue( MCTStrings::Schedule3Rate5, "D" );
+
+        // Schedule 4
+        config.insertValue( MCTStrings::Schedule4Time1, "00:01" );
+        config.insertValue( MCTStrings::Schedule4Time2, "08:59" );
+        config.insertValue( MCTStrings::Schedule4Time3, "12:12" );
+        config.insertValue( MCTStrings::Schedule4Time4, "23:01" );
+        config.insertValue( MCTStrings::Schedule4Time5, "23:55" );
+
+        config.insertValue( MCTStrings::Schedule4Rate0, "B" );
+        config.insertValue( MCTStrings::Schedule4Rate1, "C" );
+        config.insertValue( MCTStrings::Schedule4Rate2, "D" );
+        config.insertValue( MCTStrings::Schedule4Rate3, "A" );
+        config.insertValue( MCTStrings::Schedule4Rate4, "B" );
+        config.insertValue( MCTStrings::Schedule4Rate5, "C" );
+
+        // day table
+        config.insertValue( MCTStrings::SundaySchedule,    "Schedule 1" );
+        config.insertValue( MCTStrings::MondaySchedule,    "Schedule 1" );
+        config.insertValue( MCTStrings::TuesdaySchedule,   "Schedule 3" );
+        config.insertValue( MCTStrings::WednesdaySchedule, "Schedule 2" );
+        config.insertValue( MCTStrings::ThursdaySchedule,  "Schedule 4" );
+        config.insertValue( MCTStrings::FridaySchedule,    "Schedule 2" );
+        config.insertValue( MCTStrings::SaturdaySchedule,  "Schedule 3" );
+        config.insertValue( MCTStrings::HolidaySchedule,   "Schedule 3" );
+
+        // default rate
+        config.insertValue( MCTStrings::DefaultTOURate, "B" );
+
+        // set TOU enabled
+        config.insertValue( MCTStrings::touEnabled, "true" );
+
+        config.insertValue("enableDst", "true");
+        config.insertValue("electronicMeter", "5");
+
+        CtiCommandParser parse("putconfig install all");
+        request.setConnectionHandle((void *)1);  //  so the OMs report that they were sent
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_CHECK( vgList.empty() );
+
+        {
+            const std::vector<std::string> resultString_exp = boost::assign::list_of
+                ("Emetcon DLC command sent on route ").repeat(22, "Emetcon DLC command sent on route ");
+            const std::vector<long> status_exp = boost::assign::list_of
+                (0).repeat(22, 0);
+
+            std::vector<std::string> resultString_rcv;
+            std::vector<long> status_rcv;
+
+            for each( const CtiMessage *msg in retList )
+            {
+                const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(msg);
+
+                BOOST_REQUIRE(retMsg);
+
+                resultString_rcv.push_back( retMsg->ResultString() );
+                status_rcv.push_back( retMsg->Status() );
+            }
+
+            BOOST_CHECK_EQUAL_RANGES(resultString_exp,
+                                     resultString_rcv);
+            BOOST_CHECK_EQUAL_RANGES(status_exp,
+                                     status_rcv);
+        }
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 23 );
+
+        CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
+
+        //  timezone (OMs 1-2)
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 40 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
+
+            const unsigned char expected_message[] = { 0xe8 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 40 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "getconfig install timezone" );
+        }
+        //  time adjust tolerance (OMs 3-4)
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 31 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
+
+            const unsigned char expected_message[] = { 0x03 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 31 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "getconfig install timeadjusttolerance" );
+        }
+        //  service provider ID (OMs 5-6)
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 18 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
+
+            const unsigned char expected_message[] = { 0x7f };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 18 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "getconfig install spid" );
+        }
+        //  demand and profile intervals (OMs 7-8)
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   2 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
+
+            const unsigned char expected_message[] = { 0x57, 0x62 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 50 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "getconfig install demandlp" );
+        }
+        //  channel setup (OMs 9-12)
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 7 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
+
+            const unsigned char expected_message[] = { 0x7f, 0x01, 0x1d, 0x00, 0x13, 0x00, 0x00, 0x02, 0x19, 0x00, 0x13, 0x00, 0x00 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 33 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   10 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "getconfig install lpchannel 12" );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 7 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
+
+            const unsigned char expected_message[] = { 0x7f, 0x03, 0x14, 0x00, 0x00, 0x00, 0x00, 0x04, 0x10, 0x00, 0x00, 0x00, 0x00 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 34 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   10 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "getconfig install lpchannel 34" );
+        }
+        //  precanned table (OMs 13-15)
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 211 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   4 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
+
+            const unsigned char expected_message[] = { 0x7f, 0x05, 0x06, 0x0b };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 35 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   11 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "getconfig install precannedtable nospid" );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 18 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "getconfig install precannedtable spid" );
+        }
+        //  config byte (OMs 16-17)
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
+
+            const unsigned char expected_message[] = { 0x51 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+        }
+    }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_configbyte_mct430_matching_dynamicPaoInfo)
     {
         mct._type = TYPEMCT430S4;
@@ -1469,6 +1866,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         config.insertValue("serviceProviderId", "127");
 
+        config.insertValue("demandInterval",  "87");
+
         config.insertValue("channel1PhysicalChannel",   "7");
         config.insertValue("channel1Type",              "1");  //  Electronic
         config.insertValue("channel1PeakKWResolution",  "10.0");
@@ -1507,9 +1906,9 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
         {
             const std::vector<std::string> resultString_exp = boost::assign::list_of
-                ("Emetcon DLC command sent on route ").repeat(14, "Emetcon DLC command sent on route ");
+                ("Emetcon DLC command sent on route ").repeat(16, "Emetcon DLC command sent on route ");
             const std::vector<long> status_exp = boost::assign::list_of
-                (0).repeat(14, 0);
+                (0).repeat(16, 0);
 
             std::vector<std::string> resultString_rcv;
             std::vector<long> status_rcv;
@@ -1530,7 +1929,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
                                      status_rcv);
         }
 
-        BOOST_REQUIRE_EQUAL( outList.size(), 15 );
+        BOOST_REQUIRE_EQUAL( outList.size(), 17 );
 
         CtiDeviceBase::OutMessageList::const_iterator om_itr = outList.begin();
 
@@ -1621,7 +2020,36 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
             BOOST_CHECK_EQUAL( om->Request.CommandStr, "getconfig install spid" );
         }
-        //  channel setup (OMs 7-10)
+        //  demand interval (OMs 7-8)
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       2 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 3 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
+
+            const unsigned char expected_message[] = { 0x57 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length,
+                expected_message,
+                expected_message + sizeof(expected_message) );
+        }
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       1 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 50 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   6 );
+            BOOST_CHECK_EQUAL( om->Request.CommandStr, "getconfig install demandlp" );
+        }
+        //  channel setup (OMs 9-12)
         {
             const OUTMESS *om = *om_itr++;
 
@@ -1678,7 +2106,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   10 );
             BOOST_CHECK_EQUAL( om->Request.CommandStr, "getconfig install lpchannel 34" );
         }
-        //  precanned table (OMs 11-13)
+        //  precanned table (OMs 13-15)
         {
             const OUTMESS *om = *om_itr++;
 
@@ -1717,7 +2145,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1 );
             BOOST_CHECK_EQUAL( om->Request.CommandStr, "getconfig install precannedtable spid" );
         }
-        //  config byte (OMs 14-15)
+        //  config byte (OMs 16-17)
         {
             const OUTMESS *om = *om_itr++;
 

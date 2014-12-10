@@ -6,13 +6,10 @@
 #include "logger.h"
 #include "pt_accum.h"
 #include "pt_status.h"
-#include "numstr.h"
-#include "porter.h"
 #include "dllyukon.h"
-#include "utility.h"
-#include "numstr.h"
 #include "ctistring.h"
 #include "config_data_mct.h"
+#include "config_exceptions.h"
 #include "da_lp_deviceconfig.h"
 
 #include "std_helper.h"
@@ -61,6 +58,7 @@ Mct470Device::ConfigPartsList Mct470Device::initConfigParts430()
     tempList.push_back(Mct4xxDevice::PutConfigPart_timezone);
     tempList.push_back(Mct4xxDevice::PutConfigPart_time_adjust_tolerance);
     tempList.push_back(Mct4xxDevice::PutConfidPart_spid);//Before Precanned Table
+    tempList.push_back(Mct4xxDevice::PutConfigPart_demand_lp);
     tempList.push_back(Mct4xxDevice::PutConfigPart_lpchannel);
     tempList.push_back(Mct4xxDevice::PutConfigPart_precanned_table);
     tempList.push_back(Mct4xxDevice::PutConfigPart_configbyte);
@@ -3315,67 +3313,64 @@ YukonError_t Mct470Device::executePutConfigRelays(CtiRequestMsg *pReq,CtiCommand
 
 YukonError_t Mct470Device::executePutConfigDemandLP(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)
 {
-    YukonError_t nRet = ClientErrors::None;
-    long value;
     DeviceConfigSPtr deviceConfig = getDeviceConfig();
 
-    if( deviceConfig )
+    if( ! deviceConfig )
+    {
+        return ClientErrors::NoConfigData;
+    }
+
+    try
     {
         if( ! readsOnly )
         {
-            const boost::optional<long>
-                demand       = deviceConfig->findValue<long>(MCTStrings::DemandInterval),
-                loadProfile1 = deviceConfig->findValue<long>(MCTStrings::ProfileInterval);
+            const long cfgDemandInterval = deviceConfig->getLongValueFromKey(MCTStrings::DemandInterval);
+            boost::optional<long> cfgProfileInterval;  //  only used for MCT-470s
 
-            if( ! demand || ! loadProfile1 )
-            {
-                CTILOG_ERROR(dout, "no or bad value stored");
+            bool match = CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandInterval) == cfgDemandInterval;
 
-                nRet = ClientErrors::NoConfigData;
-            }
-            else
+            if( isMct470(getType()) )
             {
-                if( parse.isKeyValid("force")
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_DemandInterval) != demand
-                    || CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) != loadProfile1)
-                {
-                    if( !parse.isKeyValid("verify") )
-                    {
-                        OutMessage->Buffer.BSt.Function   = FuncWrite_IntervalsPos;
-                        OutMessage->Buffer.BSt.Length     = FuncWrite_IntervalsLen-1; //Not setting loadProfile2
-                        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
-                        OutMessage->Buffer.BSt.Message[0] = (char)*demand;
-                        OutMessage->Buffer.BSt.Message[1] = (char)*loadProfile1;
-                        outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
-                    }
-                    else
-                    {
-                        nRet = ClientErrors::ConfigNotCurrent;
-                    }
-                }
-                else
-                {
-                    nRet = ClientErrors::ConfigCurrent;
-                }
+                cfgProfileInterval = deviceConfig->getLongValueFromKey(MCTStrings::ProfileInterval);
+
+                match &= CtiDeviceBase::getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LoadProfileInterval) == *cfgProfileInterval;
             }
+
+            if( match && ! parse.isKeyValid("force") )
+            {
+                return ClientErrors::ConfigCurrent;
+            }
+            if( ! match && parse.isKeyValid("verify") )
+            {
+                return ClientErrors::ConfigNotCurrent;
+            }
+
+            OutMessage->Buffer.BSt.Function   = FuncWrite_IntervalsPos;
+            OutMessage->Buffer.BSt.Length     = isMct470(getType()) ? 2 : 1;  //  only set LP interval if it's an MCT-470
+            OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Function_Write;
+            OutMessage->Buffer.BSt.Message[0] = cfgDemandInterval;
+            if( isMct470(getType()) )
+            {
+                OutMessage->Buffer.BSt.Message[1] = *cfgProfileInterval;
+            }
+
+            outList.push_back( CTIDBG_new OUTMESS(*OutMessage) );
         }
 
-        //Either we sent the put ok, or we are doing a read to get into here.
-        if (nRet == ClientErrors::None)
-        {
-            OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
-            OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
-            OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
+        OutMessage->Buffer.BSt.Function   = Memory_IntervalsPos;
+        OutMessage->Buffer.BSt.Length     = Memory_IntervalsLen;
+        OutMessage->Buffer.BSt.IO         = EmetconProtocol::IO_Read;
 
-            insertConfigReadOutMessage("getconfig install demandlp", *OutMessage, outList);
-        }
+        insertConfigReadOutMessage("getconfig install demandlp", *OutMessage, outList);
+
+        return ClientErrors::None;
     }
-    else
+    catch( const MissingConfigDataException &e )
     {
-        nRet = ClientErrors::NoConfigData;
-    }
+        CTILOG_EXCEPTION_ERROR(dout, e, "Device \""<< getName() <<"\"");
 
-    return nRet;
+        return ClientErrors::NoConfigData;
+    }
 }
 
 YukonError_t Mct470Device::executePutConfigPrecannedTable(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,CtiMessageList&vgList,CtiMessageList&retList,OutMessageList &outList, bool readsOnly)

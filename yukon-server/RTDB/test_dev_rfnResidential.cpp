@@ -2165,10 +2165,14 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
                     // set TOU enabled
                     ( RfnStrings::touEnabled, "true" )))
 
-            // voltage averaging config
+            // demand interval
             ( CategoryDefinition(
-                "demandProfile", map_list_of
-                    ( RfnStrings::demandInterval,  "1" )
+                "demand", map_list_of
+                    ( RfnStrings::demandInterval,  "1" )))
+
+            // profile recording interval
+            ( CategoryDefinition(
+                "profile", map_list_of
                     ( RfnStrings::profileInterval, "2" )))
 
             // temperature alarming config
@@ -2196,7 +2200,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
             ( 1 )   // add demand freeze day config     -> +1 request
             ( 7 )   // add OVUV config                  -> +6 request
             ( 9 )   // add TOU config                   -> +2 request
-            ( 10 )  // add voltage averaging config     -> +1 request
+            ( 9 )   // add demand config                -> +0 request
+            ( 10 )  // add profile config               -> +1 request
             ( 11 )  // add temperature alarming config  -> +1 request
             ( 13 )  // add channel config               -> +2 request
             ;
@@ -2206,7 +2211,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all )
             ( list_of<bool>(true)(true)(true)(true)(true)(true) )   // add demand freeze day config     -> 5 error messages + 1 config sent message
             ( list_of<bool>(true)(true)(true)(true)(true) )         // add OVUV config                  -> 4 error messages + 2 config sent message
             ( list_of<bool>(true)(true)(true)(true) )               // add TOU config                   -> 3 error messages + 3 config sent message
-            ( list_of<bool>(true)(true)(true) )                     // add voltage averaging config     -> 2 error messages + 4 config sent message
+            ( list_of<bool>(true)(true)(true)(true) )               // add demand config                -> 3 error messages + 3 config sent message
+            ( list_of<bool>(true)(true)(true) )                     // add profile config               -> 2 error messages + 4 config sent message
             ( list_of<bool>(true)(true) )                           // add temperature alarming config  -> 1 error messages + 5 config sent message
             ( list_of<bool>(true) )                                 // add channel config               -> 6 config sent message
             ;
@@ -2364,8 +2370,12 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
 
             // voltage averaging config
             ( CategoryDefinition(
-                "demandProfile", map_list_of
-                    ( RfnStrings::demandInterval,  "1" )
+                "demand", map_list_of
+                    ( RfnStrings::demandInterval,  "1" )))
+
+            // profile recording interval
+            ( CategoryDefinition(
+                "profile", map_list_of
                     ( RfnStrings::profileInterval, "2" )))
 
             // temperature alarming config
@@ -2666,8 +2676,12 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
                     ( RfnStrings::touEnabled, "true" )))
 
             ( CategoryDefinition( // voltage averaging config
-                "demandProfile", map_list_of
-                    ( RfnStrings::demandInterval,  "1" )
+                "demand", map_list_of
+                    ( RfnStrings::demandInterval,  "1" )))
+
+            // profile recording interval
+            ( CategoryDefinition(
+                "profile", map_list_of
                     ( RfnStrings::profileInterval, "2" )))
 
             ( CategoryDefinition( // temperature alarming config
@@ -2694,7 +2708,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
             ( 2 )   // add demand freeze day config     -> +1 request
             ( 8 )   // add OVUV config                  -> +6 request
             ( 10 )  // add TOU config                   -> +1 request
-            ( 11 )  // add voltage averaging config     -> +1 request
+            ( 10 )  // add demand config                -> +0 request
+            ( 11 )  // add profile config               -> +1 request
             ( 12 )  // add temperature alarming config  -> +1 request
             ( 14 )  // add channel config               -> +2 request
             ;
@@ -2705,7 +2720,8 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
             ( list_of<bool>(true)(true)(true)(true)(true)(true) )           // add demand freeze day config     -> 5 error messages + 2 config sent message
             ( list_of<bool>(true)(true)(true)(true)(true) )                 // add OVUV config                  -> 4 error messages + 3 config sent message
             ( list_of<bool>(true)(true)(true)(true) )                       // add TOU config                   -> 3 error messages + 4 config sent message
-            ( list_of<bool>(true)(true)(true) )                             // add voltage averaging config     -> 2 error messages + 5 config sent message
+            ( list_of<bool>(true)(true)(true)(true) )                       // add demand config                -> 3 error messages + 4 config sent message
+            ( list_of<bool>(true)(true)(true) )                             // add profile config               -> 2 error messages + 5 config sent message
             ( list_of<bool>(true)(true) )                                   // add temperature alarming config  -> 1 error messages + 6 config sent message
             ( list_of<bool>(true) )                                         // add channel config               -> 7 config sent message
             ;

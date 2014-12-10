@@ -154,120 +154,158 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_freezeday )
     }
 }
 */
-/*
 BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configuration )
 {
     test_RfnCommercialDevice dut;
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
+    const std::map<std::string, std::string> configItems = boost::assign::map_list_of
+            ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix, "5" )
+            ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
+              + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DELIVERED_KWH" )
+            ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".0."
+              + RfnStrings::ChannelConfiguration::EnabledChannels::Read,    "MIDNIGHT" )
+            ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".1."
+              + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "RECEIVED_KWH" )
+            ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".1."
+              + RfnStrings::ChannelConfiguration::EnabledChannels::Read,    "MIDNIGHT" )
+            ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".2."
+              + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "SUM_KWH" )
+            ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".2."
+              + RfnStrings::ChannelConfiguration::EnabledChannels::Read,    "INTERVAL" )
+            ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".3."
+              + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "NET_KWH" )
+            ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".3."
+              + RfnStrings::ChannelConfiguration::EnabledChannels::Read,    "INTERVAL" )
+            ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
+              + RfnStrings::ChannelConfiguration::EnabledChannels::Attribute, "DEMAND" )
+            ( RfnStrings::ChannelConfiguration::EnabledChannels_Prefix + ".4."
+              + RfnStrings::ChannelConfiguration::EnabledChannels::Read,    "INTERVAL" )
+            ( RfnStrings::ChannelConfiguration::RecordingIntervalMinutes, "123" )
+            ( RfnStrings::ChannelConfiguration::ReportingIntervalMinutes, "456" );
+
+    cfg.addCategory(
+            Cti::Config::Category::ConstructCategory(
+                    "rfnChannelConfiguration",
+                    configItems));
+
     {
-        resetTestState();
+        CtiCommandParser parse("putconfig install channelconfig");
 
-        cfg.insertValue( RfnStrings::ChannelSelectionPrefix, "5" );
-        cfg.insertValue( RfnStrings::ChannelSelectionPrefix + ".0." + RfnStrings::ChannelSelectionMetric, "WattHourDel" );
-        cfg.insertValue( RfnStrings::ChannelSelectionPrefix + ".1." + RfnStrings::ChannelSelectionMetric, "WattHourRec" );
-        cfg.insertValue( RfnStrings::ChannelSelectionPrefix + ".2." + RfnStrings::ChannelSelectionMetric, "WattHourTotal" );
-        cfg.insertValue( RfnStrings::ChannelSelectionPrefix + ".3." + RfnStrings::ChannelSelectionMetric, "WattHourNet" );
-        cfg.insertValue( RfnStrings::ChannelSelectionPrefix + ".4." + RfnStrings::ChannelSelectionMetric, "WattsDelCurrentDemand" );
+        BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
-        cfg.insertValue( RfnStrings::ChannelRecordingIntervalPrefix, "3" );
-        cfg.insertValue( RfnStrings::ChannelRecordingIntervalPrefix + ".0." + RfnStrings::ChannelRecordingIntervalMetric, "WattsPhaseA" );
-        cfg.insertValue( RfnStrings::ChannelRecordingIntervalPrefix + ".1." + RfnStrings::ChannelRecordingIntervalMetric, "PfPhaseA" );
-        cfg.insertValue( RfnStrings::ChannelRecordingIntervalPrefix + ".2." + RfnStrings::ChannelRecordingIntervalMetric, "CurrentAnglePhaseB" );
-
-        cfg.insertValue( RfnStrings::ChannelRecordingIntervalSeconds, "123" );
-        cfg.insertValue( RfnStrings::ChannelReportingIntervalSeconds, "2147483647" );
-
+        BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
         {
-            CtiCommandParser parse("putconfig install channelconfig");
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
 
-            BOOST_CHECK_EQUAL( NoError, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
+            BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
+            BOOST_CHECK_EQUAL( returnMsg.ResultString(), "2 commands queued for device" );
+        }
 
-            BOOST_REQUIRE_EQUAL( 1, returnMsgs.size() );
-            {
-                const CtiReturnMsg &returnMsg = returnMsgs.front();
+        BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
+        RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+        {
+            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
 
-                BOOST_CHECK_EQUAL( returnMsg.Status(),       0 );
-                BOOST_CHECK_EQUAL( returnMsg.ResultString(), "2 commands queued for device" );
-            }
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
-            BOOST_REQUIRE_EQUAL( 2, rfnRequests.size() );
-            RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
-            {
-                Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            std::vector<unsigned char> exp = boost::assign::list_of
+                    (0x78)(0x00)(0x01)
+                    (0x01)(0x00)(0x0b)(0x05)(0x00)(0x01)(0x00)(0x02)(0x00)(0x03)(0x00)(0x04)(0x00)(0x05);
 
-                Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+            BOOST_CHECK_EQUAL( rcv, exp );
 
-                std::vector<unsigned char> exp = boost::assign::list_of
-                        (0x78)(0x00)(0x01)
-                        (0x01)(0x00)(0x0b)(0x05)(0x00)(0x01)(0x00)(0x02)(0x00)(0x03)(0x00)(0x04)(0x00)(0x05);
+            std::vector<unsigned char> response = boost::assign::list_of
+                    (0x79)(0x00)(0X00)(0x01)  // command code + operation + status + 1 tlv
+                    (0x02)                    // tlv type 2
+                    (0x00)(0x15)              // tlv size (2-bytes)
+                    (0x05)                    // number of metrics descriptor
+                    (0x00)(0x01)(0x00)(0x00)
+                    (0x00)(0x02)(0x00)(0x00)
+                    (0x00)(0x03)(0x40)(0x00)
+                    (0x00)(0x04)(0x40)(0x00)
+                    (0x00)(0x05)(0x08)(0x00);
 
-                BOOST_CHECK_EQUAL( rcv, exp );
+            command->decodeCommand( CtiTime::now(), response );
 
-                std::vector<unsigned char> response = boost::assign::list_of
-                        (0x79)(0x00)(0x00)(0x02)
-                        (0x01)(0x00)(0x0b)(0x05)(0x00)(0x01)(0x00)(0x02)(0x00)(0x03)(0x00)(0x04)(0x00)(0x05)
-                        (0x02)(0x00)(0x01)(0x00);
+            dut.extractCommandResult( *command );
 
-                command->decodeCommand( CtiTime::now(), response );
+            const std::set<unsigned long> dynMetricsExpSet = boost::assign::list_of
+                    ( 1 )
+                    ( 2 )
+                    ( 3 )
+                    ( 4 )
+                    ( 5 );
 
-                dut.extractCommandResult( *command );
+            // use the order provided by the set
+            const std::vector<unsigned long> dynMetricsExp( dynMetricsExpSet.begin(), dynMetricsExpSet.end());
 
-                const std::set<std::string> dynMetricsExpSet = boost::assign::list_of
-                        ( "WattHourDel" )
-                        ( "WattHourRec" )
-                        ( "WattHourTotal" )
-                        ( "WattHourNet" )
-                        ( "WattsDelCurrentDemand" );
+            const boost::optional<std::vector<unsigned long>> dynMetricsRcv = dut.findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics );
 
-                // use the order provided by the set
-                const std::vector<std::string> dynMetricsExp( dynMetricsExpSet.begin(), dynMetricsExpSet.end());
+            BOOST_REQUIRE( dynMetricsRcv );
+            BOOST_CHECK_EQUAL_COLLECTIONS( dynMetricsRcv->begin(), dynMetricsRcv->end(), dynMetricsExp.begin(), dynMetricsExp.end() );
+        }
+        {
+            Commands::RfnCommandSPtr command = *rfnRequest_itr++;
 
-                const boost::optional<std::vector<std::string>> dynMetricsRcv = dut.findDynamicInfo<std::string>( CtiTableDynamicPaoInfoIndexed::Key_RFN_ChannelSelectionMetrics );
+            Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
 
-                BOOST_REQUIRE( dynMetricsRcv );
-                BOOST_CHECK_EQUAL_COLLECTIONS( dynMetricsRcv->begin(), dynMetricsRcv->end(), dynMetricsExp.begin(), dynMetricsExp.end() );
-            }
-            {
-                Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+            std::vector<unsigned char> exp = boost::assign::list_of
+                    (0x7a)(0x00)(0x01)  //  command code + operation + 1 TLV
+                    (0x01)              //  TLV type 1
+                    (0x0f)              //  length 15
+                    (0x00)(0x00)(0x1c)(0xd4)  //  123 minute recording interval (7380 seconds)
+                    (0x00)(0x00)(0x6a)(0xe0)  //  456 minute reporting interval (27360 seconds)
+                    (0x03)              //  3 metrics
+                    (0x00)(0x03)
+                    (0x00)(0x04)
+                    (0x00)(0x05);
 
-                Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand( execute_time );
+            BOOST_CHECK_EQUAL( rcv, exp );
 
-                std::vector<unsigned char> exp = boost::assign::list_of
-                        (0x7a)(0x00)(0x01)(0x01)(0x0f)(0x00)(0x00)(0x00)(0x7b)(0x7f)(0xff)(0xff)(0xff)(0x03)(0x00)(0x6e)(0x00)(0x96)(0x00)(0xa2);
+            std::vector<unsigned char> response = boost::assign::list_of
+                    (0x7b)(0x00)(0X00)(0x01)    // command code + operation + status + 1 tlv
+                    (0x02)                      // tlv type 2
+                    (0x0d)                      // tlv size (1-byte)
+                    (0x03)                      // number of metrics descriptor
+                    (0x00)(0x03)(0x00)(0x00)
+                    (0x00)(0x04)(0x00)(0x00)
+                    (0x00)(0x05)(0x00)(0x00)
+                    ;
 
-                BOOST_CHECK_EQUAL( rcv, exp );
+            const Cti::Devices::Commands::RfnCommandResult result = command->decodeCommand( CtiTime::now(), response );
 
-                std::vector<unsigned char> response = boost::assign::list_of
-                        (0x7b)(0x00)(0x00)(0x02)
-                        (0x01)(0x0f)(0x00)(0x00)(0x00)(0x7b)(0x7f)(0xff)(0xff)(0xff)(0x03)(0x00)(0x6e)(0x00)(0x96)(0x00)(0xa2)
-                        (0x02)(0x01)(0x00);
+            BOOST_CHECK_EQUAL(
+                    result.description,
+                    "Status: Success (0)\n"
+                    "Channel Interval Recording Full Description:\n"
+                    "Metric(s) descriptors:\n"
+                    "Watt hour total/sum (3): Scaling Factor: 1\n"
+                    "Watt hour net (4): Scaling Factor: 1\n"
+                    "Watts delivered, current demand (5): Scaling Factor: 1\n");
 
-                command->decodeCommand( CtiTime::now(), response );
+            dut.extractCommandResult( *command );
 
-                dut.extractCommandResult( *command );
+            const std::set<unsigned long> dynMetricsExpSet = boost::assign::list_of
+                    ( 3 )
+                    ( 4 )
+                    ( 5 );
 
-                const std::set<std::string> dynMetricsExpSet = boost::assign::list_of
-                        ( "WattsPhaseA" )
-                        ( "PfPhaseA" )
-                        ( "CurrentAnglePhaseB" );
+            // use the order provided by the set
+            const std::vector<int> dynMetricsExp( dynMetricsExpSet.begin(), dynMetricsExpSet.end());
 
-                // use the order provided by the set
-                const std::vector<std::string> dynMetricsExp( dynMetricsExpSet.begin(), dynMetricsExpSet.end());
+            const boost::optional<std::vector<unsigned long>> dynMetricsRcv = dut.findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics );
 
-                const boost::optional<std::vector<std::string>> dynMetricsRcv = dut.findDynamicInfo<std::string>( CtiTableDynamicPaoInfoIndexed::Key_RFN_ChannelRecordingIntervalMetrics );
+            BOOST_REQUIRE( dynMetricsRcv );
+            BOOST_CHECK_EQUAL_COLLECTIONS( dynMetricsRcv->begin(), dynMetricsRcv->end(), dynMetricsExp.begin(), dynMetricsExp.end() );
 
-                BOOST_REQUIRE( dynMetricsRcv );
-                BOOST_CHECK_EQUAL_COLLECTIONS( dynMetricsRcv->begin(), dynMetricsRcv->end(), dynMetricsExp.begin(), dynMetricsExp.end() );
-
-                BOOST_CHECK_EQUAL( unsigned(123),        dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ChannelRecordingIntervalSeconds ));
-                BOOST_CHECK_EQUAL( unsigned(2147483647), dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ChannelReportingIntervalSeconds ));
-            }
+            BOOST_CHECK_EQUAL( unsigned(7380),  dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds ));
+            BOOST_CHECK_EQUAL( unsigned(27360), dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds ));
         }
     }
 }
-*/
+
 BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 {
     using boost::assign::list_of;
