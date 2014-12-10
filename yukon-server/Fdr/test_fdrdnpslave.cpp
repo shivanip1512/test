@@ -269,7 +269,7 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_control_request )
+BOOST_AUTO_TEST_CASE( test_control_close )
 {
     Test_FdrDnpSlave dnpSlave;
 
@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE( test_control_request )
 
     fdrPointList.setPointList(fdrManager);
 
-    dnpSlave.setSendToList(fdrPointList);
+    dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
     fdrPointList.setPointList(0);
@@ -305,7 +305,7 @@ BOOST_AUTO_TEST_CASE( test_control_request )
 
         fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
 
-        dnpSlave.translateSinglePoint(fdrPoint, true);
+        dnpSlave.translateSinglePoint(fdrPoint, false);
     }
 
     const byte_str request(
@@ -337,7 +337,7 @@ BOOST_AUTO_TEST_CASE( test_control_request )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_control_request_shortIndexShortQuantity )
+BOOST_AUTO_TEST_CASE( test_control_open )
 {
     Test_FdrDnpSlave dnpSlave;
 
@@ -347,7 +347,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_shortIndexShortQuantity )
 
     fdrPointList.setPointList(fdrManager);
 
-    dnpSlave.setSendToList(fdrPointList);
+    dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
     fdrPointList.setPointList(0);
@@ -373,7 +373,75 @@ BOOST_AUTO_TEST_CASE( test_control_request_shortIndexShortQuantity )
 
         fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
 
-        dnpSlave.translateSinglePoint(fdrPoint, true);
+        dnpSlave.translateSinglePoint(fdrPoint, false);
+    }
+
+    const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 17 01 00 81 01 00 00 00 00 00 00 51 37 "
+            "00 00 00 ff ff");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 81 01 00 00 00 00 59 0c "
+            "00 00 00 00 00 ff ff");
+
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+
+    BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
+
+    const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+
+    CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+    BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
+    BOOST_CHECK_EQUAL(opArgs[0], -1);
+    BOOST_CHECK_EQUAL(opArgs[1],  0);
+    BOOST_CHECK_EQUAL(opArgs[2], 43);  //  point id
+    BOOST_CHECK_EQUAL(opArgs[3],  0);  //  control state
+}
+
+
+BOOST_AUTO_TEST_CASE( test_control_request_shortIndexShortQuantity )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.setReceiveFromList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(53);
+        fdrPoint->setOffset(12);
+        fdrPoint->setPointType(StatusPointType);
+        fdrPoint->setValue(0);
+        fdrPoint->setControllable(true);
+
+        CtiFDRDestination pointDestination(fdrPoint.get(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:0", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, false);
     }
 
     const byte_str request(
@@ -404,7 +472,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_controlDisabled )
 
     fdrPointList.setPointList(fdrManager);
 
-    dnpSlave.setSendToList(fdrPointList);
+    dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
     fdrPointList.setPointList(0);
@@ -461,7 +529,7 @@ BOOST_AUTO_TEST_CASE( test_control_request_invalidObject )
 
     fdrPointList.setPointList(fdrManager);
 
-    dnpSlave.setSendToList(fdrPointList);
+    dnpSlave.setReceiveFromList(fdrPointList);
 
     //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
     fdrPointList.setPointList(0);

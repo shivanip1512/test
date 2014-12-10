@@ -187,51 +187,51 @@ CtiFDRClientServerConnectionSPtr DnpSlave::createNewConnection(SOCKET newSocket)
 
 bool DnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList)
 {
-    bool foundPoint = false;
+    DnpDestinationMap &pointMap = sendList ? _sendMap : _receiveMap;
 
-    for (int x = 0; x < translationPoint->getDestinationList().size(); x++)
+    CtiFDRPoint::DestinationList &destinations = translationPoint->getDestinationList();
+
+    if ( destinations.empty() )
     {
-        foundPoint = true;
-        CtiFDRDestination pointDestination = translationPoint->getDestinationList()[x];
+        return false;
+    }
+
+    for each (CtiFDRDestination pointDestination in destinations)
+    {
         // translate and put the point id the list
 
         DnpId dnpId = ForeignToYukonId(pointDestination);
         if (!dnpId.valid)
         {
-            return foundPoint;
+            return true;
         }
 
-        if (sendList)
-        {
-            _sendMap[pointDestination] = dnpId;
+        pointMap[pointDestination] = dnpId;
 
-            if( getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL )
-            {
-                CTILOG_DEBUG(dout, "Added send mapping "<< pointDestination <<" to " << dnpId);
-            }
+        if( getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL )
+        {
+            CTILOG_DEBUG(dout, "Added " << (sendList ? "send" : "receieve") << " mapping "<< pointDestination <<" to " << dnpId);
         }
     }
-    return foundPoint;
+    return true;
 }
 
 void DnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList)
 {
-    if (recvList)
-    {
-        return;
-    }
+    DnpDestinationMap &pointMap = recvList ? _receiveMap : _sendMap;
+
     for each( const CtiFDRDestination &dest in translationPoint->getDestinationList() )
     {
-        SendMap::iterator itr = _sendMap.find(dest);
+        DnpDestinationMap::iterator itr = pointMap.find(dest);
 
-        if ( itr != _sendMap.end() )
+        if ( itr != pointMap.end() )
         {
             if( getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL )
             {
-                CTILOG_DEBUG(dout, "Removing send mapping "<< itr->first <<" to "<< itr->second);
+                CTILOG_DEBUG(dout, "Removing " << (recvList ? "receive" : "send") << " mapping "<< itr->first <<" to "<< itr->second);
             }
 
-            _sendMap.erase(itr);
+            pointMap.erase(itr);
         }
         else
         {
@@ -357,7 +357,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
 
     const CtiTime Now;
 
-    for each( SendMap::value_type mapping in _sendMap )
+    for each( DnpDestinationMap::value_type mapping in _sendMap )
     {
         const DnpId &dnpId = mapping.second;
         if (dnpId.SlaveId == dest.sh && dnpId.MasterId == src.sh )
@@ -579,7 +579,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
     iPoint.din.status     = BinaryOutputControl::Status_NotSupported;
 
     //  look for the point with the correct control offset
-    for each( SendMap::value_type mapping in _sendMap )
+    for each( DnpDestinationMap::value_type mapping in _receiveMap )
     {
         const DnpId &dnpId = mapping.second;
         if (dnpId.PointType   == StatusPointType
@@ -591,9 +591,9 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
             CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
 
             {
-                CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
+                CtiLockGuard<CtiMutex> recvGuard(getReceiveFromList().getMutex());
 
-                if ( ! findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
+                if ( ! findPointIdInList(fdrPoint->getPointID(),getReceiveFromList(),*fdrPoint) )
                 {
                     continue;
                 }

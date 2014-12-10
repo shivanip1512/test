@@ -80,8 +80,8 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
 
         std::string dumpDNPMessage(const char* data, unsigned int size);
 
-        typedef std::map<CtiFDRDestination, DnpId> SendMap;
-        SendMap _sendMap;
+        typedef std::map<CtiFDRDestination, DnpId> DnpDestinationMap;
+        DnpDestinationMap _sendMap, _receiveMap;
 
         Protocols::DnpSlaveProtocol  _dnpSlave;
 
