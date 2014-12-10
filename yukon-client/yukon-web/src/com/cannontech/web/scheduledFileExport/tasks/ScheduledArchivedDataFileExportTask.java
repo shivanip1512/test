@@ -59,7 +59,8 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		
 		//If using SINCE_LAST_CHANGE_ID, update last id for this job
 		if(dataRange.getDataRangeType() == DataRangeType.SINCE_LAST_CHANGE_ID) {
-			scheduledFileExportDao.setRphIdForJob(getJob().getId(), dataRange.getChangeIdRange().getLastChangeId());
+            scheduledFileExportDao.setRphIdForJob(getJob().getId(), getJob().getJobGroupId(),
+                dataRange.getChangeIdRange().getLastChangeId());
 		}
 		
 		// Create and Write to the archive file
@@ -98,7 +99,7 @@ public class ScheduledArchivedDataFileExportTask extends ScheduledFileExportTask
 		if(dataRange.getDataRangeType() == DataRangeType.END_DATE) {
 			dataRange.setEndDate(LocalDate.now());
 		} else if(dataRange.getDataRangeType() == DataRangeType.SINCE_LAST_CHANGE_ID) {
-			long firstChangeId = scheduledFileExportDao.getLastRphIdByJobId(getJob().getId());
+            long firstChangeId = scheduledFileExportDao.getLastRphIdByJobId(getJob().getJobGroupId());
 			long lastChangeId = rawPointHistoryDao.getMaxChangeId();
 			ChangeIdRange changeIdRange = new ChangeIdRange();
 			changeIdRange.setFirstChangeId(firstChangeId);

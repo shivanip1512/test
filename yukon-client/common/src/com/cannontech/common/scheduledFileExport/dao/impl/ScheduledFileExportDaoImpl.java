@@ -27,51 +27,51 @@ public class ScheduledFileExportDaoImpl implements ScheduledFileExportDao {
     }
 
     @Override
-    public void setRphIdForJob(int jobId, long rphId) {
-        if (hasEntry(jobId)) {
-            updateRphIdForJob(jobId, rphId);
+    public void setRphIdForJob(int jobId, int jobGroupId, long rphId) {
+        if (hasEntry(jobGroupId)) {
+            updateRphIdForJob(jobId, jobGroupId, rphId);
         } else {
-            insertRphIdForJob(jobId, rphId);
+            insertRphIdForJob(jobId, jobGroupId, rphId);
         }
     }
 
-    private void insertRphIdForJob(int jobId, long rphId) {
+    private void insertRphIdForJob(int jobId, int jobGroupId, long rphId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.insertInto("RawPointHistoryDependentJob");
-
         sink.addValue("JobId", jobId);
+        sink.addValue("JobGroupId", jobGroupId);
         sink.addValue("RawPointHistoryId", rphId);
 
         yukonJdbcTemplate.update(sql);
     }
 
-    private void updateRphIdForJob(int jobId, long rphId) {
+    private void updateRphIdForJob(int jobId, int jobGroupId, long rphId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.update("RawPointHistoryDependentJob");
-
         sink.addValue("JobId", jobId);
+        sink.addValue("JobGroupId", jobGroupId);
         sink.addValue("RawPointHistoryId", rphId);
-        sql.append("WHERE JobId").eq(jobId);
+        sql.append("WHERE JobGroupId").eq(jobGroupId);
 
         yukonJdbcTemplate.update(sql);
     }
 
-    private boolean hasEntry(int jobId) {
+    private boolean hasEntry(int jobGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*)");
         sql.append("FROM RawPointHistoryDependentJob");
-        sql.append("WHERE JobId").eq(jobId);
+        sql.append("WHERE JobGroupId").eq(jobGroupId);
 
         int result = yukonJdbcTemplate.queryForInt(sql);
         return result > 0;
     }
 
     @Override
-    public long getLastRphIdByJobId(int jobId) {
+    public long getLastRphIdByJobId(int jobGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT RawPointHistoryId");
         sql.append("FROM RawPointHistoryDependentJob");
-        sql.append("WHERE JobId").eq(jobId);
+        sql.append("WHERE JobGroupId").eq(jobGroupId);
 
         long result;
         try {
