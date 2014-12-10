@@ -224,7 +224,8 @@ public enum FdrInterfaceType implements DatabaseRepresentationSource {
                 FdrInterfaceOption.DNPSLAVE_MULTIPLIER
             },
             new FdrDirection[] {
-                FdrDirection.SEND
+                FdrDirection.SEND,
+                FdrDirection.RECEIVE_FOR_CONTROL
             }),
     VALMETMULTI(29, new FdrInterfaceOption[] {
                 FdrInterfaceOption.VALMETMULTI_POINT,
@@ -247,6 +248,7 @@ public enum FdrInterfaceType implements DatabaseRepresentationSource {
      * natural enum order.
      */
     public static final Comparator<FdrInterfaceType> alphabeticalComparator = new Comparator<FdrInterfaceType>() {
+        @Override
         public int compare(FdrInterfaceType typeOne, FdrInterfaceType typeTwo) {
             return typeOne.name().compareTo(typeTwo.name());
         }
@@ -331,7 +333,8 @@ public enum FdrInterfaceType implements DatabaseRepresentationSource {
         return Lists.newArrayList(FdrInterfaceType.values());
     }
     
+    @Override
     public Object getDatabaseRepresentation() {
-        return this.toString();
+        return toString();
     }
 }
