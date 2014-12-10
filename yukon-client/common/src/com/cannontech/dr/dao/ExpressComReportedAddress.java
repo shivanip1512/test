@@ -2,6 +2,7 @@ package com.cannontech.dr.dao;
 
 import java.io.Serializable;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class ExpressComReportedAddress extends LmReportedAddress implements Serializable {
 
@@ -74,6 +75,12 @@ public class ExpressComReportedAddress extends LmReportedAddress implements Seri
         return relays;
     }
     
+    public Set<ExpressComReportedAddressRelay> getRelaysSorted() {
+        Set<ExpressComReportedAddressRelay> sortedRelays = new TreeSet<>(ExpressComReportedAddressRelay.BY_RELAY_NUMBER);
+        sortedRelays.addAll(relays);
+        return sortedRelays;
+    }
+    
     public void setRelays(Set<ExpressComReportedAddressRelay> relays) {
         this.relays = relays;
     }
@@ -136,22 +143,29 @@ public class ExpressComReportedAddress extends LmReportedAddress implements Seri
      */
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ExpressComReportedAddress other = (ExpressComReportedAddress) obj;
-        if (changeId != other.changeId)
+        if (changeId != other.changeId) {
             return false;
+        }
         if (timestamp == null) {
-            if (other.timestamp != null)
+            if (other.timestamp != null) {
                 return false;
-        } else if (!timestamp.equals(other.timestamp))
+            }
+        } else if (!timestamp.equals(other.timestamp)) {
             return false;
-        if (!isEquivalent(other))
+        }
+        if (!isEquivalent(other)) {
             return false;
+        }
         
         return true;
     }
@@ -166,27 +180,37 @@ public class ExpressComReportedAddress extends LmReportedAddress implements Seri
      *  is that it ignores {@link #changeId} and {@link #timestamp}.
      */
     public boolean isEquivalent(ExpressComReportedAddress other) {
-        if (deviceId != other.deviceId)
+        if (deviceId != other.deviceId) {
             return false;
-        if (feeder != other.feeder)
+        }
+        if (feeder != other.feeder) {
             return false;
-        if (geo != other.geo)
+        }
+        if (geo != other.geo) {
             return false;
+        }
         if (relays == null) {
-            if (other.relays != null)
+            if (other.relays != null) {
                 return false;
-        } else if (!relays.equals(other.relays))
+            }
+        } else if (!relays.equals(other.relays)) {
             return false;
-        if (required != other.required)
+        }
+        if (required != other.required) {
             return false;
-        if (spid != other.spid)
+        }
+        if (spid != other.spid) {
             return false;
-        if (substation != other.substation)
+        }
+        if (substation != other.substation) {
             return false;
-        if (uda != other.uda)
+        }
+        if (uda != other.uda) {
             return false;
-        if (zip != other.zip)
+        }
+        if (zip != other.zip) {
             return false;
+        }
         
         return true;
     }

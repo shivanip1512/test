@@ -30,10 +30,18 @@
 		  <th><i:inline key=".splinter"/></th>
 		</tr>
 		<tbody>
-			<c:forEach begin="1" end="${fn:length(reportedConfig.relays)}"  varStatus="status">
-			    <tr><td>${status.index}</td>
-			    <td><cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/RELAY_PROGRAM/${status.index-1}"/></td>
-			    <td><cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" identifier="${deviceId}/RELAY_SPLINTER/${status.index-1}"/></td></tr>
+            <c:forEach items="${reportedConfig.relaysSorted}" var="expressComRelay">
+            <tr>
+                <td>${expressComRelay.relayNumber}</td>
+                <td>
+                    <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" 
+                        identifier="${deviceId}/RELAY_PROGRAM/${expressComRelay.relayNumber}"/>
+                </td>
+                <td>
+                    <cti:dataUpdaterValue type="LM_REPORTED_ADDRESS" 
+                        identifier="${deviceId}/RELAY_SPLINTER/${expressComRelay.relayNumber}"/>
+                </td>
+            </tr>
 	        </c:forEach>
         </tbody>
     </table>

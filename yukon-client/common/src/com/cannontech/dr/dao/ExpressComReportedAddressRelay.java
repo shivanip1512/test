@@ -1,9 +1,18 @@
 package com.cannontech.dr.dao;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 public class ExpressComReportedAddressRelay implements Serializable {
 
+    public static final Comparator<ExpressComReportedAddressRelay> BY_RELAY_NUMBER = 
+            new Comparator<ExpressComReportedAddressRelay>() {
+        @Override
+        public int compare(ExpressComReportedAddressRelay a, ExpressComReportedAddressRelay b){
+            return Integer.compare(a.relayNumber, b.relayNumber);
+        }
+    };
+    
     private int relayNumber;
     private int program;
     private int splinter;
@@ -52,19 +61,25 @@ public class ExpressComReportedAddressRelay implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ExpressComReportedAddressRelay other = (ExpressComReportedAddressRelay) obj;
-        if (program != other.program)
+        if (program != other.program) {
             return false;
-        if (relayNumber != other.relayNumber)
+        }
+        if (relayNumber != other.relayNumber) {
             return false;
-        if (splinter != other.splinter)
+        }
+        if (splinter != other.splinter) {
             return false;
+        }
         return true;
     }
     
