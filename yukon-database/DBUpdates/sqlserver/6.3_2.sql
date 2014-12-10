@@ -108,7 +108,7 @@ ALTER TABLE RawPointHistoryDependentJob
     DROP CONSTRAINT FK_RPHDependentJob_Job;
 
 ALTER TABLE RawPointHistoryDependentJob
-   ADD CONSTRAINT FK_RPHDependentJob_Job FOREIGN KEY (JobId)
+   ADD CONSTRAINT FK_RPHDependentJob_Job FOREIGN KEY (JobId, JobGroupId)
       REFERENCES Job (JobId, JobGroupId)
       ON DELETE CASCADE;
 /* End YUK-13910 */
