@@ -420,6 +420,9 @@ void CtiFDRSocketServer::threadFunctionConnection( unsigned short listeningPort,
                     // new socket
                     SOCKET tmpConnection = listeningSockets->accept(addr, Chrono::infinite, &_shutdownEvent);
 
+                    unsigned long disabled = 0;
+                    ::ioctlsocket(tmpConnection, FIONBIO, &disabled);  //  reset socket back to blocking mode
+
                     // when this thread is to be shutdown, requestCancellation()
                     // will be called, then the listener socket will be shutdown
                     // which will cause accept() to return.

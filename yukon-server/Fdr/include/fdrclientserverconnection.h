@@ -67,7 +67,6 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection : public Cti::Fdr::ServerConnec
         //      read/write on the socket, make a super class of this class that
         //      has the bare representations of a socket, and extend it to suit
         //      your needs.
-        SOCKET getRawSocket();
         int writeSocket(CHAR *aBuffer, ULONG length, ULONG &aBytesWritten);
         int readSocket (CHAR *aBuffer, ULONG length, ULONG &aBytesRead);
 

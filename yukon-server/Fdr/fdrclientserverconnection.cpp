@@ -56,11 +56,6 @@ CtiFDRClientServerConnection::~CtiFDRClientServerConnection( )
     _parentInterface->logEvent(_linkName + ": connection destroyed", "", true);
 }
 
-SOCKET CtiFDRClientServerConnection::getRawSocket()
-{
-    return _socket;
-}
-
 bool CtiFDRClientServerConnection::isRegistered ()
 {
     return _isRegistered;
@@ -187,7 +182,7 @@ int CtiFDRClientServerConnection::getPortNumber()
 {
     Cti::SocketAddress addr( Cti::SocketAddress::STORAGE_SIZE );
 
-    if( getsockname(getRawSocket(), &addr._addr.sa, &addr._addrlen) == SOCKET_ERROR )
+    if( getsockname(_socket, &addr._addr.sa, &addr._addrlen) == SOCKET_ERROR )
     {
         const DWORD error = WSAGetLastError();
         CTILOG_ERROR(dout, logNow() <<"getsockname() failed with error code: "<< error <<" / "<< Cti::getSystemErrorMessage(error));
@@ -529,8 +524,6 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
 
 INT CtiFDRClientServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG &aBytesRead)
 {
-    INT retVal = ClientErrors::None;
-
     // initialize
     aBytesRead = 0;
 
@@ -539,19 +532,25 @@ INT CtiFDRClientServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG
     // we have data, try and get as much as we need
     do
     {
-        LONG bytesReceived = 0;
         // read out of buffer until we have everything
-        if ((bytesReceived = recv (_socket,
-                                   (aBuffer + totalByteCnt),
-                                   length-totalByteCnt,
-                                   0)) <= 0)
+        const long bytesReceived = recv (_socket,
+                                         (aBuffer + totalByteCnt),
+                                         length-totalByteCnt,
+                                         0);
+
+        if( bytesReceived < 0)
         {
             const DWORD error = WSAGetLastError();
             CTILOG_ERROR(dout, logNow() <<"Socket receive failed with error code: "<< error <<" / "<< Cti::getSystemErrorMessage(error));
 
             // problem with the receive
-            retVal = SOCKET_ERROR;
-            break;
+            return SOCKET_ERROR;
+        }
+        if( bytesReceived == 0 )
+        {
+            CTILOG_ERROR(dout, logNow() << " Socket closed, aborting read");
+
+            return SOCKET_ERROR;
         }
 
         // add to our total count
@@ -560,7 +559,7 @@ INT CtiFDRClientServerConnection::readSocket (CHAR *aBuffer, ULONG length, ULONG
 
     } while (totalByteCnt < length);
 
-    return retVal;
+    return 0;
 }
 
 void CtiFDRClientServerConnection::sendLinkState(bool linkUp)
