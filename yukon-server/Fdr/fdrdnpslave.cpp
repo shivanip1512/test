@@ -567,6 +567,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
 
     DnpSlaveProtocol::input_point iPoint;
 
+    //  create the point so we can echo it back in the DNP response
     iPoint.type = DnpSlaveProtocol::DigitalInput;
     iPoint.control_offset = control.offset;
     iPoint.din.control    = static_cast<BinaryOutputControl::ControlCode>(control.code & 0x0f);
@@ -578,46 +579,89 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
     iPoint.din.off_time   = control.offTime;
     iPoint.din.status     = BinaryOutputControl::Status_NotSupported;
 
-    //  look for the point with the correct control offset
-    for each( DnpDestinationMap::value_type mapping in _receiveMap )
+    boost::optional<unsigned> controlState;
+
+    switch( iPoint.din.trip_close )
     {
-        const DnpId &dnpId = mapping.second;
-        if (dnpId.PointType   == StatusPointType
-            && dnpId.SlaveId  == dest
-            && dnpId.MasterId == src
-            && dnpId.Offset   == control.offset)
+        case BinaryOutputControl::Trip:
         {
-            const CtiFDRDestination &fdrdest = mapping.first;
-            CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
+            controlState = 0;
+            break;
+        }
 
+        case BinaryOutputControl::Close:
+        {
+            controlState = 1;
+            break;
+        }
+
+        case BinaryOutputControl::NUL:
+        {
+            switch( iPoint.din.control )
             {
-                CtiLockGuard<CtiMutex> recvGuard(getReceiveFromList().getMutex());
-
-                if ( ! findPointIdInList(fdrPoint->getPointID(),getReceiveFromList(),*fdrPoint) )
+                case BinaryOutputControl::PulseOn:
+                case BinaryOutputControl::LatchOn:
                 {
-                    continue;
+                    controlState = 1;
+                    break;
+                }
+                case BinaryOutputControl::PulseOff:
+                case BinaryOutputControl::LatchOff:
+                {
+                    controlState = 0;
+                    break;
                 }
             }
+        }
+    }
 
-            if( fdrPoint->isControllable() )
+    if ( ! controlState)
+    {
+        iPoint.din.status = BinaryOutputControl::Status_FormatError;
+    }
+    else
+    {
+        //  look for the point with the correct control offset
+        for each( DnpDestinationMap::value_type mapping in _receiveMap )
+        {
+            const DnpId &dnpId = mapping.second;
+            if (dnpId.PointType   == StatusPointType
+                && dnpId.SlaveId  == dest
+                && dnpId.MasterId == src
+                && dnpId.Offset   == control.offset)
             {
-                // build the command message and send the control
-                std::auto_ptr<CtiCommandMsg> cmdMsg(
-                        new CtiCommandMsg(CtiCommandMsg::ControlRequest));
+                const CtiFDRDestination &fdrdest = mapping.first;
+                CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
 
-                cmdMsg->insert(-1);     // This is the dispatch token and is unimplemented at this time
-                cmdMsg->insert(0);      // device id, unknown at this point, dispatch will find it
-                cmdMsg->insert(fdrPoint->getPointID());  // point for control
-                cmdMsg->insert(iPoint.din.trip_close == BinaryOutputControl::Close);  //  Open => 0, Close => 1
-
-                sendMessageToDispatch(cmdMsg.release());
-
-                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CTILOG_DEBUG(dout, logNow() << " Control " << (iPoint.din.trip_close == BinaryOutputControl::Close ? "close" : "open") << " sent to pointid " << fdrPoint->getPointID());
+                    CtiLockGuard<CtiMutex> recvGuard(getReceiveFromList().getMutex());
+
+                    if ( ! findPointIdInList(fdrPoint->getPointID(),getReceiveFromList(),*fdrPoint) )
+                    {
+                        continue;
+                    }
                 }
 
-                iPoint.din.status = BinaryOutputControl::Status_Success;
+                if( fdrPoint->isControllable() )
+                {
+                    // build the command message and send the control
+                    std::auto_ptr<CtiCommandMsg> cmdMsg(
+                            new CtiCommandMsg(CtiCommandMsg::ControlRequest));
+
+                    cmdMsg->insert(-1);     // This is the dispatch token and is unimplemented at this time
+                    cmdMsg->insert(0);      // device id, unknown at this point, dispatch will find it
+                    cmdMsg->insert(fdrPoint->getPointID());  // point for control
+                    cmdMsg->insert(*controlState);
+
+                    sendMessageToDispatch(cmdMsg.release());
+
+                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                    {
+                        CTILOG_DEBUG(dout, logNow() << " Control " << (iPoint.din.trip_close == BinaryOutputControl::Close ? "close" : "open") << " sent to pointid " << fdrPoint->getPointID());
+                    }
+
+                    iPoint.din.status = BinaryOutputControl::Status_Success;
+                }
             }
         }
     }

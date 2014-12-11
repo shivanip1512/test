@@ -308,32 +308,163 @@ BOOST_AUTO_TEST_CASE( test_control_close )
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
 
-    const byte_str request(
-            "05 64 18 c4 f6 01 e8 03 36 79 "
-            "c0 c1 05 0c 01 17 01 00 41 01 00 00 00 00 00 00 84 a9 "
-            "00 00 00 ff ff");
+    //  Close, NUL operation
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 40 01 00 00 00 00 00 00 96 bf "
+                "00 00 00 ff ff");
 
-    Test_ServerConnection connection;
+        Test_ServerConnection connection;
 
-    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
-    const byte_str expected(
-            "05 64 1a 44 e8 03 f6 01 20 bb "
-            "c0 c1 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 a7 b3 "
-            "00 00 00 00 00 ff ff");
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 40 01 00 00 00 00 40 06 "
+                "00 00 00 00 00 ff ff");
 
-    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
 
-    BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
-    const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
 
-    CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
-    BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
-    BOOST_CHECK_EQUAL(opArgs[0], -1);
-    BOOST_CHECK_EQUAL(opArgs[1],  0);
-    BOOST_CHECK_EQUAL(opArgs[2], 43);  //  point id
-    BOOST_CHECK_EQUAL(opArgs[3],  1);  //  control state
+        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
+        BOOST_CHECK_EQUAL(opArgs[0], -1);
+        BOOST_CHECK_EQUAL(opArgs[1],  0);
+        BOOST_CHECK_EQUAL(opArgs[2], 43);  //  point id
+        BOOST_CHECK_EQUAL(opArgs[3],  1);  //  control state
+    }
+
+    dnpSlave.dispatchMessages.clear();
+
+    //  Close, pulse on
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 41 01 00 00 00 00 00 00 84 a9 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 41 01 00 00 00 00 a7 b3 "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
+
+        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+
+        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
+        BOOST_CHECK_EQUAL(opArgs[0], -1);
+        BOOST_CHECK_EQUAL(opArgs[1],  0);
+        BOOST_CHECK_EQUAL(opArgs[2], 43);  //  point id
+        BOOST_CHECK_EQUAL(opArgs[3],  1);  //  control state
+    }
+
+    dnpSlave.dispatchMessages.clear();
+
+    //  Close, pulse off
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 42 01 00 00 00 00 00 00 b2 93 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 42 01 00 00 00 00 f7 20 "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
+
+        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+
+        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
+        BOOST_CHECK_EQUAL(opArgs[0], -1);
+        BOOST_CHECK_EQUAL(opArgs[1],  0);
+        BOOST_CHECK_EQUAL(opArgs[2], 43);  //  point id
+        BOOST_CHECK_EQUAL(opArgs[3],  1);  //  control state
+    }
+
+    dnpSlave.dispatchMessages.clear();
+
+    //  Pulse on, no trip/close
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 01 01 00 00 00 00 00 00 e0 18 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 01 01 00 00 00 00 da 1d "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
+
+        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+
+        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
+        BOOST_CHECK_EQUAL(opArgs[0], -1);
+        BOOST_CHECK_EQUAL(opArgs[1],  0);
+        BOOST_CHECK_EQUAL(opArgs[2], 43);  //  point id
+        BOOST_CHECK_EQUAL(opArgs[3],  1);  //  control state
+    }
+
+    dnpSlave.dispatchMessages.clear();
+
+    //  Latch on, no trip/close
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 03 01 00 00 00 00 00 00 c4 34 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 03 01 00 00 00 00 6d 3b "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
+
+        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+
+        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
+        BOOST_CHECK_EQUAL(opArgs[0], -1);
+        BOOST_CHECK_EQUAL(opArgs[1],  0);
+        BOOST_CHECK_EQUAL(opArgs[2], 43);  //  point id
+        BOOST_CHECK_EQUAL(opArgs[3],  1);  //  control state
+    }
 }
 
 
@@ -376,32 +507,131 @@ BOOST_AUTO_TEST_CASE( test_control_open )
         dnpSlave.translateSinglePoint(fdrPoint, false);
     }
 
-    const byte_str request(
-            "05 64 18 c4 f6 01 e8 03 36 79 "
-            "c0 c1 05 0c 01 17 01 00 81 01 00 00 00 00 00 00 51 37 "
-            "00 00 00 ff ff");
+    //  Trip, NUL operation
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 80 01 00 00 00 00 00 00 43 21 "
+                "00 00 00 ff ff");
 
-    Test_ServerConnection connection;
+        Test_ServerConnection connection;
 
-    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
-    const byte_str expected(
-            "05 64 1a 44 e8 03 f6 01 20 bb "
-            "c0 c1 81 00 00 0c 01 17 01 00 81 01 00 00 00 00 59 0c "
-            "00 00 00 00 00 ff ff");
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 80 01 00 00 00 00 be b9 "
+                "00 00 00 00 00 ff ff");
 
-    BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
 
-    BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
 
-    const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
 
-    CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
-    BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
-    BOOST_CHECK_EQUAL(opArgs[0], -1);
-    BOOST_CHECK_EQUAL(opArgs[1],  0);
-    BOOST_CHECK_EQUAL(opArgs[2], 43);  //  point id
-    BOOST_CHECK_EQUAL(opArgs[3],  0);  //  control state
+        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
+        BOOST_CHECK_EQUAL(opArgs[0], -1);
+        BOOST_CHECK_EQUAL(opArgs[1],  0);
+        BOOST_CHECK_EQUAL(opArgs[2], 43);  //  point id
+        BOOST_CHECK_EQUAL(opArgs[3],  0);  //  control state
+    }
+
+    dnpSlave.dispatchMessages.clear();
+
+    //  Trip, pulse on
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 81 01 00 00 00 00 00 00 51 37 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 81 01 00 00 00 00 59 0c "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
+
+        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+
+        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
+        BOOST_CHECK_EQUAL(opArgs[0], -1);
+        BOOST_CHECK_EQUAL(opArgs[1],  0);
+        BOOST_CHECK_EQUAL(opArgs[2], 43);  //  point id
+        BOOST_CHECK_EQUAL(opArgs[3],  0);  //  control state
+    }
+
+    dnpSlave.dispatchMessages.clear();
+
+    //  Pulse of, no trip/close
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 02 01 00 00 00 00 00 00 d6 22 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 02 01 00 00 00 00 8a 8e "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
+
+        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+
+        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
+        BOOST_CHECK_EQUAL(opArgs[0], -1);
+        BOOST_CHECK_EQUAL(opArgs[1],  0);
+        BOOST_CHECK_EQUAL(opArgs[2], 43);  //  point id
+        BOOST_CHECK_EQUAL(opArgs[3],  0);  //  control state
+    }
+
+    dnpSlave.dispatchMessages.clear();
+
+    //  Latch off, no trip/close
+    {
+        const byte_str request(
+                "05 64 18 c4 f6 01 e8 03 36 79 "
+                "c0 c1 05 0c 01 17 01 00 04 01 00 00 00 00 00 00 ba 56 "
+                "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+                "05 64 1a 44 e8 03 f6 01 20 bb "
+                "c0 c1 81 00 00 0c 01 17 01 00 04 01 00 00 00 00 53 e5 "
+                "00 00 00 00 00 ff ff");
+
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.message);
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 1);
+
+        const CtiCommandMsg &msg = dynamic_cast<const CtiCommandMsg &>(dnpSlave.dispatchMessages.front());
+
+        CtiCommandMsg::OpArgList opArgs = msg.getOpArgList();
+        BOOST_REQUIRE_EQUAL(opArgs.size(), 4);
+        BOOST_CHECK_EQUAL(opArgs[0], -1);
+        BOOST_CHECK_EQUAL(opArgs[1],  0);
+        BOOST_CHECK_EQUAL(opArgs[2], 43);  //  point id
+        BOOST_CHECK_EQUAL(opArgs[3],  0);  //  control state
+    }
 }
 
 
