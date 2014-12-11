@@ -94,7 +94,7 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
             attemptsMap = new HashMap<String, AttemptsRow>();
             String attempts = "select CapBankName, count(*) as totCount, CBCName, FeederName, FeederId, SubBusName, SubBusId, SubstationId, Region, AreaId ";
             attempts += "from ccoperations_view "; 
-            attempts += "where operation like '%sent, %' ";
+            attempts += "where operation like '%Sent, %' ";
             attempts += "and opTime > ? "; 
             attempts += "and opTime <= ? "; 
             if(getFilters() != null) {
