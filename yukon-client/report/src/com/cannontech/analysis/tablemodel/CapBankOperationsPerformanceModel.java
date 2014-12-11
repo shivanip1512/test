@@ -147,11 +147,11 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
             if(queryType.equalsIgnoreCase("Success")) {
                 resultQuery +="(confstatus like '%, Close' or confstatus like '%, Open') ";
             }else if (queryType.equalsIgnoreCase("Failed")){
-                resultQuery +="confstatus like '%Fail%' ";
+                resultQuery +="confstatus like '%Fail' ";
             }else if (queryType.equalsIgnoreCase("Questionable")) {
-                resultQuery +="confstatus like '%Questionable%' ";
+                resultQuery +="confstatus like '%Questionable' ";
             }else if (queryType.equalsIgnoreCase("Failed-Questionable")) {
-                resultQuery +="(confstatus like '%Questionable%' or confstatus like '%Failed%') ";
+                resultQuery +="(confstatus like '%Questionable' or confstatus like '%Fail') ";
             }
             
             resultQuery += "and opTime > ? "; 
