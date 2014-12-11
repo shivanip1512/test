@@ -68,10 +68,11 @@ public class LinkTabbedTag extends BodyTagSupport {
     public int doEndTag() throws JspException {
 
         try {
-            if (mode == Mode.section) classes += " section";
+            String divClass = classes + (mode == Mode.section ? " section" : "");
+            
             id = ! StringUtils.isEmpty(id) ? id : "linkTabbedControl_"+ UniqueIdentifierTag.generateIdentifier(pageContext, "tabbedContentSelectorContainer_");
 
-            pageContext.getOut().println("<div id=\"" + id + "\" class=\"" + classes + "\">");
+            pageContext.getOut().println("<div id=\"" + id + "\" class=\"" + divClass + "\">");
             pageContext.getOut().println("<ul class=\"ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all\">");
 
             final String activeCss = " ui-tabs-active ui-state-active";
