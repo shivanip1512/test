@@ -4053,7 +4053,7 @@ bool CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                            text += " ( ";
                                            text += doubleToString(ratio*100.0);
                                            if (!assumedWrongFlag)
-                                               text += "% change), Closed";
+                                               text += "% change), Close";
                                            else
                                                text += "% change), Open";
 
