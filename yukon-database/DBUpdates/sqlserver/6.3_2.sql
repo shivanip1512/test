@@ -4,28 +4,11 @@
 
 /* Start YUK-13917 */
 DELETE FROM YukonGroupRole
-WHERE RolePropertyId = -10803;
- 
-DELETE FROM YukonRoleProperty
-WHERE RolePropertyId = -10803;
- 
 DELETE FROM YukonGroupRole
-WHERE RolePropertyId = -10804;
+WHERE RolePropertyId IN (-10803, -10804, -10807, -10808);
  
 DELETE FROM YukonRoleProperty
-WHERE RolePropertyId = -10804;
- 
-DELETE FROM YukonGroupRole
-WHERE RolePropertyId = -10808;
- 
-DELETE FROM YukonRoleProperty
-WHERE RolePropertyId = -10808;
- 
-DELETE FROM YukonGroupRole
-WHERE RolePropertyId = -10807;
- 
-DELETE FROM YukonRoleProperty
-WHERE RolePropertyId = -10807;
+WHERE RolePropertyId IN (-10803, -10804, -10807, -10808);
 /* End YUK-13917 */
 
 /* Start YUK-13905 */
