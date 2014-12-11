@@ -52,8 +52,9 @@ public class FileExportHistoryController {
             ExportHistoryEntry entry = fileExportHistoryDao.getEntry(entryId);
             exports = Lists.newArrayList(entry);
             
-            WebMessageSourceResolvable resolvable = new WebMessageSourceResolvable(baseKey 
-                    + ".singleEntry", entry.getType(),Integer.toString(entry.getJobGroupId()));
+			WebMessageSourceResolvable resolvable = new WebMessageSourceResolvable(
+					baseKey + ".singleEntry", entry.getType(),
+					Integer.toString(entry.getJobGroupId()));
             resolvable.setHtmlEscape(false);
             flashScope.setWarning(resolvable);
         } else {
