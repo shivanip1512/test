@@ -584,7 +584,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     }
                     else
                     {
-                        CTILOG_ERROR(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<")");
+                        CTILOG_WARN(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<")");
                     }
                 }
 
@@ -630,7 +630,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     }
                     else
                     {
-                        CTILOG_ERROR(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<")");
+                        CTILOG_WARN(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<")");
                     }
                 }
 
@@ -653,7 +653,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     }
                     else
                     {
-                        CTILOG_ERROR(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<")");
+                        CTILOG_WARN(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<")");
                     }
                 }
 
@@ -686,7 +686,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     }
                     else
                     {
-                        CTILOG_ERROR(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<")");
+                        CTILOG_WARN(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<")");
                     }
                 }
                 break;
@@ -752,7 +752,7 @@ void CtiPendingOpThread::updateControlHistory( CtiPendingPointOperations &ppc, i
                     }
                     else
                     {
-                        CTILOG_ERROR(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<", active restore = "<< ppc.getControl().getActiveRestore() <<")");
+                        CTILOG_WARN(dout, "Invalid addnlseconds is < 0 ( update time = "<< updateTime.seconds() <<", previous log time = "<< ppc.getControl().getPreviousLogTime().seconds() <<", active restore = "<< ppc.getControl().getActiveRestore() <<")");
                     }
                 }
                 break;
