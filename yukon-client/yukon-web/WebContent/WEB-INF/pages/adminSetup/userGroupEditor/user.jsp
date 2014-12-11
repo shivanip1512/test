@@ -13,7 +13,8 @@
     <div class="dn" id="change-password-popup" data-dialog 
             data-title="${passwordTitle}"
             data-ok-class="js-save-pw-btn"
-            data-event="yukon:admin:user:password:save">
+            data-event="yukon:admin:user:password:save"
+            data-ok-disabled="true">
         <tags:setFormEditMode mode="${pwChangeFormMode}"/>
         <c:if test="${not empty passwordErrorMsg}">
             <tags:alertBox>${fn:escapeXml(passwordErrorMsg)}</tags:alertBox>
