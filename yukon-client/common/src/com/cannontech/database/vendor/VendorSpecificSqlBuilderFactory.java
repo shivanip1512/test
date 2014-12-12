@@ -3,6 +3,7 @@ package com.cannontech.database.vendor;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.google.common.collect.Sets;
 
 public class VendorSpecificSqlBuilderFactory {
     private DatabaseVendor currentVendor;
@@ -62,7 +64,12 @@ public class VendorSpecificSqlBuilderFactory {
              */
             @Override
             public SqlBuilder buildFor(DatabaseVendor ... vendors) {
-                boolean isUsefulForMyDb = Arrays.asList(vendors).contains(currentVendor);
+                return buildFor(Sets.newHashSet(vendors));
+            }
+            
+            @Override
+            public SqlBuilder buildFor(Set<DatabaseVendor> vendors) {
+                boolean isUsefulForMyDb = vendors.contains(currentVendor);
                 
                 if (isUsefulForMyDb) {
                     if (usefulSqlSource != null) {

@@ -1,5 +1,7 @@
 package com.cannontech.database.vendor;
 
+import java.util.Set;
+
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
 
@@ -20,7 +22,10 @@ public interface VendorSpecificSqlBuilder extends SqlFragmentSource {
      * @param vendors
      * @return an SqlBuilder
      */
-    public SqlBuilder buildFor(DatabaseVendor... vendors);
+    SqlBuilder buildFor(DatabaseVendor... vendors);
+    
+    SqlBuilder buildFor(Set<DatabaseVendor> vendors);
+    
 
     /**
      * Returns a special SqlBuilder that can be used to inject SQL into this
@@ -31,6 +36,6 @@ public interface VendorSpecificSqlBuilder extends SqlFragmentSource {
      * buildOther() calls.
      * @return an SqlBuilder
      */
-    public SqlBuilder buildOther();
+    SqlBuilder buildOther();
 
 }

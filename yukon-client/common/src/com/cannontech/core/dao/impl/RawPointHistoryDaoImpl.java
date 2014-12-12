@@ -390,8 +390,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                             excludeDisabledPaos, minimumValue, excludeQualities);
                         
                         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-                        SqlBuilder sqla =
-                            builder.buildFor(DatabaseVendor.MS2008, DatabaseVendor.MS2012, DatabaseVendor.MS2014);
+                        SqlBuilder sqla = builder.buildFor(DatabaseVendor.getMsDatabases());
                         sqla.append(sql);  
                         int hour = time.get(DateTimeFieldType.hourOfDay());
                         int minute = time.get(DateTimeFieldType.minuteOfHour());
