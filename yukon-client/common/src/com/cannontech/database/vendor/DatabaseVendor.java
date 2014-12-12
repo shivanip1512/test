@@ -11,6 +11,7 @@ public enum DatabaseVendor {
     MS2005    ("Microsoft SQL Server",9),
     MS2008    ("Microsoft SQL Server",10),
     MS2012    ("Microsoft SQL Server",11),  //Denali
+    MS2014    ("Microsoft SQL Server",12),
     ORACLE9I  ("Oracle",9),
     ORACLE10G ("Oracle",10),
     ORACLE11G ("Oracle",11),
