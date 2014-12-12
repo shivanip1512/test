@@ -19,6 +19,7 @@ import com.cannontech.common.fileExportHistory.task.RepeatingExportHistoryDeleti
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
@@ -47,6 +48,7 @@ public class MaintenanceController {
 
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private CronExpressionTagService cronExpressionTagService;
+    @Autowired private DatabaseVendorResolver dbVendorResolver;
     @Autowired private JobManager jobManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private ScheduledRepeatingJobDao scheduledRepeatingJobDao;
@@ -81,7 +83,9 @@ public class MaintenanceController {
         jobs.add(getJob(userContext, rphDuplicateJobDef, RPH_DUPLICATE_CRON));
         jobs.add(getJob(userContext, rphDanglingEntriesJobDef, RPH_DANGLING_CRON));
         jobs.add(getJob(userContext, systemLogDanglingEntriesJobDef, SYSTEM_LOG_DANGLING_CRON));
-        jobs.add(getJob(userContext, spSmartIndexMaintanenceJobDef, SP_SMART_INDEX_MAINT_UPDATE_CRON));
+        if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {
+            jobs.add(getJob(userContext, spSmartIndexMaintanenceJobDef, SP_SMART_INDEX_MAINT_UPDATE_CRON));
+        }
         jobs.add(getJob(userContext, weatherDataJobDef, WEATHER_DATA_UPDATE_CRON));
         jobs.add(getJob(userContext, exportHistoryJobDef, EXPORT_HISTORY_UPDATE_CRON));
         if (configurationSource.getBoolean(MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD, false)) {
