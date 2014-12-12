@@ -195,7 +195,7 @@ public class InventoryOperationsFilterServiceImpl implements InventoryOperations
             
         case SERIAL_NUMBER_RANGE:
             VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-            SqlBuilder oracleSql = builder.buildFor(DatabaseVendor.ORACLE11G, DatabaseVendor.ORACLE10G);
+            SqlBuilder oracleSql = builder.buildFor(DatabaseVendor.ORACLE12C, DatabaseVendor.ORACLE11G, DatabaseVendor.ORACLE10G);
             oracleSql.append("(CAST (lmhb.ManufacturerSerialNumber AS NUMBER(19))").gte(rule.getSerialNumberFrom()).append("AND");
             oracleSql.append("CAST (lmhb.ManufacturerSerialNumber AS NUMBER(19))").lte(rule.getSerialNumberTo()).append(")");
             

@@ -279,8 +279,10 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         msSql.append("FROM DeviceGroup_CTE"); // bring it all together
         msSql.append("  JOIN DeviceGroup AS dg_real ON DeviceGroup_CTE.DeviceGroupId = dg_real.DeviceGroupId");
         
-        // This query uses Oracle's proprietary syntax for recursive queries
-        SqlBuilder oracleSql = builder.buildFor(DatabaseVendor.ORACLE11G, DatabaseVendor.ORACLE10G);
+        // This query uses Oracle's proprietary syntax for recursive queries; Oracle 9i specifically left out.
+        SqlBuilder oracleSql = builder.buildFor(DatabaseVendor.ORACLE12C,
+                                                DatabaseVendor.ORACLE11G,
+                                                DatabaseVendor.ORACLE10G);
         oracleSql.append("SELECT *");
         oracleSql.append("FROM DeviceGroup");
         oracleSql.append("START WITH ParentDeviceGroupId").eq(group.getId()); // starting point

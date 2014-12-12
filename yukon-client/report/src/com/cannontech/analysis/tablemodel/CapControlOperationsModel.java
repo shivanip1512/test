@@ -74,14 +74,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     @Override
     public void doLoadData() {
         DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
-        boolean oracle = false;
-        switch(databaseVendor) {
-            case ORACLE10G:
-            case ORACLE11G:
-            case ORACLE9I:
-                oracle = true;
-                break;
-        }
+        boolean oracle = databaseVendor.isOracle();
         
         SqlStatementBuilder sql = null;
         if(oracle) {
@@ -160,13 +153,16 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("yp2.paobjectid subBusId, ca.paoname region, cb.bankSize bankSize, cb.controllertype protocol, p.value ipAddress, ");
         sql.append("cbc.serialnumber serialNum, da.slaveAddress slaveAddress "); 
         sql.append("from ( select op.logid oid,  min(aaa.confid) cid  from (select logid, pointid from #tempCcEventOperationLog ");
-        sql.append("where (text like '%Close Sent,%' or text like '%Open Sent,%' )) op ");
+//        sql.append("where (text like '%Close Sent,%' or text like '%Open Sent,%' )) op ");
+        sql.append("where (EventType = 1 AND EventSubType in (0, 2, 4) )) op ");
         sql.append("left join (select el.logid opid, min(el2.logid) confid from #tempCcEventOperationLog el ");
         sql.append("join #tempCcEventConfirmationLog el2 on el2.pointid = el.pointid left outer join  (select a.logid aid, min(b.logid) next_aid "); 
         sql.append("from #tempCcEventOperationLog a, #tempCcEventConfirmationLog b where a.pointid = b.pointid ");
-        sql.append("and (a.text like '%Close Sent,%' or a.text like '%Open Sent,%') and (b.text like '%Close Sent,%' or b.text like '%Open Sent,%')  ");
+//        sql.append("and (a.text like '%Close Sent,%' or a.text like '%Open Sent,%') and (b.text like '%Close Sent,%' or b.text like '%Open Sent,%')  ");
+        sql.append("and (a.EventType = 1 AND a.EventSubType in (0, 2, 4)) and (b.EventType = 1 AND b.EventSubType in (0, 2, 4))  ");
         sql.append("and b.logid > a.logid group by a.logid) el3 on el3.aid = el.logid ");
-        sql.append("where (el.text like '%Close Sent,%'  or el.text like '%Open Sent,%') and el2.text like 'Var: %' ");
+//        sql.append("where (el.text like '%Close Sent,%'  or el.text like '%Open Sent,%') and el2.text like 'Var: %' ");
+        sql.append("where (el.EventType = 1 AND el.EventSubType in (0, 2, 4)) and el2.text like 'Var: %' ");
         sql.append("and el2.logid > el.logid and (el2.logid < el3.next_aid  or el3.next_aid is null) ");
         sql.append("group by el.logid ) aaa on op.logid = aaa.opid group by op.logid ) OpConf ");
         sql.append("join #tempCcEventOperationLog el on el.logid = opConf.oid left join #tempCcEventConfirmationLog el2 on el2.logid = opConf.cid ");

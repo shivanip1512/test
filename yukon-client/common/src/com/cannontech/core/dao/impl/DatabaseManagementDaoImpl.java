@@ -4,21 +4,26 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DatabaseManagementDao;
-import com.cannontech.database.LongRowMapper;
+import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 
-public class DatabaseManagementDaoImpl  implements DatabaseManagementDao {
-	
-	private final static int ROWS_TO_DELETE = 1000000;
-	
+public class DatabaseManagementDaoImpl implements DatabaseManagementDao {
+
+    private static final Logger log = YukonLogManager.getLogger(DatabaseManagementDaoImpl.class);
+    private final static int ROWS_TO_DELETE = 1000000;
+
+    @Autowired private DatabaseVendorResolver dbVendorResolver;
     @Autowired private YukonJdbcTemplate yukonTemplate;
     private ChunkingSqlTemplate chunkyJdbcTemplate;
     
@@ -35,7 +40,7 @@ public class DatabaseManagementDaoImpl  implements DatabaseManagementDao {
         sql.append(     "FROM RAWPOINTHISTORY");
         sql.append(")");
         sql.append("SELECT CHANGEID FROM CTE WHERE RN <> 1");
-        List<Long> changeIds = yukonTemplate.queryForLimitedResults(sql, new LongRowMapper(), ROWS_TO_DELETE);
+        List<Long> changeIds = yukonTemplate.queryForLimitedResults(sql, RowMapper.LONG, ROWS_TO_DELETE);
         chunkyJdbcTemplate.update(new RphDeleteByChangeIdsSqlGenerator(), changeIds);
         return changeIds.size();
     }
@@ -45,7 +50,7 @@ public class DatabaseManagementDaoImpl  implements DatabaseManagementDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PointId FROM RAWPOINTHISTORY");
         sql.append(" WHERE PointId NOT IN (SELECT PointId FROM POINT)");
-        List<Long> pointIds = yukonTemplate.queryForLimitedResults(sql, new LongRowMapper(), ROWS_TO_DELETE);
+        List<Long> pointIds = yukonTemplate.queryForLimitedResults(sql, RowMapper.LONG, ROWS_TO_DELETE);
         chunkyJdbcTemplate.update(new RphDeleteByPointIdsSqlGenerator(), pointIds);
         return pointIds.size();
     }
@@ -55,16 +60,21 @@ public class DatabaseManagementDaoImpl  implements DatabaseManagementDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PointId FROM SYSTEMLOG");
         sql.append(" WHERE PointId NOT IN (SELECT PointId FROM POINT)");
-        List<Long> pointIds = yukonTemplate.queryForLimitedResults(sql, new LongRowMapper(), ROWS_TO_DELETE);
+        List<Long> pointIds = yukonTemplate.queryForLimitedResults(sql, RowMapper.LONG, ROWS_TO_DELETE);
         chunkyJdbcTemplate.update(new SystemLogDeleteSqlGenerator(),  pointIds);
         return  pointIds.size();
     }
     
     @Override
     public void executeSpSmartIndexMaintanence() throws DataAccessException {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("EXECUTE sp_SmartIndexMaintenance");
-        yukonTemplate.update(sql);
+        if (dbVendorResolver.getDatabaseVendor().isSqlServer()) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("EXECUTE sp_SmartIndexMaintenance");
+            yukonTemplate.update(sql);
+        } else {
+            log.warn("Smart Index Management is not supported by your database: " + 
+                    dbVendorResolver.getDatabaseVendor().toString() + " . No maintenance performed.");
+        }
     }
     
     private class RphDeleteByChangeIdsSqlGenerator implements SqlFragmentGenerator<Long> {
