@@ -1,6 +1,7 @@
 package com.cannontech.dr.estimatedload.service.impl;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -80,7 +81,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
      * program/gear combination. First checks to see if the cache holds a recently computed value. If so,
      * that value is returned. If not, a new Runnable is created and executed that will insert the value into cache.  
      */
-    private EstimatedLoadResult getProgramValue(final int programId, final Integer gearId, boolean blocking) {
+    private EstimatedLoadResult getProgramValue(final int programId, final int gearId, boolean blocking) {
         final MultiKey resultKey = new MultiKey(programId, gearId); 
         EstimatedLoadResult amount = null;
         
@@ -145,7 +146,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
     @Override
     public EstimatedLoadSummary getControlAreaValue(PaoIdentifier paoId, boolean blocking) {
         Set<Integer> programIdsForControlArea = controlAreaDao.getProgramIdsForControlArea(paoId.getPaoId());
-        Set<EstimatedLoadResult> programResults = new HashSet<>();
+        List<EstimatedLoadResult> programResults = new ArrayList<>();
         
         for (Integer programId : programIdsForControlArea) {
             programResults.add(findProgramValue(programId, blocking));
@@ -157,11 +158,21 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
     public EstimatedLoadSummary getScenarioValue(PaoIdentifier paoId, boolean blocking) {
         Map<Integer, ScenarioProgram> programsForScenario = scenarioDao.findScenarioProgramsForScenario(
                 paoId.getPaoId());
-        Set<EstimatedLoadResult> programAmounts = new HashSet<>();
+        List<EstimatedLoadResult> programAmounts = new ArrayList<>();
         
         for (Integer programId : programsForScenario.keySet()) {
-            int startGearId = programsForScenario.get(programId).getStartGear();
-            programAmounts.add(getProgramValue(programId, startGearId, blocking)); 
+            int startGearNumber = programsForScenario.get(programId).getStartGear();
+            EstimatedLoadResult result = null;
+            try {
+                int startGearId = estimatedLoadDao.getGearIdForProgramAndGearNumber(programId, startGearNumber);
+                result = getProgramValue(programId, startGearId, blocking);
+            } catch (EstimatedLoadException e) {
+                // There was an exception finding the gearId, so the resulting EstimatedLoadException
+                // is the result for this programId and should be added to the summary. 
+                result = e;
+            }
+            
+            programAmounts.add(result); 
         }
         return sumEstimatedLoadAmounts(paoId, programAmounts);
     }
@@ -177,7 +188,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
      * as a single EstimatedLoadReductionAmount.
      * @throws EstimatedLoadException 
      */
-    private EstimatedLoadSummary sumEstimatedLoadAmounts(PaoIdentifier paoId, Set<EstimatedLoadResult> programResults) {
+    private EstimatedLoadSummary sumEstimatedLoadAmounts(PaoIdentifier paoId, List<EstimatedLoadResult> programResults) {
         int totalPrograms = programResults.size();
         int contributing = 0;
         int calculating = 0;
@@ -213,7 +224,7 @@ public class EstimatedLoadBackingServiceHelperImpl implements EstimatedLoadBacki
         if (program.getCurrentGear() != null) {
             gearNumber = program.getCurrentGearNumber();
         }
-        return estimatedLoadDao.getCurrentGearIdForProgram(programId, gearNumber);
+        return estimatedLoadDao.getGearIdForProgramAndGearNumber(programId, gearNumber);
     }
 
     @Override

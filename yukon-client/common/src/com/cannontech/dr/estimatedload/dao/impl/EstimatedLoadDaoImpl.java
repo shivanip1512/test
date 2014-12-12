@@ -9,7 +9,6 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.SqlFragment;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.RowMapper;
@@ -64,7 +63,7 @@ public class EstimatedLoadDaoImpl implements EstimatedLoadDao{
     }
 
     @Override
-    public Integer getCurrentGearIdForProgram(int lmProgramId, int gearNumber) throws EstimatedLoadException {
+    public int getGearIdForProgramAndGearNumber(int lmProgramId, int gearNumber) throws EstimatedLoadException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT GearId");
         sql.append("FROM LmProgramDirectGear");
