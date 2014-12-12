@@ -98,7 +98,6 @@ yukon.assets.gateway.list = (function () {
         
         var 
         gwText, 
-        complete = update.pending.length == 0,
         timestamp = moment(update.timestamp.millis).tz(_tz).format(_timeFormat);
         
         row.find('.js-cert-update-timestamp a').text(timestamp);
@@ -111,7 +110,7 @@ yukon.assets.gateway.list = (function () {
             gwText += _text['cert.update.more'].replace('{0}', update.length - 2);
         }
         row.find('.js-cert-update-gateways').text(gwText);
-        if (complete) {
+        if (update.complete) {
             row.find('.js-cert-update-status').html('<span class="success">' 
                     + _text['complete'] + '</span>');
         } else {

@@ -82,6 +82,13 @@ public class CertificateUpdate {
         return yukonUpdateId;
     }
     
+    public boolean isComplete() {
+        if (successful.size() + failed.size() + pending.size() == 0) {
+            return false;
+        }
+        return pending.size() == 0;
+    }
+    
     @Override
     public int hashCode() {
         final int prime = 31;

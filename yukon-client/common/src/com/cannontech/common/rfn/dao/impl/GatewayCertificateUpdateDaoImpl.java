@@ -187,8 +187,10 @@ public class GatewayCertificateUpdateDaoImpl implements GatewayCertificateUpdate
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE GatewayCertificateUpdateEntry");
         sql.set("UpdateStatus", GatewayCertificateUpdateStatus.TIMEOUT);
-        sql.append("WHERE UpdateStatus").eq(GatewayCertificateUpdateStatus.STARTED);
+        sql.append("WHERE (");
+        sql.append("UpdateStatus").eq(GatewayCertificateUpdateStatus.STARTED);
         sql.append("OR UpdateStatus").eq(GatewayCertificateUpdateStatus.REQUEST_ACCEPTED);
+        sql.append(")");
         sql.append("AND UpdateId IN (");
         sql.append(  "SELECT UpdateId");
         sql.append(  "FROM GatewayCertificateUpdate");

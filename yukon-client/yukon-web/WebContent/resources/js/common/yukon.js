@@ -1322,10 +1322,13 @@ yukon.ui = (function () {
         
         return this.each(function () {
             
-            var list, messages = [], type = typeof (args.message),
-                create = !$(this).children('.user-message').length,
-                alertBox = create ? $(this).prepend('<div class="user-message">') 
-                                  : $(this).children('.user-message');
+            var list, alertbox, messages = [], type = typeof (args.message),
+                create = !$(this).children('.user-message').length;
+            
+            if (create) {
+                $(this).prepend('<div class="user-message">');
+            }
+            alertBox = $(this).children('.user-message');
             
             if (type === 'string') {
                 messages.push(args.message);

@@ -77,6 +77,7 @@ public class GatewayDataTopicListener implements MessageListener {
         RfnGatewayUpgradeResponseType responseType = gatewayUpgradeMessage.getResponseType();
         GatewayCertificateUpdateStatus status = GatewayCertificateUpdateStatus.of(responseType);
         
+        log.info("Gateway certificate upgrade response received. PaoId: " + paoId + ", ResponseType: " + responseType);
         certificateUpdateDao.updateEntry(updateId, paoId, status);
     }
 }
