@@ -104,6 +104,12 @@ UPDATE CCEventLog
 SET Text = REPLACE(Text, ', Closed', ', Close');
 /* End YUK-13945 */
 
+/* Start YUK-10432 */
+UPDATE FDRInterface
+SET PossibleDirections = 'Send,Receive for control'
+WHERE InterfaceID = 28;
+/* End YUK-10432 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
