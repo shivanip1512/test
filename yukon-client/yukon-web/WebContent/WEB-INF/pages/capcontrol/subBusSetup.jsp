@@ -5,40 +5,49 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
     <script type="text/javascript">
-        var substationBusDisableBusPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker', '', 'substationBusDisableBusPointPicker', 'pointName:disableBusPoint;deviceName:disableBusDevice');
+        var substationBusDisableBusPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker', 
+                '', 'substationBusDisableBusPointPicker', 
+                'pointId:subDisablePointValue;pointName:disableBusPoint;deviceName:disableBusDevice');
         substationBusDisableBusPointPicker.destinationFieldId = 'subDisablePointValue';
         substationBusDisableBusPointPicker.memoryGroup = 'pointPicker';
         <cti:pickerProperties var="voltReductionPickerOutputColumns" property="OUTPUT_COLUMNS" type="voltReductionPointPicker"/>
         substationBusDisableBusPointPicker.outputColumns = ${voltReductionPickerOutputColumns};
 
-        var substationBusVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker', '', 'substationBusVoltReductionPointPicker', 'pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice');
+        var substationBusVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker',
+                '', 'substationBusVoltReductionPointPicker', 
+                'pointId:subReductionPointValue;pointName:substationBusVoltReductionPoint;deviceName:substationBusDevice');
         substationBusVoltReductionPointPicker.destinationFieldId = 'subReductionPointValue';
         substationBusVoltReductionPointPicker.memoryGroup = 'pointPicker';
         substationBusVoltReductionPointPicker.outputColumns = ${voltReductionPickerOutputColumns};
 
-        var sub_Var_PointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'sub_Var_PointPicker', 'pointName:sub_Var_Point;deviceName:sub_Var_Device');
+        var sub_Var_PointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'sub_Var_PointPicker', 
+                'pointId:var_point;pointName:sub_Var_Point;deviceName:sub_Var_Device');
         sub_Var_PointPicker.destinationFieldId = 'var_point';
         sub_Var_PointPicker.memoryGroup = 'pointPicker';
         <cti:pickerProperties var="varPickerOutputColumns" property="OUTPUT_COLUMNS" type="varPointPicker"/>
         sub_Var_PointPicker.outputColumns = ${varPickerOutputColumns};
 
-        var sub_Var_PhaseB_PointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'sub_Var_PhaseB_PointPicker', 'pointName:sub_Var_PhaseB_Point;deviceName:sub_Var_PhaseB_Device');
+        var sub_Var_PhaseB_PointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'sub_Var_PhaseB_PointPicker',
+                'pointId:var_phase_b_point;pointName:sub_Var_PhaseB_Point;deviceName:sub_Var_PhaseB_Device');
         sub_Var_PhaseB_PointPicker.destinationFieldId = 'var_phase_b_point';
         sub_Var_PhaseB_PointPicker.memoryGroup = 'pointPicker';
         sub_Var_PhaseB_PointPicker.outputColumns = ${varPickerOutputColumns};
 
-        var sub_Var_PhaseC_PointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'sub_Var_PhaseC_PointPicker', 'pointName:sub_Var_PhaseC_Point;deviceName:sub_Var_PhaseC_Device');
+        var sub_Var_PhaseC_PointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'sub_Var_PhaseC_PointPicker', 
+                'pointId:var_phase_c_point;pointName:sub_Var_PhaseC_Point;deviceName:sub_Var_PhaseC_Device');
         sub_Var_PhaseC_PointPicker.destinationFieldId = 'var_phase_c_point';
         sub_Var_PhaseC_PointPicker.memoryGroup = 'pointPicker';
-        sub_Var_PhaseB_PointPicker.outputColumns = ${varPickerOutputColumns};
+        sub_Var_PhaseC_PointPicker.outputColumns = ${varPickerOutputColumns};
 
-        var subWattPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'wattPointPicker', '', 'subWattPointPicker', 'pointName:subWattPoint;deviceName:subWattDevice');
+        var subWattPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'wattPointPicker', '', 'subWattPointPicker', 
+                'pointId:watt_point;pointName:subWattPoint;deviceName:subWattDevice');
         subWattPointPicker.destinationFieldId = 'watt_point';
         subWattPointPicker.memoryGroup = 'pointPicker';
         <cti:pickerProperties var="wattPickerOutputColumns" property="OUTPUT_COLUMNS" type="wattPointPicker"/>
         subWattPointPicker.outputColumns = ${wattPickerOutputColumns};
 
-        var subVoltPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltPointPicker', '', 'subVoltPointPicker', 'pointName:subVoltPoint;deviceName:subVoltDevice');
+        var subVoltPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltPointPicker', '', 'subVoltPointPicker',
+                'pointId:volt_point;pointName:subVoltPoint;deviceName:subVoltDevice');
         subVoltPointPicker.destinationFieldId = 'volt_point';
         subVoltPointPicker.memoryGroup = 'pointPicker';
         <cti:pickerProperties var="voltPickerOutputColumns" property="OUTPUT_COLUMNS" type="voltPointPicker"/>

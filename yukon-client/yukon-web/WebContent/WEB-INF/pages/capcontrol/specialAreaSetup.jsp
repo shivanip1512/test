@@ -5,7 +5,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
     <script type="text/javascript">
-        var specAreaVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'statusPointPicker', '', 'specAreaVoltReductionPointPicker', 'pointName:specAreaVoltReductionPoint;deviceName:areaDevice');
+        var specAreaVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'statusPointPicker', '',
+                'specAreaVoltReductionPointPicker', 'pointId:specAreaVoltReductionPointValue;pointName:specAreaVoltReductionPoint;deviceName:areaDevice');
         specAreaVoltReductionPointPicker.destinationFieldId = 'specAreaVoltReductionPointValue';
         <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="statusPointPicker"/>
         specAreaVoltReductionPointPicker.outputColumns = ${outputColumns};

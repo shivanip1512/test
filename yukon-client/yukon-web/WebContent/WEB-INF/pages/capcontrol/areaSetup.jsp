@@ -5,11 +5,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
     <script type="text/javascript">
-        var areaVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker', '', 'areaVoltReductionPointPicker', 'pointName:areaVoltReductionPoint;deviceName:areaDevice');
-        areaVoltReductionPointPicker.destinationFieldId = 'areaVoltReductionPointValue';
-        <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="voltReductionPointPicker"/>
-        areaVoltReductionPointPicker.outputColumns = ${outputColumns};
-    </script>
+                    var areaVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker',
+                            '', 'areaVoltReductionPointPicker', 
+                            'pointId:areaVoltReductionPointValue;pointName:areaVoltReductionPoint;deviceName:areaDevice');
+                    areaVoltReductionPointPicker.destinationFieldId = 'areaVoltReductionPointValue';
+                    <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="voltReductionPointPicker"/>
+                    areaVoltReductionPointPicker.outputColumns = ${outputColumns};
+                </script>
 </f:verbatim>
 
 <f:subview id="areaSetup" rendered="#{capControlForm.visibleTabs['CBCArea']}">

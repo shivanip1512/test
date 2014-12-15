@@ -5,29 +5,34 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
 	<script type="text/javascript">
-	    var feederVarPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'feederVarPointPicker', 'pointName:feederVarPoint;deviceName:feederVarDevice');
+	    var feederVarPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'feederVarPointPicker', 
+	            'pointId:varPoint;pointName:feederVarPoint;deviceName:feederVarDevice');
 	    feederVarPointPicker.destinationFieldId = 'varPoint';
 	    feederVarPointPicker.memoryGroup = 'pointPicker';
 	    <cti:pickerProperties var="varPickerOutputColumns" property="OUTPUT_COLUMNS" type="varPointPicker"/>
 	    feederVarPointPicker.outputColumns = ${varPickerOutputColumns};
 	    
-	    var feederVarPhaseBPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'feederVarPhaseBPointPicker', 'pointName:feederVarPhaseBPoint;deviceName:feederVarPhaseBDevice');
+	    var feederVarPhaseBPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'feederVarPhaseBPointPicker',
+	            'pointId:varPhaseBPoint;pointName:feederVarPhaseBPoint;deviceName:feederVarPhaseBDevice');
         feederVarPhaseBPointPicker.destinationFieldId = 'varPhaseBPoint';
         feederVarPhaseBPointPicker.memoryGroup = 'pointPicker';
         feederVarPhaseBPointPicker.outputColumns = ${varPickerOutputColumns};
         
-        var feederVarPhaseCPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'feederVarPhaseCPointPicker', 'pointName:feederVarPhaseCPoint;deviceName:feederVarPhaseCDevice');
+        var feederVarPhaseCPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'varPointPicker', '', 'feederVarPhaseCPointPicker',
+                'pointId:varPhaseCPoint;pointName:feederVarPhaseCPoint;deviceName:feederVarPhaseCDevice');
         feederVarPhaseCPointPicker.destinationFieldId = 'varPhaseCPoint';
         feederVarPhaseCPointPicker.memoryGroup = 'pointPicker';
         feederVarPhaseCPointPicker.outputColumns = ${varPickerOutputColumns};
         
-        var feederWattPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'wattPointPicker', '', 'feederWattPointPicker', 'pointName:feederWattPoint;deviceName:feederWattDevice');
+        var feederWattPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'wattPointPicker', '', 'feederWattPointPicker',
+                'pointId:wattPoint;pointName:feederWattPoint;deviceName:feederWattDevice');
         feederWattPointPicker.destinationFieldId = 'wattPoint';
         feederWattPointPicker.memoryGroup = 'pointPicker';
         <cti:pickerProperties var="wattPickerOutputColumns" property="OUTPUT_COLUMNS" type="wattPointPicker"/>
         feederWattPointPicker.outputColumns = ${wattPickerOutputColumns};
         
-        var feederVoltPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltPointPicker', '', 'feederVoltPointPicker', 'pointName:feederVoltPoint;deviceName:feederVoltDevice');
+        var feederVoltPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltPointPicker', '', 'feederVoltPointPicker',
+                'pointId:voltPoint;pointName:feederVoltPoint;deviceName:feederVoltDevice');
         feederVoltPointPicker.destinationFieldId = 'voltPoint';
         feederVoltPointPicker.memoryGroup = 'pointPicker';
         <cti:pickerProperties var="voltPickerOutputColumns" property="OUTPUT_COLUMNS" type="voltPointPicker"/>

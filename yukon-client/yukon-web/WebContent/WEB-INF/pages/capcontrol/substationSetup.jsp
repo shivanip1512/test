@@ -5,11 +5,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
     <script type="text/javascript">
-        var substationVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker', '', 'substationVoltReductionPointPicker', 'pointName:substationVoltReductionPoint;deviceName:substationDevice');
-        substationVoltReductionPointPicker.destinationFieldId = 'substationVoltReductionPointValue';
-        <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="voltReductionPointPicker"/>
-        substationVoltReductionPointPicker.outputColumns = ${outputColumns};
-    </script>
+                    var substationVoltReductionPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'voltReductionPointPicker',
+                            '', 'substationVoltReductionPointPicker',
+                            'pointId:substationVoltReductionPointValue;pointName:substationVoltReductionPoint;deviceName:substationDevice');
+                    substationVoltReductionPointPicker.destinationFieldId = 'substationVoltReductionPointValue';
+                    <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="voltReductionPointPicker"/>
+                    substationVoltReductionPointPicker.outputColumns = ${outputColumns};
+                </script>
 </f:verbatim>
 
 <f:subview id="substationSetup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
@@ -110,7 +112,7 @@
 	    
 	                    <x:htmlTag value="br"/>
 	    
-	                    <h:outputLink  value="javascript:substationVoltReductionPointPicker.show.call(substationVoltReductionPointPicker)" rendered="#{capControlForm.editingAuthorized}">
+	                    <h:outputLink  value="javascript:substationVoltReductionPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
 	                        <h:outputText value="Select point"/>
 	                    </h:outputLink>
 	                 
