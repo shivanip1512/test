@@ -9,31 +9,13 @@
 <cti:standardPage module="capcontrol" page="ivvc.voltagePoints">
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     
-    <script>
-        $(document).ready(function() {
-            $("table.compact-results-table tbody tr td input:checkbox").change(function() {
-                $(this).closest("tr").find("input:text").toggleDisabled();
-            });
-            
-            /**
-             * If the user checked the Override Strategy checkbox.. then entered invalid limit values,
-             * then hit save. Since the Override Strategy value is not yet in the database the resulting
-             * error page would show this checkbox as unchecked. This code iterates through these and 
-             * "checks" them for the user.
-             */
-            $("input.lowerLimit.error, input.upperLimit.error").each(function() {
-                this.disabled = false;
-                $(this).closest("tr").find("input:checkbox").attr("checked", true);
-            });
-            yukon.ui.focusFirstError();
-        });
-    </script>
+    <cti:includeScript link="/JavaScript/yukon.da.voltage.points.edit.js"/>
 
     <tags:boxContainer2 nameKey=".title">
         <form:form id="voltagePointsForm" action="updateVoltagePoints" commandName="zoneVoltagePointsHolder">
             <cti:csrfToken/>
             <input name="zoneId" value="${zoneId}" type="hidden"/>
-            <table class="compact-results-table no-stripes">
+            <table class="compact-results-table no-stripes js-voltage-points">
                 <thead>
                     <tr>
                         <th><i:inline key=".table.header.deviceName"/></th>

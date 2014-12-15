@@ -1,12 +1,11 @@
+yukon.namespace('yukon.da.voltageDeltas');
+
 /**
- * Handles the validation engine advanced processing page.
  *
  * @module yukon.da.voltageDeltas
  * @requires JQUERY
  * @requires yukon
  */
-
-yukon.namespace('yukon.da.voltageDeltas');
 
 yukon.da.voltageDeltas = (function () {
 
@@ -48,7 +47,6 @@ yukon.da.voltageDeltas = (function () {
                     $('.js-view-delta').show();
 
                     $('.js-static-delta').removeClass('changed');
-                    //$('label').removeClass('staticChangedLabel');
                 });
 
                 $(document).on('click','#delta-submit', function() {

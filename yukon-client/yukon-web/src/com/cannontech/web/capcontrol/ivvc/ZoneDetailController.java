@@ -402,7 +402,7 @@ public class ZoneDetailController {
         model.addAttribute("mostRecentDateTime", mostRecentDateTime);
     }
 
-    @RequestMapping("recentEvents")
+    @RequestMapping("recent-events")
     public @ResponseBody Map<String, Object> recentEvents(int zoneId,
             int subBusId,
             String mostRecent,

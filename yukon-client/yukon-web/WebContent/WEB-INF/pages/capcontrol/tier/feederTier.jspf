@@ -56,7 +56,7 @@
 
                 <%-- State --%>
                 <td class="wsnw">
-                    <span class="box state-box js-state" data-pao-id="${feederId}">&nbsp;</span>
+                    <span class="box state-box js-cc-state-updater" data-pao-id="${feederId}">&nbsp;</span>
                     <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="FEEDER/${feederId}/STATE_FLAGS"/>
 
                     <cti:capControlValue paoId="${feederId}" type="FEEDER" format="STATE"/>

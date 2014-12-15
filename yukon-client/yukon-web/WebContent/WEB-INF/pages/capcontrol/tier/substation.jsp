@@ -102,7 +102,7 @@ $(function() {
                         <tags:nameValue2 nameKey=".state" rowClass="wsnw">
                                 <c:if test="${hasSubstationControl}"><a id="substationState_${substationId}" class="subtle-link" href="javascript:void(0);"></c:if>
                                 <c:if test="${not hasSubstationControl}"><span></c:if>
-                                    <span class="box state-box js-state" data-pao-id="${substationId}">&nbsp;</span>
+                                    <span class="box state-box js-cc-state-updater" data-pao-id="${substationId}">&nbsp;</span>
                                     <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBSTATION/${substationId}/STATE_FLAGS"/>
                                     <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="STATE"/>
                                 <c:if test="${hasSubstationControl}"></a></c:if>

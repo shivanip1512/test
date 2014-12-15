@@ -17,20 +17,20 @@ yukon.da.ivvc = (function () {
             var params = {
                 'zoneId': zoneId,
                 'subBusId': busId,
-                'mostRecent': $('#most-recent-update').val()
+                'mostRecent': $('#ivvc-most-recent-update').val()
             };
             $.ajax({
-                url: 'recentEvents',
+                url: 'recent-events',
                 method: 'GET',
                 data: params
             }).done(function (data, textStatus, jqXHR) {
                 var ii,
-                    table = $('#recent-events'),
+                    table = $('#ivvc-recent-events'),
                     body = table.find('tbody'),
                     events = data.events,
                     newRow,
                     event,
-                    templateRow = $('#template-row');
+                    templateRow = $('#ivvc-recent-events-template-row');
 
                 if (events.length) {
                     table.siblings('.empty-list').hide();
@@ -47,10 +47,10 @@ yukon.da.ivvc = (function () {
                     newRow.flash();
                 }
 
-                $('#most-recent-update').val(data.timestamp);
+                $('#ivvc-most-recent-update').val(data.timestamp);
 
                 // Keep table size <= 20 rows
-                $('#recent-events tbody tr:gt(20)').each(function (index, tr) {
+                table.find('tbody tr:gt(20)').each(function (index, tr) {
                     tr.remove();
                 });
             });
@@ -60,7 +60,7 @@ yukon.da.ivvc = (function () {
 
             /** Initialize this module. Depends on DOM elements so only call after DOM is loaded. */
             init : function (params) {
-                var recentEvents = $('#recent-events'),
+                var recentEvents = $('#ivvc-recent-events'),
                     timeout = recentEvents.data('timeout') || 4000,
                     zoneId = recentEvents.data('zoneId'),
                     busId = recentEvents.data('busId');

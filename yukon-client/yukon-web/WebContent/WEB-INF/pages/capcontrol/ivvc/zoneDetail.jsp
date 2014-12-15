@@ -95,7 +95,7 @@
         </tags:boxContainer2>
         
         <tags:boxContainer2 nameKey="actions" hideEnabled="true" showInitially="true" styleClass="regulatorActions">
-            <table id="recent-events-table" class="compact-results-table">
+            <table id="ivvc-recent-events" class="compact-results-table">
                 <thead>
                 <tr>
                     <c:if test="${zoneDto.zoneType != gangOperated}">
@@ -326,7 +326,7 @@
             </cti:tabbedContentSelectorContent>
         </cti:tabbedContentSelector>
         <tags:boxContainer2 nameKey="ivvcEvents" hideEnabled="true" showInitially="true">
-            <input id="most-recent-update" type="hidden" value="${mostRecentDateTime}">
+            <input id="ivvc-most-recent-update" type="hidden" value="${mostRecentDateTime}">
             <div class="scroll-lg">
 
                 <c:set var="tableClass" value="" />
@@ -364,7 +364,7 @@
 </div>
 <div class="dn">
     <table>
-    <tr id="template-row">
+    <tr id="ivvc-recent-events-template-row">
         <td class="js-device-name"></td>
         <td class="js-description"></td>
         <td class="js-formatted-time"></td>

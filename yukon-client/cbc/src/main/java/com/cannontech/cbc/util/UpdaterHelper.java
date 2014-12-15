@@ -488,8 +488,8 @@ public class UpdaterHelper {
         }
         
         case SUB_VOLT_REDUCTION: {
-            Boolean flag = substation.getVoltReductionFlag();
-            Boolean childFlag = substation.getChildVoltReductionFlag();
+            boolean flag = substation.getVoltReductionFlag();
+            boolean childFlag = substation.getChildVoltReductionFlag();
 
             return flag || childFlag;
         }
@@ -512,8 +512,8 @@ public class UpdaterHelper {
         }
         
         case AREA_VOLT_REDUCTION: { 
-            Boolean flag = area.getVoltReductionFlag();
-            Boolean childFlag = area.getChildVoltReductionFlag();
+            boolean flag = area.getVoltReductionFlag();
+            boolean childFlag = area.getChildVoltReductionFlag();
             
             return flag || childFlag;
         }

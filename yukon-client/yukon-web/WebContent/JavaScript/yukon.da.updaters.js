@@ -8,20 +8,20 @@ yukon.namespace('yukon.da.updaters');
 
 yukon.da.updaters = (function () {
 
-    var _updateOperations = function (div, lastOp, mode, tooltip) {
-            var tapIcons = div.find('[data-last-tap]');
+    var _updateOperations = function (opsContainer, lastOp, mode, tooltip) {
+            var tapIcons = opsContainer.find('[data-last-tap]');
             mode = JSON.parse(mode);
 
-            div.children().addClass('dn');
+            opsContainer.children().addClass('dn');
 
             if (mode.warning) {
-                div.find('[data-regulator-mode="warning"]').removeClass('dn');
+                opsContainer.find('[data-regulator-mode="warning"]').removeClass('dn');
                 tapIcons = tapIcons.filter('[data-tap-warning]');
             } else {
                 if (mode.local) {
-                    div.find('[data-regulator-mode="local"]').removeClass('dn');
+                    opsContainer.find('[data-regulator-mode="local"]').removeClass('dn');
                 } else {
-                    div.find('[data-regulator-mode="normal"]').removeClass('dn');
+                    opsContainer.find('[data-regulator-mode="normal"]').removeClass('dn');
                 }
                 tapIcons = tapIcons.filter(':not([data-tap-warning])');
             }
@@ -32,7 +32,7 @@ yukon.da.updaters = (function () {
         mod = {
             stateColor: function (data) {
                 var result = JSON.parse(data.value),
-                    box = $('.js-state[data-pao-id="' + result.paoId + '"]'),
+                    box = $('.js-cc-state-updater[data-pao-id="' + result.paoId + '"]'),
                     color = '#d14836';
 
                 if (result.value.pending) {

@@ -73,7 +73,7 @@
 
                 <%-- State --%>
                 <td class="wsnw">
-                    <span class="box state-box js-state" data-pao-id="${subbusId}">&nbsp;</span>
+                    <span class="box state-box js-cc-state-updater" data-pao-id="${subbusId}">&nbsp;</span>
                     <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" value="SUBBUS/${subbusId}/STATE_FLAGS"/>
                     <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="STATE" styleClass="vat"/>
                 </td>
