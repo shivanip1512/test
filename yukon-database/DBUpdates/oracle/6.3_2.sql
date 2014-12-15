@@ -83,6 +83,14 @@ ALTER TABLE RawPointHistoryDependentJob
       ON DELETE CASCADE;
 /* End YUK-13910 */
 
+/* Start YUK-13945 */
+UPDATE CCEventLog 
+SET Text = REPLACE(Text, 'sent,', 'Sent,');
+
+UPDATE CCEventLog 
+SET Text = REPLACE(Text, ', Closed', ', Close');
+/* End YUK-13945 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
