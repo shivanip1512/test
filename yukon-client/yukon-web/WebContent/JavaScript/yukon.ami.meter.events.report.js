@@ -154,7 +154,6 @@ yukon.ami.meterEventsReport = (function () {
         $.post('delete', data, 'json').done(function (data) {
             var flashScopeEl = $('<div>').attr('class','user-message success').text(data.successMsg);
             _reloadScheduledJobsTable(flashScopeEl);
-            $('#scheduledJobsTableFlashScope').html(flashScopeEl);
         });
     },
     

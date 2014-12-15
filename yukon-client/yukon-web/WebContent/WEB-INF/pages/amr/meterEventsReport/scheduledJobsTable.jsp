@@ -10,12 +10,12 @@
 <cti:msgScope paths="yukon.web.modules.tools.scheduledFileExport.jobs">
 
 <tags:sectionContainer2 nameKey="scheduledJobs">
+    <div id="scheduledJobsTableFlashScope"></div>
     <c:choose>
         <c:when test="${fn:length(jobs) == 0}">
             <span class="empty-list"><i:inline key=".noJobs"/></span>
         </c:when>
         <c:otherwise>
-            <div id="scheduledJobsTableFlashScope"></div>
             <div class="scroll-lg">
                 <table class="compact-results-table dashed has-actions">
                     <thead>
