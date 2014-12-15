@@ -33,7 +33,7 @@ yukon.trends = (function() {
                 $('[data-trend]').highcharts('StockChart', {
                     
                     chart: {
-                        height: 600,
+                        height: 600 + 18 * trend.series.length,
                         
                         events: {
                             load: function(event) {

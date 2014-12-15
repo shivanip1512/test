@@ -15,7 +15,6 @@
     max-height: 600px;
     overflow-y: auto;
 }
-.trend-container {height: 600px;width: 100%}
 .trend-container .glass{height: 100%;width: 100%;z-index: 1000;}
 </style>
     
@@ -52,7 +51,7 @@
                     </ul>
                 </div>
             </div>
-                <div class="column two nogutter trend-container pr" data-trend="${trendId}"><div class="glass"></div></div>
+                <div class="column two nogutter trend-container content-box no-transitions pr" data-trend="${trendId}"><div class="glass"></div></div>
             </c:when>
             <c:otherwise>
             <div class="column one">
