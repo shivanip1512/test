@@ -233,6 +233,8 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     public int getNumberOfDevicesInAnalysis(int analysisId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
+        // It feels like it would be more correct to do a 'GROUP BY DeviceCount' here but that slows this down
+        // We can select 'Top 1' because every slotId for any given AnalysisId will have the same set of devices
         sql.append("SELECT Top 1 DeviceCount");
         sql.append("FROM ArchiveDataAnalysisSlot ADAS");
         sql.append("LEFT JOIN (");
