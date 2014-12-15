@@ -232,13 +232,18 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     @Override
     public int getNumberOfDevicesInAnalysis(int analysisId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(DISTINCT DeviceId)");
-        sql.append("FROM ArchiveDataAnalysisSlotValue slotValue");
-        sql.append("  JOIN ArchiveDataAnalysisSlot slot ON slotValue.SlotId = slot.SlotId");
+
+        sql.append("SELECT Top 1 DeviceCount");
+        sql.append("FROM ArchiveDataAnalysisSlot ADAS");
+        sql.append("LEFT JOIN (");
+        sql.append("    SELECT COUNT(DISTINCT DeviceId) AS DeviceCount, SlotId");
+        sql.append("    FROM ArchiveDataAnalysisSlotValue");
+        sql.append("    GROUP BY SlotId");
+        sql.append(") AS SlotCount");
+        sql.append("ON SlotCount.SlotId = ADAS.SlotId");
         sql.append("WHERE AnalysisId").eq(analysisId);
-        
-        int numberOfDevices = jdbcTemplate.queryForInt(sql);
-        return numberOfDevices;
+
+        return jdbcTemplate.queryForInt(sql);
     }
     
     @Override
