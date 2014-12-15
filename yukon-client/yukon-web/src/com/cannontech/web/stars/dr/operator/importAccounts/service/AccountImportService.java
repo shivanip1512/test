@@ -566,7 +566,7 @@ public class AccountImportService {
                         }
 
 
-                        if(isZigbeeDevice(deviceType, result, lineNoKey, hwFields,Boolean.FALSE)) {
+                        if(isZigbeeDevice(deviceType, result, lineNoKey, hwFields,false)) {
                             continue;
                         }
 
@@ -802,7 +802,7 @@ public class AccountImportService {
                         continue;
                     }
 
-                    if(isZigbeeDevice(deviceType, result, lineNoKey, hwFields,Boolean.TRUE)) {
+                    if(isZigbeeDevice(deviceType, result, lineNoKey, hwFields,true)) {
                         continue;
                     }
 
@@ -1152,7 +1152,7 @@ public class AccountImportService {
      * @return - boolean true if the device type corresponds to zibgee device
      */
     private boolean isZigbeeDevice(YukonListEntry deviceType, AccountImportResult result, Integer lineNoKey,
-            String[] hwFields, Boolean isHwFile) {
+            String[] hwFields, boolean isHwFile) {
 
         boolean isZigbee = false;
         try {
