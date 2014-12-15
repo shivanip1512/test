@@ -529,9 +529,10 @@ public class ScheduledGroupRequestExecutionController {
         int deleteJobId = ServletRequestUtils.getRequiredIntParameter(request, "deleteJobId");
         
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(deleteJobId);
+        String jobName = job.getJobProperties().get("name");
         jobManager.deleteJob(job);
         
-        toolsEventLogService.groupRequestScheduleDeleted(userContext.getYukonUser(), job.getBeanName());
+        toolsEventLogService.groupRequestScheduleDeleted(userContext.getYukonUser(), jobName);
         
         return mav;
     }
