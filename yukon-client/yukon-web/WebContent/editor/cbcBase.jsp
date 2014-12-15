@@ -2,7 +2,7 @@
 <%@ page import="com.cannontech.util.*"%>
 <%@ page import="com.cannontech.web.util.*"%>
 <%@ page import="com.cannontech.web.editor.*"%>
-<%@ page import="org.apache.commons.lang.StringUtils"%>
+<%@ page import="org.apache.commons.lang3.StringUtils"%>
 <%@ page import="javax.faces.application.FacesMessage"%>
 <%@ page import="com.cannontech.cbc.exceptions.CBCExceptionMessages"%>
 <%@ page import="javax.faces.context.FacesContext"%>

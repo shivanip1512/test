@@ -1,5 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<%@ page import="org.apache.commons.lang.ObjectUtils" %>
+<%@ page import="org.apache.commons.lang3.ObjectUtils" %>
 <%@ page import="com.cannontech.common.exception.NotLoggedInException" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 

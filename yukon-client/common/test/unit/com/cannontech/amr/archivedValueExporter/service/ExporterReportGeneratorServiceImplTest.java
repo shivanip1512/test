@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang3.NotImplementedException;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
@@ -101,7 +101,7 @@ public class ExporterReportGeneratorServiceImplTest {
                         return new PaoPointIdentifier(meter.getPaoIdentifier(), new PointIdentifier(PointType.Analog, 0));
                     }
                 }
-                throw new NotImplementedException();
+                throw new NotImplementedException("mock failure");
             }
         });
         ReflectionTestUtils.setField(exporterReportGeneratorService, "paoSelectionService", paoSelectionService);

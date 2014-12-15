@@ -5,10 +5,9 @@
 <%@page import="com.cannontech.util.ServletUtil"%>
 <%@page import="com.cannontech.database.data.lite.LiteYukonUser"%>
 <%@page import="com.cannontech.common.exception.NotLoggedInException"%>
-<%@page import="org.apache.commons.lang.ObjectUtils"%>
+<%@page import="org.apache.commons.lang3.ObjectUtils"%>
 <%@page import="com.cannontech.common.util.CtiUtilities"%>
 <jsp:directive.page import="com.cannontech.common.version.VersionTools"/>
-<jsp:directive.page import="org.apache.commons.lang.BooleanUtils"/>
 <jsp:directive.page import="com.cannontech.web.util.ErrorHelperFilter"/>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
@@ -22,8 +21,7 @@ try {
     LiteYukonUser user = ServletUtil.getYukonUser(request);
     RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
     
-    String suppressStackStr = rolePropertyDao.getPropertyStringValue(YukonRoleProperty.SUPPRESS_ERROR_PAGE_DETAILS, user);
-    showStack = !BooleanUtils.toBoolean(suppressStackStr);
+    boolean showStack = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SUPPRESS_ERROR_PAGE_DETAILS, user);
     if (showStack) {
         pageContext.setAttribute("yukonVersion", VersionTools.getYUKON_VERSION());
         pageContext.setAttribute("yukonDetails", VersionTools.getYukonDetails());

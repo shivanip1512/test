@@ -19,7 +19,7 @@ if (contWorkPhone != null)
 %>
       
       <% if(account.getCompany() != null && account.getCompany().length() > 0) { %> <span class="NavText"><%=account.getCompany() %></span><br> <%}%>
-      <span class="NavText"><%= StringEscapeUtils.escapeHtml(primContact.getFirstName()) %> <%= StringEscapeUtils.escapeHtml(primContact.getLastName()) %><%= contPhoneNo.toString() %>  
+      <span class="NavText"><%= StringEscapeUtils.escapeHtml4(primContact.getFirstName()) %> <%= StringEscapeUtils.escapeHtml4(primContact.getLastName()) %><%= contPhoneNo.toString() %>  
       </span><br>
       <span class="NavText"><%= ServletUtils.getOneLineAddress(propAddr) %></span><br>
     </td>

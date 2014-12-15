@@ -1,7 +1,7 @@
 <html>
   <head>
   <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
-<%@ page import="org.apache.commons.lang.StringUtils" %>
+<%@ page import="org.apache.commons.lang3.StringUtils" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <%@ include file="../Consumer/include/StarsHeader.jsp" %>

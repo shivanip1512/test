@@ -3,7 +3,7 @@
 <%@ page import="java.util.*" %>
 <%@ page import="javax.xml.soap.SOAPMessage" %>
 <%@ page import="java.text.*" %>
-<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
+<%@ page import="org.apache.commons.lang3.StringEscapeUtils"%>
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
 <%@ page import="com.cannontech.common.constants.YukonSelectionList" %>
