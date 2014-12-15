@@ -36,7 +36,7 @@
 
         <c:forEach var="viewableCapBank" items="${capBankList}">
             <c:set var="bankId" value="${viewableCapBank.ccId}"/>
-            <c:set var="parentId" value="${viewableCapBank.parentID}"/>
+            <c:set var="parentId" value="${viewableCapBank.parentId}"/>
             <cti:msg2 var="moveBankTitle" key=".moveBankTitle" arguments="${viewableCapBank.ccName}"/>
             <cti:msg2 var="cbcInfoTitle" key=".cbcPointsTitle" arguments="${viewableCapBank.cbcName}" javaScriptEscape="true"/>
             <cti:msg2 var="bankInfoTitle" key=".addInfoTitle" arguments="${viewableCapBank.ccName}" javaScriptEscape="true"/>
