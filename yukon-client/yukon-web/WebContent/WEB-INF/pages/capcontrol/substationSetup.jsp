@@ -112,7 +112,7 @@
 	    
 	                    <x:htmlTag value="br"/>
 	    
-	                    <h:outputLink  value="javascript:substationVoltReductionPointPicker.show()" rendered="#{capControlForm.editingAuthorized}">
+	                    <h:outputLink  value="javascript:substationVoltReductionPointPicker.show.call(substationVoltReductionPointPicker)" rendered="#{capControlForm.editingAuthorized}">
 	                        <h:outputText value="Select point"/>
 	                    </h:outputLink>
 	                 

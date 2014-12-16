@@ -4,7 +4,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:verbatim>
 <script type="text/javascript">
-var switchPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'twoStatePointPicker', '', 'switchPointPicker', 'pointName:switchPointName;deviceName:switchPointDevice');
+var switchPointPicker = new Picker('OK', 'Cancel', '(none selected)', 'twoStatePointPicker', '', 'switchPointPicker',
+        'pointId:switch_point;pointName:switchPointName;deviceName:switchPointDevice');
 switchPointPicker.destinationFieldId = 'switch_point';
 <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="twoStatePointPicker"/>
 switchPointPicker.outputColumns = ${outputColumns};

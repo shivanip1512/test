@@ -122,7 +122,9 @@
                     <f:verbatim>
                         <script type="text/javascript">
                             var filterType;
-                            window['pointPicker_' + rowNumber] = new Picker('OK', 'Cancel', '(none selected)', 'filterablePointPicker', '', 'pointPicker_' + rowNumber, 'pointName:'+ 'pointName[' + rowNumber + ']' + ';deviceName:'+ 'paoName[' + rowNumber + ']');
+                            window['pointPicker_' + rowNumber] = new Picker('OK', 'Cancel', '(none selected)', 'filterablePointPicker', 
+                                    '', 'pointPicker_' + rowNumber, 'pointId:'+ 'pointId['+ rowNumber + ']'+ 
+                                    ';pointName:'+ 'pointName[' + rowNumber + ']' + ';deviceName:'+ 'paoName[' + rowNumber + ']');
                             window['pointPicker_' + rowNumber].destinationFieldId = 'pointId[' + rowNumber + ']';
                             <cti:pickerProperties var="outputColumns" property="OUTPUT_COLUMNS" type="filterablePointPicker"/>
                             window['pointPicker_' + rowNumber].outputColumns = ${outputColumns};
