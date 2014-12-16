@@ -24,7 +24,6 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -41,7 +40,6 @@ import com.cannontech.web.bulk.ada.service.AdaResultsHelper;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.google.common.collect.ImmutableMap;
 
 @CheckRoleProperty(YukonRoleProperty.ARCHIVED_DATA_ANALYSIS)
 @Controller
@@ -53,51 +51,27 @@ public class AdaResultsController {
     private final static int BAR_WIDTH = 400;
     
     private static enum Column implements DisplayableEnum {
+        NAME(AdaDevice.ON_NAME), 
+        TYPE(AdaDevice.ON_PAO_TYPE), 
+        METER_NUMBER(AdaDevice.ON_METER_NUMBER), 
+        MISSING(AdaDevice.ON_MISSING_INTERVALS);
         
-        NAME, 
-        TYPE, 
-        METER_NUMBER, 
-        MISSING;
+        private final Comparator<AdaDevice> comparator;
+        
+        Column(Comparator<AdaDevice> comparator) {
+            this.comparator = comparator;
+        }
+        
+        public Comparator<AdaDevice> getComparator() {
+            return comparator;
+        }
         
         @Override
         public String getFormatKey() {
             return "yukon.web.modules.tools.bulk.analysis." + name();
         }
-    };
-    
-    private static final Comparator<AdaDevice> nameCompare = new Comparator<AdaDevice>() {
-        @Override
-        public int compare(AdaDevice o1, AdaDevice o2) {
-            return o1.getName().compareToIgnoreCase(o2.getName());
-        }
-    };
-    
-    private static final Comparator<AdaDevice> typeCompare = new Comparator<AdaDevice>() {
-        @Override
-        public int compare(AdaDevice o1, AdaDevice o2) {
-            return o1.getPaoIdentifier().getPaoType().name().compareTo(o2.getPaoIdentifier().getPaoType().name());
-        }
-    };
-    
-    private static final Comparator<AdaDevice> meterNumberCompare = new Comparator<AdaDevice>() {
-        @Override
-        public int compare(AdaDevice o1, AdaDevice o2) {
-            return o1.getMeterNumber().compareTo(o2.getMeterNumber());
-        }
-    };
-    
-    private static final Comparator<AdaDevice> intervalCompare = new Comparator<AdaDevice>() {
-        @Override
-        public int compare(AdaDevice o1, AdaDevice o2) {
-            return Integer.compare(o1.getMissingIntervals(), o2.getMissingIntervals());
-        }
-    };
-    
-    private static final Map<Column, Comparator<AdaDevice>> sorters = ImmutableMap.of(Column.NAME, nameCompare,
-                                                                 Column.TYPE, typeCompare,
-                                                                 Column.METER_NUMBER, meterNumberCompare,
-                                                                 Column.MISSING, intervalCompare);
-    
+    }
+
     @Autowired private ArchiveDataAnalysisDao adaDao;
     @Autowired private ArchiveDataAnalysisCollectionProducer adaCollectionProducer;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -135,7 +109,9 @@ public class AdaResultsController {
             row.setData(data);
             
             SimpleMeter meter = allMeters.get(data.getPaoIdentifier().getPaoId());
-            if (meter != null) row.setMeterNumber(meter.getMeterNumber());
+            if (meter != null) {
+                row.setMeterNumber(meter.getMeterNumber());
+            }
             
             row.setName(allPaosMap.get(data.getPaoIdentifier().getPaoId()).getPaoName());
             row.setMissingIntervals(data.getHoleCount());
@@ -144,8 +120,10 @@ public class AdaResultsController {
         }
         
         // Sort by column
-        Comparator<AdaDevice> comparator = sorters.get(Column.valueOf(sorting.getSort()));
-        if (sorting.getDirection() == Direction.desc) comparator = Collections.reverseOrder(comparator);
+        Comparator<AdaDevice> comparator = Column.valueOf(sorting.getSort()).getComparator();
+        if (sorting.getDirection() == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
+        }
         Collections.sort(rows, comparator);
         
         // Add sorting columns
