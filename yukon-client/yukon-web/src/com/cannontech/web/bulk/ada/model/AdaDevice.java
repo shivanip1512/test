@@ -2,7 +2,7 @@ package com.cannontech.web.bulk.ada.model;
 
 import java.util.Comparator;
 
-import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang3.ObjectUtils;
 
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.pao.PaoIdentifier;
