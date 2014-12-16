@@ -49,7 +49,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
     private static String selectSql;
     
     static {
-        selectSql = "SELECT PaobjectId, Type, MeterNumber, Address, DisconnectAddress, " +
+        selectSql = "SELECT PaobjectId, Type, PaoName, MeterNumber, Address, DisconnectAddress, " +
                         "SerialNumber, Manufacturer, Model " +
                     "FROM YukonPaobject pao " +
                         "JOIN DeviceMeterGroup dmg ON pao.paobjectId = dmg.deviceId " +
@@ -191,6 +191,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
     private static Meter createMeter(YukonResultSet rset) throws SQLException
     {
         PaoIdentifier paoIdentifier = rset.getPaoIdentifier("paobjectid", "type");
+        String paoName = rset.getString("PaoName");
         String meterNumber = rset.getString("meternumber");
         String carrierAddress = rset.getString("address");
         String discCollarAddress = rset.getString("disconnectaddress");
@@ -200,6 +201,7 @@ public final class MspMeterDaoImpl implements MspMeterDao
         
         Meter meter = new Meter();
         meter.setObjectID(meterNumber);
+        meter.setComments("Device Name: " + paoName);
 //      MessageElement element = new MessageElement(QName.valueOf("AMRMeterType"), paoType);
 //        MessageElement element2 = new MessageElement(QName.valueOf("AMRRdgGrp"), collectionGroup);
 //        Extensions ext = new Extensions();
