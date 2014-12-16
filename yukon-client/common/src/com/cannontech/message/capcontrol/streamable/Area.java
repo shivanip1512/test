@@ -2,53 +2,38 @@ package com.cannontech.message.capcontrol.streamable;
 
 public class Area extends StreamableCapObject {
 
-    private Boolean disableFlag;
-    private Boolean ovUvDisabledFlag;
+    private boolean disableFlag;
+    private boolean ovUvDisabledFlag;
     private String paoDescription;
-    private String paoType;
-    private String paoName;
     private String paoCategory;
-    private Integer paoId;
     private String paoClass;
-    int[] stations = null;
-    private Double powerFactorValue = null;
-    private Double estimatedPFValue = null;
-    private Boolean voltReductionFlag;
-    private Boolean childVoltReductionFlag;
-    
+    int[] stations;
+    private double powerFactorValue;
+    private double estimatedPFValue;
+    private boolean voltReductionFlag;
+    private boolean childVoltReductionFlag;
+
     public int[] getStations() {
-		return stations;
-	}
+        return stations;
+    }
 
-	public void setStations(int[] stations) {
-		this.stations = stations;
-	}
-
-	public void setPaoId(Integer integer) {
-        paoId = integer;
+    public void setStations(int[] stations) {
+        this.stations = stations;
     }
 
     public void setPaoCategory(String string) {
         paoCategory = string;
     }
 
-    public void setPaoName(String string) {
-        paoName = string;
-    }
-
-    public void setPaoType(String string) {
-        paoType = string;
-    }
-
     public void setPaoDescription(String string) {
         paoDescription = string;
     }
 
-    public void setDisableFlag(Boolean b) {
-        disableFlag = b;
+    public void setDisableFlag(boolean disableFlag) {
+        this.disableFlag = disableFlag;
     }
 
-    public Boolean getDisableFlag() {
+    public boolean getDisableFlag() {
         return disableFlag;
     }
 
@@ -58,18 +43,6 @@ public class Area extends StreamableCapObject {
 
     public String getPaoDescription() {
         return paoDescription;
-    }
-
-    public Integer getPaoId() {
-        return paoId;
-    }
-
-    public String getPaoName() {
-        return paoName;
-    }
-
-    public String getPaoType() {
-        return paoType;
     }
 
     public void setPaoClass(String string) {
@@ -84,76 +57,48 @@ public class Area extends StreamableCapObject {
     public boolean equals(Object obj) {
         if (obj instanceof Area) {
             Area area = (Area) obj;
-            return area.getPaoId().equals(getPaoId());
+            return area.getCcId() == getCcId();
         }
         return false;
     }
 
-    public Area copy() {
-        Area copy = new Area();
-        copy.setPaoId(getPaoId());
-        copy.setPaoCategory(getPaoCategory());
-        copy.setPaoClass(getPaoClass());
-        copy.setPaoName(getPaoName());
-        copy.setPaoType(getPaoType());
-        copy.setPaoDescription(getPaoDescription());
-        copy.setDisableFlag(getDisableFlag());
-        return copy;
-    }
+    public boolean getOvUvDisabledFlag() {
+        return ovUvDisabledFlag;
+        }
 
-	public Boolean getOvUvDisabledFlag() {
-		return ovUvDisabledFlag;
-	}
+    public void setOvUvDisabledFlag(boolean ovUvDisabledFlag) {
+        this.ovUvDisabledFlag = ovUvDisabledFlag;
+        }
 
-	public void setOvUvDisabledFlag(Boolean ovUvDisabledFlag) {
-		this.ovUvDisabledFlag = ovUvDisabledFlag;
-	}
-    
-    /**
-     * Returns the powerFactorValue.
-     * @return Double
-     */
-    public Double getPowerFactorValue() {
+    public double getPowerFactorValue() {
         return powerFactorValue;
     }
 
-    /**
-     * Sets the powerFactorValue.
-     * @param powerFactorValue The powerFactorValue to set
-     */
-    public void setPowerFactorValue(Double powerFactorValue) {
+    public void setPowerFactorValue(double powerFactorValue) {
         this.powerFactorValue = powerFactorValue;
     }
 
-    /**
-     * Returns the estimatedPFValue.
-     * @return Double
-     */
-    public Double getEstimatedPFValue() {
+    public double getEstimatedPFValue() {
         return estimatedPFValue;
     }
 
-    /**
-     * Sets the estimatedPFValue.
-     * @param estimatedPFValue The estimatedPFValue to set
-     */
-    public void setEstimatedPFValue(Double estimatedPFValue) {
+    public void setEstimatedPFValue(double estimatedPFValue) {
         this.estimatedPFValue = estimatedPFValue;
     }
 
-	public Boolean getVoltReductionFlag() {
-		return voltReductionFlag;
-	}
+    public boolean getVoltReductionFlag() {
+        return voltReductionFlag;
+        }
 
-	public void setVoltReductionFlag(Boolean voltReductionFlag) {
-		this.voltReductionFlag = voltReductionFlag;
-	}
-	
-	public Boolean getChildVoltReductionFlag() {
+    public void setVoltReductionFlag(boolean voltReductionFlag) {
+        this.voltReductionFlag = voltReductionFlag;
+    }
+
+    public boolean getChildVoltReductionFlag() {
         return childVoltReductionFlag;
     }
 
-    public void setChildVoltReductionFlag(Boolean childVoltReductionFlag) {
+    public void setChildVoltReductionFlag(boolean childVoltReductionFlag) {
         this.childVoltReductionFlag = childVoltReductionFlag;
     }
 

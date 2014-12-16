@@ -1,5 +1,7 @@
 package com.cannontech.message.capcontrol.streamable;
 
+import com.cannontech.database.data.point.UnitOfMeasure;
+
 public interface PointQualityCheckable {
-	public Integer getCurrentPtQuality(int pointType);
+	public int getCurrentPtQuality(UnitOfMeasure uom);
 }

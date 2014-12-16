@@ -24,6 +24,8 @@ public class CapControlValueTag extends YukonTagSupport {
     private String type;
     private String styleClass;
     private boolean isTypeSet;
+    private boolean initialize = true;
+    private boolean defaultBlank;
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -38,15 +40,19 @@ public class CapControlValueTag extends YukonTagSupport {
         DataType dataType = DataType.valueOf(type);
         
         String id = dataType + "/" + paoId + "/" + format;
-        UpdateValue value = updaterService.getFirstValue(id, getUserContext());
 
         JspWriter out = getJspContext().getOut();
-        out.print("<span data-updater=\"" + StringEscapeUtils.escapeHtml4(value.getIdentifier().getFullIdentifier()) + "\"");
+        out.print("<span data-updater=\"" + StringEscapeUtils.escapeHtml4(id) + "\"");
         if (StringUtils.isNotBlank(styleClass)) {
             out.print(" class=\"" + styleClass + "\"");
         }
         out.print(">");
-        out.print(StringEscapeUtils.escapeHtml4(value.getValue()));
+        if (initialize) {
+            UpdateValue value = updaterService.getFirstValue(id, getUserContext());
+            out.print(StringEscapeUtils.escapeHtml4(value.getValue()));
+        } else if (!defaultBlank){
+            out.print(getMessageSource().getMessage("yukon.common.point.pointFormatting.unavailablePlaceholder"));
+        }
         out.print("</span>");
     }
     
@@ -64,6 +70,14 @@ public class CapControlValueTag extends YukonTagSupport {
     	this.format = format;
     }
     
+    public void setInitialize(boolean initialize) {
+        this.initialize = initialize;
+    }
+
+    public void setDefaultBlank(boolean defaultBlank) {
+        this.defaultBlank = defaultBlank;
+    }
+
     public void setStyleClass(String styleClass) {
         this.styleClass = styleClass;
     }

@@ -6,11 +6,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
@@ -90,8 +88,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.pao.DBEditorTypes;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOFactory;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
@@ -672,66 +670,66 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 
         switch (paoType) {
 
-            case PAOGroups.CAP_CONTROL_AREA:
+            case CapControlTypes.CAP_CONTROL_AREA:
                 setEditorTitle("Area");
                 setPaoDescLabel("Area Location");
                 setChildLabel("Substations");
                 getVisibleTabs().put("CBCArea", Boolean.TRUE);
                 break;
                 
-            case PAOGroups.CAP_CONTROL_SPECIAL_AREA:
+            case CapControlTypes.CAP_CONTROL_SPECIAL_AREA:
                 setEditorTitle("Special Area");
                 setPaoDescLabel("Special Area Location");
                 setChildLabel("Substations");
                 getVisibleTabs().put("CBCSpecialArea", Boolean.TRUE);
                 break;
 
-            case PAOGroups.CAP_CONTROL_SUBSTATION:
+            case CapControlTypes.CAP_CONTROL_SUBSTATION:
     			setEditorTitle("Substation");
     			setPaoDescLabel("Geographical Name");
     			setChildLabel("Substation Buses");
     			getVisibleTabs().put("CBCSubstation", Boolean.TRUE);
                 break;
                 
-            case PAOGroups.CAP_CONTROL_SUBBUS:
+            case CapControlTypes.CAP_CONTROL_SUBBUS:
     			setEditorTitle("Substation Bus");
     			setPaoDescLabel("Geographical Name");
     			setChildLabel("Feeders");
     			getVisibleTabs().put("CBCSubstationBus", Boolean.TRUE);
                 break;
     
-    		case PAOGroups.CAP_CONTROL_FEEDER:
+    		case CapControlTypes.CAP_CONTROL_FEEDER:
     			setEditorTitle("Feeder");
     			getVisibleTabs().put("CBCFeeder", Boolean.TRUE);
     			setPaoDescLabel(null);
     			setChildLabel("CapBanks");
     			break;
     
-    		case PAOGroups.CAPBANK:
+    		case DeviceTypes.CAPBANK:
     			setEditorTitle("Capacitor Bank");
     			setPaoDescLabel("Street Location");
     			getVisibleTabs().put("CBCCapBank", Boolean.TRUE);
                 LiteYukonUser user = JSFUtil.getYukonUser();
                 if (user != null) {
                     boolean showCapBankAddInfo = CapControlUtils.isCBAdditionalInfoAllowed(user);
-                    getVisibleTabs().put ("CBAddInfo", Boolean.TRUE && showCapBankAddInfo);
+                    getVisibleTabs().put ("CBAddInfo", showCapBankAddInfo);
                 }
     			break;
     
-    		case PAOGroups.CAPBANKCONTROLLER:
-    		case PAOGroups.CBC_FP_2800:
-    		case PAOGroups.DNP_CBC_6510:
-    		case PAOGroups.CBC_EXPRESSCOM:
-    		case PAOGroups.CBC_7010:
-            case PAOGroups.CBC_7011:
-            case PAOGroups.CBC_7012:
-            case PAOGroups.CBC_7020:
-            case PAOGroups.CBC_7022:
-            case PAOGroups.CBC_7023:
-            case PAOGroups.CBC_7024: 
-            case PAOGroups.CBC_8020:
-            case PAOGroups.CBC_8024:
-            case PAOGroups.CBC_DNP:
+    		case DeviceTypes.CAPBANKCONTROLLER:
+    		case DeviceTypes.CBC_FP_2800:
+    		case DeviceTypes.DNP_CBC_6510:
+    		case DeviceTypes.CBC_EXPRESSCOM:
+    		case DeviceTypes.CBC_7010:
+            case DeviceTypes.CBC_7011:
+            case DeviceTypes.CBC_7012:
+            case DeviceTypes.CBC_7020:
+            case DeviceTypes.CBC_7022:
+            case DeviceTypes.CBC_7023:
+            case DeviceTypes.CBC_7024: 
+            case DeviceTypes.CBC_8020:
+            case DeviceTypes.CBC_8024:
+            case DeviceTypes.CBC_DNP:
     			setEditorTitle("CBC");
     			setPaoDescLabel(null);
     			getVisibleTabs().put("CBCType", Boolean.TRUE);
@@ -978,7 +976,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
             for(CBCSpecialAreaData data: assignedAreas) {
                 try {
                     SubStation substation = capControlCache.getSubstation(data.getSubID());
-                    if(substation.getSpecialAreaEnabled() && substation.getSpecialAreaId().intValue() != area.getPAObjectID().intValue()) {
+                    if(substation.getSpecialAreaEnabled() && substation.getSpecialAreaId() != area.getPAObjectID()) {
                         duplicates.add(capControlCache.getSpecialArea(substation.getSpecialAreaId()).getCcName() + ": " + substation.getCcName());
                     }
                 } catch(NotFoundException nfe) {
@@ -1216,7 +1214,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 		FacesContext context = FacesContext.getCurrentInstance();
 		Map paramMap = context.getExternalContext().getRequestParameterMap();
 		String swapType = (String) paramMap.get("swapType");
-		int elemID = new Integer((String) paramMap.get("id")).intValue();
+		int elemID = Integer.parseInt((String) paramMap.get("id"));
 		if ("CapBank".equalsIgnoreCase(swapType)) {
 			// a table that swaps CapBanks, must be for a Feeder object
 			if (unassignedBanks != null) {
@@ -1266,11 +1264,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     /**
      *iterates through the bank list and reverses the trip order for the cap 
 	 */
-    @SuppressWarnings("unchecked")
     private void updateTripOrder(CapControlFeeder currFdr) {
         List<CCFeederBankList> childList = currFdr.getChildList();
-        for (Iterator iter = childList.iterator(); iter.hasNext();) {
-            CCFeederBankList assign = (CCFeederBankList) iter.next();
+        for (CCFeederBankList assign : childList) {
             assign.setTripOrder(maxDispOrderOnList(childList) + 1 - assign.getControlOrder());
         }
     }
@@ -1320,11 +1316,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 	}
 
     //Warning: instanceof CCFeederSubAssignment is putting an int into a float.
-	@SuppressWarnings("unchecked")
     private float maxDispOrderOnList(List<? extends DBPersistent> childList) {
 		float max = 0;
-		for (Iterator iter = childList.iterator(); iter.hasNext();) {
-			Object element = iter.next();
+		for (DBPersistent element : childList) {
 			if (element instanceof CCFeederSubAssignment) {
 				CCFeederSubAssignment feeder = (CCFeederSubAssignment) element;
 				if (feeder.getDisplayOrder().intValue() > max) {
@@ -1352,7 +1346,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 		FacesContext context = FacesContext.getCurrentInstance();
 		Map paramMap = context.getExternalContext().getRequestParameterMap();
 		String swapType = (String) paramMap.get("swapType");
-		int elemID = new Integer((String) paramMap.get("id")).intValue();
+		int elemID = Integer.parseInt((String) paramMap.get("id"));
 		if ("CapBank".equalsIgnoreCase(swapType)) {
 			CapControlFeeder currFdr = (CapControlFeeder) getDbPersistent();
 			for (int i = 0; i < currFdr.getChildList().size(); i++) {
@@ -1494,7 +1488,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 	}
 
 	@Override
-    @SuppressWarnings("unchecked")
     public String[] getStratDaysOfWeek() {
 
 		CapControlStrategy strat = getCbcStrategiesMap().get(new Integer(getCurrentStrategyID()));
@@ -1502,15 +1495,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 		if (strat == null) {
 			return new String[0];
         }
-		Vector retList = new Vector(8);
+		List<String> retList = new ArrayList<>();
 		for (int i = 0; i < strat.getDaysOfWeek().length(); i++) {
 			if (strat.getDaysOfWeek().charAt(i) == 'Y') {
-				retList.add(String.valueOf(i));
+				retList.add(Integer.toString(i));
             }
 		}
 
 		String[] strArray = new String[retList.size()];
-		return (String[]) retList.toArray(strArray);
+		return retList.toArray(strArray);
 	}
 
 	@Override
@@ -1740,10 +1733,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     public LitePoint[] getCapBankPointList() {
-        List temp = pointDao.getLitePointsByPaObjectId(((YukonPAObject)getDbPersistent()).getPAObjectID().intValue());
-        return (LitePoint[])temp.toArray(new LitePoint [temp.size()]);        
+        List<LitePoint> temp = pointDao.getLitePointsByPaObjectId(((YukonPAObject)getDbPersistent()).getPAObjectID().intValue());
+        return temp.toArray(new LitePoint [temp.size()]);
     }
     
     public void capBankPointClick (ActionEvent ae){
@@ -1783,15 +1775,14 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 	}
     
     @Override
-    @SuppressWarnings("unchecked")
-    public Map getPointNameMap () {
+    public Map<Integer, String> getPointNameMap () {
 
-        pointNameMap = new HashMap();
+        pointNameMap = new HashMap<>();
         List<Integer> pointIds = new ArrayList<Integer>();
         
-        pointIds.add(getControlPoint(UnitOfMeasure.KVAR.getId()));
-        pointIds.add(getControlPoint(UnitOfMeasure.KW.getId()));
-        pointIds.add(getControlPoint(UnitOfMeasure.KVOLTS.getId()));
+        pointIds.add(getControlPoint(UnitOfMeasure.KVAR));
+        pointIds.add(getControlPoint(UnitOfMeasure.KW));
+        pointIds.add(getControlPoint(UnitOfMeasure.KVOLTS));
 
         if (getDbPersistent() instanceof CapControlSubBus) {
             CapControlSubBus sub = (CapControlSubBus) getDbPersistent();
@@ -1834,9 +1825,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         paoNameMap = new HashMap<Integer, String>();
         List<Integer> pointIds = new ArrayList<Integer>();
         
-        pointIds.add(getControlPoint(UnitOfMeasure.KVAR.getId()));
-        pointIds.add(getControlPoint(UnitOfMeasure.KW.getId()));
-        pointIds.add(getControlPoint(UnitOfMeasure.KVOLTS.getId()));
+        pointIds.add(getControlPoint(UnitOfMeasure.KVAR));
+        pointIds.add(getControlPoint(UnitOfMeasure.KW));
+        pointIds.add(getControlPoint(UnitOfMeasure.KVOLTS));
         
         if(getDbPersistent() instanceof CapControlSubBus) {
             CapControlSubstationBus subBus = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
@@ -1873,9 +1864,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         map.put(pointId, paoDao.getYukonPAOName(pointDao.getLitePoint(pointId).getPaobjectID()));
     }
      
-    private int getControlPoint(int uomid) {
+    private int getControlPoint(UnitOfMeasure uom) {
         int pointID = 0;
-        UnitOfMeasure uom = UnitOfMeasure.getForId(uomid);
         if (getPAOBase() instanceof CapControlSubBus) {
             CapControlSubstationBus sub = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
             switch (uom) {
@@ -1888,6 +1878,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
                 case KVOLTS: 
                     pointID = sub.getCurrentVoltLoadPointID();
                     break;
+                default:
+                    log.warn("Invalid control point Unit of Measure for Sub Bus: " + uom);
             }
         }
         if (getPAOBase() instanceof CapControlFeeder) {
@@ -1902,6 +1894,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
                 case KVOLTS: 
                     pointID = feeder.getCurrentVoltLoadPointID();
                     break;
+                default:
+                    log.warn("Invalid control point Unit of Measure for Feeder: " + uom);
             }
         }
         return pointID;

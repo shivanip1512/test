@@ -8,6 +8,9 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+import org.joda.time.Instant;
+import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -19,6 +22,7 @@ import com.cannontech.capcontrol.model.Substation;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -50,9 +54,13 @@ public class TierController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private SubstationDao substationDao;
     @Autowired private CapControlWebUtilsService capControlWebUtilsService;
-    
+
+    private static final Logger log = YukonLogManager.getLogger(TierController.class);
+
     @RequestMapping("areas")
     public String areas(HttpServletRequest request, LiteYukonUser user, ModelMap model) {
+
+        Instant startPage = Instant.now();
 
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
 
@@ -71,6 +79,9 @@ public class TierController {
         String urlParams = request.getQueryString();
         String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
         CBCNavigationUtil.setNavigation(requestURI , request.getSession());
+
+        long timeForPage = new Interval(startPage, Instant.now()).toDurationMillis();
+        log.debug("Time to map dashboard: "  + timeForPage + "ms");
 
         return "tier/areaTier.jsp";
     }
@@ -120,6 +131,8 @@ public class TierController {
             YukonUserContext userContext, 
             int substationId) {
         
+        Instant startPage = Instant.now();
+
         LiteYukonUser user = userContext.getYukonUser();
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         SubStation cachedSubstation = cache.getSubstation(substationId);
@@ -205,6 +218,9 @@ public class TierController {
         String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
         CBCNavigationUtil.setNavigation(requestURI , request.getSession());
         
+        long timeForPage = new Interval(startPage, Instant.now()).toDurationMillis();
+        log.debug("Time to map substation: "  + timeForPage + "ms");
+
         return "tier/substation.jsp";
     }
     

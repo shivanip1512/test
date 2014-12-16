@@ -381,6 +381,18 @@ public final class DeviceTypesFuncs {
         }
     }
 
+    public static boolean is701xDevice(PaoType deviceType) {
+        switch (deviceType) {
+        case CBC_7010:
+        case CBC_7011:
+        case CBC_7012:
+            return true;
+
+        default:
+            return false;
+        }
+    }
+
     public static boolean isTcpPort(int portId) {
         PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
         return paoDao.getYukonPao(portId).getPaoIdentifier().getPaoType() == PaoType.TCPPORT;

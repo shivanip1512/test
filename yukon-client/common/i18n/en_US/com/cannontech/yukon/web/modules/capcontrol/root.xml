@@ -69,7 +69,7 @@
     <entry key="yukon.web.modules.capcontrol.lastRunTime">Last Run Time</entry>
     <entry key="yukon.web.modules.capcontrol.nextRunTime">Next Run Time</entry>
     <entry key="yukon.web.modules.capcontrol.interval">Interval</entry>
-    <entry key="yukon.web.modules.capcontrol.kvarsValue">{0} kVArs</entry>
+    <entry key="yukon.web.modules.capcontrol.kvarsValue">{0} kVAr</entry>
     <entry key="yukon.web.modules.capcontrol.availableKvars">Available</entry>
     <entry key="yukon.web.modules.capcontrol.unavailableKvars">Unavailable</entry>
     <entry key="yukon.web.modules.capcontrol.closedKvars">Closed</entry>
@@ -576,7 +576,7 @@
     <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Disabled">Whether or not this object should be disabled&lt;br&gt;Options: Y,N</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.MapLocationId">Any map location identifier desired for the object</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Operational State">For Cap Banks, the Operational State&lt;br&gt;Options: Fixed, Switched, StandAlone, Uninstalled</entry>
-    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Capbank Size">For Cap Banks, the size in kVArs</entry>
+    <entry key="yukon.web.modules.capcontrol.import.description.HIERARCHY.Capbank Size">For Cap Banks, the size in kVAr</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.NAME">Name of the Regulator to create</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.ACTION">Options: Add, Update, or Remove</entry>
     <entry key="yukon.web.modules.capcontrol.import.description.REGULATOR.KEEP ALIVE CONFIG">Time sent to device to stay alive for (in seconds)</entry>

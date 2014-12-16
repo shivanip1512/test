@@ -407,7 +407,7 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         }
         return convertedValue.toString();
     }
-    
+
     private Object getPropertyObjectValue(PropertyTuple propertyTuple) throws UserNotInRoleException {
         Object convertedValue = getConvertedValue(propertyTuple, Object.class);
         return convertedValue;

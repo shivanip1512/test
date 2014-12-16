@@ -297,7 +297,7 @@ public interface RolePropertyDao {
      * @throws UserNotInRoleException user must be in role to access a role property
      */
     public String getPropertyStringValue(LiteYukonGroup liteYukonGroup, YukonRoleProperty property);
-
+    
     /**
      * Returns the liteYukonGroup's value of the specified role property as an integer.
      * 
@@ -330,4 +330,5 @@ public interface RolePropertyDao {
 
     Number getPropertyNumberValue(LiteYukonGroup roleGroup, YukonRoleProperty property)
             throws UserNotInRoleException;
+
 }

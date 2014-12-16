@@ -5,9 +5,9 @@ public class BankMoveBean {
     int bankId;
     int oldFeederId; 
     int newFeederId;
-    float displayOrder;
-    float tripOrder;
-    float closeOrder;
+    double displayOrder;
+    double tripOrder;
+    double closeOrder;
     
     public int getBankId() {
         return bankId;
@@ -33,27 +33,27 @@ public class BankMoveBean {
         this.newFeederId = newFeederId;
     }
     
-    public float getDisplayOrder() {
+    public double getDisplayOrder() {
         return displayOrder;
     }
     
-    public void setDisplayOrder(float displayOrder) {
+    public void setDisplayOrder(double displayOrder) {
         this.displayOrder = displayOrder;
     }
     
-    public float getTripOrder() {
+    public double getTripOrder() {
         return tripOrder;
     }
     
-    public void setTripOrder(float tripOrder) {
+    public void setTripOrder(double tripOrder) {
         this.tripOrder = tripOrder;
     }
     
-    public float getCloseOrder() {
+    public double getCloseOrder() {
         return closeOrder;
     }
     
-    public void setCloseOrder(float closeOrder) {
+    public void setCloseOrder(double closeOrder) {
         this.closeOrder = closeOrder;
     }
     

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.Vector;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -62,7 +61,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private static final Logger log = YukonLogManager.getLogger(CapControlCacheImpl.class);
     
     private static final int STARTUP_REF_RATE = 15 * 1000;
-    private static final int NORMAL_REF_RATE = 30 * 60 * 1000; //5 minutes
+    private static final int NORMAL_REF_RATE = 30 * 60 * 1000; //30 minutes
     
     private Map<Integer, Area> areas = new ConcurrentHashMap<>();
     private Map<Integer, SpecialArea> specialAreas = new ConcurrentHashMap<>();
@@ -163,8 +162,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     public List<Feeder> getFeedersBySubBus(int subbusId) {
         SubBus subBus = getSubBus(subbusId);
         try {
-            List<Feeder> list = new ArrayList<Feeder>(subBus.getCcFeeders());
-            return list;
+            return subBus.getCcFeeders();
         } catch (NotFoundException e) {
             return Collections.emptyList();
         }
@@ -175,13 +173,13 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         Validate.notNull(substation, "Substation cannot be null");
         
         int[] subBusIds = substation.getSubBusIds();
-        List<Feeder> substationFeeders = new ArrayList<Feeder>(subBusIds.length);
+        List<Feeder> substationFeeders = new ArrayList<>();
         
         for (final int id : subBusIds) {
             try {
                 SubBus subBus = getSubBus(id);
                 substationFeeders.addAll(subBus.getCcFeeders());
-            } catch (NotFoundException ignore) {}  
+            } catch (NotFoundException ignore) {}
         }
 
         return substationFeeders;
@@ -192,13 +190,13 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         Validate.notNull(substation, "Substation cannot be null");
         
         int[] subBusIds = substation.getSubBusIds();
-        List<CapBankDevice> capBanks = new ArrayList<CapBankDevice>(subBusIds.length);
+        List<CapBankDevice> capBanks = new ArrayList<>();
         
         for (final int id : subBusIds) {
             try {
                 SubBus subBus = getSubBus(id);
                 for (final Feeder feeder : subBus.getCcFeeders()) {
-                    Vector<CapBankDevice> caps = feeder.getCcCapBanks();
+                    List<CapBankDevice> caps = feeder.getCcCapBanks();
                     capBanks.addAll(caps);
                 }
             } catch (NotFoundException ignore) {}
@@ -371,9 +369,8 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
             List<Feeder> allFeeders = new ArrayList<Feeder>(subs.size());
 
             for (final SubBus subBus : subs) {
-                Integer subBusId = subBus.getCcId();
                 try {
-                    List<Feeder> feeders = getFeedersBySubBus(subBusId);
+                    List<Feeder> feeders = getFeedersBySubBus(subBus.getCcId());
                     allFeeders.addAll(feeders);
                 } catch (NotFoundException ignore) {}
             }
@@ -388,14 +385,14 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     @Override
     public synchronized List<Area> getAreas() {
         List<Area> list = new ArrayList<Area>(areas.values());
-        Collections.sort(list, CapControlUtils.CBC_AREA_COMPARATOR);
+        Collections.sort(list, CapControlUtils.CCNAME_COMPARATOR);
         return list;
     }
     
     @Override
     public synchronized List<SpecialArea> getSpecialAreas() {
         List<SpecialArea> list = new ArrayList<SpecialArea>(specialAreas.values());
-        Collections.sort(list, CapControlUtils.CBC_SPECIAL_AREA_COMPARATOR);
+        Collections.sort(list, CapControlUtils.CCNAME_COMPARATOR);
         return list;
     }
     
@@ -495,7 +492,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         
         List<SpecialArea> list = areas.getAreas();
         for (final SpecialArea area : list) {
-            int areaId = area.getPaoId();
+            int areaId = area.getCcId();
             specialAreas.put(areaId, area);
             getUpdatedObjects().handleCBCChangeEvent(area);
         }
@@ -708,15 +705,12 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         final Integer subBusId = subbus.getCcId();
         
         subbuses.put(subBusId, subbus);
-        
-        Vector<Feeder> busFeeders = subbus.getCcFeeders();
-    
+
         List<Integer> capBankIds = new ArrayList<>();
-        for (final Feeder feeder : busFeeders) {
+        for (final Feeder feeder : subbus.getCcFeeders()) {
             feeders.put(feeder.getCcId(), feeder);
             
-            Vector<CapBankDevice> capBanks = feeder.getCcCapBanks();
-            for (final CapBankDevice capBank : capBanks) {
+            for (final CapBankDevice capBank : feeder.getCcCapBanks()) {
                 Integer capBankId = capBank.getCcId();
                 banks.put(capBankId, capBank);
                 capBankIds.add(capBankId);
@@ -733,7 +727,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private synchronized void handleSubStation(SubStation substation) {
         Validate.notNull(substation, "substation can't be null");
 
-        final Integer subStationId = substation.getCcId();
+        int subStationId = substation.getCcId();
         substations.put(subStationId, substation);
 
         getUpdatedObjects().handleCBCChangeEvent(substation);

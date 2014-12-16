@@ -106,7 +106,7 @@ public class BankMoveController {
         List<Area> areas = filterCapControlCache.getAreas();
         List<MovedBank> movedBanks = Lists.newArrayList();   
         for (Area area : areas) {
-            List<CapBankDevice> capBanks = filterCapControlCache.getCapBanksByArea(area.getPaoId());
+            List<CapBankDevice> capBanks = filterCapControlCache.getCapBanksByArea(area.getCcId());
             for (CapBankDevice capBank : capBanks) {
                 if (capBank.isBankMoved()) {
                     MovedBank movedBank = new MovedBank(capBank);

@@ -699,7 +699,7 @@ public class UpdaterHelper {
         
         // This is returning a css class to be updated, no data.
         case SUB_VAR_LOAD_QUALITY: {
-            if (!CapControlUtils.signalQualityNormal(subBus, UnitOfMeasure.KVAR.getId())) {
+            if (!CapControlUtils.signalQualityNormal(subBus, UnitOfMeasure.KVAR)) {
                 return "";
             } else {
                 return "dn";
@@ -708,7 +708,7 @@ public class UpdaterHelper {
         
         // This is returning a css class to be updated, no data.
         case SUB_WATT_QUALITY: {
-            if (!CapControlUtils.signalQualityNormal(subBus, UnitOfMeasure.KW.getId())) {
+            if (!CapControlUtils.signalQualityNormal(subBus, UnitOfMeasure.KW)) {
                 return "";
             } else {
                 return "dn";
@@ -717,7 +717,7 @@ public class UpdaterHelper {
         
         // This is returning a css class to be updated, no data.
         case SUB_VOLT_QUALITY: {
-            if (!CapControlUtils.signalQualityNormal(subBus, UnitOfMeasure.KVOLTS.getId())) {
+            if (!CapControlUtils.signalQualityNormal(subBus, UnitOfMeasure.KVOLTS)) {
                 return "";
             } else {
                 return "dn";
@@ -957,7 +957,7 @@ public class UpdaterHelper {
         
         // This is returning a css class to be updated, no data.
         case FDR_VAR_LOAD_QUALITY: {
-            if (!CapControlUtils.signalQualityNormal(feeder, UnitOfMeasure.KVAR.getId())) {
+            if (!CapControlUtils.signalQualityNormal(feeder, UnitOfMeasure.KVAR)) {
                 return "";
             } else {
                 return "dn";
@@ -966,7 +966,7 @@ public class UpdaterHelper {
         
         // This is returning a css class to be updated, no data.
         case FDR_WATT_QUALITY: {
-            if (!CapControlUtils.signalQualityNormal(feeder, UnitOfMeasure.KW.getId())) {
+            if (!CapControlUtils.signalQualityNormal(feeder, UnitOfMeasure.KW)) {
                 return "";
             } else {
                 return "dn";
@@ -975,7 +975,7 @@ public class UpdaterHelper {
         
         // This is returning a css class to be updated, no data.
         case FDR_VOLT_QUALITY: {
-            if (!CapControlUtils.signalQualityNormal(feeder, UnitOfMeasure.KVOLTS.getId())) {
+            if (!CapControlUtils.signalQualityNormal(feeder, UnitOfMeasure.KVOLTS)) {
                 return "";
             } else {
                 return "dn";
@@ -1246,14 +1246,14 @@ public class UpdaterHelper {
         }
 
         case SUB_ONELINE_DAILY_OPCNT_COLUMN: {
-            return (subBus.getCurrentDailyOperations()).toString();
+            return Integer.toString(subBus.getCurrentDailyOperations());
         }
 
         case SUB_ONELINE_MAX_OPCNT_COLUMN: {
             if (subBus.getMaxDailyOperation() <= 0) {
                 return accessor.getMessage("yukon.web.defaults.na");
             } else {
-                return subBus.getMaxDailyOperation().toString();
+                return Integer.toString(subBus.getMaxDailyOperation());
             }
         }
         

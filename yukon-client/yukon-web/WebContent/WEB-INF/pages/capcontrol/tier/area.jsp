@@ -94,20 +94,20 @@
                     <div class="column one">
                         <tags:nameValueContainer2 tableClass="name-collapse">
                             <tags:nameValue2 nameKey=".availableKvars">
-                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="KVARS_AVAILABLE"/>
+                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="KVARS_AVAILABLE" initialize="false"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".unavailableKvars">
-                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="KVARS_UNAVAILABLE"/>
+                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="KVARS_UNAVAILABLE" initialize="false"/>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </div>
                     <div class="column two nogutter">
                         <tags:nameValueContainer2 tableClass="name-collapse">
                             <tags:nameValue2 nameKey=".closedKvars">
-                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="KVARS_CLOSED"/>
+                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="KVARS_CLOSED" initialize="false"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".trippedKvars">
-                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="KVARS_TRIPPED"/>
+                                <cti:capControlValue paoId="${bc_areaId}" type="${type}" format="KVARS_TRIPPED" initialize="false"/>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
                     </div>
@@ -156,7 +156,7 @@
                             ${fn:escapeXml(subStation.ccName)}
                         </a>
                         <div class="error textFieldLabel">
-                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="SA_ENABLED_MSG" />
+                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="SA_ENABLED_MSG" defaultBlank="true"/>
                         </div>
                     </td>
 
@@ -170,10 +170,10 @@
                         <c:if test="${not hasSubstationControl}"></span></c:if>
                     </td>
 
-                    <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" /></td>
-                    <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_UNAVAILABLE" /></td>
-                    <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_CLOSED" /></td>
-                    <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_TRIPPED" /></td>
+                    <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_AVAILABLE" initialize="false"/></td>
+                    <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_UNAVAILABLE" initialize="false"/></td>
+                    <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_CLOSED" initialize="false"/></td>
+                    <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="KVARS_TRIPPED" initialize="false"/></td>
                     <td class="tar"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="PFACTOR" /></td>
                 </tr>
             </c:forEach>

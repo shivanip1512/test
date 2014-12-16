@@ -646,6 +646,16 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>
+    <attribute>
+      <name>initialize</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>defaultBlank</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
   </tag>
 
   <tag>

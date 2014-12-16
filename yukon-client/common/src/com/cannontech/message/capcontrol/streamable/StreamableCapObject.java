@@ -3,20 +3,20 @@ package com.cannontech.message.capcontrol.streamable;
 import com.cannontech.common.util.CtiUtilities;
 
 public abstract class StreamableCapObject {
-	
-	private Integer ccId = null;
-	private String ccCategory = null;
-	private String ccClass = null;
-	private String ccName = null;
-	private String ccType = null;
-	private String ccArea = null;
-	private Boolean ccDisableFlag = null;
-	private int parentID = CtiUtilities.NONE_ZERO_ID;
+
+    private int ccId;
+    private String ccCategory;
+    private String ccClass;
+    private String ccName;
+    private String ccType;
+    private String ccArea;
+    private boolean ccDisableFlag;
+    private int parentID = CtiUtilities.NONE_ZERO_ID;
 
     protected StreamableCapObject() {
-    	super();
+        super();
     }
-    
+
     public StreamableCapObject(int id, 
                                String category, 
                                String clazz, 
@@ -24,39 +24,42 @@ public abstract class StreamableCapObject {
                                String type, 
                                String description, 
                                boolean disabled) {
-    	super();
-    
-    	setCcId(id);
-    	setCcCategory(category);
-    	setCcClass(clazz);
-    	setCcName(name);
-    	setCcType(type);
-    	setCcArea(description);
-    	setCcDisableFlag(disabled);
+        super();
+
+        setCcId(id);
+        setCcCategory(category);
+        setCcClass(clazz);
+        setCcName(name);
+        setCcType(type);
+        setCcArea(description);
+        setCcDisableFlag(disabled);
     }
-    
+
+    @Override
     public boolean equals(Object obj) {
-    	if(obj instanceof StreamableCapObject) {
-    		return getCcId().equals(((StreamableCapObject)obj).getCcId());
-    	} else {
-    		return super.equals(obj);
-    	}
+        if(obj instanceof StreamableCapObject) {
+            return getCcId().equals(((StreamableCapObject)obj).getCcId());
+        } else {
+            return super.equals(obj);
+        }
     }
-    
+
+    @Override
     public int hashCode() {
-    	if( getCcId() != null) {
-    		return getCcId().intValue();
-    	} else {
-    		return super.hashCode();
-    	}
+        if( getCcId() != null) {
+            return getCcId().intValue();
+        } else {
+            return super.hashCode();
+        }
     }
-    
+
+    @Override
     public String toString() {
-    	if(getCcName() != null) {
-    		return getCcName();
-    	} else {
-    		return super.toString();
-    	}
+        if(getCcName() != null) {
+            return getCcName();
+        } else {
+            return super.toString();
+        }
     }
 
     public Integer getCcId() {
@@ -107,11 +110,11 @@ public abstract class StreamableCapObject {
         this.ccArea = ccArea;
     }
 
-    public Boolean getCcDisableFlag() {
+    public boolean getCcDisableFlag() {
         return ccDisableFlag;
     }
 
-    public void setCcDisableFlag(Boolean ccDisableFlag) {
+    public void setCcDisableFlag(boolean ccDisableFlag) {
         this.ccDisableFlag = ccDisableFlag;
     }
 
@@ -122,5 +125,5 @@ public abstract class StreamableCapObject {
     public void setParentID(int parentID) {
         this.parentID = parentID;
     }
-    
+
 }

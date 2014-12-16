@@ -1,117 +1,95 @@
 package com.cannontech.message.capcontrol.streamable;
 
-
-
 public class SubStation extends StreamableCapObject {
 
-	private Boolean ovuvDisableFlag;
-	int[] subBusIds = null;
-    private Double powerFactorValue = null;
-    private Double estimatedPFValue = null;
-    private Boolean specialAreaEnabled;
-    private Integer specialAreaId;
-	private Boolean verificationFlag = false;
-	private Boolean voltReductionFlag = false;
-	private Boolean childVoltReductionFlag = false;
-	private Boolean recentlyControlledFlag = false;
-    
-	public SubStation(){
-		super();
-	}
+    private boolean ovuvDisableFlag;
+    int[] subBusIds;
+    private double powerFactorValue;
+    private double estimatedPFValue;
+    private boolean specialAreaEnabled;
+    private int specialAreaId;
+    private boolean verificationFlag;
+    private boolean voltReductionFlag;
+    private boolean childVoltReductionFlag;
+    private boolean recentlyControlledFlag;
 
-	public Boolean getOvuvDisableFlag() {
-		return ovuvDisableFlag;
-	}
+    public boolean getOvuvDisableFlag() {
+        return ovuvDisableFlag;
+    }
 
-	public void setOvuvDisableFlag(Boolean ovuvDisableFlag) {
-		this.ovuvDisableFlag = ovuvDisableFlag;
-	}
+    public void setOvuvDisableFlag(boolean ovuvDisableFlag) {
+        this.ovuvDisableFlag = ovuvDisableFlag;
+    }
 
-	public int[] getSubBusIds() {
-		return subBusIds;
-	}
+    public int[] getSubBusIds() {
+        return subBusIds;
+    }
 
-	public void setSubBusIds(int[] subBusIds) {
-		this.subBusIds = subBusIds;
-	}
-    
-    /**
-     * Returns the powerFactorValue.
-     * @return Double
-     */
-    public Double getPowerFactorValue() {
+    public void setSubBusIds(int[] subBusIds) {
+        this.subBusIds = subBusIds;
+    }
+
+    public double getPowerFactorValue() {
         return powerFactorValue;
     }
 
-    /**
-     * Sets the powerFactorValue.
-     * @param powerFactorValue The powerFactorValue to set
-     */
-    public void setPowerFactorValue(Double powerFactorValue) {
+    public void setPowerFactorValue(double powerFactorValue) {
         this.powerFactorValue = powerFactorValue;
     }
 
-    /**
-     * Returns the estimatedPFValue.
-     * @return Double
-     */
-    public Double getEstimatedPFValue() {
+    public double getEstimatedPFValue() {
         return estimatedPFValue;
     }
 
-    /**
-     * Sets the estimatedPFValue.
-     * @param estimatedPFValue The estimatedPFValue to set
-     */
-    public void setEstimatedPFValue(Double estimatedPFValue) {
+    public void setEstimatedPFValue(double estimatedPFValue) {
         this.estimatedPFValue = estimatedPFValue;
     }
-    
-    public Boolean getSpecialAreaEnabled() {
+
+    public boolean getSpecialAreaEnabled() {
         return specialAreaEnabled;
     }
 
-    public void setSpecialAreaEnabled(Boolean specialAreaEnabled) {
+    public void setSpecialAreaEnabled(boolean specialAreaEnabled) {
         this.specialAreaEnabled = specialAreaEnabled;
     }
-    
-    public Integer getSpecialAreaId() {
+
+    public int getSpecialAreaId() {
         return specialAreaId;
     }
-    
-    public void setSpecialAreaId(Integer specialAreaId) {
+
+    public void setSpecialAreaId(int specialAreaId) {
         this.specialAreaId = specialAreaId;
     }
-    
-    public Boolean getVerificationFlag() {
+
+    public boolean getVerificationFlag() {
         return verificationFlag;
     }
 
-    public void setVerificationFlag(Boolean bool) {
-        verificationFlag = bool;
+    public void setVerificationFlag(boolean verificationFlag) {
+        this.verificationFlag = verificationFlag;
     }
 
-	public Boolean getVoltReductionFlag() {
-		return voltReductionFlag;
-	}
+    public boolean getVoltReductionFlag() {
+        return voltReductionFlag;
+    }
 
-	public void setVoltReductionFlag(Boolean voltReductionFlag) {
-		this.voltReductionFlag = voltReductionFlag;
-	}
-	
-	public void setRecentlyControlledFlag(Boolean value) {
-	    this.recentlyControlledFlag = value;
-	}
-	
-	public Boolean getRecentlyControlledFlag() {
-	    return this.recentlyControlledFlag;
-	}
-	
-	public Boolean getChildVoltReductionFlag() {
-	    return this.childVoltReductionFlag;
-	}
-	
-	public void setChildVoltReductionFlag(Boolean value) {
-	    this.childVoltReductionFlag = value;
-	}
+    public void setVoltReductionFlag(boolean voltReductionFlag) {
+        this.voltReductionFlag = voltReductionFlag;
+    }
+
+    public void setRecentlyControlledFlag(boolean recentlyControlledFlag) {
+        this.recentlyControlledFlag = recentlyControlledFlag;
+    }
+
+    public boolean getRecentlyControlledFlag() {
+        return recentlyControlledFlag;
+    }
+
+    public boolean getChildVoltReductionFlag() {
+        return childVoltReductionFlag;
+    }
+
+    public void setChildVoltReductionFlag(boolean value) {
+        childVoltReductionFlag = value;
+    }
 }

@@ -52,10 +52,10 @@
                         <c:if test="${hasAreaControl}"></a></c:if>
                         <c:if test="${!hasAreaControl}"></span></c:if>
                     </td>
-                    <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_AVAILABLE"/></td>
-                    <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_UNAVAILABLE"/></td>
-                    <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_CLOSED"/></td>
-                    <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_TRIPPED"/></td>
+                    <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_AVAILABLE" initialize="false"/></td>
+                    <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_UNAVAILABLE" initialize="false"/></td>
+                    <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_CLOSED" initialize="false"/></td>
+                    <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_TRIPPED" initialize="false"/></td>
                     <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="PFACTOR"/></td>
                 </tr>
             </c:forEach>

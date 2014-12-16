@@ -5,9 +5,9 @@ public class BankMove extends ItemCommand {
 	private int oldFeederId = -1;
 	private boolean permanentMove = false;
 	private int newFeederId = -1;
-	private float displayOrder = -1;
-    private float closeOrder = -1;
-    private float tripOrder = -1;
+	private double displayOrder = -1;
+    private double closeOrder = -1;
+    private double tripOrder = -1;
     
 	public BankMove() {
 		super();
@@ -38,27 +38,27 @@ public class BankMove extends ItemCommand {
         this.newFeederId = newFeederId;
     }
 
-    public float getDisplayOrder() {
+    public double getDisplayOrder() {
         return displayOrder;
     }
 
-    public void setDisplayOrder(float displayOrder) {
+    public void setDisplayOrder(double displayOrder) {
         this.displayOrder = displayOrder;
     }
 
-    public float getCloseOrder() {
+    public double getCloseOrder() {
         return closeOrder;
     }
 
-    public void setCloseOrder(float closeOrder) {
+    public void setCloseOrder(double closeOrder) {
         this.closeOrder = closeOrder;
     }
 
-    public float getTripOrder() {
+    public double getTripOrder() {
         return tripOrder;
     }
 
-    public void setTripOrder(float tripOrder) {
+    public void setTripOrder(double tripOrder) {
         this.tripOrder = tripOrder;
     }
 

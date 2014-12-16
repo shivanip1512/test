@@ -45,13 +45,13 @@ public class SpecialAreaSerializer extends
         msg.setEstimatedPFValue(entity.get_estPfDisplayValue());
         msg.setVoltReductionFlag(entity.is_voltReductionControlValue());
 
-        msg.setPaoId(entity.get_baseMessage().get_paoId());
+        msg.setCcId(entity.get_baseMessage().get_paoId());
         msg.setDisableFlag(entity.get_baseMessage().is_disableFlag());
         msg.setPaoCategory(entity.get_baseMessage().get_paoCategory());
         msg.setPaoClass(entity.get_baseMessage().get_paoClass());
         msg.setPaoDescription(entity.get_baseMessage().get_paoDescription());
-        msg.setPaoName(entity.get_baseMessage().get_paoName());
-        msg.setPaoType(entity.get_baseMessage().get_paoType());
+        msg.setCcName(entity.get_baseMessage().get_paoName());
+        msg.setCcType(entity.get_baseMessage().get_paoType());
 
     }
 
@@ -63,12 +63,12 @@ public class SpecialAreaSerializer extends
         entity.set_estPfDisplayValue(msg.getEstimatedPFValue());
         entity.set_voltReductionControlValue(msg.getVoltReductionFlag());
 
-        entity.get_baseMessage().set_paoId(msg.getPaoId());
+        entity.get_baseMessage().set_paoId(msg.getCcId());
         entity.get_baseMessage().set_disableFlag(msg.getDisableFlag());
         entity.get_baseMessage().set_paoCategory(msg.getPaoCategory());
         entity.get_baseMessage().set_paoClass(msg.getPaoClass());
         entity.get_baseMessage().set_paoDescription(msg.getPaoDescription());
-        entity.get_baseMessage().set_paoName(msg.getPaoName());
-        entity.get_baseMessage().set_paoType(msg.getPaoType());
+        entity.get_baseMessage().set_paoName(msg.getCcName());
+        entity.get_baseMessage().set_paoType(msg.getCcType());
     }
 }

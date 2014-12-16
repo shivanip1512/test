@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.log4j.Logger;
+import org.joda.time.Instant;
+import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.CapControlUtils;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -40,9 +44,13 @@ public class AreaController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private CapControlWebUtilsService capControlWebUtilsService;
 
+    private static final Logger log = YukonLogManager.getLogger(AreaController.class);
+
     @RequestMapping("substations")
     public String substations(HttpServletRequest request, ModelMap model, LiteYukonUser user,
             @RequestParam("bc_areaId") int areaId) {
+
+        Instant startPage = Instant.now();
 
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
         
@@ -98,6 +106,9 @@ public class AreaController {
         String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
         CBCNavigationUtil.setNavigation(requestURI , request.getSession());
         
+        long timeForPage = new Interval(startPage, Instant.now()).toDurationMillis();
+        log.debug("Time to map area page: "  + timeForPage + "ms");
+
         return "tier/area.jsp";
     }
     

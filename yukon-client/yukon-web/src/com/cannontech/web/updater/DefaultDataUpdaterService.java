@@ -4,9 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
+import org.joda.time.Interval;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.user.YukonUserContext;
@@ -34,6 +37,8 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
             requestsToProcess.put(identifier.getType(), identifier);
         }
 
+        Map<String,Long> timesMap = new HashMap<>();
+
         // Handle requests by type.
         Map<String, String> response = new HashMap<>();
         for (DataType type : requestsToProcess.keySet()) {
@@ -45,7 +50,21 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
                     log.debug("handling values of type " + type + ": " + Joiner.on("; ").join(identifiers));
                 }
                 for (UpdateIdentifier identifier : identifiers) {
+                    String updaterType = null;
+                    Instant start = null;
+                    if (log.isDebugEnabled()) {
+                        updaterType =  identifier.getRemainder();
+                        int lastIndex = updaterType.lastIndexOf("/");
+                        updaterType = updaterType.substring(lastIndex > 0 ? lastIndex + 1 : 0 );
+                        start = Instant.now();
+                    }
                     UpdateValue updateValue = getValue(back, identifier, afterDate, userContext, true);
+                    if (log.isDebugEnabled()) {
+                        long time = new Interval(start, Instant.now()).toDurationMillis();
+                        Long timeForUpdater = timesMap.get(updaterType);
+                        timeForUpdater = timeForUpdater != null? timeForUpdater + time: time;
+                        timesMap.put(updaterType, timeForUpdater);
+                    }
                     if (updateValue != null) {
                         response.put(identifier.getFullIdentifier(), updateValue.getValue());
                     }
@@ -66,15 +85,21 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
             log.debug("done handling values of type " + type);
         }
 
-        log.debug("getUpdates - creating response object");
+        if (log.isDebugEnabled()) {
+            for (Entry<String, Long> e : timesMap.entrySet()) {
+                log.debug(e.getKey() +": " + e.getValue() + "ms" );
+            }
+            log.debug("getUpdates - creating response object");
+        }
+
         return new UpdateResponse(response, System.currentTimeMillis());
     }
 
     @Override
     public UpdateValue getFirstValue(String fullIdentifier, YukonUserContext userContext) {
         UpdateIdentifier identifier = new UpdateIdentifier(fullIdentifier);
-        if (log.isDebugEnabled()) {
-            log.debug("getFirstValue - handling " + identifier);
+        if (log.isTraceEnabled()) {
+            log.trace("getFirstValue - handling " + identifier);
         }
         UpdateValue updateValue = null;
         UpdateBackingService back = backs.get(identifier.getType());
@@ -91,7 +116,7 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
         } else {
             log.error("could not find handler for data type " + identifier.getType());
         }
-        log.debug("getFirstValue - done");
+        log.trace("getFirstValue - done");
         return updateValue;
     }
 

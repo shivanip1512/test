@@ -21,12 +21,12 @@ public class AreaValidator extends AutoInitializedClassValidator<Area> {
         ctrlObj.setVoltReductionFlag(generator.generateBoolean());
         ctrlObj.setChildVoltReductionFlag(generator.generateBoolean());
 
-        ctrlObj.setPaoId(ctrlObj.getCcId());
+        ctrlObj.setCcId(ctrlObj.getCcId());
         ctrlObj.setDisableFlag(ctrlObj.getCcDisableFlag());
         ctrlObj.setPaoCategory(ctrlObj.getCcCategory());
         ctrlObj.setPaoClass(ctrlObj.getCcClass());
         ctrlObj.setPaoDescription(ctrlObj.getCcArea());
-        ctrlObj.setPaoName(ctrlObj.getCcName());
-        ctrlObj.setPaoType(ctrlObj.getCcType());          
+        ctrlObj.setCcName(ctrlObj.getCcName());
+        ctrlObj.setCcType(ctrlObj.getCcType());
     }
 }

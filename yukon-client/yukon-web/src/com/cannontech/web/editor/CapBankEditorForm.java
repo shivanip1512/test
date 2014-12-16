@@ -66,7 +66,7 @@ public class CapBankEditorForm extends DBEditorForm {
     private String[] DYNAMIC_TABLE_NAMES = { "DynamicCCMonitorBankHistory", "DynamicCCMonitorPointResponse" };
     private CapBankAdditional additionalInfo;
     
-    private static CapControlCache cache = (CapControlCache)YukonSpringHook.getBean("capControlCache");
+    private static CapControlCache cache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
     private static CapbankDao dao = YukonSpringHook.getBean("capbankDao", CapbankDao.class);
     private static PointDao pointDao = YukonSpringHook.getBean("pointDao",PointDao.class);
     private static PaoDao paoDao = YukonSpringHook.getBean("paoDao",PaoDao.class);
@@ -215,8 +215,8 @@ public class CapBankEditorForm extends DBEditorForm {
         
         if (fdrId != 0) {
             Feeder feeder = cache.getFeeder(fdrId);
-            monitorPoint.setLowerBandwidth(feeder.getPeakLag().floatValue());
-            monitorPoint.setUpperBandwidth(feeder.getPeakLead().floatValue());
+            monitorPoint.setLowerBandwidth(feeder.getPeakLag());
+            monitorPoint.setUpperBandwidth(feeder.getPeakLead());
         }
     }
 

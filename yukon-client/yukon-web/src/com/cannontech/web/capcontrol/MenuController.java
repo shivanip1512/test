@@ -20,6 +20,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -172,9 +173,9 @@ public class MenuController {
         LiteYukonPAObject cbcPaoObject = paoDao.getLiteYukonPAO(cbcDeviceId);
         
         boolean isClosed = CapBankDevice.isInAnyCloseState(capBank);
-        boolean isTwoWay = CapControlUtils.isTwoWay(cbcPaoObject);
-        boolean is702xDevice = CapControlUtils.is702xDevice(cbcPaoObject.getPaoType());
-        boolean is701xDevice = CapControlUtils.is701xDevice(cbcPaoObject);
+        boolean isTwoWay = DeviceTypesFuncs.isCBCTwoWay(cbcPaoObject.getPaoType());
+        boolean is702xDevice = DeviceTypesFuncs.is702xDevice(cbcPaoObject.getPaoType());
+        boolean is701xDevice = DeviceTypesFuncs.is701xDevice(cbcPaoObject.getPaoType());
         boolean allowFlip = rolePropertyDao.checkProperty(YukonRoleProperty.SHOW_FLIP_COMMAND, user);
         boolean allowLocalControl = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_ALLOW_OVUV, user);
         

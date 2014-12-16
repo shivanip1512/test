@@ -124,7 +124,7 @@ public class CBControllerEditor implements ICBControllerModel {
     @Override
     public boolean isTwoWay() {
         if (getPaoCBC() != null) {
-        	return CapControlUtils.isTwoWay(getPaoCBC().getPaoType());
+            return DeviceTypesFuncs.isCBCTwoWay(getPaoCBC().getPaoType());
         }
         return false;
     }

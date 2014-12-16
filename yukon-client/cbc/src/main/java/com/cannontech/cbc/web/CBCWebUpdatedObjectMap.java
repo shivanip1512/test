@@ -21,19 +21,19 @@ public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer> {
     }
     
     public void handleCBCChangeEvent(Area area) {
-        List<SubStation> subList = capControlCache.getSubstationsByArea(area.getPaoId());
+        List<SubStation> subList = capControlCache.getSubstationsByArea(area.getCcId());
         for (final SubStation substation : subList) {
             handleCBCChangeEvent(substation);
         }
-        updateMap(area.getPaoId());
+        updateMap(area.getCcId());
     }
     
     public void handleCBCChangeEvent(SpecialArea specialArea) {
-        List<SubStation> substationList = capControlCache.getSubstationsBySpecialArea(specialArea.getPaoId());
+        List<SubStation> substationList = capControlCache.getSubstationsBySpecialArea(specialArea.getCcId());
         for (final SubStation subStation : substationList) {
             handleCBCChangeEvent(subStation);
         }
-        updateMap(specialArea.getPaoId());
+        updateMap(specialArea.getCcId());
     }
     
     public void handleCBCChangeEvent(SubStation subStation) {
