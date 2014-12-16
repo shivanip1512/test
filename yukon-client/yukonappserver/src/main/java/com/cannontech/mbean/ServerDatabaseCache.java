@@ -16,6 +16,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
@@ -83,6 +84,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     // stores a soft reference to the cache
     private static ServerDatabaseCache cache;
     
+    @Autowired private AlarmCatDao alarmCatDao;
     @Autowired private PointDao pointDao;
     @Autowired private PaoDao paoDao;
     @Autowired private MeterDao meterDao;
@@ -726,34 +728,34 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
 
         switch (dbChangeType) {
         case ADD:
-            for (int i = 0; i < allAlarmCategories.size(); i++) {
-                if (allAlarmCategories.get(i).getAlarmStateID() == id) {
+            for (LiteAlarmCategory liteAlarmCategory : allAlarmCategories) {
+                if (liteAlarmCategory.getAlarmCategoryId() == id) {
                     alreadyAdded = true;
-                    lBase = allAlarmCategories.get(i);
+                    lBase = liteAlarmCategory;
                     break;
                 }
             }
             if (!alreadyAdded) {
-                LiteAlarmCategory la = new LiteAlarmCategory(id);
-                la.retrieve(databaseAlias);
+                
+                LiteAlarmCategory la = alarmCatDao.getAlarmCategory(id);
                 allAlarmCategories.add(la);
                 lBase = la;
             }
             break;
 
         case UPDATE:
-            for (int i = 0; i < allAlarmCategories.size(); i++) {
-                if (allAlarmCategories.get(i).getAlarmStateID() == id) {
-                    allAlarmCategories.get(i).retrieve(databaseAlias);
-                    lBase = allAlarmCategories.get(i);
+            for (LiteAlarmCategory liteAlarmCategory : allAlarmCategories) {
+                if (liteAlarmCategory.getAlarmCategoryId() == id) {
+                    liteAlarmCategory = alarmCatDao.getAlarmCategory(id);
+                    lBase = liteAlarmCategory;
                     break;
                 }
             }
             break;
         case DELETE:
-            for (int i = 0; i < allAlarmCategories.size(); i++) {
-                if (allAlarmCategories.get(i).getAlarmStateID() == id) {
-                    lBase = allAlarmCategories.remove(i);
+            for (LiteAlarmCategory liteAlarmCategory : allAlarmCategories) {
+                if (liteAlarmCategory.getAlarmCategoryId() == id) {
+                    lBase = liteAlarmCategory;
                     break;
                 }
             }

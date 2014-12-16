@@ -1,98 +1,83 @@
 package com.cannontech.core.dao.impl;
 
+import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AlarmCatDao;
+import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.yukon.IDatabaseCache;
 
-/**
- * @author rneuharth
- * Oct 16, 2002 at 2:12:21 PM
- * 
- * A undefined generated comment
- */
-public final class AlarmCatDaoImpl implements AlarmCatDao
-{
-    private IDatabaseCache databaseCache;
+public final class AlarmCatDaoImpl implements AlarmCatDao {
+    @Autowired private IDatabaseCache databaseCache;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
     
-	/**
-	 * Constructor for AlarmCategoriesFuncs.
-	 */
-	private AlarmCatDaoImpl()
-	{
-		super();
-	}
+    private YukonRowMapper<LiteAlarmCategory> liteAlarmCategoryMapper = new YukonRowMapper<LiteAlarmCategory>() {
 
+        @Override
+        public LiteAlarmCategory mapRow(YukonResultSet rs) throws SQLException {
+            
+            int alarmCategoryId = rs.getInt("AlarmCategoryId");
+            String categoryName = rs.getString("CategoryName");
+            int notificationGroupId = rs.getInt("NotificationGroupID");
+            
+            LiteAlarmCategory liteAlarmCategory = new LiteAlarmCategory(alarmCategoryId);
+            liteAlarmCategory.setCategoryName(categoryName);
+            liteAlarmCategory.setNotificationGroupID(notificationGroupId);
+                    
+            return liteAlarmCategory;
+        }
+    };
 
-   /* Insert the method's description here.
-    * Creation date: (3/26/2001 9:41:59 AM)
-    * @return com.cannontech.database.data.lite.LitePoint
-    * @param pointID int
-    */
-   /* (non-Javadoc)
- * @see com.cannontech.core.dao.AlarmCatDao#getAlarmCategoryName(int)
- */
-public String getAlarmCategoryName( int alarmCatID )
-   {   		
-   		LiteAlarmCategory lac = getAlarmCategory(alarmCatID);
-   		return (lac == null ? null : lac.getCategoryName());	
-   }
-   
-   /* (non-Javadoc)
- * @see com.cannontech.core.dao.AlarmCatDao#getAlarmCategory(int)
- */
-public LiteAlarmCategory getAlarmCategory(int id)
-   {
-      synchronized( databaseCache )
-      {
-         List categories = databaseCache.getAllAlarmCategories();
-         
-         for( int j = 0; j < categories.size(); j++ )
-         {
-            if( id == ((com.cannontech.database.data.lite.LiteAlarmCategory)categories.get(j)).getAlarmStateID() )
-               return (com.cannontech.database.data.lite.LiteAlarmCategory)categories.get(j);
-         }
-   
-         return null;
-      }	
-   }
-   
-   
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.AlarmCatDao#getAlarmCategoryId(java.lang.String)
-     */
-	public int getAlarmCategoryId( String categoryName ) {
-		synchronized( databaseCache ) {
-
-		   List categories = databaseCache.getAllAlarmCategories();
-         
-		   for( int j = 0; j < categories.size(); j++ )
-		   {
-			  LiteAlarmCategory alCat = (LiteAlarmCategory)categories.get(j);
-			  if( alCat.getCategoryName().equals(categoryName) )
-				 return alCat.getAlarmStateID();
-		   }
-   
-		   return PointAlarming.NONE_NOTIFICATIONID;
-		}	
-
-	}
     
-    // method to return a List of LiteAlarmCategories
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.AlarmCatDao#getAlarmCategories()
-     */
-    public List getAlarmCategories() 
-    {
-        List alarmList = databaseCache.getAllAlarmCategories();
-        return alarmList;
+    @Override
+    public LiteAlarmCategory getAlarmCategory(int alarmCategoryId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT AlarmCategoryId, CategoryName, NotificationGroupId");
+        sql.append("FROM AlarmCategory");
+        sql.append("WHERE AlarmCategoryId").eq(alarmCategoryId);
+        
+        return jdbcTemplate.queryForObject(sql, liteAlarmCategoryMapper);
+    }
+    
+    @Override
+    public LiteAlarmCategory getAlarmCategoryFromCache(int id) {
+        synchronized (databaseCache) {
+            List<LiteAlarmCategory> categories = databaseCache.getAllAlarmCategories();
+
+            for (int j = 0; j < categories.size(); j++) {
+                if (id == categories.get(j).getAlarmCategoryId()) {
+                    return categories.get(j);
+                }
+            }
+            return null;
+        }
     }
 
+    @Override
+    public int getAlarmCategoryIdFromCache(String categoryName) {
+        synchronized (databaseCache) {
+            List<LiteAlarmCategory> categories = databaseCache.getAllAlarmCategories();
 
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
+            for (int j = 0; j < categories.size(); j++) {
+                LiteAlarmCategory alCat = categories.get(j);
+                if (alCat.getCategoryName().equals(categoryName)) {
+                    return alCat.getAlarmCategoryId();
+                }
+            }
+            return PointAlarming.NONE_NOTIFICATIONID;
+        }
     }
 
+    @Override
+    public List<LiteAlarmCategory> getAlarmCategories() {
+        return databaseCache.getAllAlarmCategories();
+    }
 }

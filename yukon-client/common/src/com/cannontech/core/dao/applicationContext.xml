@@ -8,9 +8,7 @@
     This file defines beans that live under the com.cannontech.core.dao
     package.
   </description>
-  <bean id="alarmCatDao" class="com.cannontech.core.dao.impl.AlarmCatDaoImpl">
-  	<property name="databaseCache" ref="databaseCache"/>
-  </bean>
+  <bean id="alarmCatDao" class="com.cannontech.core.dao.impl.AlarmCatDaoImpl"/>
   <bean id="alarmDao" class="com.cannontech.core.dao.impl.AlarmDaoImpl">
   	<property name="pointDao" ref="pointDao"/>
   	<property name="dynamicDataSource" ref="dynamicDataSource"/>

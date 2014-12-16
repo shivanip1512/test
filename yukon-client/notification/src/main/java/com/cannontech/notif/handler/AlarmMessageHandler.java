@@ -107,7 +107,8 @@ public class AlarmMessageHandler extends NotifHandler implements MessageHandler<
                 String conditionText = AlarmUtils.getAlarmConditionText(msg.condition, point);
                 notif.addData("condition", conditionText);
                 
-                String categoryText = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategoryName(msg.alarmCategoryId);
+                LiteAlarmCategory liteAlarmCategory = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategoryFromCache(msg.alarmCategoryId);
+                String categoryText = (liteAlarmCategory == null ? null : liteAlarmCategory.getCategoryName());
                 notif.addData("category", categoryText);
                 
                 DateFormat dateFormatter = new SimpleDateFormat("EEEE, MMMM d"); // e.g. "Tuesday, May 31"

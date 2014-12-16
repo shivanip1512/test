@@ -190,7 +190,7 @@ public class TdcServiceImpl implements TdcService{
         List<DisplayData> data = Lists.newArrayList();
         List<LiteAlarmCategory> alarmList = alarmCatDao.getAlarmCategories();
         for (LiteAlarmCategory alarmCat : alarmList) {
-            Set<Signal> signals = dynamicDataSource.getSignalsByCategory(alarmCat.getAlarmStateID());
+            Set<Signal> signals = dynamicDataSource.getSignalsByCategory(alarmCat.getAlarmCategoryId());
             data.addAll(getDisplayData(signals, showActive));
         }
         Collections.sort(data, sortByDate);
@@ -340,7 +340,7 @@ public class TdcServiceImpl implements TdcService{
         List<LiteAlarmCategory> alarmList = alarmCatDao.getAlarmCategories();
         for (LiteAlarmCategory alarmCat : alarmList) {
             Set<Signal> signals =
-                dynamicDataSource.getSignalsByCategory(alarmCat.getAlarmStateID());
+                dynamicDataSource.getSignalsByCategory(alarmCat.getAlarmCategoryId());
             for (Signal signal : signals) {
                 if (TagUtils.isAlarmUnacked(signal.getTags())
                     && signal.getCondition() != Signal.SIGNAL_COND) {
@@ -462,7 +462,7 @@ public class TdcServiceImpl implements TdcService{
     }
        
     private List<DisplayData> getCustomDisplayDataByAlarmCategory(Display display) {
-        int catId = alarmCatDao.getAlarmCategoryId(display.getName());
+        int catId = alarmCatDao.getAlarmCategoryIdFromCache(display.getName());
         Set<Signal> signals = dynamicDataSource.getSignalsByCategory(catId);
         return getDisplayData(signals, true);
     }

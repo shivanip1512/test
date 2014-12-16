@@ -98,7 +98,7 @@ public class DisplayDaoImpl implements DisplayDao {
 
         int startingDisplayNumber = IDisplay.GLOBAL_ALARM_DISPLAY + 1;
         for (LiteAlarmCategory cat : categories) {
-            if (cat.getAlarmStateID() != Signal.EVENT_SIGNAL) {
+            if (cat.getAlarmCategoryId() != Signal.EVENT_SIGNAL) {
                 mappedDisplays.put(startingDisplayNumber++, cat.getCategoryName());
             }
         }

@@ -114,7 +114,7 @@ public final static com.cannontech.database.db.DBPersistent createDBPersistent(L
 			break;
 		case LiteTypes.ALARM_CATEGORIES:
 			returnObject = new com.cannontech.database.db.notification.AlarmCategory();
-			((com.cannontech.database.db.notification.AlarmCategory)returnObject).setAlarmCategoryID(new Integer(((LiteAlarmCategory)liteObject).getAlarmStateID()));
+			((com.cannontech.database.db.notification.AlarmCategory)returnObject).setAlarmCategoryID(new Integer(((LiteAlarmCategory)liteObject).getAlarmCategoryId()));
 			((com.cannontech.database.db.notification.AlarmCategory)returnObject).setCategoryName(((LiteAlarmCategory)liteObject).getCategoryName());
 			((com.cannontech.database.db.notification.AlarmCategory)returnObject).setNotificationGroupID( new Integer( ((LiteAlarmCategory)liteObject).getNotificationGroupID()) );
 			break;

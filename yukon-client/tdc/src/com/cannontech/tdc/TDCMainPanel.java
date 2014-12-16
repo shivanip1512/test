@@ -892,7 +892,7 @@ private Object[][] getAlarmStatesCache()
 		for( int i = 0; i < alarmStates.size(); i++ )
 		{
 			LiteAlarmCategory liteAlarm = (LiteAlarmCategory)alarmStates.get(i);
-			if( liteAlarm.getAlarmStateID() == Signal.EVENT_SIGNAL )
+			if( liteAlarm.getAlarmCategoryId() == Signal.EVENT_SIGNAL )
 				continue;
 
 			data[indx][0] = liteAlarm.getCategoryName();
@@ -2223,9 +2223,7 @@ public void initializeTable()
 			{
 				boolean enabled = true;
             
-				if( currentDisp.getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.CAP_CONTROL_CLIENT_TYPE_INDEX]) )
-					enabled = !TDCDefines.isHiddenCapControl(TDCDefines.USER_RIGHTS);
-				else if( currentDisp.getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.LOAD_CONTROL_CLIENT_TYPE_INDEX]) )
+				if( currentDisp.getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.LOAD_CONTROL_CLIENT_TYPE_INDEX]) )
 					enabled = !TDCDefines.isHiddenLoadControl(TDCDefines.USER_RIGHTS);
 				else if( currentDisp.getType().equalsIgnoreCase(Display.DISPLAY_TYPES[Display.SCHEDULER_CLIENT_TYPE_INDEX]) )
 					enabled = !TDCDefines.isHiddenMACS(TDCDefines.USER_RIGHTS);

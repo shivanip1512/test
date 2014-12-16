@@ -446,7 +446,7 @@ public class PointImportUtility
 					{
 						if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
 						{
-							alarmCategoryID = liteAlarms.get(j).getAlarmStateID();
+							alarmCategoryID = liteAlarms.get(j).getAlarmCategoryId();
 							break;
 						}
 					}
@@ -861,7 +861,7 @@ public class PointImportUtility
                     {
                         if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
                         {
-                            alarmCategoryID = liteAlarms.get(j).getAlarmStateID();
+                            alarmCategoryID = liteAlarms.get(j).getAlarmCategoryId();
                             break;
                         }
                     }
@@ -1278,7 +1278,7 @@ public class PointImportUtility
                     {
                         if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
                         {
-                            alarmCategoryID = liteAlarms.get(j).getAlarmStateID();
+                            alarmCategoryID = liteAlarms.get(j).getAlarmCategoryId();
                             break;
                         }
                     }
@@ -1575,7 +1575,7 @@ public class PointImportUtility
 						
 						if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
 						{
-							alarmCategoryID = liteAlarms.get(j).getAlarmStateID();
+							alarmCategoryID = liteAlarms.get(j).getAlarmCategoryId();
 							break;
 						}
 					}
