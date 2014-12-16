@@ -107,7 +107,7 @@ yukon.assets.gateway.list = (function () {
             gwText += ', ' + update.gateways[1].name;
         }
         if (update.gateways.length > 2) {
-            gwText += _text['cert.update.more'].replace('{0}', update.length - 2);
+            gwText += _text['cert.update.more'].replace('{0}', update.gateways.length - 2);
         }
         row.find('.js-cert-update-gateways').text(gwText);
         if (update.complete) {
