@@ -5,12 +5,12 @@ import java.util.List;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.bulk.model.AdaStatus;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 public interface ArchiveDataAnalysisDao {
     
@@ -27,13 +27,6 @@ public interface ArchiveDataAnalysisDao {
      * Inserts slot values for one device in a given Analysis.
      */
     public void insertSlotValues(PaoIdentifier paoIdentifier, Analysis analysis, int pointId, boolean excludeBadPointQualities);
-    
-    /**
-     * Retrieves slot values for the specified subset of devices in a given analysis. 
-     * Returned as a list of DeviceArchiveData, each of which contains all slot values
-     * for a single device. Use to collect results after analysis is complete.
-     */
-    public List<DeviceArchiveData> getSlotValues(int analysisId, List<PaoIdentifier> deviceIds);
     
     /**
      * Retrieves all slot values for all devices in a given analysis. Returned as a list of

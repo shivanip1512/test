@@ -29,6 +29,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -124,18 +125,19 @@ public class AdaResultsController {
         model.addAttribute("deviceCollection", collection);
         model.addAllAttributes(collection.getCollectionParameters());
         
-        List<PaoIdentifier> deviceIds = adaDao.getRelevantDeviceIds(analysisId);
-        List<DeviceArchiveData> datas = adaDao.getSlotValues(analysisId, deviceIds);
+        List<DeviceArchiveData> datas = adaDao.getSlotValues(analysisId);
         
         List<AdaDevice> rows = new ArrayList<>();
+        Map<Integer, SimpleMeter> allMeters = cache.getAllMeters();
+        Map<Integer, LiteYukonPAObject> allPaosMap = cache.getAllPaosMap();
         for (DeviceArchiveData data : datas) {
             AdaDevice row = new AdaDevice();
             row.setData(data);
             
-            SimpleMeter meter = cache.getAllMeters().get(data.getPaoIdentifier().getPaoId());
+            SimpleMeter meter = allMeters.get(data.getPaoIdentifier().getPaoId());
             if (meter != null) row.setMeterNumber(meter.getMeterNumber());
             
-            row.setName(cache.getAllPaosMap().get(data.getPaoIdentifier().getPaoId()).getPaoName());
+            row.setName(allPaosMap.get(data.getPaoIdentifier().getPaoId()).getPaoName());
             row.setMissingIntervals(data.getHoleCount());
             
             rows.add(row);
