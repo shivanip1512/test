@@ -7259,20 +7259,19 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
 
         try
         {
-            long areaId = substationToDelete->getParentId();
-            if (areaId != NULL)
+            if ( const long areaId = substationToDelete->getParentId() )
             {
-                CtiCCAreaPtr area = findAreaByPAObjectID(areaId);
+                if ( CtiCCAreaPtr area = findAreaByPAObjectID(areaId) )
+                {
+                    area->removeSubstationId(substationId); 
+                }
             }
-            CtiCCSpArea_vec::iterator itrSp = _ccSpecialAreas->begin();
-            while ( itrSp != _ccSpecialAreas->end() )
+            for each ( CtiCCSpecialPtr spArea in *_ccSpecialAreas )
             {
-                CtiCCSpecial *spArea = *itrSp;
-                if (spArea != NULL)
+                if ( spArea )
                 {
                     spArea->removeSubstationId(substationId);
                 }
-                itrSp++;
             }
 
             string substationName = substationToDelete->getPaoName();
