@@ -120,8 +120,8 @@ public class BankMoveController {
                     movedBank.setCurrentFeederName(currentFeeder.getCcName());
                     movedBank.setOriginalFeederName(originalFeeder.getCcName());
 
-                    SubStation currentSub = filterCapControlCache.getParentSubstation(originalFeederId);
-                    SubStation originalSub = filterCapControlCache.getParentSubstation(currentFeederId);
+                    SubStation currentSub = filterCapControlCache.getParentSubstation(currentFeederId);
+                    SubStation originalSub = filterCapControlCache.getParentSubstation(originalFeederId);
 
                     movedBank.setCurrentSubstationId(currentSub.getCcId());
                     movedBank.setOriginalSubstationId(originalSub.getCcId());
