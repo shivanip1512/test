@@ -4,7 +4,6 @@
 
 /* Start YUK-13917 */
 DELETE FROM YukonGroupRole
-DELETE FROM YukonGroupRole
 WHERE RolePropertyId IN (-10803, -10804, -10807, -10808);
  
 DELETE FROM YukonRoleProperty
