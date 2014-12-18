@@ -103,4 +103,4 @@ WHERE InterfaceID = 28;
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.3', '14-DEC-2014', 'Latest Update', 2, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('6.3', '14-DEC-2014', 'Latest Update', 2, SYSDATE);
