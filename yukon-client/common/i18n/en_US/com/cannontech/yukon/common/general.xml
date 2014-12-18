@@ -100,6 +100,7 @@
 <entry key="yukon.common.pending">Pending</entry>
 <entry key="yukon.common.phase">Phase</entry>
 <entry key="yukon.common.phase.phase">All</entry>
+<entry key="yukon.common.phase.phaseALL">All</entry>
 <entry key="yukon.common.phase.phaseA">A</entry>
 <entry key="yukon.common.phase.phaseB">B</entry>
 <entry key="yukon.common.phase.phaseC">C</entry>

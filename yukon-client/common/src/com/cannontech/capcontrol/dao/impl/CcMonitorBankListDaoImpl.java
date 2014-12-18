@@ -55,7 +55,10 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
             PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PaObjectId", "Type");
             int pointId = rs.getInt("PointId");
             String pointName = rs.getString("PointName");
-            Phase phase = rs.getEnum("Phase", Phase.class);
+             Phase phase = rs.getEnum("Phase", Phase.class);
+            if(phase==null){
+                phase=Phase.ALL;
+            }
             double lowerLimit = rs.getDouble("LowerBandwidth");
             double upperLimit = rs.getDouble("UpperBandwidth");
             boolean overrideStrategy = rs.getBooleanYN("OverrideStrategy");
