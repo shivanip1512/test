@@ -11,12 +11,13 @@
 <cti:url var="saveInPlaceUrl" value="/deviceConfiguration/category/saveInPlace"/>
 <form:form id="category-form" commandName="categoryEditBean" action="${saveInPlaceUrl}" cssClass="js-preventSubmitViaEnterKey">
     <cti:csrfToken/>
+    
     <form:hidden path="categoryType"/>
     <form:hidden path="categoryId"/>
     <input type="hidden" name="configId" value="${configId}"/>
     
     <cti:msgScope paths="modules.tools.configs, modules.tools.configs.category">
-
+        <cti:flashScopeMessages/>
         <div class="stacked">
             <span class="warning">
                 <i:inline key="yukon.common.warning"/>
