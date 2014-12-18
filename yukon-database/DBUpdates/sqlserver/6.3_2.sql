@@ -13,14 +13,14 @@ WHERE RolePropertyId IN (-10803, -10804, -10807, -10808);
 /* Start YUK-13905 */
 SELECT * INTO #DemandProfileCategories
 FROM DeviceConfigCategory
-WHERE CategoryType = 'demandProfile'
-
+WHERE CategoryType = 'demandProfile';
 
 /* @start-block */
-DECLARE @DeviceConfigCategoryId INT
-DECLARE @NextDeviceConfigCategoryId INT
-DECLARE @Name VARCHAR(100)
-DECLARE @Description VARCHAR(1024)
+DECLARE 
+    @DeviceConfigCategoryId INT,
+    @NextDeviceConfigCategoryId INT,
+    @Name VARCHAR(100),
+    @Description VARCHAR(1024);
  
 WHILE EXISTS (SELECT * FROM #DemandProfileCategories)
 BEGIN
