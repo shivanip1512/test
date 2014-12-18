@@ -11,6 +11,7 @@ WHERE RolePropertyId IN (-10803, -10804, -10807,-10808);
 /* End YUK-13917 */
 
 /* Start YUK-13905 */
+/* @start-block */
 DECLARE 
     v_NextDeviceConfigCategoryId NUMBER;
     v_Name VARCHAR2(100);
@@ -58,6 +59,7 @@ BEGIN
     END LOOP;
 END;
 /
+/* @end-block */
 /* End YUK-13905 */
 
 /* Start YUK-13910 */
