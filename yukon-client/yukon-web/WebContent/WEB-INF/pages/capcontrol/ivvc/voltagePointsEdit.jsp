@@ -63,14 +63,14 @@
                                 <c:choose>
                                     <c:when test="${!voltagePoint.regulator}">
                                         <form:select path="points[${status.index}].phase" disabled="${!hasEditingRole}">
-                                            <form:option value="A"><cti:msg2 key="yukon.common.phase.phaseA"/></form:option>
-                                            <form:option value="B"><cti:msg2 key="yukon.common.phase.phaseB"/></form:option>
-                                            <form:option value="C"><cti:msg2 key="yukon.common.phase.phaseC"/></form:option>
+                                            <form:option value="A"><cti:msg2 key="yukon.common.phase.phase.A"/></form:option>
+                                            <form:option value="B"><cti:msg2 key="yukon.common.phase.phase.B"/></form:option>
+                                            <form:option value="C"><cti:msg2 key="yukon.common.phase.phase.C"/></form:option>
                                         </form:select>
                                     </c:when>
                                     <c:otherwise>
                                         <form:hidden path="points[${status.index}].phase"/>
-                                        <i:inline key="yukon.common.phase.phase${voltagePoint.phase}"/>
+                                        <i:inline key="${voltagePoint.phase}"/>
                                     </c:otherwise>
                                 </c:choose>
                             </td>

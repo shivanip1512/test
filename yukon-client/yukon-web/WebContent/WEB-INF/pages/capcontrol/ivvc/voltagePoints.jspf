@@ -58,7 +58,7 @@
                         <a href="${pointLink}">${fn:escapeXml(voltagePoint.pointName)}</a>
                     </div>
 				</td>
-				<td><i:inline key="yukon.common.phase.phase${voltagePoint.phase}"/></td>
+				<td><i:inline key="${voltagePoint.phase}"/></td>
 				<td title="<cti:msg2 key=".table.header.lowerLimitTitle"/>" class="${overrideStrategyClass}">
 					${lowerLimit}
 				</td>

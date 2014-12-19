@@ -237,7 +237,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         Map<Phase, String> zoneLineColorPhaseMap = Maps.newHashMapWithExpectedSize(3);
         for (Phase phase : Phase.getRealPhases()) {
             String phaseString = messageSourceAccessor.getMessage("yukon.common.phase");
-            phaseString += " " + messageSourceAccessor.getMessage("yukon.common.phase.phase" + phase);
+            phaseString += " " + messageSourceAccessor.getMessage("yukon.common.phase.phase." + phase);
             phaseStringMap.put(phase, phaseString);
             String zoneLineColorPhase = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhase" + phase);
             zoneLineColorPhaseMap.put(phase, zoneLineColorPhase);
