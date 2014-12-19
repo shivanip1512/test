@@ -120,9 +120,15 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     
     @Override
     public void updateDeviceInfo(VoltageLimitedDeviceInfo deviceInfo) {
+        /*In The database null value represents a 3 phase system,so while updating the 
+         * devices, if it is a 3 phase system need to insert null for a 3 phase system */
+        Phase phase=deviceInfo.getPhase();
+        if(phase==Phase.ALL){
+            phase=null;
+        }
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE CcMonitorBankList");
-        sql.append("SET Phase").eq(deviceInfo.getPhase());
+        sql.append("SET Phase").eq(phase);
         sql.append(", LowerBandwidth").eq(deviceInfo.getLowerLimit());
         sql.append(", UpperBandwidth").eq(deviceInfo.getUpperLimit());
         sql.append(", OverrideStrategy").eq(YNBoolean.valueOf(deviceInfo.isOverrideStrategy()));
@@ -144,6 +150,10 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
 
     @Override
     public int addDeviceInfo(VoltageLimitedDeviceInfo info) {
+        Phase phase=info.getPhase();
+        if(phase==Phase.ALL){
+            phase=null;
+        }
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.insertInto("CcMonitorBankList");
         sink.addValue("DeviceId", info.getParentPaoIdentifier().getPaoId());
@@ -153,7 +163,7 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         sink.addValue("NINAvg", 3);
         sink.addValue("UpperBandwidth", info.getUpperLimit());
         sink.addValue("LowerBandwidth", info.getLowerLimit());
-        sink.addValue("Phase", info.getPhase());
+        sink.addValue("Phase", phase);
         sink.addValue("OverrideStrategy", YNBoolean.valueOf(info.isOverrideStrategy()));
         
         return yukonJdbcTemplate.update(sql);
@@ -161,6 +171,9 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     
     @Override
     public int updatePhase(int pointId, Phase phase) {
+        if(phase==Phase.ALL){
+            phase=null;
+        }
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE CcMonitorBankList");
         sql.append("SET Phase").eq(phase);
@@ -237,6 +250,9 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
         if(zonePointPhase == null) {
             return;
         }
+        if(phase==Phase.ALL){
+            phase=null;
+        }
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE CcMonitorBankList").set("Phase", phase);
@@ -305,6 +321,9 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     
     private VoltageLimitedDeviceInfo buildNewInfoObject(PaoIdentifier paoId, int pointId, StrategyLimitsHolder limits, Phase phase) {
         VoltageLimitedDeviceInfo info = new VoltageLimitedDeviceInfo();
+        if(phase==Phase.ALL){
+            phase=null;
+        }
         info.setParentPaoIdentifier(paoId);
         info.setPointId(pointId);
         info.setUpperLimit(limits.getUpperLimit());
