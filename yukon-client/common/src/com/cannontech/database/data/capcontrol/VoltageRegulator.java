@@ -40,7 +40,7 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
      * @param paoType
      */
     public VoltageRegulator(PaoType paoType) {
-        super(PaoType.LOAD_TAP_CHANGER);
+        super(paoType);
     }
 
     @Override
