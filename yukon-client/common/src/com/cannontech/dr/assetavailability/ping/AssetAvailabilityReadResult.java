@@ -6,7 +6,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.Completable;
@@ -23,7 +23,7 @@ public class AssetAvailabilityReadResult implements DeviceAttributeReadCallback,
     private final Set<Integer> devicesToRead;
     private final Set<Integer> successDevices = Sets.newHashSet();
     private final Set<Integer> failedDevices = Sets.newHashSet();
-    private final List<DeviceAttributeReadError> errorList = Lists.newArrayList();
+    private final List<SpecificDeviceErrorDescription> errorList = Lists.newArrayList();
     
     public AssetAvailabilityReadResult(Iterable<Integer> devicesToRead) {
         this.devicesToRead = Sets.newHashSet(devicesToRead);
@@ -36,7 +36,7 @@ public class AssetAvailabilityReadResult implements DeviceAttributeReadCallback,
             successDevices.add(paoId);
             log.debug("Asset availability read received value for paoId " + paoId);
         } else {
-            log.debug("Asset availability read: received value for invalid paoId " + paoId);
+            log.debug("Asset availability read received value for invalid paoId " + paoId);
         }
     }
 
@@ -46,21 +46,21 @@ public class AssetAvailabilityReadResult implements DeviceAttributeReadCallback,
     }
 
     @Override
-    public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+    public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
         int paoId = pao.getPaoId();
         if(isValidDevice(pao.getPaoId())) {
             failedDevices.add(pao.getPaoId());
             errorList.add(error);
-            log.debug("Asset availability read received " + error.getType() + " error for paoId " + paoId);
+            log.debug("Asset availability read received error "+error+ "for paoId " + paoId);
         } else {
-            log.debug("Asset availability read received " + error.getType() + " error for invalid paoId " + paoId);
+            log.debug("Asset availability read received error "+error+ "for paoId " + paoId);
         }
     }
 
     @Override
-    public void receivedException(DeviceAttributeReadError error) {
+    public void receivedException(SpecificDeviceErrorDescription error) {
         errorList.add(error);
-        log.debug("Asset availability read received " + error.getType() + " error");
+        log.debug("Asset availability read received error");
     }
 
     @Override

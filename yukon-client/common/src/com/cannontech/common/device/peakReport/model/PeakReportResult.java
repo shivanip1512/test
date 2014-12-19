@@ -1,8 +1,8 @@
 package com.cannontech.common.device.peakReport.model;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 
@@ -30,7 +30,7 @@ public class PeakReportResult {
     // error values
     private boolean noData = true;
     private String deviceError = "";
-    private List<SpecificDeviceErrorDescription> errors = new ArrayList<SpecificDeviceErrorDescription>(); 
+    private Set<SpecificDeviceErrorDescription> errors = new HashSet<SpecificDeviceErrorDescription>(); 
     
     
     // db
@@ -146,10 +146,10 @@ public class PeakReportResult {
     public void setNoData(boolean noData) {
         this.noData = noData;
     }
-    public List<SpecificDeviceErrorDescription> getErrors() {
+    public Set<SpecificDeviceErrorDescription> getErrors() {
         return errors;
     }
-    public void setErrors(List<SpecificDeviceErrorDescription> errors) {
+    public void setErrors(Set<SpecificDeviceErrorDescription> errors) {
         this.errors = errors;
     }
      

@@ -27,7 +27,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.dao.WaitableDeviceAttributeReadCallback;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
@@ -333,13 +332,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
 
             @Override
-            public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+            public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
                 // do we need to send something to the foreign system here?
                 log.warn("received error for " + pao + ": " + error);
             }
 
             @Override
-            public void receivedException(DeviceAttributeReadError error) {
+            public void receivedException(SpecificDeviceErrorDescription error) {
                 log.warn("received exception in meterReadEvent callback: " + error);
             }
             
@@ -596,19 +595,19 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 }
     
                 @Override
-                public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {  //failure
+                public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {  //failure
                     log.warn("deviceAttributeReadCallback.receivedError for odEvent: " + pao + ": " + error);
                     
                     YukonMeter yukonMeter = meterDao.getForId(pao.getPaoId());  // can we get this from meters?
                     meters.remove(yukonMeter);
                     Date now = new Date();  // may need to get this from the callback, but for now "now" will do.
-                    OutageEventType outageEventType = getForStatusCode(error.getType().getErrorCode());
+                    OutageEventType outageEventType = getForStatusCode(error.getErrorCode());
                     OutageDetectionEvent outageDetectionEvent = buildOutageDetectionEvent(yukonMeter, outageEventType, now, error.toString());
                     sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
                 }
     
                 @Override
-                public void receivedException(DeviceAttributeReadError error) {
+                public void receivedException(SpecificDeviceErrorDescription error) {
                     log.warn("deviceAttributeReadCallback.receivedException in odEvent callback: " + error);
                 }
     
@@ -835,13 +834,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
 
             @Override
-            public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+            public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
                 // do we need to send something to the foreign system here?
                 log.warn("received error for " + pao + ": " + error);
             }
 
             @Override
-            public void receivedException(DeviceAttributeReadError error) {
+            public void receivedException(SpecificDeviceErrorDescription error) {
                 log.warn("received exception in meterReadEvent callback: " + error);
             }
         };
@@ -960,13 +959,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
 
             @Override
-            public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+            public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
                 // do we need to send something to the foreign system here?
                 log.warn("received error for " + pao + ": " + error);
             }
 
             @Override
-            public void receivedException(DeviceAttributeReadError error) {
+            public void receivedException(SpecificDeviceErrorDescription error) {
                 log.warn("received exception in FormattedBlockEvent callback: " + error);
             }
         };

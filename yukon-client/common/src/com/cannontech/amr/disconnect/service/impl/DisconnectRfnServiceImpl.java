@@ -28,7 +28,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.service.NetworkManagerError;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -53,16 +52,14 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
     @Override
     public void execute(final DisconnectCommand command, final Set<SimpleDevice> meters,
                         final DisconnectCallback disconnectCallback,
-                        final CommandRequestExecution execution,
-                        final YukonUserContext userContext) {
+                        final CommandRequestExecution execution, YukonUserContext userContext) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 Iterable<YukonMeter> yukonMeters = meterDao.getMetersForYukonPaos(meters);
                 PendingRequests pendingRequests = new PendingRequests(meters.size());
                 for (YukonMeter meter : yukonMeters) {
-                    Callback callback =
-                        new Callback(meter, disconnectCallback, pendingRequests, execution, userContext);
+                    Callback callback = new Callback(meter, disconnectCallback, pendingRequests, execution);
                     if (disconnectCallback.isCanceled()) {
                         callback.cancel();
                     } else {
@@ -94,21 +91,17 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
     }
 
     private class Callback implements RfnMeterDisconnectCallback {
-        MessageSourceAccessor messageSourceAccessor;
         private final DisconnectCallback callback;
         private final SimpleDevice meter;
         private final PendingRequests pendingRequests;
         private final CommandRequestExecution execution;
-        private final YukonUserContext userContext;
 
         Callback(YukonMeter meter, DisconnectCallback callback, PendingRequests pendingRequests,
-                 CommandRequestExecution execution, YukonUserContext userContext) {
+                 CommandRequestExecution execution) {
             this.callback = callback;
             this.meter = new SimpleDevice(meter);
-            messageSourceAccessor = resolver.getMessageSourceAccessor(userContext);
             this.pendingRequests = pendingRequests;
             this.execution = execution;
-            this.userContext = userContext;
         }
         
         public void cancel() {
@@ -134,7 +127,10 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
         @Override
         public void processingExceptionOccured(MessageSourceResolvable message) {
             log.debug("RFN exception (RfnMeterDisconnectCallback)");
-            SpecificDeviceErrorDescription error = getErrorDescription(NetworkManagerError.FAILURE, message);
+            DeviceErrorDescription errorDescription =
+                deviceErrorTranslatorDao.translateErrorCode(NetworkManagerError.FAILURE.getErrorCode());
+            SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, message);
+
             callback.failed(meter, error);
         }
 
@@ -150,15 +146,7 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
             }
         }
 
-        private SpecificDeviceErrorDescription getErrorDescription(NetworkManagerError errorType, MessageSourceResolvable message) {
-            String detail = messageSourceAccessor.getMessage(message);
-            DeviceErrorDescription errorDescription =
-                deviceErrorTranslatorDao.translateErrorCode(errorType.getErrorCode(), userContext);
-            SpecificDeviceErrorDescription deviceErrorDescription =
-                new SpecificDeviceErrorDescription(errorDescription, detail);
-            return deviceErrorDescription;
-        }
-        
+       
         private void proccessResult(RfnMeterDisconnectState state, PointValueQualityHolder pointData, MessageSourceResolvable message) {
             if (log.isDebugEnabled()) {
                 log.debug("RFN proccessState:" + meter + " State:" + state);
@@ -170,11 +158,12 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
             
             if (message == null) {
                 message =
-                    YukonMessageSourceResolvable
-                        .createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.confirmError",
-                                                       state);
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                        "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.confirmError", state);
             }
-            SpecificDeviceErrorDescription error = getErrorDescription(NetworkManagerError.FAILURE, message);
+            DeviceErrorDescription errorDescription =
+                    deviceErrorTranslatorDao.translateErrorCode(NetworkManagerError.FAILURE.getErrorCode());
+                SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, message);
             int errorCode = 0;
             if (state == null) {
                 callback.failed(meter, error);

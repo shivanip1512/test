@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.joda.time.ReadableInstant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -27,6 +28,7 @@ import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.core.service.LoadProfileService.CompletionCallback;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -141,9 +143,14 @@ public class ProfileCollectionServiceImpl implements ProfileCollectionService {
             public void onFailure(int returnStatus, String resultString) {
                 log.error(token + " onFailure for " + paoIdentifier + ", returnStatus = " +
                         returnStatus + "; resultString = " + resultString);
-                DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(returnStatus);
+
+                DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(returnStatus);
+                MessageSourceResolvable detail =
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.errorDetail",
+                        resultString);
                 SpecificDeviceErrorDescription deviceError =
-                        new SpecificDeviceErrorDescription(error, resultString);
+                    new SpecificDeviceErrorDescription(errorDescription, resultString, detail);
+                
                 errors.put(paoIdentifier, deviceError);
                 workLeft.remove(paoIdentifier);
             }

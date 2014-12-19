@@ -9,9 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
 
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -40,9 +41,12 @@ public class AssetAvailabilityPingServiceImpl implements AssetAvailabilityPingSe
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigurationDao;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private AssetAvailabilityService assetAvailabilityService;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     private static final Logger log = YukonLogManager.getLogger(AssetAvailabilityPingServiceImpl.class);
     
-    private Map<Integer, String> paoIdToResultIdMap = Maps.newConcurrentMap();
+    private final Map<Integer, String> paoIdToResultIdMap = Maps.newConcurrentMap();
+    
+    private final static int INVALID_ACTION_ERROR_CODE = 2000;
     
     @Override
     public void readDevicesInDrGrouping(PaoIdentifier paoIdentifier, LiteYukonUser user) {
@@ -84,7 +88,7 @@ public class AssetAvailabilityPingServiceImpl implements AssetAvailabilityPingSe
                 deviceAttributeReadService.initiateRead(paos, Sets.newHashSet(attribute), result, 
                                                         DeviceRequestType.ASSET_AVAILABILITY_READ, user);
             } else {
-                DeviceAttributeReadError error = getBadRelayError(relay);
+                SpecificDeviceErrorDescription error = getBadRelayError(relay);
                 for(YukonPao pao : paos) {
                     result.receivedError(pao.getPaoIdentifier(), error);
                 }
@@ -102,11 +106,13 @@ public class AssetAvailabilityPingServiceImpl implements AssetAvailabilityPingSe
         return recentResultsCache.getResult(resultId);
     }
     
-    private DeviceAttributeReadError getBadRelayError(int relay) {
-        MessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.web.modules.dr.assetAvailability.pingError.badRelay", relay);
-        return new DeviceAttributeReadError(DeviceAttributeReadErrorType.NO_POINT, resolvable);
+    private SpecificDeviceErrorDescription getBadRelayError(int relay) {
+        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(INVALID_ACTION_ERROR_CODE);
+        MessageSourceResolvable detail =
+            new YukonMessageSourceResolvable("yukon.web.modules.dr.assetAvailability.pingError.badRelay", relay);
+        return new SpecificDeviceErrorDescription(errorDescription, detail, detail);
     }
-    
+
     private static void logRelayRead(PaoIdentifier paoIdentifier, int size, int relay) {
         log.info("Asset availability read with paoId " + paoIdentifier.getPaoId() + " reading " + size + 
                  " devices on relay " + relay);

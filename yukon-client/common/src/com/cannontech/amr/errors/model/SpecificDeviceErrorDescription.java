@@ -1,14 +1,79 @@
 package com.cannontech.amr.errors.model;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.MessageSourceResolvable;
+
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public final class SpecificDeviceErrorDescription {
     private final DeviceErrorDescription errorDescription;
     private final String resultString;
+    private final MessageSourceResolvable summary;
+    private final MessageSourceResolvable detail;
 
-    public SpecificDeviceErrorDescription(DeviceErrorDescription errorDescription, String resultString) {
+    /**
+     * Constructs SpecificDeviceErrorDescription. Summary is constructed using
+     * description and error code from errorDescription. resultString is set to
+     * empty string if it is null.
+     * 
+     * @throws IllegalArgumentException
+     *         if detail or errorDescription is null.
+     */
+    public SpecificDeviceErrorDescription(DeviceErrorDescription errorDescription, String resultString,
+            MessageSourceResolvable detail) {
+        this(errorDescription, resultString, YukonMessageSourceResolvable.createSingleCodeWithArguments(
+            "yukon.common.device.errorSummary", errorDescription.getDescription(), errorDescription.getErrorCode()),
+            detail);
+    }
+
+    /**
+     * Constructs SpecificDeviceErrorDescription. Summary is constructed using
+     * description and error code from errorDescription. resultString is set to
+     * empty string.
+     * 
+     * @throws IllegalArgumentException if detail or errorDescription is null.
+     */
+    public SpecificDeviceErrorDescription(DeviceErrorDescription errorDescription, MessageSourceResolvable detail) {
+        this(errorDescription, "", detail);
+    }
+
+    /**
+     * Constructs SpecificDeviceErrorDescription. resultString is set to empty string.
+     * 
+     * @throws IllegalArgumentException if errorDescription, summary or detail is null.
+     */
+    public SpecificDeviceErrorDescription(DeviceErrorDescription errorDescription, MessageSourceResolvable summary,
+            MessageSourceResolvable detail) {
+        this(errorDescription, "", summary, detail);
+    }
+
+    /**
+     * Constructs SpecificDeviceErrorDescription. resultString is set to empty
+     * string if it is null.
+     * 
+     * @throws IllegalArgumentException if errorDescription, summary or detail is null.
+     */
+    private SpecificDeviceErrorDescription(DeviceErrorDescription errorDescription, String resultString,
+            MessageSourceResolvable summary, MessageSourceResolvable detail) {
+
+        if (errorDescription == null) {
+            throw new IllegalArgumentException("errorDescription is null");
+        }
+        if (summary == null) {
+            throw new IllegalArgumentException("summary is null");
+        }
+        if (detail == null) {
+            throw new IllegalArgumentException("detail is null");
+        }
+
         this.errorDescription = errorDescription;
-        this.resultString = resultString;
+        if (StringUtils.isEmpty(resultString)) {
+            this.resultString = "";
+        } else {
+            this.resultString = resultString;
+        }
+        this.summary = summary;
+        this.detail = detail;
     }
 
     public Integer getErrorCode() {
@@ -29,6 +94,14 @@ public final class SpecificDeviceErrorDescription {
 
     public String getPorter() {
         return resultString;
+    }
+
+    public MessageSourceResolvable getSummary() {
+        return summary;
+    }
+
+    public MessageSourceResolvable getDetail() {
+        return detail;
     }
 
     @Override

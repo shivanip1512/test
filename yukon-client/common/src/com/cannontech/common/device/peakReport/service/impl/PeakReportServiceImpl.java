@@ -4,7 +4,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -100,7 +100,7 @@ public class PeakReportServiceImpl implements PeakReportService {
 	            peakResult.setErrors(commandResultHolder.getErrors());
 	            
 	            StringBuffer sb = new StringBuffer();
-	            List<SpecificDeviceErrorDescription> errors = commandResultHolder.getErrors();
+	            Set<SpecificDeviceErrorDescription> errors = commandResultHolder.getErrors();
 	            for (SpecificDeviceErrorDescription ded : errors) {
 	                sb.append(ded.toString() + "\n");
 	            }

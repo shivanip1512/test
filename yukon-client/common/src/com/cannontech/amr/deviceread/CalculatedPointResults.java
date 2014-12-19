@@ -2,14 +2,14 @@ package com.cannontech.amr.deviceread;
 
 import java.util.Set;
 
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class CalculatedPointResults {
     PointValueHolder calculatedPVH;
     PointValueHolder differencePVH;
     PointValueHolder currentPVH;
-    Set<DeviceAttributeReadError> errors;
+    Set<SpecificDeviceErrorDescription> errors;
     String deviceError;
 
     public PointValueHolder getCalculatedPVH() {
@@ -36,11 +36,11 @@ public class CalculatedPointResults {
         this.differencePVH = differencePVH;
     }
 
-    public Set<DeviceAttributeReadError> getErrors() {
+    public Set<SpecificDeviceErrorDescription> getErrors() {
         return errors;
     }
 
-    public void setErrors(Set<DeviceAttributeReadError> errors) {
+    public void setErrors(Set<SpecificDeviceErrorDescription> errors) {
         this.errors = errors;
     }
     

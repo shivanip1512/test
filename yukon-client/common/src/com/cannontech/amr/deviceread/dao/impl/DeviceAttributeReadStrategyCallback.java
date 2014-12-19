@@ -1,6 +1,6 @@
 package com.cannontech.amr.deviceread.dao.impl;
 
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dynamic.PointValueHolder;
 
@@ -21,13 +21,13 @@ public interface DeviceAttributeReadStrategyCallback {
     /**
      * For a given PAO, this method should be called in those cases that the receivedValue method will NOT be called.
      */
-    public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error);
+    public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error);
     
     /**
      * This may be called zero or more times. If this is called, there is no guarantee that the other received* methods
      * will be called as described. Guarantees on the complete method will always be honored, however.
      */
-    public void receivedException(DeviceAttributeReadError error);
+    public void receivedException(SpecificDeviceErrorDescription error);
     
     /**
      * This is guaranteed to be called exactly once. Once this has been called, none of the received* methods will called.

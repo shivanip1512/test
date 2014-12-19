@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
@@ -36,7 +36,7 @@ import com.cannontech.user.YukonUserContext;
 
 public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService {
 
-    private Logger logger = YukonLogManager.getLogger(MoveInMoveOutEmailServiceImpl.class);
+    private final Logger logger = YukonLogManager.getLogger(MoveInMoveOutEmailServiceImpl.class);
 
     private TemplateProcessorFactory templateProcessorFactory;
     private EmailService emailService;
@@ -57,6 +57,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     private final String moveInSuccessSubjectFormat = "Move in for {newMeterName} from {startDate|BOTH} - {stopDate|BOTH} {status}.";
     private final String scheduledMsgSub = "Scheduled meter reading for {prevMeterName}.";
 
+    @Override
     public void createMoveInEmail(MoveInResult moveInResult,
                                   YukonUserContext userContext) {
         if (!StringUtils.isBlank(moveInResult.getEmailAddress())) {
@@ -72,6 +73,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         }
     }
 
+    @Override
     public void createMoveOutEmail(MoveOutResult moveOutResult,
                                    YukonUserContext userContext) {
         if (!StringUtils.isBlank(moveOutResult.getEmailAddress())) {
@@ -334,7 +336,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("stopDate", currentDate);
     }
 
-    private void buildErrorStr(Set<DeviceAttributeReadError> errors,
+    private void buildErrorStr(Set<SpecificDeviceErrorDescription> errors,
             String errorMessage, Map<String, Object> msgData, YukonUserContext userContext) {
     	
     	MessageSourceAccessor messageSourceAccessor = resolver.getMessageSourceAccessor(userContext);
@@ -346,7 +348,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
             msgData.put("errorMessage", " ");
         }
         
-        for (DeviceAttributeReadError error : errors) {
+        for (SpecificDeviceErrorDescription error : errors) {
         	errorsStr.append("<br>");
         	errorsStr.append("<br>");
         	errorsStr.append(messageSourceAccessor.getMessage(error.getSummary()));

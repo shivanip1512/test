@@ -13,10 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.device.StrategyType;
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
 import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
@@ -53,6 +53,8 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    
+    private final static int TIME_OUT_ERROR_CODE = 227;
 
     @Override
     public StrategyType getType() {
@@ -89,13 +91,14 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
              * is treated the same as "no porter connection" error. There is no
              * command request execution result created for the entries.
              */
-            MessageSourceResolvable summary =
+            
+            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(TIME_OUT_ERROR_CODE);
+            MessageSourceResolvable detail =
                 YukonMessageSourceResolvable.createSingleCodeWithArguments(
                     "yukon.common.device.attributeRead.general.readError", error.getMessage());
-            DeviceAttributeReadError exceptionError =
-                new DeviceAttributeReadError(DeviceAttributeReadErrorType.EXCEPTION, summary);
+            SpecificDeviceErrorDescription deviceError = new SpecificDeviceErrorDescription(errorDescription, detail);
             log.error(error);
-            delegateCallback.receivedException(exceptionError);
+            delegateCallback.receivedException(deviceError);
         }
         delegateCallback.complete();
     }

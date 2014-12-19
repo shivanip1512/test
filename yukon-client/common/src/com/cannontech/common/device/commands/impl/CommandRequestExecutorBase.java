@@ -19,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -55,6 +56,7 @@ import com.cannontech.core.service.PorterRequestCancelService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
 import com.cannontech.message.porter.message.Request;
@@ -101,7 +103,7 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
         private volatile boolean canceled = false;
         private final CountDownLatch commandsAreWritingLatch = new CountDownLatch(1);
         private final CommandRequestExecution commandRequestExecution;
-        private boolean multipleStrategies;
+        private final boolean multipleStrategies;
 
 		private CommandResultMessageListener(List<RequestHolder> requests,
 				CommandCompletionCallback<? super T> callback, int groupMessageId,
@@ -147,7 +149,11 @@ public abstract class CommandRequestExecutorBase<T extends CommandRequestBase> i
                     int status = rtn.getStatus();
                     if (status != 0) {
                         DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(status);
-                        specificErrorDescription  = new SpecificDeviceErrorDescription(errorDescription, rtn.getResultString());
+                        MessageSourceResolvable detail =
+                            YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                                "yukon.common.device.errorDetail", rtn.getResultString());
+                        specificErrorDescription =
+                            new SpecificDeviceErrorDescription(errorDescription, rtn.getResultString(), detail);
                         if (debug) {
                             log.debug("Calling receivedError on " + callback + " for " + rtn);
                         }

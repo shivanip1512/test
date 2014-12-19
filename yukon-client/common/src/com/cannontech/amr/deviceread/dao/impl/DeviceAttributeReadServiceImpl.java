@@ -14,13 +14,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadCallback;
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.dao.WaitableDeviceAttributeReadCallback;
 import com.cannontech.amr.deviceread.service.DeviceReadResult;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.deviceread.service.RetryParameters;
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
@@ -70,6 +71,10 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private List<DeviceAttributeReadStrategy> strategies;
     @Autowired private DeviceAttributeReadPlcStrategy plcStrategy;
+    @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
+    
+    private final static int TIME_OUT_ERROR_CODE = 227;
+    private final static int INVALID_ACTION_ERROR_CODE = 2000;
     
     private final RecentResultsCache<GroupMeterReadResult> resultsCache = new RecentResultsCache<>();
     
@@ -137,25 +142,31 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 		DeviceAttributeReadStrategyCallback strategyCallback = new ReadCallback(delegateCallback, pointsForStrategy
 				.keySet().size(), execution);
 
-		for (YukonPao unreadableDevice : unreadableDevices) {
-			MessageSourceResolvable summary = YukonMessageSourceResolvable.createDefaultWithoutCode("no strategy for "
-					+ unreadableDevice.getPaoIdentifier().getPaoType());
-			DeviceAttributeReadError strategyError = new DeviceAttributeReadError(
-					DeviceAttributeReadErrorType.NO_STRATEGY, summary);
-			strategyCallback.receivedError(unreadableDevice.getPaoIdentifier(), strategyError);
-		}
+        for (YukonPao unreadableDevice : unreadableDevices) {
+            DeviceErrorDescription errorDescription =
+                deviceErrorTranslatorDao.translateErrorCode(INVALID_ACTION_ERROR_CODE);
+            MessageSourceResolvable detail =
+                YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                    "yukon.common.device.attributeRead.general.noStrategy",
+                    unreadableDevice.getPaoIdentifier().getPaoType());
+            SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, detail, detail);
 
-		for (YukonPao unsupportedDevice : unsupportedDevices) {
-			if (!unreadableDevices.contains(unsupportedDevice)) {
+            strategyCallback.receivedError(unreadableDevice.getPaoIdentifier(), error);
+        }
 
-				MessageSourceResolvable summary = YukonMessageSourceResolvable.createDefaultWithoutCode(attributes
-						+ " not supported for " + unsupportedDevice.getPaoIdentifier().getPaoType());
-				DeviceAttributeReadError strategyError = new DeviceAttributeReadError(
-						DeviceAttributeReadErrorType.NO_ATTRIBUTE, summary);
-				strategyCallback.receivedError(unsupportedDevice.getPaoIdentifier(), strategyError);
-			}
-
-		}
+        for (YukonPao unsupportedDevice : unsupportedDevices) {
+            if (!unreadableDevices.contains(unsupportedDevice)) {
+                DeviceErrorDescription errorDescription =
+                    deviceErrorTranslatorDao.translateErrorCode(INVALID_ACTION_ERROR_CODE);
+                MessageSourceResolvable detail =
+                    YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                        "yukon.common.device.attributeRead.general.noAttribute",
+                        unsupportedDevice.getPaoIdentifier().getPaoType());
+                SpecificDeviceErrorDescription error =
+                    new SpecificDeviceErrorDescription(errorDescription, detail, detail);
+                strategyCallback.receivedError(unsupportedDevice.getPaoIdentifier(), error);
+            }
+        }
 
 		if (pointsForStrategy.isEmpty()) {
 			strategyCallback.complete();
@@ -267,9 +278,11 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 		} catch (InterruptedException e) {
 		}
 		if (result.isTimeout()) {
-			MessageSourceResolvable summary = YukonMessageSourceResolvable.createDefaultWithoutCode("Request timed out.");
-			DeviceAttributeReadError error = new DeviceAttributeReadError(DeviceAttributeReadErrorType.COMMUNICATION, summary);
-			result.addError(error);
+            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(TIME_OUT_ERROR_CODE);
+            MessageSourceResolvable detail =
+                YukonMessageSourceResolvable.createSingleCode("yukon.common.device.attributeRead.general.timeout");
+            SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, detail);
+            result.addError(error);
 		}
 		return result;
 	}
@@ -342,7 +355,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 		}
 		
 		@Override
-		public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+		public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
 			result.addError(error);
 		}
 
@@ -357,7 +370,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 		}
 
 		@Override
-		public void receivedException(DeviceAttributeReadError exception) {
+		public void receivedException(SpecificDeviceErrorDescription exception) {
 			result.addError(exception);
 		}
 
@@ -398,7 +411,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 		}
 
 		@Override
-		public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+		public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
 			delegateCallback.receivedError(pao, error);
 		}
 
@@ -413,7 +426,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 		}
 
 		@Override
-		public void receivedException(DeviceAttributeReadError exception) {
+		public void receivedException(SpecificDeviceErrorDescription exception) {
 			delegateCallback.receivedException(exception);
 		}
 	};

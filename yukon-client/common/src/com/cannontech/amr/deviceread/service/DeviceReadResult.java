@@ -5,21 +5,21 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.core.dynamic.PointValueHolder;
 
 public class DeviceReadResult {
 	
-	private Set<DeviceAttributeReadError> errors = new HashSet<DeviceAttributeReadError>();
-    private List<PointValueHolder> pointValues = new ArrayList<PointValueHolder>();
+	private final Set<SpecificDeviceErrorDescription> errors = new HashSet<SpecificDeviceErrorDescription>();
+    private final List<PointValueHolder> pointValues = new ArrayList<PointValueHolder>();
     private String lastResultString;
     private boolean timeout = true;
     
-	public Set<DeviceAttributeReadError> getErrors() {
+	public Set<SpecificDeviceErrorDescription> getErrors() {
 		return errors;
 	}
 	
-	public void addError(DeviceAttributeReadError error) {
+	public void addError(SpecificDeviceErrorDescription error) {
 		errors.add(error);
 	}
 

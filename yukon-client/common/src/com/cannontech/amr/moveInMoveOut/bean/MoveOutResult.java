@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -17,7 +17,7 @@ public class MoveOutResult{
     private PointValueHolder currentReading;
     private PointValueHolder calculatedDifference;
     private PlcMeter previousMeter;
-    private Set<DeviceAttributeReadError> errors = new HashSet<DeviceAttributeReadError>();    //contains device read errors 
+    private Set<SpecificDeviceErrorDescription> errors = new HashSet<SpecificDeviceErrorDescription>();    //contains device read errors 
     private List<DeviceGroup> deviceGroupsAdded = new ArrayList<DeviceGroup>();
     private String emailAddress;
     private String submissionType;
@@ -42,10 +42,10 @@ public class MoveOutResult{
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
     }
-    public Set<DeviceAttributeReadError> getErrors() {
+    public Set<SpecificDeviceErrorDescription> getErrors() {
         return errors;
     }
-    public void setErrors(Set<DeviceAttributeReadError> errors) {
+    public void setErrors(Set<SpecificDeviceErrorDescription> errors) {
         this.errors = errors;
     }
     public PlcMeter getPreviousMeter() {

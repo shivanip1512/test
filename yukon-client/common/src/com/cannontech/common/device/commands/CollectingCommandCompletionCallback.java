@@ -1,7 +1,9 @@
 package com.cannontech.common.device.commands;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionIdentifier;
@@ -13,9 +15,9 @@ public class CollectingCommandCompletionCallback implements
         CommandCompletionCallback<Object>, CommandResultHolder, Completable, CancelStatus {
     
 	private CommandRequestExecutionIdentifier commandRequestExecutionIdentifier = null;
-    private List<SpecificDeviceErrorDescription> errors = new ArrayList<SpecificDeviceErrorDescription>();
-    private List<PointValueHolder> values = new ArrayList<PointValueHolder>();
-    private List<String> resultStrings = new ArrayList<String>();
+    private final Set<SpecificDeviceErrorDescription> errors = new HashSet<>();
+    private final List<PointValueHolder> values = new ArrayList<PointValueHolder>();
+    private final List<String> resultStrings = new ArrayList<String>();
     private boolean complete = false;
     private boolean canceled = false;
     private boolean processingErrorOccured = false;
@@ -62,22 +64,27 @@ public class CollectingCommandCompletionCallback implements
     	return isExceptionOccured() || isErrorsExist();
     }
     
+    @Override
     public boolean isErrorsExist() {
         return !errors.isEmpty();
     }
 
-    public List<SpecificDeviceErrorDescription> getErrors() {
+    @Override
+    public Set<SpecificDeviceErrorDescription> getErrors() {
         return errors;
     }
 
+    @Override
     public List<PointValueHolder> getValues() {
         return values;
     }
     
+    @Override
     public List<String> getResultStrings() {
         return resultStrings;
     }
     
+    @Override
     public String getLastResultString() {
         
         if(resultStrings.size() > 0){

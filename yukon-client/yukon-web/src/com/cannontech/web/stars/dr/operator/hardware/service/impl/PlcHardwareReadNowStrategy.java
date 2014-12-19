@@ -1,17 +1,17 @@
 package com.cannontech.web.stars.dr.operator.hardware.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.service.DeviceReadResult;
+import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -58,9 +58,10 @@ public class PlcHardwareReadNowStrategy implements HardwareReadNowStrategy {
         if (result.isSuccess()) {
             resultMap.put("message", accessor.getMessage(keyBase + "readNowSuccess"));
         } else {
-            Set<DeviceAttributeReadErrorType> errors = new HashSet<>();
-            for (DeviceAttributeReadError error : result.getErrors()) {
-                errors.add(error.getType());
+            List<String> errors = new ArrayList<>(); 
+            for (SpecificDeviceErrorDescription error : result.getErrors()) {
+                String detail = accessor.getMessage(error.getDetail());
+                errors.add(detail);
             }
             log.info("Read failed for " + device.getPaoIdentifier() + " with errors: " +Joiner.on(',').join(errors));
             resultMap.put("message", accessor.getMessage(keyBase + "error.readNowFailed", Joiner.on(',').join(errors)));

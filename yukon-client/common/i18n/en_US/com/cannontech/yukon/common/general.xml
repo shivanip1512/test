@@ -53,6 +53,8 @@
 <entry key="yukon.common.device">Device</entry>
 <entry key="yukon.common.deviceName">Device Name</entry>
 <entry key="yukon.common.deviceType">Device Type</entry>
+<entry key="yukon.common.device.errorSummary">{0} ({1})</entry>
+<entry key="yukon.common.device.errorDetail">{0}</entry>
 <entry key="yukon.common.disable">Disable</entry>
 <entry key="yukon.common.disabled">Disabled</entry>
 <entry key="yukon.common.distance.KILOMETERS">km</entry>

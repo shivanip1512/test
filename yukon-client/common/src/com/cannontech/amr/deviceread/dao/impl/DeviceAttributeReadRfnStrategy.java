@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.device.StrategyType;
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadError;
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
 import com.cannontech.amr.deviceread.service.RetryParameters;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -42,6 +40,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoMultiPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.service.NetworkManagerError;
 import com.cannontech.common.util.IterableUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -101,7 +100,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
           
         RfnStrategyCallback strategyCallback = new RfnStrategyCallback() {
             
-            Set<DeviceAttributeReadError> errors = new HashSet<>();
+            Set<SpecificDeviceErrorDescription> errors = new HashSet<>();
             AtomicInteger completionCounter = new AtomicInteger(1);
             
             @Override
@@ -113,11 +112,11 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             }
             
             @Override
-            public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+            public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
                 delegateCallback.receivedError(pao, error);
                 errors.add(error);
                 commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution, pao.getPaoId(),
-                    error.getType().getErrorCode());
+                    error.getErrorCode());
             }
             
             @Override
@@ -126,7 +125,7 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             }
                  
             @Override
-            public void receivedException(DeviceAttributeReadError error) {
+            public void receivedException(SpecificDeviceErrorDescription error) {
                 delegateCallback.receivedException(error);
             }
 
@@ -167,13 +166,12 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             }
             
             @Override
-            public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+            public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
                 CommandRequestDevice command = new CommandRequestDevice();
                 command.setDevice(new SimpleDevice(pao));
-                SpecificDeviceErrorDescription errorDescription = getError(error.getType().getErrorCode());
-                groupCallback.receivedLastError(command, errorDescription);
+                groupCallback.receivedLastError(command, error);
                 commandRequestExecutionResultDao.saveCommandRequestExecutionResult(groupCallback.getExecution(),
-                    pao.getPaoId(), error.getType().getErrorCode());
+                    pao.getPaoId(), error.getErrorCode());
             }
             
             @Override
@@ -184,10 +182,9 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             }
                  
             @Override
-            public void receivedException(DeviceAttributeReadError error) {
-                SpecificDeviceErrorDescription errorDescription = getError(error.getType().getErrorCode());
+            public void receivedException(SpecificDeviceErrorDescription error) {
                 CommandRequestDevice command = new CommandRequestDevice();
-                groupCallback.receivedLastError(command, errorDescription);
+                groupCallback.receivedLastError(command, error);
             }
 
             @Override
@@ -254,16 +251,18 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             
             @Override
             public void receivedDataError(T2 replyType) {
-                MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.dataError", replyType);
-                DeviceAttributeReadError dataError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.COMMUNICATION, summary);
-                delegateCallback.receivedError(device.getPaoIdentifier(), dataError);
+                SpecificDeviceErrorDescription error =
+                    getError(NetworkManagerError.TIMEOUT.getErrorCode(), replyType,
+                        "yukon.common.device.attributeRead.rfn.dataError");
+                delegateCallback.receivedError(device.getPaoIdentifier(), error);
             }
-            
+
             @Override
             public void receivedStatusError(T1 replyType) {
-                MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.statusError", replyType);
-                DeviceAttributeReadError dataError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.UNKNOWN, summary);
-                delegateCallback.receivedError(device.getPaoIdentifier(), dataError);
+                SpecificDeviceErrorDescription error =
+                    getError(NetworkManagerError.FAILURE.getErrorCode(), replyType,
+                        "yukon.common.device.attributeRead.rfn.statusError");
+                delegateCallback.receivedError(device.getPaoIdentifier(), error);
             }
             
             @Override
@@ -271,9 +270,9 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
             }
             
             @Override
-            public void processingExceptionOccured(MessageSourceResolvable message) {
-                DeviceAttributeReadError exception = new DeviceAttributeReadError(DeviceAttributeReadErrorType.EXCEPTION, message);
-                delegateCallback.receivedException(exception);
+            public void processingExceptionOccured(MessageSourceResolvable detail) {
+                SpecificDeviceErrorDescription error = getError(NetworkManagerError.FAILURE.getErrorCode(), detail);
+                delegateCallback.receivedException(error);
             }
 
             @Override
@@ -321,19 +320,21 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
         
         @Override
         public void receivedDataError(T2 replyType) {
-            if(!isComplete) {
-                MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.dataError", replyType);
-                DeviceAttributeReadError dataError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.COMMUNICATION, summary);
-                delegateCallback.receivedError(device.getPaoIdentifier(), dataError);
+            if(!isComplete) {         
+                SpecificDeviceErrorDescription error =
+                    getError(NetworkManagerError.TIMEOUT.getErrorCode(), replyType,
+                        "yukon.common.device.attributeRead.rfn.statusError");
+                delegateCallback.receivedError(device.getPaoIdentifier(), error);
             }
         }
         
         @Override
         public void receivedStatusError(T1 replyType) {
             if(!isComplete) {
-                MessageSourceResolvable summary = YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.common.device.attributeRead.rfn.statusError", replyType);
-                DeviceAttributeReadError dataError = new DeviceAttributeReadError(DeviceAttributeReadErrorType.UNKNOWN, summary);
-                delegateCallback.receivedError(device.getPaoIdentifier(), dataError);
+                SpecificDeviceErrorDescription error =
+                    getError(NetworkManagerError.FAILURE.getErrorCode(), replyType,
+                        "yukon.common.device.attributeRead.rfn.statusError");
+                delegateCallback.receivedError(device.getPaoIdentifier(), error);
             }
         }
         
@@ -343,10 +344,10 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
         }
         
         @Override
-        public void processingExceptionOccured(MessageSourceResolvable message) {
+        public void processingExceptionOccured(MessageSourceResolvable detail) {
             if(!isComplete) {
-                DeviceAttributeReadError exception = new DeviceAttributeReadError(DeviceAttributeReadErrorType.EXCEPTION, message);
-                delegateCallback.receivedException(exception);
+                SpecificDeviceErrorDescription error = getError(NetworkManagerError.FAILURE.getErrorCode(), detail);
+                delegateCallback.receivedException( error);
             }
         }
 
@@ -410,11 +411,16 @@ public class DeviceAttributeReadRfnStrategy implements DeviceAttributeReadStrate
         
     }
 
-    private SpecificDeviceErrorDescription getError(Integer errorCode) {
+    private <T> SpecificDeviceErrorDescription getError(Integer errorCode, T replyType, String msgCode) {
         DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(errorCode);
-        SpecificDeviceErrorDescription deviceErrorDescription =
-            new SpecificDeviceErrorDescription(errorDescription, null);
-
-        return deviceErrorDescription;
+        MessageSourceResolvable detail = YukonMessageSourceResolvable.createSingleCodeWithArguments(msgCode, replyType);
+        SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, detail);
+        return error;
+    }
+    
+    private SpecificDeviceErrorDescription getError(Integer errorCode, MessageSourceResolvable detail) {
+        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(errorCode);
+        SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, detail);
+        return error;
     }
 }

@@ -28,7 +28,6 @@ import com.cannontech.amr.device.ProfileAttributeChannel;
 import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.device.search.model.DeviceSearchCategory;
 import com.cannontech.amr.device.search.model.DeviceSearchField;
-import com.cannontech.amr.deviceread.dao.DeviceAttributeReadErrorType;
 import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectDeviceState;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
@@ -607,7 +606,6 @@ public class SimpleImmutabilityTest {
             DataRangeType.class,
             DataSelection.class,
             DetectedPhase.class,
-            DeviceAttributeReadErrorType.class,
             DeviceSearchCategory.class,
             DeviceSearchField.class,
             Direction.class,
