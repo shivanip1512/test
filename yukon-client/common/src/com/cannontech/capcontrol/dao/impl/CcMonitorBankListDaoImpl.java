@@ -321,9 +321,6 @@ public class CcMonitorBankListDaoImpl implements CcMonitorBankListDao {
     
     private VoltageLimitedDeviceInfo buildNewInfoObject(PaoIdentifier paoId, int pointId, StrategyLimitsHolder limits, Phase phase) {
         VoltageLimitedDeviceInfo info = new VoltageLimitedDeviceInfo();
-        if(phase==Phase.ALL){
-            phase=null;
-        }
         info.setParentPaoIdentifier(paoId);
         info.setPointId(pointId);
         info.setUpperLimit(limits.getUpperLimit());
