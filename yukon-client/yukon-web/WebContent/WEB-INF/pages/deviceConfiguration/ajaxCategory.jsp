@@ -11,7 +11,6 @@
 <cti:url var="saveInPlaceUrl" value="/deviceConfiguration/category/saveInPlace"/>
 <form:form id="category-form" commandName="categoryEditBean" action="${saveInPlaceUrl}" cssClass="js-preventSubmitViaEnterKey">
     <cti:csrfToken/>
-    
     <form:hidden path="categoryType"/>
     <form:hidden path="categoryId"/>
     <input type="hidden" name="configId" value="${configId}"/>
