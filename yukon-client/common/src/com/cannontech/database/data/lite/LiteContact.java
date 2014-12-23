@@ -15,6 +15,11 @@ public class LiteContact extends LiteBase {
     private int addressID = CtiUtilities.NONE_ZERO_ID;
 
     private List<LiteContactNotification> liteContactNotifications = LazyList.ofInstance(LiteContactNotification.class);
+    
+    /*Default constructor */
+    public LiteContact() {
+        
+    }
 
     public LiteContact(int contactId) {
         super();
