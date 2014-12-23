@@ -80,25 +80,28 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
                                                      DeviceRequestType type) {
         
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select CommandRequestExecId, StartTime, StopTime, RequestCount, CommandRequestExecType, Username, CommandRequestExecContextId, ExecutionStatus, CommandRequestType");
-        sql.append("from (select cre.CommandRequestExecId, cre.StartTime, cre.StopTime,  cre.RequestCount, cre.CommandRequestExecType, ");
+        sql.append("SELECT CommandRequestExecId, StartTime, StopTime, RequestCount, CommandRequestExecType, Username,");
+        sql.append("CommandRequestExecContextId, ExecutionStatus, CommandRequestType");
+        sql.append("FROM (SELECT cre.CommandRequestExecId, cre.StartTime, cre.StopTime,  cre.RequestCount, cre.CommandRequestExecType, ");
         sql.append("             cre.Username, cre.CommandRequestExecContextId, cre.ExecutionStatus, cre.CommandRequestType, ");
-        sql.append("             ROW_NUMBER() over (order by cre.StartTime desc) as RowNum");
-        sql.append("      from CommandRequestExec cre");
+        sql.append("             ROW_NUMBER() OVER (ORDER BY cre.StartTime DESC) AS RowNum");
+        sql.append("      FROM CommandRequestExec cre");
         if (jobId > 0) {
-            sql.append(" join ScheduledGrpCommandRequest sgcr on sgcr.CommandRequestExecContextId = cre.CommandRequestExecContextId");
+            sql.append(" JOIN ScheduledGrpCommandRequest sgcr ON sgcr.CommandRequestExecContextId = cre.CommandRequestExecContextId");
         }
-        sql.append("      where cre.StartTime").gte(from);
-        sql.append("        and cre.StartTime").lte(to);
+        sql.append("      WHERE cre.StartTime").gte(from);
+        sql.append("        AND cre.StartTime").lte(to);
         if (jobId > 0) {
-            sql.append("    and sgcr.JobId").eq(jobId);
+            sql.append("    AND sgcr.JobId IN ");
+            sql.append("(SELECT jobId FROM Job WHERE JobGroupId = (SELECT JobGroupId FROM Job WHERE jobId").eq(jobId);
+            sql.append("))");
         }
         if (type != null) {
-            sql.append("    and cre.CommandRequestExecType").eq_k(type);
+            sql.append("    AND cre.CommandRequestExecType").eq_k(type);
         }
-        sql.append(") as tbl");
-        sql.append("where tbl.RowNum between").append(paging.getOneBasedStartIndex());
-        sql.append("and").append(paging.getOneBasedEndIndex());
+        sql.append(") AS tbl");
+        sql.append("WHERE tbl.RowNum between").append(paging.getOneBasedStartIndex());
+        sql.append("AND").append(paging.getOneBasedEndIndex());
               
         List<CommandRequestExecution> executions = yukonJdbcTemplate.query(sql, rowAndFieldMapper);
                 
@@ -109,18 +112,20 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
     public int getByRangeCount(int jobId, Instant from, Instant to, DeviceRequestType type) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select count(*)");
-        sql.append("from CommandRequestExec cre");
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM CommandRequestExec cre");
         if (jobId > 0) {
-            sql.append("join ScheduledGrpCommandRequest sgcr on sgcr.CommandRequestExecContextId = cre.CommandRequestExecContextId");
+            sql.append("JOIN ScheduledGrpCommandRequest sgcr ON sgcr.CommandRequestExecContextId = cre.CommandRequestExecContextId");
         }
-        sql.append("  where cre.StartTime").gte(from);
-        sql.append("    and cre.StartTime").lte(to);
+        sql.append("  WHERE cre.StartTime").gte(from);
+        sql.append("    AND cre.StartTime").lte(to);
         if (jobId > 0) {
-            sql.append("and sgcr.JobId").eq(jobId);
+            sql.append("    AND sgcr.JobId IN ");
+            sql.append("(SELECT jobId FROM Job WHERE JobGroupId = (SELECT JobGroupId FROM Job WHERE jobId").eq(jobId);
+            sql.append("))");
         }
         if (type != null) {
-            sql.append("and cre.CommandRequestExecType").eq_k(type);
+            sql.append("AND cre.CommandRequestExecType").eq_k(type);
         }
 
         return yukonJdbcTemplate.queryForInt(sql);

@@ -214,7 +214,9 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         sql.append("JOIN CommandRequestExec CRE ON (SGCR.CommandRequestExecContextId = CRE.CommandRequestExecContextId)");
 
         if (jobId > 0) {
-    		sql.append("WHERE SGCR.JobId").eq(jobId);
+        	sql.append("WHERE SGCR.JobId IN ");
+    		sql.append("(SELECT jobId FROM Job WHERE JobGroupId = (SELECT JobGroupId FROM Job WHERE JobId").eq(jobId);
+            sql.append("))");
         } else {
         	sql.append("WHERE SGCR.JobId > 0");
         }
