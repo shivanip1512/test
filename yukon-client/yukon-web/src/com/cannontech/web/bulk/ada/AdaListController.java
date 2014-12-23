@@ -70,7 +70,7 @@ public class AdaListController {
      * to the model.
      */
     private void setUpList(ModelMap model, int page, int itemsPerPage) {
-        List<Analysis> analyses = archiveDataAnalysisDao.getAllAnalyses();
+        List<Analysis> analyses = archiveDataAnalysisDao.getAllNotDeletedAnalyses();
         int startIndex = (page - 1) * itemsPerPage;
         int endIndex = startIndex + itemsPerPage;
         if(endIndex >= analyses.size()) {

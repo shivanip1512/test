@@ -41,9 +41,9 @@ public interface ArchiveDataAnalysisDao {
     public Analysis getAnalysisById(int analysisId);
     
     /**
-     * Retrieves a list of all Analyses.
+     * Retrieves a list of all Analyses which don't have an AnalysisStatus of 'DELETED'
      */
-    public List<Analysis> getAllAnalyses();
+    public List<Analysis> getAllNotDeletedAnalyses();
     
     /**
      * Deletes an analysis and all associated slot and read status information.

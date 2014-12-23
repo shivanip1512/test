@@ -201,10 +201,11 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
     
     @Override
-    public List<Analysis> getAllAnalyses() {
+    public List<Analysis> getAllNotDeletedAnalyses() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT AnalysisId, Attribute, StartDate, StopDate, IntervalPeriod, LastChangeId, RunDate, ExcludeBadPointQualities, AnalysisStatus, StatusId");
         sql.append("FROM ArchiveDataAnalysis");
+        sql.append("WHERE AnalysisStatus").neq_k(AdaStatus.DELETED);
         sql.append("ORDER BY RunDate DESC");
         
         List<Analysis> analyses = jdbcTemplate.query(sql, analysisRowMapper);
