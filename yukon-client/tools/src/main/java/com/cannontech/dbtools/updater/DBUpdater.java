@@ -157,7 +157,7 @@ public class DBUpdater extends MessageFrameAdaptor {
     /**
      * Main entry point
      */
-    public static void main(String[] args) throws java.io.IOException {
+    public static void main(String[] args) {
         System.setProperty("cti.app.name", "DBUpdater");
         DBUpdater updater = new DBUpdater();
 
