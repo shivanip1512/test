@@ -25,6 +25,7 @@
     <tbody>
         <c:forEach items="${result.resultList}" var="analysis">
             <cti:msg2 var="attribName" key="${analysis.attribute}" htmlEscape="true"/>
+            <c:if test="${analysis.status != 'DELETED'}">
                 <tr data-analysis="${analysis.analysisId}" data-status="${analysis.status}">
                     <input type="hidden" value="${analysis.analysisId}"/>
                     <td>
@@ -114,6 +115,7 @@
                                 value="ARCHIVE_DATA_ANALYSIS/${analysis.analysisId}/STATUS"/>
                     
                 </tr>
+            </c:if>
         </c:forEach>
     </tbody>
 </table>
