@@ -1,5 +1,6 @@
 package com.cannontech.messaging.serialization.thrift.test.autotest;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.cannontech.messaging.serialization.thrift.ThriftMessageFactory;
@@ -19,6 +20,7 @@ public class LoadControlMessagesAutoSerializationTest extends MessageAutoSeriali
     }
 
     @Test
+    @Ignore("YUK-13453")
     public void autoTestLoadControlMessages() {
         autoTestMessage(com.cannontech.loadcontrol.messages.LMMessage.class);
         autoTestMessage(com.cannontech.loadcontrol.messages.LMCommand.class);
@@ -32,6 +34,7 @@ public class LoadControlMessagesAutoSerializationTest extends MessageAutoSeriali
     }
 
     @Test
+    @Ignore("YUK-13453")
     public void autoTestDynamicReceiveMessages() {
         autoTestMessage(com.cannontech.loadcontrol.dynamic.receive.LMControlAreaChanged.class);
         autoTestMessage(com.cannontech.loadcontrol.dynamic.receive.LMGroupChanged.class);
@@ -40,6 +43,7 @@ public class LoadControlMessagesAutoSerializationTest extends MessageAutoSeriali
     }
 
     @Test
+    @Ignore("YUK-13453")
     public void autoTestDataMessages() {
         autoTestMessage(com.cannontech.loadcontrol.data.LMGroupBase.class);
         autoTestMessage(com.cannontech.loadcontrol.data.LMDirectGroupBase.class);
