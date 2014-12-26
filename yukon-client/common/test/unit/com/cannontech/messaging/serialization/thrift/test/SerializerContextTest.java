@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.cannontech.messaging.serialization.thrift.ThriftSerializer;
@@ -19,7 +18,6 @@ public class SerializerContextTest extends ContextAwareTestBase{
     }
     
     @Test
-    @Ignore("YUK-13453")
     public void allSerializersAreUsed() {        
         Collection<ThriftSerializer> allSerializerList =
             new ArrayList<>(appContext.getBeansOfType(ThriftSerializer.class).values());
