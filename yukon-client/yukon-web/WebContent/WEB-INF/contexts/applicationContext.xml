@@ -1494,7 +1494,8 @@
     <bean id="facilityIdMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.FacilityIdMspMeterSearchMethodResultProvider"/>
     <bean id="accountNumberMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.AccountNumberMspMeterSearchMethodResultProvider"/>
     <bean id="custIdMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.CustIdMspMeterSearchMethodResultProvider"/>
-
+    <bean id="cisSearchMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.CisSearchMspMeterSearchMethodResultProvider"/>
+    
     <bean id="multispeakDeviceGroupSyncBackingService" class="com.cannontech.web.updater.multispeak.deviceGroupSync.MultispeakDeviceGroupSyncBackingService"/>
 
     <bean id="deviceReconfigMonitorBackingService" class="com.cannontech.web.updater.deviceReconfig.DeviceReconfigMonitorBackingService"/>

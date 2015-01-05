@@ -282,6 +282,36 @@ public class MspObjectDaoImpl implements MspObjectDao {
         }
         return meters;
     }
+    
+    @Override
+    public List<Meter> getMetersBySearchString(String searchString, MultispeakVendor mspVendor) {
+
+        List<Meter> meters = new ArrayList<>();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+
+        try {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            if (port != null) {
+                long start = System.currentTimeMillis();
+                log.debug( "Begin call to getMetersBySearchString for SearchString: %s"+searchString);
+                Meter[] mspMeters = port.getMetersBySearchString(searchString);
+                log.debug("End call to getMetersBySearchString for SearchString:" + searchString + "  (took "
+                    + (System.currentTimeMillis() - start) + " millis)");
+                if (mspMeters != null) {
+                    meters = Arrays.asList(mspMeters);
+                }
+            } else {
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for SearchString: "
+                    + searchString);
+            }
+        } catch (RemoteException e) {
+            log.error("TargetService: " + endpointUrl + " - getMetersBySearchString (" + mspVendor.getCompanyName()
+                + ") for SearchString: " + searchString);
+            log.error("RemoteExceptionDetail: " + e.getMessage());
+        }
+        return meters;
+    }
+
 
     @Override
     public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType, String method,

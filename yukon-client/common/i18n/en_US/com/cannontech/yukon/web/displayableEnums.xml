@@ -20,6 +20,7 @@
 <entry key="yukon.web.mspFilterBy.EA_LOCATION">EA Location</entry>
 <entry key="yukon.web.mspFilterBy.FACILITY_ID">Facility ID</entry>
 <entry key="yukon.web.mspFilterBy.SERVICE_LOCATION">Service Location</entry>
+<entry key="yukon.web.mspFilterBy.CIS_SEARCH">CIS Search</entry>
 
 <!-- Theme Property Type -->
 <entry key="yukon.common.themePropertyType.BUTTON_COLOR">Button Color</entry>
