@@ -40,7 +40,7 @@
                             </td>
                             <td><cti:formatDate value="${callReportWrapper.callReport.dateTaken}" type="BOTH"/></td>
                             <td>${callReportWrapper.type}</td>
-                            <td class="description">${fn:escapeXml(callReportWrapper.callReport.description)}</td>
+                            <td class="description wbba">${fn:escapeXml(callReportWrapper.callReport.description)}</td>
                             <td>${fn:escapeXml(callReportWrapper.callReport.takenBy)}</td>
                         </tr>
                     </c:forEach>
