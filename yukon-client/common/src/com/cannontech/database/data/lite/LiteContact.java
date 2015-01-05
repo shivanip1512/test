@@ -18,7 +18,7 @@ public class LiteContact extends LiteBase {
     
     /*Default constructor */
     public LiteContact() {
-        
+        setLiteType(LiteTypes.CONTACT);
     }
 
     public LiteContact(int contactId) {
