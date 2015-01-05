@@ -1,9 +1,9 @@
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <tags:noAuthPage module="login" page="changePassword">
     <section class="yukon-content" style="min-height: 420px;">
@@ -20,7 +20,7 @@
                         <form:hidden path="userId"/>
                         <form:hidden path="username"/>
                         <form:hidden path="userGroupName"/>
-        
+                        
                         <tags:nameValueContainer2 id="passwordFields">
                             <tags:nameValue2 nameKey=".username">
                                 ${fn:escapeXml(login.username)}

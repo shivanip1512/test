@@ -83,7 +83,7 @@ yukon.userProfile = (function () {
             select.find('option[value="-1"]').remove();
             select.removeClass('js-has-select-one');
         }
-    }
+    },
     
     _addNotification = function (ev) {
         
