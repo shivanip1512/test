@@ -63,13 +63,21 @@ yukon.trends = (function() {
                     },
                     
                     plotOptions: {
+                        // We may want to turn grouping off but it's on by default for performance.
+//                        line: {
+//                            dataGrouping: {
+//                                enabled: false
+//                            }
+//                        },
+                        
                         series: {
                             dataGrouping: {
                                 dateTimeLabelFormats: dateTimeLabelFormats
                             }
                         }
+                        
                     },
-
+                    
                     rangeSelector : {
                         buttons: [{
                             type: 'day',
@@ -106,10 +114,17 @@ yukon.trends = (function() {
                     },
                     
                     series : trend.series,
-
+                    
                     tooltip: {
                         dateTimeLabelFormats: dateTimeLabelFormats,
                         valueDecimals: 3
+                    },
+                    
+                    xAxis: {
+                        // Disabling stops highcharts from spacing points equally regardless of timestamp,
+                        // it means sections with no data will take up space in the chart.
+                        // http://api.highcharts.com/highstock#xAxis.ordinal
+                        ordinal: false 
                     },
                     
                     yAxis: trend.yAxis
