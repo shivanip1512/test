@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     12/15/2014 3:14:43 PM                        */
+/* Created on:     1/6/2015 5:32:22 PM                          */
 /*==============================================================*/
 
 
@@ -4726,6 +4726,7 @@ create table EnergyCompany  (
    Name                 VARCHAR2(60)                    not null,
    PrimaryContactID     NUMBER                          not null,
    UserID               NUMBER                          not null,
+   ParentEnergyCompanyId NUMBER,
    constraint PK_ENERGYCOMPANY primary key (EnergyCompanyID)
 );
 
@@ -11255,6 +11256,10 @@ alter table EcobeeReconReportError
    add constraint FK_EcobeeRecRepErr_EcobeeRecRp foreign key (EcobeeReconReportId)
       references EcobeeReconciliationReport (EcobeeReconReportId)
       on delete cascade;
+
+alter table EnergyCompany
+   add constraint FK_EnergyCompany_EnergyCompany foreign key (ParentEnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID);
 
 alter table EnergyCompany
    add constraint FK_EnCm_Cnt foreign key (PrimaryContactID)

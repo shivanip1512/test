@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     12/15/2014 3:17:23 PM                        */
+/* Created on:     1/6/2015 5:30:00 PM                          */
 /*==============================================================*/
 
 
@@ -4973,6 +4973,7 @@ create table EnergyCompany (
    Name                 varchar(60)          not null,
    PrimaryContactID     numeric              not null,
    UserID               numeric              not null,
+   ParentEnergyCompanyId numeric              null,
    constraint PK_ENERGYCOMPANY primary key (EnergyCompanyID)
 )
 go
@@ -12121,6 +12122,11 @@ alter table EcobeeReconReportError
    add constraint FK_EcobeeRecRepErr_EcobeeRecRp foreign key (EcobeeReconReportId)
       references EcobeeReconciliationReport (EcobeeReconReportId)
          on delete cascade
+go
+
+alter table EnergyCompany
+   add constraint FK_EnergyCompany_EnergyCompany foreign key (ParentEnergyCompanyId)
+      references EnergyCompany (EnergyCompanyID)
 go
 
 alter table EnergyCompany
