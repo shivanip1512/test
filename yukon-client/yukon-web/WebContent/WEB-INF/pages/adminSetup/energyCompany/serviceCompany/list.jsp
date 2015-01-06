@@ -52,7 +52,7 @@
                                 <tags:notNullDataLine ignore="(none)" value="${serviceCompany.emailContactNotification}"></tags:notNullDataLine>
                             </span>
                         </td>
-                        <td>
+                        <td class="wbba">
                             <span class="meta">
                                 <tags:liteAddress ignore="(none)" address="${serviceCompany.address}"></tags:liteAddress>
                             </span>
