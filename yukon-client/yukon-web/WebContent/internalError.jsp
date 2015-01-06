@@ -21,7 +21,7 @@ try {
     LiteYukonUser user = ServletUtil.getYukonUser(request);
     RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
     
-    showStack = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SUPPRESS_ERROR_PAGE_DETAILS, user);
+    showStack = !rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.SUPPRESS_ERROR_PAGE_DETAILS, user);
     if (showStack) {
         pageContext.setAttribute("yukonVersion", VersionTools.getYUKON_VERSION());
         pageContext.setAttribute("yukonDetails", VersionTools.getYukonDetails());
