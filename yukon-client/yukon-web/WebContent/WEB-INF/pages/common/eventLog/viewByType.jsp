@@ -132,9 +132,8 @@ $(function () {
         </a>
     </c:set>
     <tags:sectionContainer title="${eventsTitle}" controls="${controls}">
-    
         <c:choose>
-            <c:when test="${searchResult.count == 0}">
+            <c:when test="${fn:length(searchResult.resultList) == 0}">
                 <span class="empty-list"><i:inline key="yukon.common.events.noResults"/></span>
             </c:when>
             <c:otherwise>

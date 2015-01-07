@@ -137,7 +137,7 @@ $(function() {
                                 </c:forEach>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".supportBundle.notesLbl">
-                                <form:textarea rows="6" cols="40" path="comments"/>
+                                <form:textarea rows="6" cols="35" path="comments"/>
                             </tags:nameValue2>
                         </tags:nameValueContainer2>
                         <div class="page-action-area"> 
