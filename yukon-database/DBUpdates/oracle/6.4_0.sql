@@ -7,7 +7,7 @@ ALTER TABLE EnergyCompany
 ADD ParentEnergyCompanyId NUMBER NULL;
 
 ALTER TABLE EnergyCompany 
-    ADD CONSTRAINT FK_EnergyCompany_EnergyCompany FOREIGN KEY (ParentEnergyCompanyId)
+    ADD CONSTRAINT FK_EnergyComp_EnergyCompParent FOREIGN KEY (ParentEnergyCompanyId)
        REFERENCES EnergyCompany (EnergyCompanyId);
 
 UPDATE EnergyCompany ec

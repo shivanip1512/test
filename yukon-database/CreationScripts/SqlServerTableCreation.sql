@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/6/2015 5:30:00 PM                          */
+/* Created on:     1/7/2015 3:46:00 PM                          */
 /*==============================================================*/
 
 
@@ -4978,7 +4978,7 @@ create table EnergyCompany (
 )
 go
 
-insert into EnergyCompany VALUES (-1,'Default Energy Company',0,-100);
+insert into EnergyCompany VALUES (-1, 'Default Energy Company', 0, -100, NULL);
 
 /*==============================================================*/
 /* Index: Indx_EnCmpName                                        */
@@ -12125,7 +12125,7 @@ alter table EcobeeReconReportError
 go
 
 alter table EnergyCompany
-   add constraint FK_EnergyCompany_EnergyCompany foreign key (ParentEnergyCompanyId)
+   add constraint FK_EnergyComp_EnergyCompParent foreign key (ParentEnergyCompanyId)
       references EnergyCompany (EnergyCompanyID)
 go
 

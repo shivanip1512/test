@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/6/2015 5:32:22 PM                          */
+/* Created on:     1/7/2015 3:47:13 PM                          */
 /*==============================================================*/
 
 
@@ -4730,7 +4730,7 @@ create table EnergyCompany  (
    constraint PK_ENERGYCOMPANY primary key (EnergyCompanyID)
 );
 
-insert into EnergyCompany VALUES (-1,'Default Energy Company',0,-100);
+insert into EnergyCompany VALUES (-1, 'Default Energy Company', 0, -100, NULL);
 
 /*==============================================================*/
 /* Index: Indx_EnCmpName                                        */
@@ -11258,7 +11258,7 @@ alter table EcobeeReconReportError
       on delete cascade;
 
 alter table EnergyCompany
-   add constraint FK_EnergyCompany_EnergyCompany foreign key (ParentEnergyCompanyId)
+   add constraint FK_EnergyComp_EnergyCompParent foreign key (ParentEnergyCompanyId)
       references EnergyCompany (EnergyCompanyID);
 
 alter table EnergyCompany

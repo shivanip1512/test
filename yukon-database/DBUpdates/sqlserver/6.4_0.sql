@@ -8,14 +8,14 @@ ADD ParentEnergyCompanyId NUMERIC NULL;
 GO
 
 ALTER TABLE EnergyCompany 
-    ADD CONSTRAINT FK_EnergyCompany_EnergyCompany FOREIGN KEY (ParentEnergyCompanyId)
+    ADD CONSTRAINT FK_EnergyComp_EnergyCompParent FOREIGN KEY (ParentEnergyCompanyId)
        REFERENCES EnergyCompany (EnergyCompanyId);
 GO
 
-UPDATE EnergyCompany ec
-SET ec.ParentEnergyCompanyId = ecm.EnergyCompanyId
+UPDATE EnergyCompany
+SET ParentEnergyCompanyId = ecm.EnergyCompanyId
 FROM ECToGenericMapping ecm
-WHERE ec.EnergyCompanyId = ecm.ItemId
+WHERE EnergyCompany.EnergyCompanyId = ecm.ItemId
   AND ecm.MappingCategory = 'Member';
 
 DELETE FROM ECToGenericMapping
