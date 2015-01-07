@@ -164,10 +164,9 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     @Override
     public List<Integer> getDirectChildEnergyCompanies(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ItemId");
-        sql.append("FROM ECToGenericMapping");
-        sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.MEMBER);
-        sql.append(  "AND EnergyCompanyId").eq(energyCompanyId);
+        sql.append("SELECT EnergyCompanyID");
+        sql.append("FROM EnergyCompany");
+        sql.append("WHERE ParentEnergyCompanyId").eq(energyCompanyId);
 
         return jdbcTemplate.query(sql, RowMapper.INTEGER);
     }
@@ -176,12 +175,10 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     @Override
     public Integer getParentEnergyCompany(int energyCompanyId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT EnergyCompanyId");
-        sql.append("FROM ECToGenericMapping");
-        sql.append("WHERE MappingCategory").eq_k(EcMappingCategory.MEMBER);
-        sql.append(  "AND ItemId").eq(energyCompanyId);
-
-        return jdbcTemplate.queryForInt(sql);
+        sql.append("SELECT ParentEnergyCompanyId");
+        sql.append("FROM EnergyCompany");
+        sql.append("WHERE EnergyCompanyID").eq(energyCompanyId);
+        return jdbcTemplate.queryForObject(sql, Integer.class, energyCompanyId);
     }
 
     @Deprecated
@@ -395,12 +392,9 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
     private synchronized Map<Integer, EnergyCompany> getEnergyCompanies() {
         if (energyCompanies == null) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT EC.EnergyCompanyId as EcId, ECM.EnergyCompanyId as ParentEcId, Name, PrimaryContactID,");
-            sql.append(    "YU.UserId, UserName, Status, ForceReset, UserGroupId");
+            sql.append("SELECT EC.EnergyCompanyId as EcId, EC.ParentEnergyCompanyId as ParentEcId,");
+            sql.append(    "Name, PrimaryContactID, YU.UserId, UserName, Status, ForceReset,UserGroupId ");
             sql.append("FROM EnergyCompany EC");
-            sql.append("LEFT JOIN ECToGenericMapping ECM");
-            sql.append(    "ON EC.EnergyCompanyId = ECM.ItemID");
-            sql.append(    "AND ECM.MappingCategory").eq_k(EcMappingCategory.MEMBER);
             sql.append("JOIN YukonUser YU on EC.UserId = YU.UserId");
 
             EnergyCompanyRowCallbackHandler energyCompanyRowCallbackHandler = new EnergyCompanyRowCallbackHandler();

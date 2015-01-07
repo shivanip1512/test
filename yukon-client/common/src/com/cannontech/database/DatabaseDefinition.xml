@@ -113,6 +113,7 @@
         <identifier name="Name" />
         <data name="PrimaryContactID" />
         <data name="UserID" />
+        <data name="ParentEnergyCompanyId" />
     </table>
 
     <table name="GroupPAOPermission">

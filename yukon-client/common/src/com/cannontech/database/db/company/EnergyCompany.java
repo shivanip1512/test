@@ -23,8 +23,9 @@ public class EnergyCompany extends DBPersistent {
     private String name;
     private Integer primaryContactId = CtiUtilities.NONE_ZERO_ID;
     private Integer userId = CtiUtilities.NONE_ZERO_ID;
+    private Integer parentEnergyCompanyId;
     
-	public static final String[] SETTER_COLUMNS = { "Name", "PrimaryContactID", "UserID" };
+	public static final String[] SETTER_COLUMNS = { "Name", "PrimaryContactID", "UserID", "ParentEnergyCompanyId" };
 	public static final String[] CONSTRAINT_COLUMNS = { "EnergyCompanyID" };
 	public static final String TABLE_NAME = "EnergyCompany";
 
@@ -54,7 +55,8 @@ public class EnergyCompany extends DBPersistent {
     		getEnergyCompanyId(),
     		getName(),
     		getPrimaryContactId(),
-    		getUserId()
+    		getUserId(),
+    		getParentEnergyCompanyId()
     	};
     
     	//if any of the values are null, return
@@ -70,7 +72,8 @@ public class EnergyCompany extends DBPersistent {
         Object[] setValues = {
             getName(),
             getPrimaryContactId(),
-            getUserId()
+            getUserId(),
+            getParentEnergyCompanyId()
         };
     
         //if any of the values are null, return
@@ -124,7 +127,7 @@ public class EnergyCompany extends DBPersistent {
     public static final EnergyCompany[] getEnergyCompanies() {
     	try {
     	    SqlStringStatementBuilder sql = new SqlStringStatementBuilder();
-            sql.append("SELECT EnergyCompanyId, Name, PrimaryContactId, UserId");
+            sql.append("SELECT EnergyCompanyId, Name, PrimaryContactId, UserId, ParentEnergyCompanyId");
             sql.append("FROM EnergyCompany");
             
             RowMapper<EnergyCompany> energyCompanyRowMapper = new RowMapper<EnergyCompany>() {
@@ -135,6 +138,7 @@ public class EnergyCompany extends DBPersistent {
                     company.setName(rs.getString("Name"));
                     company.setPrimaryContactId(rs.getInt("PrimaryContactId"));
                     company.setUserId(rs.getInt("UserId"));
+                    company.setParentEnergyCompanyId(rs.getInt("ParentEnergyCompanyId"));
                     return company;
                 }
             };
@@ -152,7 +156,7 @@ public class EnergyCompany extends DBPersistent {
             return false;
         }
     
-    	for( int i = 0; i < values.length; i++ ) {
+    	for( int i = 0; i < values.length-1; i++ ) {
             if( values[i] == null ) {
                 return false;
             }
@@ -242,6 +246,14 @@ public class EnergyCompany extends DBPersistent {
 
 	public void setUserId(Integer userId) {
 		this.userId = userId;
+	}
+	
+	public Integer getParentEnergyCompanyId() {
+		return parentEnergyCompanyId;
+	}
+
+	public void setParentEnergyCompanyId(Integer parentEnergyCompanyId) {
+		this.parentEnergyCompanyId = parentEnergyCompanyId;
 	}
 
     @Override

@@ -99,4 +99,8 @@ public class YukonJdbcTemplate extends JdbcTemplate {
     public int update(SqlFragmentSource sql) throws DataAccessException {
         return update(sql.getSql(), sql.getArguments());
     }
+
+	public <T> T queryForObject(SqlFragmentSource sql, Class<T> requiredType,Object...args) {
+		return queryForObject(sql.getSql(), requiredType, args);
+	}
 }

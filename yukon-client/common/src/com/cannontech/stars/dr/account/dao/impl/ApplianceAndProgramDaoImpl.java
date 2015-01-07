@@ -85,10 +85,9 @@ public class ApplianceAndProgramDaoImpl implements ApplianceAndProgramDao {
     	sql.append(				"AND (");
     	sql.append(					"EnergyCompanyId").eq(energyCompanyId);
     	sql.append(					"OR EnergyCompanyId IN (");
-    	sql.append(						"SELECT EnergyCompanyId");
-    	sql.append(						"FROM ECToGenericMapping");
-    	sql.append(						"WHERE ItemId").eq(energyCompanyId);
-    	sql.append(							"AND MappingCategory").eq_k(EcMappingCategory.MEMBER);
+    	sql.append(						"SELECT ParentEnergyCompanyId");
+    	sql.append(						"FROM EnergyCompany");
+    	sql.append(						"WHERE EnergyCompanyID").eq(energyCompanyId);
     	sql.append(					")");
     	sql.append(				")");
     	sql.append(		")");

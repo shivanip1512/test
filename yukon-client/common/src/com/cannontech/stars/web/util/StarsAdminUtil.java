@@ -44,6 +44,7 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.user.UserGroup;
+import com.cannontech.database.db.company.EnergyCompany;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
@@ -534,13 +535,18 @@ public class StarsAdminUtil {
 
     public static void addMember(LiteStarsEnergyCompany energyCompany, LiteStarsEnergyCompany member, int loginID,
             LiteYukonUser user) throws TransactionException {
-        ECToGenericMapping map = new ECToGenericMapping();
-        map.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
-        map.setItemID(member.getEnergyCompanyId());
-        map.setMappingCategory(EcMappingCategory.MEMBER);
-        Transaction.createTransaction(Transaction.INSERT, map).execute();
+    	EnergyCompany energyCompanyMap=new EnergyCompany();
+    	energyCompanyMap.setName(member.getName());
+    	energyCompanyMap.setPrimaryContactId(member.getEnergyCompanyId());
+    	energyCompanyMap.setUserId(member.getUser().getUserID());
+    	energyCompanyMap.setEnergyCompanyId(member.getEnergyCompanyId());
+    	energyCompanyMap.setParentEnergyCompanyId(energyCompany.getEnergyCompanyId());
+    	energyCompanyMap.setPrimaryContactId(member.getPrimaryContactID());
+        Transaction.createTransaction(Transaction.UPDATE, energyCompanyMap).execute();
 
         if (loginID != -1) {
+        	ECToGenericMapping map = new ECToGenericMapping();
+            map.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
             map.setItemID(new Integer(loginID));
             map.setMappingCategory(EcMappingCategory.MEMBER_LOGIN);
             Transaction.createTransaction(Transaction.INSERT, map).execute();
@@ -592,11 +598,13 @@ public class StarsAdminUtil {
                 continue;
             }
 
-            ECToGenericMapping map = new ECToGenericMapping();
-            map.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
-            map.setItemID(member.getEnergyCompanyId());
-            map.setMappingCategory(EcMappingCategory.MEMBER);
-            Transaction.createTransaction(Transaction.DELETE, map).execute();
+            EnergyCompany energyCompanyMap=new EnergyCompany();
+        	energyCompanyMap.setName(member.getName());
+        	energyCompanyMap.setPrimaryContactId(member.getEnergyCompanyId());
+        	energyCompanyMap.setUserId(member.getUser().getUserID());
+        	energyCompanyMap.setEnergyCompanyId(member.getEnergyCompanyId());
+        	energyCompanyMap.setPrimaryContactId(member.getPrimaryContactID());
+            Transaction.createTransaction(Transaction.UPDATE, energyCompanyMap).execute();
 
             member.clearHierarchy();
 
@@ -606,6 +614,8 @@ public class StarsAdminUtil {
                     YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(loginID.intValue());
 
                 if (YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteUser).getId() == member.getLiteID()) {
+                	ECToGenericMapping map = new ECToGenericMapping();
+                    map.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
                     map.setItemID(loginID);
                     map.setMappingCategory(EcMappingCategory.MEMBER_LOGIN);
                     Transaction.createTransaction(Transaction.DELETE, map).execute();
