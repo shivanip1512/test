@@ -50,8 +50,6 @@
         </c:forEach>
     </tbody>
 </table>
-<c:if test="${!applianceCategory.consumerSelectable}">
-    <tags:pagingResultsControls result="${assignedPrograms}"/>
-</c:if>
+<tags:pagingResultsControls result="${assignedPrograms}"/>
 
 </cti:msgScope>
