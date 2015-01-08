@@ -643,9 +643,9 @@ public class CBCSelectionLists {
     public SelectItem[] getPhases() {
         YukonUserContext yukonUserContext = getYukonUserContext();
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
-        String phaseAString = messageSourceAccessor.getMessage("Phase.A");
-        String phaseBString = messageSourceAccessor.getMessage("Phase.B");
-        String phaseCString = messageSourceAccessor.getMessage("Phase.C");
+        String phaseAString = messageSourceAccessor.getMessage(Phase.A);
+        String phaseBString = messageSourceAccessor.getMessage(Phase.B);
+        String phaseCString = messageSourceAccessor.getMessage(Phase.C);
         SelectItem[] phases = {new SelectItem(Phase.A.name(), phaseAString), 
                                new SelectItem(Phase.B.name(), phaseBString), 
                                new SelectItem(Phase.C.name(), phaseCString)};
