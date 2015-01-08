@@ -9,22 +9,22 @@ import com.cannontech.multispeak.deploy.service.Meter;
 
 public class CisSearchMspMeterSearchMethodResultProvider extends MspMeterSearchMethodResultProviderBase {
 
-	@Override
-	public MspSearchField getSearchField() {
-		return MspSearchField.CIS_SEARCH;
-	}
-	
-	@Override
-	public List<String> getMeterNumbers(String filterValue) {
-		
-		List<String> meterNumbers = new ArrayList<String>();
-		
-		MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-		List<Meter> meters = mspObjectDao.getMspMetersByServiceLocation(filterValue, mspVendor);
-		for (Meter meter : meters) {
-			meterNumbers.add(meter.getMeterNo());
-		}
-		
-		return meterNumbers;
-	}
+    @Override
+    public MspSearchField getSearchField() {
+        return MspSearchField.CIS_SEARCH;
+    }
+
+    @Override
+    public List<String> getMeterNumbers(String filterValue) {
+
+        List<String> meterNumbers = new ArrayList<String>();
+
+        MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
+        List<Meter> meters = mspObjectDao.getMspMetersByServiceLocation(filterValue, mspVendor);
+        for (Meter meter : meters) {
+            meterNumbers.add(meter.getMeterNo());
+        }
+
+        return meterNumbers;
+    }
 }
