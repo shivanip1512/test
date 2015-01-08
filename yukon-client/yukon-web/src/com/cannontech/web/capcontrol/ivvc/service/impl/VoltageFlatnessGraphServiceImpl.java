@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.PointToZoneMapping;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
@@ -28,6 +29,7 @@ import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -48,8 +50,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.TargetSettingType;
-import com.cannontech.common.model.Phase;
-import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.SubBus;
@@ -237,7 +237,7 @@ public class VoltageFlatnessGraphServiceImpl implements VoltageFlatnessGraphServ
         Map<Phase, String> zoneLineColorPhaseMap = Maps.newHashMapWithExpectedSize(3);
         for (Phase phase : Phase.getRealPhases()) {
             String phaseString = messageSourceAccessor.getMessage("yukon.common.phase");
-            phaseString += " " + messageSourceAccessor.getMessage("yukon.common.phase.phase." + phase);
+            phaseString += " " + messageSourceAccessor.getMessage(phase);
             phaseStringMap.put(phase, phaseString);
             String zoneLineColorPhase = messageSourceAccessor.getMessage("yukon.web.modules.capcontrol.ivvc.voltProfileGraph.zoneLineColorPhase" + phase);
             zoneLineColorPhaseMap.put(phase, zoneLineColorPhase);
