@@ -416,14 +416,6 @@
           </page>
         </pages>
       </page>
-      <page name="commander.select" type="BASIC" >
-        <link>/commander/select</link>
-        <pages>
-          <page name="commander.command" type="DETAIL_CHILD">
-            <labelArgument>${deviceName}</labelArgument>
-          </page>
-        </pages>
-      </page>
       <page name="schedules.all" type="BASIC">
         <link>/group/scheduledGroupRequestExecutionResults/jobs</link>
         <pages>

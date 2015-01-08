@@ -251,7 +251,6 @@
                 <value>classpath:com/cannontech/yukon/web/modules/tools/bulk</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/configs</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/fdrTranslationManagement</value>
-                <value>classpath:com/cannontech/yukon/web/modules/tools/commander</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/scripts</value>
                 <value>classpath:com/cannontech/yukon/web/modules/trending</value>
                 <value>classpath:com/cannontech/yukon/web/modules/support/databaseMigration</value>
