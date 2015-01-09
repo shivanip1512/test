@@ -62,9 +62,6 @@ public final class SpecificDeviceErrorDescription {
         if (summary == null) {
             throw new IllegalArgumentException("summary is null");
         }
-        if (detail == null) {
-            throw new IllegalArgumentException("detail is null");
-        }
 
         this.errorDescription = errorDescription;
         if (StringUtils.isEmpty(resultString)) {
