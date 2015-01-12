@@ -535,17 +535,17 @@ public class StarsAdminUtil {
 
     public static void addMember(LiteStarsEnergyCompany energyCompany, LiteStarsEnergyCompany member, int loginID,
             LiteYukonUser user) throws TransactionException {
-    	EnergyCompany energyCompanyMap=new EnergyCompany();
-    	energyCompanyMap.setName(member.getName());
-    	energyCompanyMap.setPrimaryContactId(member.getEnergyCompanyId());
-    	energyCompanyMap.setUserId(member.getUser().getUserID());
-    	energyCompanyMap.setEnergyCompanyId(member.getEnergyCompanyId());
-    	energyCompanyMap.setParentEnergyCompanyId(energyCompany.getEnergyCompanyId());
-    	energyCompanyMap.setPrimaryContactId(member.getPrimaryContactID());
+        EnergyCompany energyCompanyMap = new EnergyCompany();
+        energyCompanyMap.setName(member.getName());
+        energyCompanyMap.setPrimaryContactId(member.getEnergyCompanyId());
+        energyCompanyMap.setUserId(member.getUser().getUserID());
+        energyCompanyMap.setEnergyCompanyId(member.getEnergyCompanyId());
+        energyCompanyMap.setParentEnergyCompanyId(energyCompany.getEnergyCompanyId());
+        energyCompanyMap.setPrimaryContactId(member.getPrimaryContactID());
         Transaction.createTransaction(Transaction.UPDATE, energyCompanyMap).execute();
 
         if (loginID != -1) {
-        	ECToGenericMapping map = new ECToGenericMapping();
+            ECToGenericMapping map = new ECToGenericMapping();
             map.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
             map.setItemID(new Integer(loginID));
             map.setMappingCategory(EcMappingCategory.MEMBER_LOGIN);
@@ -598,12 +598,12 @@ public class StarsAdminUtil {
                 continue;
             }
 
-            EnergyCompany energyCompanyMap=new EnergyCompany();
-        	energyCompanyMap.setName(member.getName());
-        	energyCompanyMap.setPrimaryContactId(member.getEnergyCompanyId());
-        	energyCompanyMap.setUserId(member.getUser().getUserID());
-        	energyCompanyMap.setEnergyCompanyId(member.getEnergyCompanyId());
-        	energyCompanyMap.setPrimaryContactId(member.getPrimaryContactID());
+            EnergyCompany energyCompanyMap = new EnergyCompany();
+            energyCompanyMap.setName(member.getName());
+            energyCompanyMap.setPrimaryContactId(member.getEnergyCompanyId());
+            energyCompanyMap.setUserId(member.getUser().getUserID());
+            energyCompanyMap.setEnergyCompanyId(member.getEnergyCompanyId());
+            energyCompanyMap.setPrimaryContactId(member.getPrimaryContactID());
             Transaction.createTransaction(Transaction.UPDATE, energyCompanyMap).execute();
 
             member.clearHierarchy();
@@ -614,7 +614,7 @@ public class StarsAdminUtil {
                     YukonSpringHook.getBean(YukonUserDao.class).getLiteYukonUser(loginID.intValue());
 
                 if (YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(liteUser).getId() == member.getLiteID()) {
-                	ECToGenericMapping map = new ECToGenericMapping();
+                    ECToGenericMapping map = new ECToGenericMapping();
                     map.setEnergyCompanyID(energyCompany.getEnergyCompanyId());
                     map.setItemID(loginID);
                     map.setMappingCategory(EcMappingCategory.MEMBER_LOGIN);
