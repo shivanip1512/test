@@ -285,24 +285,7 @@
     <entry key="yukon.web.modules.dev.i18nDemo.colors.OTHER">Other</entry>
     
     <!-- Picker Test -->
-    <entry key="yukon.web.modules.dev.pickers.pageName">Item Pickers</entry>
-    <entry key="yukon.web.modules.dev.pickers.linkPickers.title">Link Pickers</entry>
-    <entry key="yukon.web.modules.dev.pickers.buttonPickers.title">Button Pickers</entry>
-    <entry key="yukon.web.modules.dev.pickers.pick7.label">Pick 7 (i18n)</entry>
-    <entry key="yukon.web.modules.dev.pickers.pick8.label">Pick 8 (i18n)</entry>
-    <entry key="yukon.web.modules.dev.pickers.pick9.label">Pick 9 (i18n)</entry>
-    <entry key="yukon.web.modules.dev.pickers.pick11.label">Pick 11 (i18n)</entry>
-    <entry key="yukon.web.modules.dev.pickers.memoryGroupedPickers.title">Memory Grouped Pickers</entry>
-    <entry key="yukon.web.modules.dev.pickers.pick12.label">Pick 12 (i18n)</entry>
-    <entry key="yukon.web.modules.dev.pickers.pick13.label">Pick 13 (i18n)</entry>
-    <entry key="yukon.web.modules.dev.pickers.pick14.label">Pick 14 (i18n)</entry>
-    <entry key="yukon.web.modules.dev.pickers.selectionPickers.title">Selection Pickers</entry>
-    <entry key="yukon.web.modules.dev.pickers.pick16.label">Pick 2 (i18n)</entry>
-    <entry key="yukon.web.modules.dev.pickers.pick18.label">Pick 4 (i18n)</entry>
-    <entry key="yukon.web.modules.dev.pickers.pick19.label">Pick 5 (i18n)</entry>
-    <entry key="yukon.web.modules.dev.pickers.pick20.label">Pick 6 (i18n)</entry>
-    <entry key="yukon.web.modules.dev.pickers.rememberingPickers.title">Remembering Pickers</entry>
-    <entry key="yukon.web.modules.dev.pickers.inlinePickers.title">Inline Pickers</entry>
+    <entry key="yukon.web.modules.dev.pickers.pageName">Pickers</entry>
     
     <!-- Style Guide Pages -->
     <entry key="yukon.web.modules.dev.jsTesting.pageName">JavaScript Testing</entry>
