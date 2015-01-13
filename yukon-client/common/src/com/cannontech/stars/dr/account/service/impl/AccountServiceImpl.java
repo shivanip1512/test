@@ -8,6 +8,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.Errors;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -16,6 +18,7 @@ import com.cannontech.common.model.Address;
 import com.cannontech.common.model.ContactNotificationType;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.validator.AddressValidator;
 import com.cannontech.core.authentication.model.AuthenticationCategory;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.AddressDao;
@@ -57,6 +60,7 @@ import com.cannontech.stars.dr.account.dao.CallReportDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.exception.AccountNumberUnavailableException;
 import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
+import com.cannontech.stars.dr.account.exception.InvalidAddressException;
 import com.cannontech.stars.dr.account.exception.InvalidLoginGroupException;
 import com.cannontech.stars.dr.account.exception.InvalidSubstationNameException;
 import com.cannontech.stars.dr.account.model.AccountDto;
@@ -618,6 +622,14 @@ public class AccountServiceImpl implements AccountService {
 
         // Update the address
         if (streetAddress != null) {
+            AddressValidator addressValidator = new AddressValidator();
+            Errors errors = new BeanPropertyBindingResult(streetAddress, "streetAddress");
+            addressValidator.validate(streetAddress, errors);
+            if (errors.getErrorCount() != 0) {
+                log.error("Address for account " + accountNumber
+                    + " could not be updated: The address provided is invalid.");
+                throw new InvalidAddressException("The address provided is invalid.");
+            }
             setAddressFieldsFromDTO(liteStreetAddress, streetAddress);
             addressDao.update(liteStreetAddress);
         }
