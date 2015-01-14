@@ -404,7 +404,8 @@ function youPickedSomething(hits, picker) {
 <div class="column-4-20 clearfix picker-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <form action="<cti:url value="/dev/styleguide/pickers"/>">
+        <cti:url var="url" value="/dev/styleguide/pickers"/>
+        <form action="${url}">
             <c:if test="${!empty param.pickerType}">
               <input type="hidden" name="pickerType" value="${param.pickerType}">
             </c:if>
@@ -417,13 +418,14 @@ function youPickedSomething(hits, picker) {
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;form action=&quot;&lt;cti:url value=&quot;/dev/styleguide/pickers&quot;/&gt;&quot;&gt;
+&lt;cti:url var=&quot;url&quot; value=&quot;/dev/styleguide/pickers&quot;/&gt;
+&lt;form action=&quot;&#36;{url}&quot;&gt;
     &lt;c:if test=&quot;${!empty param.pickerType}&quot;&gt;
       &lt;input type=&quot;hidden&quot; name=&quot;pickerType&quot; value=&quot;${param.pickerType}&quot;&gt;
     &lt;/c:if&gt;
     &lt;tags:pickerDialog id=&quot;p15&quot; type=&quot;${pickerType}&quot; linkType=&quot;selection&quot; selectionProperty=&quot;${itemNameProperty}&quot;
         destinationFieldName=&quot;p15items&quot; allowEmptySelection=&quot;true&quot; multiSelectMode=&quot;true&quot;
-        initialIds=&quot;${paramValues['p15items']}&quot;/&gt;
+        initialIds=&quot;&#36;{paramValues['p15items']}&quot;/&gt;
     &lt;cti:button type=&quot;submit&quot; label=&quot;Submit&quot;/&gt;
 &lt;/form&gt;
 </pre>

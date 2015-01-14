@@ -142,7 +142,7 @@ yukon.dr.ecobee = (function () {
                         
                         // must show nothing selected text after picker initialized
                         if (showNothingSelected) {
-                            $('#picker_loadGroupPicker_nothingSelected').show();
+                            $('#picker-loadGroupPicker-nothing-selected').show();
                         }
                     }
                 });
@@ -367,7 +367,7 @@ yukon.dr.ecobee = (function () {
         assignInputs: function (loadGroups) {
             var pickerThis = loadGroupPicker,
                 loadGroupDiv = document.getElementById('loadGroup'),
-                ssInputId = 'picker_' + pickerThis.pickerId + '_ss',
+                ssInputId = 'picker-' + pickerThis.pickerId + '-ss',
                 ssInputElem = document.getElementById(ssInputId),
                 oldHiddenInputs = $('[name="' + pickerThis.destinationFieldName + '"]');
             // purge all previously made selections, if any. If we don't, they will

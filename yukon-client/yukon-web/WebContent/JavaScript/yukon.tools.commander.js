@@ -310,9 +310,9 @@ yukon.tools.commander = (function () {
             if (targetStore.target === _targetTypes.device || targetStore.target === _targetTypes.lmGroup) {
                 option.data('paoId', targetStore.paoId);
                 if (targetStore.target === _targetTypes.device) {
-                    option.find('.dropdown-option-label').text($('#picker_commanderDevicePicker_btn .b-label').text());
+                    option.find('.dropdown-option-label').text($('#picker-commanderDevicePicker-btn .b-label').text());
                 } else {
-                    option.find('.dropdown-option-label').text($('#picker_lmGroupPicker_btn .b-label').text());
+                    option.find('.dropdown-option-label').text($('#picker-lmGroupPicker-btn .b-label').text());
                 }
             } else {
                 option.data('routeId', targetStore.routeId);

@@ -89,9 +89,9 @@ yukon.protoPicker = function (okText,
         }
         
         this.allowEmptySelection = false;
-        this.resultAreaId = 'picker_' + this.pickerId + '_resultArea';
-        this.resultAreaFixedId = 'picker_' + this.pickerId + '_resultAreaFixed';
-        this.errorHolderId = 'picker_' + this.pickerId + '_errorHolder';
+        this.resultAreaId = 'picker-' + this.pickerId + '-result-area';
+        this.resultAreaFixedId = 'picker-' + this.pickerId + '-result-area-fixed';
+        this.errorHolderId = 'picker-' + this.pickerId + '-error-holder';
         this.primed = false;
         this.useInitialIdsIfEmpty = false;
         this.container = container;
@@ -556,16 +556,16 @@ yukon.protoPicker = function (okText,
             alert(errString);
             return;
         }
-        this.ssInput = document.getElementById('picker_' + this.pickerId + '_ss');
-        this.showAllLink = document.getElementById('picker_' + this.pickerId + '_showAllLink');
-        this.resultsDiv = document.getElementById('picker_' + this.pickerId + '_results');
-        this.noResultsDiv = document.getElementById('picker_' + this.pickerId + '_noResults');
-        this.nothingSelectedDiv = document.getElementById('picker_' + this.pickerId + '_nothingSelected');
-        this.selectAllCheckBox = document.getElementById('picker_' + this.pickerId + '_selectAll');
-        this.selectAllPagesLink = document.getElementById('picker_' + this.pickerId + '_selectAllPages');
-        this.allPagesSelected = document.getElementById('picker_' + this.pickerId + '_allPagesSelected');
-        this.clearEntireSelectionLink = document.getElementById('picker_' + this.pickerId + '_clearEntireSelection');
-        this.entireSelectionCleared = document.getElementById('picker_' + this.pickerId + '_entireSelectionCleared');
+        this.ssInput = document.getElementById('picker-' + this.pickerId + '-ss');
+        this.showAllLink = document.getElementById('picker-' + this.pickerId + '-show-all-link');
+        this.resultsDiv = document.getElementById('picker-' + this.pickerId + '-results');
+        this.noResultsDiv = document.getElementById('picker-' + this.pickerId + '-no-results');
+        this.nothingSelectedDiv = document.getElementById('picker-' + this.pickerId + '-nothing-selected');
+        this.selectAllCheckBox = document.getElementById('picker-' + this.pickerId + '-select-all');
+        this.selectAllPagesLink = document.getElementById('picker-' + this.pickerId + '-select-all-pages');
+        this.allPagesSelected = document.getElementById('picker-' + this.pickerId + '-all-pages-selected');
+        this.clearEntireSelectionLink = document.getElementById('picker-' + this.pickerId + '-clear-entire-selection');
+        this.entireSelectionCleared = document.getElementById('picker-' + this.pickerId + '-entire-selection-cleared');
         this.jqSelectAllPagesLinkParentNode = this.selectAllPagesLink ? $(this.selectAllPagesLink.parentNode) : null;
         this.jqAllPagesSelectedParentNode = this.allPagesSelected ? $(this.allPagesSelected.parentNode) : null;
         this.jqClearEntireSelectionLinkParentNode = this.clearEntireSelectionLink ? $(this.clearEntireSelectionLink.parentNode) : null;
@@ -852,12 +852,12 @@ yukon.protoPicker = function (okText,
             initialIds = [],
             destFieldSelector;
         
-        this.inputAreaDiv = document.getElementById('picker_' + this.pickerId + '_inputArea');
+        this.inputAreaDiv = document.getElementById('picker-' + this.pickerId + '-input-area');
         if (!viewMode) {
             if (this.selectionProperty) {
-                this.selectedItemsPopup = document.getElementById('picker_' + this.pickerId + '_selectedItemsPopup');
-                this.selectedItemsDisplayArea = document.getElementById('picker_' + this.pickerId + '_selectedItemsDisplayArea');
-                showSelectedImg = document.getElementById('picker_' + this.pickerId + '_showSelectedImg');
+                this.selectedItemsPopup = document.getElementById('picker-' + this.pickerId + '-selected-items-popup');
+                this.selectedItemsDisplayArea = document.getElementById('picker-' + this.pickerId + '-selected-items-display-area');
+                showSelectedImg = document.getElementById('picker-' + this.pickerId + '-show-selected-icon');
                 if (showSelectedImg) {
                     this.showSelectedLink = showSelectedImg.parentNode;
                     $(this.showSelectedLink).hide();
@@ -865,7 +865,7 @@ yukon.protoPicker = function (okText,
             }
         }
         if (this.selectionProperty) {
-            this.selectionLabel = $('span', $(document.getElementById('picker_' + this.pickerId + '_btn')))[0];
+            this.selectionLabel = $('span', $(document.getElementById('picker-' + this.pickerId + '-btn')))[0];
             this.originalSelectionLabel = this.selectionLabel.innerHTML;
         }
         

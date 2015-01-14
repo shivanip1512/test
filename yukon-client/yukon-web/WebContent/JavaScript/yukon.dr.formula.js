@@ -180,7 +180,7 @@ yukon.dr.formula = (function() {
     /** Loads the point picker when point picker link is clicked. */
     _pointPickerClick = function() {
         var tableId = this.id.split("_").pop();
-        $("#picker_pointPicker_btn").data("table-id", tableId).click();
+        $("#picker-pointPicker-btn").data("table-id", tableId).click();
     },
 
     /** Removes the lookup table when remove button is clicked */
@@ -430,7 +430,7 @@ yukon.dr.formula = (function() {
          * @param {Object} picker - picker object.
          */
         pickerClose : function(selectedItems, picker) {
-            var tableId = $("#picker_pointPicker_btn").data("table-id");
+            var tableId = $("#picker-pointPicker-btn").data("table-id");
             $("#inputPointId_" + tableId).val(selectedItems[0].pointId);
             $("#formulaPointPickerLbl_" + tableId).html(
                     selectedItems[0].pointName);

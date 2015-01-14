@@ -5,33 +5,33 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="type" required="true" description="Spring bean name of the Picker class"%>
-<%@ attribute name="id" required="true" description="Unique id for this picker"%>
+<%@ attribute name="type" required="true" description="Spring bean name of the Picker class." %>
+<%@ attribute name="id" required="true" description="Unique id for this picker, must be safe for javascript variable names and html element ids." %>
 
-<%@ attribute name="destinationFieldId" description="Id of field to place selected items on picker close"%>
-<%@ attribute name="excludeIds" description="The ids that cannot be selected in the picker" type="java.lang.Object"%>
-<%@ attribute name="destinationFieldName"  description="Name of field to place selected items on picker close"%>
-<%@ attribute name="multiSelectMode" type="java.lang.Boolean" description="True if this picker allows selection of multiple items"%>
-<%@ attribute name="immediateSelectMode" type="java.lang.Boolean" description="True if picker should select and close when an item is clicked"%>
-<%@ attribute name="endAction" description="Javascript function to call on picker ok button press"%>
-<%@ attribute name="cancelAction" description="Javascript function to call on picker cancel button press"%>
-<%@ attribute name="memoryGroup" description="Adds the picker to the memory group - picker will open up with previous search text populated (as long as no page refresh between)"%>
-<%@ attribute name="linkType" description="Type of link to create which can be 'normal' (the default--a plain anchor tag link), 'button', 'selection' or 'none'"%>
-<%@ attribute name="nameKey" description="i18n key; required if linkType is 'button'; unused for 'none' or 'link'"%>
-<%@ attribute name="styleClass" description="CSS class names applied to the picker's outer container."%>
-<%@ attribute name="extraArgs" description="Dynamic inputs to picker search"%>
-<%@ attribute name="extraDestinationFields" description="used when a selection has been made and the picker is closed.  It's a semicolon separated list of: [property]:[fieldId]"%>
-<%@ attribute name="buttonStyleClass" description="Class to style the button with"%>
-<%@ attribute name="icon" description="Icon class to use for button."%>
-<%@ attribute name="anchorStyleClass" description="Class to style the anchor with"%>
-<%@ attribute name="selectionProperty" description="Required with a linkType of 'selection', used to determine name of property from selected item to display in label.  Not used with other linkType values."%>
-<%@ attribute name="allowEmptySelection" description="Allow an empty selection.  Only valid when 'multiSelectMode' is true."%>
-<%@ attribute name="initialId" description="Id of item selected at the start."%>
-<%@ attribute name="initialIds" type="java.lang.Object" description="Ids of items selected at the start." %>
+<%@ attribute name="destinationFieldId" description="Id of field to place selected items on picker close." %>
+<%@ attribute name="excludeIds" type="java.lang.Object" description="The ids that cannot be selected in the picker." %>
+<%@ attribute name="destinationFieldName"  description="Name of field to place selected items on picker close." %>
+<%@ attribute name="multiSelectMode" type="java.lang.Boolean" description="If 'true', this picker allows selection of multiple items." %>
+<%@ attribute name="immediateSelectMode" type="java.lang.Boolean" description="If 'true' this picker will select and close when an item is clicked." %>
+<%@ attribute name="endAction" description="Javascript function called when picker ok button press or when item is clicked if 'immediateSelectMode' is 'true'." %>
+<%@ attribute name="cancelAction" description="Javascript function called when picker cancel button press." %>
+<%@ attribute name="memoryGroup" description="Adds the picker to the memory group - picker will open up with previous search text populated as long as no page refresh between." %>
+<%@ attribute name="linkType" description="Type of link to create which can be 'normal' (the default--a plain anchor tag link), 'button', 'selection' or 'none'." %>
+<%@ attribute name="nameKey" description="I18n key. Required if linkType is 'button'. Only used for 'button' and 'selection'." %>
+<%@ attribute name="styleClass" description="CSS class names applied to the picker's outer container." %>
+<%@ attribute name="extraArgs" description="Request parameters used inpicker search request. See jquery's ajax api." %>
+<%@ attribute name="extraDestinationFields" description="Used when a selection has been made and the picker is closed.  It's a semicolon separated list of: [property]:[fieldId]" %>
+<%@ attribute name="buttonStyleClass" description="CSS class names applied to the button." %>
+<%@ attribute name="icon" description="Specifies and icon for the button." %>
+<%@ attribute name="anchorStyleClass" description="CSS class names applied to the 'a' link element." %>
+<%@ attribute name="selectionProperty" description="Required with a linkType of 'selection', used to determine name of property from selected item to display in label.  Not used with other linkType values." %>
+<%@ attribute name="allowEmptySelection" description="Allow an empty selection.  Only valid when 'multiSelectMode' is true." %>
+<%@ attribute name="initialId" description="Id of pre-selected item." %>
+<%@ attribute name="initialIds" type="java.lang.Object" description="Id of pre-selected item. Should be parsable as a JSON array. i.e. ArrayList." %>
 <%@ attribute name="useInitialIdsIfEmpty" type="java.lang.Boolean" description="Clears selection if initial id(s) is empty." %>
-<%@ attribute name="container" description="The id of the container element. Used for placing a picker on the page rather than loaded into a dialog."%>
-<%@ attribute name="viewOnlyMode" type="java.lang.Boolean" description="causes picker display the value only; only usable with selection linkType"%>
-<%@ attribute name="buttonRenderMode" description="passes the render mode to the cti:button tag; only usable with button linkType" %>
+<%@ attribute name="container" description="The id of the container element. Used for placing a picker inline on the page rather than shown in a dialog." %>
+<%@ attribute name="viewOnlyMode" type="java.lang.Boolean" description="Causes picker component to display the value but not be clickable.  Only usable with when linkType is 'selection'." %>
+<%@ attribute name="buttonRenderMode" description="Passes the render mode to the cti:button tag.  Only usable 'linkType' is 'button'.  See cti:button 'renderMode' attribute." %>
 
 <c:set var="containerArg" value="null"/>
 <c:if test="${!empty  pageScope.container}">
@@ -112,14 +112,13 @@
 <c:if test="${pageScope.linkType == 'selection'}">
     <cti:msgScope paths="components.picker">
         <cti:msg2 var="selectedItemsDialogTitleMsg" key=".selectedItemsDialogTitle"/>
-        <cti:msg2 var="closeMsg" key=".close"/>
     </cti:msgScope>
-    <div title="${selectedItemsDialogTitleMsg}" id="picker_${id}_selectedItemsPopup">
-        <div id="picker_${id}_selectedItemsDisplayArea"></div>
+    <div title="${selectedItemsDialogTitleMsg}" id="picker-${id}-selected-items-popup">
+        <div id="picker-${id}-selected-items-display-area"></div>
     </div>
 </c:if>
 
-<span id="picker_${id}_inputArea">
+<span id="picker-${id}-input-area">
 <c:if test="${!empty pageScope.initialIds}">
     <c:forEach var="initialId" items="${initialIds}">
         <input type="hidden" name="${destinationFieldName}" value="${initialId}">
@@ -132,7 +131,7 @@
 
 <c:if test="${pageScope.viewOnlyMode}">
     <c:set var="viewMode" value="true"/>
-    <span id="picker_${id}_btn"><span></span></span>
+    <span id="picker-${id}-btn"><span></span></span>
 </c:if>
 <c:if test="${!pageScope.viewOnlyMode}">
     <c:set var="viewMode" value="false"/>
@@ -144,7 +143,7 @@
                     <c:if test="${not empty pageScope.buttonRenderMode}">
                         <c:set var="renderMode" value="${pageScope.buttonRenderMode}"/>
                     </c:if>
-                    <cti:button id="picker_${id}_btn"
+                    <cti:button id="picker-${id}-btn"
                                 nameKey="${pageScope.nameKey}" 
                                 onclick="${id}.show.call(${id})" 
                                 renderMode="${pageScope.renderMode}" 
@@ -160,14 +159,14 @@
                         <c:set var="nameKey" value="selectionPicker"/>
                     </c:if>
                     <c:set var="icon" value="${empty pageScope.icon ? 'icon-database-add' : icon}"/>
-                    <cti:button id="picker_${id}_btn" 
+                    <cti:button id="picker-${id}-btn" 
                                 nameKey="${pageScope.nameKey}" 
                                 classes="noSelectionPickerLabel ${pageScope.buttonStyleClass}" 
                                 renderMode="labeledImage" 
                                 icon="${icon}"
                                 onclick="${id}.show.call(${id})"/>
                     <c:if test="${pageScope.multiSelectMode}">
-                        <cti:icon id="picker_${id}_showSelectedImg" 
+                        <cti:icon id="picker-${id}-show-selected-icon" 
                                   href="javascript:${id}.showSelected.call(${id})" 
                                   nameKey="zoom" 
                                   icon="icon-magnifier"/>
