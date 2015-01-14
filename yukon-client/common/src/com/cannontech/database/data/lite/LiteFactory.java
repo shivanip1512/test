@@ -12,7 +12,6 @@ import com.cannontech.database.data.config.ConfigTwoWay;
 import com.cannontech.database.data.customer.CICustomerBase;
 import com.cannontech.database.data.customer.Contact;
 import com.cannontech.database.data.customer.Customer;
-import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase;
 import com.cannontech.database.data.graph.GraphDefinition;
@@ -260,22 +259,22 @@ public final class LiteFactory {
         } else if (val instanceof MultiDBPersistent) {
             returnLite = createLite(((MultiDBPersistent) val).getDBPersistentVector().get(0));
         } else if (val instanceof CICustomerBase) {
-            returnLite = new LiteCICustomer(((CICustomerBase) val).getCustomerID().intValue(),
-                                            ((CICustomerBase) val).getCiCustomerBase().getCompanyName());
-            ((LiteCICustomer) returnLite).setCICustType(((CICustomerBase) val).getCiCustomerBase().getCICustType().intValue());
-            ((LiteCICustomer) returnLite).setCurtailAmount(((CICustomerBase) val).getCiCustomerBase().getCurtailAmount().doubleValue());
-            ((LiteCICustomer) returnLite).setDemandLevel(((CICustomerBase) val).getCiCustomerBase().getCustDmdLevel().doubleValue());
+            returnLite = new LiteCICustomer(((CICustomerBase) val).getCustomerID());
+            ((LiteCICustomer) returnLite).setCompanyName(((CICustomerBase) val).getCiCustomerBase().getCompanyName());
+            ((LiteCICustomer) returnLite).setCICustType(((CICustomerBase) val).getCiCustomerBase().getCICustType());
+            ((LiteCICustomer) returnLite).setCurtailAmount(((CICustomerBase) val).getCiCustomerBase().getCurtailAmount());
+            ((LiteCICustomer) returnLite).setDemandLevel(((CICustomerBase) val).getCiCustomerBase().getCustDmdLevel());
 
         } else if (val instanceof Customer) {
-            returnLite = new LiteCustomer(((Customer) val).getCustomerID().intValue());
+            returnLite = new LiteCustomer(((Customer) val).getCustomerID());
         } else if (val instanceof PointBase) {
             if (((PointBase) val).getPoint().getPaoID() == null || 
                     ((PointBase) val).getPoint().getPaoID() == 0) {
-                returnLite = new LitePoint(((PointBase) val).getPoint().getPointID().intValue(), ((PointBase) val).getPoint().getPointName());
+                returnLite = new LitePoint(((PointBase) val).getPoint().getPointID(), ((PointBase) val).getPoint().getPointName());
             } else {
                 PointBase pointBase = (PointBase) val;
                 int pointType = PointType.getForString(pointBase.getPoint().getPointType()).getPointTypeId();
-                returnLite = new LitePoint(pointBase.getPoint().getPointID().intValue(),
+                returnLite = new LitePoint(pointBase.getPoint().getPointID(),
                                            pointBase.getPoint().getPointName(),
                                            pointType,
                                            pointBase.getPoint().getPaoID(),
@@ -435,22 +434,4 @@ public final class LiteFactory {
 
         return userObject;
     }
-
-    /*
-     * This guy is useful when we need to retrieve for either a LiteCICustomer
-     * or a regular LiteCustomer.
-     */
-    public static LiteCustomer createCICustomerOrLiteCustomer(String dbAlias,
-            int customerID, int customerType) {
-        if (customerType == CustomerTypes.CUSTOMER_CI) {
-            LiteCICustomer theCustomer = new LiteCICustomer(customerID);
-            theCustomer.retrieve(dbAlias);
-            return theCustomer;
-        } else {
-            LiteCustomer theCustomer = new LiteCustomer(customerID);
-            theCustomer.retrieve(dbAlias);
-            return theCustomer;
-        }
-    }
-
 }

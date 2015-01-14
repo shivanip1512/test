@@ -3,17 +3,16 @@ package com.cannontech.analysis.tablemodel;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Vector;
+
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.lm.LMEvent;
 import com.cannontech.analysis.data.lm.SettlementCustomer;
-import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonListDao;
-import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.database.data.lite.LiteAccountInfo;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 
 /**
  * Extending classes must implement:
@@ -126,16 +125,12 @@ public class HECO_CustomerMonthlyBillingSettlementModel extends HECO_SettlementM
                 case CUSTOMER_NUMBER_DATA:
                     return settleCust.getCICustomerBase().getCustomer().getCustomerNumber();
                 case ACCOUNT_NUMBER_DATA: {
-                    LiteCustomer liteCust = YukonSpringHook.getBean(CustomerDao.class).getLiteCustomer(settleCust.getCustomerID().intValue());
-                    Vector acctIDs = liteCust.getAccountIDs();
-                    if( acctIDs != null && !acctIDs.isEmpty()) {
-                        StarsCustAccountInformationDao custAccountDao = YukonSpringHook.getBean(StarsCustAccountInformationDao.class);
-                        LiteAccountInfo lscai = 
-                                custAccountDao.getById((Integer)acctIDs.get(0), getLiteStarsEC().getEnergyCompanyId());
-                        return lscai.getCustomerAccount().getAccountNumber();
+                    try {
+                        CustomerAccount customerAccount = YukonSpringHook.getBean(CustomerAccountDao.class).getAccountByCustomerId(settleCust.getCustomerID().intValue());
+                        return customerAccount.getAccountNumber();
+                    } catch (IncorrectResultSizeDataAccessException e) {
+                        return "Acct # ?";
                     }
-
-                    return "Acct # ?";
                 }
                 case DSM_APPLICATION_NUMBER_DATA:
                     return settleCust.getCICustomerBase().getCustomer().getAltTrackingNumber();

@@ -60,6 +60,8 @@ public interface CustomerAccountDao {
 
     CustomerAccount getAccountByContactId(int contactId);
 
+    CustomerAccount getAccountByCustomerId(int customerId);
+
     List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(int ecId, List<Integer> groupIds, Date startDate,
             Date stopDate);
 

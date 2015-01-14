@@ -269,6 +269,7 @@ public class AccountServiceImpl implements AccountService {
         String tempUnit = ecSettingDao.getEnum(EnergyCompanySettingType.DEFAULT_TEMPERATURE_UNIT,
             TemperatureUnit.class, ec.getId()).getLetter();
         liteCustomer.setTemperatureUnit(tempUnit);
+        liteCustomer.setEnergyCompanyID(ec.getId());
         customerDao.addCustomer(liteCustomer);
         dbChangeManager.processDbChange(liteCustomer.getLiteID(), DBChangeMsg.CHANGE_CUSTOMER_DB,
             DBChangeMsg.CAT_CUSTOMER, DBChangeMsg.CAT_CUSTOMER, DbChangeType.ADD);
@@ -283,8 +284,7 @@ public class AccountServiceImpl implements AccountService {
             }
             addressDao.add(companyAddress);
 
-            LiteCICustomer liteCICustomer = new LiteCICustomer();
-            liteCICustomer.setCustomerID(liteCustomer.getCustomerID());
+            LiteCICustomer liteCICustomer = new LiteCICustomer(liteCustomer.getCustomerID());
             liteCICustomer.setMainAddressID(companyAddress.getAddressID());
             liteCICustomer.setDemandLevel(CtiUtilities.NONE_ZERO_ID);
             liteCICustomer.setCurtailAmount(CtiUtilities.NONE_ZERO_ID);
@@ -803,7 +803,7 @@ public class AccountServiceImpl implements AccountService {
                 liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_CI);
                 customerDao.updateCustomer(liteCustomer);
 
-                LiteCICustomer liteCICustomer = new LiteCICustomer();
+                LiteCICustomer liteCICustomer = new LiteCICustomer(liteCustomer.getCustomerID());
                 liteCICustomer.setMainAddressID(companyAddress.getAddressID());
                 liteCICustomer.setDemandLevel(CtiUtilities.NONE_ZERO_ID);
                 liteCICustomer.setCurtailAmount(CtiUtilities.NONE_ZERO_ID);
@@ -814,7 +814,7 @@ public class AccountServiceImpl implements AccountService {
                     liteCICustomer.setCICustType(YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL);
                 }
                 liteCICustomer.setAltTrackingNumber(accountDto.getAltTrackingNumber());
-                liteCICustomer.setCustomerID(liteCustomer.getCustomerID());
+                liteCICustomer.setEnergyCompanyID(energyCompanyOfAccount.getEnergyCompanyId());
                 customerDao.addCICustomer(liteCICustomer);
 
                 // Log customer type change

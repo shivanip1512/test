@@ -2,12 +2,12 @@ package com.cannontech.yukon.server.cache;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.Vector;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -25,6 +25,7 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.db.customer.CICustomerBase;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.Lists;
 
 public class CICustomerLoader implements Runnable 
 {
@@ -82,7 +83,7 @@ public class CICustomerLoader implements Runnable
                 lc.setRateScheduleID(custRateScheduleID);
                 lc.setAltTrackingNumber(custAltTrackNum);
                 lc.setTemperatureUnit(temperatureUnit);
-                lc.setAdditionalContacts(new Vector<LiteContact>(0));
+                lc.setAdditionalContacts(new ArrayList<LiteContact>());
                 
                 return lc;
             }
@@ -117,16 +118,16 @@ public class CICustomerLoader implements Runnable
             "and ca.CustomerID <= " + maxCustomerID + " " +
             "ORDER BY ca.CustomerID, ca.Ordering";
         
-        final Map<LiteCustomer, Vector<LiteContact>> temporaryAdditionalContacts = new TreeMap<LiteCustomer, Vector<LiteContact>>();
+        final Map<LiteCustomer, List<LiteContact>> temporaryAdditionalContacts = new TreeMap<LiteCustomer, List<LiteContact>>();
         
         template.query(sqlString, new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
                 int custumerId = rs.getInt("CustomerID");
                 LiteCustomer liteCustomer = allCICustomersMap.get(custumerId);
-                Vector<LiteContact> contactList = temporaryAdditionalContacts.get(liteCustomer);
+                List<LiteContact> contactList = temporaryAdditionalContacts.get(liteCustomer);
                 if (contactList == null) {
-                    contactList = new Vector<LiteContact>();
+                    contactList = Lists.newArrayList();
                     temporaryAdditionalContacts.put(liteCustomer, contactList);
                 }
                 // for the following to be efficient, the contacts should have been cached already
@@ -140,15 +141,15 @@ public class CICustomerLoader implements Runnable
         // It is important that we never call getAdditionalContacts on the lite customer. This
         // would cause the lite object to load all of the additional contact (lazy style) first--
         // which would defeat the purpose of what we're trying to do here.
-        for (Map.Entry<LiteCustomer, Vector<LiteContact>> entry : temporaryAdditionalContacts.entrySet()) {
+        for (Map.Entry<LiteCustomer, List<LiteContact>> entry : temporaryAdditionalContacts.entrySet()) {
             LiteCustomer customer = entry.getKey();
-            Vector<LiteContact> additionalContacts = entry.getValue();
+            List<LiteContact> additionalContacts = entry.getValue();
             customer.setAdditionalContacts(additionalContacts);
         }
         
 
         // Now we do the same for accountIds as we just did with additional contacts.
-        sqlString =	"SELECT acct.AccountID, map.EnergyCompanyID, acct.CustomerID " +
+        sqlString =	"SELECT map.EnergyCompanyID, acct.CustomerID " +
             "FROM CustomerAccount acct, ECToAccountMapping map, Customer c " +
             "WHERE acct.AccountID = map.AccountID " +
             "and acct.CustomerID = c.CustomerID " +
@@ -156,30 +157,16 @@ public class CICustomerLoader implements Runnable
             "and acct.CustomerID <= " + maxCustomerID + " " +
             "order by acct.customerID";
         
-        final Map<LiteCustomer, Vector<Integer>> temporaryAccountIds = new TreeMap<LiteCustomer, Vector<Integer>>();
-        
         template.query(sqlString, new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rset) throws SQLException {
-                Integer accountId = rset.getInt("AccountID");
                 int energyCompanyId = rset.getInt("EnergyCompanyID");
                 Integer customerId = rset.getInt("CustomerID");
                 
                 LiteCustomer customer = allCICustomersMap.get(customerId);
                 customer.setEnergyCompanyID(energyCompanyId);
-                
-                Vector<Integer> accountList = temporaryAccountIds.get(customer);
-                if (accountList == null) {
-                    accountList = new Vector<Integer>();
-                    temporaryAccountIds.put(customer, accountList);
-                }
-                accountList.add(accountId);
             }
         });
-        
-        for (Map.Entry<LiteCustomer, Vector<Integer>> entry : temporaryAccountIds.entrySet()) {
-            entry.getKey().setAccountIDs(entry.getValue());
-        }
         
         // Finally, fill in the extra CICustomer data for those customers that are C&I.
         sqlString = 

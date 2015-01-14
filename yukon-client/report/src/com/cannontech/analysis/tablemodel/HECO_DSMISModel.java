@@ -3,15 +3,15 @@ package com.cannontech.analysis.tablemodel;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Vector;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.lm.SettlementCustomer;
-import com.cannontech.core.dao.CustomerDao;
-import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
-import com.cannontech.stars.database.data.lite.LiteAccountInfo;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 
 /**
  * Extending classes must implement:
@@ -100,20 +100,16 @@ public class HECO_DSMISModel extends HECO_SettlementModelBase {
                     return value;
                 }
                 case ACCOUNT_NUMBER_DATA: {
-                    String value = "";
-                    LiteCustomer liteCust = YukonSpringHook.getBean(CustomerDao.class).getLiteCustomer(settleCust.getCustomerID().intValue());
-                    Vector acctIDs = liteCust.getAccountIDs();
-                    if(acctIDs != null && !acctIDs.isEmpty()) {
-                        StarsCustAccountInformationDao custAccountDao = YukonSpringHook.getBean(StarsCustAccountInformationDao.class);
-                        LiteAccountInfo lscai = 
-                                custAccountDao.getById((Integer)acctIDs.get(0), getLiteStarsEC().getEnergyCompanyId());
-                        value = lscai.getCustomerAccount().getAccountNumber();
+                    String accountNumber = "";
+                    try {
+                        CustomerAccount customerAccount = YukonSpringHook.getBean(CustomerAccountDao.class).getAccountByCustomerId(settleCust.getCustomerID().intValue());
+                        accountNumber = customerAccount.getAccountNumber();
+                    } catch (IncorrectResultSizeDataAccessException e) {
+                        // do nothing
                     }
 
-                    while (value.length() < 11) {
-                        value = " " + value;
-                    }
-                    return value;
+                    accountNumber = StringUtils.leftPad(accountNumber, 11);
+                    return accountNumber;
                 }
                 case START_DATE_DATA:
                     return dateFormat_yyyy.format(getStartDate());

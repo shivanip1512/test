@@ -60,6 +60,11 @@ public class CustomerAccountDaoAdapter implements CustomerAccountDao {
     }
 
     @Override
+    public CustomerAccount getAccountByCustomerId(int customerId) {
+        throw new UnsupportedOperationException("not implemented");
+    }
+    
+    @Override
     public List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(int ecId, List<Integer> groupIds,
             Date startDate, Date stopDate) {
         throw new UnsupportedOperationException("not implemented");

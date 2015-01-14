@@ -91,7 +91,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
 
     private SimpleTableAccessTemplate<CustomerAccount> customerAccountTemplate;
 
-    private AdvancedFieldMapper<CustomerAccount> customerAccountFieldMapper =
+    private final AdvancedFieldMapper<CustomerAccount> customerAccountFieldMapper =
         new AdvancedFieldMapper<CustomerAccount>() {
             @Override
             public void extractValues(SqlParameterChildSink p, CustomerAccount account) {
@@ -122,7 +122,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         customerAccountTemplate.setPrimaryKeyValidOver(0);
     }
 
-    private SqlStatementBuilder selectSql = new SqlStatementBuilder();
+    private final SqlStatementBuilder selectSql = new SqlStatementBuilder();
     {
         selectSql.appendFragment(new CustomerAccountRowMapper().getBaseQuery());
     }
@@ -446,6 +446,17 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         sql.append("        (SELECT CustomerId");
         sql.append("         FROM CustomerAdditionalContact");
         sql.append("         WHERE ContactId").eq(contactId).append("))");
+
+        CustomerAccount account = jdbcTemplate.queryForObject(sql, rowMapper);
+        return account;
+    }
+
+    @Override
+    public CustomerAccount getAccountByCustomerId(int customerId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT *");
+        sql.append("FROM CustomerAccount");
+        sql.append("WHERE CustomerId").eq(customerId);
 
         CustomerAccount account = jdbcTemplate.queryForObject(sql, rowMapper);
         return account;

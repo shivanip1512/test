@@ -7,7 +7,6 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -22,14 +21,15 @@ import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventParticipant;
 import com.cannontech.cc.model.EconomicEventParticipantSelectionWindow;
 import com.cannontech.cc.model.EconomicEventPricing;
-import com.cannontech.cc.service.EconomicService;
 import com.cannontech.cc.service.CurtailmentEventState;
 import com.cannontech.cc.service.EconomicEventState;
+import com.cannontech.cc.service.EconomicService;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
+import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 
 /**
@@ -180,23 +180,18 @@ public class CurtailmentEventsItronFormat extends SimpleBillingFormatBase {
 	 * This is currently implemented as the CustomerAccount.AccountNumber field (Per Xcel).
 	 * @return customerName
 	 */
-	private String getCustomerName(LiteCustomer liteCustomer) {
+    private String getCustomerName(LiteCustomer liteCustomer) {
+        String customerName = "";
+        CustomerAccountDao customerAccountDao = YukonSpringHook.getBean(CustomerAccountDao.class);
+        try {
+            CustomerAccount customerAccount = customerAccountDao.getAccountByCustomerId(liteCustomer.getCustomerID());
+            return customerAccount.getAccountNumber();
+        } catch (IncorrectResultSizeDataAccessException e) {
+            CTILogger.error(e);
+        }
 
-		String customerName = "";
-		Vector<Integer> accountIDs = liteCustomer.getAccountIDs();
-		if (!accountIDs.isEmpty() ) {	//setup "should" be such that there is only one account per customer
-		    YukonJdbcTemplate jdbcTemplate = YukonSpringHook.getBean(YukonJdbcTemplate.class);
-			String sql = "Select AccountNumber from CustomerAccount " +
-						" where AccountId = ? ";
-			try {
-				customerName = jdbcTemplate.queryForObject(sql, String.class, accountIDs.get(0));
-			} catch(IncorrectResultSizeDataAccessException e) {
-				CTILogger.error(e);
-			}
-		}
-		return customerName;
-		
-	}
+        return customerName;
+    }
 
 	private String getProductNameString(BaseEvent event) {
 		if (event instanceof CurtailmentEvent) {

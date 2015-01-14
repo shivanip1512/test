@@ -1,7 +1,5 @@
 package com.cannontech.stars.web;
 
-import java.util.Vector;
-
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -52,24 +50,6 @@ public class StarsYukonUser {
 	
 	public int getEnergyCompanyID() {
 		return energyCompanyID;
-	}
-	
-	/**
-	 * If the yukon user belongs to a residential customer, returns
-	 * all the account IDs of this customer. Otherwise, returns null.
-	 */
-	public int[] getCustomerAccountIDs() {
-		if (customer != null) {
-			Vector<Integer> acctIDs = customer.getAccountIDs();
-			int[] accountIDs = new int[ acctIDs.size() ];
-			for (int i = 0; i < acctIDs.size(); i++) {
-                accountIDs[i] = acctIDs.get(i).intValue();
-            }
-			
-			return accountIDs;
-		}
-		
-		return null;
 	}
 	
 	private void init() throws InstantiationException {

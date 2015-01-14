@@ -42,7 +42,7 @@ public abstract class NotifHandler {
             log.debug("Couldn't find customer for contactable while writing to ActivityLogger: " + contactable);
             customerId = -1;
         }
-        ActivityLogger.logEvent(userId, -1, energyCompanyId, customerId, -1, action, description);
+        ActivityLogger.logEvent(userId, -1, energyCompanyId, customerId, action, description);
     }
 
     static public void logNotificationStatus(String action, boolean success, Contactable contactable, NotifType notifType, Object forDescription) {
@@ -59,7 +59,7 @@ public abstract class NotifHandler {
             log.debug("Couldn't find customer for contactable while writing to ActivityLogger: " + contactable);
             customerId = -1;
         }
-        ActivityLogger.logEvent(userId, -1, energyCompanyId, customerId, -1, action, description);
+        ActivityLogger.logEvent(userId, -1, energyCompanyId, customerId, action, description);
     }
     
 

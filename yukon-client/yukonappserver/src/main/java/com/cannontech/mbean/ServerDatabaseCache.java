@@ -1470,13 +1470,11 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             if (!noObjectNeeded) {
                 LiteCustomer lc;
                 if (dbCategory.equalsIgnoreCase(DBChangeMsg.CAT_CI_CUSTOMER)) {
-                    lc = new LiteCICustomer(id);
+                    lc = customerDao.getLiteCICustomer(id);
                 } else {
-                    lc = new LiteCustomer(id);
+                    lc = customerDao.getLiteCustomer(id);
                 }
-                lc.retrieve(databaseAlias);
                 customerCache.put(new Integer(lc.getCustomerID()), lc);
-
                 lBase = lc;
             }
             break;
