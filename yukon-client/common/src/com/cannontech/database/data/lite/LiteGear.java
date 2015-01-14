@@ -1,245 +1,106 @@
-/*
- * Created on May 17, 2004
- *
- * To change the template for this generated file go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 package com.cannontech.database.data.lite;
 
 import com.cannontech.database.db.device.lm.LMProgramDirectGear;
-/**
- * @author jdayton
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
- */
 
-//At long last, we can reveal the lite gear 
-public class LiteGear extends LiteBase
-{
-	private String gearName;
-	private String gearType;
-	private int ownerID;
-	private int gearNumber;
-/**
- * LiteHolidaySchedule constructor comment.
- */
-public LiteGear()
-{
-	super();
+public class LiteGear extends LiteBase {
+    private String gearName;
+    private String gearType;
+    private int ownerID;
+    private int gearNumber;
 
-	setLiteType(LiteTypes.GEAR);
-}
-/**
- * LiteHolidaySchedule constructor comment.
- */
-public LiteGear(int gearID)
-{
-	super();
+    public LiteGear() {
+        super();
+        setLiteType(LiteTypes.GEAR);
+    }
 
-	setLiteID( gearID );
-	setLiteType(LiteTypes.GEAR);
-}
+    public LiteGear(int gearID) {
+        super();
+        setLiteID(gearID);
+        setLiteType(LiteTypes.GEAR);
+    }
 
-/**
- * LiteHolidaySchedule constructor comment.
- */
-public LiteGear(int gearID, String conName_ )
-{
-	this( gearID );
-	setGearName( conName_ );
-}
+    public LiteGear(int gearID, String conName_) {
+        this(gearID);
+        setGearName(conName_);
+    }
 
-public LiteGear(int gearID, String conName_, String type )
-{
-	this( gearID );
-	setGearName( conName_ );
-	setGearType( type );
-}
-/**
- * Insert the method's description here.
- * @return int
- */
-public int getGearID() 
-{
-	return getLiteID();
-}
-/**
- * Insert the method's description here.
- * @return java.lang.String
- */
-public String getGearName() {
-	return gearName;
-}
+    public LiteGear(int gearID, String conName_, String type) {
+        this(gearID);
+        setGearName(conName_);
+        setGearType(type);
+    }
 
-public String getGearType() {
-	return gearType;
-}
+    public int getGearID() {
+        return getLiteID();
+    }
 
-public int getOwnerID() {
-	return ownerID;
-}
+    public String getGearName() {
+        return gearName;
+    }
 
-public int getGearNumber() {
-	return gearNumber;
-}
-/**
- * retrieve method comment.
- */
-public void retrieve(String databaseAlias) 
-{
- 
-   com.cannontech.database.SqlStatement s = 
-	  new com.cannontech.database.SqlStatement(
-		 "SELECT gearID, gearName, controlMethod, deviceID, gearNumber "  + 
-			"FROM " + LMProgramDirectGear.TABLE_NAME +
-			" where gearID = " + getGearID(),
-		 com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
+    public String getGearType() {
+        return gearType;
+    }
 
-   try 
-   {
-	  s.execute();
+    public int getOwnerID() {
+        return ownerID;
+    }
 
-	  if( s.getRowCount() <= 0 )
-		 throw new IllegalStateException("Unable to find gear with ID = " + getLiteID() );
+    public int getGearNumber() {
+        return gearNumber;
+    }
 
+    /**
+     * retrieve method comment.
+     */
+    public void retrieve(String databaseAlias) {
 
-	  setGearID( new Integer(s.getRow(0)[0].toString()).intValue() );
-	  setGearName( s.getRow(0)[1].toString() );
-	  setGearType( s.getRow(0)[2].toString());
-	  setOwnerID( new Integer(s.getRow(0)[3].toString()).intValue() );
-	  setGearNumber( new Integer(s.getRow(0)[4].toString()).intValue() );
-   }
-   catch( Exception e )
-   {
-	  com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-   }
-      
-}
-/**
- * Insert the method's description here.
- * @return void
- */
-public void setGearID( int conID )
-{
-	setLiteID( conID );
-}
-/**
- * Insert the method's description here.
- * @return void
- */
-public void setGearName( String name )
-{
-	gearName = name;
-}
+        com.cannontech.database.SqlStatement s = 
+                new com.cannontech.database.SqlStatement(
+                   "SELECT gearID, gearName, controlMethod, deviceID, gearNumber "  + 
+                      "FROM " + LMProgramDirectGear.TABLE_NAME +
+                      " where gearID = " + getGearID(),
+                   com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
 
-public void setGearType( String type )
-{
-	gearType = type;
-}
+        try {
+            s.execute();
 
-public void setOwnerID(int id)
-{
-	ownerID = id;
-}
+            if (s.getRowCount() <= 0)
+                throw new IllegalStateException("Unable to find gear with ID = " + getLiteID());
 
-public void setGearNumber(int newNum)
-{
-	gearNumber = newNum;
-}
-/**
- * Insert the method's description here.
- * @return java.lang.String
- */
-public String toString() 
-{
-	return getGearName();
-}
+            setGearID(new Integer(s.getRow(0)[0].toString()).intValue());
+            setGearName(s.getRow(0)[1].toString());
+            setGearType(s.getRow(0)[2].toString());
+            setOwnerID(new Integer(s.getRow(0)[3].toString()).intValue());
+            setGearNumber(new Integer(s.getRow(0)[4].toString()).intValue());
+        } catch (Exception e) {
+            com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
+        }
 
-/*
-public final java.util.Vector getSpecificLiteGears(java.sql.Connection conn)
-{
-	java.util.Vector returnVector = new java.util.Vector();
-	int gearID = null;
-	String 	gearName = null;
-	String gearType = null;
-	Integer
-	
-	java.sql.PreparedStatement pstmt = null;
-	java.sql.ResultSet rset = null;
-	
-	String sql = "SELECT gearID, gearName, controlMethod, deviceID, gearNumber "  + 
-			"FROM " + LMProgramDirectGear.TABLE_NAME +
-		" ORDER BY gearID";
+    }
 
-	try
-	{		
-		if( conn == null )
-		{
-			throw new IllegalStateException("Database connection should not be (null).");
-		}
-		else
-		{
-			pstmt = conn.prepareStatement(sql.toString());
-						
-			rset = pstmt.executeQuery();
-	
-			while( rset.next() )
-			{
-				gearID = new Integer( rset.getInt("gearID") );
-				gearName = rset.getString("gearName");
-				gearType =  rset.getString("gearType");
-				ownerID = new Integer( rset.getInt("ownerID"));
-				gearNumber = 
-				
-				returnVector.addElement( new LiteGear(
-						gearID.intValue(), 
-						gearName, gearType ));				
-			}
-					
-		}		
-	}
-	catch( java.sql.SQLException e )
-	{
-		com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-	}
-	finally
-	{
-		try
-		{
-			if( pstmt != null ) pstmt.close();
-		} 
-		catch( java.sql.SQLException e2 )
-		{
-			com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );//something is up
-		}	
-	}
+    public void setGearID(int conID) {
+        setLiteID(conID);
+    }
 
+    public void setGearName(String name) {
+        gearName = name;
+    }
 
-	return returnVector;
-}
+    public void setGearType(String type) {
+        gearType = type;
+    }
 
-public java.util.Vector getAllGears()
-{
-	java.util.Vector tempVector = null;
-	
-	try
-	{
-		java.sql.Connection conn = null;
-	
-		conn = com.cannontech.database.PoolManager.getInstance().getConnection("yukon");
+    public void setOwnerID(int id) {
+        ownerID = id;
+    }
 
-		tempVector = getAllGears(conn);
+    public void setGearNumber(int newNum) {
+        gearNumber = newNum;
+    }
 
-		conn.close();
-	}
-	catch( java.sql.SQLException e2 )
-	{
-		com.cannontech.clientutils.CTILogger.error( e2.getMessage(), e2 );
-	}	
-	
-	return tempVector;
-}
-*/	 
-
+    @Override
+    public String toString() {
+        return getGearName();
+    }
 }

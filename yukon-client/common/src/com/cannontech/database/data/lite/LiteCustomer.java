@@ -14,85 +14,71 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.spring.YukonSpringHook;
 
-/**
- * @author yao
- *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
- */
 public class LiteCustomer extends LiteBase {
-	
-	private int primaryContactID = 0;
-	private int customerTypeID = com.cannontech.database.data.customer.CustomerTypes.INVALID;
-	private String timeZone = null;
-	private String customerNumber = CtiUtilities.STRING_NONE;
-	private int rateScheduleID = CtiUtilities.NONE_ZERO_ID;
-	private String altTrackNum = CtiUtilities.STRING_NONE;
+
+    private int primaryContactID = 0;
+    private int customerTypeID = com.cannontech.database.data.customer.CustomerTypes.INVALID;
+    private String timeZone = null;
+    private String customerNumber = CtiUtilities.STRING_NONE;
+    private int rateScheduleID = CtiUtilities.NONE_ZERO_ID;
+    private String altTrackNum = CtiUtilities.STRING_NONE;
     private String temperatureUnit = TemperatureUnit.FAHRENHEIT.getLetter();
-    
-	//non-persistent data, 
-	//contains com.cannontech.database.data.lite.LiteContact
-	private Vector<LiteContact> additionalContacts = null;
-	
-	// contains int ,Used for residential customers only
-	private Vector<Integer> accountIDs = null;
-	private int energyCompanyID = -1;
-	
-	public LiteCustomer() {
-		super();
-		setCustomerID(-1); // LiteBase sets this to 0 as a default, but 0 is a valid customerId 
-		setLiteType( LiteTypes.CUSTOMER );
-	}
-	
-	public LiteCustomer(int customerID) {
-		super();
-		setCustomerID( customerID );
-		setLiteType( LiteTypes.CUSTOMER );
-	}
-	
-	public int getCustomerID() {
-		return getLiteID();
-	}
-	
-	public void setCustomerID(int customerID) {
-		setLiteID( customerID );
-	}
-	
+
+    // non-persistent data,
+    // contains com.cannontech.database.data.lite.LiteContact
+    private Vector<LiteContact> additionalContacts = null;
+
+    // contains int ,Used for residential customers only
+    private Vector<Integer> accountIDs = null;
+    private int energyCompanyID = -1;
+
+    public LiteCustomer() {
+        super();
+        setCustomerID(-1); // LiteBase sets this to 0 as a default, but 0 is a valid customerId
+        setLiteType(LiteTypes.CUSTOMER);
+    }
+
+    public LiteCustomer(int customerID) {
+        super();
+        setCustomerID(customerID);
+        setLiteType(LiteTypes.CUSTOMER);
+    }
+
+    public int getCustomerID() {
+        return getLiteID();
+    }
+
+    public void setCustomerID(int customerID) {
+        setLiteID(customerID);
+    }
+
     public void retrieve(String dbAlias) {
         PreparedStatement pstmt = null;
         java.sql.Connection conn = null;
         ResultSet rset = null;
         try {
-            conn = PoolManager.getInstance().getConnection( dbAlias );
-            
-            String sql = "SELECT PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit" +
-                        " FROM " + Customer.TABLE_NAME +
-                        " WHERE CustomerID = ?";            
-            
-            pstmt = conn.prepareStatement( sql );
-            pstmt.setInt( 1, getCustomerID());
+            conn = PoolManager.getInstance().getConnection(dbAlias);
+
+            String sql = "SELECT PrimaryContactID, CustomerTypeID, TimeZone, CustomerNumber, RateScheduleID, AltTrackNum, TemperatureUnit" + " FROM " + Customer.TABLE_NAME + " WHERE CustomerID = ?";
+
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, getCustomerID());
             rset = pstmt.executeQuery();
-            
-            if(rset.next())
-            {
-                setPrimaryContactID(rset.getInt(1) );
-                setCustomerTypeID( rset.getInt(2) );
-                setTimeZone( rset.getString(3) );
-                setCustomerNumber( rset.getString(4) );
-                setRateScheduleID( rset.getInt(5) );
-                setAltTrackingNumber( rset.getString(6) );
-                setTemperatureUnit( rset.getString(7) );
-            }
-            else
-                throw new IllegalStateException("Unable to find the Customer with CustomerID = " + getCustomerID() );
-        }
-        catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-        	SqlUtils.close(rset, pstmt, conn );
+
+            if (rset.next()) {
+                setPrimaryContactID(rset.getInt(1));
+                setCustomerTypeID(rset.getInt(2));
+                setTimeZone(rset.getString(3));
+                setCustomerNumber(rset.getString(4));
+                setRateScheduleID(rset.getInt(5));
+                setAltTrackingNumber(rset.getString(6));
+                setTemperatureUnit(rset.getString(7));
+            } else
+                throw new IllegalStateException("Unable to find the Customer with CustomerID = " + getCustomerID());
+        } catch (Exception e) {
+            CTILogger.error(e.getMessage(), e);
+        } finally {
+            SqlUtils.close(rset, pstmt, conn);
         }
     }
 
@@ -103,95 +89,82 @@ public class LiteCustomer extends LiteBase {
         try {
             conn = PoolManager.getYukonConnection();
 
-            String sql = "SELECT acct.AccountID, map.EnergyCompanyID " +
-                         " FROM CustomerAccount acct, ECToAccountMapping map " +
-                         " WHERE acct.CustomerID = ?" +
-                         " AND acct.AccountID = map.AccountID";
+            String sql = "SELECT acct.AccountID, map.EnergyCompanyID " + " FROM CustomerAccount acct, ECToAccountMapping map " + " WHERE acct.CustomerID = ?" + " AND acct.AccountID = map.AccountID";
 
-            pstmt = conn.prepareStatement( sql );
-            pstmt.setInt( 1, getCustomerID());
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, getCustomerID());
             rset = pstmt.executeQuery();
 
             accountIDs.removeAllElements();
 
             while (rset.next()) {
-                accountIDs.add( new Integer(rset.getInt(1)) );
+                accountIDs.add(new Integer(rset.getInt(1)));
                 energyCompanyID = rset.getInt(2);
             }
-            
+
         } catch (Exception e) {
-            CTILogger.error( e.getMessage(), e );
+            CTILogger.error(e.getMessage(), e);
         } finally {
             SqlUtils.close(rset, pstmt, conn);
         }
     }
 
-	/**
-	 * Returns the customerTypeID.
-	 * @return int
-	 */
-	public int getCustomerTypeID() {
-		return customerTypeID;
-	}
+    /**
+     * Returns the customerTypeID.
+     */
+    public int getCustomerTypeID() {
+        return customerTypeID;
+    }
 
-	/**
-	 * Returns the primaryContactID.
-	 * @return int
-	 */
-	public int getPrimaryContactID() {
+    /**
+     * Returns the primaryContactID.
+     */
+    public int getPrimaryContactID() {
         return primaryContactID;
-/*        if( getLiteContact() != null)
-            return getLiteContact().getContactID();
-        return 0;*/
-	}
+    }
 
-	/**
-	 * Sets the additionalContacts.
-	 * @param additionalContacts The additionalContacts to set
-	 */
-	public void setAdditionalContacts(Vector<LiteContact> additionalContacts) {
-		this.additionalContacts = additionalContacts;
-	}
-	
-	public void setAdditionalContacts(List<LiteContact> additionalContacts) {
-	    
-	    this.additionalContacts = new Vector<LiteContact>();
-	    this.additionalContacts.addAll(additionalContacts);
-	}
+    /**
+     * Sets the additionalContacts.
+     */
+    public void setAdditionalContacts(Vector<LiteContact> additionalContacts) {
+        this.additionalContacts = additionalContacts;
+    }
 
-	/**
-	 * Sets the customerTypeID.
-	 * @param customerTypeID The customerTypeID to set
-	 */
-	public void setCustomerTypeID(int customerTypeID) {
-		this.customerTypeID = customerTypeID;
-	}
+    public void setAdditionalContacts(List<LiteContact> additionalContacts) {
 
-	/**
-	 * Sets the primaryContactID.
-	 * @param primaryContactID The primaryContactID to set
-	 */
-	public void setPrimaryContactID(int primaryContactID) {
-		this.primaryContactID = primaryContactID;
-	}
+        this.additionalContacts = new Vector<LiteContact>();
+        this.additionalContacts.addAll(additionalContacts);
+    }
 
-	/**
-	 * Returns the timeZone.
-	 * @return String
-	 */
-	public String getTimeZone() {
-		return timeZone;
-	}
+    /**
+     * Sets the customerTypeID.
+     */
+    public void setCustomerTypeID(int customerTypeID) {
+        this.customerTypeID = customerTypeID;
+    }
 
-	/**
-	 * Sets the timeZone.
-	 * @param timeZone The timeZone to set
-	 */
-	public void setTimeZone(String timeZone) {
-		this.timeZone = timeZone;
-	}
-	
-	public String getTemperatureUnit() {
+    /**
+     * Sets the primaryContactID.
+     */
+    public void setPrimaryContactID(int primaryContactID) {
+        this.primaryContactID = primaryContactID;
+    }
+
+    /**
+     * Returns the timeZone.
+     */
+    public String getTimeZone() {
+        return timeZone;
+    }
+
+    /**
+     * Sets the timeZone.
+     */
+    public void setTimeZone(String timeZone) {
+        this.timeZone = timeZone;
+    }
+
+    public String getTemperatureUnit() {
         return temperatureUnit;
     }
 
@@ -200,89 +173,70 @@ public class LiteCustomer extends LiteBase {
     }
 
     /**
-	 * Returns the additionalContacts.
-	 * @return java.util.Vector
-	 */
-	public synchronized Vector<LiteContact> getAdditionalContacts() {
-		if (additionalContacts == null)
-        {
-			additionalContacts = new Vector<LiteContact>(10);
-			additionalContacts.removeAllElements();
-	        additionalContacts.addAll(YukonSpringHook.getBean(ContactDao.class).getAdditionalContactsForCustomer(getCustomerID()));
+     * Returns the additionalContacts.
+     */
+    public synchronized Vector<LiteContact> getAdditionalContacts() {
+        if (additionalContacts == null) {
+            additionalContacts = new Vector<LiteContact>(10);
+            additionalContacts.removeAllElements();
+            additionalContacts.addAll(YukonSpringHook.getBean(ContactDao.class)
+                                                     .getAdditionalContactsForCustomer(getCustomerID()));
         }
-		return additionalContacts;
-	}
-	
-	/**
-	 * Returns the customer account IDs
-	 * @return java.util.Vector
-	 */
-	public synchronized Vector<Integer> getAccountIDs() {
-		if (accountIDs == null)
-        {
-			accountIDs = new Vector<Integer>(1);
+        return additionalContacts;
+    }
+
+    /**
+     * Returns the customer account IDs
+     */
+    public synchronized Vector<Integer> getAccountIDs() {
+        if (accountIDs == null) {
+            accountIDs = new Vector<Integer>(1);
             retrieveAccountIDs();
         }
-		return accountIDs;
-	}
-	
-	/**
-	 * Used for residential customers only. A residential customer
-	 * should belong to only one energy company.
-	 */
-	public int getEnergyCompanyID() {
-        if( energyCompanyID == -1) {
+        return accountIDs;
+    }
+
+    /**
+     * Used for residential customers only. 
+     * A residential customer should belong to only one energy company.
+     */
+    public int getEnergyCompanyID() {
+        if (energyCompanyID == -1) {
             getAdditionalContacts();
             getAccountIDs();
-        }    
-		return energyCompanyID;
-	}
+        }
+        return energyCompanyID;
+    }
 
-	/**
-	 * @param vector
-	 */
-	public void setAccountIDs(Vector<Integer> vector)
-	{
-		accountIDs = vector;
-	}
+    public void setAccountIDs(Vector<Integer> vector) {
+        accountIDs = vector;
+    }
 
-	/**
-	 * @param i
-	 */
-	public void setEnergyCompanyID(int i)
-	{
-		energyCompanyID = i;
-	}
-	
-	public String getCustomerNumber() 
-	{
-		return customerNumber;
-	}
+    public void setEnergyCompanyID(int i) {
+        energyCompanyID = i;
+    }
 
-	public void setCustomerNumber(String custNum) 
-	{
-		this.customerNumber = custNum;
-	}
-	
-	public String getAltTrackingNumber() 
-	{
-		return altTrackNum;
-	}
+    public String getCustomerNumber() {
+        return customerNumber;
+    }
 
-	public void setAltTrackingNumber(String altNum) 
-	{
-		this.altTrackNum = altNum;
-	}
-	
-	public int getRateScheduleID() 
-	{
-		return rateScheduleID;
-	}
+    public void setCustomerNumber(String custNum) {
+        this.customerNumber = custNum;
+    }
 
+    public String getAltTrackingNumber() {
+        return altTrackNum;
+    }
 
-	public void setRateScheduleID(int rSched) 
-	{
-		this.rateScheduleID = rSched;
-	}
+    public void setAltTrackingNumber(String altNum) {
+        this.altTrackNum = altNum;
+    }
 
+    public int getRateScheduleID() {
+        return rateScheduleID;
+    }
+
+    public void setRateScheduleID(int rSched) {
+        this.rateScheduleID = rSched;
+    }
 }
