@@ -320,7 +320,8 @@ public final class CustomerDaoImpl implements CustomerDao {
     public void callbackWithAllCiCustomers(final SimpleCallback<LiteCICustomer> callback) {
         
         final SqlStatementBuilder sql = new SqlStatementBuilder(selectCustomer);
-        sql.append("order by CompanyName");
+        sql.append("WHERE CustomerTypeId").eq_k(CustomerTypes.CUSTOMER_CI);
+        sql.append("ORDER BY CompanyName");
         
         final CiCustomerRowMapper customerRowMapper = new CiCustomerRowMapper();
         yukonJdbcTemplate.query(sql, new YukonRowCallbackHandler() {
