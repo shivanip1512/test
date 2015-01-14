@@ -598,13 +598,12 @@ public class StarsAdminUtil {
                 continue;
             }
 
-            EnergyCompany energyCompanyMap = new EnergyCompany();
-            energyCompanyMap.setName(member.getName());
-            energyCompanyMap.setPrimaryContactId(member.getEnergyCompanyId());
-            energyCompanyMap.setUserId(member.getUser().getUserID());
-            energyCompanyMap.setEnergyCompanyId(member.getEnergyCompanyId());
-            energyCompanyMap.setPrimaryContactId(member.getPrimaryContactID());
-            Transaction.createTransaction(Transaction.UPDATE, energyCompanyMap).execute();
+            EnergyCompany energyComp = new EnergyCompany();
+            energyComp.setName(member.getName());
+            energyComp.setUserId(member.getUser().getUserID());
+            energyComp.setEnergyCompanyId(member.getEnergyCompanyId());
+            energyComp.setPrimaryContactId(member.getPrimaryContactID());
+            Transaction.createTransaction(Transaction.UPDATE, energyComp).execute();
 
             member.clearHierarchy();
 
