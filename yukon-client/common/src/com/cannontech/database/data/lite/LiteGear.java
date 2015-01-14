@@ -1,6 +1,5 @@
 package com.cannontech.database.data.lite;
 
-import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 
 public class LiteGear extends LiteBase {
     private String gearName;
@@ -48,35 +47,6 @@ public class LiteGear extends LiteBase {
 
     public int getGearNumber() {
         return gearNumber;
-    }
-
-    /**
-     * retrieve method comment.
-     */
-    public void retrieve(String databaseAlias) {
-
-        com.cannontech.database.SqlStatement s = 
-                new com.cannontech.database.SqlStatement(
-                   "SELECT gearID, gearName, controlMethod, deviceID, gearNumber "  + 
-                      "FROM " + LMProgramDirectGear.TABLE_NAME +
-                      " where gearID = " + getGearID(),
-                   com.cannontech.common.util.CtiUtilities.getDatabaseAlias() );
-
-        try {
-            s.execute();
-
-            if (s.getRowCount() <= 0)
-                throw new IllegalStateException("Unable to find gear with ID = " + getLiteID());
-
-            setGearID(new Integer(s.getRow(0)[0].toString()).intValue());
-            setGearName(s.getRow(0)[1].toString());
-            setGearType(s.getRow(0)[2].toString());
-            setOwnerID(new Integer(s.getRow(0)[3].toString()).intValue());
-            setGearNumber(new Integer(s.getRow(0)[4].toString()).intValue());
-        } catch (Exception e) {
-            com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
-        }
-
     }
 
     public void setGearID(int conID) {
