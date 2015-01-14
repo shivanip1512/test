@@ -32,6 +32,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeHelper;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -180,6 +181,11 @@ public class MeterController {
 
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         model.addAttribute("deviceId", deviceId);
+        //we are redirecting request for water meter to WaterMeterController.java
+        if (device.getDeviceType() == PaoType.RFWMETER) {
+            return "redirect:/meter/water/home";
+        }
+        
         model.addAttribute("deviceName",  paoLoadingService.getDisplayablePao(device).getName());
         
         boolean isRFMesh = device.getDeviceType().getPaoClass() == PaoClass.RFMESH;
