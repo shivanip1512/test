@@ -19,7 +19,6 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -212,7 +211,7 @@ public abstract class AbstractDeviceTreeModel extends DBTreeModel {
      * want to use
      */
     public boolean isDeviceValid(PaoCategory paoCategory, PaoClass paoClass, PaoType paoType) {
-        return DeviceClasses.isCoreDeviceClass(paoClass.getPaoClassId()) && 
+        return paoClass.isCore() && 
                 paoCategory == PaoCategory.DEVICE && 
                 paoType != PaoType.MCTBROADCAST;
     }

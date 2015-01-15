@@ -3,31 +3,29 @@ package com.cannontech.common.pao;
 import org.apache.commons.lang3.Validate;
 
 import com.cannontech.common.util.DatabaseRepresentationSource;
-import com.cannontech.database.data.pao.DeviceClasses;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum PaoClass implements DatabaseRepresentationSource {
     
-    TRANSMITTER(DeviceClasses.TRANSMITTER, DeviceClasses.STRING_CLASS_TRANSMITTER),
-    RTU(DeviceClasses.RTU, DeviceClasses.STRING_CLASS_RTU),
-    IED(DeviceClasses.IED, DeviceClasses.STRING_CLASS_IED),
-    METER(DeviceClasses.METER, DeviceClasses.STRING_CLASS_METER),
-    CARRIER(DeviceClasses.CARRIER, DeviceClasses.STRING_CLASS_CARRIER),
-    GROUP(DeviceClasses.GROUP, DeviceClasses.STRING_CLASS_GROUP),
-    VIRTUAL(DeviceClasses.VIRTUAL, DeviceClasses.STRING_CLASS_VIRTUAL),
-    LOADMANAGEMENT(DeviceClasses.LOADMANAGEMENT, DeviceClasses.STRING_CLASS_LOADMANAGER),
-    SYSTEM(DeviceClasses.SYSTEM, DeviceClasses.STRING_CLASS_SYSTEM),
-    GRID(DeviceClasses.GRID, DeviceClasses.STRING_CLASS_GRID),
-    ROUTE(PAOGroups.CLASS_ROUTE, PAOGroups.STRING_CAT_ROUTE),
-    PORT(PAOGroups.CLASS_PORT, PAOGroups.STRING_CAT_PORT),
-    CUSTOMER(PAOGroups.CLASS_CUSTOMER, PAOGroups.STRING_CAT_CUSTOMER),
-    CAPCONTROL(PAOGroups.CLASS_CAPCONTROL, PAOGroups.STRING_CAT_CAPCONTROL),
+    TRANSMITTER(1000, "TRANSMITTER"),
+    RTU(1001, "RTU"),
+    IED(1002, "IED"),
+    METER(1003, "METER"),
+    CARRIER(1004, "CARRIER"),
+    GROUP(1005, "GROUP"),
+    VIRTUAL(1007, "VIRTUAL"),
+    LOADMANAGEMENT(1008, "LOADMANAGEMENT"),
+    SYSTEM(1009, "SYSTEM"),
+    GRID(1010, "GRIDADVISOR"),
+    ROUTE(1, "ROUTE"),
+    PORT(2, "PORT"),
+    CUSTOMER(3, "CUSTOMER"),
+    CAPCONTROL(4, "CAPCONTROL"),
     // Schedule doesn't seem have a constant already defined anywhere.
     SCHEDULE(0, "Schedule"),
-    RFMESH(DeviceClasses.RFMESH, "RFMESH"),
-    THERMOSTAT(DeviceClasses.THERMOSTAT, DeviceClasses.STRING_CLASS_THERMOSTAT);
+    RFMESH(1012, "RFMESH"),
+    THERMOSTAT(1013, "THERMOSTAT");
 
     // legacy class id
     private final int paoClassId;
@@ -79,6 +77,11 @@ public enum PaoClass implements DatabaseRepresentationSource {
         return paoClass;
     }
     
+    public boolean isCore() {
+        return CARRIER == this || IED == this || METER == this || RFMESH == this ||
+                RTU == this || TRANSMITTER == this || VIRTUAL == this || GRID == this ||
+                THERMOSTAT == this;
+    }
     public int getPaoClassId() {
         return paoClassId;
     }

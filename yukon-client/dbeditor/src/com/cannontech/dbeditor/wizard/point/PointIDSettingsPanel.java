@@ -22,7 +22,6 @@ import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
@@ -353,7 +352,7 @@ public class PointIDSettingsPanel extends DataInputPanel implements JCValueListe
                 getDeviceComboBox().removeAllItems();
 
             for (LiteYukonPAObject liteYukonPAObject : devices) {
-                if (DeviceClasses.isCoreDeviceClass(liteYukonPAObject.getPaoType().getPaoClass().getPaoClassId())) {
+                if (liteYukonPAObject.getPaoType().getPaoClass().isCore()) {
                     getDeviceComboBox().addItem(liteYukonPAObject);
 
                     if (initialPAOId != null && initialPAOId.intValue() == liteYukonPAObject.getYukonID()) {

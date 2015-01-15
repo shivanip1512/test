@@ -5,7 +5,6 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -48,8 +47,7 @@ public class DeviceTreeModel extends AbstractDeviceTreeModel {
             } else {
                 return true;
             }
-        } else if (DeviceClasses.isCoreDeviceClass(paoClass.getPaoClassId()) 
-                && paoCategory == PaoCategory.DEVICE) {
+        } else if (paoClass.isCore() && paoCategory == PaoCategory.DEVICE) {
             return true;
         }
 

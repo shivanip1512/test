@@ -2373,30 +2373,6 @@
   </function>
 
   <function>
-    <name>isDeviceSortByGroup</name>
-    <function-class>com.cannontech.yc.bean.CommandDeviceBean</function-class>
-    <function-signature>
-        boolean isDeviceSortByGroup(com.cannontech.database.data.lite.LiteYukonPAObject)
-    </function-signature>
-  </function>
-
-  <function>
-    <name>isLoadManagementSortByGroup</name>
-    <function-class>com.cannontech.yc.bean.CommandDeviceBean</function-class>
-    <function-signature>
-        boolean isLoadManagementSortByGroup(com.cannontech.database.data.lite.LiteYukonPAObject)
-    </function-signature>
-  </function>
-
-  <function>
-    <name>isCapControlSortByGroup</name>
-    <function-class>com.cannontech.yc.bean.CommandDeviceBean</function-class>
-    <function-signature>
-        boolean isCapControlSortByGroup(com.cannontech.database.data.lite.LiteYukonPAObject)
-    </function-signature>
-  </function>
-    
-  <function>
     <name>combineWidgetParams</name>
     <function-class>com.cannontech.web.widget.support.WidgetUtils</function-class>
     <function-signature>

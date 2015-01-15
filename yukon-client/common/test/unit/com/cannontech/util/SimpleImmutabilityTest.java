@@ -213,7 +213,6 @@ import com.cannontech.database.data.customer.CustomerFactory;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.pao.CapControlType;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.ZoneType;
@@ -432,7 +431,6 @@ public class SimpleImmutabilityTest {
             CustomerFactory.class,
             DatabaseTypes.class,
             DateRowMapper.class,
-            DeviceClasses.class,
 //            DeviceTypesFuncs.class,   // The switch statements in here are converting to non-final PaoType values, need to investigate more.
             Disconnect410State.class,
             EncodingType.class,

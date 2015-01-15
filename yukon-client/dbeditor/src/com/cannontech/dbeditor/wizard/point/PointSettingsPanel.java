@@ -10,13 +10,11 @@ import javax.swing.event.CaretListener;
 
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TextFieldDocument;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
@@ -223,7 +221,7 @@ public class PointSettingsPanel extends DataInputPanel implements CaretListener 
             synchronized (cache) {
                 List<LiteYukonPAObject> devices = cache.getAllDevices();
                 for (LiteYukonPAObject liteYukonPAObject : devices) {
-                    if (DeviceClasses.isCoreDeviceClass(liteYukonPAObject.getPaoType().getPaoClass().getPaoClassId())) {
+                    if (liteYukonPAObject.getPaoType().getPaoClass().isCore()) {
                         getDeviceComboBox().addItem(liteYukonPAObject);
 
                         if (initialPAOId != null && initialPAOId.intValue() == liteYukonPAObject.getYukonID()) {

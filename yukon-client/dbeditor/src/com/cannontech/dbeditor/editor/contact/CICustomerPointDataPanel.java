@@ -20,7 +20,6 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.customer.CICustomerPointData;
@@ -173,7 +172,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
                 {
                     LiteYukonPAObject liteDevice = YukonSpringHook.getBean(PaoDao.class).getLiteYukonPAO( litePoint.getPaobjectID() );
 
-                    if( DeviceClasses.isCoreDeviceClass(liteDevice.getPaoType().getPaoClass().getPaoClassId()) )
+                    if (liteDevice.getPaoType().getPaoClass().isCore())
                         paoSet.add( liteDevice );
                 }
             }

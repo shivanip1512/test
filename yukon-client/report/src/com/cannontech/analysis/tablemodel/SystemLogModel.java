@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -19,7 +20,6 @@ import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
@@ -203,7 +203,7 @@ public class SystemLogModel extends ReportModelBase<SystemLog>
                     
 		    }
 		    
-			sql.append(" AND PAOCLASS = '" + DeviceClasses.STRING_CLASS_GROUP + "' ");
+			sql.append(" AND PAOCLASS = '" + PaoClass.GROUP.getDbString() + "' ");
 		} else {
 		    if( getPaoIDs()!= null)  //null load groups means ALL groups!
             {
@@ -333,7 +333,8 @@ public class SystemLogModel extends ReportModelBase<SystemLog>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getAttribute(int, java.lang.Object)
 	 */
-	public Object getAttribute(int columnIndex, Object o)
+	@Override
+    public Object getAttribute(int columnIndex, Object o)
 	{
 		if( o instanceof SystemLog)
 		{
@@ -372,7 +373,8 @@ public class SystemLogModel extends ReportModelBase<SystemLog>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnNames()
 	 */
-	public String[] getColumnNames()
+	@Override
+    public String[] getColumnNames()
 	{
 		if( columnNames == null)
 		{
@@ -391,7 +393,8 @@ public class SystemLogModel extends ReportModelBase<SystemLog>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnTypes()
 	 */
-	public Class<?>[] getColumnTypes()
+	@Override
+    public Class<?>[] getColumnTypes()
 	{
 		if( columnTypes == null)
 		{
@@ -411,7 +414,8 @@ public class SystemLogModel extends ReportModelBase<SystemLog>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
 	 */
-	public ColumnProperties[] getColumnProperties()
+	@Override
+    public ColumnProperties[] getColumnProperties()
 	{
 		if(columnProperties == null)
 		{
@@ -431,7 +435,8 @@ public class SystemLogModel extends ReportModelBase<SystemLog>
 	/* (non-Javadoc)
 	 * @see com.cannontech.analysis.Reportable#getTitleString()
 	 */
-	public String getTitleString()
+	@Override
+    public String getTitleString()
 	{
 		return title;
 	}

@@ -4,7 +4,6 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.pao.DeviceClasses;
 
 public class DeviceTree_CustomPointsModel extends AbstractDeviceTreeModel {
 
@@ -18,8 +17,9 @@ public class DeviceTree_CustomPointsModel extends AbstractDeviceTreeModel {
         super(showPointNodes, new DBTreeNode("Devices"));
     }
 
+    @Override
     public boolean isDeviceValid(PaoCategory paoCategory, PaoClass paoClass, PaoType paoType) {
-        return ((DeviceClasses.isCoreDeviceClass(paoClass.getPaoClassId()) || paoClass == PaoClass.CAPCONTROL) 
+        return ((paoClass.isCore() || paoClass == PaoClass.CAPCONTROL) 
         		&& paoCategory == PaoCategory.DEVICE);
     }
 
@@ -27,6 +27,7 @@ public class DeviceTree_CustomPointsModel extends AbstractDeviceTreeModel {
         includePoints = pointUOFMMask;
     }
 
+    @Override
     public String toString() {
         if ((includePoints & LitePoint.POINT_UOFM_GRAPH) == LitePoint.POINT_UOFM_GRAPH) {
             return "Graph Points";
@@ -37,6 +38,7 @@ public class DeviceTree_CustomPointsModel extends AbstractDeviceTreeModel {
         return "Device";
     }
 
+    @Override
     protected boolean isPointValid(LitePoint lp) {
         if (lp == null) {
             return false;

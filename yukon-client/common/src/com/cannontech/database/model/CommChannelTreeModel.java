@@ -16,7 +16,6 @@ import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IDatabaseCache;
@@ -55,7 +54,7 @@ public class CommChannelTreeModel extends DBTreeModel {
         }
 
         boolean isDeviceValid = isDeviceValid(paoType);
-        boolean isCoreDevice = DeviceClasses.isCoreDeviceClass(paoType.getPaoClass().getPaoClassId());
+        boolean isCoreDevice = paoType.getPaoClass().isCore();
         boolean isCommChannPort = paoType.isPort();
         if (isCommChannPort) {
             return true;

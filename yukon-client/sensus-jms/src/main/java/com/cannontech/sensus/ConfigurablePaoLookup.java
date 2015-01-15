@@ -8,10 +8,10 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceClasses;
 
 public class ConfigurablePaoLookup implements YukonDeviceLookup {
 	private Map<Integer, Integer> paoMapping = new HashMap<Integer, Integer>();
@@ -23,15 +23,17 @@ public class ConfigurablePaoLookup implements YukonDeviceLookup {
 		this.paoMapping.putAll(paoMapping);
 	}
 
-	@SuppressWarnings("unchecked")
+	@Override
+    @SuppressWarnings("unchecked")
 	public synchronized LiteYukonPAObject getDeviceForRepId(int repId) {
 		Integer paoId = paoMapping.get(repId);
 
 		if (paoId == null) {
 			SqlStatementBuilder sql = new SqlStatementBuilder();
 			sql.append("select da.deviceid from deviceaddress da, yukonpaobject ypa");
-			sql.append("where ypa.paobjectid = da.deviceid and ypa.paoclass = ");
-			sql.append("'", DeviceClasses.STRING_CLASS_GRID, "' and da.masteraddress = ?");
+			sql.append("where ypa.paobjectid = da.deviceid");
+			sql.append("and ypa.paoclass").eq_k(PaoClass.GRID);
+			sql.append("and da.masteraddress = ?");
 			try {
 				int devId = simpleJdbcTemplate.queryForInt(sql.toString(), repId);
 				paoMapping.put(repId, devId); 	// Add it to our map to avoid the select next time.
@@ -51,7 +53,8 @@ public class ConfigurablePaoLookup implements YukonDeviceLookup {
 		return yukonPAObject;
 	}
 
-	public boolean isDeviceConfigured(int repId) {
+	@Override
+    public boolean isDeviceConfigured(int repId) {
 		return paoMapping.containsKey(repId);
 	}
 
