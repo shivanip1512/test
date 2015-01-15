@@ -596,4 +596,11 @@ public final class PaoDaoImpl implements PaoDao {
     public List<LiteYukonPAObject> getAllPaos() {
         return jdbcTemplate.query(litePaoSql, litePaoRowMapper);
     }
+    
+    @Override
+    public List<PaoType> getExistingPaoTypes() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISTINCT Type FROM YukonPaobject ORDER BY Type");
+        return jdbcTemplate.query(sql, RowMapper.PAO_TYPE);
+    }
 }

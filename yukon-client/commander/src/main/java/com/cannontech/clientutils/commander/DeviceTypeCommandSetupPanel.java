@@ -10,10 +10,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
 import java.util.EventObject;
 import java.util.List;
 
@@ -40,8 +36,7 @@ import com.cannontech.common.gui.dnd.DragAndDropTable;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CommandDao;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlUtils;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.TransactionType;
@@ -64,6 +59,7 @@ import com.cannontech.yukon.conns.ConnPool;
 public class DeviceTypeCommandSetupPanel extends JPanel implements DragAndDropListener, ActionListener, ListSelectionListener {
     
     private CommandDao commandDao = YukonSpringHook.getBean(CommandDao.class);
+    private PaoDao paoDao = YukonSpringHook.getBean(PaoDao.class);
     
     private JDialog dialog;
     private String dialogTitle;
@@ -92,6 +88,7 @@ public class DeviceTypeCommandSetupPanel extends JPanel implements DragAndDropLi
         setDeviceType(deviceType_);
     }
     
+    @Override
     public void actionPerformed(ActionEvent event) {
         
         if (event.getSource() == getAddCommandButton()) {
@@ -213,6 +210,7 @@ public class DeviceTypeCommandSetupPanel extends JPanel implements DragAndDropLi
         }
     }
     
+    @Override
     public void drop_actionPerformed(EventObject newEvent) { }
     
     public void exit() {
@@ -295,9 +293,11 @@ public class DeviceTypeCommandSetupPanel extends JPanel implements DragAndDropLi
             model.addElement(CommandCategory.SERIALNUMBER.getDbString());
             model.addElement(CommandCategory.VERSACOM_SERIAL.getDbString());
             
+            List<PaoType> existingPaoTypes = paoDao.getExistingPaoTypes();
             // Add the distinct device types
-            for (String type : retrieveDistinctDeviceTypes()) model.addElement(type);
-            
+            for (PaoType paoType : existingPaoTypes) { 
+                model.addElement(paoType.getDbString());
+            }
             // TODO sort the elements??
             ivjCategoryList.setModel(model);
             ivjCategoryList.addListSelectionListener(this);
@@ -507,42 +507,6 @@ public class DeviceTypeCommandSetupPanel extends JPanel implements DragAndDropLi
         add(getDeviceTypeCommandSetupPanel(), constraintsDeviceTypeCommandSetupPanel);
     }
     
-    /**
-     * Retrieves the distinct types from yukonPaobject table
-     */
-    private List<String> retrieveDistinctDeviceTypes() {
-        
-        List<String> types = new ArrayList<>();
-        StringBuffer sql = new StringBuffer("SELECT DISTINCT TYPE FROM YUKONPAOBJECT ORDER BY TYPE");
-        
-        Connection conn = null;
-        PreparedStatement stmt = null;
-        ResultSet rset = null;
-        
-        try {
-            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-            
-            if (conn == null) {
-                CTILogger.info(getClass() + ":  Error getting database connection.");
-                return types;
-            } else {
-                stmt = conn.prepareStatement(sql.toString());
-                rset = stmt.executeQuery();
-                while (rset.next()) {
-                    types.add(rset.getString(1));
-                }
-            }
-        }
-
-        catch (java.sql.SQLException e) {
-            e.printStackTrace();
-        } finally {
-            SqlUtils.close(rset, stmt, conn);
-        }
-        
-        return types;
-    }
-    
     public void saveChanges() {
         
         int rowCount = getDandDCommandTable().getModel().getRowCount();
@@ -610,12 +574,12 @@ public class DeviceTypeCommandSetupPanel extends JPanel implements DragAndDropLi
         for (LiteBase lite : commands) {
             DeviceTypeCommand dtc = null;
             if (lite instanceof LiteDeviceTypeCommand) {
-                dtc = (DeviceTypeCommand)LiteFactory.createDBPersistent((LiteDeviceTypeCommand)lite);
+                dtc = (DeviceTypeCommand)LiteFactory.createDBPersistent(lite);
             } else if (lite instanceof LiteCommand) {
                 //We have to create a "fake" DeviceTypeCommand.  This will NOT be entered into the table,
                 // but rather used as a template for all deviceTypes that fit into the CATEGORY!
                 dtc = new DeviceTypeCommand();
-                dtc.setCommand((Command)LiteFactory.createDBPersistent((LiteCommand)lite));
+                dtc.setCommand((Command)LiteFactory.createDBPersistent(lite));
             }
             //TODO - change to set CommandGroupID correctly based on either lite object or current user.
             dtc.setCommandGroupID(new Integer(com.cannontech.database.db.command.DeviceTypeCommand.DEFAULT_COMMANDS_GROUP_ID));
@@ -638,6 +602,7 @@ public class DeviceTypeCommandSetupPanel extends JPanel implements DragAndDropLi
         KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0, true);
         dialog.getRootPane().getInputMap().put(ks, "CloseAction");
         dialog.getRootPane().getActionMap().put("CloseAction", new AbstractAction() {
+            @Override
             public void actionPerformed(ActionEvent ae) {
                 exit();
             }
@@ -646,6 +611,7 @@ public class DeviceTypeCommandSetupPanel extends JPanel implements DragAndDropLi
         // Add a window closeing event, even though I think it's already handled
         // by setDefaultCloseOperation(..)
         dialog.addWindowListener(new WindowAdapter() {
+            @Override
             public void windowClosing(WindowEvent e) {
                 exit();
             };
@@ -654,13 +620,14 @@ public class DeviceTypeCommandSetupPanel extends JPanel implements DragAndDropLi
         dialog.setVisible(true);
     }
     
+    @Override
     public void valueChanged(ListSelectionEvent e) {
         
         if (e.getValueIsAdjusting()) return; // not yet!
         
         if (e.getSource() == getCategoryList()) {
             
-            setDeviceType((String)getCategoryList().getSelectedValue());
+            setDeviceType(getCategoryList().getSelectedValue());
             List<? extends LiteBase> objects = null;
             if (CommandCategoryUtil.isCommandCategory(getDeviceType())) {
                 objects = commandDao.getAllCommandsByCategory(getDeviceType());

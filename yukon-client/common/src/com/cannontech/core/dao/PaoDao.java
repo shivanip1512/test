@@ -163,4 +163,8 @@ public interface PaoDao {
 
     List<LiteYukonPAObject> getAllPaos();
 
+    /**
+     * Returns a list of existing distinct PaoTypes from the database.
+     */
+    List<PaoType> getExistingPaoTypes();
 }
