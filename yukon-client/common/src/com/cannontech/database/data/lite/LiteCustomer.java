@@ -62,7 +62,7 @@ public class LiteCustomer extends LiteBase {
      * Unnecessary to load/set when this class is only used for Customer database table updates as it is non-persistent wrt this class.
      */
     public void setAdditionalContacts(List<LiteContact> additionalContacts) {
-        this.additionalContacts.addAll(additionalContacts);
+        this.additionalContacts = additionalContacts;
     }
 
     /**
