@@ -434,7 +434,7 @@ public class AttributeServiceImpl implements AttributeService {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
                         SqlStatementBuilder sql = new SqlStatementBuilder();
-                        sql.append(PointDao.LITE_POINT_WITH_YUKONPAOBJECT_ROW_MAPPER);
+                        sql.append(PointDao.LITE_POINT_WITH_YUKONPAOBJECT_ROW_MAPPER.getBaseQuery());
                         sql.append("WHERE PointType").eq(pi.getPointType());
                         sql.append("AND PointOffset").eq(pi.getOffset());
                         sql.append("AND pao.PaobjectId").in(subList);

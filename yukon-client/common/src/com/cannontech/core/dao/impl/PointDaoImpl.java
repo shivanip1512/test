@@ -38,7 +38,6 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.YukonRowMapperAdapter;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
@@ -99,7 +98,7 @@ public class PointDaoImpl implements PointDao {
     public LitePoint findPointByName(YukonPao pao, String pointName) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(LITE_POINT_ROW_MAPPER);
+            sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
             sql.append("WHERE PaobjectId").eq(pao.getPaoIdentifier().getPaoId());
             sql.append("AND UPPER(PointName)").eq(pointName.toUpperCase());
 
@@ -113,7 +112,7 @@ public class PointDaoImpl implements PointDao {
     public LitePoint getLitePoint(int pointId) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(LITE_POINT_ROW_MAPPER);
+            sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
             sql.append("WHERE P.POINTID").eq(pointId);
 
             return jdbcTemplate.queryForObject(sql, LITE_POINT_ROW_MAPPER);
@@ -154,7 +153,7 @@ public class PointDaoImpl implements PointDao {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append(LITE_POINT_ROW_MAPPER);
+                sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
                 sql.append("where p.pointid").in(subList);
                 return sql;
             }
@@ -178,7 +177,7 @@ public class PointDaoImpl implements PointDao {
                 @Override
                 public SqlFragmentSource generate(List<Integer> subList) {
                     SqlStatementBuilder sql = new SqlStatementBuilder();
-                    sql.append(LITE_POINT_WITH_YUKONPAOBJECT_ROW_MAPPER);
+                    sql.append(LITE_POINT_WITH_YUKONPAOBJECT_ROW_MAPPER.getBaseQuery());
                     sql.append("WHERE P.PointType").eq_k(pointIdentifier.getPointType());
                     sql.append("AND P.PointOffset").eq_k(pointIdentifier.getOffset());
                     sql.append("AND P.PaobjectId").in(subList);
@@ -231,7 +230,7 @@ public class PointDaoImpl implements PointDao {
     public List<LitePoint> getLitePointsBy(List<PointType> pointTypes) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(LITE_POINT_ROW_MAPPER);
+        sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
         sql.append("WHERE p.PointType").in(pointTypes);
 
         List<LitePoint> points = jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
@@ -242,7 +241,7 @@ public class PointDaoImpl implements PointDao {
     public List<LitePoint> getLitePointsByPaObjectId(int paobjectId) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(LITE_POINT_ROW_MAPPER);
+        sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
         sql.append("where PAObjectId").eq(paobjectId);
         List<LitePoint> points = jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
 
@@ -628,7 +627,7 @@ public class PointDaoImpl implements PointDao {
     public LitePoint getLitePointIdByDeviceId_Offset_PointType(int paobjectId, int pointOffset, int pointType) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(LITE_POINT_ROW_MAPPER);
+        sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
         sql.append("where PAObjectId").eq(paobjectId);
         sql.append("and PointOffset").eq(pointOffset);
         sql.append("and PointType").eq(PointTypes.getType(pointType));
@@ -644,7 +643,7 @@ public class PointDaoImpl implements PointDao {
     public List<LitePoint> getLitePointIdByDeviceId_PointType(int paobjectId, int pointType) throws NotFoundException {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(LITE_POINT_ROW_MAPPER);
+        sql.append(LITE_POINT_ROW_MAPPER.getBaseQuery());
         sql.append("where PAObjectId").eq(paobjectId);
         sql.append("and PointType").eq(PointTypes.getType(pointType));
         try {

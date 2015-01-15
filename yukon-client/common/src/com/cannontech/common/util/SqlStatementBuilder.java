@@ -15,7 +15,6 @@ import org.joda.time.ReadableInstant;
 import org.joda.time.ReadablePeriod;
 import org.joda.time.format.ISOPeriodFormat;
 
-import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.database.SqlParameterBase;
 import com.cannontech.database.SqlParameterSink;
 import com.google.common.collect.Lists;
@@ -170,8 +169,6 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
                 appendList((Collection<?>)object);            
             } else if (object instanceof SqlFragmentSource) {
             	appendFragment((SqlFragmentSource) object);
-            } else if (object instanceof RowMapperWithBaseQuery<?>) {
-                appendFragment(((RowMapperWithBaseQuery<?>)object).getBaseQuery());
             } else {
                 // Trim off any leading or trailing space and then add a space to the end
                 addString(object.toString().trim());
