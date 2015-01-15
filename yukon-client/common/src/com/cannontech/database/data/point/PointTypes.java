@@ -81,18 +81,6 @@ public final class PointTypes implements TypeBase {
                 + typeStr + "'");
     }
 
-    public static String[] convertPointTypes(Integer[] pointTypes) {
-        if (pointTypes == null) {
-            return new String[0];
-        }
-        String[] pointTypesStr = new String[pointTypes.length];
-
-        for (int i = 0; i < pointTypes.length; i++) {
-            pointTypesStr[i] = PointTypes.getType(pointTypes[i]);
-        }
-        return pointTypesStr;
-    }
-
     public final static boolean isValidPointType(int ptType) {
         return (ptType == com.cannontech.database.data.point.PointTypes.ANALOG_POINT
                 || ptType == com.cannontech.database.data.point.PointTypes.STATUS_POINT

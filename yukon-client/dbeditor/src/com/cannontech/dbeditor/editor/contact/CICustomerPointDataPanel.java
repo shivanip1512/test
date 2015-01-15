@@ -21,10 +21,12 @@ import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.customer.CICustomerPointData;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.spring.YukonSpringHook;
+import com.google.common.collect.Lists;
 
 public class CICustomerPointDataPanel extends JPanel implements java.awt.event.ActionListener, javax.swing.event.CaretListener 
 
@@ -160,8 +162,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
         if( comboBox == null ) return;
         
         List<LitePoint> points = YukonSpringHook.getBean(PointDao.class).
-            getLitePointsBy(new Integer[] { PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT },
-                                null, null, null, null);
+            getLitePointsBy(Lists.newArrayList(PointType.Analog, PointType.CalcAnalog));
         
             //ensures uniqueness and ordering by name
             TreeSet paoSet = new TreeSet( LiteComparators.liteStringComparator );
@@ -502,6 +503,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
      * Method to handle events for the ActionListener interface.
      * @param e java.awt.event.ActionEvent
      */
+    @Override
     public void actionPerformed(java.awt.event.ActionEvent e) {
         if (e.getSource() == getJComboDevice()) 
         {
@@ -521,6 +523,7 @@ public class CICustomerPointDataPanel extends JPanel implements java.awt.event.A
         parent.removeButton_ActionPerformed(this);
     }
 
+    @Override
     public void caretUpdate(CaretEvent e) 
     {
         parent.fireInputUpdate();

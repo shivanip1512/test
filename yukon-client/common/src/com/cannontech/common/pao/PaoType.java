@@ -843,13 +843,4 @@ public enum PaoType implements DatabaseRepresentationSource {
         PaoType paoTypeObject = getForId(typeId);
         return paoTypeObject.getDbString();
     }
-    
-    public static String[] convertPaoTypes(Integer[] paoTypes) {
-        int arrayLength = paoTypes.length;
-        String[] str = new String[arrayLength];
-        for (int i = 0; i < arrayLength; i++) {
-            str[i] = getPaoTypeString(paoTypes[i]);
-        }
-        return str;
-    }
 }

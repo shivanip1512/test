@@ -4,12 +4,15 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import com.cannontech.common.bulk.filter.AbstractRowMapperWithBaseQuery;
+import com.cannontech.common.bulk.filter.RowMapperWithBaseQuery;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
@@ -19,27 +22,87 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
+import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.google.common.collect.Multimap;
 
 public interface PointDao {
 
-    String litePointSql = "SELECT " + "P.POINTID, POINTNAME, POINTTYPE, P.PAOBJECTID, POINTOFFSET, STATEGROUPID, "
-        + "PU.DecimalDigits, " + "UM.FORMULA, UM.UOMID, "
-        + "PA.MULTIPLIER AnalogMultiplier, PA.DATAOFFSET AnalogOffset, "
-        + "PAC.MULTIPLIER AccumulatorMultiplier, PAC.DATAOFFSET AccumulatorOffset " + "FROM POINT P "
-        + "LEFT JOIN POINTUNIT PU ON P.POINTID = PU.POINTID " + "LEFT JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID "
-        + "LEFT JOIN POINTANALOG PA ON P.POINTID = PA.POINTID "
-        + "LEFT JOIN POINTACCUMULATOR PAC ON P.POINTID = PAC.POINTID ";
-
-    String litePaoPointSql = "SELECT " + "YPO.PAOBJECTID, YPO.TYPE, "
-        + "P.POINTID, POINTNAME, POINTTYPE, POINTOFFSET, STATEGROUPID, " + "PU.DecimalDigits, "
-        + "UM.FORMULA, UM.UOMID, " + "PA.MULTIPLIER AnalogMultiplier, PA.DATAOFFSET AnalogOffset, "
-        + "PAC.MULTIPLIER AccumulatorMultiplier, PAC.DATAOFFSET AccumulatorOffset " + "FROM POINT P "
-        + "JOIN YUKONPAOBJECT YPO ON YPO.PAOBJECTID = P.PAOBJECTID "
-        + "LEFT JOIN POINTUNIT PU ON P.POINTID = PU.POINTID " + "LEFT JOIN UNITMEASURE UM ON PU.UOMID = UM.UOMID "
-        + "LEFT JOIN POINTANALOG PA ON P.POINTID = PA.POINTID "
-        + "LEFT JOIN POINTACCUMULATOR PAC ON P.POINTID = PAC.POINTID ";
-
+    abstract class LightPointRowMapper extends AbstractRowMapperWithBaseQuery<LitePoint> {
+        @Override
+        public LitePoint mapRow(YukonResultSet rs) throws SQLException {
+            int pointId = rs.getInt("PointId");
+            String pointName = rs.getString("PointName").trim();
+            PointType pointType = rs.getEnum("PointType", PointType.class);
+            int paobjectId = rs.getInt("PaobjectId");
+            int pointOffset = rs.getInt("PointOffset");
+            int stateGroupId = rs.getInt("StateGroupId");
+            String formula = rs.getString("Formula");
+            int decimalDigits = rs.getInt("DecimalDigits"); // 0 if null
+            int uomId = rs.getInt("UomId");
+     
+            if (rs.wasNull()) {
+                // if UomId is null, mark it as INVALID.
+                uomId = UnitOfMeasure.INVALID.getId();
+            }
+     
+            // process all the bit mask tags here
+            long tags = LitePoint.POINT_UOFM_GRAPH;
+            if ("usage".equalsIgnoreCase(formula)) {
+                tags = LitePoint.POINT_UOFM_USAGE;
+            }
+     
+            LitePoint litePoint = new LitePoint(pointId, pointName, pointType.getPointTypeId(), paobjectId,
+                pointOffset, stateGroupId, tags, uomId);
+     
+            if (pointType == PointType.Analog) {
+                litePoint.setMultiplier(rs.getNullableDouble("AnalogMultiplier"));
+                litePoint.setDataOffset(rs.getNullableDouble("AnalogOffset"));
+            } else if (pointType == PointType.PulseAccumulator || pointType == PointType.DemandAccumulator) {
+                litePoint.setMultiplier(rs.getNullableDouble("AccumulatorMultiplier"));
+                litePoint.setDataOffset(rs.getNullableDouble("AccumulatorOffset"));
+            }
+            
+            if (decimalDigits != 0) {
+                litePoint.setDecimalDigits(decimalDigits);
+            }
+            return litePoint;
+        }
+    }
+    
+    RowMapperWithBaseQuery<LitePoint> LITE_POINT_ROW_MAPPER = new LightPointRowMapper() {
+        @Override
+        public SqlFragmentSource getBaseQuery() {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT p.PointId, p.PointName, PointType, p.PaobjectId, PointOffset, StateGroupId, pu.DecimalDigits,");
+            sql.append(    "um.Formula, um.UomId, pa.Multiplier AnalogMultiplier, pa.DataOffset AnalogOffset,");
+            sql.append(    "pac.Multiplier AccumulatorMultiplier, pac.DataOffset AccumulatorOffset");
+            sql.append("FROM Point p");
+            sql.append(    "LEFT JOIN PointUnit pu ON p.PointId = pu.PointId");
+            sql.append(    "LEFT JOIN UnitMeasure um ON pu.UomId = um.UomId");
+            sql.append(    "LEFT JOIN PointAnalog pa ON p.PointId = pa.PointId");
+            sql.append(    "LEFT JOIN PointAccumulator pac ON p.PointId = pac.PointId");
+            return sql;
+        }
+    };
+    
+    RowMapperWithBaseQuery<LitePoint> LITE_POINT_WITH_YUKONPAOBJECT_ROW_MAPPER = new LightPointRowMapper() { 
+        @Override
+        public SqlFragmentSource getBaseQuery() {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT p.PointId, p.PointName, PointType, p.PaobjectId, pao.Type, PointOffset, StateGroupId, pu.DecimalDigits,");
+            sql.append(    "um.Formula, um.UomId, pa.Multiplier AnalogMultiplier, pa.DataOffset AnalogOffset,");
+            sql.append(    "pac.Multiplier AccumulatorMultiplier, pac.DataOffset AccumulatorOffset");
+            sql.append("FROM Point p");
+            sql.append("JOIN YukonPaobject pao ON pao.PaobjectId = p.PaobjectId");
+            sql.append(    "LEFT JOIN PointUnit pu ON p.PointId = pu.PointId");
+            sql.append(    "LEFT JOIN UnitMeasure um ON pu.UomId = um.UomId");
+            sql.append(    "LEFT JOIN PointAnalog pa ON p.PointId = pa.PointId");
+            sql.append(    "LEFT JOIN PointAccumulator pac ON p.PointId = pac.PointId");
+            return sql;
+        }
+    };
+    
     LitePoint getLitePoint(int pointId);
 
     PaoPointIdentifier getPaoPointIdentifier(int pointId);
@@ -70,8 +133,12 @@ public interface PointDao {
      */
     int[] getNextPointIds(int count);
 
-    List<LitePoint> getLitePointsBy(Integer[] pointTypes, Integer[] uomIds, Integer[] paoTypes,
-            Integer[] paoCategories, Integer[] paoClasses);
+    /**
+     * Returns ALL points having pointTypes. Avoid this method. 
+     * @param pointTypes
+     */
+    @Deprecated
+    List<LitePoint> getLitePointsBy(List<PointType> pointTypes);
 
     /**
      * Returns a list of all the lite points associated with the given PAO id.
@@ -187,9 +254,6 @@ public interface PointDao {
      */
     @Deprecated
     SqlFragmentSource getAttributeLookupSqlLimit(Attribute attribute, int limitToRowCount);
-
-    /** Given a {@link YukonResultSet}, produces a {@link LitePoint} */
-    LitePoint createLitePoint(YukonResultSet rs) throws SQLException;
 
     /** Retrieves all {@link LitePointLimit}s from the database. */
     List<LitePointLimit> getAllPointLimits();

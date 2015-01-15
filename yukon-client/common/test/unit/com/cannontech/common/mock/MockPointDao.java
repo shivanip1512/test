@@ -1,10 +1,8 @@
 package com.cannontech.common.mock;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
@@ -14,7 +12,6 @@ import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
@@ -23,6 +20,7 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
 import com.google.common.collect.Multimap;
 
@@ -123,8 +121,7 @@ public class MockPointDao implements PointDao {
     }
 
     @Override
-    public List<LitePoint> getLitePointsBy(Integer[] pointTypes, Integer[] uomIDs, Integer[] paoTypes,
-            Integer[] paoCategories, Integer[] paoClasses) {
+    public List<LitePoint> getLitePointsBy(List<PointType> pointTypes) {
         return null;
     }
 
@@ -229,11 +226,6 @@ public class MockPointDao implements PointDao {
 
     @Override
     public Multimap<Integer, Integer> getPaoPointMultimap(Iterable<Integer> paoIds) {
-        return null;
-    }
-
-    @Override
-    public LitePoint createLitePoint(YukonResultSet rs) throws SQLException {
         return null;
     }
 

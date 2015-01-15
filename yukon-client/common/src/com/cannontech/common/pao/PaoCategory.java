@@ -85,13 +85,4 @@ public enum PaoCategory implements DatabaseRepresentationSource {
         PaoCategory foundCategory = lookupById.get(categoryId);
         return foundCategory.getDbString();
     }
-
-    public static String[] convertPaoCategories(Integer[] paoCategories) {
-        int arrayLength = paoCategories.length;
-        String[] str = new String[arrayLength];
-        for (int i = 0; i < arrayLength; i++) {
-            str[i] = getPaoCategory(paoCategories[i]);
-        }
-        return str;
-    }
 }

@@ -433,10 +433,11 @@ public class AttributeServiceImpl implements AttributeService {
                 SqlFragmentGenerator<Integer> generator = new SqlFragmentGenerator<Integer>() {
                     @Override
                     public SqlFragmentSource generate(List<Integer> subList) {
-                        SqlStatementBuilder sql = new SqlStatementBuilder(PointDao.litePaoPointSql);
-                        sql.append("where PointType").eq(pi.getPointType());
-                        sql.append("and PointOffset").eq(pi.getOffset());
-                        sql.append("and YPO.PAObjectId").in(subList);
+                        SqlStatementBuilder sql = new SqlStatementBuilder();
+                        sql.append(PointDao.LITE_POINT_WITH_YUKONPAOBJECT_ROW_MAPPER);
+                        sql.append("WHERE PointType").eq(pi.getPointType());
+                        sql.append("AND PointOffset").eq(pi.getOffset());
+                        sql.append("AND pao.PaobjectId").in(subList);
 
                         return sql;
                     }
@@ -445,8 +446,8 @@ public class AttributeServiceImpl implements AttributeService {
                     new YukonRowCallbackHandler() {
                         @Override
                         public void processRow(YukonResultSet rs) throws SQLException {
-                            PaoIdentifier pao = rs.getPaoIdentifier("PAObjectId", "Type");
-                            LitePoint litePoint = pointDao.createLitePoint(rs);
+                            PaoIdentifier pao = rs.getPaoIdentifier("PaobjectId", "Type");
+                            LitePoint litePoint = PointDao.LITE_POINT_WITH_YUKONPAOBJECT_ROW_MAPPER.mapRow(rs);
                             points.put(pao, litePoint);
                         }
                     });

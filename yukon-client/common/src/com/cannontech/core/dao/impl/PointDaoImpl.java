@@ -15,7 +15,6 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.model.Phase;
-import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -27,7 +26,6 @@ import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentCollection;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -47,13 +45,11 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointLimit;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteStateGroup;
-import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.point.CapBankMonitorPointParams;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.database.vendor.DatabaseVendor;
@@ -88,13 +84,6 @@ public class PointDaoImpl implements PointDao {
         chunkingMappedSqlTemplate = new ChunkingMappedSqlTemplate(jdbcTemplate);
     }
 
-    private final YukonRowMapper<LitePoint> litePointRowMapper = new YukonRowMapper<LitePoint>() {
-        @Override
-        public LitePoint mapRow(YukonResultSet rs) throws SQLException {
-            return createLitePoint(rs);
-        }
-    };
-
     private static final SqlFragmentGenerator<Integer> paoPointFragmentGenerator = new SqlFragmentGenerator<Integer>() {
         @Override
         public SqlFragmentSource generate(List<Integer> subList) {
@@ -109,11 +98,12 @@ public class PointDaoImpl implements PointDao {
     @Override
     public LitePoint findPointByName(YukonPao pao, String pointName) {
         try {
-            SqlStatementBuilder sql = new SqlStatementBuilder(litePointSql);
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append(LITE_POINT_ROW_MAPPER);
             sql.append("WHERE PaobjectId").eq(pao.getPaoIdentifier().getPaoId());
             sql.append("AND UPPER(PointName)").eq(pointName.toUpperCase());
 
-            return jdbcTemplate.queryForObject(sql, litePointRowMapper);
+            return jdbcTemplate.queryForObject(sql, LITE_POINT_ROW_MAPPER);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
@@ -122,10 +112,11 @@ public class PointDaoImpl implements PointDao {
     @Override
     public LitePoint getLitePoint(int pointId) {
         try {
-            SqlStatementBuilder sql = new SqlStatementBuilder(litePointSql);
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append(LITE_POINT_ROW_MAPPER);
             sql.append("WHERE P.POINTID").eq(pointId);
 
-            return jdbcTemplate.queryForObject(sql, litePointRowMapper);
+            return jdbcTemplate.queryForObject(sql, LITE_POINT_ROW_MAPPER);
 
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("A point with id " + pointId + " cannot be found.");
@@ -163,13 +154,13 @@ public class PointDaoImpl implements PointDao {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append(litePointSql);
+                sql.append(LITE_POINT_ROW_MAPPER);
                 sql.append("where p.pointid").in(subList);
                 return sql;
             }
         };
 
-        return chunkingTemplate.query(sqlGenerator, pointIds, litePointRowMapper);
+        return chunkingTemplate.query(sqlGenerator, pointIds, LITE_POINT_ROW_MAPPER);
     }
 
     @Override
@@ -187,7 +178,7 @@ public class PointDaoImpl implements PointDao {
                 @Override
                 public SqlFragmentSource generate(List<Integer> subList) {
                     SqlStatementBuilder sql = new SqlStatementBuilder();
-                    sql.append(litePaoPointSql);
+                    sql.append(LITE_POINT_WITH_YUKONPAOBJECT_ROW_MAPPER);
                     sql.append("WHERE P.PointType").eq_k(pointIdentifier.getPointType());
                     sql.append("AND P.PointOffset").eq_k(pointIdentifier.getOffset());
                     sql.append("AND P.PaobjectId").in(subList);
@@ -196,9 +187,24 @@ public class PointDaoImpl implements PointDao {
             };
 
             final Function<PaoIdentifier, Integer> paoIdFunction = PaoUtils.getPaoIdFunction();
-            Map<PaoIdentifier, LitePoint> litePointsForPoint =
-                chunkingMappedSqlTemplate.mappedQuery(sqlGenerator, paoIdentifiers, new PointIdToLitePointRowMapper(),
-                    paoIdFunction);
+            Map<PaoIdentifier, LitePoint> litePointsForPoint = 
+                    chunkingMappedSqlTemplate.mappedQuery(sqlGenerator,
+                                                          paoIdentifiers,
+                                                          new YukonRowMapper<Map.Entry<Integer, LitePoint>>() {
+                                                              private final Map<LitePoint, LitePoint> alreadyCreated = Maps.newHashMap();
+
+                                                              @Override
+                                                              public Map.Entry<Integer, LitePoint> mapRow(YukonResultSet rs) throws SQLException {
+                                                                  LitePoint rsLitePoint = LITE_POINT_WITH_YUKONPAOBJECT_ROW_MAPPER.mapRow(rs);
+                                                                  LitePoint litePoint = alreadyCreated.get(rsLitePoint);
+                                                                  if (litePoint == null) {
+                                                                      alreadyCreated.put(rsLitePoint, rsLitePoint);
+                                                                      litePoint = rsLitePoint;
+                                                                  }
+                                                                  return Maps.immutableEntry(rsLitePoint.getPaobjectID(), litePoint);
+                                                              }
+                                                          },
+                                                          paoIdFunction);
 
             for (Map.Entry<PaoIdentifier, LitePoint> entry : litePointsForPoint.entrySet()) {
                 retVal.put(entry.getValue(), new PaoPointIdentifier(entry.getKey(), pointIdentifier));
@@ -222,39 +228,23 @@ public class PointDaoImpl implements PointDao {
     }
 
     @Override
-    public List<LitePoint> getLitePointsBy(Integer[] pointTypes, Integer[] uomIDs, Integer[] paoTypes,
-            Integer[] paoCategories, Integer[] paoClasses) {
+    public List<LitePoint> getLitePointsBy(List<PointType> pointTypes) {
 
-        StringBuilder sql = new StringBuilder(litePaoPointSql);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(LITE_POINT_ROW_MAPPER);
+        sql.append("WHERE p.PointType").in(pointTypes);
 
-        pointTypes = CtiUtilities.ensureNotNull(pointTypes);
-        uomIDs = CtiUtilities.ensureNotNull(uomIDs);
-        paoTypes = CtiUtilities.ensureNotNull(paoTypes);
-        paoCategories = CtiUtilities.ensureNotNull(paoCategories);
-        paoClasses = CtiUtilities.ensureNotNull(paoClasses);
-
-        String[] pointTypesStr = PointTypes.convertPointTypes(pointTypes);
-        String[] paoTypesStr = PaoType.convertPaoTypes(paoTypes);
-        String[] paoCategoriesStr = PaoCategory.convertPaoCategories(paoCategories);
-        String[] paoClassesStr = DeviceClasses.convertPaoClasses(paoClasses);
-
-        SqlUtil.buildInClause("where", "p", "pointtype", pointTypesStr, sql);
-        SqlUtil.buildInClause("and", "pu", "uomid", uomIDs, sql);
-        SqlUtil.buildInClause("and", "ypo", "type", paoTypesStr, sql);
-        SqlUtil.buildInClause("and", "ypo", "cateogry", paoCategoriesStr, sql);
-        SqlUtil.buildInClause("and", "ypo", "paoclass", paoClassesStr, sql);
-
-        List<LitePoint> points = jdbcTemplate.query(sql.toString(), new YukonRowMapperAdapter<>(litePointRowMapper));
-
+        List<LitePoint> points = jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
         return points;
     }
 
     @Override
     public List<LitePoint> getLitePointsByPaObjectId(int paobjectId) {
 
-        SqlStatementBuilder sql = new SqlStatementBuilder(litePointSql);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(LITE_POINT_ROW_MAPPER);
         sql.append("where PAObjectId").eq(paobjectId);
-        List<LitePoint> points = jdbcTemplate.query(sql, litePointRowMapper);
+        List<LitePoint> points = jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
 
         return points;
     }
@@ -405,20 +395,6 @@ public class PointDaoImpl implements PointDao {
             PointInfo pointInfo = createPointInfo(alreadyCreated, rs);
 
             return Maps.immutableEntry(pointId, pointInfo);
-        }
-    }
-
-    private class PointIdToLitePointRowMapper implements YukonRowMapper<Map.Entry<Integer, LitePoint>> {
-
-        private final Map<LitePoint, LitePoint> alreadyCreated = Maps.newHashMap();
-
-        @Override
-        public Map.Entry<Integer, LitePoint> mapRow(YukonResultSet rs) throws SQLException {
-
-            int paoId = rs.getInt("PaobjectId");
-            LitePoint litePoint = createLitePoint(alreadyCreated, rs);
-
-            return Maps.immutableEntry(paoId, litePoint);
         }
     }
 
@@ -651,12 +627,13 @@ public class PointDaoImpl implements PointDao {
     @Override
     public LitePoint getLitePointIdByDeviceId_Offset_PointType(int paobjectId, int pointOffset, int pointType) {
 
-        SqlStatementBuilder sql = new SqlStatementBuilder(litePointSql);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(LITE_POINT_ROW_MAPPER);
         sql.append("where PAObjectId").eq(paobjectId);
         sql.append("and PointOffset").eq(pointOffset);
         sql.append("and PointType").eq(PointTypes.getType(pointType));
         try {
-            return jdbcTemplate.queryForObject(sql, litePointRowMapper);
+            return jdbcTemplate.queryForObject(sql, LITE_POINT_ROW_MAPPER);
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Unable to find point for deviceId=" + paobjectId + ", pointOffset="
                 + pointOffset + ", pointType=" + pointType);
@@ -666,11 +643,12 @@ public class PointDaoImpl implements PointDao {
     @Override
     public List<LitePoint> getLitePointIdByDeviceId_PointType(int paobjectId, int pointType) throws NotFoundException {
 
-        SqlStatementBuilder sql = new SqlStatementBuilder(litePointSql);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(LITE_POINT_ROW_MAPPER);
         sql.append("where PAObjectId").eq(paobjectId);
         sql.append("and PointType").eq(PointTypes.getType(pointType));
         try {
-            List<LitePoint> pointList = jdbcTemplate.query(sql, litePointRowMapper);
+            List<LitePoint> pointList = jdbcTemplate.query(sql, LITE_POINT_ROW_MAPPER);
             return pointList;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Unable to find point for deviceId=" + paobjectId + ", pointType=" + pointType);
@@ -826,59 +804,4 @@ public class PointDaoImpl implements PointDao {
 
         return builder;
     }
-
-    private LitePoint createLitePoint(Map<LitePoint, LitePoint> alreadyCreated, YukonResultSet rset)
-            throws SQLException {
-
-        LitePoint litePoint = createLitePoint(rset);
-        LitePoint retVal = alreadyCreated.get(litePoint);
-        if (retVal == null) {
-            alreadyCreated.put(litePoint, litePoint);
-            retVal = litePoint;
-        }
-        return retVal;
-    }
-
-    @Override
-    public LitePoint createLitePoint(YukonResultSet rs) throws SQLException {
-
-        int pointId = rs.getInt("PointId");
-        String pointName = rs.getString("PointName").trim();
-        PointType pointType = rs.getEnum("PointType", PointType.class);
-        int paobjectId = rs.getInt("PaobjectId");
-        int pointOffset = rs.getInt("PointOffset");
-        int stateGroupId = rs.getInt("StateGroupId");
-        String formula = rs.getString("Formula");
-        int decimalDigits = rs.getInt("DecimalDigits"); // 0 if null
-        int uomId = rs.getInt("uomId");
-
-        if (rs.wasNull()) { // if uomid is null, set it to an INVALID int
-            uomId = UnitOfMeasure.INVALID.getId();
-        }
-
-        // process all the bit mask tags here
-        long tags = LitePoint.POINT_UOFM_GRAPH;
-        if ("usage".equalsIgnoreCase(formula)) {
-            tags = LitePoint.POINT_UOFM_USAGE;
-        }
-
-        LitePoint lp =
-            new LitePoint(pointId, pointName, pointType.getPointTypeId(), paobjectId, pointOffset, stateGroupId, tags,
-                uomId);
-
-        if (pointType == PointType.Analog) {
-            lp.setMultiplier(rs.getNullableDouble("analogMultiplier"));
-            lp.setDataOffset(rs.getNullableDouble("analogOffset"));
-        } else if (pointType == PointType.PulseAccumulator || pointType == PointType.DemandAccumulator) {
-            lp.setMultiplier(rs.getNullableDouble("accumulatorMultiplier"));
-            lp.setDataOffset(rs.getNullableDouble("accumulatorOffset"));
-        }
-
-        if (decimalDigits != 0) {
-            lp.setDecimalDigits(decimalDigits);
-        }
-
-        return lp;
-    }
-
 }
