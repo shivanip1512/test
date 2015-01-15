@@ -82,10 +82,12 @@ public class UpdateAccountsRequestEndpoint {
                     } catch(InvalidSubstationNameException ex) {
                         Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "InvalidSubstationName", ex.getMessage());
                         updateAccountResult.addContent(fe);
-                    }catch(InvalidAddressException ex) {
-                        Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "InvalidAddress", ex.getMessage());
+                    } catch (InvalidAddressException ex) {
+                        Element fe =
+                            XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "InvalidAddress",
+                                ex.getMessage());
                         updateAccountResult.addContent(fe);
-                    } 
+                    }
                 } else {
                     Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "InvalidAccountNumber", e.getMessage());
                     updateAccountResult.addContent(fe);
@@ -96,10 +98,11 @@ public class UpdateAccountsRequestEndpoint {
             } catch(UserNameUnavailableException e) {
                 Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, e, "UserNameUnavailable", e.getMessage());
                 updateAccountResult.addContent(fe);
-            }catch(InvalidAddressException ex) {
-                Element fe = XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "InvalidAddress", ex.getMessage());
+            } catch (InvalidAddressException ex) {
+                Element fe =
+                    XMLFailureGenerator.generateFailure(updateAccountsRequest, ex, "InvalidAddress", ex.getMessage());
                 updateAccountResult.addContent(fe);
-            } 
+            }
     
         }
         
