@@ -24,6 +24,7 @@ import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.web.util.InventoryManagerUtil;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
 public class DailyTimerTask extends StarsTimerTask {
@@ -33,28 +34,32 @@ public class DailyTimerTask extends StarsTimerTask {
 	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.StarsTimerTask#isFixedRate()
 	 */
-	public boolean isFixedRate() {
+	@Override
+    public boolean isFixedRate() {
 		return true;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.StarsTimerTask#getTimerPeriod()
 	 */
-	public long getTimerPeriod() {
+	@Override
+    public long getTimerPeriod() {
 		return TIMER_PERIOD;
 	}
 
 	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.StarsTimerTask#getNextScheduledTime()
 	 */
-	public Date getNextScheduledTime() {
+	@Override
+    public Date getNextScheduledTime() {
 		return ServletUtil.getTomorrow();
 	}
 
 	/* (non-Javadoc)
 	 * @see java.lang.Runnable#run()
 	 */
-	public void run() {
+	@Override
+    public void run() {
 		CTILogger.debug( "*** Daily timer task start ***" );
 		String batchProcessType =  YukonSpringHook.getBean(GlobalSettingDao.class).getString(GlobalSettingType.BATCHED_SWITCH_COMMAND_TOGGLE);
         boolean noAuto = false;
@@ -93,7 +98,7 @@ public class DailyTimerTask extends StarsTimerTask {
     				}
     				
     				String msg = numCmdSent + " of " + commands.length + " switch commands sent successfully";
-    				ActivityLogger.logEvent(-1, -1, company.getLiteID(), -1, ActivityLogActions.HARDWARE_SEND_BATCH_CONFIG_ACTION, msg);
+    				ActivityLogger.logEvent(YukonUserContext.system.getYukonUser().getUserID(), -1, company.getLiteID(), -1, ActivityLogActions.HARDWARE_SEND_BATCH_CONFIG_ACTION, msg);
     				
                     Map<Integer,Object[]> batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
     				batchConfig.put( company.getEnergyCompanyId(), new Object[]{new Date(), msg} );
