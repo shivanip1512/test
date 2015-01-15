@@ -25,6 +25,7 @@ import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
@@ -162,8 +163,10 @@ public abstract class DemandResponseControllerBase {
 
             dataRow[0] = details.getSerialNumber();
             dataRow[1] = details.getType().toString();
-            dataRow[2] = (details.getLastComm() == null) ? "" : details.getLastComm().toString();
-            dataRow[3] = (details.getLastRun() == null) ? "" : details.getLastRun().toString();
+            dataRow[2] = (details.getLastComm() == null) ? "" : dateFormattingService.format(details.getLastComm(),
+                    DateFormatEnum.BOTH, userContext);
+            dataRow[3] = (details.getLastRun() == null) ? "" : dateFormattingService.format(details.getLastRun(),
+                    DateFormatEnum.BOTH, userContext);
             dataRow[4] = details.getAppliances();
             dataRow[5] = msa.getMessage(details.getAvailability());
             dataRows.add(dataRow);
