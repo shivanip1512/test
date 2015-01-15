@@ -177,8 +177,8 @@ public class EnergyCompanyDaoImpl implements EnergyCompanyDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ParentEnergyCompanyId");
         sql.append("FROM EnergyCompany");
-        sql.append("WHERE EnergyCompanyID = ?");
-        return jdbcTemplate.queryForObject(sql, Integer.class, energyCompanyId);
+        sql.append("WHERE EnergyCompanyID").eq(energyCompanyId);
+        return jdbcTemplate.queryForObject(sql, RowMapper.INTEGER_NULLABLE);
     }
 
     @Deprecated
