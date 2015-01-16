@@ -7,7 +7,7 @@
 <cti:msgScope paths="yukon.web.modules.capcontrol.substation">
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".controlMethod">
-            <i:inline key="yukon.web.modules.capcontrol.controlAlgorithm.${bus.subBus.controlMethod}"/> (<i:inline key="yukon.web.modules.capcontrol.controlAlgorithm.${bus.subBus.controlUnits}"/>)
+            <i:inline key="${bus.controlMethod}"/> (<i:inline key="${bus.controlUnits}"/>)
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".varPoint">
             <c:choose>

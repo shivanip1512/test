@@ -43,7 +43,7 @@ public class AdditionalInfoController {
     }
 
     private BusDetails busDetailsFor(SubBus bus) {
-        BusDetails details = new BusDetails();
+        BusDetails details = new BusDetails(bus);
         if(bus.getCurrentVarLoadPointID() != 0) {
             LitePoint point = pointDao.getLitePoint(bus.getCurrentVarLoadPointID());
             details.setVarPoint(point);

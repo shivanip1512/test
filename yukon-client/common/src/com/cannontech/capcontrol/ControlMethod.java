@@ -83,7 +83,7 @@ public enum ControlMethod implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.capcontrol.controlMethod." + name();
+        return "yukon.web.modules.capcontrol.controlAlgorithm." + name();
     }
 
 }
