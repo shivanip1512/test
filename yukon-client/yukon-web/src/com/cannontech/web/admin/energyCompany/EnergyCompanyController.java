@@ -183,7 +183,7 @@ public class EnergyCompanyController {
     public String parentLogin(HttpServletRequest request, HttpSession session, YukonUserContext userContext, int loginAsUserId) {
         
         LiteYukonUser user = userContext.getYukonUser();
-        LiteYukonUser memeberOperator = yukonUserDao.getLiteYukonUser(loginAsUserId);
+        LiteYukonUser memberOperator = yukonUserDao.getLiteYukonUser(loginAsUserId);
         EnergyCompany memberEc;
         
         if (!energyCompanyService.canManageMembers(user)) {
@@ -191,9 +191,9 @@ public class EnergyCompanyController {
         }
         
         try {
-            memberEc = ecDao.getEnergyCompanyByOperator(memeberOperator);
+            memberEc = ecDao.getEnergyCompanyByOperator(memberOperator);
         } catch (EnergyCompanyNotFoundException e) {
-            throw new NotAuthorizedException("User " + memeberOperator.getUsername() + " is not an energy company operator.");
+            throw new NotAuthorizedException("User " + memberOperator.getUsername() + " is not an energy company operator.");
         }
         
         boolean isParentOperator = energyCompanyService.isParentOperator(user.getUserID(), memberEc.getId());
@@ -203,7 +203,7 @@ public class EnergyCompanyController {
         
         /* Do internal login as operator of member energy company */
         CtiNavObject nav = (CtiNavObject)session.getAttribute(ServletUtils.NAVIGATE);
-        memeberOperator = loginService.internalLogin(request, session, memeberOperator.getUsername(), true);
+        memberOperator = loginService.internalLogin(request, session, memberOperator.getUsername(), true);
         
         /* Set new CtiNavObject */
         nav = new CtiNavObject();
