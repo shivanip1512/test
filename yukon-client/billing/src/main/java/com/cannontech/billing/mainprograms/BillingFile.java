@@ -210,9 +210,13 @@ public class BillingFile extends java.util.Observable implements Runnable {
                 notify("Unsuccessful database query");
             } else {
                 setChanged();
-                notify("Successfully created the file : "
+                if (out instanceof FileOutputStream) {
+                    notify("Successfully created the file : "
                     + simpleBillingFormat.getBillingFileDefaults().getOutputFileDir() + "\n"
                     + simpleBillingFormat.getReadingCount() + " Valid Readings Reported.");
+                } else {
+                    CTILogger.info(simpleBillingFormat.getReadingCount() + " Valid Readings Reported.");
+                }
             }
 
         } catch (IllegalArgumentException e) {
