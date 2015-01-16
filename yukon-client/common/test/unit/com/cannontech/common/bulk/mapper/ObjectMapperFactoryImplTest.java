@@ -326,6 +326,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         public List<LiteYukonPAObject> getAllPaos() {
             throw new UnsupportedOperationException("Method not implemented");
         }
+
+        @Override
+        public List<PaoType> getExistingPaoTypes() {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
     }
 
     /**
