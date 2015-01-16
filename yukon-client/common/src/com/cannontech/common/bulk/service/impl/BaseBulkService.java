@@ -48,6 +48,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -405,6 +406,10 @@ public abstract class BaseBulkService {
                             && (blankHandlingEnum.equals(BlankHandlingEnum.IGNORE_BLANK) || 
                                 blankHandlingEnum.equals(BlankHandlingEnum.NOT_APPLICABLE))) {
                         fieldStringValue = null;
+                    }
+                    else if (!(PaoUtils.isValidPaoName(fieldStringValue)))
+                    {
+                    	throw new DeviceCreationException("Device name cannot include any of the following characters: / \\ ,\" ' |");
                     }
         
                     valueMap.put(inputSource.getField(), fieldStringValue);
