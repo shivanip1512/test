@@ -52,7 +52,7 @@
     <entry key="yukon.web.modules.amr.waterLeakReport.report.validation.thresholdNegative">Threshold cannot be negative</entry>
     
     <!-- WATER LEAK REPORT ACCOUNT INFO DIALOG accountInfoAjax.jsp -->
-    <entry key="yukon.web.modules.amr.waterLeakReport.accountInfo.title">Account Info</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.accountInfo.title">Account Info</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.custInfo">Customer Information</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.name">Name</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.dba">DBA Name</entry>
