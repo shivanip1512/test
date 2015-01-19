@@ -53,8 +53,8 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService {
         if (vendorId > 0) {
             
             MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
+            if(mspVendor.getMspInterfaceMap().containsKey(MultispeakDefines.CB_Server_STR)){
             List<String> mspMethodNames = mspObjectDao.findMethods(MultispeakDefines.CB_Server_STR, mspVendor);
-            
             MspSearchField[] allMspSearchFields = MspSearchField.values();
             for (MspSearchField mspSearchField : allMspSearchFields) {
                 
@@ -68,6 +68,7 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService {
                         
                         mspSearchFields.add(mspSearchField);
                         break;
+                        }
                     }
                 }
             }
