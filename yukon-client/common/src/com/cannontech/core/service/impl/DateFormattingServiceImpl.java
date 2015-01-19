@@ -73,7 +73,7 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         	DateTimeFormatter formatter = getDateTimeFormatter(type, userContext);
         	return formatter.print(((Long) object).longValue());
         } else {
-            throw new IllegalArgumentException("Date object is not supported in DateFormattingServiceImpl.formatDate()");
+            throw new IllegalArgumentException("Date object is not supported in DateFormattingServiceImpl.format()");
         }
     }
 

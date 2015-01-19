@@ -65,13 +65,11 @@ public class StyleGuideController {
     public String more(ModelMap model) {
         
         Instant now = Instant.now();
-        Instant past = new Instant(now.minus(Duration.standardDays(5)).getMillis());
-        Instant start = new Instant(now.minus(Duration.standardDays(7)).getMillis());
-        Instant end = new Instant(now.plus(Duration.standardDays(7)).getMillis());
+        Instant weekAgo = new Instant(now.minus(Duration.standardDays(7)).getMillis());
+        Instant weekFromNow = new Instant(now.plus(Duration.standardDays(7)).getMillis());
         model.addAttribute("now", now);
-        model.addAttribute("past", past);
-        model.addAttribute("start", start);
-        model.addAttribute("end", end);
+        model.addAttribute("weekAgo", weekAgo);
+        model.addAttribute("weekFromNow", weekFromNow);
         
         return "styleguide/date.pickers.jsp";
     }

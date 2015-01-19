@@ -53,8 +53,8 @@
 </c:choose>
 
 <p class="description">
-Pikers are components built by the 
-<span class="label label-attr">&lt;tags:pickerDialog&gt;</span> tag that allow for easy selection items; either inline 
+Pickers are components built by the 
+<span class="label label-attr">&lt;tags:pickerDialog&gt;</span> tag that allow for easy selection of items; either inline 
 or in a popup.
 </p>
 

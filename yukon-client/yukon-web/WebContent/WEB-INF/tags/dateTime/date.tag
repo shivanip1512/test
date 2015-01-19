@@ -7,16 +7,19 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="cssClass" description="Class added to the input of the widget" %>
-<%@ attribute name="cssDialogClass" description="Class added to the outer dialog div" %>
-<%@ attribute name="disabled" type="java.lang.Boolean" description="Default: false. Determines if the input is disabled." %>
-<%@ attribute name="id" description="ID of the field in the supplied object"%>
-<%@ attribute name="maxDate" type="java.lang.Object" description="Set a maximum selectable date via a Instant object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
-<%@ attribute name="minDate" type="java.lang.Object" description="Set a minimum selectable date via a Instant object or as a string in the current dateFormat, or a number of days from today (e.g. +7) or a string of values and periods ('y' for years, 'm' for months, 'w' for weeks, 'd' for days, e.g. '+1m +1w'), or null for no limit." %>
-<%@ attribute name="name" description="Name of the field in the supplied object"%>
-<%@ attribute name="path" description="Spring binding path"%>
-<%@ attribute name="hideErrors" type="java.lang.Boolean" description="Default: false. If true, will not display validation error messages." %>
+<%@ attribute name="name" description="Name of the input." %>
+<%@ attribute name="path" description="Spring binding path." %>
 <%@ attribute name="value" type="java.lang.Object" description="Default: null. Sets the initial value of the input." %>
+<%@ attribute name="id" description="ID of the input." %>
+<%@ attribute name="disabled" type="java.lang.Boolean" description="Default: false. Determines if the input is disabled." %>
+<%@ attribute name="cssClass" description="CSS class names applied to the outer container of the picker component." %>
+<%@ attribute name="cssDialogClass" description="CSS class names applied to the popup container." %>
+
+<%@ attribute name="maxDate" type="java.lang.Object" 
+    description="Set a maximum selectable date via an object consumable by the DateFormatingService#format method (Date, ReadablePartial, ReadableInstant, Long)." %>
+<%@ attribute name="minDate" type="java.lang.Object" 
+    description="Set a minimum selectable date via an object consumable by the DateFormatingService#format method (Date, ReadablePartial, ReadableInstant, Long)." %>
+<%@ attribute name="hideErrors" type="java.lang.Boolean" description="Default: false. If true, will not display validation error messages." %>
 
 <dt:pickerIncludes/>
 
