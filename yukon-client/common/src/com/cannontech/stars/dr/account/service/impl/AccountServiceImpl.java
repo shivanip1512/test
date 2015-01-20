@@ -194,6 +194,7 @@ public class AccountServiceImpl implements AccountService {
         // Create the address
         LiteAddress liteAddress = new LiteAddress();
         if (streetAddress != null) {
+            validateAddress(accountNumber, streetAddress, "streetAddress");
             setAddressFieldsFromDTO(liteAddress, streetAddress);
         } else {
             setAddressDefaults(liteAddress);
@@ -203,6 +204,7 @@ public class AccountServiceImpl implements AccountService {
         // Create billing address
         LiteAddress liteBillingAddress = new LiteAddress();
         if (billingAddress != null) {
+            validateAddress(accountNumber, billingAddress, "billingAddress");
             setAddressFieldsFromDTO(liteBillingAddress, billingAddress);
         } else {
             setAddressDefaults(liteBillingAddress);
@@ -278,6 +280,7 @@ public class AccountServiceImpl implements AccountService {
         if (liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
             LiteAddress companyAddress = new LiteAddress();
             if (streetAddress != null) {
+                validateAddress(accountNumber, streetAddress, "streetAddress");
                 setAddressFieldsFromDTO(companyAddress, streetAddress);
             } else {
                 setAddressDefaults(companyAddress);
@@ -622,19 +625,13 @@ public class AccountServiceImpl implements AccountService {
 
         // Update the address
         if (streetAddress != null) {
-            AddressValidator addressValidator = new AddressValidator();
-            Errors errors = new BeanPropertyBindingResult(streetAddress, "streetAddress");
-            addressValidator.validate(streetAddress, errors);
-            if (errors.getErrorCount() != 0) {
-                log.error("Address for account " + accountNumber
-                    + " could not be updated: The address provided is invalid.");
-                throw new InvalidAddressException("The address provided is invalid.");
-            }
+            validateAddress(accountNumber, streetAddress, "streetAddress");
             setAddressFieldsFromDTO(liteStreetAddress, streetAddress);
             addressDao.update(liteStreetAddress);
         }
         // Update the billing address if supplied
         if (billingAddress != null) {
+            validateAddress(accountNumber, billingAddress, "billingAddress");
             setAddressFieldsFromDTO(liteBillingAddress, billingAddress);
             addressDao.update(liteBillingAddress);
         }
@@ -794,6 +791,7 @@ public class AccountServiceImpl implements AccountService {
                 // was residential, now commercial
                 LiteAddress companyAddress = new LiteAddress();
                 if (streetAddress != null) {
+                    validateAddress(accountNumber, streetAddress, "streetAddress");
                     setAddressFieldsFromDTO(companyAddress, streetAddress);
                 } else {
                     setAddressDefaults(companyAddress);
@@ -1066,6 +1064,22 @@ public class AccountServiceImpl implements AccountService {
             log.error("Account " + accountNumber + " could not be updated: The provided user group '" + userGroupName
                 + "' doesn't exist.");
             throw new InvalidLoginGroupException("The provided user group '" + userGroupName + "' doesn't exist.");
+        }
+    }
+
+    /**
+     * This method validates the given address
+     * 
+     * @throws InvalidAddressException - The address is not valid.
+     */
+    private void validateAddress(String accountNumber, Address address, String addressType) {
+        AddressValidator addressValidator = new AddressValidator();
+        Errors errors = new BeanPropertyBindingResult(address, addressType);
+        addressValidator.validate(address, errors);
+        if (errors.getErrorCount() != 0) {
+            log.error("Address for account " + accountNumber
+                + " could not be updated: The address provided is invalid.");
+            throw new InvalidAddressException("The address provided is invalid.");
         }
     }
 }
