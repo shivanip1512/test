@@ -14,6 +14,7 @@ import com.cannontech.common.bulk.callbackResult.ArchiveDataAnalysisCallbackResu
 import com.cannontech.common.bulk.model.AdaStatus;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.AnalysisWithDeviceCount;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
@@ -70,16 +71,10 @@ public class AdaListController {
      * to the model.
      */
     private void setUpList(ModelMap model, int page, int itemsPerPage) {
-        List<Analysis> analyses = archiveDataAnalysisDao.getAllNotDeletedAnalyses();
-        int startIndex = (page - 1) * itemsPerPage;
-        int endIndex = startIndex + itemsPerPage;
-        if(endIndex >= analyses.size()) {
-            endIndex = analyses.size();
-        }
-        
+        PagingParameters pagingParameter = PagingParameters.of(itemsPerPage, page);
+        List<Analysis> analyses = archiveDataAnalysisDao.getAllNotDeletedAnalyses(pagingParameter);
         List<AnalysisWithDeviceCount> analysisSublist = Lists.newArrayList();
-        for(int i = startIndex; i < endIndex; i++) {
-            Analysis analysis = analyses.get(i);
+        for(Analysis analysis : analyses) {
             if(isAnalysisInterrupted(analysis)) {
                 archiveDataAnalysisDao.updateStatus(analysis.getAnalysisId(), AdaStatus.INTERRUPTED, null);
                 analysis.setStatus(AdaStatus.INTERRUPTED);

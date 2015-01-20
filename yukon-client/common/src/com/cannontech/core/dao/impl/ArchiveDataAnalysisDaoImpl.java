@@ -24,6 +24,7 @@ import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
 import com.cannontech.common.bulk.model.ReadType;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisHelper;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -201,11 +202,16 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
     }
     
     @Override
-    public List<Analysis> getAllNotDeletedAnalyses() {
+    public List<Analysis> getAllNotDeletedAnalyses(PagingParameters pagingParameter) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT AnalysisId, Attribute, StartDate, StopDate, IntervalPeriod, LastChangeId, RunDate, ExcludeBadPointQualities, AnalysisStatus, StatusId");
+        sql.append("SELECT * FROM (");
+        sql.append("SELECT (ROW_NUMBER() OVER (ORDER BY RunDate DESC)) RowNumber, AnalysisId, Attribute, StartDate, StopDate, IntervalPeriod, LastChangeId, RunDate, ExcludeBadPointQualities, AnalysisStatus, StatusId");
         sql.append("FROM ArchiveDataAnalysis");
         sql.append("WHERE AnalysisStatus").neq_k(AdaStatus.DELETED);
+        sql.append(") ArchiveDataAnalysisInnerTable WHERE RowNumber BETWEEN");
+        sql.append(pagingParameter.getOneBasedStartIndex());
+        sql.append(" AND ");
+        sql.append(pagingParameter.getOneBasedEndIndex());
         sql.append("ORDER BY RunDate DESC");
         
         List<Analysis> analyses = jdbcTemplate.query(sql, analysisRowMapper);

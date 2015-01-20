@@ -9,6 +9,7 @@ import com.cannontech.common.bulk.model.AdaStatus;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.bulk.model.DeviceArchiveData;
 import com.cannontech.common.bulk.model.DevicePointValuesHolder;
+import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
@@ -43,7 +44,7 @@ public interface ArchiveDataAnalysisDao {
     /**
      * Retrieves a list of all Analyses which don't have an AnalysisStatus of 'DELETED'
      */
-    public List<Analysis> getAllNotDeletedAnalyses();
+    public List<Analysis> getAllNotDeletedAnalyses(PagingParameters pagingParameter);
     
     /**
      * Deletes an analysis and all associated slot and read status information.

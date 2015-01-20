@@ -3,6 +3,7 @@ package com.cannontech.web.bulk.ada;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,6 +50,7 @@ public class AdaResultsController {
     private final static String baseKey = "yukon.web.modules.tools.bulk.analysis";
     private final static int TABULAR_SIZE_LIMIT = 5000; //maximum number of data points before tabular link is disabled
     private final static int BAR_WIDTH = 400;
+    private Map<Integer, List<AdaDevice>> adaResultsCache = new HashMap<>();
     
     private static enum Column implements DisplayableEnum {
         NAME(AdaDevice.ON_NAME), 
@@ -85,38 +87,42 @@ public class AdaResultsController {
             YukonUserContext userContext, FlashScope flash) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        
         Analysis analysis = adaDao.getAnalysisById(analysisId);
         ArchiveAnalysisResult result = new ArchiveAnalysisResult(analysis);
+        List<AdaDevice> rows = null;        
         
-        // Warn the user if the analysis was interrupted
-        if (analysis.getStatus() == AdaStatus.INTERRUPTED) {
-            flash.setWarning(new YukonMessageSourceResolvable(baseKey + ".analysisInterruptedWarning"));
-        }
+        if(adaResultsCache.containsKey(analysisId)) {
+            rows = adaResultsCache.get(analysisId);            
+        } else {
             
-        // Build device collection
-        DeviceCollection collection = adaCollectionProducer.buildDeviceCollection(analysisId);
-        model.addAttribute("deviceCollection", collection);
-        model.addAllAttributes(collection.getCollectionParameters());
-        
-        List<DeviceArchiveData> datas = adaDao.getSlotValues(analysisId);
-        
-        List<AdaDevice> rows = new ArrayList<>();
-        Map<Integer, SimpleMeter> allMeters = cache.getAllMeters();
-        Map<Integer, LiteYukonPAObject> allPaosMap = cache.getAllPaosMap();
-        for (DeviceArchiveData data : datas) {
-            AdaDevice row = new AdaDevice();
-            row.setData(data);
-            
-            SimpleMeter meter = allMeters.get(data.getPaoIdentifier().getPaoId());
-            if (meter != null) {
-                row.setMeterNumber(meter.getMeterNumber());
+            // Warn the user if the analysis was interrupted
+            if (analysis.getStatus() == AdaStatus.INTERRUPTED) {
+                flash.setWarning(new YukonMessageSourceResolvable(baseKey + ".analysisInterruptedWarning"));
             }
             
-            row.setName(allPaosMap.get(data.getPaoIdentifier().getPaoId()).getPaoName());
-            row.setMissingIntervals(data.getHoleCount());
+            // Build device collection
+            DeviceCollection collection = adaCollectionProducer.buildDeviceCollection(analysisId);
+            model.addAttribute("deviceCollection", collection);
+            model.addAllAttributes(collection.getCollectionParameters());
+            List<DeviceArchiveData> datas = adaDao.getSlotValues(analysisId);
+            rows = new ArrayList<>();
+            Map<Integer, SimpleMeter> allMeters = cache.getAllMeters();
+            Map<Integer, LiteYukonPAObject> allPaosMap = cache.getAllPaosMap();
+            for (DeviceArchiveData data : datas) {
+                AdaDevice row = new AdaDevice();
+                row.setData(data);
             
-            rows.add(row);
+                SimpleMeter meter = allMeters.get(data.getPaoIdentifier().getPaoId());
+                if (meter != null) {
+                    row.setMeterNumber(meter.getMeterNumber());
+                }
+            
+                row.setName(allPaosMap.get(data.getPaoIdentifier().getPaoId()).getPaoName());
+                row.setMissingIntervals(data.getHoleCount());
+            
+                rows.add(row);
+            }
+            adaResultsCache.put(analysisId, rows);
         }
         
         // Sort by column
@@ -158,10 +164,10 @@ public class AdaResultsController {
             model.addAttribute("showReadOption", true);
         }
         
-        int numberOfIntervals = datas.get(0).getNumberOfIntervals();
+        int numberOfIntervals = rows.get(0).getData().getNumberOfIntervals();
         model.addAttribute("intervals", numberOfIntervals);
         
-        int numberOfDataPoints = datas.size() * numberOfIntervals;
+        int numberOfDataPoints = rows.size() * numberOfIntervals;
         boolean underTabularSizeLimit = true;
         if (numberOfDataPoints > TABULAR_SIZE_LIMIT) {
             underTabularSizeLimit = false;
