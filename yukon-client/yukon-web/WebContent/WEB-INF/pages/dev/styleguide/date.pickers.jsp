@@ -8,28 +8,6 @@
 <tags:styleguide page="date-pickers">
 
 <style>
-.date-time-pickers label {
-    width: 8em;
-    float: left;
-    minHeight: 2em;
-    text-align: right;
-    padding-right: 5px;
-}
-
-.date-container {
-    overflow: hidden;
-    float: left;
-    margin: 0 10px 10px 0;
-}
-
-.date-time-pickers small {
-    font-size: 70%;
-}
-
-</style>
-
-<style>
-.dialog-example .one { line-height: 26px; }
 .description { line-height: 22px; }
 </style>
 
@@ -37,7 +15,8 @@
 Dates, date ranges and times are handled with special components built by the  
 <span class="label label-attr">&lt;dt:date&gt;</span>, <span class="label label-attr">&lt;dt:dateRange&gt;</span>,
 <span class="label label-attr">&lt;dt:time&gt;</span>, and <span class="label label-attr">&lt;dt:dateTime&gt;</span> tags. 
-They all support spring binding as well as page edit modes (VIEW, EDIT, CREATE).
+They all support <a target="_blank" href="http://docs.spring.io/spring/docs/3.0.x/spring-framework-reference/html/view.html">spring binding</a> 
+as well as page edit modes (VIEW, EDIT, CREATE).
 </p>
 
 <h1>Date Tag</h1>
@@ -48,7 +27,7 @@ They all support spring binding as well as page edit modes (VIEW, EDIT, CREATE).
         <span class="label label-attr">path</span>.
     </tags:nameValue>
     <tags:nameValue name="path">
-        The 'path' value passed to the <span class="label label-attr">&lt;spring:input&gt;</span> tag which builds an input
+        The 'path' value passed to the <span class="label label-attr">&lt;form:input&gt;</span> tag which builds an input
         with a special name.  <span class="label label-attr">path</span> should not be used if also using 
         <span class="label label-attr">name</span>.
     </tags:nameValue>
@@ -148,7 +127,7 @@ They all support spring binding as well as page edit modes (VIEW, EDIT, CREATE).
         <span class="label label-attr">startPath</span>.
     </tags:nameValue>
     <tags:nameValue name="startPath">
-        The 'path' value passed to the <span class="label label-attr">&lt;spring:input&gt;</span> tag which builds an input
+        The 'path' value passed to the <span class="label label-attr">&lt;form:input&gt;</span> tag which builds an input
         with a special name.  <span class="label label-attr">startPath</span> should not be used if also using 
         <span class="label label-attr">startName</span>.
     </tags:nameValue>
@@ -163,7 +142,7 @@ They all support spring binding as well as page edit modes (VIEW, EDIT, CREATE).
         <span class="label label-attr">endPath</span>.
     </tags:nameValue>
     <tags:nameValue name="endPath">
-        The 'path' value passed to the <span class="label label-attr">&lt;spring:input&gt;</span> tag which builds an input
+        The 'path' value passed to the <span class="label label-attr">&lt;form:input&gt;</span> tag which builds an input
         with a special name.  <span class="label label-attr">endPath</span> should not be used if also using 
         <span class="label label-attr">endName</span>.
     </tags:nameValue>
@@ -221,7 +200,7 @@ They all support spring binding as well as page edit modes (VIEW, EDIT, CREATE).
         <span class="label label-attr">path</span>.
     </tags:nameValue>
     <tags:nameValue name="path">
-        The 'path' value passed to the <span class="label label-attr">&lt;spring:input&gt;</span> tag which builds an input
+        The 'path' value passed to the <span class="label label-attr">&lt;form:input&gt;</span> tag which builds an input
         with a special name.  <span class="label label-attr">path</span> should not be used if also using 
         <span class="label label-attr">name</span>.
     </tags:nameValue>
@@ -309,7 +288,7 @@ They all support spring binding as well as page edit modes (VIEW, EDIT, CREATE).
         <span class="label label-attr">path</span>.
     </tags:nameValue>
     <tags:nameValue name="path">
-        The 'path' value passed to the <span class="label label-attr">&lt;spring:input&gt;</span> tag which builds an input
+        The 'path' value passed to the <span class="label label-attr">&lt;form:input&gt;</span> tag which builds an input
         with a special name.  <span class="label label-attr">path</span> should not be used if also using 
         <span class="label label-attr">name</span>.
     </tags:nameValue>

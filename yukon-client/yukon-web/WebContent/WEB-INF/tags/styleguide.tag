@@ -11,20 +11,28 @@
 <div class="column-4-20">
     <div class="column one side-nav">
         <ul>
+            <li><h2 class="buffered">Basic</h2></li>
             <c:set var="clazz" value="${page == 'grids' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/grids"/>">Grids</a></li>
             <c:set var="clazz" value="${page == 'tables' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/tables"/>">Tables</a></li>
             <c:set var="clazz" value="${page == 'containers' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/containers"/>">Containers</a></li>
-            <c:set var="clazz" value="${page == 'buttons' ? 'selected' : ''}"/>
-            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/buttons"/>">Buttons</a></li>
             <c:set var="clazz" value="${page == 'icons' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/icons"/>">Icons</a></li>
-            <c:set var="clazz" value="${page == 'pickers' ? 'selected' : ''}"/>
-            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/pickers"/>">Pickers</a></li>
+            <c:set var="clazz" value="${page == 'buttons' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/buttons"/>">Buttons</a></li>
+            <c:set var="clazz" value="${page == 'switches' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/switches"/>">Switches</a></li>
+            <li><h2 class="buffered">Advanced</h2></li>
+            <c:set var="clazz" value="${page == 'inputs' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/fun-with-inputs"/>">Fun with Inputs</a></li>
+            <c:set var="clazz" value="${page == 'blocking' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/blocking"/>">Blocking</a></li>
             <c:set var="clazz" value="${page == 'dialogs' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/dialogs"/>">Dialogs</a></li>
+            <c:set var="clazz" value="${page == 'pickers' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/pickers"/>">Pickers</a></li>
             <c:set var="clazz" value="${page == 'date-pickers' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/date-pickers"/>">Date Pickers</a></li>
         </ul>

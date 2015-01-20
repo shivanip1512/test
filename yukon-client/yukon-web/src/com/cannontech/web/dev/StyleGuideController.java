@@ -41,6 +41,26 @@ public class StyleGuideController {
         return "styleguide/buttons.jsp";
     }
     
+    @RequestMapping("/styleguide/switches")
+    public String switches(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        
+        Thing thing = new Thing();
+        thing.setEnabled(true);
+        model.addAttribute("thing", thing);
+        
+        return "styleguide/switches.jsp";
+    }
+    
+    @RequestMapping("/styleguide/fun-with-inputs")
+    public String inputs(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        return "styleguide/inputs.jsp";
+    }
+    
+    @RequestMapping("/styleguide/blocking")
+    public String blocking(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        return "styleguide/blocking.jsp";
+    }
+    
     @RequestMapping("/styleguide/pickers")
     public String pickers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         return "styleguide/pickers.jsp";
@@ -102,4 +122,13 @@ public class StyleGuideController {
         model.addAttribute("sprites32Array", sprites32Array);
     }
     
+    public class Thing {
+        private boolean enabled;
+        public boolean isEnabled() {
+            return enabled;
+        }
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+    }
 }

@@ -210,7 +210,7 @@ input[type=radio] {
 .placeholder { color: #aaa; }
 
 /** Styles for a 'toggle switch' checkbox **/
-.checkbox input {
+.checkbox .checkbox-input {
     border: 0;
     clip: rect(0 0 0 0);
     height: 1px;
@@ -250,11 +250,15 @@ input[type=radio] {
     transition: all 120ms ease-in;
     width: 1.5em;
 }
-input:checked + .checkbox-value {
+.checkbox-input:disabled ~ .checkbox-value { 
+    cursor: default;
+    opacity: .5;
+}
+.checkbox-input:checked ~ .checkbox-value {
     background-color: #70C765;
     border-color: #5A9E51;
 }
-input:checked + .checkbox-value::before { left: 75%; }
+.checkbox-input:checked ~ .checkbox-value::before { left: 75%; }
 .with-form-controls .checkbox-value::before { top: 1px; }
 
 /** Styles for a 'toggle button' checkbox **/
@@ -281,6 +285,10 @@ input:checked + .checkbox-value::before { left: 75%; }
     box-shadow: inset 0 0 10px #bbb !important;
     
     .b-label { color: @red; }
+}
+.switch-btn .switch-btn-checkbox:disabled ~ .button {
+    cursor: default;
+    opacity: .5;
 }
 
 /* VERTICAL MENUS */

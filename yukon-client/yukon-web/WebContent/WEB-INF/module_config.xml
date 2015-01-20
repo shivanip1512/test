@@ -1470,7 +1470,6 @@
           <page name="webServices.account" type="BASIC"/>
           <page name="pointInjection" type="BASIC"/>
           <page name="bulkPointInjection" type="BASIC"/>
-          <page name="uiToolkitDemo" type="BASIC"/>
           <page name="setupDatabase" type="BASIC"/>
           <page name="miscellaneousMethod" type="BASIC"/>
           <page name="rfnTest" type="BASIC">
@@ -1493,10 +1492,13 @@
               <page name="grids" type="BASIC"/>
               <page name="tables" type="BASIC"/>
               <page name="containers" type="BASIC"/>
+              <page name="icons" type="BASIC"/>
               <page name="buttons" type="BASIC"/>
+              <page name="switches" type="BASIC"/>
+              <page name="inputs" type="BASIC"/>
+              <page name="blocking" type="BASIC"/>
               <page name="pickers" type="BASIC"/>
               <page name="dialogs" type="BASIC"/>
-              <page name="icons" type="BASIC"/>
               <page name="datePickers" type="BASIC"/>
             </pages>
           </page>

@@ -202,8 +202,6 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
     UI_DEMO(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.styleguide.pageName", "/dev/styleguide",
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
-    UI_TOOLKIT(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.uiToolkitDemo.pageName", "/dev/uiToolkitDemo/main",
-            MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
     POINT_INJECTION(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.pointInjection.pageName", "/dev/pointInjection/main",
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE),
     BULK_POINT_INJECTION(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.bulkPointInjection.pageName", "/dev/bulkPointInjection/home",

@@ -148,9 +148,6 @@
     <entry key="yukon.web.modules.dev.bulkPointInjection.valueRangeHigh">Value Range High</entry>
     <entry key="yukon.web.modules.dev.bulkPointInjection.archive">Archive</entry>
     
-    <!-- UI Toolkit Demos -->
-    <entry key="yukon.web.modules.dev.uiToolkitDemo.pageName">UI Toolkit Demos</entry>
-    
     <!-- Setup Database -->
     <entry key="yukon.web.modules.dev.setupDatabase.pageName">Setup Development Database</entry>
     <entry key="yukon.web.modules.dev.setupDatabase.setupDevDatabase.label">Setup Development Database</entry>
@@ -308,6 +305,10 @@
     <entry key="yukon.web.modules.dev.buttons.lastName">Last Name</entry>
     <entry key="yukon.web.modules.dev.buttons.email">Email</entry>
     <entry key="yukon.web.modules.dev.buttons.create">Create</entry>
+    
+    <entry key="yukon.web.modules.dev.switches.pageName">Switches</entry>
+    <entry key="yukon.web.modules.dev.inputs.pageName">Fun with Inputs</entry>
+    <entry key="yukon.web.modules.dev.blocking.pageName">Blocking</entry>
     
     <entry key="yukon.web.modules.dev.dialogs.pageName">Dialogs</entry>
     <entry key="yukon.web.modules.dev.icons.pageName">Icons</entry>

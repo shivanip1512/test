@@ -11,7 +11,6 @@
             <tags:sectionContainer title="User Interface Development">
                 <ul class="simple-list">
                     <li><a href="<cti:url value="/dev/styleguide"/>">Style Guide</a></li>
-                    <li><a href="<cti:url value="/dev/uiToolkitDemo/main"/>">Advanced Components</a></li>
                     <li><a href="<cti:url value="/dev/i18n"/>">Localization</a></li>
                     <li><a href="<cti:url value="/dev/i18n/scopes"/>">Localization Scoping</a></li>
                 </ul>
