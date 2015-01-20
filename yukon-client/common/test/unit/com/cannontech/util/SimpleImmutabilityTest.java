@@ -150,7 +150,6 @@ import com.cannontech.common.rfn.message.RfnMessageClass;
 import com.cannontech.common.rfn.message.metadata.CommStatusType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataReplyType;
-import com.cannontech.common.rfn.service.NetworkManagerError;
 import com.cannontech.common.survey.model.QuestionType;
 import com.cannontech.common.temperature.CelsiusTemperature;
 import com.cannontech.common.temperature.FahrenheitTemperature;
@@ -362,7 +361,6 @@ public class SimpleImmutabilityTest {
             MasterConfigStringKeysEnum.class,
             MatchStyle.class,
             MonthYear.class,
-            NetworkManagerError.class,
             OptionalField.class,
             PagingParameters.class,
             PaoCategory.class,

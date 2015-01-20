@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.demandreset.service.DemandResetCallback.Results;
 import com.cannontech.amr.demandreset.service.RfnDemandResetService;
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
@@ -43,7 +44,6 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.service.NetworkManagerError;
 import com.cannontech.common.util.jms.JmsReplyHandler;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dao.PointDao;
@@ -174,13 +174,12 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                                 if (log.isDebugEnabled()) {
                                     log.debug(device + " Timed out waiting for point from Network Manager.");
                                 }
-                                callback.cannotVerify(device, getError(NetworkManagerError.TIMEOUT.getErrorCode()));
+                                callback.cannotVerify(device, getError(DeviceError.NM_TIMEOUT));
                                 deviceIterator.remove();
                                 asyncDynamicDataSource.unRegisterForPointData(RfnDemandResetServiceImpl.this,
                                                                               ImmutableSet.of(pointId));
                                 commandRequestExecutionResultDao.saveCommandRequestExecutionResult(
-                                    verificationInfo.verificationExecution, device.getDeviceId(),
-                                    NetworkManagerError.TIMEOUT.getErrorCode());
+                                    verificationInfo.verificationExecution, device.getDeviceId(), DeviceError.NM_TIMEOUT.getCode());
                             }
 
                         }
@@ -254,7 +253,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
             log.error("Can't Verify:" + devicesWithoutPoint + " \"RF Demand Reset Status\" point is missing.");
         }
         for (YukonPao device : devicesWithoutPoint) {
-            callback.cannotVerify(new SimpleDevice(device), getError(DemandResetError.NO_POINT.getErrorCode()));
+            callback.cannotVerify(new SimpleDevice(device), getError(DeviceError.NO_POINT));
         }
         
         for (Map.Entry<? extends YukonPao, RfnIdentifier> entry : meterIdentifiersByPao.entrySet()) {
@@ -407,7 +406,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                         if (log.isDebugEnabled()) {
                             log.debug("Failed (no point data received): " + device);
                         }
-                        callback.failed(device, getError(DemandResetError.NO_TIMESTAMP.getErrorCode()));
+                        callback.failed(device, getError(DeviceError.NO_TIMESTAMP));
                     } else {
                         Instant resetTime = new Instant(pointData.getPointDataTimeStamp());
                         RfnDemandResetState resetState = RfnDemandResetState.values()[(int) pointData.getValue()];
@@ -426,7 +425,7 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
                             if (log.isDebugEnabled()) {
                                 log.debug("Failed: " + device);
                             }
-                            callback.failed(device, getError(DemandResetError.TIMESTAMP_OUT_OF_RANGE.getErrorCode()));
+                            callback.failed(device, getError(DeviceError.TIMESTAMP_OUT_OF_RANGE));
                         }
                     }
                     if (verificationInfo.isAllVerified()) {
@@ -444,7 +443,11 @@ public class RfnDemandResetServiceImpl implements RfnDemandResetService, PointDa
         }
     }
         
-    private SpecificDeviceErrorDescription getError(Integer errorCode) {
+    private SpecificDeviceErrorDescription getError(DeviceError error) {
+       return getError(error.getCode());
+    }
+    
+    private SpecificDeviceErrorDescription getError(int errorCode) {
         DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(errorCode);
         SpecificDeviceErrorDescription deviceErrorDescription =
             new SpecificDeviceErrorDescription(errorDescription, null);

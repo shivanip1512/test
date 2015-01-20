@@ -14,6 +14,7 @@ import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.service.RetryParameters;
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
@@ -54,8 +55,6 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
-    private final static int TIME_OUT_ERROR_CODE = 227;
-
     @Override
     public StrategyType getType() {
         return StrategyType.ECOBEE;
@@ -92,7 +91,7 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
              * command request execution result created for the entries.
              */
             
-            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(TIME_OUT_ERROR_CODE);
+            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.TIMEOUT);
             MessageSourceResolvable detail =
                 YukonMessageSourceResolvable.createSingleCodeWithArguments(
                     "yukon.common.device.attributeRead.general.readError", error.getMessage());

@@ -20,14 +20,14 @@ import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
 
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.ThemeUtils;
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.YukonUserContext;
@@ -39,51 +39,55 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
 	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private Logger log = YukonLogManager.getLogger(DeviceErrorTranslatorDaoImpl.class);
     private InputStream errorDefinitions;
-    private Map<String, Map<Integer, DeviceErrorDescription>> store = new HashMap<String, Map<Integer, DeviceErrorDescription>>();
+    private Map<String, Map<DeviceError, DeviceErrorDescription>> store = new HashMap<String, Map<DeviceError, DeviceErrorDescription>>();
     private DeviceErrorDescription defaultTranslation;
-    private String baseKey = "yukon.web.errorCodes_";
     private String defaultThemeKey = getThemeKey(Locale.US, ThemeUtils.getDefaultThemeName());
 
     /**
      * Returns the US translation for the error code.
      */
     @Override
-    public DeviceErrorDescription translateErrorCode(int error) {
-		DeviceErrorDescription dded = translateErrorCode(error,
-				new SimpleYukonUserContext(null, Locale.US, TimeZone.getDefault(), ThemeUtils.getDefaultThemeName()));
-        if (dded != null) {
-            return dded;
-        }
+    public DeviceErrorDescription translateErrorCode(int errorCode) {
+        return translateErrorCode(DeviceError.getErrorByCode(errorCode));
+    }
+    
+    /**
+     * Returns the US translation for the error code.
+     */
+    @Override
+    public DeviceErrorDescription translateErrorCode(DeviceError error) {
+        return translateErrorCode(error, YukonUserContext.system);
 
-        // Clone the defaultTranslation and set the error code
-        return new DeviceErrorDescription(error, defaultTranslation.getCategory(), defaultTranslation.getPorter(), 
-                defaultTranslation.getDescription(), defaultTranslation.getTroubleshooting());
     }
 
     @Override
-    public DeviceErrorDescription translateErrorCode(int error, YukonUserContext userContext) {
+    public DeviceErrorDescription translateErrorCode(int errorCode, YukonUserContext userContext) {
+        return translateErrorCode(DeviceError.getErrorByCode(errorCode), userContext);
+    }
+    
+    @Override
+    public DeviceErrorDescription translateErrorCode(DeviceError error, YukonUserContext userContext) {
     	
-    	//check the cache
-    	Map<Integer, DeviceErrorDescription> localeStore = store.get(getThemeKey(userContext.getLocale(), userContext.getThemeName()));
-    	if(localeStore != null){
-	    	if (localeStore.get(error) != null) {
-	    		return localeStore.get(error);
-	    	}
-    	}else{
+        //check the cache
+    	Map<DeviceError, DeviceErrorDescription> localeStore = store.get(getThemeKey(userContext.getLocale(), userContext.getThemeName()));
+    	if(localeStore == null){
 	    	//try resolving the error for the user's locale
 	    	try{
 	    		//the first time we encounter a new Locale, try to cache the errors
 	    		cacheErrorsForLocale(userContext);
 	    		localeStore = store.get(getThemeKey(userContext.getLocale(), userContext.getThemeName()));
-	    		return localeStore.get(error);
 	    	}catch(Exception exception){
 	    		log.info("Unable to load errors for ("+ userContext.getLocale().getDisplayCountry() +"): " + error);
 	    	}
     	}
-
-    	// Clone the defaultTranslation and set the error code
-        return new DeviceErrorDescription(error, defaultTranslation.getCategory(), defaultTranslation.getPorter(), 
+    	DeviceErrorDescription localError = localeStore.get(error);
+    	if(localError != null){
+    	    return localError;
+    	}else{
+    	 // Clone the defaultTranslation and set the error code
+            return new DeviceErrorDescription(error, defaultTranslation.getPorter(),
                 defaultTranslation.getDescription(), defaultTranslation.getTroubleshooting());
+    	}
     }
 
     /**
@@ -93,7 +97,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
     @PostConstruct
     @SuppressWarnings("unchecked")
     public void initialize() throws JDOMException, IOException {
-        Builder<Integer, DeviceErrorDescription> mapBuilder = ImmutableMap.builder();
+        Builder<DeviceError, DeviceErrorDescription> mapBuilder = ImmutableMap.builder();
         Format compactFormat = Format.getCompactFormat();
         compactFormat.setOmitDeclaration(true);
         compactFormat.setOmitEncoding(true);
@@ -105,15 +109,12 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
         List<Element> children = rootElement.getChildren("error");
         for (Element errorEl : children) {
             String errorCodeStr = errorEl.getAttributeValue("code");
-            Integer errorCode = null;
+            DeviceError error = DeviceError.UNKNOWN;
             if (!"*".equals(errorCodeStr)) {
-                errorCode = Integer.parseInt(errorCodeStr);
+                error = DeviceError.getErrorByCode(Integer.parseInt(errorCodeStr));
             }
-            String category = errorEl.getChildTextTrim("category");
-            Validate.notEmpty(category, "Category for error " + errorCodeStr + " must not be blank");
-
             String porter = errorEl.getChildTextTrim("porter");
-           
+
             String description = errorEl.getChildTextTrim("description");
             Validate.notEmpty(description, "Description for error " + errorCodeStr + " must not be blank");
             Element troubleEl = errorEl.getChild("troubleshooting");
@@ -122,12 +123,11 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
                 troubleNodes = troubleEl.getContent();
             }
             String troubleHtml = xmlOut.outputString(troubleNodes).trim();
-            DeviceErrorDescription dded = new DeviceErrorDescription(errorCode, category, porter, 
-                                                                     description, troubleHtml);
-            if (errorCode == null) {
+            DeviceErrorDescription dded = new DeviceErrorDescription(error, porter, description, troubleHtml);
+            if (error == DeviceError.UNKNOWN) {
                 defaultTranslation = dded;
             } else {
-                mapBuilder.put(errorCode, dded);
+                mapBuilder.put(error, dded);
             }
         }
         Validate.notNull(defaultTranslation, "No default translation found");
@@ -146,7 +146,7 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
 
     @Override
     public Iterable<DeviceErrorDescription> getAllErrors(YukonUserContext userContext) {
-        Map<Integer, DeviceErrorDescription> localeStore = store.get(getThemeKey(userContext.getLocale(), userContext.getThemeName()));
+        Map<DeviceError, DeviceErrorDescription> localeStore = store.get(getThemeKey(userContext.getLocale(), userContext.getThemeName()));
         if(localeStore == null) {
             localeStore = cacheErrorsForLocale(userContext);
         }
@@ -154,46 +154,31 @@ public class DeviceErrorTranslatorDaoImpl implements DeviceErrorTranslatorDao {
     	return localeStore.values();
     }
     
-    private Map<Integer, DeviceErrorDescription> cacheErrorsForLocale(YukonUserContext userContext) {
-        final String themeKey = getThemeKey(userContext.getLocale(), userContext.getThemeName());
+    private Map<DeviceError, DeviceErrorDescription> cacheErrorsForLocale(YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         
     	//loop over us entries
-    	Builder<Integer, DeviceErrorDescription> mapBuilder = ImmutableMap.builder();
-    	for(Integer errorCode : store.get(defaultThemeKey).keySet()){
-
-    		try{
-	    		//resolve each message
-	    		MessageSourceResolvable categoryResolvable = new YukonMessageSourceResolvable(baseKey + errorCode + ".category");
-	    		MessageSourceResolvable porterResolvable = new YukonMessageSourceResolvable(baseKey + errorCode + ".porter");
-	    		MessageSourceResolvable descriptionResolvable = new YukonMessageSourceResolvable(baseKey + errorCode + ".description");
-	    		MessageSourceResolvable troubleshootingResolvable = new YukonMessageSourceResolvable(baseKey + errorCode + ".troubleshooting");
-	    		
-	    		DeviceErrorDescription dded = new DeviceErrorDescription(errorCode, 
-	    				messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(categoryResolvable), 
-	    				messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(porterResolvable), 
-	    				messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(descriptionResolvable), 
-	    				messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(troubleshootingResolvable));
-	    		
-	    		mapBuilder.put(errorCode, dded);
+    	Builder<DeviceError, DeviceErrorDescription> mapBuilder = ImmutableMap.builder();
+    	for(DeviceError error : store.get(defaultThemeKey).keySet()){
+    		try{	    		
+                DeviceErrorDescription dded = new DeviceErrorDescription(error, accessor);
+	    		mapBuilder.put(error, dded);
     		}catch(NoSuchMessageException e){
 
     			//if not found, clone the US message as a fallback
     			log.info("Device error code descriptions for error code: " 
-	    			+ errorCode + " and Locale: " 
+	    			+ error.getCode() + " and Locale: " 
 	    			+ userContext.getLocale().getDisplayCountry());
     			
-    			DeviceErrorDescription fallback = store.get(defaultThemeKey).get(errorCode);
-    			DeviceErrorDescription dded = new DeviceErrorDescription(errorCode, 
-    					fallback.getCategory(), 
-    					fallback.getPorter(), 
-    					fallback.getDescription(), 
-    					fallback.getTroubleshooting());
+    			DeviceErrorDescription fallback = store.get(defaultThemeKey).get(error);
+    			DeviceErrorDescription dded = new DeviceErrorDescription(error, fallback.getPorter(), fallback.getDescription(), fallback.getTroubleshooting());
     			
-    			mapBuilder.put(errorCode, dded);
+    			mapBuilder.put(error, dded);
     		}
     	}
     	
-    	Map<Integer, DeviceErrorDescription> localeStore = mapBuilder.build();
+    	Map<DeviceError, DeviceErrorDescription> localeStore = mapBuilder.build();
+    	final String themeKey = getThemeKey(userContext.getLocale(), userContext.getThemeName());
         store.put(themeKey, localeStore);
         log.info("Device error code descriptions loaded ("+ userContext.getLocale().getDisplayCountry() +"): " + store.get(themeKey).size());
         

@@ -1,26 +1,36 @@
 package com.cannontech.amr.errors.model;
 
-public class DeviceErrorDescription {
-    private Integer errorCode;
-    private String category;
-    private String porter;
-    private String description;
-    private String troubleshooting;
+import com.cannontech.amr.errors.dao.DeviceError;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 
-    public DeviceErrorDescription(Integer errorCode, String category, String porter, String description,
-            String troubleshooting) {
-        this.errorCode = errorCode;
-        this.category = category;
+public class DeviceErrorDescription {
+    private final DeviceError error;
+    private final String porter;
+    private final String description;
+    private final String troubleshooting;
+    private final String category;
+
+    public DeviceErrorDescription(DeviceError error, String porter, String description, String troubleshooting) {
+        this.error = error;
         this.porter = porter;
         this.description = description;
         this.troubleshooting = troubleshooting;
+        this.category = error.getCategory().getDefaultCategory();
+    }
+
+    public DeviceErrorDescription(DeviceError error, MessageSourceAccessor accessor) {
+        this.error = error;
+        this.porter = accessor.getMessage(error.getPorterResolvable());
+        this.description = accessor.getMessage(error.getDescriptionResolvable());
+        this.troubleshooting = accessor.getMessage(error.getTroubleshootingResolvable());
+        this.category = accessor.getMessage(error.getCategory());
     }
 
     /**
      * Get error code or null if this is the default.
      */
     public Integer getErrorCode() {
-        return errorCode;
+        return getError().getCode();
     }
 
     /**
@@ -37,25 +47,29 @@ public class DeviceErrorDescription {
         return troubleshooting;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
     public String getPorter() {
         return porter;
     }
 
+    public DeviceError getError() {
+        return error;
+    }
     @Override
     public String toString() {
-        return description + "(" + porter + " -- " + errorCode + ")";
+        return description + "(" + porter + " -- " + getError() + ")";
     }
 
+    
     @Override
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + ((errorCode == null) ? 0 : errorCode.hashCode());
+        result = PRIME * result + ((getError() == null) ? 0 : getError().hashCode());
         return result;
+    }
+    
+    public String getCategory() {
+        return category;
     }
 
     @Override
@@ -67,10 +81,10 @@ public class DeviceErrorDescription {
         if (getClass() != obj.getClass())
             return false;
         final DeviceErrorDescription other = (DeviceErrorDescription) obj;
-        if (errorCode == null) {
-            if (other.errorCode != null)
+        if (getError() == null) {
+            if (other.getError() != null)
                 return false;
-        } else if (!errorCode.equals(other.errorCode))
+        } else if (!getError().equals(other.getError()))
             return false;
         return true;
     }

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
@@ -45,8 +46,6 @@ public class AssetAvailabilityPingServiceImpl implements AssetAvailabilityPingSe
     private static final Logger log = YukonLogManager.getLogger(AssetAvailabilityPingServiceImpl.class);
     
     private final Map<Integer, String> paoIdToResultIdMap = Maps.newConcurrentMap();
-    
-    private final static int INVALID_ACTION_ERROR_CODE = 2000;
     
     @Override
     public void readDevicesInDrGrouping(PaoIdentifier paoIdentifier, LiteYukonUser user) {
@@ -107,7 +106,7 @@ public class AssetAvailabilityPingServiceImpl implements AssetAvailabilityPingSe
     }
     
     private SpecificDeviceErrorDescription getBadRelayError(int relay) {
-        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(INVALID_ACTION_ERROR_CODE);
+        DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.INVALID_ACTION);
         MessageSourceResolvable detail =
             new YukonMessageSourceResolvable("yukon.web.modules.dr.assetAvailability.pingError.badRelay", relay);
         return new SpecificDeviceErrorDescription(errorDescription, detail, detail);

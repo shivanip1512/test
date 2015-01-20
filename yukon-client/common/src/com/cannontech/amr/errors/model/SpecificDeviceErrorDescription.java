@@ -3,6 +3,7 @@ package com.cannontech.amr.errors.model;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public final class SpecificDeviceErrorDescription {
@@ -99,6 +100,10 @@ public final class SpecificDeviceErrorDescription {
 
     public MessageSourceResolvable getDetail() {
         return detail;
+    }
+
+    public DeviceError getDeviceError() {
+        return errorDescription.getError();
     }
 
     @Override

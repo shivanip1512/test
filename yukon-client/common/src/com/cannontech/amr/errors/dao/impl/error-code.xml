@@ -984,24 +984,24 @@
         </troubleshooting>
     </error>
     <error code="281">
-        <category>Demand Reset</category>
+        <category>Yukon System</category>
         <porter></porter>
-        <description>Demand Reset point is missing.</description>
+        <description>Point is missing.</description>
         <troubleshooting>
-            Add demand reset point.
+            Add missing point.
         </troubleshooting>
     </error>
     <error code="282">
-        <category>Demand Reset</category>
+        <category>Yukon System</category>
         <porter></porter>
-        <description>Demand reset failed, the reset timestamp was not received.</description>
+        <description>The action failed, the timestamp was not received.</description>
         <troubleshooting>
         </troubleshooting>
     </error>
      <error code="283">
-        <category>Demand Reset</category>
+        <category>Yukon System</category>
         <porter></porter>
-        <description>Demand reset failed, the reset timestamp is outside of the expected range.</description>
+        <description>The action failed, the timestamp is outside of the expected range.</description>
         <troubleshooting>
         </troubleshooting>
     </error>

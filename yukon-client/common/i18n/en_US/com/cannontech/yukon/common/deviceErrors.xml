@@ -2,39 +2,43 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-	<entry key="yukon.web.errorCodes_3.porter">Bad Message Type</entry>
-	<entry key="yukon.web.errorCodes_3.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_3.description">The master station has received an unexpected response
+	<entry key="yukon.web.error.category.BULK_COMMUNICATIONS">Bulk Communications</entry>
+	<entry key="yukon.web.error.category.DATA_VALIDATION">Data Validation</entry>
+	<entry key="yukon.web.error.category.POWERLINE_CARRIER">Powerline Carrier</entry>
+	<entry key="yukon.web.error.category.YUKON_SYSTEM">Yukon System</entry>
+	<entry key="yukon.web.error.category.TRANSMITTER">Transmitter</entry>
+	<entry key="yukon.web.error.category.NETWORK_MANAGER">Network Manager</entry>
+	<entry key="yukon.web.error.category.NA">N/A</entry>
+	
+	<entry key="yukon.web.error.code.3.porter">Bad Message Type</entry>
+	<entry key="yukon.web.error.code.3.description">The master station has received an unexpected response
 		from the CCU.</entry>
-	<entry key="yukon.web.errorCodes_3.troubleshooting"><![CDATA[This is a bulk communications error associated with a logic problem internal to the CCU
+	<entry key="yukon.web.error.code.3.troubleshooting"><![CDATA[This is a bulk communications error associated with a logic problem internal to the CCU
             or possibly an echo on the communication channel.
             <ul>
                 <li>Attempt the command again</li>
                 <li>From Commander, remotely reset the CCU and attempt the command again</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_4.porter">D Word Wrong length</entry>
-	<entry key="yukon.web.errorCodes_4.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_4.description">The master station has received an invalid response
+	<entry key="yukon.web.error.code.4.porter">D Word Wrong length</entry>
+	<entry key="yukon.web.error.code.4.description">The master station has received an invalid response
 		from the targeted device.</entry>
-	<entry key="yukon.web.errorCodes_4.troubleshooting"><![CDATA[This is a bulk communications error associated with the number of data packets received
+	<entry key="yukon.web.error.code.4.troubleshooting"><![CDATA[This is a bulk communications error associated with the number of data packets received
             for a single communication. This error code is returned when the CCU receives too many or too few packets based on the request.
             <ul>
                 <li>Attempt the command again</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_9.porter">Parameter Out of Range</entry>
-	<entry key="yukon.web.errorCodes_9.category">Data Validation</entry>
-	<entry key="yukon.web.errorCodes_9.description">A parameter supplied in the command string is outside
+	<entry key="yukon.web.error.code.9.porter">Parameter Out of Range</entry>
+	<entry key="yukon.web.error.code.9.description">A parameter supplied in the command string is outside
 		of its valid range.</entry>
-	<entry key="yukon.web.errorCodes_9.troubleshooting"><![CDATA[A parameter supplied in the command string is outside of its valid range.
+	<entry key="yukon.web.error.code.9.troubleshooting"><![CDATA[A parameter supplied in the command string is outside of its valid range.
             Correct the invalid parameter and attempt the command again.]]></entry>
 
-	<entry key="yukon.web.errorCodes_15.porter">Parity Error</entry>
-	<entry key="yukon.web.errorCodes_15.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_15.description">Checksum verification failed on communication between
+	<entry key="yukon.web.error.code.15.porter">Parity Error</entry>
+	<entry key="yukon.web.error.code.15.description">Checksum verification failed on communication between
 		the master station and the targeted device.</entry>
-	<entry key="yukon.web.errorCodes_15.troubleshooting"><![CDATA[This is a bulk communications error typically associated with systems using direct radio
+	<entry key="yukon.web.error.code.15.troubleshooting"><![CDATA[This is a bulk communications error typically associated with systems using direct radio
             communications between the master station and a targeted device such as a CCU, RTU or
             dial up meter.
             Communication timing setup usually plays a role in troubleshooting this problem.
@@ -64,11 +68,10 @@
                 </ul>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_16.porter">Bad CCU Specification</entry>
-	<entry key="yukon.web.errorCodes_16.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_16.description">The CCU address in the response does not match the
+	<entry key="yukon.web.error.code.16.porter">Bad CCU Specification</entry>
+	<entry key="yukon.web.error.code.16.description">The CCU address in the response does not match the
 		address of the targeted CCU.</entry>
-	<entry key="yukon.web.errorCodes_16.troubleshooting"><![CDATA[This is a bulk communications error that is commonly due to timing or buffering problems
+	<entry key="yukon.web.error.code.16.troubleshooting"><![CDATA[This is a bulk communications error that is commonly due to timing or buffering problems
             with communication equipment such as portservers or radios.
             <ul>
                 <li>Attempt the command again</li>
@@ -85,11 +88,10 @@
                 </ol>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_17.porter">Word 1 NACK</entry>
-	<entry key="yukon.web.errorCodes_17.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_17.description">The CCU received a partial response from the targeted
+	<entry key="yukon.web.error.code.17.porter">Word 1 NACK</entry>
+	<entry key="yukon.web.error.code.17.description">The CCU received a partial response from the targeted
 		device.</entry>
-	<entry key="yukon.web.errorCodes_17.troubleshooting"><![CDATA[This is a powerline carrier error typically associated with marginal or corrupted signal
+	<entry key="yukon.web.error.code.17.troubleshooting"><![CDATA[This is a powerline carrier error typically associated with marginal or corrupted signal
             received at the CCU.
             <ul>
                 <li>Attempt the command again</li>
@@ -105,11 +107,10 @@
                     original device</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_18.porter">Word 2 NACK</entry>
-	<entry key="yukon.web.errorCodes_18.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_18.description">The CCU received a partial response from the targeted
+	<entry key="yukon.web.error.code.18.porter">Word 2 NACK</entry>
+	<entry key="yukon.web.error.code.18.description">The CCU received a partial response from the targeted
 		device.</entry>
-	<entry key="yukon.web.errorCodes_18.troubleshooting"><![CDATA[This is a powerline carrier error typically associated with marginal or corrupted signal
+	<entry key="yukon.web.error.code.18.troubleshooting"><![CDATA[This is a powerline carrier error typically associated with marginal or corrupted signal
             received at the CCU.
             <ul>
                 <li>Attempt the command again</li>
@@ -125,11 +126,10 @@
                     original device</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_19.porter">Word 3 NACK</entry>
-	<entry key="yukon.web.errorCodes_19.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_19.description">The CCU received a partial response from the targeted
+	<entry key="yukon.web.error.code.19.porter">Word 3 NACK</entry>
+	<entry key="yukon.web.error.code.19.description">The CCU received a partial response from the targeted
 		device.</entry>
-	<entry key="yukon.web.errorCodes_19.troubleshooting"><![CDATA[This is a powerline carrier error typically associated with marginal or corrupted signal
+	<entry key="yukon.web.error.code.19.troubleshooting"><![CDATA[This is a powerline carrier error typically associated with marginal or corrupted signal
             received at the CCU.
             <ul>
                 <li>Attempt the command again</li>
@@ -145,11 +145,10 @@
                     original device</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_20.porter">Word 1 NACK Padded</entry>
-	<entry key="yukon.web.errorCodes_20.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_20.description">The CCU did not receive a response from the targeted
+	<entry key="yukon.web.error.code.20.porter">Word 1 NACK Padded</entry>
+	<entry key="yukon.web.error.code.20.description">The CCU did not receive a response from the targeted
 		device.</entry>
-	<entry key="yukon.web.errorCodes_20.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated with marginal signal or a
+	<entry key="yukon.web.error.code.20.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated with marginal signal or a
             request to a non existent device.
             <ul>
                 <li>Attempt the command again</li>
@@ -170,11 +169,10 @@
                     </ul>
                 </ul>
             </ul>]]></entry>
-	<entry key="yukon.web.errorCodes_21.porter">Word 2 NACK Padded</entry>
-	<entry key="yukon.web.errorCodes_21.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_21.description">The CCU did not receive a response from the targeted
+	<entry key="yukon.web.error.code.21.porter">Word 2 NACK Padded</entry>
+	<entry key="yukon.web.error.code.21.description">The CCU did not receive a response from the targeted
 		device.</entry>
-	<entry key="yukon.web.errorCodes_21.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated with marginal signal or a
+	<entry key="yukon.web.error.code.21.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated with marginal signal or a
             request to a non existent device.
             <ul>
                 <li>Attempt the command again</li>
@@ -196,11 +194,10 @@
                 </ul>
 
             </ul>]]></entry>
-	<entry key="yukon.web.errorCodes_22.porter">Word 3 NACK Padded</entry>
-	<entry key="yukon.web.errorCodes_22.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_22.description">The CCU did not receive a response from the targeted
+	<entry key="yukon.web.error.code.22.porter">Word 3 NACK Padded</entry>
+	<entry key="yukon.web.error.code.22.description">The CCU did not receive a response from the targeted
 		device.</entry>
-	<entry key="yukon.web.errorCodes_22.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated with marginal signal or a
+	<entry key="yukon.web.error.code.22.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated with marginal signal or a
             request to a non existent device.
             <ul>
                 <li>Attempt the command again</li>
@@ -222,11 +219,10 @@
                 </ul>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_31.porter">Timeout Reading from Port</entry>
-	<entry key="yukon.web.errorCodes_31.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_31.description">The master station did not receive a response from the
+	<entry key="yukon.web.error.code.31.porter">Timeout Reading from Port</entry>
+	<entry key="yukon.web.error.code.31.description">The master station did not receive a response from the
 		targeted device.</entry>
-	<entry key="yukon.web.errorCodes_31.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with a setup problem or
+	<entry key="yukon.web.error.code.31.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with a setup problem or
             possibly caused by a communications equipment failure
             <ul>
                 <li>Attempt the command again</li>
@@ -251,11 +247,10 @@
                 </ul>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_32.porter">Sequence Reject Frame Received... Sequencing Adjusted</entry>
-	<entry key="yukon.web.errorCodes_32.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_32.description">The response's sequence number does not match what was
+	<entry key="yukon.web.error.code.32.porter">Sequence Reject Frame Received... Sequencing Adjusted</entry>
+	<entry key="yukon.web.error.code.32.description">The response's sequence number does not match what was
 		expected by the master station.</entry>
-	<entry key="yukon.web.errorCodes_32.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with invalid timing
+	<entry key="yukon.web.error.code.32.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with invalid timing
             parameter's set at the master station. Another possible cause is a field visit to the CCU
             resulting in local communications being used. Upon setting the communications back to internal, the master
             station may receive this error on the first request due internal bookkeeping mismatches.
@@ -275,11 +270,10 @@
                 </ol>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_33.porter">Framing Error</entry>
-	<entry key="yukon.web.errorCodes_33.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_33.description">The master station received an invalid header in the
+	<entry key="yukon.web.error.code.33.porter">Framing Error</entry>
+	<entry key="yukon.web.error.code.33.description">The master station received an invalid header in the
 		response from the targeted device.</entry>
-	<entry key="yukon.web.errorCodes_33.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with invalid timing
+	<entry key="yukon.web.error.code.33.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with invalid timing
             parameters set at the master station. This particular code is returned when the first
             section
             of the response from the targeted device does not match what the master station was expecting.
@@ -298,11 +292,10 @@
                 </ol>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_34.porter">Bad CRC on Message</entry>
-	<entry key="yukon.web.errorCodes_34.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_34.description">Checksum verification failed on response from the
+	<entry key="yukon.web.error.code.34.porter">Bad CRC on Message</entry>
+	<entry key="yukon.web.error.code.34.description">Checksum verification failed on response from the
 		targeted device.</entry>
-	<entry key="yukon.web.errorCodes_34.troubleshooting"><![CDATA[This is a bulk communications error caused by an incomplete or corrupted response.
+	<entry key="yukon.web.error.code.34.troubleshooting"><![CDATA[This is a bulk communications error caused by an incomplete or corrupted response.
             <ul>
                 <li>Attempt the command again</li>
                 <li>Adjust the timings of the communication channel (Steps to find the settings are
@@ -318,19 +311,17 @@
                 </ol>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_36.porter">Bad HDLC UA Frame</entry>
-	<entry key="yukon.web.errorCodes_36.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_36.description">The CCU did not respond correctly to a reset request.</entry>
-	<entry key="yukon.web.errorCodes_36.troubleshooting"><![CDATA[This is a powerline carrier error associated with a logic problem internal to the CCU.
+	<entry key="yukon.web.error.code.36.porter">Bad HDLC UA Frame</entry>
+	<entry key="yukon.web.error.code.36.description">The CCU did not respond correctly to a reset request.</entry>
+	<entry key="yukon.web.error.code.36.troubleshooting"><![CDATA[This is a powerline carrier error associated with a logic problem internal to the CCU.
             <ul>
                 <li>Attempt the command again</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_46.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_46.porter">REQACK Flag set-- Frame Unexecutable</entry>
-	<entry key="yukon.web.errorCodes_46.description">The CCU has rejected a request from the master
+	<entry key="yukon.web.error.code.6.porter">REQACK Flag set-- Frame Unexecutable</entry>
+	<entry key="yukon.web.error.code.6.description">The CCU has rejected a request from the master
 		station.</entry>
-	<entry key="yukon.web.errorCodes_46.troubleshooting"><![CDATA[This is a bulk communications error often caused by a mismatch of bookkeeping between
+	<entry key="yukon.web.error.code.6.troubleshooting"><![CDATA[This is a bulk communications error often caused by a mismatch of bookkeeping between
             the master station and the CCU. Another possibility is a logic problem internal to
             the CCU.
             <ul>
@@ -340,18 +331,16 @@
                     Replace the logic card or contact Technical Support.</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_54.porter">Device ID not found</entry>
-	<entry key="yukon.web.errorCodes_54.category">Yukon System</entry>
-	<entry key="yukon.web.errorCodes_54.description">The device ID requested does not exist or is not
+	<entry key="yukon.web.error.code.54.porter">Device ID not found</entry>
+	<entry key="yukon.web.error.code.54.description">The device ID requested does not exist or is not
 		loaded yet.</entry>
-	<entry key="yukon.web.errorCodes_54.troubleshooting"><![CDATA[The devices may still be in process of being loaded by the servers, wait a few minutes
+	<entry key="yukon.web.error.code.54.troubleshooting"><![CDATA[The devices may still be in process of being loaded by the servers, wait a few minutes
             and attempt the command again.]]></entry>
 
-	<entry key="yukon.web.errorCodes_57.porter">E-Word Received in Returned Message</entry>
-	<entry key="yukon.web.errorCodes_57.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_57.description">The repeater did not receive a response from the end
+	<entry key="yukon.web.error.code.57.porter">E-Word Received in Returned Message</entry>
+	<entry key="yukon.web.error.code.57.description">The repeater did not receive a response from the end
 		device.</entry>
-	<entry key="yukon.web.errorCodes_57.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated with marginal signal or a
+	<entry key="yukon.web.error.code.57.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated with marginal signal or a
             request to a non existent device.
             <ul>
                 <li>Attempt the command again</li>
@@ -373,11 +362,10 @@
                 </ul>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_65.porter">No DCD on Return Message</entry>
-	<entry key="yukon.web.errorCodes_65.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_65.description">The master station timed out while waiting for carrier
+	<entry key="yukon.web.error.code.65.porter">No DCD on Return Message</entry>
+	<entry key="yukon.web.error.code.65.description">The master station timed out while waiting for carrier
 		detect on the communications channel.</entry>
-	<entry key="yukon.web.errorCodes_65.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with equipment failure
+	<entry key="yukon.web.error.code.65.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with equipment failure
             or improperly configured communication channels
             <ul>
                 <li>Attempt the command again</li>
@@ -402,11 +390,10 @@
                     switched to external</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_67.porter">Error Reading from Port</entry>
-	<entry key="yukon.web.errorCodes_67.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_67.description">The master station was unable to read from the
+	<entry key="yukon.web.error.code.67.porter">Error Reading from Port</entry>
+	<entry key="yukon.web.error.code.67.description">The master station was unable to read from the
 		communications channel.</entry>
-	<entry key="yukon.web.errorCodes_67.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with the inability to
+	<entry key="yukon.web.error.code.67.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with the inability to
             connect to or retrieve data from the communications channel. Built in methods allow the
             system to attempt to recover from this code automatically
             <ul>
@@ -415,11 +402,10 @@
                     containing the physical communication ports</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_68.porter">Error Writing to Port</entry>
-	<entry key="yukon.web.errorCodes_68.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_68.description">The master station was unable to write to the
+	<entry key="yukon.web.error.code.68.porter">Error Writing to Port</entry>
+	<entry key="yukon.web.error.code.68.description">The master station was unable to write to the
 		communications channel.</entry>
-	<entry key="yukon.web.errorCodes_68.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with the inability to
+	<entry key="yukon.web.error.code.68.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with the inability to
             connect to or write data to the communications channel. Built in methods allow the
             system to attempt to recover from this code automatically
             <ul>
@@ -428,11 +414,10 @@
                     containing the physical communication ports</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_72.porter">DLC Read Timeout on CCU Queue Entry</entry>
-	<entry key="yukon.web.errorCodes_72.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_72.description">The CCU did not receive a response from the targeted
+	<entry key="yukon.web.error.code.72.porter">DLC Read Timeout on CCU Queue Entry</entry>
+	<entry key="yukon.web.error.code.72.description">The CCU did not receive a response from the targeted
 		device on a queued request.</entry>
-	<entry key="yukon.web.errorCodes_72.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated with marginal signal or a
+	<entry key="yukon.web.error.code.72.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated with marginal signal or a
             request to a non existent device.
             <ul>
                 <li>Attempt the command again</li>
@@ -454,11 +439,10 @@
                 </ul>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_74.porter">Route Failed on CCU Queue Entry</entry>
-	<entry key="yukon.web.errorCodes_74.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_74.description">The CCU received a partial response from the targeted
+	<entry key="yukon.web.error.code.74.porter">Route Failed on CCU Queue Entry</entry>
+	<entry key="yukon.web.error.code.74.description">The CCU received a partial response from the targeted
 		device on a queued request.</entry>
-	<entry key="yukon.web.errorCodes_74.troubleshooting"><![CDATA[This is a powerline carrier error typically associated with marginal or corrupted signal
+	<entry key="yukon.web.error.code.74.troubleshooting"><![CDATA[This is a powerline carrier error typically associated with marginal or corrupted signal
             received at the CCU.
             <ul>
                 <li>Attempt the command again</li>
@@ -474,46 +458,41 @@
                     original device</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_83.porter">Operation Attempted on Inhibited Port</entry>
-	<entry key="yukon.web.errorCodes_83.category">Yukon System</entry>
-	<entry key="yukon.web.errorCodes_83.description">The targeted port is disabled or inhibited in the
+	<entry key="yukon.web.error.code.83.porter">Operation Attempted on Inhibited Port</entry>
+	<entry key="yukon.web.error.code.83.description">The targeted port is disabled or inhibited in the
 		Yukon System.</entry>
-	<entry key="yukon.web.errorCodes_83.troubleshooting">This is a Yukon system message, the port is flagged as
+	<entry key="yukon.web.error.code.83.troubleshooting">This is a Yukon system message, the port is flagged as
 		disabled in the Device Setup.</entry>
 
-	<entry key="yukon.web.errorCodes_85.porter">Operation Attempted on Inhibited Device</entry>
-	<entry key="yukon.web.errorCodes_85.category">Yukon System</entry>
-	<entry key="yukon.web.errorCodes_85.description">The targeted device is disabled or inhibited in the
+	<entry key="yukon.web.error.code.85.porter">Operation Attempted on Inhibited Device</entry>
+	<entry key="yukon.web.error.code.85.description">The targeted device is disabled or inhibited in the
 		Yukon System.</entry>
-	<entry key="yukon.web.errorCodes_85.troubleshooting">This is a Yukon system message, the device is flagged
+	<entry key="yukon.web.error.code.85.troubleshooting">This is a Yukon system message, the device is flagged
 		as disabled in the Device Setup.</entry>
 
-	<entry key="yukon.web.errorCodes_87.porter">Error Dialing Up Remote</entry>
-	<entry key="yukon.web.errorCodes_87.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_87.description">The master station was unable to communicate with the
+	<entry key="yukon.web.error.code.87.porter">Error Dialing Up Remote</entry>
+	<entry key="yukon.web.error.code.87.description">The master station was unable to communicate with the
 		targeted device due to communication failure.</entry>
-	<entry key="yukon.web.errorCodes_87.troubleshooting"><![CDATA[This is a bulk communications error typically associated with a failure to initialize
+	<entry key="yukon.web.error.code.87.troubleshooting"><![CDATA[This is a bulk communications error typically associated with a failure to initialize
             the modem for dial-up.
             <ul>
                 <li>Attempt the command again</li>
                 <li>Verify the modem is functioning properly</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_88.porter">Wrong Unique Address Received</entry>
-	<entry key="yukon.web.errorCodes_88.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_88.description">The CCU heard a response from a device other than the
+	<entry key="yukon.web.error.code.88.porter">Wrong Unique Address Received</entry>
+	<entry key="yukon.web.error.code.88.description">The CCU heard a response from a device other than the
 		one it was targeting.</entry>
-	<entry key="yukon.web.errorCodes_88.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated either crosstalk or is
+	<entry key="yukon.web.error.code.88.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated either crosstalk or is
             preceded by a bulk communication error such as a timeout.
             <ul>
                 <li>Attempt the command again</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_89.porter">Error Connecting to Terminal Server</entry>
-	<entry key="yukon.web.errorCodes_89.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_89.description">The master station was unable to connect to the
+	<entry key="yukon.web.error.code.89.porter">Error Connecting to Terminal Server</entry>
+	<entry key="yukon.web.error.code.89.description">The master station was unable to connect to the
 		communications channel.</entry>
-	<entry key="yukon.web.errorCodes_89.troubleshooting"><![CDATA[This is a bulk communications error that is associated with the inability to connect to
+	<entry key="yukon.web.error.code.89.troubleshooting"><![CDATA[This is a bulk communications error that is associated with the inability to connect to
             or initialize the communications channel. Built in methods allow the
             system to attempt to recover from this code automatically
             <ul>
@@ -522,11 +501,10 @@
                     communication ports</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_90.porter">Error Writing to Terminal Server</entry>
-	<entry key="yukon.web.errorCodes_90.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_90.description">The master station was unable to write to the
+	<entry key="yukon.web.error.code.90.porter">Error Writing to Terminal Server</entry>
+	<entry key="yukon.web.error.code.90.description">The master station was unable to write to the
 		communications channel.</entry>
-	<entry key="yukon.web.errorCodes_90.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with the inability to
+	<entry key="yukon.web.error.code.90.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with the inability to
             connect to or send data to the communications channel. Built in methods allow the
             system to attempt to recover from this code automatically
             <ul>
@@ -535,11 +513,10 @@
                     communication ports</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_91.porter">Error Reading from Terminal Server</entry>
-	<entry key="yukon.web.errorCodes_91.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_91.description">The master station was unable to read from the
+	<entry key="yukon.web.error.code.91.porter">Error Reading from Terminal Server</entry>
+	<entry key="yukon.web.error.code.91.description">The master station was unable to read from the
 		communications channel.</entry>
-	<entry key="yukon.web.errorCodes_91.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with the inability to
+	<entry key="yukon.web.error.code.91.troubleshooting"><![CDATA[This is a bulk communications error that is typically associated with the inability to
             connect to retrieve data from the communications channel. Built in methods allow the
             system to attempt to recover from this code automatically
             <ul>
@@ -548,21 +525,19 @@
                     communication ports</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_92.porter">Address Does Not Match Expected Value</entry>
-	<entry key="yukon.web.errorCodes_92.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_92.description">The CCU heard a response from a device other than the
+	<entry key="yukon.web.error.code.92.porter">Address Does Not Match Expected Value</entry>
+	<entry key="yukon.web.error.code.92.description">The CCU heard a response from a device other than the
 		one it was targeting.</entry>
-	<entry key="yukon.web.errorCodes_92.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated either crosstalk or is
+	<entry key="yukon.web.error.code.92.troubleshooting"><![CDATA[This is a powerline carrier error that is typically associated either crosstalk or is
             preceded by a bulk communication error such as a timeout.
             <ul>
                 <li>Attempt the command again</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_93.porter">Bad Data Buffer for IED</entry>
-	<entry key="yukon.web.errorCodes_93.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_93.description">The powerline carrier device was unable to communicate
+	<entry key="yukon.web.error.code.93.porter">Bad Data Buffer for IED</entry>
+	<entry key="yukon.web.error.code.93.description">The powerline carrier device was unable to communicate
 		to the connected IED.</entry>
-	<entry key="yukon.web.errorCodes_93.troubleshooting"><![CDATA[This is a powerline carrier error that is associated with using a powerline carrier
+	<entry key="yukon.web.error.code.93.troubleshooting"><![CDATA[This is a powerline carrier error that is associated with using a powerline carrier
             device to query data from another intelligent device on the line. The error is
             returned when the carrier device is unable to communicate with the polyphase meter or other end device.
             <ul>
@@ -571,11 +546,10 @@
                     IED</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_94.porter">Missing Required Configuration Entry</entry>
-	<entry key="yukon.web.errorCodes_94.category">Yukon System</entry>
-	<entry key="yukon.web.errorCodes_94.description">The device was unable to complete the requested
+	<entry key="yukon.web.error.code.94.porter">Missing Required Configuration Entry</entry>
+	<entry key="yukon.web.error.code.94.description">The device was unable to complete the requested
 		command.</entry>
-	<entry key="yukon.web.errorCodes_94.troubleshooting"><![CDATA[This is a Yukon system error that is associated with using MCT device configuration
+	<entry key="yukon.web.error.code.94.troubleshooting"><![CDATA[This is a Yukon system error that is associated with using MCT device configuration
             information. The error is
             returned when the MCT device does not have configuration information stored already in the database. An
             attempt
@@ -586,11 +560,10 @@
                     IED</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_98.porter">Bad Nexus Specification</entry>
-	<entry key="yukon.web.errorCodes_98.category">Yukon System</entry>
-	<entry key="yukon.web.errorCodes_98.description">A connection to the TCP/IP device could not be
+	<entry key="yukon.web.error.code.98.porter">Bad Nexus Specification</entry>
+	<entry key="yukon.web.error.code.98.description">A connection to the TCP/IP device could not be
 		established or a current connection failed.</entry>
-	<entry key="yukon.web.errorCodes_98.troubleshooting"><![CDATA[<ul>
+	<entry key="yukon.web.error.code.98.troubleshooting"><![CDATA[<ul>
                 <li>Attempt the command again</li>
                 <li>Confirm communication with TCP/IP devices by 'pinging' the IP address of the
                     devices. Check the setup of all devices found unreachable.</li>
@@ -601,11 +574,10 @@
                 <li>Contact third parties to confirm operation of network.</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_99.porter">Error Writing to Port</entry>
-	<entry key="yukon.web.errorCodes_99.category">Yukon System</entry>
-	<entry key="yukon.web.errorCodes_99.description">A connection to the TCP/IP device could not be
+	<entry key="yukon.web.error.code.99.porter">Error Writing to Port</entry>
+	<entry key="yukon.web.error.code.99.description">A connection to the TCP/IP device could not be
 		established or a current connection failed.</entry>
-	<entry key="yukon.web.errorCodes_99.troubleshooting"><![CDATA[<ul>
+	<entry key="yukon.web.error.code.99.troubleshooting"><![CDATA[<ul>
                 <li>Attempt the command again</li>
                 <li>Confirm communication with TCP/IP devices by 'pinging' the IP address of the
                     devices. Check the setup of all devices found unreachable.</li>
@@ -616,11 +588,10 @@
                 <li>Contact third parties to confirm operation of network.</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_100.porter">Bad BCH</entry>
-	<entry key="yukon.web.errorCodes_100.category">Powerline Carrier</entry>
-	<entry key="yukon.web.errorCodes_100.description">Checksum verification failed on the response from the
+	<entry key="yukon.web.error.code.100.porter">Bad BCH</entry>
+	<entry key="yukon.web.error.code.100.description">Checksum verification failed on the response from the
 		end device.</entry>
-	<entry key="yukon.web.errorCodes_100.troubleshooting"><![CDATA[This is a powerline carrier error typically associated with marginal or corrupted signal
+	<entry key="yukon.web.error.code.100.troubleshooting"><![CDATA[This is a powerline carrier error typically associated with marginal or corrupted signal
             received at the CCU.
             <ul>
                 <li>Attempt the command again</li>
@@ -636,23 +607,21 @@
                     (signal strength) at the substation</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_202.porter">NoMethod or invalid command.</entry>
-	<entry key="yukon.web.errorCodes_202.category">Yukon System</entry>
-	<entry key="yukon.web.errorCodes_202.description">The command is incorrect or not supported by this
+	<entry key="yukon.web.error.code.202.porter">NoMethod or invalid command.</entry>
+	<entry key="yukon.web.error.code.202.description">The command is incorrect or not supported by this
 		device type.</entry>
-	<entry key="yukon.web.errorCodes_202.troubleshooting"><![CDATA[<ul>
+	<entry key="yukon.web.error.code.202.troubleshooting"><![CDATA[<ul>
                 <li>Verify the command string syntax is valid.</li>
                 <li>The firmware for this device may not support this operation.</li>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_261.porter">The freeze check bit in the frozen reading does not
+	<entry key="yukon.web.error.code.261.porter">The freeze check bit in the frozen reading does not
 		match the last recorded freeze
 		sent to the device.</entry>
-	<entry key="yukon.web.errorCodes_261.category">Data Validation</entry>
-	<entry key="yukon.web.errorCodes_261.description">The freeze check bit in the frozen reading does not
+	<entry key="yukon.web.error.code.261.description">The freeze check bit in the frozen reading does not
 		match the last recorded
 		freeze sent to the device.</entry>
-	<entry key="yukon.web.errorCodes_261.troubleshooting"><![CDATA[This is a data validation error associated with the freeze check bit retrieved from the
+	<entry key="yukon.web.error.code.261.troubleshooting"><![CDATA[This is a data validation error associated with the freeze check bit retrieved from the
             device not matching the value expected by the master station.
             <ul>
                 <li>Send the expected freeze command and attempt the command again</li>
@@ -662,13 +631,12 @@
                 </ol>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_262.porter">The frozen peak timestamp is outside of the expected
+	<entry key="yukon.web.error.code.262.porter">The frozen peak timestamp is outside of the expected
 		range.</entry>
-	<entry key="yukon.web.errorCodes_262.category">Data Validation</entry>
-	<entry key="yukon.web.errorCodes_262.description">Verification of the frozen peak's timestamp as
+	<entry key="yukon.web.error.code.262.description">Verification of the frozen peak's timestamp as
 		retrieved from the device has
 		failed.</entry>
-	<entry key="yukon.web.errorCodes_262.troubleshooting"><![CDATA[This is a data validation error associated with the frozen peak demand's timestamp
+	<entry key="yukon.web.error.code.262.troubleshooting"><![CDATA[This is a data validation error associated with the frozen peak demand's timestamp
             falling outside the range expected by the master station.
             This range is defined as greater than the last frozen peak demand reading archived in the database
             and less than the timestamp of the most recent freeze command sent to the device.
@@ -681,149 +649,128 @@
                 </ol>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_263.porter">The freeze counter is less than the expected value.</entry>
-	<entry key="yukon.web.errorCodes_263.category">Data Validation</entry>
-	<entry key="yukon.web.errorCodes_263.description">Verification of the freeze counter has failed. Device
+	<entry key="yukon.web.error.code.263.porter">The freeze counter is less than the expected value.</entry>
+	<entry key="yukon.web.error.code.263.description">Verification of the freeze counter has failed. Device
 		did not receive one or
 		more of the last Freeze commands.</entry>
-	<entry key="yukon.web.errorCodes_263.troubleshooting"><![CDATA[The last recorded freeze count (in Yukon) for the device does not match the current
+	<entry key="yukon.web.error.code.263.troubleshooting"><![CDATA[The last recorded freeze count (in Yukon) for the device does not match the current
             count returned from the device. This indicates a
             freeze command was not received by the device.
             <ul>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_264.porter">Invalid data was received for one or more data points.</entry>
-	<entry key="yukon.web.errorCodes_264.category">Data Validation</entry>
-	<entry key="yukon.web.errorCodes_264.description">Invalid data was received for one or more data points.</entry>
-	<entry key="yukon.web.errorCodes_264.troubleshooting"><![CDATA[<ul>
+	<entry key="yukon.web.error.code.264.porter">Invalid data was received for one or more data points.</entry>
+	<entry key="yukon.web.error.code.264.description">Invalid data was received for one or more data points.</entry>
+	<entry key="yukon.web.error.code.264.troubleshooting"><![CDATA[<ul>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_265.porter">There is no record of the last freeze sent to this
+	<entry key="yukon.web.error.code.265.porter">There is no record of the last freeze sent to this
 		device.</entry>
-	<entry key="yukon.web.errorCodes_265.category">Data Validation</entry>
-	<entry key="yukon.web.errorCodes_265.description">There is no record of the last freeze sent to this
+	<entry key="yukon.web.error.code.265.description">There is no record of the last freeze sent to this
 		device.</entry>
-	<entry key="yukon.web.errorCodes_265.troubleshooting"><![CDATA[<ul>
+	<entry key="yukon.web.error.code.265.troubleshooting"><![CDATA[<ul>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_267.porter">Invalid time returned OR time outside of requested
+	<entry key="yukon.web.error.code.267.porter">Invalid time returned OR time outside of requested
 		range - retry.</entry>
-	<entry key="yukon.web.errorCodes_267.category">Data Validation</entry>
-	<entry key="yukon.web.errorCodes_267.description">The setup validation data returned by the meter did
+	<entry key="yukon.web.error.code.267.description">The setup validation data returned by the meter did
 		not match the expected
 		value. The device did not hear the setup command.</entry>
-	<entry key="yukon.web.errorCodes_267.troubleshooting"><![CDATA[The meter did not receive the setup command for the read. Attempt the read again.
+	<entry key="yukon.web.error.code.267.troubleshooting"><![CDATA[The meter did not receive the setup command for the read. Attempt the read again.
             <ul>
             </ul>]]></entry>
 
-	<entry key="yukon.web.errorCodes_268.porter">Invalid channel returned by daily read.</entry>
-	<entry key="yukon.web.errorCodes_268.category">Data Validation</entry>
-	<entry key="yukon.web.errorCodes_268.description">The setup validation data returned by the meter did
+	<entry key="yukon.web.error.code.268.porter">Invalid channel returned by daily read.</entry>
+	<entry key="yukon.web.error.code.268.description">The setup validation data returned by the meter did
 		not match the expected
 		value. The device did not hear the setup command.</entry>
-	<entry key="yukon.web.errorCodes_268.troubleshooting"><![CDATA[The meter did not receive the setup command for the read. Attempt the read again.]]></entry>
+	<entry key="yukon.web.error.code.268.troubleshooting"><![CDATA[The meter did not receive the setup command for the read. Attempt the read again.]]></entry>
 
-	<entry key="yukon.web.errorCodes_269.porter">Invalid or insufficient device SSPEC revision.</entry>
-	<entry key="yukon.web.errorCodes_269.category">Data Validation</entry>
-	<entry key="yukon.web.errorCodes_269.description">The meter does not support the requested command.</entry>
-	<entry key="yukon.web.errorCodes_269.troubleshooting"><![CDATA[Please verify the SSPEC supports the requested command. Execute 'getconfig model' to
+	<entry key="yukon.web.error.code.269.porter">Invalid or insufficient device SSPEC revision.</entry>
+	<entry key="yukon.web.error.code.269.description">The meter does not support the requested command.</entry>
+	<entry key="yukon.web.error.code.269.troubleshooting"><![CDATA[Please verify the SSPEC supports the requested command. Execute 'getconfig model' to
             retrieve the SSPEC revision.]]></entry>
 
-	<entry key="yukon.web.errorCodes_270.porter">Verification of device SSPEC revision is required.</entry>
-	<entry key="yukon.web.errorCodes_270.category">Data Validation</entry>
-	<entry key="yukon.web.errorCodes_270.description">Verification of device SSPEC revision is required.</entry>
-	<entry key="yukon.web.errorCodes_270.troubleshooting"><![CDATA[Execute 'getconfig model' to verify the device SSPEC revision.]]></entry>
+	<entry key="yukon.web.error.code.270.porter">Verification of device SSPEC revision is required.</entry>
+	<entry key="yukon.web.error.code.270.description">Verification of device SSPEC revision is required.</entry>
+	<entry key="yukon.web.error.code.270.troubleshooting"><![CDATA[Execute 'getconfig model' to verify the device SSPEC revision.]]></entry>
 
-	<entry key="yukon.web.errorCodes_271.porter">Transmitter is busy</entry>
-	<entry key="yukon.web.errorCodes_271.category">Transmitter</entry>
-	<entry key="yukon.web.errorCodes_271.description">The transmitter is busy with another request.</entry>
-	<entry key="yukon.web.errorCodes_271.troubleshooting"><![CDATA[The transmitter is busy with another request, possibly from another system. Attempt the
+	<entry key="yukon.web.error.code.271.porter">Transmitter is busy</entry>
+	<entry key="yukon.web.error.code.271.description">The transmitter is busy with another request.</entry>
+	<entry key="yukon.web.error.code.271.troubleshooting"><![CDATA[The transmitter is busy with another request, possibly from another system. Attempt the
             command again.]]></entry>
 
-	<entry key="yukon.web.errorCodes_273.porter">Port is not initialized</entry>
-	<entry key="yukon.web.errorCodes_273.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_273.description">The request has been received, but may be delayed
+	<entry key="yukon.web.error.code.273.porter">Port is not initialized</entry>
+	<entry key="yukon.web.error.code.273.description">The request has been received, but may be delayed
 		because the port is not initialized. Bulk communication channel may be
 		experiencing connection difficulties.</entry>
-	<entry key="yukon.web.errorCodes_273.troubleshooting"><![CDATA[Verify the bulk communication channel is functioning properly.]]></entry>
+	<entry key="yukon.web.error.code.273.troubleshooting"><![CDATA[Verify the bulk communication channel is functioning properly.]]></entry>
 
-	<entry key="yukon.web.errorCodes_274.porter">Daily read request already in progress</entry>
-	<entry key="yukon.web.errorCodes_274.category">Data Validation</entry>
-	<entry key="yukon.web.errorCodes_274.description">The daily read request is already in progress.</entry>
-	<entry key="yukon.web.errorCodes_274.troubleshooting"><![CDATA[The daily read request is already in progress with another daily read request. Only one
+	<entry key="yukon.web.error.code.274.porter">Daily read request already in progress</entry>
+	<entry key="yukon.web.error.code.274.description">The daily read request is already in progress.</entry>
+	<entry key="yukon.web.error.code.274.troubleshooting"><![CDATA[The daily read request is already in progress with another daily read request. Only one
             daily read can be in progress at a time. Wait for a moment and attempt the command
             again.]]></entry>
 
-	<entry key="yukon.web.errorCodes_275.porter">Device is not connected</entry>
-	<entry key="yukon.web.errorCodes_275.category">Bulk Communications</entry>
-	<entry key="yukon.web.errorCodes_275.description">Yukon is unable to establish a connection with the
+	<entry key="yukon.web.error.code.275.porter">Device is not connected</entry>
+	<entry key="yukon.web.error.code.275.description">Yukon is unable to establish a connection with the
 		device.</entry>
-	<entry key="yukon.web.errorCodes_275.troubleshooting"><![CDATA[Verify the device's connection parameters.]]></entry>
+	<entry key="yukon.web.error.code.275.troubleshooting"><![CDATA[Verify the device's connection parameters.]]></entry>
 
-	<entry key="yukon.web.errorCodes_276.porter">No disconnect configured on this device</entry>
-	<entry key="yukon.web.errorCodes_276.category">Yukon System</entry>
-	<entry key="yukon.web.errorCodes_276.description">The device does not have a disconnect to be operated
+	<entry key="yukon.web.error.code.276.porter">No disconnect configured on this device</entry>
+	<entry key="yukon.web.error.code.276.description">The device does not have a disconnect to be operated
 		on.</entry>
-	<entry key="yukon.web.errorCodes_276.troubleshooting"><![CDATA[Verify there is a disconnect configured in the Device Setup.]]></entry>
+	<entry key="yukon.web.error.code.276.troubleshooting"><![CDATA[Verify there is a disconnect configured in the Device Setup.]]></entry>
 
-	<entry key="yukon.web.errorCodes_277.porter">Transmitter is overheating</entry>
-	<entry key="yukon.web.errorCodes_277.category">Transmitter</entry>
-	<entry key="yukon.web.errorCodes_277.description">The request was denied because the PLC transmitter is
+	<entry key="yukon.web.error.code.277.porter">Transmitter is overheating</entry>
+	<entry key="yukon.web.error.code.277.description">The request was denied because the PLC transmitter is
 		overheating.</entry>
-	<entry key="yukon.web.errorCodes_277.troubleshooting"><![CDATA[
+	<entry key="yukon.web.error.code.277.troubleshooting"><![CDATA[
     		Hardware Protection Mode.]]></entry>
 
-	<entry key="yukon.web.errorCodes_278.porter">Command requires channel configuration to continue.</entry>
-	<entry key="yukon.web.errorCodes_278.category">Yukon System</entry>
-	<entry key="yukon.web.errorCodes_278.description">In order to collect load profile, the system needs to
+	<entry key="yukon.web.error.code.278.porter">Command requires channel configuration to continue.</entry>
+	<entry key="yukon.web.error.code.278.description">In order to collect load profile, the system needs to
 		retrieve the channel
 		setup information.</entry>
-	<entry key="yukon.web.errorCodes_278.troubleshooting"><![CDATA[
+	<entry key="yukon.web.error.code.278.troubleshooting"><![CDATA[
     		The system will attempt to collect the required configuration data automatically. Retry
             the command.
             ]]></entry>
 
-	<entry key="yukon.web.errorCodes_1024.porter">No node in Network Manager.</entry>
-	<entry key="yukon.web.errorCodes_1024.category">Network Manager</entry>
-	<entry key="yukon.web.errorCodes_1024.description">There isn't a node in Network Manager which is
+	<entry key="yukon.web.error.code.1024.porter">No node in Network Manager.</entry>
+	<entry key="yukon.web.error.code.1024.description">There isn't a node in Network Manager which is
 		currently associated with this device in Yukon.</entry>
-	<entry key="yukon.web.errorCodes_1024.troubleshooting">Use Network Manager to see if this meter exists and is
+	<entry key="yukon.web.error.code.1024.troubleshooting">Use Network Manager to see if this meter exists and is
 		known to be paired with any RF nodes.</entry>
 
-	<entry key="yukon.web.errorCodes_1025.porter">There is no RF gateway associated with the RF node.</entry>
-	<entry key="yukon.web.errorCodes_1025.category">Network Manager</entry>
-	<entry key="yukon.web.errorCodes_1025.description">There isn't a gateway in Network Manager which is
+	<entry key="yukon.web.error.code.1025.porter">There is no RF gateway associated with the RF node.</entry>
+	<entry key="yukon.web.error.code.1025.description">There isn't a gateway in Network Manager which is
 		currently associated with this node.</entry>
-	<entry key="yukon.web.errorCodes_1025.troubleshooting">Use Network Manager to see which RF gateway is
+	<entry key="yukon.web.error.code.1025.troubleshooting">Use Network Manager to see which RF gateway is
 		associated with the RF node in question, if any.</entry>
 
-	<entry key="yukon.web.errorCodes_1026.porter">There was an error while processing the request.</entry>
-	<entry key="yukon.web.errorCodes_1026.category">Network Manager</entry>
-	<entry key="yukon.web.errorCodes_1026.description">An unexpected Network Manager error has occurred.</entry>
-	<entry key="yukon.web.errorCodes_1026.troubleshooting">Check Network Manager server logs to identify the root
+	<entry key="yukon.web.error.code.1026.porter">There was an error while processing the request.</entry>
+	<entry key="yukon.web.error.code.1026.description">An unexpected Network Manager error has occurred.</entry>
+	<entry key="yukon.web.error.code.1026.troubleshooting">Check Network Manager server logs to identify the root
 		cause of the failure.</entry>
 
-	<entry key="yukon.web.errorCodes_1027.porter">Timeout</entry>
-	<entry key="yukon.web.errorCodes_1027.category">Network Manager</entry>
-	<entry key="yukon.web.errorCodes_1027.description">Request timed out</entry>
-	<entry key="yukon.web.errorCodes_1027.troubleshooting">Check Yukon Logs for errors</entry>
+	<entry key="yukon.web.error.code.1027.porter">Timeout</entry>
+	<entry key="yukon.web.error.code.1027.description">Request timed out</entry>
+	<entry key="yukon.web.error.code.1027.troubleshooting">Check Yukon Logs for errors</entry>
 
-	<entry key="yukon.web.errorCodes_2000.category">Yukon System</entry>
-	<entry key="yukon.web.errorCodes_2000.porter">Invalid Action for Device Type.</entry>
-	<entry key="yukon.web.errorCodes_2000.description">This action cannot be performed on this device type.</entry>
-	<entry key="yukon.web.errorCodes_2000.troubleshooting"></entry>
+	<entry key="yukon.web.error.code.2000.porter">Invalid Action for Device Type.</entry>
+	<entry key="yukon.web.error.code.2000.description">This action cannot be performed on this device type.</entry>
+	<entry key="yukon.web.error.code.2000.troubleshooting"></entry>
 
-	<entry key="yukon.web.errorCodes_0.category">N/A</entry>
-	<entry key="yukon.web.errorCodes_0.porter">N/A</entry>
-	<entry key="yukon.web.errorCodes_0.description">Successful Read</entry>
-	<entry key="yukon.web.errorCodes_0.troubleshooting">N/A</entry>
+	<entry key="yukon.web.error.code.0.porter">N/A</entry>
+	<entry key="yukon.web.error.code.0.description">Successful Read</entry>
+	<entry key="yukon.web.error.code.0.troubleshooting">N/A</entry>
 
-	<entry key="yukon.web.errorCodes_*.category">N/A</entry>
-	<entry key="yukon.web.errorCodes_*.porter">Troubleshooting tips for this error code are not
+	<entry key="yukon.web.error.code.-1.porter">Troubleshooting tips for this error code are not
 		available at this time</entry>
-	<entry key="yukon.web.errorCodes_*.description">Troubleshooting tips for this error code are not
+	<entry key="yukon.web.error.code.-1.description">Troubleshooting tips for this error code are not
 		available at this time</entry>
-	<entry key="yukon.web.errorCodes_*.troubleshooting"></entry>
+	<entry key="yukon.web.error.code.-1.troubleshooting"></entry>
 
 
 

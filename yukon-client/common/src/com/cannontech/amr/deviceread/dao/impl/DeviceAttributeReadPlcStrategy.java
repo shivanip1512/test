@@ -22,6 +22,7 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.deviceread.service.MeterReadCommandGeneratorService;
 import com.cannontech.amr.deviceread.service.RetryParameters;
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
@@ -71,8 +72,6 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
     @Autowired private GlobalSettingDao globalSettingDao;
     private ScheduledExecutorService executor = null;
     
-    private final static int TIME_OUT_ERROR_CODE = 227;
-
     private final Set<RetryCallback> retryCallbacksAwaitingCompletion =
         Collections.synchronizedSet(new HashSet<RetryCallback>());
 
@@ -138,7 +137,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
                 @Override
                 public void processingExceptionOccured(String reason) {
                     DeviceErrorDescription errorDescription =
-                        deviceErrorTranslatorDao.translateErrorCode(TIME_OUT_ERROR_CODE);
+                        deviceErrorTranslatorDao.translateErrorCode(DeviceError.TIMEOUT);
                     MessageSourceResolvable summary =
                         YukonMessageSourceResolvable.createSingleCodeWithArguments(
                             "yukon.common.device.attributeRead.plc.exception", reason);
@@ -361,7 +360,7 @@ public class DeviceAttributeReadPlcStrategy implements DeviceAttributeReadStrate
                 }
                 for (SimpleDevice device : timeoutDevices) {
                     commandRequestExecutionResultDao.saveCommandRequestExecutionResult(execution, device.getDeviceId(),
-                        TIME_OUT_ERROR_CODE);
+                        DeviceError.TIMEOUT.getCode());
                 }
                 complete();
             }

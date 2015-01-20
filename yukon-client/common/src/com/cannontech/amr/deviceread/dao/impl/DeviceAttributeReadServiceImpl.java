@@ -19,6 +19,7 @@ import com.cannontech.amr.deviceread.dao.WaitableDeviceAttributeReadCallback;
 import com.cannontech.amr.deviceread.service.DeviceReadResult;
 import com.cannontech.amr.deviceread.service.GroupMeterReadResult;
 import com.cannontech.amr.deviceread.service.RetryParameters;
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
@@ -73,8 +74,6 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
     @Autowired private DeviceAttributeReadPlcStrategy plcStrategy;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     
-    private final static int TIME_OUT_ERROR_CODE = 227;
-    private final static int INVALID_ACTION_ERROR_CODE = 2000;
     
     private final RecentResultsCache<GroupMeterReadResult> resultsCache = new RecentResultsCache<>();
     
@@ -144,7 +143,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 
         for (YukonPao unreadableDevice : unreadableDevices) {
             DeviceErrorDescription errorDescription =
-                deviceErrorTranslatorDao.translateErrorCode(INVALID_ACTION_ERROR_CODE);
+                deviceErrorTranslatorDao.translateErrorCode(DeviceError.INVALID_ACTION);
             MessageSourceResolvable detail =
                 YukonMessageSourceResolvable.createSingleCodeWithArguments(
                     "yukon.common.device.attributeRead.general.noStrategy",
@@ -157,7 +156,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
         for (YukonPao unsupportedDevice : unsupportedDevices) {
             if (!unreadableDevices.contains(unsupportedDevice)) {
                 DeviceErrorDescription errorDescription =
-                    deviceErrorTranslatorDao.translateErrorCode(INVALID_ACTION_ERROR_CODE);
+                    deviceErrorTranslatorDao.translateErrorCode(DeviceError.INVALID_ACTION);
                 MessageSourceResolvable detail =
                     YukonMessageSourceResolvable.createSingleCodeWithArguments(
                         "yukon.common.device.attributeRead.general.noAttribute",
@@ -278,7 +277,7 @@ public class DeviceAttributeReadServiceImpl implements DeviceAttributeReadServic
 		} catch (InterruptedException e) {
 		}
 		if (result.isTimeout()) {
-            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(TIME_OUT_ERROR_CODE);
+            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.TIMEOUT);
             MessageSourceResolvable detail =
                 YukonMessageSourceResolvable.createSingleCode("yukon.common.device.attributeRead.general.timeout");
             SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, detail);

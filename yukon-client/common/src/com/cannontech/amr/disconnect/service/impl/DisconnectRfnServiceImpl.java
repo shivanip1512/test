@@ -15,6 +15,7 @@ import com.cannontech.amr.disconnect.model.DisconnectCommand;
 import com.cannontech.amr.disconnect.model.DisconnectResult;
 import com.cannontech.amr.disconnect.service.DisconnectCallback;
 import com.cannontech.amr.disconnect.service.DisconnectRfnService;
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
@@ -28,7 +29,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.rfn.service.NetworkManagerError;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -127,8 +127,7 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
         @Override
         public void processingExceptionOccured(MessageSourceResolvable message) {
             log.debug("RFN exception (RfnMeterDisconnectCallback)");
-            DeviceErrorDescription errorDescription =
-                deviceErrorTranslatorDao.translateErrorCode(NetworkManagerError.FAILURE.getErrorCode());
+            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE);
             SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, message);
 
             callback.failed(meter, error);
@@ -161,9 +160,8 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
                     YukonMessageSourceResolvable.createSingleCodeWithArguments(
                         "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.confirmError", state);
             }
-            DeviceErrorDescription errorDescription =
-                    deviceErrorTranslatorDao.translateErrorCode(NetworkManagerError.FAILURE.getErrorCode());
-                SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, message);
+            DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE);
+            SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, message);
             int errorCode = 0;
             if (state == null) {
                 callback.failed(meter, error);

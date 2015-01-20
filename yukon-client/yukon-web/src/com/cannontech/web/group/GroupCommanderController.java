@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
@@ -351,8 +352,8 @@ public class GroupCommanderController {
                 .getCallback().getErrors();
         if (!errors.isEmpty()) {
             for (SimpleDevice device : errors.keySet()) {
-                if (device.getDeviceType().getPaoClass() == PaoClass.RFMESH && errors.get(device).getErrorCode() != 2000) {
-                    DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(2000, userContext);
+                if (device.getDeviceType().getPaoClass() == PaoClass.RFMESH && errors.get(device).getDeviceError() != DeviceError.INVALID_ACTION) {
+                    DeviceErrorDescription error = deviceErrorTranslatorDao.translateErrorCode(DeviceError.INVALID_ACTION, userContext);
                     SpecificDeviceErrorDescription deviceError = new SpecificDeviceErrorDescription(error, null);
                     errors.put(device, deviceError);
                 }
