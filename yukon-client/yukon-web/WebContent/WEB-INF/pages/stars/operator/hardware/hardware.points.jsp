@@ -15,7 +15,7 @@
         <%@ include file="/WEB-INF/pages/common/pao/points.table.jsp" %>
     </div>
     <div id="page-buttons" class="dn">
-        <cti:url var="download" value="/common/pao/${paoId}/download"/>
+        <cti:url var="download" value="/common/pao/${deviceId}/download"/>
         <cti:button nameKey="download" href="${download}" icon="icon-page-white-excel"/>
     </div>
 </cti:standardPage>
