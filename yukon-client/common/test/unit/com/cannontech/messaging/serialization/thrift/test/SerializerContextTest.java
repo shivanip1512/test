@@ -19,6 +19,7 @@ public class SerializerContextTest extends ContextAwareTestBase{
     }
     
     @Test
+    @Ignore("YUK-13453")
     public void allSerializersAreUsed() {        
         Collection<ThriftSerializer> allSerializerList =
             new ArrayList<>(appContext.getBeansOfType(ThriftSerializer.class).values());
