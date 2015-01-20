@@ -129,7 +129,11 @@ public enum DeviceError {
     }
     
     public static DeviceError getErrorByCode(int code){
-        return errors.get(code);
+        DeviceError error = errors.get(code);
+        if(error == null){
+            error = DeviceError.UNKNOWN;
+        }
+        return error;
     }
     
     public MessageSourceResolvable getPorterResolvable() {
