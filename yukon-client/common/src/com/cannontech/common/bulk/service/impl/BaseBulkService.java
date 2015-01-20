@@ -406,10 +406,9 @@ public abstract class BaseBulkService {
                             && (blankHandlingEnum.equals(BlankHandlingEnum.IGNORE_BLANK) || 
                                 blankHandlingEnum.equals(BlankHandlingEnum.NOT_APPLICABLE))) {
                         fieldStringValue = null;
-                    }
-                    else if (!(PaoUtils.isValidPaoName(fieldStringValue)))
-                    {
-                    	throw new DeviceCreationException("Device name cannot include any of the following characters: / \\ ,\" ' |");
+                    }else if (!(PaoUtils.isValidPaoName(fieldStringValue))) {
+                        throw new DeviceCreationException(
+                            "Device name cannot include any of the following characters: / \\ ,\" ' |");
                     }
         
                     valueMap.put(inputSource.getField(), fieldStringValue);
