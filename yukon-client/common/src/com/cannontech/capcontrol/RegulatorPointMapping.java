@@ -26,15 +26,11 @@ public enum RegulatorPointMapping implements DisplayableEnum {
     
     static {
         Builder<RegulatorPointMapping> b = ImmutableSet.builder();
-        b.add(AUTO_BLOCK_ENABLE);
         b.add(AUTO_REMOTE_CONTROL);
         b.add(KEEP_ALIVE);
-        b.add(KEEP_ALIVE_TIMER);
         b.add(TAP_DOWN);
         b.add(TAP_UP);
         b.add(TAP_POSITION);
-        b.add(TERMINATE);
-        b.add(VOLTAGE_X);
         b.add(VOLTAGE_Y);
         ltcRegulatorMappings = b.build();
         
