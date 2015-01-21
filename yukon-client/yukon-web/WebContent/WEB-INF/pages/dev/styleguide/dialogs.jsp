@@ -186,6 +186,7 @@
             $('.js-new-person-form').ajaxSubmit({
                 success: function (data, status, xhr, $form) {
                     $('#form-example').dialog('close');
+                    debug.log('A winner is you!!');
                 },
                 error: function (xhr, status, error, $form) {
                     $('#form-example').html(xhr.responseText);
@@ -263,6 +264,7 @@ $('#form-example').on('yukon:dev:styleguid:dialogs:create:person', function (e) 
     $('.js-new-person-form').ajaxSubmit({
         success: function (data, status, xhr, $form) {
             $('#form-example').dialog('close');
+            debug.log('A winner is you!!');
         },
         error: function (xhr, status, error, $form) {
             $('#form-example').html(xhr.responseText);
