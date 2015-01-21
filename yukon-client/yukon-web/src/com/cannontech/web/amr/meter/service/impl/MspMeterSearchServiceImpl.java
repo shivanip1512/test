@@ -45,36 +45,37 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService {
 	    loadMspSearchFields(vendorId);
     }
 	
-	@Override
+    @Override
     public void loadMspSearchFields(int vendorId) {
-	    //set to available mspSearchFields based on methods that vendor supports
+        // set to available mspSearchFields based on methods that vendor supports
         mspSearchFields = new ArrayList<MspSearchField>();
-        
+
         if (vendorId > 0) {
-            
+
             MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
             if (mspVendor.getMspInterfaceMap().containsKey(MultispeakDefines.CB_Server_STR)) {
-            List<String> mspMethodNames = mspObjectDao.findMethods(MultispeakDefines.CB_Server_STR, mspVendor);
-            MspSearchField[] allMspSearchFields = MspSearchField.values();
-            for (MspSearchField mspSearchField : allMspSearchFields) {
-                
-                for (String mspMethodName : mspMethodNames) {
-                    
-                    if (mspSearchField.getRequiredMspMethodName().equalsIgnoreCase(mspMethodName)) {
-                        
-                        if (!methodResultProviderMap.keySet().contains(mspSearchField)) {
-                            throw new IllegalArgumentException("MspSearchField (" + mspSearchField + ") has no associated MspMeterSearchMethodResultProvider");
-                        }
-                        
-                        mspSearchFields.add(mspSearchField);
-                        break;
+                List<String> mspMethodNames = mspObjectDao.findMethods(MultispeakDefines.CB_Server_STR, mspVendor);
+                MspSearchField[] allMspSearchFields = MspSearchField.values();
+                for (MspSearchField mspSearchField : allMspSearchFields) {
+
+                    for (String mspMethodName : mspMethodNames) {
+
+                        if (mspSearchField.getRequiredMspMethodName().equalsIgnoreCase(mspMethodName)) {
+
+                            if (!methodResultProviderMap.keySet().contains(mspSearchField)) {
+                                throw new IllegalArgumentException("MspSearchField (" + mspSearchField
+                                    + ") has no associated MspMeterSearchMethodResultProvider");
+                            }
+
+                            mspSearchFields.add(mspSearchField);
+                            break;
                         }
                     }
                 }
             }
         }
-	}
-	
+    }
+
     @Autowired
     public void setMspObjectDao(MspObjectDao mspObjectDao) {
 		this.mspObjectDao = mspObjectDao;
