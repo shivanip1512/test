@@ -9,7 +9,7 @@
 <tags:styleguide page="dialogs">
 
 <style>
-.dialog-example .one { line-height: 26px; }
+.style-guide-example .one { line-height: 26px; }
 .description { line-height: 22px; }
 </style>
 
@@ -32,9 +32,6 @@
             If present, this event will be fired right before the popup is shown. If 
             <span class="label label-attr">data-url</span> is used, the event will be fired after the dialog is loaded with 
             the response body.
-        </tags:nameValue>
-        <tags:nameValue name="data-popup-toggle">
-            If present, the trigger element can be clicked to close the popup as well.
         </tags:nameValue>
         <tags:nameValue name="data-dialog">
             If present the popup will have 'ok' and 'cancel' buttons.
@@ -95,7 +92,7 @@
 <p class="description">
     To make a simple popup just start with a hidden <span class="label label-attr">&lt;div&gt;</span> and a trigger.
 </p>
-<div class="column-4-20 clearfix dialog-example">
+<div class="column-4-20 clearfix style-guide-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
         <div class="dn" id="popup-1" data-title="Popup Example">This is a simple popup.</div>
@@ -113,7 +110,7 @@
 <p class="description">
     A popup with initial width of 500 pixels and height of 300 pixels.
 </p>
-<div class="column-4-20 clearfix dialog-example">
+<div class="column-4-20 clearfix style-guide-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
         <div class="dn" id="popup-2" 
@@ -137,7 +134,7 @@
 <p class="description">
     A popup that will be immediately above the button.
 </p>
-<div class="column-4-20 clearfix dialog-example">
+<div class="column-4-20 clearfix style-guide-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
         <div class="dn" id="positioned-popup-1" 
@@ -163,6 +160,74 @@
 &lt;cti:button id=&quot;positioned-link-1&quot; label=&quot;Positioned Popup&quot; data-popup=&quot;#positioned-popup-1&quot; data-popup-toggle=""/&gt;
 </pre>
 
+<h2 id="positioning-example">Dynamic Content</h2>
+
+<p class="description">
+    A popup whose content is automactially loaded via ajax from the <em>/yukon/dev/styleguide/new-person</em> url before 
+    showing using the <span class="label label-attr">[data-url]</span> attribute.
+</p>
+<div class="column-4-20 clearfix style-guide-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div class="dn" id="dynamic-content-popup" data-title="Dynamic Content Example" data-width="400"
+                data-url="new-person"></div>
+        <cti:button label="Open Popup" data-popup="#dynamic-content-popup"/>
+    </div>
+</div>
+<h4 class="subtle">JSP Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;dn&quot; id=&quot;dynamic-content-popup&quot; data-title=&quot;Dynamic Content Example&quot; data-width=&quot;400&quot;
+        data-url=&quot;new-person&quot;&gt;&lt;/div&gt;
+&lt;cti:button label=&quot;Open Popup&quot; data-popup=&quot;#dynamic-content-popup&quot;/&gt;
+</pre>
+<h4 class="subtle">Controller Code:</h4>
+<pre class="code prettyprint">
+@RequestMapping(value=&quot;/styleguide/new-person&quot;, method=RequestMethod.GET)
+public String newPersonPopup(ModelMap model) {
+    
+    Person person = new Person();
+    model.addAttribute(&quot;person&quot;, person);
+    
+    return &quot;styleguide/person.jsp&quot;;
+}
+</pre>
+
+<h2 id="positioning-example">Dialog Buttons and Events</h2>
+
+<p class="description">
+    This popup has 'ok' and 'cancel' buttons by using <span class="label label-attr">[data-dialog]</span>.  
+    The content is automactially loaded via ajax by using <span class="label label-attr">[data-url]</span>.
+    The <em>yukon:dev:styleguide:dialogs:foo</em> event is fired when the 'ok' button is clicked by using
+    <span class="label label-attr">[data-event]</span>.  The event's target by default will be the dialog div but it can be
+    overridden using <span class="label label-attr">[data-target]</span>.
+</p>
+<div class="column-4-20 clearfix style-guide-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div class="dn" id="button-event-popup" data-dialog data-title="Buttons and Event Example" data-width="400"
+                data-url="new-person" data-event="yukon:dev:styleguide:dialogs:foo"></div>
+        <cti:button label="Open Popup" data-popup="#button-event-popup"/>
+        <script>
+        $('#button-event-popup').on('yukon:dev:styleguide:dialogs:foo', function (e) {
+            $('#button-event-popup').dialog('close');
+            alert('A winner is you!!');
+        });
+        </script>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;dn&quot; id=&quot;button-event-popup&quot; data-dialog data-title=&quot;Buttons and Event Example&quot; data-width=&quot;400&quot;
+        data-url=&quot;new-person&quot; data-event=&quot;yukon:dev:styleguide:dialogs:foo&quot;&gt;&lt;/div&gt;
+&lt;cti:button label=&quot;Open Popup&quot; data-popup=&quot;#button-event-popup&quot;/&gt;
+&lt;script&gt;
+$('#button-event-popup').on('yukon:dev:styleguide:dialogs:foo', function (e) {
+    $('#button-event-popup').dialog('close');
+    alert('A winner is you!!');
+});
+&lt;/script&gt;
+</pre>
+
 <h2 id="form-ajax-validation-example">Dialogs and Forms</h2>
 
 <p class="description">
@@ -173,7 +238,7 @@
     simply returns a no-content success when validation passes.  This is a very simple example that doesn't actually save
     anything but you get the point.
 </p>
-<div class="column-4-20 clearfix dialog-example">
+<div class="column-4-20 clearfix style-guide-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
         <div class="dn" id="form-example" data-title="Ajax Form Submission Example" data-width="400" data-dialog 
@@ -271,6 +336,33 @@ $('#form-example').on('yukon:dev:styleguid:dialogs:create:person', function (e) 
         }
     });
 });
+</pre>
+
+<h2 id="js-api-example">Javascrip API: Programatic Dialog Opening</h2>
+
+<p class="description">
+    Sometimes you need to open one of these popups from javascript.  Yukon's Javascript api has some dialog functions to 
+    handle that. Calling <em>yukon.ui.dialog</em> will open these dialogs using all the data stored in the data attributes. 
+</p>
+<div class="column-4-20 clearfix style-guide-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div class="dn" id="js-api-show-popup" data-dialog data-title="JS API Show Example" data-width="400"
+                data-url="new-person" data-event="yukon:dev:styleguide:dialogs:foo"></div>
+        <cti:button label="Open Popup" classes="js-api-show-btn"/>
+        <script>
+        $('.js-api-show-btn').click(function (e) { yukon.ui.dialog('#js-api-show-popup'); });
+        </script>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;dn&quot; id=&quot;js-api-show-popup&quot; data-dialog data-title=&quot;JS API Show Example&quot; data-width=&quot;400&quot;
+        data-url=&quot;new-person&quot; data-event=&quot;yukon:dev:styleguide:dialogs:foo&quot;&gt;&lt;/div&gt;
+&lt;cti:button label=&quot;Open Popup&quot; classes=&quot;js-api-show-btn&quot;/&gt;
+&lt;script&gt;
+    $('.js-api-show-btn').click(function (e) { yukon.ui.dialog('#js-api-show-popup'); });
+&lt;/script&gt;
 </pre>
 
 </tags:styleguide>

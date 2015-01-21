@@ -4,7 +4,7 @@
 
 <cti:msgScope paths="modules.dev.dialogs">
 <form:form commandName="person" action="person" method="post" cssClass="js-new-person-form">
-    <tags:nameValueContainer2 tableClass="with-form-controls">
+    <tags:nameValueContainer2>
         <tags:inputNameValue nameKey=".name" path="name"/>
         <tags:inputNameValue nameKey=".age" path="age"/>
         <tags:inputNameValue nameKey=".email" path="email"/>

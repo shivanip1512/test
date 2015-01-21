@@ -145,7 +145,7 @@
     A switch that use the <span class="label label-attr">name</span>.<br>
     A switch using alternate button text.<br>
     A switch defaulting to checked.<br>
-    A switch defaulting to checked and disabled.
+    A switch defaulting to checked and disabled.<br>
     A switch defaulting to checked, uses alternate button text, and inverts the state.
 </p>
 <div class="column-4-20 clearfix style-guide-example">
