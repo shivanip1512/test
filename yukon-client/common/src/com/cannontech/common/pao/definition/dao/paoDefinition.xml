@@ -7032,14 +7032,14 @@
             </point>
             <point type="Analog" offset="14">
                 <init>true</init>
-                <name>Max Volts</name>
+                <name>Daily Max Volts</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Volts" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="15">
                 <init>true</init>
-                <name>Min Volts</name>
+                <name>Daily Min Volts</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Volts" />
                 <decimalplaces value="3" />
@@ -7050,10 +7050,10 @@
                 <basicLookup point="Voltage" />
             </attribute>
             <attribute name="MINIMUM_VOLTAGE">
-                <basicLookup point="Min Volts" />
+                <basicLookup point="Daily Min Volts" />
             </attribute>
             <attribute name="MAXIMUM_VOLTAGE">
-                <basicLookup point="Max Volts" />
+                <basicLookup point="Daily Max Volts" />
             </attribute>
         </attributes>
     </pao>
