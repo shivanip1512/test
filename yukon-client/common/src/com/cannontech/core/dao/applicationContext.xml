@@ -80,7 +80,7 @@
   <bean id="sepLMGroupDeviceClassDao" class="com.cannontech.core.dao.impl.SepDeviceClassDaoImpl"/>
   <bean id="lmGroupDao" class="com.cannontech.core.dao.impl.LMGroupDaoImpl"/>
   
-  <bean id="paoScheduleDao" class="com.cannontech.core.dao.impl.PaoScheduleDaoImpl"/>
+  <bean id="paoScheduleDao" class="com.cannontech.core.schedule.dao.impl.PaoScheduleDaoImpl"/>
   
   <bean id="strategyDao" class="com.cannontech.capcontrol.dao.impl.StrategyDaoImpl"/>
   

@@ -1,4 +1,4 @@
-package com.cannontech.core.dao.impl;
+package com.cannontech.core.schedule.dao.impl;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoScheduleDao;
+import com.cannontech.core.schedule.dao.PaoScheduleDao;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;

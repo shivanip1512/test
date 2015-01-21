@@ -1,14 +1,14 @@
 /**
  * Handles the schedule and schedule assignment pages.
- * @module yukon.da.schedules
+ * @module yukon.da.scheduleAssignments
  * @requires JQUERY
  * @requires yukon
  * @requires yukon.da
  */
 
-yukon.namespace('yukon.da.schedules');
+yukon.namespace('yukon.da.scheduleAssignments');
 
-yukon.da.schedules = (function () {
+yukon.da.scheduleAssignments = (function () {
     
     var _initialized = false,
     
@@ -161,4 +161,4 @@ yukon.da.schedules = (function () {
     return mod;
 }());
 
-$(function () { yukon.da.schedules.init(); });
+$(function () { yukon.da.scheduleAssignments.init(); });

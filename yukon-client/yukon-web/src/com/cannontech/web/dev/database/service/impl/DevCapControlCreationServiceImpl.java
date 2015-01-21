@@ -16,7 +16,7 @@ import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.core.dao.PaoScheduleDao;
+import com.cannontech.core.schedule.dao.PaoScheduleDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
 import com.cannontech.database.db.pao.PAOSchedule;

@@ -10,7 +10,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PaoScheduleDao;
+import com.cannontech.core.schedule.dao.PaoScheduleDao;
 import com.cannontech.database.data.pao.CapControlTypes;
 
 public class CapControlCreationModelValidator extends SimpleValidator<CapControlCreationModel>{
