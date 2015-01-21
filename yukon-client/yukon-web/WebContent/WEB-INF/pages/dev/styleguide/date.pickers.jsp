@@ -156,8 +156,9 @@ as well as page edit modes (VIEW, EDIT, CREATE).
         If <strong>true</strong> the picker components and the underlying inputs will be disabled.
     </tags:nameValue>
     <tags:nameValue name="cssClass">
-        CSS class names applied to both date pickers in the range. Note the <strong>js-dateStart</strong> and
-        <strong>js-dateEnd</strong> classes are included on the start and end pickers in the range.
+        CSS class names applied to both date pickers in the range. Note the 
+        <span class="label label-attr">.js-dateStart</span> and <span class="label label-attr">.js-dateEnd</span>
+        classes are already included on the start and end pickers in the range.
     </tags:nameValue>
     <tags:nameValue name="cssDialogClass">
         CSS class names applied to both date pickers in the range.
@@ -309,7 +310,8 @@ as well as page edit modes (VIEW, EDIT, CREATE).
         CSS class names applied to the popup container.
     </tags:nameValue>
     <tags:nameValue name="cssErrorClass">
-        CSS class names applied to the error element. Note: The <strong>error</strong> class is already included.
+        CSS class names applied to the error element. Note: The <span class="label label-attr">.error</span> class is 
+        already included.
     </tags:nameValue>
     <tags:nameValue name="maxDate">
         Set a maximum selectable date/time via an object consumable by the 

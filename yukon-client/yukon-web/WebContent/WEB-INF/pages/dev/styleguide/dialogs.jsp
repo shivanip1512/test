@@ -2,6 +2,7 @@
 
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dev" page="dialogs">
@@ -131,11 +132,10 @@
 &lt;cti:button label=&quot;Open Popup&quot; data-popup=&quot;#popup-2&quot;/&gt;
 </pre>
 
-
 <h2 id="positioning-example">Positioning</h2>
 
 <p class="description">
-    A popup that will be immediately above the button
+    A popup that will be immediately above the button.
 </p>
 <div class="column-4-20 clearfix dialog-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
@@ -162,5 +162,114 @@
 &lt;/div&gt;
 &lt;cti:button id=&quot;positioned-link-1&quot; label=&quot;Positioned Popup&quot; data-popup=&quot;#positioned-popup-1&quot; data-popup-toggle=""/&gt;
 </pre>
+
+<h2 id="form-ajax-validation-example">Dialogs and Forms</h2>
+
+<p class="description">
+    A popup with a form using 
+    <a target="_blank" href="http://docs.spring.io/spring/docs/3.0.x/spring-framework-reference/html/view.html">spring binding</a> 
+    that is submitted via ajax. The popup contents are from a separate jsp that uses our special tags which provide
+    nice error rendering when validation fails. The controller returns the popup jsp as 400 when validation fails or 
+    simply returns a no-content success when validation passes.  This is a very simple example that doesn't actually save
+    anything but you get the point.
+</p>
+<div class="column-4-20 clearfix dialog-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div class="dn" id="form-example" data-title="Ajax Form Submission Example" data-width="400" data-dialog 
+                data-url="new-person"
+                data-event="yukon:dev:styleguid:dialogs:create:person">
+        </div>
+        <cti:button label="Add Person" data-popup="#form-example" icon="icon-plus-green"/>
+        <script>
+        $('#form-example').on('yukon:dev:styleguid:dialogs:create:person', function (e) {
+            $('.js-new-person-form').ajaxSubmit({
+                success: function (data, status, xhr, $form) {
+                    $('#form-example').dialog('close');
+                },
+                error: function (xhr, status, error, $form) {
+                    $('#form-example').html(xhr.responseText);
+                }
+            });
+        });
+        </script>
+    </div>
+</div>
+<h4 class="subtle">Controller Code:</h4>
+<pre class="code prettyprint">
+@RequestMapping(value=&quot;/styleguide/new-person&quot;, method=RequestMethod.GET)
+public String newPersonPopup(ModelMap model) {
+    
+    Person person = new Person();
+    model.addAttribute(&quot;person&quot;, person);
+    
+    return &quot;styleguide/person.jsp&quot;;
+}
+
+@RequestMapping(value=&quot;/styleguide/person&quot;, method=RequestMethod.POST)
+public String createPerson(ModelMap model, HttpServletResponse resp, 
+        @ModelAttribute(&quot;person&quot;) Person person, BindingResult result) {
+    
+    new PersonValidator().validate(person, result);
+    if (result.hasErrors()) {
+        resp.setStatus(HttpStatus.BAD_REQUEST.value());
+        return &quot;styleguide/person.jsp&quot;;
+    }
+    
+    resp.setStatus(HttpStatus.NO_CONTENT.value());
+    return null;
+}
+
+public class PersonValidator extends SimpleValidator&lt;Person&gt; {
+        
+    public PersonValidator() { super(Person.class); }
+    
+    @Override
+    protected void doValidation(Person person, Errors errors) {
+        YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, &quot;name&quot;, person.getName(), false, 60);
+        int age = person.getAge();
+        String email = person.getEmail();
+        if (age &lt; 1 || age &gt; 120) errors.rejectValue(&quot;age&quot;, null, &quot;Age should be between 1 and 120.&quot;);
+        if (!Validator.isEmailAddress(email)) errors.rejectValue(&quot;email&quot;, null, &quot;Invalid email address.&quot;);
+    }
+}
+</pre>
+<h4 class="subtle">JSP Page Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;dn&quot; id=&quot;form-example&quot; data-title=&quot;Ajax Form Submission Example&quot; data-width=&quot;400&quot; data-dialog 
+        data-url=&quot;new-person&quot;
+        data-event=&quot;yukon:dev:styleguid:dialogs:create:person&quot;&gt;
+&lt;/div&gt;
+&lt;cti:button label=&quot;Add Person&quot; data-popup=&quot;#form-example&quot; icon=&quot;icon-plus-green&quot;/&gt;
+</pre>
+<h4 class="subtle">person.jsp Code:</h4>
+<pre class="code prettyprint">
+&lt;cti:msgScope paths=&quot;modules.dev.dialogs&quot;&gt;
+&lt;form:form commandName=&quot;person&quot; action=&quot;person&quot; method=&quot;post&quot; cssClass=&quot;js-new-person-form&quot;&gt;
+    &lt;tags:nameValueContainer2 tableClass=&quot;with-form-controls&quot;&gt;
+        &lt;tags:inputNameValue nameKey=&quot;.name&quot; path=&quot;name&quot;/&gt;
+        &lt;tags:inputNameValue nameKey=&quot;.age&quot; path=&quot;age&quot;/&gt;
+        &lt;tags:inputNameValue nameKey=&quot;.email&quot; path=&quot;email&quot;/&gt;
+        &lt;tags:nameValue2 excludeColon=&quot;true&quot;&gt;
+            &lt;label&gt;&lt;tags:switch path=&quot;spam&quot;/&gt;Send me Spam?&lt;/label&gt;
+        &lt;/tags:nameValue2&gt;
+    &lt;/tags:nameValueContainer2&gt;
+&lt;/form:form&gt;
+&lt;/cti:msgScope&gt;
+</pre>
+<h4 class="subtle">Javascript Code:</h4>
+<pre class="code prettyprint">
+$('#form-example').on('yukon:dev:styleguid:dialogs:create:person', function (e) {
+    $('.js-new-person-form').ajaxSubmit({
+        success: function (data, status, xhr, $form) {
+            $('#form-example').dialog('close');
+        },
+        error: function (xhr, status, error, $form) {
+            $('#form-example').html(xhr.responseText);
+        }
+    });
+});
+</pre>
+
 </tags:styleguide>
 </cti:standardPage>

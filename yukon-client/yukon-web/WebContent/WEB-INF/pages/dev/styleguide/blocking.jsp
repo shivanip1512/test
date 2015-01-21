@@ -32,6 +32,7 @@ $(function() {
     the user from interacting while you are waiting for something to happen. Blocking things is done using yukon's js 
     blocking api, or by using special class names that have will trigger the yukon's js blocking api.
     <span class="warning">Blocking should only be used as a last resort since it is visually jarring to users.</span>
+    <a href="buttons#busy-buttons-example">Busy buttons</a> should be used when needing to prevent double form submission.
 </p>
 
 <h2 id="block-element-example">Block An Element</h2>

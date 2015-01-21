@@ -318,8 +318,9 @@ function youPickedSomething(hits, picker) {
 
 <p class="description">
     Pickers whose trigger components are buttons. Note: when using <span class="label label-attr">linkType</span>
-    of <strong>button</strong> the <span class="label label-attr">nameKey</span> used must end in <em>.label</em>.
-    The <strong>choose</strong> nameKey in the examples are referencing <em>yukon.web.components.button.choose.label</em>
+    of <strong>button</strong>, <em>.label</em> will be appended to the <span class="label label-attr">nameKey</span> and
+    <em>yukon.web.components.button.</em> is added to the scope for you. Therefore the <strong>choose</strong> nameKey in the 
+    examples below are actually referencing the <em>yukon.web.components.button.choose.label</em> key.
 </p>
 <div class="column-4-20 clearfix picker-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>

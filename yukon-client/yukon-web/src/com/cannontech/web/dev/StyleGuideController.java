@@ -6,15 +6,25 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.Validator;
+import com.cannontech.web.dev.model.Person;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 
 @Controller
@@ -131,4 +141,42 @@ public class StyleGuideController {
             this.enabled = enabled;
         }
     }
+    
+    public class PersonValidator extends SimpleValidator<Person> {
+        
+        public PersonValidator() { super(Person.class); }
+        
+        @Override
+        protected void doValidation(Person person, Errors errors) {
+            YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "name", person.getName(), false, 60);
+            int age = person.getAge();
+            String email = person.getEmail();
+            if (age < 1 || age > 120) errors.rejectValue("age", null, "Age should be between 1 and 120.");
+            if (!Validator.isEmailAddress(email)) errors.rejectValue("email", null, "Invalid email address.");
+        }
+    }
+    
+    @RequestMapping(value="/styleguide/new-person", method=RequestMethod.GET)
+    public String newPersonPopup(ModelMap model) {
+        
+        Person person = new Person();
+        model.addAttribute("person", person);
+        
+        return "styleguide/person.jsp";
+    }
+    
+    @RequestMapping(value="/styleguide/person", method=RequestMethod.POST)
+    public String createPerson(ModelMap model, HttpServletResponse resp, 
+            @ModelAttribute("person") Person person, BindingResult result) {
+        
+        new PersonValidator().validate(person, result);
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            return "styleguide/person.jsp";
+        }
+        
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
+        return null;
+    }
+    
 }
