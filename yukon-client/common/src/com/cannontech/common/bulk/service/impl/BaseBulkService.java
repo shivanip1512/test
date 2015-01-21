@@ -402,15 +402,14 @@ public abstract class BaseBulkService {
                     // if its blank and blank handling is not applicable, set to null
                     // otherwise set as-is
                     BlankHandlingEnum blankHandlingEnum = bulkField.getBlankHandlingEnum();
-                    if (StringUtils.isBlank(fieldStringValue) 
-                            && (blankHandlingEnum.equals(BlankHandlingEnum.IGNORE_BLANK) || 
-                                blankHandlingEnum.equals(BlankHandlingEnum.NOT_APPLICABLE))) {
+                    if (StringUtils.isBlank(fieldStringValue)
+                        && (blankHandlingEnum.equals(BlankHandlingEnum.IGNORE_BLANK) || blankHandlingEnum.equals(BlankHandlingEnum.NOT_APPLICABLE))) {
                         fieldStringValue = null;
-                    }else if (!(PaoUtils.isValidPaoName(fieldStringValue))) {
+                    } else if (!(PaoUtils.isValidPaoName(fieldStringValue))) {
                         throw new DeviceCreationException(
-                            "Device name cannot include any of the following characters: / \\ ,\" ' |");
+                            "Field value contain any of the following invalid characters: / \\ ,\" ' |");
                     }
-        
+
                     valueMap.put(inputSource.getField(), fieldStringValue);
                 
                 } catch (ArrayIndexOutOfBoundsException e) {
