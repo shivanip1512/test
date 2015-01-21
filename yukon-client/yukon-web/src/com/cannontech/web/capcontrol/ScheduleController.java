@@ -1,5 +1,6 @@
 package com.cannontech.web.capcontrol;
 
+import java.beans.PropertyEditor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,18 +9,30 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
+import org.joda.time.Instant;
 import org.joda.time.Period;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,9 +48,12 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.schedule.dao.PaoScheduleDao;
+import com.cannontech.core.schedule.model.PaoSchedule;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
@@ -49,13 +65,15 @@ import com.cannontech.message.capcontrol.model.CommandType;
 import com.cannontech.message.capcontrol.model.VerifyBanks;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.filter.ScheduleAssignmentCommandFilter;
 import com.cannontech.web.capcontrol.filter.ScheduleAssignmentFilter;
 import com.cannontech.web.capcontrol.filter.ScheduleAssignmentRowMapper;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.input.DatePropertyEditorFactory;
+import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 
@@ -74,7 +92,8 @@ public class ScheduleController {
     @Autowired private CapControlCommandExecutor executor;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DbChangeManager dbChangeManager;
-    
+    @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+
     private final String NO_FILTER = "All";
     
     public ScheduleController() {
@@ -155,19 +174,12 @@ public class ScheduleController {
     }
     
     private void setupSchedulesTabModel(HttpServletRequest request, LiteYukonUser user, ModelMap model) {
-        
-        boolean hasEditingRole = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, user);
-        model.addAttribute("hasEditingRole", hasEditingRole);
-        List<PAOSchedule> schedules = paoScheduleDao.getAllPaoScheduleNames();
-        Collections.sort(schedules);
+
+        List<PaoSchedule> schedules = paoScheduleDao.getAll();
         model.addAttribute("schedules", schedules);
-        
-        long startOfTime = CtiUtilities.get1990GregCalendar().getTime().getTime();
-        model.addAttribute("startOfTime", startOfTime);
-        
-        String urlParams = request.getQueryString();
-        String requestURI = request.getRequestURI() + ((urlParams != null) ? "?" + urlParams : "");
-        CBCNavigationUtil.setNavigation(requestURI , request.getSession());
+
+        model.addAttribute("epoch1990", epoch1990.plus(Duration.standardSeconds(1)));
+
     }
     
     @RequestMapping("schedules")
@@ -176,6 +188,93 @@ public class ScheduleController {
         return "schedule/schedules.jsp";
     }
     
+    private static final Instant epoch1990 = new Instant(CtiUtilities.get1990GregCalendar().getTime());
+
+    @RequestMapping(value="{id}", method=RequestMethod.GET)
+    public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
+        PaoSchedule schedule = paoScheduleDao.getForId(id);
+        boolean authorizedEdit = rolePropertyDao.checkProperty(YukonRoleProperty.CBC_DATABASE_EDIT, userContext.getYukonUser());
+        PageEditMode pageMode = authorizedEdit ? PageEditMode.EDIT : PageEditMode.VIEW;
+        model.addAttribute("mode", pageMode);
+        model.addAttribute("scheduleDuration", Duration.standardSeconds(schedule.getRepeatSeconds()));
+        List<PaoScheduleAssignment> assignments = paoScheduleDao.getScheduleAssignmentByScheduleId(id);
+        model.addAttribute("assignments", assignments);
+
+        return setupEditModelMap(model, schedule);
+    }
+
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    @RequestMapping(value="create", method=RequestMethod.GET)
+    public String create(ModelMap model) {
+        model.addAttribute("mode", PageEditMode.CREATE);
+        PaoSchedule schedule = new PaoSchedule();
+        schedule.setNextRunTime(Instant.now());
+        return setupEditModelMap(model, schedule);
+    }
+
+    private String setupEditModelMap(ModelMap model, PaoSchedule schedule) {
+        model.addAttribute("schedule", schedule);
+        model.addAttribute("epoch1990", epoch1990.plus(Duration.standardSeconds(1)));
+        
+        model.addAttribute("intervals", PaoSchedule.ScheduleInterval.values());
+        return "schedule/schedule.jsp";
+    }
+
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    @RequestMapping(value="{id}", method=RequestMethod.POST)
+    public String save(HttpServletResponse response, ModelMap model, @ModelAttribute("schedule") PaoSchedule schedule, BindingResult bindingResult) {
+        if (schedule.getLastRunTime() == null) {
+            schedule.setLastRunTime(epoch1990);
+        }
+        scheduleValidator.validate(schedule, bindingResult);
+        if (bindingResult.hasErrors()) {
+            response.setStatus(HttpStatus.BAD_REQUEST.value());
+            return setupEditModelMap(model, schedule);
+        } else {
+            try {
+                paoScheduleDao.save(schedule);
+            //Name Conflict
+            } catch (DataIntegrityViolationException e) {
+                bindingResult.rejectValue("name", "yukon.web.modules.capcontrol.schedules.error.nameConflict");
+                return setupEditModelMap(model, schedule);
+            }
+            return null;
+        }
+    }
+
+    @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
+    @RequestMapping(value="{id}/delete")
+    public String delete(HttpServletResponse response, ModelMap model, @PathVariable int id) {
+        paoScheduleDao.delete(id);
+        return null;
+    }
+
+    private final Validator scheduleValidator = new SimpleValidator<PaoSchedule>(PaoSchedule.class) {
+        @Override
+        public void doValidation(PaoSchedule schedule, Errors errors) {
+            ValidationUtils.rejectIfEmptyOrWhitespace(
+                errors, "name", "yukon.web.modules.capcontrol.schedules.error.nameEmpty");
+
+            //For create, we cannot take an existing name
+            if (schedule.getId() == null) {
+                boolean nameTaken = paoScheduleDao.doesNameExist(schedule.getName());
+                if (nameTaken) {
+                    errors.rejectValue("name", "yukon.web.modules.capcontrol.schedules.error.nameConflict");
+                }
+            //For edit, we cannot take a different schedules name
+            } else {
+                PaoSchedule existingWithName = paoScheduleDao.findForName(schedule.getName());
+                if (existingWithName != null && ! existingWithName.getId().equals(schedule.getId())) {
+                    errors.rejectValue("name", "yukon.web.modules.capcontrol.schedules.error.nameConflict");
+                }
+            }
+
+            if (schedule.getNextRunTime() == null) {
+                errors.rejectValue("nextRunTime", "yukon.web.modules.capcontrol.schedules.error.date");
+            }
+        }
+    };
+
     private boolean executeScheduleCommand(PaoScheduleAssignment assignment, LiteYukonUser user) {
         boolean isCommandValid = true;
         ScheduleCommand schedCommand = null;
@@ -585,5 +684,13 @@ public class ScheduleController {
         List<PaoScheduleAssignment> assignments = filterService.filter(filter, sorter, rowMapper);
         
         return assignments;
+    }
+
+    @InitBinder
+    public void initBinder(WebDataBinder binder, YukonUserContext userContext) {
+
+        PropertyEditor instantEditor = datePropertyEditorFactory.getInstantPropertyEditor(DateFormatEnum.DATEHM, userContext, BlankMode.NULL);
+
+        binder.registerCustomEditor(Instant.class, instantEditor);
     }
 }

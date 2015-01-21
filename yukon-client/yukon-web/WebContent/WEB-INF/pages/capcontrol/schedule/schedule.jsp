@@ -1,0 +1,87 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+
+<cti:msgScope paths="modules.capcontrol.schedules.edit, modules.capcontrol.schedules, modules.capcontrol">
+    <tags:setFormEditMode mode="${mode}"/>
+    <cti:displayForPageEditModes modes="CREATE">
+        <cti:msg2 var="createTitle"  key=".create"/>
+        <input type="hidden" class="js-popup-title" value="${createTitle}">
+    </cti:displayForPageEditModes>
+    <cti:displayForPageEditModes modes="EDIT,VIEW">
+        <input type="hidden" class="js-popup-title" value="${schedule.name}">
+    </cti:displayForPageEditModes>
+    <cti:msg2 var="deleteMessage"  key=".deleteSuccess"/>
+    <form:form commandName="schedule" action="" method="post" data-mode="${mode}" data-delete-message="${deleteMessage}">
+        <cti:csrfToken/>
+        <form:hidden path="id"/>
+        <form:hidden path="lastRunTime"/>
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey="yukon.common.name">
+                <tags:input path="name"/>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".interval">
+                <cti:displayForPageEditModes modes="VIEW">
+                    <c:if test="${schedule.repeatSeconds == 0}">
+                        <cti:msg2 key="defaults.none"/>
+                    </c:if>
+                    <c:if test="${schedule.repeatSeconds != 0}">
+                        <cti:formatDuration type="DHMS_REDUCED" value="${schedule.repeatDuration}"/>
+                    </c:if>
+                </cti:displayForPageEditModes>
+                <cti:displayForPageEditModes modes="CREATE,EDIT">
+                    <select name="repeatSeconds">
+                        <c:forEach var="interval" items="${intervals}">
+                            <c:set var="selected" value="" />
+                            <c:if test="${schedule.repeatSeconds == interval.seconds}">
+                                <c:set var="selected" value="selected" />
+                            </c:if>
+                            <option value="${interval.seconds}" ${selected}>
+                                <c:if test="${interval.seconds == 0}">
+                                    <cti:msg2 key="defaults.none"/>
+                                </c:if>
+                                <c:if test="${interval.seconds != 0}">
+                                    <cti:formatDuration type="DHMS_REDUCED" value="${interval.duration}"/>
+                                </c:if>
+                            </option>
+                        </c:forEach>
+                    </select>
+                </cti:displayForPageEditModes>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".lastRunTime">
+                <c:choose>
+                    <c:when test="${empty schedule.lastRunTime or schedule.lastRunTime.millis < epoch1990.millis}">
+                        <i:inline key="yukon.web.defaults.dashes"/>
+                    </c:when>
+                    <c:otherwise>
+                        <cti:formatDate value="${schedule.lastRunTime}" type="DATEHM"/>
+                    </c:otherwise>
+                </c:choose>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".nextRunTime">
+                <spring:bind path="nextRunTime">
+                    <dt:dateTime path="nextRunTime" cssClass="${status.error ? 'error' : ''}"/>
+                    <c:if test="${status.error}"><br><form:errors path="${path}" cssClass="clear db error"/></c:if>
+                </spring:bind>
+            </tags:nameValue2>
+            <tags:nameValue2 excludeColon="true">
+                <label>
+                    <tags:switchButton path="disabled" inverse="true" onNameKey="enabled" offNameKey="disabled"/>
+                </label>
+            </tags:nameValue2>
+        </tags:nameValueContainer2>
+        <%-- Coming soon in a manageable way --%>
+<%--
+        Assignments:
+        <div>
+        <c:forEach var="assignment" items="${assignments}">
+            ${assignment.commandName} on ${assignment.deviceName}
+        </c:forEach>
+        </div>
+--%>
+    </form:form>
+</cti:msgScope>

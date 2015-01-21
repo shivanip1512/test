@@ -3,6 +3,7 @@ package com.cannontech.core.schedule.dao;
 import java.util.List;
 
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.schedule.model.PaoSchedule;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 
@@ -15,7 +16,7 @@ public interface PaoScheduleDao {
      * @throws NotFoundException if the command was not found.
      * @return
      */
-    public PaoScheduleAssignment getScheduleAssignmentByEventId(Integer eventId);
+    PaoScheduleAssignment getScheduleAssignmentByEventId(Integer eventId);
 
     /**
      * Returns the assignments with the given schedule id
@@ -23,29 +24,38 @@ public interface PaoScheduleDao {
      * @param scheduleId
      * @return list of assignments or empty list if there are none.
      */
-    public List<PaoScheduleAssignment> getScheduleAssignmentByScheduleId(Integer scheduleId);
+    List<PaoScheduleAssignment> getScheduleAssignmentByScheduleId(Integer scheduleId);
     
-    public List<PaoScheduleAssignment> getAllScheduleAssignments();
+    List<PaoScheduleAssignment> getAllScheduleAssignments();
 
-    public List<PAOSchedule> getAllPaoScheduleNames();
+    List<PAOSchedule> getAllPaoScheduleNames();
 
-    public boolean assignCommand(List<PaoScheduleAssignment> param);
+    boolean assignCommand(List<PaoScheduleAssignment> param);
 
-    public boolean assignCommand(PaoScheduleAssignment param);
+    boolean assignCommand(PaoScheduleAssignment param);
 
-    public boolean unassignCommandByEventId(int eventId);
+    boolean unassignCommandByEventId(int eventId);
 
-    public boolean updateAssignment(PaoScheduleAssignment assignment);
+    boolean updateAssignment(PaoScheduleAssignment assignment);
 
-    public boolean delete(int scheduleId);
+    boolean delete(int scheduleId);
 
-    public boolean deletePaoScheduleAssignmentsByScheduleId(int scheduleId);
+    boolean deletePaoScheduleAssignmentsByScheduleId(int scheduleId);
 
-    public int add(String name, boolean disabled);
+    int add(String name, boolean disabled);
 
     /**
      * Checks if there is already a schedule of the same name
      * @return true if there is a conflict
      */
-    public boolean isUniqueName(String name);
+    boolean doesNameExist(String name);
+    
+    List<PaoSchedule> getAll();
+
+    PaoSchedule getForId(int id);
+
+    PaoSchedule findForName(String name);
+
+    void save(PaoSchedule schedule);
+
 }

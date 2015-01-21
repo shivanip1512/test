@@ -450,8 +450,12 @@
     <entry key="yukon.web.modules.capcontrol.schedules.disabled">Disabled</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.noSchedules">No Schedules</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.confirmDelete">Are you sure you want to delete {0}?</entry>
-    <entry key="yukon.web.modules.capcontrol.schedules.deleteSuccess">Schedule deleted successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.schedules.deleteSuccess">Schedule deleted</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.deleteFailed">Schedule could not be deleted.</entry>
+    <entry key="yukon.web.modules.capcontrol.schedules.create">Create Schedule</entry>
+    <entry key="yukon.web.modules.capcontrol.schedules.error.nameConflict">Name already exists</entry>
+    <entry key="yukon.web.modules.capcontrol.schedules.error.nameEmpty">Name cannot be blank</entry>
+    <entry key="yukon.web.modules.capcontrol.schedules.error.date">Invalid date</entry>
     
     <!-- scheduleAssignment.jsp -->
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.pageName">Schedules</entry><!-- Schedule Assignments -->
@@ -490,7 +494,7 @@
     <entry key="yukon.web.modules.capcontrol.stopDisabled.label">Stop Commands</entry>
     
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.hoverText">Create a new schedule assignment</entry>
-    <entry key="yukon.web.modules.capcontrol.add.label">New Assignment </entry>
+    <entry key="yukon.web.modules.capcontrol.scheduleAssignments.add.label">New Assignment</entry>
     
     <entry key="yukon.web.modules.capcontrol.scheduleAssignments.addDisabled.hoverText">You do not have permission to perform this action.</entry>
     <entry key="yukon.web.modules.capcontrol.addDisabled.label">New Schedule Assignment </entry>

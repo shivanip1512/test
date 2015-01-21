@@ -4,6 +4,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <%@ attribute name="name" description="The name of the checkbox input." %>
 <%@ attribute name="path" description="Spring path, used instead of 'name'." %>
@@ -29,21 +30,41 @@
 <cti:default var="onNameKey" value="on"/>
 <cti:default var="offNameKey" value="off"/>
 
-<c:set var="clazz" value="${inverse ? 'inverse' : ''}"/>
-<label class="switch-btn ${clazz}" <c:if test="${not empty pageScope.classes}">classes="${classes}"</c:if>>
-    <c:choose>
-        <c:when test="${not empty name}">
-            <input type="checkbox" name="${name}" id="${id}" class="switch-btn-checkbox" data-toggle="${pageScope.toggleGroup}" 
-                <c:if test="${checked}">checked</c:if> 
-                <c:if test="${disabled}">disabled</c:if>>
-        </c:when>
-        <c:otherwise>
-            <form:checkbox path="${path}" id="${id}" cssClass="switch-btn-checkbox" data-toggle="${pageScope.toggleGroup}" 
-                disabled="${disabled}"/>
-        </c:otherwise>
-    </c:choose>
-    <cti:msgScope paths="yukon.web.components.button"> <%--Do not format, spaces will be added by browser. --%>
-        <label for="${id}" class="button left yes ${pageScope.onClasses}"><span class="b-label"><cti:msg2 key=".${onNameKey}.label"/></span></label
-        ><label for="${id}" class="button right no ${pageScope.offClasses}"><span class="b-label"><cti:msg2 key=".${offNameKey}.label"/></span></label>
+<cti:displayForPageEditModes modes="EDIT,CREATE">
+    <c:set var="clazz" value="${inverse ? 'inverse' : ''}"/>
+    <label class="switch-btn ${clazz}" <c:if test="${not empty pageScope.classes}">classes="${classes}"</c:if>>
+        <c:choose>
+            <c:when test="${not empty name}">
+                <input type="checkbox" name="${name}" id="${id}" class="switch-btn-checkbox" data-toggle="${pageScope.toggleGroup}" 
+                    <c:if test="${checked}">checked</c:if> 
+                    <c:if test="${disabled}">disabled</c:if>>
+            </c:when>
+            <c:otherwise>
+                <form:checkbox path="${path}" id="${id}" cssClass="switch-btn-checkbox" data-toggle="${pageScope.toggleGroup}" 
+                    disabled="${disabled}"/>
+            </c:otherwise>
+        </c:choose>
+        <cti:msgScope paths="yukon.web.components.button"> <%--Do not format, spaces will be added by browser. --%>
+            <label for="${id}" class="button left yes ${pageScope.onClasses}"><span class="b-label"><cti:msg2 key=".${onNameKey}.label"/></span></label
+            ><label for="${id}" class="button right no ${pageScope.offClasses}"><span class="b-label"><cti:msg2 key=".${offNameKey}.label"/></span></label>
+        </cti:msgScope>
+    </label>
+</cti:displayForPageEditModes>
+<cti:displayForPageEditModes modes="VIEW">
+    <c:if test="${empty name}">
+        <spring:bind path="${path}">
+            <c:set var="checked" value="${status.actualValue}" />
+        </spring:bind>
+    </c:if>
+    <c:if test="${inverse}">
+        <c:set var="checked" value="${not checked}"/>
+    </c:if>
+    <cti:msgScope paths="yukon.web.components.button">
+        <c:if test="${checked}">
+            <span class="green"><cti:msg2 key=".${onNameKey}.label"/></span>
+        </c:if>
+        <c:if test="${not checked}">
+            <span class="red"><cti:msg2 key=".${offNameKey}.label"/></span>
+        </c:if>
     </cti:msgScope>
-</label>
+</cti:displayForPageEditModes>

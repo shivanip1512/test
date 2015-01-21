@@ -25,7 +25,10 @@ var yg = {
         edit: '<cti:msg2 key="yukon.web.components.button.edit.label"/>',
         ok: '<cti:msg2 key="yukon.web.components.button.ok.label"/>',
         save: '<cti:msg2 key="yukon.web.components.button.save.label"/>',
-        view: '<cti:msg2 key="yukon.web.components.button.view.label"/>'
+        view: '<cti:msg2 key="yukon.web.components.button.view.label"/>',
+        yes: '<cti:msg2 key="yukon.web.defaults.yes"/>',
+        no: '<cti:msg2 key="yukon.web.defaults.no"/>',
+        confirm: '<cti:msg2 key="yukon.web.defaults.confirm"/>'
     },
     dev_mode: '<cti:getBooleanConfigParam param="DEVELOPMENT_MODE"/>' === 'true',
     

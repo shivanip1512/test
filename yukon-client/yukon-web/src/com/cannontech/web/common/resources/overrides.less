@@ -626,14 +626,7 @@ span.dynatree-folder a {
         &:after { clear: both; }
         
         .ui-datepicker-close {
-            float: left;
-        }
-        
-        button.ui-datepicker-current {
-            float: right;
-            opacity: 1;
-            
-            /* make today button primary */
+           /* Make the 'Done' button primary */
             background: @primary-button-color;
             border: 1px solid @primary-button-color-border !important;
             transition: border .20s;
@@ -645,6 +638,10 @@ span.dynatree-folder a {
                 border: 1px solid @primary-button-color-border !important;
                 box-shadow:0 0 10px #bbb;
             }
+        }
+
+        button.ui-datepicker-current {
+            opacity: 1;
         }
     }
 }

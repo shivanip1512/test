@@ -760,6 +760,49 @@ yukon.ui = (function () {
             }
         },
 
+        /**
+         * Turn dialogs buttons into confirm
+         * @param {jQuery} [options.dialog] - jQuery element that has had .dialog called on it
+         * @param {string} [options.event] - Event to be fired if the confirm button is pressed
+         * @param {string} [options.confirmText] - Confirm text next to buttons
+         * @param {string} [options.yesText]
+         * @param {string} [options.noText]
+         */
+        confirm: function (options) {
+            var dialog = options.dialog,
+                event = options.event || 'yukon:dialog:confirm',
+                confirmText = options.confirmText || yg.text.confirm,
+                yesText = options.yesText || yg.text.yes,
+                noText = options.noText || yg.text.no,
+                oldButtons = dialog.dialog('option', 'buttons'),
+                confirmButton = {
+                    text: yesText,
+                    click: function (ev) {
+                        confirmSpan.remove();
+                        dialog.trigger(event);
+                    },
+                    'class': 'primary action js-primary-action'
+                },
+                cancelButton = {
+                   text: noText,
+                   click: function (ev) {
+                       confirmSpan.remove();
+                       dialog.dialog('option', 'buttons', oldButtons);
+                   },
+                   'class': 'js-secondary-action '
+                },
+                confirmSpan = $('<span>')
+                    .attr('class', 'fr')
+                    .css({'line-height': '36px'})
+                    .text(confirmText);
+
+            dialog.dialog('option', 'buttons', [cancelButton, confirmButton]);
+            dialog.closest('.ui-dialog').find('.ui-dialog-buttonpane').append(confirmSpan);
+            dialog.on('dialogclose', function () {
+                confirmSpan.remove();
+            });
+        },
+
         AUTOFOCUS_TRIES: 0,
 
         autofocus: function () {

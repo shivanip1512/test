@@ -28,7 +28,7 @@
 
 <dt:pickerIncludes/>
 
-<c:if test="${empty id}">
+<c:if test="${empty pageScope.id}">
     <c:if test="${empty pageScope.path}">
         <cti:uniqueIdentifier var="id" prefix="dateTimeInputId_"/>
     </c:if>
@@ -43,13 +43,13 @@
 
 <c:choose>
     <c:when test="${empty pageScope.value}">
-        <c:if test="${not empty pageScope.path && not empty status.actualValue}">
-            <spring:bind path="${path}">
+        <spring:bind path="${path}">
+            <c:if test="${not empty pageScope.path && not empty status.actualValue}">
                 <cti:formatDate var="dateTimeValue" value="${status.actualValue}" type="DATEHM"/>
                 <cti:formatDate var="timeZoneShort" value="${status.actualValue}" type="TIMEZONE"/>
                 <cti:formatDate var="timeZoneFull" value="${status.actualValue}" type="TIMEZONE_EXTENDED"/>
-            </spring:bind>
-        </c:if>
+           </c:if>
+        </spring:bind>
     </c:when>
     <c:otherwise>
         <cti:formatDate var="dateTimeValue" value="${pageScope.value}" type="DATEHM"/>

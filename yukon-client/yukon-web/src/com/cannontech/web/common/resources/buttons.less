@@ -15,6 +15,11 @@
 
 /* Variables */
 
+@red: #d14836;
+@green: #093;
+@blue: #1f4cff;
+@orange: #fb8521;
+
 @primary-color: #06c;
 @primary-button-color: #777;
 @primary-button-color-border: #444;
@@ -267,7 +272,7 @@ button:not([disabled]):hover .ui-button-text,
 }
 button:hover .b-label.red, .button:hover .b-label.red,
 button:hover .ui-button-text.red, .button:hover .ui-button-text.red {
-    color: #db4a37;
+    color: @red;
 }
 button:hover .b-label.blue, .button:hover .b-label.blue,
 button:hover .ui-button-text.blue, .button:hover .ui-button-text.blue {
@@ -373,7 +378,9 @@ button.primary .ui-button-text, .button.primary .ui-button-text {
 
 /* Delete Button */
 
-button.delete .b-label, .button.delete .b-label { color: #db4a37; }
+button.delete .b-label,
+.button.delete .b-label,
+.ui-dialog-buttonpane button.delete .ui-button-text { color: @red; }
 
 
 

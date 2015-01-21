@@ -42,7 +42,7 @@ public class CapControlCreationModelValidator extends SimpleValidator<CapControl
         }
         
         if (type == CapControlTypes.CAP_CONTROL_SCHEDULE) {
-            if(paoScheduleDao.isUniqueName(name)){
+            if(paoScheduleDao.doesNameExist(name)){
                 errors.reject("There is already a Schedule with the name '" + name + "'");
             }
             return;

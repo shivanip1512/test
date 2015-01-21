@@ -48,35 +48,6 @@
     <div id="page-buttons" class="dn">
          <cti:button nameKey="filter" classes="js-show-filter" icon="icon-filter" data-popup="#filter-popup"/>
     </div>
-    <div class="dn js-page-additional-actions">
-        <li class="divider"></li>
-        <c:choose>
-            <c:when test="${hasActionRoles == true}">
-                <cm:dropdownOption id="systemStartScheduleAssignments" data-popup="#start-assignments" icon="icon-control-play-blue" key=".play.label"/>
-            </c:when>
-            <c:otherwise>
-                <cm:dropdownOption id="systemStartScheduleAssignments" icon="icon-control-play-blue" key=".playDisabled.label"/>
-            </c:otherwise>
-        </c:choose>
-        <c:choose>
-            <c:when test="${hasActionRoles == true}">
-                <cm:dropdownOption id="systemStopScheduleAssignments" data-popup="#stop-assignments" icon="icon-control-stop-blue" key=".stop.label"/>
-            </c:when>
-            <c:otherwise>
-                <cm:dropdownOption id="systemStopScheduleAssignments" icon="icon-control-stop-blue" key=".stopDisabled.label"/>
-            </c:otherwise>
-        </c:choose>
-        
-        <c:choose>
-            <c:when test="${hasEditingRole == true}">
-                <cm:dropdownOption id="systemAddScheduleAssignments" data-popup="#add-assignments" icon="icon-add" key=".add.label"/>
-            </c:when>
-            <c:otherwise>
-                <cm:dropdownOption id="systemAddScheduleAssignments" icon="icon-add" key=".addDisabled.label"/>
-            </c:otherwise>
-        </c:choose>
-    </div>
-
     <cti:linkTabbedContainer mode="section">
         <cti:linkTab selectorKey="yukon.web.modules.capcontrol.schedules.tab.title">
             <c:url value="/capcontrol/schedule/schedules" />
@@ -134,8 +105,23 @@
     <c:set var="baseUrl" value="/capcontrol/schedule/scheduleAssignments"/>
     <cti:url var="showAllUrl" value="/capcontrol/schedule/scheduleAssignments"/>
 
-    <div id="schedule-assignments-table">
+    <div id="schedule-assignments-table" class="scroll-xl">
         <%@include file="scheduleassignmentTable.jsp" %>
+    </div>
+    
+    <div class="action-area">
+        <c:choose>
+            <c:when test="${hasActionRoles}">
+                <cti:button id="systemAddScheduleAssignments" data-popup="#add-assignments" icon="icon-add" nameKey="add"/>
+                <cti:button id="systemStartScheduleAssignments" data-popup="#start-assignments" icon="icon-control-play-blue" nameKey="play" />
+                <cti:button id="systemStopScheduleAssignments" data-popup="#stop-assignments" icon="icon-control-stop-blue" nameKey="stop"/>
+            </c:when>
+            <c:otherwise>
+                <cti:button id="systemAddScheduleAssignments" icon="icon-add" nameKey="addDisabled"/>
+                <cti:button id="systemStartScheduleAssignments" icon="icon-control-play-blue" nameKey="playDisabled"/>
+                <cti:button id="systemStopScheduleAssignments" icon="icon-control-stop-blue" nameKey="stopDisabled"/>
+            </c:otherwise>
+        </c:choose>
     </div>
     
 </cti:standardPage>
