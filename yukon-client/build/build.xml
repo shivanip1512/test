@@ -4,6 +4,10 @@
     <property environment="env" />
     <property file="build.properties" />
 
+	<presetdef name="javac">
+	   <javac includeantruntime="false" />
+	</presetdef>
+	
     <target name="all" depends="init, cleanlib, help">
         <antcall target="callall">
             <param name="dotarget" value="all" />
