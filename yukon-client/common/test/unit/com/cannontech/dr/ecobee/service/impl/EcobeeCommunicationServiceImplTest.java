@@ -221,11 +221,10 @@ public class EcobeeCommunicationServiceImplTest {
     private <T> void setRequestResponse(RestTemplate mock, Object request, T response) throws Exception {
         EasyMock.expect(mock.exchange(EasyMock.anyObject(String.class), 
                   EasyMock.eq(HttpMethod.GET), EasyMock.anyObject(HttpEntity.class), 
-                  EasyMock.anyObject(Class.class), 
+                  (Class<T>)EasyMock.anyObject(Class.class), 
                   EasyMock.eq(Collections.singletonMap("bodyJson", JsonUtils.toJson(request)))))
               .andReturn(new ResponseEntity<>(response, HttpStatus.I_AM_A_TEAPOT));
     }
-
 
     private void AssertEqual(List<EcobeeDeviceReadings> allDeviceReadings1, List<EcobeeDeviceReadings> allDeviceReadings2) {
         Assert.assertNotNull(allDeviceReadings1);

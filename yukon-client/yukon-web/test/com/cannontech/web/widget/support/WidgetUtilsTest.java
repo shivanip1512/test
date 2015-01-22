@@ -32,8 +32,8 @@ public class WidgetUtilsTest {
         simpleMap.put("key2","value2");
 
         String json = WidgetUtils.generateJsonString(simpleMap);
-        //"{\"key2\":\"value2\",\"key1\":\"value1\"}"
-        Assert.assertEquals(json, "{\"key2\":\"value2\",\"key1\":\"value1\"}");
+        //"{\"key1\":\"value1\",\"key2\":\"value2\"}"
+        Assert.assertEquals(json, "{\"key1\":\"value1\",\"key2\":\"value2\"}");
     }
     
     @Test

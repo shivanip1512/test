@@ -34,7 +34,8 @@ public class ValidatorServiceImpl implements ValidatorService {
 
     @Override
     public Validator getValidator(Object validatedObject) {
-        return getValidator(validatedObject == null ? Object.class : validatedObject.getClass());
+    	Class<?> validatedClass = validatedObject == null ? Object.class : validatedObject.getClass();
+        return getValidator(validatedClass);
     }
 
     @Override
