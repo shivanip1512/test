@@ -10,18 +10,15 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.schedule.dao.PaoScheduleDao;
 import com.cannontech.database.data.pao.CapControlTypes;
 
 public class CapControlCreationModelValidator extends SimpleValidator<CapControlCreationModel>{
 
-    private final PaoScheduleDao paoScheduleDao;
     private final StrategyDao strategyDao;
     private final PaoDao paoDao;
 
-    public CapControlCreationModelValidator(PaoScheduleDao paoScheduleDao, StrategyDao strategyDao, PaoDao paoDao) {
+    public CapControlCreationModelValidator(StrategyDao strategyDao, PaoDao paoDao) {
         super(CapControlCreationModel.class);
-        this.paoScheduleDao = paoScheduleDao;
         this.strategyDao = strategyDao;
         this.paoDao = paoDao;
     }
@@ -35,17 +32,10 @@ public class CapControlCreationModelValidator extends SimpleValidator<CapControl
             errors.reject("A name must be specified for this object.");
         }
         
-        if (type != CapControlTypes.CAP_CONTROL_SCHEDULE && type != CapControlTypes.CAP_CONTROL_STRATEGY) {
+        if (type != CapControlTypes.CAP_CONTROL_STRATEGY) {
             if (!PaoUtils.isValidPaoName(name)) {
                 errors.reject(name + " cannot include any of the following characters: / \\ , ' |");
             }
-        }
-        
-        if (type == CapControlTypes.CAP_CONTROL_SCHEDULE) {
-            if(paoScheduleDao.doesNameExist(name)){
-                errors.reject("There is already a Schedule with the name '" + name + "'");
-            }
-            return;
         }
 
         if (type == CapControlTypes.CAP_CONTROL_STRATEGY) {

@@ -2,7 +2,6 @@ package com.cannontech.web.capcontrol;
 
 import java.beans.PropertyEditor;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -35,6 +34,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.capcontrol.ScheduleCommand;
@@ -55,7 +55,6 @@ import com.cannontech.core.schedule.dao.PaoScheduleDao;
 import com.cannontech.core.schedule.model.PaoSchedule;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -107,10 +106,8 @@ public class ScheduleController {
     
     private void setUpModel(HttpServletRequest request, LiteYukonUser user, ModelMap model) {
         
-        boolean hasEditingRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CBC_DATABASE_EDIT, user);
         boolean hasCapBankRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ALLOW_CAPBANK_CONTROLS, user);
         boolean hasSubbusRole = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ALLOW_SUBBUS_CONTROLS, user);
-        model.addAttribute("hasEditingRole", hasEditingRole);
         model.addAttribute("hasActionRoles", hasCapBankRole && hasSubbusRole);
         
         //Create filters
@@ -145,10 +142,9 @@ public class ScheduleController {
         
         model.addAttribute("commandList", ScheduleCommand.values());
         model.addAttribute("verifyCommandsList", ScheduleCommand.getVerifyCommandsList());
-        List<PAOSchedule> schedules = paoScheduleDao.getAllPaoScheduleNames(); 
-        Collections.sort(schedules);
-        
-        model.addAttribute("schedules", schedules);
+        List<PaoSchedule> schedules = paoScheduleDao.getAll(); 
+        //TODO JOE
+        model.addAttribute("scheduleList", schedules);
         
     }
     
@@ -593,12 +589,12 @@ public class ScheduleController {
      * Returns the "Run Multiple Schedule Assignment Commands" popup form.
      */
     @RequestMapping("startMultiScheduleAssignmentPopup")
-    public String startMultiScheduleAssignmentPopup(HttpServletRequest request, ModelMap map) {
-        String schedule = ServletRequestUtils.getStringParameter(request, "schedule", NO_FILTER);
-        String command = ServletRequestUtils.getStringParameter(request, "command", NO_FILTER);
-        List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
-        Collections.sort(schedList);
-        
+    public String startMultiScheduleAssignmentPopup(ModelMap map,
+            @RequestParam(defaultValue="All") String schedule,
+            @RequestParam(defaultValue="All") String command) {
+
+        List<PaoSchedule> schedList = paoScheduleDao.getAll();
+
         map.addAttribute("schedule", schedule);
         map.addAttribute("command", command);
         map.addAttribute("commandList", ScheduleCommand.values());
@@ -611,12 +607,12 @@ public class ScheduleController {
      * Returns the "Stop Multiple Schedule Assignment Commands" popup form.
      */
     @RequestMapping("stopMultiScheduleAssignmentPopup")
-    public String stopMultiScheduleAssignmentPopup(HttpServletRequest request, ModelMap map) {
-        String schedule = ServletRequestUtils.getStringParameter(request, "schedule", NO_FILTER);
-        String command = ServletRequestUtils.getStringParameter(request, "command", NO_FILTER);
-        List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
-        Collections.sort(schedList);
-        
+    public String stopMultiScheduleAssignmentPopup(ModelMap map,
+            @RequestParam(defaultValue="All") String schedule,
+            @RequestParam(defaultValue="All") String command) {
+
+        List<PaoSchedule> schedList = paoScheduleDao.getAll();
+
         map.addAttribute("schedule", schedule);
         map.addAttribute("command", command);
         map.addAttribute("verifyCommandsList", ScheduleCommand.getVerifyCommandsList());
@@ -629,11 +625,11 @@ public class ScheduleController {
      * Returns the "Run Multiple Schedule Assignment Commands" popup form.
      */
     @RequestMapping("newScheduleAssignmentPopup")
-    public String newScheduleAssignmentPopup(HttpServletRequest request, ModelMap map) {
-        String schedule = ServletRequestUtils.getStringParameter(request, "schedule", NO_FILTER);
-        String command = ServletRequestUtils.getStringParameter(request, "command", NO_FILTER);
-        List<PAOSchedule> schedList = paoScheduleDao.getAllPaoScheduleNames();
-        Collections.sort(schedList);
+    public String newScheduleAssignmentPopup(ModelMap map,
+            @RequestParam(defaultValue="All") String schedule,
+            @RequestParam(defaultValue="All") String command) {
+
+        List<PaoSchedule> schedList = paoScheduleDao.getAll();
         
         map.addAttribute("schedule", schedule);
         map.addAttribute("command", command);

@@ -12,6 +12,5 @@ public interface DBEditorTypes {
 	//editor types
 	public final static int EDITOR_POINT = 1;
 	public final static int EDITOR_CAPCONTROL = 2;
-	public final static int EDITOR_SCHEDULE = 3;
     public final static int EDITOR_STRATEGY = 5;
 }

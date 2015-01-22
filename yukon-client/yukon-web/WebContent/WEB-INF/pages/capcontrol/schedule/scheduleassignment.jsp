@@ -64,9 +64,9 @@
                 <tags:nameValue2 nameKey=".schedules">
                     <select name="schedule" id="scheduleSelection">
                         <option value="All"><cti:msg2 key=".allSchedules"/></option>
-                        <c:forEach var="aSchedule" items="${scheduleList}">
-                            <option value="${aSchedule.scheduleName}"<c:if test="${param.schedule == aSchedule.scheduleName}"> selected="selected" </c:if>>
-                                ${fn:escapeXml(aSchedule.scheduleName)}
+                        <c:forEach var="schedule" items="${scheduleList}">
+                            <option value="${schedule.name}"<c:if test="${param.schedule == schedule.name}"> selected="selected" </c:if>>
+                                ${fn:escapeXml(schedule.name)}
                             </option>
                         </c:forEach>
                     </select>

@@ -67,6 +67,7 @@ import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.schedule.dao.PaoScheduleDao;
+import com.cannontech.core.schedule.model.PaoSchedule;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController;
@@ -104,7 +105,6 @@ import com.cannontech.database.db.capcontrol.PeakTargetSetting;
 import com.cannontech.database.db.capcontrol.StrategyPeakSettingsHelper;
 import com.cannontech.database.db.device.DeviceScanRate;
 import com.cannontech.database.db.holiday.HolidaySchedule;
-import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.model.Season;
@@ -497,11 +497,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     			dbObj = PAOFactory.createPAObject(id);
     			break;
     
-    		case DBEditorTypes.EDITOR_SCHEDULE:
-    			dbObj = new PAOSchedule();
-    			((PAOSchedule) dbObj).setScheduleID(new Integer(id));
-    			break;
-                
             case DBEditorTypes.EDITOR_STRATEGY:
                 dbObj = new CapControlStrategy();
                 ((CapControlStrategy)dbObj).setStrategyID(new Integer(id));
@@ -565,12 +560,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 			itemId = point.getPoint().getPointID().intValue();
 			initPanels(PointTypes.getType(point.getPoint().getPointType()));
 			
-		} else if (getDbPersistent() instanceof PAOSchedule) {
-		    
-		    PAOSchedule schedule = (PAOSchedule) getDbPersistent();
-			itemId = schedule.getScheduleID().intValue();
-            initPanels(CapControlTypes.CAP_CONTROL_SCHEDULE);
-            
 		} else if (getDbPersistent() instanceof CapControlStrategy) {
 		    
             CapControlStrategy strat = (CapControlStrategy)getDbPersistent();
@@ -736,13 +725,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     			getVisibleTabs().put("CBCController", Boolean.TRUE);
     			break;
     
-    		case CapControlTypes.CAP_CONTROL_SCHEDULE:
-    			setEditorTitle("Schedule");
-    			getVisibleTabs().put("GeneralPAO", Boolean.FALSE);
-    			getVisibleTabs().put("GeneralSchedule", Boolean.TRUE);
-    			getVisibleTabs().put("CBCSchedule", Boolean.TRUE);
-    			break;
-                
             case CapControlTypes.CAP_CONTROL_STRATEGY:
                 setEditorTitle("Strategy");
                 getVisibleTabs().put("GeneralPAO", Boolean.FALSE);
@@ -999,9 +981,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
      * @return
      */
     private int getEditorType(int type) {
-        if (type == CapControlTypes.CAP_CONTROL_SCHEDULE) {
-            return DBEditorTypes.EDITOR_SCHEDULE;
-        }else if (type == CapControlTypes.CAP_CONTROL_STRATEGY) {
+        if (type == CapControlTypes.CAP_CONTROL_STRATEGY) {
             return DBEditorTypes.EDITOR_STRATEGY;
         }else {
             return DBEditorTypes.EDITOR_CAPCONTROL;
@@ -1009,7 +989,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     }
 
     /**
-     * Creates a cap control object, strategy, or schedule.
+     * Creates a cap control object or strategy.
      * @Return String the url to go when done.
      */
     @Override
@@ -1020,7 +1000,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         final CBCWizardModel wizard = (CBCWizardModel) getWizData();
 
         DataBinder binder = new DataBinder(wizard);
-        CapControlCreationModelValidator validator = new CapControlCreationModelValidator(paoScheduleDao, strategyDao, paoDao);
+        CapControlCreationModelValidator validator = new CapControlCreationModelValidator(strategyDao, paoDao);
         binder.setValidator(validator);
         binder.validate();
         BindingResult bindingResult = binder.getBindingResult();
@@ -1043,12 +1023,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                // If this is a Schedule or Strategy it is NOT a Pao, handle
+                // If this is a Strategy it is NOT a Pao, handle
                 // accordingly.
-                if (type == CapControlTypes.CAP_CONTROL_SCHEDULE) {
-                    itemId = paoScheduleDao.add(name, disabled);
-                    return;
-                } else if (type == CapControlTypes.CAP_CONTROL_STRATEGY) {
+                if (type == CapControlTypes.CAP_CONTROL_STRATEGY) {
                     itemId = strategyDao.add(name);
                     return;
                 }
@@ -1448,10 +1425,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 		return CBCSelectionLists.TIME_INTERVAL;
 	}
 
-	public SelectItem[] getScheduleRepeatTime() {
-		return CBCSelectionLists.getTimeSubList(300);
-	}
-
 	@Override
     public List<LiteYukonPAObject> getUnassignedBanks() {
 		return unassignedBanks;
@@ -1721,10 +1694,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     	if (getDbPersistent() != null) {
 	    	if (getDbPersistent() instanceof YukonPAObject) {
 	        	retStr = ((YukonPAObject)getDbPersistent()).getPAOName();
-	        } else if (getDbPersistent() instanceof PAOSchedule) {
-	        	if (getDbPersistent() != null) {
-	            	retStr = ((PAOSchedule)getDbPersistent()).getScheduleName();
-	        	}
 	        } else if (getDbPersistent() instanceof CapControlStrategy) {
 	            retStr = ((CapControlStrategy)getDbPersistent()).getStrategyName();
 	        }
@@ -2111,6 +2080,19 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     
     public String getOffPeakHeader() {
         return isTimeOfDay() ? "Close" : "Off Peak";
+    }
+
+    //for subBusSchedule.jsp
+    public List<SelectItem> getPaoScheduleSelectItems() {
+
+        List<PaoSchedule> schedules = paoScheduleDao.getAll();
+        List<SelectItem> selectItems = new ArrayList<>();
+
+        for(PaoSchedule schedule : schedules) {
+            selectItems.add(new SelectItem(schedule.getId(), schedule.getName()));
+        }
+
+        return selectItems;
     }
     
     public void setSeasonScheduleDao(SeasonScheduleDao seasonScheduleDao) {

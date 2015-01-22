@@ -45,7 +45,7 @@
                         <x:selectOneMenu id="sched" value="#{paoSched.scheduleID}"
                             onchange="yukon.da.lockButtonsPerSubmit('hdr_buttons'); yukon.da.lockButtonsPerSubmit('foot_buttons');submit();">
                             <f:selectItem itemLabel="(none)" itemValue="-1" />
-                            <f:selectItems value="#{paoScheduleForm.PAOSchedulesSelItems}" />
+                            <f:selectItems value="#{capControlForm.PaoScheduleSelectItems}" />
                         </x:selectOneMenu>
                     </h:column>
                     <h:column>

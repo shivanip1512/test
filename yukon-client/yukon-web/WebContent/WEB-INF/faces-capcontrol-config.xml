@@ -121,12 +121,6 @@
     </managed-bean>
 
     <managed-bean>
-        <managed-bean-name>paoScheduleForm</managed-bean-name>
-        <managed-bean-class>com.cannontech.web.editor.PAOScheduleForm</managed-bean-class>
-        <managed-bean-scope>session</managed-bean-scope>
-    </managed-bean>
-    
-    <managed-bean>
         <managed-bean-name>cbcCopyForm</managed-bean-name>
         <managed-bean-class>com.cannontech.web.copy.DBCopyForm</managed-bean-class>
         <managed-bean-scope>session</managed-bean-scope>

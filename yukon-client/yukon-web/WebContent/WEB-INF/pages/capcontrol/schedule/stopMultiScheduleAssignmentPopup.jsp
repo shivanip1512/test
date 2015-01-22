@@ -12,14 +12,14 @@
         <tags:nameValue2 nameKey=".schedules">
             <select name="stopSchedule" id="stop-schedule">
                 <option value="All" <c:if test="${param.schedule == 'All'}">selected="selected" </c:if>><cti:msg2 key=".allSchedules"/></option>
-                <c:forEach var="aSchedule" items="${scheduleList}">
-                    <c:if test="${param.schedule == aSchedule.scheduleName}">
+                <c:forEach var="schedule" items="${scheduleList}">
+                    <c:if test="${param.schedule == schedule.name}">
                         <c:set var="selected">selected="selected"</c:set>
                     </c:if>
-                    <c:if test="${param.schedule != aSchedule.scheduleName}">
+                    <c:if test="${param.schedule != schedule.name}">
                         <c:set var="selected" value=""/>
                     </c:if>
-                    <option value="${aSchedule.scheduleName}" ${selected}>${fn:escapeXml(aSchedule.scheduleName)}</option>
+                    <option value="${schedule.name}" ${selected}>${fn:escapeXml(schedule.name)}</option>
                 </c:forEach>
             </select>
         </tags:nameValue2>

@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.schedule.model.PaoSchedule;
-import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 
 public interface PaoScheduleDao {
@@ -27,8 +26,6 @@ public interface PaoScheduleDao {
     List<PaoScheduleAssignment> getScheduleAssignmentByScheduleId(Integer scheduleId);
     
     List<PaoScheduleAssignment> getAllScheduleAssignments();
-
-    List<PAOSchedule> getAllPaoScheduleNames();
 
     boolean assignCommand(List<PaoScheduleAssignment> param);
 

@@ -17,9 +17,9 @@ import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.schedule.dao.PaoScheduleDao;
+import com.cannontech.core.schedule.model.PaoSchedule;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.capcontrol.LiteCapControlStrategy;
-import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.web.dev.database.objects.DevCapControl;
 import com.cannontech.web.dev.database.objects.DevCommChannel;
 import com.cannontech.web.dev.database.objects.DevPaoType;
@@ -211,15 +211,13 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     }
     
     private void createCapControlSchedule(DevCapControl devCapControl, int type, String name, boolean disabled) {
-        List<PAOSchedule> allPaoScheduleNames = paoScheduleDao.getAllPaoScheduleNames();
-        for (PAOSchedule paoSchedule : allPaoScheduleNames) {
-            if (paoSchedule.getScheduleName().equalsIgnoreCase(name)) {
-                log.info("CapControl object with name " + name + " already exists. Skipping");
-                return;
-            }
+        if (paoScheduleDao.doesNameExist(name)) {
+            log.info("CapControl object with name " + name + " already exists. Skipping");
+            return;
         }
-        
-        paoScheduleDao.add(name, disabled);
+        PaoSchedule newSchedule = new PaoSchedule();
+        newSchedule.setName(name);
+        paoScheduleDao.save(newSchedule);
     }
     
     private void createCapControlStrategy(DevCapControl devCapControl, int type, String name, boolean disabled) {

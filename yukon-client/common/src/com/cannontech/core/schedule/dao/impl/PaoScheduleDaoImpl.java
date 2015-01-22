@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -25,7 +24,6 @@ import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
@@ -35,7 +33,6 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 public class PaoScheduleDaoImpl implements PaoScheduleDao {
 
     private static final YukonRowMapper<PaoScheduleAssignment> assignmentRowMapper;
-    private static final YukonRowMapper<PAOSchedule> paoScheduleRowMapper;
     
     private static SimpleTableAccessTemplate<PaoSchedule> scheduleTemplate; 
 
@@ -64,22 +61,6 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
             }
         };
 
-        paoScheduleRowMapper = new YukonRowMapper<PAOSchedule>() {
-            @Override
-            public PAOSchedule mapRow(YukonResultSet rs) throws SQLException
-            {
-                PAOSchedule sched = new PAOSchedule();
-                sched.setScheduleID(rs.getInt("ScheduleID"));
-                sched.setNextRunTime(rs.getInstant("NextRunTime").toDate());
-                Instant lastRunTime = rs.getInstant("LastRunTime");
-                
-                sched.setLastRunTime(lastRunTime == null ? null : lastRunTime.toDate());
-                sched.setIntervalRate(rs.getInt("IntervalRate"));
-                sched.setScheduleName(rs.getString("ScheduleName"));
-                sched.setDisabled(rs.getBoolean("Disabled"));
-                return sched;
-            }
-        };
     }
     
     private static AdvancedFieldMapper<PaoSchedule> scheduleMapper = new AdvancedFieldMapper<PaoSchedule>() {
@@ -261,18 +242,6 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         int rowsAffected = yukonJdbcTemplate.update(sql);
         
         return rowsAffected == 1;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<PAOSchedule> getAllPaoScheduleNames() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ScheduleId, NextRunTime, LastRunTime,");
-        sql.append(       "IntervalRate, ScheduleName, Disabled");
-        sql.append("FROM PaoSchedule");
-        
-        List<PAOSchedule> scheduleNames = yukonJdbcTemplate.query(sql, paoScheduleRowMapper);
-        return scheduleNames;
     }
 
     @Override

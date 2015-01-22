@@ -13,7 +13,6 @@ public interface CapControlTypes extends TypeBase
     public static final int CAP_CONTROL_AREA        = CAPCONTROL_OFFSET + 2;
     public static final int CAP_CONTROL_SPECIAL_AREA        = CAPCONTROL_OFFSET + 3;
     public final static int CAP_CONTROL_SUBSTATION     = CAPCONTROL_OFFSET + 4;
-    public final static int CAP_CONTROL_SCHEDULE     = CAPCONTROL_OFFSET + 5;
     public final static int CAP_CONTROL_STRATEGY     = CAPCONTROL_OFFSET + 6;
     public final static int CAP_CONTROL_CAPBANK = DeviceTypes.CAPBANK;
     public final static int CAP_CONTROL_LTC     = CAPCONTROL_OFFSET + 7;

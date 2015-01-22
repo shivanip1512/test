@@ -14,8 +14,8 @@
                 <td>Schedules:</td>
                 <td>
                     <select name="addSchedule" id="addSchedule">
-                        <c:forEach var="aSchedule" items="${scheduleList}">
-                                <option value="${aSchedule.scheduleID}" <c:if test="${param.schedule == aSchedule.scheduleName}">selected="selected" </c:if> >${fn:escapeXml(aSchedule.scheduleName)}</option>
+                        <c:forEach var="schedule" items="${scheduleList}">
+                                <option value="${schedule.Id}" <c:if test="${param.schedule == schedule.name}">selected="selected" </c:if> >${fn:escapeXml(schedule.name)}</option>
                         </c:forEach>
                     </select>
                 </td>
