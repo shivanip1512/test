@@ -51,7 +51,7 @@ set PR_LOGPATH=%CATALINA_BASE%\logs
 set "PR_CLASSPATH=%CATALINA_HOME%\bin\bootstrap.jar;%CATALINA_BASE%\bin\tomcat-juli.jar;%CATALINA_HOME%\bin\tomcat-juli.jar"
 
 rem Set the client jvm from JRE_HOME
-set PR_JVM=%JRE_HOME%\bin\client\jvm.dll
+set PR_JVM=%JRE_HOME%\bin\server\jvm.dll
 if exist "%PR_JVM%" goto foundJvm
 
 :foundJvm
@@ -78,7 +78,7 @@ rem More extra parameters
 set PR_LOGPATH=%CATALINA_BASE%\logs
 set PR_STDOUTPUT=auto
 set PR_STDERROR=auto
-"%EXECUTABLE%"//US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp;-XX:MaxPermSize=128m;-XX:+HeapDumpOnOutOfMemoryError;-XX:HeapDumpPath=%YUKON_SERVER_DIR%\Log" --JvmMs 256 --JvmMx 512
+"%EXECUTABLE%"//US//%SERVICE_NAME% ++JvmOptions "-Djava.io.tmpdir=%CATALINA_BASE%\temp;-XX:+HeapDumpOnOutOfMemoryError;-XX:HeapDumpPath=%YUKON_SERVER_DIR%\Log" --JvmMs 256 --JvmMx 512
 echo The service 'Yukon Web Application Service' has been installed.
 
 :end

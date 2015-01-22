@@ -249,9 +249,9 @@
             <fileset dir="${basedir}/yukon-install/JRE/bin" includes="jar.exe,hpi.dll,java.dll,verify.dll,zip.dll,jli.dll,msvcr71.dll" />
             <fileset dir="${webcontent.bag}" />
         </copy>
-        <copy todir="${install.bag}/Yukon Web Deployment/ROOT/client" file="${basedir}/yukon-install/JRE/bin/client/jvm.dll" preservelastmodified="true"/>
+        <copy todir="${install.bag}/Yukon Web Deployment/ROOT/client" file="${basedir}/yukon-install/JRE/bin/servert/jvm.dll" preservelastmodified="true"/>
         <copy todir="${install.bag}/Yukon Web Deployment/lib" file="${basedir}/yukon-install/JRE/lib/rt.jar" preservelastmodified="true"/>
-        <copy todir="${install.bag}/Yukon Web Deployment/lib/i386" file="${basedir}/yukon-install/JRE/lib/i386/jvm.cfg" preservelastmodified="true"/>
+        <copy todir="${install.bag}/Yukon Web Deployment/lib/i386" file="${basedir}/yukon-install/JRE/lib/amd64/jvm.cfg" preservelastmodified="true"/>
 
         <!-- Wrapper files -->
         <copy todir="${install.bag}/Wrapper/Client/bin" preservelastmodified="true">
