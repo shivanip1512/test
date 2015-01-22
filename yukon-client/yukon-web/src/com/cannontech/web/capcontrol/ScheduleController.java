@@ -142,10 +142,9 @@ public class ScheduleController {
         
         model.addAttribute("commandList", ScheduleCommand.values());
         model.addAttribute("verifyCommandsList", ScheduleCommand.getVerifyCommandsList());
+
         List<PaoSchedule> schedules = paoScheduleDao.getAll(); 
-        //TODO JOE
         model.addAttribute("scheduleList", schedules);
-        
     }
     
     @RequestMapping("scheduleAssignmentsTable")

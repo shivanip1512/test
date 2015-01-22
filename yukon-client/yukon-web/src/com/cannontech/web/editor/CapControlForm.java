@@ -652,7 +652,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 		getVisibleTabs().put("CBCType", Boolean.FALSE);
 		getVisibleTabs().put("CBCController", Boolean.FALSE);
 		getVisibleTabs().put("GeneralSchedule", Boolean.FALSE);
-		getVisibleTabs().put("CBCSchedule", Boolean.FALSE);
         getVisibleTabs().put("CBAddInfo", Boolean.FALSE);
         getVisibleTabs().put("CBCStrategy", Boolean.FALSE);
         getVisibleTabs().put("Regulator", Boolean.FALSE);
