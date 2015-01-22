@@ -264,7 +264,7 @@ yukon.dataExporterFormat = (function () {
              */
             $(document).on('yukon.data.export.format.attribute.edit', function (ev) {
                 
-                var row = $(ev.target);
+                var row = $(ev.target),
                     attribute = row.find('td:first-child'),
                     originalValue = JSON.parse(attribute.find('input').val()),
                     dataSelection = attribute.next(),

@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,16 +22,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.Validator;
 import com.cannontech.web.dev.model.Person;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.google.common.collect.ImmutableMap;
 
 @Controller
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class StyleGuideController {
+    
+    private Map<Integer, Person> people = new ConcurrentHashMap<>(ImmutableMap.of(
+            1, new Person(1, "Bob Vila", "bob@thisoldhouse.com", 50, true),
+            2, new Person(2, "Paul Bunyan", "paul@mn.gov", 41, false),
+            3, new Person(3, "Babe the Blue Ox", "babe@mn.gov", 8, true)));
     
     @RequestMapping({"/styleguide", "/styleguide/"})
     public String root() {
@@ -78,6 +87,7 @@ public class StyleGuideController {
     
     @RequestMapping("/styleguide/dialogs")
     public String dialogs(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        model.addAttribute("people", people.values());
         return "styleguide/dialogs.jsp";
     }
     
@@ -161,6 +171,7 @@ public class StyleGuideController {
         
         Person person = new Person();
         model.addAttribute("person", person);
+        model.addAttribute("create", true);
         
         return "styleguide/person.jsp";
     }
@@ -172,10 +183,37 @@ public class StyleGuideController {
         new PersonValidator().validate(person, result);
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("create", true);
             return "styleguide/person.jsp";
         }
         
         resp.setStatus(HttpStatus.NO_CONTENT.value());
+        return null;
+    }
+    
+    @RequestMapping(value="/styleguide/edit-person", method=RequestMethod.GET)
+    public String editPersonPopup(ModelMap model, int id) {
+        
+        Person person = people.get(id);
+        model.addAttribute("person", person);
+        
+        return "styleguide/person.jsp";
+    }
+    
+    @RequestMapping(value="/styleguide/person", method=RequestMethod.PUT)
+    public String updatePerson(ModelMap model, HttpServletResponse resp, 
+            @ModelAttribute("person") Person person, BindingResult result) throws Exception {
+        
+        new PersonValidator().validate(person, result);
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            return "styleguide/person.jsp";
+        }
+        
+        people.put(person.getId(), person);
+        resp.setContentType("application/json");
+        JsonUtils.getWriter().writeValue(resp.getOutputStream(), person);
+        
         return null;
     }
     

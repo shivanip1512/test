@@ -1,5 +1,6 @@
 <%@ page trimDirectiveWhitespaces="true" %>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
@@ -363,6 +364,181 @@ $('#form-example').on('yukon:dev:styleguid:dialogs:create:person', function (e) 
 &lt;script&gt;
     $('.js-api-show-btn').click(function (e) { yukon.ui.dialog('#js-api-show-popup'); });
 &lt;/script&gt;
+</pre>
+
+<h2 id="js-api-example">Tables and Advanced Dialogs</h2>
+
+<p class="description">
+    Sometimes you need one popup to handle many interactions, like a user clicking an edit button in a table row.  Instead
+    of creating many popups you should use one.  At this point you probably need to bypass Yukon's automated dialog handling
+    and code it yourself usings jquery's <a href="http://api.jqueryui.com/dialog/">dialog widget</a> api.
+</p>
+<p class="description">
+    Below is an example of handling edit popups for any row of a table.  Jquery's dialog widget api defines buttons as an 
+    array of json objects.  Yukon has a helper function: <em>yukon.ui.buttons</em> to build an 'ok','cancel' button set 
+    for you. We use it here to also specify that the target of the event fired when clicking ok should be the table row we 
+    are editing.
+</p>
+<div class="column-4-20 clearfix style-guide-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        
+        <div id="edit-person-popup" class="dn"></div>
+        
+        <table id="person-table" class="compact-results-table">
+            <thead>
+                <tr>
+                    <th>Name</th><th>Age</th><th>Email</th><th colspan="2">Spam</th>
+                </tr>
+            </thead>
+            <tfoot></tfoot>
+            <tbody>
+                <c:forEach var="person" items="${people}">
+                    <tr data-id="${person.id}">
+                    <td>${person.name}</td><td>${person.age}</td><td>${person.email}</td><td>${person.spam ? 'yes' : 'no'}</td>
+                    <td><cti:button renderMode="buttonImage" icon="icon-pencil" classes="fr js-edit"/></td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+        <script>
+        $(document).on('click', '#person-table .js-edit', function (ev) {
+            
+            var 
+            popup = $('#edit-person-popup'),
+            row = $(this).closest('tr'),
+            id = row.data('id');
+            
+            $.get('edit-person', { id: id })
+            .done(function (data) {
+                popup.html(data);
+                popup.dialog({
+                    title: 'Edit Person',
+                    width: 'auto',
+                    buttons: yukon.ui.buttons({
+                        event: 'yukon:dev:sytleguide:dialogs:person:update', 
+                        target: row
+                    })
+                });
+            });
+            
+        });
+        
+        $(document).on('yukon:dev:sytleguide:dialogs:person:update', function (ev) {
+            
+            var row = $(ev.target);
+            
+            $('#edit-person-popup form').ajaxSubmit({
+                success: function (person, status, xhr, $form) {
+                    
+                    $('#edit-person-popup').dialog('close');
+                    row.find('td').eq(1).text(person.age)
+                    .next().text(person.email)
+                    .next().text(person.spam === true ? 'yes' : 'no');
+                },
+                error: function (xhr, status, error, $form) {
+                    // show the validated form
+                    $('#edit-person-popup').html(xhr.responseText);
+                }
+            });
+        });
+        </script>
+    </div>
+</div>
+<h4 class="subtle">JSP Code:</h4>
+<pre class="code prettyprint">
+&lt;div id=&quot;edit-person-popup&quot; class=&quot;dn&quot;&gt;&lt;/div&gt;
+        
+&lt;table id=&quot;person-table&quot; class=&quot;compact-results-table&quot;&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Name&lt;/th&gt;&lt;th&gt;Age&lt;/th&gt;&lt;th&gt;Email&lt;/th&gt;&lt;th colspan=&quot;2&quot;&gt;Spam&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tfoot&gt;&lt;/tfoot&gt;
+    &lt;tbody&gt;
+        &lt;c:forEach var=&quot;person&quot; items=&quot;&#36;{people}&quot;&gt;
+            &lt;tr data-id=&quot;&#36;{person.id}&quot;&gt;
+                &lt;td&gt;&#36;{person.name}&lt;/td&gt;
+                &lt;td&gt;&#36;{person.age}&lt;/td&gt;
+                &lt;td&gt;&#36;{person.email}&lt;/td&gt;
+                &lt;td&gt;&#36;{person.spam ? 'yes' : 'no'}&lt;/td&gt;
+                &lt;td&gt;&lt;cti:button renderMode=&quot;buttonImage&quot; icon=&quot;icon-pencil&quot; classes=&quot;fr js-edit&quot;/&gt;&lt;/td&gt;
+            &lt;/tr&gt;
+        &lt;/c:forEach&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+</pre>
+<h4 class="subtle">Javascript Code:</h4>
+<pre class="code prettyprint">
+$(document).on('click', '#person-table .js-edit', function (ev) {
+            
+    var 
+    popup = $('#edit-person-popup'),
+    row = $(this).closest('tr'),
+    id = row.data('id');
+    
+    $.get('edit-person', { id: id })
+    .done(function (data) {
+        popup.html(data);
+        popup.dialog({
+            title: 'Edit Person',
+            width: 'auto',
+            buttons: yukon.ui.buttons({
+                event: 'yukon:dev:sytleguide:dialogs:person:update', 
+                target: row
+            })
+        });
+    });
+    
+});
+
+$(document).on('yukon:dev:sytleguide:dialogs:person:update', function (ev) {
+    
+    var row = $(ev.target);
+    
+    $('#edit-person-popup form').ajaxSubmit({
+        success: function (person, status, xhr, $form) {
+            
+            $('#edit-person-popup').dialog('close');
+            row.find('td').eq(1).text(person.age)
+            .next().text(person.email)
+            .next().text(person.spam === true ? 'yes' : 'no');
+        },
+        error: function (xhr, status, error, $form) {
+            // show the validated form
+            $('#edit-person-popup').html(xhr.responseText);
+        }
+    });
+});
+</pre>
+<h4 class="subtle">Controller Code:</h4>
+<pre class="code prettyprint">
+@RequestMapping(value=&quot;/styleguide/edit-person&quot;, method=RequestMethod.GET)
+public String editPersonPopup(ModelMap model, int id) {
+    
+    Person person = people.get(id);
+    model.addAttribute(&quot;person&quot;, person);
+    
+    return &quot;styleguide/person.jsp&quot;;
+}
+
+@RequestMapping(value=&quot;/styleguide/person&quot;, method=RequestMethod.PUT)
+public String updatePerson(ModelMap model, HttpServletResponse resp, 
+        @ModelAttribute(&quot;person&quot;) Person person, BindingResult result) throws Exception {
+    
+    new PersonValidator().validate(person, result);
+    if (result.hasErrors()) {
+        resp.setStatus(HttpStatus.BAD_REQUEST.value());
+        return &quot;styleguide/person.jsp&quot;;
+    }
+    
+    people.put(person.getId(), person);
+    resp.setContentType(&quot;application/json&quot;);
+    JsonUtils.getWriter().writeValue(resp.getOutputStream(), person);
+    
+    return null;
+}
 </pre>
 
 </tags:styleguide>
