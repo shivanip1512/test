@@ -623,10 +623,10 @@
             </pages>
           </page>
           <page name="scheduleAssignments" type="BASIC">
-            <link>/capcontrol/schedule/scheduleAssignments</link>
+            <link>/capcontrol/schedules/scheduleAssignments</link>
           </page>
           <page name="schedules" type="BASIC">
-            <link>/capcontrol/schedule/schedules</link>
+            <link>/capcontrol/schedules/</link>
           </page>
           <page name="strategies" type="BASIC">
             <link>/capcontrol/strategy/strategies</link>

@@ -58,7 +58,7 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, OtherPermission.HIDEABLE, MasterConfigBooleanKeysEnum.ENABLE_ESTIMATED_LOAD, YukonRole.DEMAND_RESPONSE),
     AREAS(SiteMapCategory.VV, "yukon.web.modules.capcontrol.areas.pageName", "/capcontrol/tier/areas",
             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
-    IVVC_SCHEDULES(SiteMapCategory.VV, "yukon.web.modules.capcontrol.schedules.pageName", "/capcontrol/schedule/schedules",
+    IVVC_SCHEDULES(SiteMapCategory.VV, "yukon.web.modules.capcontrol.schedules.pageName", "/capcontrol/schedules/",
             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),
     STRATEGIES(SiteMapCategory.VV, "yukon.web.modules.capcontrol.strategies.pageName", "/capcontrol/strategy/strategies",
             MatchStyle.all, YukonRoleProperty.CAP_CONTROL_ACCESS),

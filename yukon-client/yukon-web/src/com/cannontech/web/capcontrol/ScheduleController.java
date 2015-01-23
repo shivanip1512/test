@@ -79,7 +79,7 @@ import com.google.common.collect.Multimap;
 
 
 @Controller
-@RequestMapping("/schedule/*")
+@RequestMapping("/schedules")
 @CheckRoleProperty(YukonRoleProperty.CAP_CONTROL_ACCESS)
 public class ScheduleController {
     
@@ -172,7 +172,7 @@ public class ScheduleController {
         return "schedule/scheduleassignmentTable.jsp";
     }
 
-    @RequestMapping("schedules")
+    @RequestMapping("")
     public String schedules(ModelMap model) {
         List<PaoSchedule> schedules = paoScheduleDao.getAll();
         model.addAttribute("schedules", schedules);
@@ -183,12 +183,19 @@ public class ScheduleController {
     }
     
     private static final Multimap<String,String> commandsByDevice(List<PaoScheduleAssignment> assignments) {
-        Multimap<String,String> commandToDevice = HashMultimap.create();
+        Multimap<String,String> deviceToCommands = HashMultimap.create();
+        
+//        assignments.forEach(assignment -> 
+//        	deviceToCommands.put(assignment.getDeviceName(), assignment.getCommandName())
+//        );
+
         for (PaoScheduleAssignment assignment : assignments) {
-            commandToDevice.put(assignment.getDeviceName(), assignment.getCommandName());
+            deviceToCommands.put(assignment.getDeviceName(), assignment.getCommandName());
         }
-        return commandToDevice;
+
+        return deviceToCommands;
     }
+
     @RequestMapping(value="{id}", method=RequestMethod.GET)
     public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
         PaoSchedule schedule = paoScheduleDao.getForId(id);
@@ -197,8 +204,9 @@ public class ScheduleController {
         model.addAttribute("mode", pageMode);
         model.addAttribute("scheduleDuration", Duration.standardSeconds(schedule.getRepeatSeconds()));
         List<PaoScheduleAssignment> assignments = paoScheduleDao.getScheduleAssignmentByScheduleId(id);
-        Multimap<String, String> deviceAssignments = commandsByDevice(assignments);
 
+        Multimap<String,String> deviceAssignments = commandsByDevice(assignments);
+        
         model.addAttribute("assignments", deviceAssignments.asMap());
 
         return setupEditModelMap(model, schedule);

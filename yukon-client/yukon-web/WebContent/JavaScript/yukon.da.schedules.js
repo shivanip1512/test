@@ -16,7 +16,7 @@ yukon.da.schedules = (function () {
                 var link = $(this),
                     popup = $('#schedule-popup'),
                     id = link.data('scheduleId');
-                popup.load(yukon.url('/capcontrol/schedule/' + id), function () {
+                popup.load(yukon.url('/capcontrol/schedules/' + id), function () {
                     var mode = popup.find('form').data('mode');
                     var title = popup.find('.js-popup-title')[0].value;
                     var buttons = [];
@@ -69,7 +69,7 @@ yukon.da.schedules = (function () {
                 var dialog = $(ev.target),
                     id = dialog.find('input[name="id"]').val(),
                     deleteMessage = dialog.find('form').data('deleteMessage');
-                $.ajax(yukon.url('/capcontrol/schedule/' + id + '/delete'))
+                $.ajax(yukon.url('/capcontrol/schedules/' + id + '/delete'))
                 .done(function () {
                     $(document).find('[data-schedule-id="' + id + '"]').remove();
                     $('.main-container').addMessage({

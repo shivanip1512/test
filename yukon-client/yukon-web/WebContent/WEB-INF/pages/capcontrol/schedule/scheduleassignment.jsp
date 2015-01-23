@@ -11,7 +11,7 @@
 
     <cti:includeScript link="/JavaScript/yukon.da.schedule.assignments.js"/>
     
-    <cti:url value="/capcontrol/schedule/startMultiScheduleAssignmentPopup" var="startAssignmentsUrl">
+    <cti:url value="/capcontrol/schedules/startMultiScheduleAssignmentPopup" var="startAssignmentsUrl">
         <cti param name="schedule" value="${param.schedule}" />
         <cti param name="command" value="${param.command}" />
     </cti:url>
@@ -23,7 +23,7 @@
         data-width="500" 
         class="dn"></div>
     
-    <cti:url value="/capcontrol/schedule/stopMultiScheduleAssignmentPopup" var="stopAssignmentsUrl">
+    <cti:url value="/capcontrol/schedules/stopMultiScheduleAssignmentPopup" var="stopAssignmentsUrl">
         <cti param name="schedule" value="${param.schedule}" />
         <cti param name="command" value="${param.command}" />
     </cti:url>
@@ -34,7 +34,7 @@
         data-url="${stopAssignmentsUrl}" 
         data-width="500" class="dn"></div>
 
-    <cti:url value="/capcontrol/schedule/newScheduleAssignmentPopup" var="newAssignmentsUrl">
+    <cti:url value="/capcontrol/schedules/newScheduleAssignmentPopup" var="newAssignmentsUrl">
         <cti param name="schedule" value="${param.schedule}" />
         <cti param name="command" value="${param.command}" />
     </cti:url>
@@ -50,14 +50,14 @@
     </div>
     <cti:linkTabbedContainer mode="section">
         <cti:linkTab selectorKey="yukon.web.modules.capcontrol.schedules.tab.title">
-            <c:url value="/capcontrol/schedule/schedules" />
+            <c:url value="/capcontrol/schedules" />
         </cti:linkTab>
         <cti:linkTab selectorKey="yukon.web.modules.capcontrol.scheduleAssignments.tab.title" initiallySelected="${true}">
-            <c:url value="/capcontrol/schedule/scheduleAssignments" />
+            <c:url value="/capcontrol/schedules/scheduleAssignments" />
         </cti:linkTab>
     </cti:linkTabbedContainer>
     
-    <cti:url value="/capcontrol/schedule/filter" var="filterURL"/>
+    <cti:url value="/capcontrol/schedules/filter" var="filterURL"/>
     <div id="filter-popup" data-title="<cti:msg2 key=".filterTitle"/>" class="dn">
         <form action="${filterURL}">
             <tags:nameValueContainer2>
@@ -102,8 +102,8 @@
     <cti:msg2 var="confirmCommand" key=".confirmCommand"/>
     <cti:msg2 var="sendTimeSyncsCommand" key=".sendTimeSyncsCommand"/>
     
-    <c:set var="baseUrl" value="/capcontrol/schedule/scheduleAssignments"/>
-    <cti:url var="showAllUrl" value="/capcontrol/schedule/scheduleAssignments"/>
+    <c:set var="baseUrl" value="/capcontrol/schedules/scheduleAssignments"/>
+    <cti:url var="showAllUrl" value="/capcontrol/schedules/scheduleAssignments"/>
 
     <div id="schedule-assignments-table" class="scroll-xl">
         <%@include file="scheduleassignmentTable.jsp" %>

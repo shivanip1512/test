@@ -98,7 +98,7 @@
         <link>/capcontrol/tier/areas</link>
       </option>
       <option name="schedules">
-        <link>/capcontrol/schedule/schedules</link>
+        <link>/capcontrol/schedules</link>
       </option>
       <option name="strategies">
         <link>/capcontrol/strategy/strategies</link>

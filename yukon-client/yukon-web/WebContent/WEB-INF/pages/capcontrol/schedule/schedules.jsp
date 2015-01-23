@@ -12,10 +12,10 @@
     <cti:linkTabbedContainer mode="section">
         <cti:linkTab selectorKey="yukon.web.modules.capcontrol.schedules.tab.title"
                      initiallySelected='${true}'>
-            <cti:url value="/capcontrol/schedule/schedules" />
+            <cti:url value="/capcontrol/schedules" />
         </cti:linkTab>
         <cti:linkTab selectorKey="yukon.web.modules.capcontrol.scheduleAssignments.tab.title">
-            <cti:url value="/capcontrol/schedule/scheduleAssignments" />
+            <cti:url value="/capcontrol/schedules/scheduleAssignments" />
         </cti:linkTab>
     </cti:linkTabbedContainer>
 
@@ -93,7 +93,7 @@
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <div class="action-area">
             <cti:button icon="icon-add" nameKey="create" data-popup="#schedule-create-popup"/>
-            <cti:url var="createUrl" value="/capcontrol/schedule/create" />
+            <cti:url var="createUrl" value="/capcontrol/schedules/create" />
         </div>
         <div id="schedule-create-popup" data-url="${createUrl}" data-dialog data-load-event="yukon:da:schedules:create" data-event="yukon:da:schedules:edit:submit" class="dn"></div>
     </cti:checkRolesAndProperties>

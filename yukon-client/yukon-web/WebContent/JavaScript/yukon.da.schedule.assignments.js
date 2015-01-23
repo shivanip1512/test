@@ -27,7 +27,7 @@ yukon.da.scheduleAssignments = (function () {
                 var deviceName = $(ev.target).closest('li').attr('data-device-name');
                 var eventId = $(ev.target).closest('li').attr('data-event-id');
                 
-                $.getJSON(yukon.url('/capcontrol/schedule/startSchedule'), {
+                $.getJSON(yukon.url('/capcontrol/schedules/startSchedule'), {
                     'eventId': eventId, 
                     'deviceName': deviceName
                 }).done(function (json) {
@@ -44,7 +44,7 @@ yukon.da.scheduleAssignments = (function () {
                 var deviceName = $(ev.target).closest('li').attr('data-device-name');
                 var deviceId = $(ev.target).closest('li').attr('data-device-id');
                 
-                $.getJSON(yukon.url('/capcontrol/schedule/stopSchedule'), {
+                $.getJSON(yukon.url('/capcontrol/schedules/stopSchedule'), {
                     'deviceId': deviceId, 
                     'deviceName': deviceName
                 }).done(function (json) {
@@ -61,7 +61,7 @@ yukon.da.scheduleAssignments = (function () {
 
             $(document).on('yukon_da_schedules_remove', '.deleteAssignment', function () {
                 var btn = $(this),
-                    removeUrl = yukon.url('/capcontrol/schedule/removePao'),
+                    removeUrl = yukon.url('/capcontrol/schedules/removePao'),
                     data = {'eventId': btn.data('eventId'),
                             'paoId': btn.data('paoId'),
                             'com.cannontech.yukon.request.csrf.token': btn.data('csrfToken')
@@ -81,7 +81,7 @@ yukon.da.scheduleAssignments = (function () {
 
             /** Click detection to post stop schedules form. */
             $('#stop-assignments').on('yukon.vv.schedules.stop.all', function (ev) {
-                var reviewTableUrl = yukon.url('/capcontrol/schedule/stopMultiple');
+                var reviewTableUrl = yukon.url('/capcontrol/schedules/stopMultiple');
                 $.post(reviewTableUrl, $('#stop-multiple-schedules-form').serialize()).done(function(json) {
                     $('#stop-assignments').dialog('close');
                     yukon.da.showAlertMessageForAction(json.schedule, '', json.resultText, 'green');
@@ -92,7 +92,7 @@ yukon.da.scheduleAssignments = (function () {
             
             /** Click detection to submit start assignment form. */
             $('#start-assignments').on('yukon.vv.schedules.start.all', function (ev) {
-                var reviewTableUrl = yukon.url('/capcontrol/schedule/startMultiple');
+                var reviewTableUrl = yukon.url('/capcontrol/schedules/startMultiple');
                 $.post(reviewTableUrl, $('#start-multiple-schedules-form').serialize()).done(function(json) {
                     $('#start-assignments').dialog('close');
                     yukon.da.showAlertMessageForAction(json.schedule, '', json.resultText, 'green');
@@ -104,7 +104,7 @@ yukon.da.scheduleAssignments = (function () {
             /** Click detection for enable OvUv menu click. */
             $(document).on('click', '.js-enable-ovuv', function (ev) {
                 var eventId = $(ev.target).closest('li').attr('value');
-                $.post(yukon.url('/capcontrol/schedule/setOvUv'), {
+                $.post(yukon.url('/capcontrol/schedules/setOvUv'), {
                     'eventId': eventId, 
                     'ovuv': 1
                 }).done(function (json) {
@@ -121,7 +121,7 @@ yukon.da.scheduleAssignments = (function () {
             /** Click detection for disable OvUv menu click. */
             $(document).on('click', '.js-disable-ovuv', function (ev) {
                 var eventId = $(ev.target).closest('li').attr('value');
-                $.post(yukon.url('/capcontrol/schedule/setOvUv'), {
+                $.post(yukon.url('/capcontrol/schedules/setOvUv'), {
                     'eventId': eventId, 
                     'ovuv': 0
                 }).done(function (json) {
@@ -138,7 +138,7 @@ yukon.da.scheduleAssignments = (function () {
 
             /** Set filter on the table. */
             $(document).on('click', '#set-filter', function (ev) {
-                var filterUrl = yukon.url('/capcontrol/schedule/filter');
+                var filterUrl = yukon.url('/capcontrol/schedules/filter');
                 $.post(filterUrl, $('#filter-popup').find('form').serialize()).done(function(result) {
                     $('#schedule-assignments-table').html(result);
                     $('#filter-popup').dialog('close');
@@ -147,7 +147,7 @@ yukon.da.scheduleAssignments = (function () {
             
             /** Clear filter on the table. */
             $(document).on('click', '#clear-filter', function (ev) {
-                var filterUrl = yukon.url('/capcontrol/schedule/filter');
+                var filterUrl = yukon.url('/capcontrol/schedules/filter');
                 $.post(filterUrl).done(function(result) {
                     $('#schedule-assignments-table').html(result);
                     $('#filter-popup').dialog('close');

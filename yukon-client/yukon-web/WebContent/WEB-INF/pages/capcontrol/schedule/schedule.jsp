@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -77,14 +78,14 @@
         <%-- Coming soon in a manageable way --%>
         <cti:displayForPageEditModes modes="VIEW,EDIT">
             <c:if test="${empty assignments}">
-                No Assignments
+                <span class="empty-list"><i:inline key=".assignments.none"/></span>
             </c:if>
             <c:if test="${not empty assignments}">
-                <tags:hideReveal title="Assignments" showInitially="false">
+                <tags:hideReveal2 titleKey=".assignments" showInitially="false">
                 <ul class="simple-list">
                 <c:forEach var="device" items="${assignments}">
                     <li>
-                        ${device.key}
+                        ${fn:escapeXml(device.key)}
                         <ul class="no-icon-list">
                             <c:forEach var="command" items="${device.value}">
                                 <li>
@@ -95,7 +96,7 @@
                     </li>
                 </c:forEach>
                 </ul>
-                </tags:hideReveal>
+                </tags:hideReveal2>
             </c:if>
         </cti:displayForPageEditModes>
     </form:form>
