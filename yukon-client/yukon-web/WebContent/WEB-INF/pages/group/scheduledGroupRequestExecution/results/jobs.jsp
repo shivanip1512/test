@@ -74,7 +74,7 @@
 </c:set>
 <tags:sectionContainer2 nameKey="tableTitle" controls="${controls}">
     <c:choose>
-        <c:when test="${fn:length(filterResult.resultList) == 0}">
+        <c:when test="${empty filterResult.resultList}">
             <span class="empty-list">
                 <c:choose>
                     <c:when test="${canManage}"><i:inline key=".noJobs.createAccess"/></c:when>

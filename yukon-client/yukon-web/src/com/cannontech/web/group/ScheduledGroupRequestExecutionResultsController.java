@@ -171,8 +171,6 @@ public class ScheduledGroupRequestExecutionResultsController {
                            filter.getFromDate(), filter.getToDate(), userContext);
             jobWrappers.add(jobWrapper);
         }
-        SearchResults<ScheduledGroupRequestExecutionJobWrapper> filterResult = 
-                SearchResults.pageBasedForWholeList(paging, jobWrappers);
         
         Direction dir = sorting.getDirection();
         Column sortBy = Column.valueOf(sorting.getSort());
@@ -182,6 +180,9 @@ public class ScheduledGroupRequestExecutionResultsController {
         } else {
             Collections.sort(jobWrappers, comparator);
         }
+
+        SearchResults<ScheduledGroupRequestExecutionJobWrapper> filterResult =
+                SearchResults.pageBasedForWholeList(paging, jobWrappers);
 
         model.addAttribute("filterResult", filterResult);
         model.addAttribute("filter", filter);

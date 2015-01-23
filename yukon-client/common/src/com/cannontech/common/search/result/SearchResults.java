@@ -1,5 +1,6 @@
 package com.cannontech.common.search.result;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -57,7 +58,7 @@ public class SearchResults<T> {
         int numberOfResults = itemList.size();
         int endIndex = Math.min(startIndex + itemsPerPage, numberOfResults);
 
-        itemList = itemList.subList(startIndex, endIndex);
+        itemList = new ArrayList<>(itemList.subList(startIndex, endIndex));
 
         SearchResults<T> result = new SearchResults<>();
         result.setResultList(itemList);
