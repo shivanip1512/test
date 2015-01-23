@@ -405,9 +405,9 @@ public abstract class BaseBulkService {
                     if (StringUtils.isBlank(fieldStringValue)
                         && (blankHandlingEnum.equals(BlankHandlingEnum.IGNORE_BLANK) || blankHandlingEnum.equals(BlankHandlingEnum.NOT_APPLICABLE))) {
                         fieldStringValue = null;
-                    } else if (!(PaoUtils.isValidPaoName(fieldStringValue))) {
+                    } else if (("Device Name".equals(bulkField.getInputSource().getDisplayName())) && !(PaoUtils.isValidPaoName(fieldStringValue))) {
                         throw new DeviceCreationException(
-                            "Field value contain any of the following invalid characters: / \\ ,\" ' |");
+                            "Device name cannot include any of the following characters: / \\ ,\" ' |");
                     }
 
                     valueMap.put(inputSource.getField(), fieldStringValue);
