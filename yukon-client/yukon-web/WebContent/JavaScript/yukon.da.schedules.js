@@ -44,7 +44,8 @@ yukon.da.schedules = (function () {
                     popup.dialog({
                         title: title,
                         buttons: buttons,
-                        width: 400
+                        width: 400,
+                        maxHeight: 400
                     });
                 });
             });

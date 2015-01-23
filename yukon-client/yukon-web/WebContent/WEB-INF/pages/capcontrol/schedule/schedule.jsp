@@ -75,13 +75,28 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
         <%-- Coming soon in a manageable way --%>
-<%--
-        Assignments:
-        <div>
-        <c:forEach var="assignment" items="${assignments}">
-            ${assignment.commandName} on ${assignment.deviceName}
-        </c:forEach>
-        </div>
---%>
+        <cti:displayForPageEditModes modes="VIEW,EDIT">
+            <c:if test="${empty assignments}">
+                No Assignments
+            </c:if>
+            <c:if test="${not empty assignments}">
+                <tags:hideReveal title="Assignments" showInitially="false">
+                <ul class="simple-list">
+                <c:forEach var="device" items="${assignments}">
+                    <li>
+                        ${device.key}
+                        <ul class="no-icon-list">
+                            <c:forEach var="command" items="${device.value}">
+                                <li>
+                                    ${command}
+                                </li>
+                            </c:forEach>
+                        </ul>
+                    </li>
+                </c:forEach>
+                </ul>
+                </tags:hideReveal>
+            </c:if>
+        </cti:displayForPageEditModes>
     </form:form>
 </cti:msgScope>

@@ -74,6 +74,8 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 
 @Controller
@@ -83,7 +85,7 @@ public class ScheduleController {
     
     private static final Logger log = YukonLogManager.getLogger(ScheduleController.class);
     
-    private PeriodFormatter periodFormatter;
+    private static PeriodFormatter periodFormatter;
 
     @Autowired private PaoScheduleDao paoScheduleDao;
     @Autowired private RolePropertyDao rolePropertyDao;
@@ -95,7 +97,9 @@ public class ScheduleController {
 
     private final String NO_FILTER = "All";
     
-    public ScheduleController() {
+    private static final Instant epoch1990 = new Instant(CtiUtilities.get1990GregCalendar().getTime());
+
+    static {
         PeriodFormatterBuilder builder = new PeriodFormatterBuilder()
         .appendMinutes().appendLiteral(" min ")
         .appendHours().appendLiteral(" hr ")
@@ -116,11 +120,11 @@ public class ScheduleController {
         String filterBySchedule = ServletRequestUtils.getStringParameter(request, "schedule", "");
         List<UiFilter<PaoScheduleAssignment>> filters = new ArrayList<UiFilter<PaoScheduleAssignment>>();
         
-        if (StringUtils.isNotEmpty(filterByCommand) && !filterByCommand.equals("All")) {
+        if (StringUtils.isNotEmpty(filterByCommand) && !filterByCommand.equals(NO_FILTER)) {
             filters.add(new ScheduleAssignmentCommandFilter(ScheduleCommand.valueOf(filterByCommand)));
             isFiltered = true;
         }
-        if (StringUtils.isNotEmpty(filterBySchedule) && !filterBySchedule.equals("All")) {
+        if (StringUtils.isNotEmpty(filterBySchedule) && !filterBySchedule.equals(NO_FILTER)) {
             filters.add(new ScheduleAssignmentFilter(filterBySchedule));
             isFiltered = true;
         }
@@ -167,24 +171,24 @@ public class ScheduleController {
         setUpModel(request, user, model);
         return "schedule/scheduleassignmentTable.jsp";
     }
-    
-    private void setupSchedulesTabModel(HttpServletRequest request, LiteYukonUser user, ModelMap model) {
 
+    @RequestMapping("schedules")
+    public String schedules(ModelMap model) {
         List<PaoSchedule> schedules = paoScheduleDao.getAll();
         model.addAttribute("schedules", schedules);
 
         model.addAttribute("epoch1990", epoch1990.plus(Duration.standardSeconds(1)));
 
-    }
-    
-    @RequestMapping("schedules")
-    public String schedules(HttpServletRequest request, LiteYukonUser user, ModelMap map) {
-        setupSchedulesTabModel(request, user, map);
         return "schedule/schedules.jsp";
     }
     
-    private static final Instant epoch1990 = new Instant(CtiUtilities.get1990GregCalendar().getTime());
-
+    private static final Multimap<String,String> commandsByDevice(List<PaoScheduleAssignment> assignments) {
+        Multimap<String,String> commandToDevice = HashMultimap.create();
+        for (PaoScheduleAssignment assignment : assignments) {
+            commandToDevice.put(assignment.getDeviceName(), assignment.getCommandName());
+        }
+        return commandToDevice;
+    }
     @RequestMapping(value="{id}", method=RequestMethod.GET)
     public String edit(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
         PaoSchedule schedule = paoScheduleDao.getForId(id);
@@ -193,7 +197,9 @@ public class ScheduleController {
         model.addAttribute("mode", pageMode);
         model.addAttribute("scheduleDuration", Duration.standardSeconds(schedule.getRepeatSeconds()));
         List<PaoScheduleAssignment> assignments = paoScheduleDao.getScheduleAssignmentByScheduleId(id);
-        model.addAttribute("assignments", assignments);
+        Multimap<String, String> deviceAssignments = commandsByDevice(assignments);
+
+        model.addAttribute("assignments", deviceAssignments.asMap());
 
         return setupEditModelMap(model, schedule);
     }
@@ -230,6 +236,7 @@ public class ScheduleController {
                 paoScheduleDao.save(schedule);
             //Name Conflict
             } catch (DataIntegrityViolationException e) {
+            	response.setStatus(HttpStatus.BAD_REQUEST.value());
                 bindingResult.rejectValue("name", "yukon.web.modules.capcontrol.schedules.error.nameConflict");
                 return setupEditModelMap(model, schedule);
             }
@@ -477,31 +484,7 @@ public class ScheduleController {
         
         return "redirect:scheduleAssignments";
     }
-    
-    @RequestMapping(value="deleteSchedule")
-    public String deleteSchedule(int scheduleId, FlashScope flash) {
-        List<PaoScheduleAssignment> assignments = paoScheduleDao.getScheduleAssignmentByScheduleId(scheduleId);
-        boolean success = paoScheduleDao.delete(scheduleId);
-        if (success) {
-            //Send DB Change
-            //These can only be assigned to sub bus objects right now, if that changes, this needs to change with it.
-            for (PaoScheduleAssignment assignment : assignments) {
-                //Each assignment is a bus to be reloaded.
-                DBChangeMsg dbChange = new DBChangeMsg(assignment.getPaoId(),
-                                                       DBChangeMsg.CHANGE_PAO_DB,
-                                                       PaoType.CAP_CONTROL_SUBBUS.getPaoCategory().getDbString(),
-                                                       PaoType.CAP_CONTROL_SUBBUS.getDbString(),
-                                                       DbChangeType.UPDATE);
-                dbChangeManager.processDbChange(dbChange);
-            }
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.schedules.deleteSuccess"));
-        } else {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.schedules.deleteFailed"));
-        }
-        
-        return "redirect:schedules";
-    }
-    
+
     @RequestMapping("setOvUv")
     public @ResponseBody Map<String, Object> setOvUv(Integer eventId, Integer ovuv, ModelMap map, 
             YukonUserContext context) {

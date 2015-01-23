@@ -98,4 +98,9 @@ public class PaoSchedule {
             return null;
         }
     }
+
+    @Override
+    public String toString() {
+        return "[Schedule " + id + ": " + name + "]" ;
+    }
 }
