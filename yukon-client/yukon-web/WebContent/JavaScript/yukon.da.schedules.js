@@ -13,23 +13,26 @@ yukon.da.schedules = (function () {
         init: function () {
 
             $(document).on('click', '.js-edit-schedule', function () {
+
                 var link = $(this),
                     popup = $('#schedule-popup'),
                     id = link.data('scheduleId');
+
                 popup.load(yukon.url('/capcontrol/schedules/' + id), function () {
-                    var mode = popup.find('form').data('mode');
-                    var title = popup.find('.js-popup-title')[0].value;
-                    var buttons = [];
-                    var deleteButton = {
-                        text: yg.text['delete'],
-                        click: function (ev) {
-                            yukon.ui.confirm({
-                                dialog: popup,
-                                event: 'yukon:da:schedules:delete',
-                            });
-                        },
-                        'class': 'delete action'
-                    };
+
+                    var mode = popup.find('form').data('mode'),
+                        title = popup.find('.js-popup-title')[0].value,
+                        buttons = [],
+                        deleteButton = {
+                            text: yg.text['delete'],
+                            click: function (ev) {
+                                yukon.ui.confirm({
+                                    dialog: popup,
+                                    event: 'yukon:da:schedules:delete',
+                                });
+                            },
+                            'class': 'delete action'
+                        };
 
                     if (mode === 'EDIT') {
                         buttons = yukon.ui.buttons({
@@ -53,9 +56,10 @@ yukon.da.schedules = (function () {
             $(document).on('yukon:da:schedules:create', yukon.ui.initDateTimePickers);
 
             $(document).on('yukon:da:schedules:edit:submit', function (ev) {
+
                 var dialog = $(ev.target);
-                var form = dialog.find('form');
-                form.ajaxSubmit({
+
+                dialog.find('form').ajaxSubmit({
                     success: function () {
                         window.location.reload();
                     },
@@ -66,9 +70,11 @@ yukon.da.schedules = (function () {
                 });
             });
             $(document).on('yukon:da:schedules:delete', function (ev) {
+
                 var dialog = $(ev.target),
                     id = dialog.find('input[name="id"]').val(),
                     deleteMessage = dialog.find('form').data('deleteMessage');
+
                 $.ajax(yukon.url('/capcontrol/schedules/' + id + '/delete'))
                 .done(function () {
                     $(document).find('[data-schedule-id="' + id + '"]').remove();

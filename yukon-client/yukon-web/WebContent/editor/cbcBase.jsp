@@ -18,7 +18,7 @@
 
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 
-<cti:includeScript link="/JavaScript/yukon.da.js"/>
+<cti:includeScript link="/JavaScript/yukon.da.common.js"/>
 <cti:includeScript link="/resources/js/lib/tomahawk.hacks/popcalendar.js"/>
 
 <cti:includeCss link="/editor/css/CapcontrolEditorStyles.css"/>
@@ -44,8 +44,8 @@
 
 <f:verbatim>
 <script type="text/JavaScript">
-	yukon.da.addLockButtonForButtonGroup("hdr_buttons");
-	yukon.da.addLockButtonForButtonGroup("foot_buttons");
+	yukon.da.common.addLockButtonForButtonGroup("hdr_buttons");
+	yukon.da.common.addLockButtonForButtonGroup("foot_buttons");
 </script>
 </f:verbatim>
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader" navigationClass="pageNavigation" bodyClass="pageBody" footerClass="pageFooter" >

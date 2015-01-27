@@ -49,6 +49,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.validator.SimpleValidator;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.schedule.dao.PaoScheduleDao;
@@ -262,8 +263,8 @@ public class ScheduleController {
     private final Validator scheduleValidator = new SimpleValidator<PaoSchedule>(PaoSchedule.class) {
         @Override
         public void doValidation(PaoSchedule schedule, Errors errors) {
-            ValidationUtils.rejectIfEmptyOrWhitespace(
-                errors, "name", "yukon.web.modules.capcontrol.schedules.error.nameEmpty");
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(
+                errors, "name", "yukon.web.error.isBlank");
 
             //For create, we cannot take an existing name
             if (schedule.getId() == null) {

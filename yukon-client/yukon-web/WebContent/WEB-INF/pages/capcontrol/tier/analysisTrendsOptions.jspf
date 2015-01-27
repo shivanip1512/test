@@ -25,7 +25,7 @@ function showTrends(title, url) {
 
 <tags:sectionContainer2 nameKey="busContainer">
     <div>
-        <input type="checkbox" id="analysisBusSelectAll" onclick="yukon.da.checkAll(this, 'table.analysisBuses input[type=checkbox]');">
+        <input type="checkbox" id="analysisBusSelectAll" onclick="yukon.da.common.checkAll(this, 'table.analysisBuses input[type=checkbox]');">
         <label for="analysisBusSelectAll"><i:inline key=".selectAllBuses"/></label>
     </div>
     <div class="scroll-md">
@@ -42,7 +42,7 @@ function showTrends(title, url) {
 
 <tags:sectionContainer2 nameKey="feedersContainer" styleClass="padBottom">
     <div>
-        <input type="checkbox" id="analysisFeederSelectAll" onclick="yukon.da.checkAll(this, 'table.analysisFeeders input[type=checkbox]');">
+        <input type="checkbox" id="analysisFeederSelectAll" onclick="yukon.da.common.checkAll(this, 'table.analysisFeeders input[type=checkbox]');">
         <label for="analysisFeederSelectAll"><i:inline key=".selectAllFeeders"/></label>
     </div>
     <div class="scroll-md">

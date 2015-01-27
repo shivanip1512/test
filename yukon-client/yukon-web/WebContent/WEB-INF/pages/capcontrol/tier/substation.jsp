@@ -30,8 +30,8 @@
 
 <script type="text/javascript">
 $(function() {
-    yukon.da.checkPageExpire();
-    yukon.da.initSubstation();
+    yukon.da.common.checkPageExpire();
+    yukon.da.common.initSubstation();
 });
 </script>
 

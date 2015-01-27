@@ -8,7 +8,7 @@
 
 yukon.namespace('yukon.da.scheduleAssignments');
 
-yukon.da.scheduleAssignments = (function () {
+yukon.da.common.scheduleAssignments = (function () {
     
     var _initialized = false,
     
@@ -32,9 +32,9 @@ yukon.da.scheduleAssignments = (function () {
                     'deviceName': deviceName
                 }).done(function (json) {
                     if (!json.success) {
-                        yukon.da.showAlertMessageForAction(scheduleName, '', json.resultText, 'red');
+                        yukon.da.common.showAlertMessageForAction(scheduleName, '', json.resultText, 'red');
                     } else {
-                        yukon.da.showAlertMessageForAction(scheduleName, '', json.resultText, 'green');
+                        yukon.da.common.showAlertMessageForAction(scheduleName, '', json.resultText, 'green');
                     }
                 });
                 
@@ -49,10 +49,10 @@ yukon.da.scheduleAssignments = (function () {
                     'deviceName': deviceName
                 }).done(function (json) {
                     if(!json.success) {
-                        yukon.da.showAlertMessageForAction('', 
+                        yukon.da.common.showAlertMessageForAction('', 
                                 '', json.resultText, 'red');
                     } else {
-                        yukon.da.showAlertMessageForAction('', 
+                        yukon.da.common.showAlertMessageForAction('', 
                                 '', json.resultText, 'green');
                     }
                 });
@@ -84,9 +84,9 @@ yukon.da.scheduleAssignments = (function () {
                 var reviewTableUrl = yukon.url('/capcontrol/schedules/stopMultiple');
                 $.post(reviewTableUrl, $('#stop-multiple-schedules-form').serialize()).done(function(json) {
                     $('#stop-assignments').dialog('close');
-                    yukon.da.showAlertMessageForAction(json.schedule, '', json.resultText, 'green');
+                    yukon.da.common.showAlertMessageForAction(json.schedule, '', json.resultText, 'green');
                 }).fail(function() {
-                    yukon.da.showAlertMessageForAction(json.schedule, '', json.resultText, 'red');
+                    yukon.da.common.showAlertMessageForAction(json.schedule, '', json.resultText, 'red');
                 });
             });
             
@@ -95,9 +95,9 @@ yukon.da.scheduleAssignments = (function () {
                 var reviewTableUrl = yukon.url('/capcontrol/schedules/startMultiple');
                 $.post(reviewTableUrl, $('#start-multiple-schedules-form').serialize()).done(function(json) {
                     $('#start-assignments').dialog('close');
-                    yukon.da.showAlertMessageForAction(json.schedule, '', json.resultText, 'green');
+                    yukon.da.common.showAlertMessageForAction(json.schedule, '', json.resultText, 'green');
                 }).fail(function() {
-                    yukon.da.showAlertMessageForAction(json.schedule, '', json.resultText, 'red');
+                    yukon.da.common.showAlertMessageForAction(json.schedule, '', json.resultText, 'red');
                 });
             });
             
@@ -109,7 +109,7 @@ yukon.da.scheduleAssignments = (function () {
                     'ovuv': 1
                 }).done(function (json) {
                     if (!json.success) {
-                        yukon.da.showAlertMessageForAction('OvUv', '', json.resultText, 'red');
+                        yukon.da.common.showAlertMessageForAction('OvUv', '', json.resultText, 'red');
                     } else {
                         var enableLi = $('li[value=' + json.id + ']').find('.js-enable-ovuv').closest('li');
                         enableLi.hide();
@@ -126,7 +126,7 @@ yukon.da.scheduleAssignments = (function () {
                     'ovuv': 0
                 }).done(function (json) {
                     if (!json.success) {
-                        yukon.da.showAlertMessageForAction('OvUv', '', json.resultText, 'red');
+                        yukon.da.common.showAlertMessageForAction('OvUv', '', json.resultText, 'red');
                     } else {
                         var enableLi = $('li[value=' + json.id + '] .js-enable-ovuv').closest('li');
                         enableLi.show();

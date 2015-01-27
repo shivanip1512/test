@@ -1,4 +1,4 @@
-yukon.namespace('yukon.da');
+yukon.namespace('yukon.da.common');
 
 /**
  * Singleton that manages the all capcontrol pages functionality.
@@ -8,7 +8,7 @@ yukon.namespace('yukon.da');
  * @requires JQUERY UI
  * @requires OPEN_LAYERS
  */
-$.extend(yukon.da, (function () {
+yukon.da.common = {
 
     var lock_buttons = function(el_id) {
             //el_id comes in looking like this: "editorForm:hdr_submit_button_1"
@@ -462,5 +462,5 @@ $.extend(yukon.da, (function () {
 }()));
 
 $(function() {
-    yukon.da.init();
+    yukon.da.common.init();
 });

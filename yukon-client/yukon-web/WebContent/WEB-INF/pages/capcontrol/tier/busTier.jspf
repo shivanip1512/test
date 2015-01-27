@@ -168,7 +168,7 @@
                                 </a>
                             </li>
                         </c:if>
-                        <cm:dropdownOption key=".busAddInfo.label" href="javascript:yukon.da.showDialog('${busAddInfoTitle}', '../addInfo/bus?busId=${subbusId}')" icon="icon-magnifier" />
+                        <cm:dropdownOption key=".busAddInfo.label" href="javascript:yukon.da.common.showDialog('${busAddInfoTitle}', '../addInfo/bus?busId=${subbusId}')" icon="icon-magnifier" />
                         <cm:dropdownOption key=".location.label" href="${locationLink}" icon="icon-interstate" />
                         <c:if test="${viewableSubBus.ivvcControlled}">
                             <cm:dropdownOption key=".ivvc.label" href="${ivvcLink}" icon="icon-ivvc" />

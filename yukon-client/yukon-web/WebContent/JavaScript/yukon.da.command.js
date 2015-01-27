@@ -1,5 +1,5 @@
 $(document).on('click', 'li.menuOption.command', function(event) {
-   yukon.da.hideMenu();
+   yukon.da.common.hideMenu();
     var doCommand = true;
     var menuOption = $(event.currentTarget).closest("li");
     var ul = menuOption.parent("ul");
@@ -13,7 +13,7 @@ $(document).on('click', 'li.menuOption.command', function(event) {
 });
 
 $(document).on('click', 'li.menuOption.stateChange', function(event) {
-    yukon.da.hideMenu();
+    yukon.da.common.hideMenu();
     doChangeState($(event.currentTarget).closest("ul").find("input[name='paoId']").val(), $(event.currentTarget).val());
 });
 
@@ -38,9 +38,9 @@ function doItemCommand(itemId, commandId, event, reason, onReasonMenu) {
         $("#menuPopup").html(data);
 
         if ($("#menuPopup #isFinished").val() === "true") {
-            yukon.da.showMessage(data);
+            yukon.da.common.showMessage(data);
         } else {
-            yukon.da.showMenuPopup({});
+            yukon.da.common.showMenuPopup({});
         }
     });
 }
@@ -54,7 +54,7 @@ function doSystemCommand(commandId) {
         type: 'POST',
         data: {'commandId' : commandId}
     }).done( function(response){
-        yukon.da.showMessage(response);
+        yukon.da.common.showMessage(response);
     });
 }
 
@@ -68,7 +68,7 @@ function doChangeState(itemId, stateId) {
         type: 'POST',
         data: {'paoId' : itemId, 'rawStateId' : stateId}
     }).done( function(response){
-        yukon.da.showMessage(response);
+        yukon.da.common.showMessage(response);
     });
 }
 
@@ -77,13 +77,13 @@ function doChangeState(itemId, stateId) {
  *  @param {number} newOpCount - New count. 
  */
 function doResetBankOpCount(itemId, newOpCount) {
-    yukon.da.hideMenu();
+    yukon.da.common.hideMenu();
     $.ajax({
         url: yukon.url('/capcontrol/command/resetBankOpCount'),
         type: 'POST',
         data: {'bankId' : itemId, 'newOpCount' : newOpCount}
     }).done( function(response){
-        yukon.da.showMessage(response);
+        yukon.da.common.showMessage(response);
     });
 }
 
@@ -94,7 +94,7 @@ function doResetBankOpCount(itemId, newOpCount) {
  *  @param {string} onReasonMenu - If set to true, executes the command.  
  */
 function doChangeOpState(bankId, stateId, reason, onReasonMenu) {
-    yukon.da.hideMenu();
+    yukon.da.common.hideMenu();
     parameters = {'bankId': bankId, 'opState': stateId, 'reason': reason};
     if (onReasonMenu) parameters.onReasonMenu = onReasonMenu;
     
@@ -103,7 +103,7 @@ function doChangeOpState(bankId, stateId, reason, onReasonMenu) {
         type: 'POST',
         data: parameters
     }).done( function(response){
-        yukon.da.showMessage(response);
+        yukon.da.common.showMessage(response);
     });
 }
 
@@ -112,6 +112,6 @@ function doChangeOpState(bankId, stateId, reason, onReasonMenu) {
  */
 function addCommandMenuBehavior(selector) {
     $(document).on('click', selector, function (event) {
-        yukon.da.getCommandMenu($(event.currentTarget).closest("a")[0].id.split('_')[1], event);
+        yukon.da.common.getCommandMenu($(event.currentTarget).closest("a")[0].id.split('_')[1], event);
     });
 }

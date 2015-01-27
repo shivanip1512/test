@@ -20,10 +20,10 @@
 		    deleteForm.initItem();
 		%>
 	
-	    <cti:includeScript link="/JavaScript/yukon.da.js"/>
+	    <cti:includeScript link="/JavaScript/yukon.da.common.js"/>
 		<f:verbatim>
 			<script type="text/JavaScript">
-			    yukon.da.addLockButtonForButtonGroup("buttons");
+			    yukon.da.common.addLockButtonForButtonGroup("buttons");
 			</script>
 		</f:verbatim>
 	    <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader" navigationClass="pageNavigation" bodyClass="pageBody" footerClass="pageFooter" >

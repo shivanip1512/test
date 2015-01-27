@@ -8,7 +8,7 @@
 
 <script type="text/javascript">
 $("#executeCommand").click(function(event) {
-    yukon.da.hideMenu();
+    yukon.da.common.hideMenu();
     doItemCommand('${paoId}', '${commandId}', event, $('#commentTextArea').val(), 'true');
 });
 $("#reasonSelect").change(function(event) {
