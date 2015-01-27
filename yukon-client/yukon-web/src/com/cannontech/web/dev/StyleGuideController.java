@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -12,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -22,18 +25,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.Validator;
 import com.cannontech.web.dev.model.Person;
+import com.cannontech.web.group.DisableNodeCallback;
+import com.cannontech.web.group.NodeAttributeSettingCallback;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 
 @Controller
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.DEVELOPMENT_MODE)
 public class StyleGuideController {
+    
+    @Autowired private DeviceGroupService deviceGroupService;
     
     private Map<Integer, Person> people = new ConcurrentHashMap<>(ImmutableMap.of(
             1, new Person(1, "Bob Vila", "bob@thisoldhouse.com", 50, true),
@@ -53,6 +64,16 @@ public class StyleGuideController {
     @RequestMapping("/styleguide/containers")
     public String containers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         return "styleguide/containers.jsp";
+    }
+    
+    @RequestMapping("/styleguide/icons")
+    public String icons(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        try {
+            setupSprites(model, request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return "styleguide/icons.jsp";
     }
     
     @RequestMapping("/styleguide/buttons")
@@ -80,29 +101,19 @@ public class StyleGuideController {
         return "styleguide/blocking.jsp";
     }
     
-    @RequestMapping("/styleguide/pickers")
-    public String pickers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
-        return "styleguide/pickers.jsp";
-    }
-    
     @RequestMapping("/styleguide/dialogs")
     public String dialogs(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         model.addAttribute("people", people.values());
         return "styleguide/dialogs.jsp";
     }
     
-    @RequestMapping("/styleguide/icons")
-    public String icons(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
-        try {
-            setupSprites(model, request);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return "styleguide/icons.jsp";
+    @RequestMapping("/styleguide/pickers")
+    public String pickers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        return "styleguide/pickers.jsp";
     }
     
     @RequestMapping("/styleguide/date-pickers")
-    public String more(ModelMap model) {
+    public String datePickers(ModelMap model) {
         
         Instant now = Instant.now();
         Instant weekAgo = new Instant(now.minus(Duration.standardDays(7)).getMillis());
@@ -112,6 +123,21 @@ public class StyleGuideController {
         model.addAttribute("weekFromNow", weekFromNow);
         
         return "styleguide/date.pickers.jsp";
+    }
+    
+    @RequestMapping("/styleguide/group-pickers")
+    public String groupPickers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        
+        List<String> groups = Lists.newArrayList("/Meters/Billing", "/Meters/Alternate", 
+                "/Meters/Collection");
+        model.addAttribute("groups", groups);
+        
+        DeviceGroup monitors = deviceGroupService.findGroupName("/Meters/Monitors");
+        DisableNodeCallback noMonitors = DisableNodeCallback.of(monitors);
+        model.addAttribute("group", Lists.newArrayList("/Meters/Billing"));
+        model.addAttribute("noMonitors", ImmutableSet.of(noMonitors));
+        
+        return "styleguide/group.pickers.jsp";
     }
     
     private void setupSprites(ModelMap model, HttpServletRequest request) throws IOException {

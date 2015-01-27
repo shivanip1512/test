@@ -162,6 +162,7 @@ yukon.tags.deviceGroupPicker = (function () {
                 dialog.addClass('js-selection-made');
                 dialog.dialog('close');
                 picker.flash();
+                picker.trigger('yukon:device:group:picker:selection', [groupNames]);
                 
             });
             

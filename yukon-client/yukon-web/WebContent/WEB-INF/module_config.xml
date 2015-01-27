@@ -1500,6 +1500,7 @@
               <page name="pickers" type="BASIC"/>
               <page name="dialogs" type="BASIC"/>
               <page name="datePickers" type="BASIC"/>
+              <page name="groupPickers" type="BASIC"/>
             </pages>
           </page>
         </pages>

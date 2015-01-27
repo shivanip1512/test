@@ -3,7 +3,8 @@
         Device group picker that sets selected group names in a hidden input.
         If using multi-selection mode, multiple hidden inputs with the same name are used
         and the controller should expect an array of Strings: 'String[] groups'.
-        When a selection is made the 'yukon:tags:device:group:picker:chosen' event is fired." %>
+        When a selection is made the 'yukon:tags:device:group:picker:chosen' event is fired
+        with the dialog being the event target." %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
@@ -12,18 +13,19 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
+<%@ attribute name="inputName" required="true" description="The name of the hidden input(s)." %>
+<%@ attribute name="inputValue" description="Optional initial group names selected." type="java.util.List" %>
+
 <%@ attribute name="multi" type="java.lang.Boolean" description="If true, selection mode will be multiselection.
                                                                  Default: single selection." %>
-<%@ attribute name="callbacks" type="java.util.Set" description="Callbacks to be preformed on the node. Can be used to disable selecting certain nodes"%>
 <%@ attribute name="predicates" description="Optional comma separated strings of DeviceGroupPredicateEnum
-                                             entry names to filter the tree data by. Default: 'NON_HIDDEN'" %>
+                                             entry names to filter the tree data by. Default: 'NON_HIDDEN'." %>
+<%@ attribute name="callbacks" type="java.util.Set" description="Callbacks to be preformed on the node. 
+                                                                 Can be used to disable selecting certain nodes." %>
 
 <%@ attribute name="classes" description="CSS class names applied to the component element." %>
 <%@ attribute name="id" description="The html id attribute of the component element." %>
 <%@ attribute name="dialogId" description="The html id attribute of the picker dialog element." %>
-
-<%@ attribute name="inputName" required="true" description="The name of the hidden input(s)." %>
-<%@ attribute name="inputValue" description="Optional initial group names selected." type="java.util.List" %>
 
 <cti:default var="multi" value="${false}"/>
 <cti:default var="predicates" value="NON_HIDDEN"/>

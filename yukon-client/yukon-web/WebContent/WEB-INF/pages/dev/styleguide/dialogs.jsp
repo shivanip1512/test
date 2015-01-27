@@ -232,11 +232,10 @@ $('#button-event-popup').on('yukon:dev:styleguide:dialogs:foo', function (e) {
 <h2 id="confirm-example">Confirm</h2>
 
 <p class="description">
-    The <span class="label label-attr">[data-target]</span> attribute determines what will fire the event
-    specified by <span class="label label-attr">[data-event]</span>.
-    <br>
-    Since the attribute <span class="label label-attr">[data-confirm]</span> is present, when the the OK button is pressed, 
-    it will first ask for confirmation before firing the supplied event.
+    Dialogs with <span class="label label-attr">[data-confirm]</span> will first ask for confirmation before performing
+    the 'OK' action.  If <span class="label label-attr">[data-event]</span> and 
+    <span class="label label-attr">[data-target]</span> are present they will still be used but only after the confirmation
+    'yes' button is clicked.
 </p>
 <div class="column-4-20 clearfix style-guide-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
@@ -365,7 +364,7 @@ public class PersonValidator extends SimpleValidator&lt;Person&gt; {
 &lt;/cti:msgScope&gt;
 </pre>
 <h4 class="subtle">Javascript Code:</h4>
-<pre class="code prettyprint">
+<pre class="code prettyprint lang-js">
 $('#form-example').on('yukon:dev:styleguid:dialogs:create:person', function (e) {
     $('.js-new-person-form').ajaxSubmit({
         success: function (data, status, xhr, $form) {

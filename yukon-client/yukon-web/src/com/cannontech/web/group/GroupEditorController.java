@@ -347,18 +347,8 @@ public class GroupEditorController {
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
         DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
         
-        // NodeAttributeSettingCallback to highlight node fo selected group
-        class DisableCurrentGroup implements NodeAttributeSettingCallback<DeviceGroup> {
-            @Override
-            public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
-                
-                if (group.equals(deviceGroup)) {
-                    node.setAttribute("disabled", true);
-                }
-            }
-        }
-        
-        Set<? extends NodeAttributeSettingCallback<DeviceGroup>> callbacks = ImmutableSet.of(new DisableCurrentGroup());
+        DisableNodeCallback cb = DisableNodeCallback.of(group);
+        Set<? extends NodeAttributeSettingCallback<DeviceGroup>> callbacks = ImmutableSet.of(cb);
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
@@ -367,10 +357,10 @@ public class GroupEditorController {
         String dataJson = JsonUtils.toJson(root.toMap());
         
         mav.addObject("groupDataJson", dataJson);
-
+        
         return mav;
     }
-
+    
     @RequestMapping("addDevicesByCollection")
     public ModelAndView addDevicesByCollection(HttpServletRequest request,
                                                  HttpServletResponse response) throws ServletException {

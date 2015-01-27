@@ -144,6 +144,7 @@ public class ComposedGroupController {
             public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
                 if (deviceGroupsToExclude.contains(deviceGroup.getFullName())) {
                     node.getAttributes().put("unselectable", true);
+                    node.setAttribute("disabled", true);
                 }
             }
 

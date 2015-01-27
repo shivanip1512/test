@@ -10,8 +10,8 @@
 
 <div class="column-4-20">
     <div class="column one side-nav">
+        <h2 class="buffered">Basic</h2>
         <ul>
-            <li><h2 class="buffered">Basic</h2></li>
             <c:set var="clazz" value="${page == 'grids' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/grids"/>">Grids</a></li>
             <c:set var="clazz" value="${page == 'tables' ? 'selected' : ''}"/>
@@ -24,7 +24,9 @@
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/buttons"/>">Buttons</a></li>
             <c:set var="clazz" value="${page == 'switches' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/switches"/>">Switches</a></li>
-            <li><h2 class="buffered">Advanced</h2></li>
+        </ul>
+        <h2 class="buffered">Advanced</h2>
+        <ul>
             <c:set var="clazz" value="${page == 'inputs' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/fun-with-inputs"/>">Fun with Inputs</a></li>
             <c:set var="clazz" value="${page == 'blocking' ? 'selected' : ''}"/>
@@ -34,7 +36,9 @@
             <c:set var="clazz" value="${page == 'pickers' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/pickers"/>">Pickers</a></li>
             <c:set var="clazz" value="${page == 'date-pickers' ? 'selected' : ''}"/>
-            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/date-pickers"/>">Date Pickers</a></li>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/date-pickers"/>">Date & Time Pickers</a></li>
+            <c:set var="clazz" value="${page == 'group-pickers' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/group-pickers"/>">Group Pickers</a></li>
         </ul>
     </div>
     <div class="column two nogutter"><jsp:doBody/></div>

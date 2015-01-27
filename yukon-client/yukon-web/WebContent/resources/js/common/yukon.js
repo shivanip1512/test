@@ -351,7 +351,7 @@ yukon.ui = (function () {
                     target.trigger(defaults.event);
                 }
             };
-
+            
             if (typeof (options) !== 'undefined') $.extend(defaults, options);
             
             ok = {
@@ -778,7 +778,7 @@ yukon.ui = (function () {
         /**
          * Turn dialogs buttons into confirm
          * @param {jQuery} options.dialog -        jQuery element that has had .dialog called on it
-         * @param {string} [options.event] -       Event to be fired if the confirm button is pressed
+         * @param {string} [options.event] - Event to be fired if the confirm button is pressed
                                                      default is 'yukon:ui:dialog:confirm'
          * @param {jQuery} [options.target] -      element to trigger the event. Default is dialog.
          * @param {string} [options.confirmText] - Confirm text next to buttons
@@ -786,7 +786,7 @@ yukon.ui = (function () {
          * @param {string} [options.noText]
          */
         confirm: function (options) {
-
+            
             var dialog = options.dialog,
                 target = options.target || dialog,
                 event = options.event || 'yukon:ui:dialog:confirm',
@@ -809,7 +809,7 @@ yukon.ui = (function () {
                        confirmSpan.remove();
                        dialog.dialog('option', 'buttons', oldButtons);
                    },
-                   'class': 'js-secondary-action'
+                   'class': 'js-secondary-action '
                 },
                 confirmSpan = $('<span>')
                     .attr('class', 'fr')
@@ -826,6 +826,7 @@ yukon.ui = (function () {
         AUTOFOCUS_TRIES: 0,
 
         autofocus: function () {
+            
             var focusElement = $('[autofocus], .js-focus:first')[0];
         
             if (focusElement) {
@@ -1032,15 +1033,18 @@ yukon.ui = (function () {
             while (str.length < length) {
                 str = '0' + str;
             }
+            
             return str;
         },
 
         /** Format time, (do we still need yukon.format.time.js?) */
         formatTime : function (time, opts) {
+            
             var timeStr = ''; 
             if (!opts) {
                 opts = {};
             }
+            
             if (opts['24']) {
                 if (opts.pad) {
                     timeStr = mod.pad(time.getHours(), 2) + ':' + mod.pad(time.getMinutes(), 2);
@@ -1066,9 +1070,11 @@ yukon.ui = (function () {
 
         /** Retrieve a request parameter by name */
         getParameterByName: function (name) {
+            
             var regexS,
                 regex,
                 results;
+            
             name = name.replace(/[\[]/,"\\\[").replace(/[\]]/,"\\\]");
             regexS = "[\\?&]"+name+"=([^&#]*)";
             regex = new RegExp(regexS);
@@ -1083,6 +1089,7 @@ yukon.ui = (function () {
 
         /** Manages wizard style paging, useful in complex popups. */
         wizard: {
+            
             _initialized: false,
 
             init: function () {
@@ -1112,6 +1119,7 @@ yukon.ui = (function () {
             },
     
             nextPage: function (page) {
+                
                 var nextPage;
                     page = $(page);
                     

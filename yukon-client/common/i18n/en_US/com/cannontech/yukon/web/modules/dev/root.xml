@@ -317,5 +317,6 @@
     
     <entry key="yukon.web.modules.dev.icons.pageName">Icons</entry>
     <entry key="yukon.web.modules.dev.datePickers.pageName">Date - Time Pickers</entry>
+    <entry key="yukon.web.modules.dev.groupPickers.pageName">Group Pickers</entry>
     
 </properties>
