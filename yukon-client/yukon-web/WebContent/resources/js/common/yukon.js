@@ -325,6 +325,8 @@ yukon.ui = (function () {
          *        {string} [okClass='']                - CSS class names applied to the primary (ok) button.
          *        {string} [okText=yg.text.ok]         - The text of the ok button. Defaults to yg.text.ok.
          *        {boolean} [okDisabled=false]         - If true, the primary (ok) button will be initially disabled.
+         *        {boolean} [confirm=false]            - If true, after clicking the primary (ok) button, 
+         *                                               the dialog will ask for confirmation
          *        {string} [cancelClass='']            - CSS class names applied to the secondary (cancel) button.
          *        {string} [cancelText=yg.text.cancel] - The text of the cancel button. Defaults to yg.text.cancel.
          */
@@ -338,22 +340,33 @@ yukon.ui = (function () {
                 cancelClass: '',
                 okDisabled: false
             }, 
-            ok, cancel;
+            ok, cancel,
             
+            okClicked = function (dialog, target) {
+                if (defaults.hasOwnProperty('form')) {
+                    var form = $(defaults.form);
+                    if (!form.is('form')) form = dialog.find('form');
+                    form.submit();
+                } else {
+                    target.trigger(defaults.event);
+                }
+            };
+
             if (typeof (options) !== 'undefined') $.extend(defaults, options);
             
             ok = {
                 text: defaults.okText, 
                 click: function (ev) {
-                    var dialog = $(this).closest('.ui-dialog-content');
-                    // Don't close the popup here.  We may want it to stay open, ie: validation failed.
-                    if (defaults.hasOwnProperty('form')) {
-                        var form = $(defaults.form);
-                        if (!form.is('form')) form = dialog.find('form');
-                        form.submit();
+                    var dialog = $(this).closest('.ui-dialog-content'),
+                        target = defaults.target ? defaults.target : dialog;
+                    if (defaults.confirm) {
+                        mod.confirm({dialog: dialog});
+                        dialog.off('yukon:ui:dialog:confirm')
+                              .on('yukon:ui:dialog:confirm', function (ev) {
+                            okClicked(dialog, target);
+                        });
                     } else {
-                        defaults.target = defaults.target ? defaults.target : dialog;
-                        $(defaults.target).trigger(defaults.event);
+                        okClicked(dialog, target);
                     }
                 }, 
                 'class': 'primary action js-primary-action ' + defaults.okClass,
@@ -701,6 +714,7 @@ yukon.ui = (function () {
          *                     If 'data-url' is used, the event will be fired after the dialog is loaded with
          *                     the response body.
          * data-popup-toggle - If present, the trigger element can be clicked to close the popup as well.
+         * data-confirm -      If present, after clicking the 'OK' button, the dialog will ask for confirmation
          *
          * Positioning options: see http://api.jqueryui.com/position/
          * data-position-my -  'left|center|right top|center|bottom', Order matters. Default is 'center'
@@ -729,8 +743,9 @@ yukon.ui = (function () {
                 if (popup.is('[data-ok-disabled]')) buttonOptions.okDisabled = true;
                 if (popup.is('[data-cancel-class]')) buttonOptions.cancelClass = popup.data('cancelClass');
                 if (popup.is('[data-event]')) buttonOptions.event = popup.data('event');
-                if (popup.is('[data-target]')) buttonOptions.target = popup.data('target');
+                if (popup.is('[data-target]')) buttonOptions.target = $(popup.data('target'));
                 if (popup.is('[data-form]')) buttonOptions.form = popup.data('form');
+                if (popup.is('[data-confirm]')) buttonOptions.confirm = true;
                 options.buttons = mod.buttons(buttonOptions);
             }
             
@@ -762,15 +777,19 @@ yukon.ui = (function () {
 
         /**
          * Turn dialogs buttons into confirm
-         * @param {jQuery} [options.dialog] - jQuery element that has had .dialog called on it
-         * @param {string} [options.event] - Event to be fired if the confirm button is pressed
+         * @param {jQuery} options.dialog -        jQuery element that has had .dialog called on it
+         * @param {string} [options.event] -       Event to be fired if the confirm button is pressed
+                                                     default is 'yukon:ui:dialog:confirm'
+         * @param {jQuery} [options.target] -      element to trigger the event. Default is dialog.
          * @param {string} [options.confirmText] - Confirm text next to buttons
          * @param {string} [options.yesText]
          * @param {string} [options.noText]
          */
         confirm: function (options) {
+
             var dialog = options.dialog,
-                event = options.event || 'yukon:dialog:confirm',
+                target = options.target || dialog,
+                event = options.event || 'yukon:ui:dialog:confirm',
                 confirmText = options.confirmText || yg.text.confirm,
                 yesText = options.yesText || yg.text.yes,
                 noText = options.noText || yg.text.no,
@@ -779,7 +798,8 @@ yukon.ui = (function () {
                     text: yesText,
                     click: function (ev) {
                         confirmSpan.remove();
-                        dialog.trigger(event);
+                        dialog.dialog('option', 'buttons', oldButtons);
+                        target.trigger(event);
                     },
                     'class': 'primary action js-primary-action'
                 },
@@ -789,7 +809,7 @@ yukon.ui = (function () {
                        confirmSpan.remove();
                        dialog.dialog('option', 'buttons', oldButtons);
                    },
-                   'class': 'js-secondary-action '
+                   'class': 'js-secondary-action'
                 },
                 confirmSpan = $('<span>')
                     .attr('class', 'fr')

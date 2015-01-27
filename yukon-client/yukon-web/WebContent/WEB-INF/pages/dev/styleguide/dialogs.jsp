@@ -229,6 +229,46 @@ $('#button-event-popup').on('yukon:dev:styleguide:dialogs:foo', function (e) {
 &lt;/script&gt;
 </pre>
 
+<h2 id="confirm-example">Confirm</h2>
+
+<p class="description">
+    The <span class="label label-attr">[data-target]</span> attribute determines what will fire the event
+    specified by <span class="label label-attr">[data-event]</span>.
+    <br>
+    Since the attribute <span class="label label-attr">[data-confirm]</span> is present, when the the OK button is pressed, 
+    it will first ask for confirmation before firing the supplied event.
+</p>
+<div class="column-4-20 clearfix style-guide-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div class="dn" id="confirm-popup" data-dialog data-confirm data-target="#confirm-btn" 
+        data-title="Confirmation Example" data-width="400" data-event="yukon:dev:styleguide:dialogs:bar">
+            We will get an alert that tells us who fired the event.
+        </div>
+        <cti:button id="confirm-btn" label="Open Confirm Popup" data-popup="#confirm-popup"/>
+        <script>
+        $('#confirm-btn').on('yukon:dev:styleguide:dialogs:bar', function (ev) {
+            $('#confirm-popup').dialog('close');
+            alert('Target is: ' + ev.target.tagName + ' with text "' + ev.target.textContent + '"');
+        });
+        </script>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div class=&quot;dn&quot; id=&quot;confirm-popup&quot; data-dialog data-confirm data-target=&quot;#confirm-btn&quot; 
+data-title=&quot;Confirmation Example&quot; data-width=&quot;400&quot; data-event=&quot;yukon:dev:styleguide:dialogs:bar&quot;&gt;
+    We will get an alert that tells us who fired the event.
+&lt;/div&gt;
+&lt;cti:button id=&quot;confirm-btn&quot; label=&quot;Open Confirm Popup&quot; data-popup=&quot;#confirm-popup&quot;/&gt;
+&lt;script&gt;
+$('#confirm-btn').on('yukon:dev:styleguide:dialogs:bar', function (ev) {
+    $('#confirm-popup').dialog('close');
+    alert('Target is: ' + ev.target.tagName + ' with text &quot;' + ev.target.textContent + '&quot;');
+});
+&lt;/script&gt;
+</pre>
+
 <h2 id="form-ajax-validation-example">Dialogs and Forms</h2>
 
 <p class="description">
