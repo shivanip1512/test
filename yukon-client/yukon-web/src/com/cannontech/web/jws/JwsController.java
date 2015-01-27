@@ -213,7 +213,7 @@ public class JwsController {
         Element resourcesElem = new Element("resources");
         jnlpElem.addContent(resourcesElem);
         Element j2seElem = new Element("j2se");
-        j2seElem.setAttribute("version", "1.7");
+        j2seElem.setAttribute("version", "1.8");
         j2seElem.setAttribute("initial-heap-size", configurationSource.getString("JNLP_INIT_HEAP_SIZE", "128m"));
         j2seElem.setAttribute("max-heap-size", configurationSource.getString("JNLP_MAX_HEAP_SIZE", "384m"));
         resourcesElem.addContent(j2seElem);
