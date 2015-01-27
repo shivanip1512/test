@@ -8,7 +8,7 @@ yukon.namespace('yukon.da.common');
  * @requires JQUERY UI
  * @requires OPEN_LAYERS
  */
-yukon.da.common = {
+yukon.da.common = (function () {
 
     var lock_buttons = function(el_id) {
             //el_id comes in looking like this: "editorForm:hdr_submit_button_1"
@@ -459,7 +459,7 @@ yukon.da.common = {
     };
 
     return mod;
-}()));
+}());
 
 $(function() {
     yukon.da.common.init();
