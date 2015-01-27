@@ -11,7 +11,7 @@
 </style>
 
 <p class="description">
-    Device Group selection is handled with special component built by the  
+    Device group selection is handled with special component built by the  
     <span class="label label-attr">&lt;tags:deviceGroupPicker&gt;</span> tag. Note: When a selection is made the
     picker component fires the <em>yukon:device:group:picker:selection</em> event that also passes an array of 
     groups names selected as data <a href="#selection-listener-example">See Example</a>.
@@ -54,7 +54,7 @@
     </tags:nameValue>
 </tags:nameValueContainer>
 
-<h1 class="dib">Examples</h1>
+<br><h1 class="dib buffered">Examples</h1><br>
 <h2>Basic Group Picker</h2>
 
 <p class="description">
@@ -87,8 +87,7 @@
 @RequestMapping(&quot;/styleguide/group-pickers&quot;)
 public String groupPickers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
     
-    List&lt;String&gt; groups = Lists.newArrayList(&quot;/Meters/Billing&quot;, &quot;/Meters/Alternate&quot;, 
-            &quot;/Meters/Alternate/Flags/DisconnectedStatus&quot;);
+    List&lt;String&gt; groups = Lists.newArrayList(&quot;/Meters/Billing&quot;, &quot;/Meters/Alternate&quot;, &quot;/Meters/Collection&quot;);
     model.addAttribute(&quot;groups&quot;, groups);
     
     return &quot;styleguide/group.pickers.jsp&quot;;
@@ -149,7 +148,7 @@ public String groupPickers(ModelMap model, HttpServletRequest request, YukonUser
 <h2 id="selection-listener-example">Listening For Selections</h2>
 
 <p class="description">
-    A group picker and an event handler that listens for group selections. After a selection the group picker component
+    A group picker and an event handler that listens for group selections. After a selection, the group picker component
     fires the <em>yukon:device:group:picker:selection</em> event that also passes an array of groups names selected as data.
 </p>
 <div class="column-4-20 clearfix">
