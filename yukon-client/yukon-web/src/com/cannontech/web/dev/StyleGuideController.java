@@ -77,6 +77,11 @@ public class StyleGuideController {
         return "styleguide/icons.jsp";
     }
     
+    @RequestMapping("/styleguide/labels-badges")
+    public String labelsAndBadges(ModelMap model) {
+        return "styleguide/labels.and.badges.jsp";
+    }
+    
     @RequestMapping("/styleguide/buttons")
     public String buttons(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         return "styleguide/buttons.jsp";
