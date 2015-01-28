@@ -159,7 +159,7 @@
                     .find('.progress-bar').css({ width: percentage })
                     .find('span').text(percentage);
                 });
-            }, 1000);
+            }, 600);
         </script>
     </div>
 </div>
@@ -205,7 +205,7 @@
         bar.data('progress', width)
         .find('.progress-bar').css({ width: percentage })
         .find('span').text(percentage);
-    }, 1000);
+    }, 600);
 &lt;/script&gt;
 </pre>
 
