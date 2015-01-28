@@ -82,6 +82,14 @@ public class StyleGuideController {
         return "styleguide/labels.and.badges.jsp";
     }
     
+    @RequestMapping("/styleguide/progressbars")
+    public String progressbars(ModelMap model) {
+        
+        
+        
+        return "styleguide/progressbars.jsp";
+    }
+    
     @RequestMapping("/styleguide/buttons")
     public String buttons(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
         return "styleguide/buttons.jsp";

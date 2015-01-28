@@ -148,7 +148,7 @@ var yukon = (function () {
          * yukon.percent(5, 10, 3) results in "50%"
          */
         percent: function (count, total, decimals) {
-            return Number((count / total * 100).toFixed(2)).toString() + '%';
+            return Number((count / total * 100).toFixed(decimals)).toString() + '%';
         },
         
         /** 

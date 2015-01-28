@@ -1494,6 +1494,7 @@
               <page name="containers" type="BASIC"/>
               <page name="icons" type="BASIC"/>
               <page name="labels.badges" type="BASIC"/>
+              <page name="progressbars" type="BASIC"/>
               <page name="buttons" type="BASIC"/>
               <page name="switches" type="BASIC"/>
               <page name="inputs" type="BASIC"/>

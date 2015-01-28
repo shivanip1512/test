@@ -22,6 +22,8 @@
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/icons"/>">Icons</a></li>
             <c:set var="clazz" value="${page == 'labels.badges' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/labels-badges"/>">Labels And Badges</a></li>
+            <c:set var="clazz" value="${page == 'progressbars' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/progressbars"/>">Progress Bars</a></li>
             <c:set var="clazz" value="${page == 'buttons' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/buttons"/>">Buttons</a></li>
             <c:set var="clazz" value="${page == 'switches' ? 'selected' : ''}"/>

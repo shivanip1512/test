@@ -315,6 +315,7 @@
     
     <entry key="yukon.web.modules.dev.inputs.pageName">Fun with Inputs</entry>
     <entry key="yukon.web.modules.dev.labels.badges.pageName">Labels And Badges</entry>
+    <entry key="yukon.web.modules.dev.progressbars.pageName">Progress Bars</entry>
     <entry key="yukon.web.modules.dev.blocking.pageName">Blocking</entry>
     
     <entry key="yukon.web.modules.dev.dialogs.pageName">Dialogs</entry>
