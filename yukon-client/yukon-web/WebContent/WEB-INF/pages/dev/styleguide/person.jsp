@@ -3,7 +3,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msgScope paths="modules.dev.dialogs">
+<cti:msgScope paths="modules.dev">
 <c:set var="method" value="${create ? 'post' : 'put'}"/>
 <form:form commandName="person" action="person" method="${method}" cssClass="js-new-person-form">
     <form:hidden path="id"/>

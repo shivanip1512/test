@@ -11,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,8 +30,10 @@ import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.Validator;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.model.Person;
 import com.cannontech.web.group.DisableNodeCallback;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
@@ -90,7 +93,28 @@ public class StyleGuideController {
     }
     
     @RequestMapping("/styleguide/alerts")
-    public String alerts(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    public String alerts(ModelMap model, YukonUserContext userContext) {
+        
+        model.addAttribute("errorMsg", "Something went wrong.");
+        model.addAttribute("person", new Person());
+        
+        return "styleguide/alerts.jsp";
+    }
+    
+    private static final String keyBase = "yukon.web.modules.dev.alerts.";
+    
+    @RequestMapping(value="/styleguide/alerts/flash-scope-test", method=RequestMethod.POST)
+    public String alerts(ModelMap model, YukonUserContext userContext, FlashScope flash,
+            @ModelAttribute("person") Person person, BindingResult result) {
+        
+        if (StringUtils.isBlank(person.getName())) {
+            flash.setError(new YukonMessageSourceResolvable(keyBase + "error"));
+        } else if (person.getEmail().contains("@aol.com")) {
+            flash.setWarning(new YukonMessageSourceResolvable(keyBase + "warning"));
+        } else {
+            flash.setConfirm(new YukonMessageSourceResolvable(keyBase + "success"));
+        }
+        
         return "styleguide/alerts.jsp";
     }
     

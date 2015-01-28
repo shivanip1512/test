@@ -287,8 +287,8 @@ $('#confirm-btn').on('yukon:dev:styleguide:dialogs:bar', function (ev) {
         </div>
         <cti:button label="Add Person" data-popup="#form-example" icon="icon-plus-green"/>
         <script>
-        $('#form-example').on('yukon:dev:styleguid:dialogs:create:person', function (e) {
-            $('.js-new-person-form').ajaxSubmit({
+        $('#form-example').on('yukon:dev:styleguid:dialogs:create:person', function (ev) {
+            $('#form-example form').ajaxSubmit({
                 success: function (data, status, xhr, $form) {
                     $('#form-example').dialog('close');
                     debug.log('A winner is you!!');
@@ -365,8 +365,8 @@ public class PersonValidator extends SimpleValidator&lt;Person&gt; {
 </pre>
 <h4 class="subtle">Javascript Code:</h4>
 <pre class="code prettyprint lang-js">
-$('#form-example').on('yukon:dev:styleguid:dialogs:create:person', function (e) {
-    $('.js-new-person-form').ajaxSubmit({
+$('#form-example').on('yukon:dev:styleguid:dialogs:create:person', function (ev) {
+    $('#form-example form').ajaxSubmit({
         success: function (data, status, xhr, $form) {
             $('#form-example').dialog('close');
             debug.log('A winner is you!!');

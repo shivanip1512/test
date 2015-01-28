@@ -307,16 +307,23 @@
     <entry key="yukon.web.modules.dev.buttons.create">Create</entry>
     
     <entry key="yukon.web.modules.dev.switches.pageName">Switches</entry>
+    
+    <entry key="yukon.web.modules.dev.alerts.pageName">Alerts</entry>
+    <entry key="yukon.web.modules.dev.alerts.success">A winner is you!</entry>
+    <entry key="yukon.web.modules.dev.alerts.warning">It's dangerous to go alone! Take this.</entry>
+    <entry key="yukon.web.modules.dev.alerts.error">All your base are belong to us.</entry>
+    
     <entry key="yukon.web.modules.dev.inputs.pageName">Fun with Inputs</entry>
     <entry key="yukon.web.modules.dev.blocking.pageName">Blocking</entry>
     
     <entry key="yukon.web.modules.dev.dialogs.pageName">Dialogs</entry>
-    <entry key="yukon.web.modules.dev.dialogs.name">Name</entry>
-    <entry key="yukon.web.modules.dev.dialogs.age">Age</entry>
-    <entry key="yukon.web.modules.dev.dialogs.email">Email</entry>
     
     <entry key="yukon.web.modules.dev.icons.pageName">Icons</entry>
     <entry key="yukon.web.modules.dev.datePickers.pageName">Date - Time Pickers</entry>
     <entry key="yukon.web.modules.dev.groupPickers.pageName">Group Pickers</entry>
+    
+    <entry key="yukon.web.modules.dev.name">Name</entry>
+    <entry key="yukon.web.modules.dev.age">Age</entry>
+    <entry key="yukon.web.modules.dev.email">Email</entry>
     
 </properties>

@@ -154,7 +154,7 @@
                     <div class="column ${columnNum} main-container">
                         
                         <%-- FLASH SCOPE MESSAGES --%>
-                        <cti:flashScopeMessages />
+                        <cti:flashScopeMessages/>
                         <noscript>
                             <div class="page-error">
                                 <cti:msg2 key="yukon.web.error.noJs"/>
