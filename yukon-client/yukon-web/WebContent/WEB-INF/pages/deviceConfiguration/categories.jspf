@@ -18,7 +18,7 @@
             <span ${attrs} class="pipe" style="margin-bottom: 20px;">&nbsp;</span>
             
             <c:if test="${empty selection.categoryId}">
-                <tags:alertBox nameKey=".needsSelection"/>
+                <tags:alertBox key=".needsSelection"/>
             </c:if>
 
             <tags:nameValueContainer2>

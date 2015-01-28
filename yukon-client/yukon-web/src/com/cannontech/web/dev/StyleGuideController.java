@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +33,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.Validator;
 import com.cannontech.web.dev.model.Person;
 import com.cannontech.web.group.DisableNodeCallback;
-import com.cannontech.web.group.NodeAttributeSettingCallback;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -89,6 +87,11 @@ public class StyleGuideController {
         model.addAttribute("thing", thing);
         
         return "styleguide/switches.jsp";
+    }
+    
+    @RequestMapping("/styleguide/alerts")
+    public String alerts(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+        return "styleguide/alerts.jsp";
     }
     
     @RequestMapping("/styleguide/fun-with-inputs")

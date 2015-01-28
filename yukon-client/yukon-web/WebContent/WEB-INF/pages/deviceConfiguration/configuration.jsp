@@ -18,7 +18,7 @@
         <form:hidden path="configId"/>
         
         <c:if test="${deviceConfigTypes.supportedTypesEmpty}">
-            <tags:alertBox nameKey=".noSupportedTypesPage"/>
+            <tags:alertBox key=".noSupportedTypesPage"/>
         </c:if>
 
         <!-- CONFIGURATION NAME AND DESCRIPTION -->
