@@ -209,27 +209,5 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
 //        complete++;
 //        log.info(complete + " / " + total);
     }
-    
-    private void createCapControlSchedule(DevCapControl devCapControl, int type, String name, boolean disabled) {
-        if (paoScheduleDao.doesNameExist(name)) {
-            log.info("CapControl object with name " + name + " already exists. Skipping");
-            return;
-        }
-        PaoSchedule newSchedule = new PaoSchedule();
-        newSchedule.setName(name);
-        paoScheduleDao.save(newSchedule);
-    }
-    
-    private void createCapControlStrategy(DevCapControl devCapControl, int type, String name, boolean disabled) {
-        List<LiteCapControlStrategy> allLiteStrategies = strategyDao.getAllLiteStrategies();
-        for (LiteCapControlStrategy liteStrategy : allLiteStrategies) {
-            if (liteStrategy.getStrategyName().equalsIgnoreCase(name)) {
-                log.info("CapControl object with name " + name + " already exists. Skipping");
-                return;
-            }
-        }
-        
-        strategyDao.add(name);
-    }
 
 }
