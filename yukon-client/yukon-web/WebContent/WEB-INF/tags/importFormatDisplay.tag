@@ -1,25 +1,33 @@
 <%@ tag body-content="empty" trimDirectiveWhitespaces="true" %>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <%@ attribute name="format" required="true" type="com.cannontech.common.csvImport.ImportFileFormat" %>
-<%@ attribute name="formatName" required="true" type="java.lang.String" %>
-<%@ attribute name="styleId" required="false" type="java.lang.String" %>
-<%@ attribute name="styleClass" required="false" type="java.lang.String" %>
+<%@ attribute name="formatName" required="true" %>
+<%@ attribute name="id" %>
+<%@ attribute name="classes" %>
 
-<div id="${styleId}" class="${styleClass}">
+<cti:uniqueIdentifier prefix="import-format-display-" var="thisId"/>
+<cti:default var="id" value="${thisId}"/>
+
+<div id="${id}" class="${classes}">
     <c:set var="requiredColumns" value="${format.requiredColumns}"/>
     <c:if test="${not empty requiredColumns}">
         <table class="results-table" style="font-size:11px;">
             <tr>
                 <th colspan="3" style="font-weight:bold;">
                     <i:inline key="yukon.web.import.display.requiredColumnsName"/>
-                    <cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
-                    <img src="${infoImg}" title="<cti:msg2 key="yukon.web.import.display.requiredColumnsIntro"/>"/>
+                    <cti:button renderMode="image" icon="icon-information" classes="fn" nameKey="info"
+                        data-popup="#${id}-required" data-popup-toggle="true"/>
+                    <div id="${id}-required" class="dn" data-width="400"
+                        data-title="<cti:msg2 key='import.display.requiredColumnsName'/>">
+
+                        <p><i:inline key="yukon.web.import.display.requiredColumnsIntro"/></p>
+                    </div>
                 </th>
             </tr>
             <tr>
@@ -56,8 +64,14 @@
             <tr>
                 <th colspan="3" style="font-weight:bold;">
                     <i:inline key="yukon.web.import.display.optionalColumnsName" />
-                    <cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
-                    <img src="${infoImg}" title="<cti:msg2 key="yukon.web.import.display.optionalColumnsIntro"/>"/>
+
+                    <cti:button renderMode="image" icon="icon-information" classes="fn" nameKey="info"
+                        data-popup="#${id}-optional" data-popup-toggle="true"/>
+                    <div id="${id}-optional" class="dn" data-width="400"
+                        data-title="<cti:msg2 key='import.display.optionalColumnsName'/>">
+
+                        <p><i:inline key="yukon.web.import.display.optionalColumnsIntro"/></p>
+                    </div>
                 </th>
             </tr>
             <tr>
@@ -94,8 +108,14 @@
             <tr>
                 <th colspan="3" style="font-weight:bold;">
                     <i:inline key="yukon.web.import.display.groupedColumnsName" />
-                    <cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
-                    <img src="${infoImg}" title="<cti:msg2 key="yukon.web.import.display.groupedColumnsIntro"/>"/>
+
+                    <cti:button renderMode="image" icon="icon-information" classes="fn" nameKey="info"
+                        data-popup="#${id}-grouped" data-popup-toggle="true"/>
+                    <div id="${id}-grouped" class="dn" data-width="400"
+                        data-title="<cti:msg2 key='import.display.groupedColumnsName'/>">
+
+                        <p><i:inline key="yukon.web.import.display.groupedColumnsIntro"/></p>
+                    </div>
                 </th>
             </tr>
             <c:forEach var="groupedColumns" items="${groupedColumnsMap}">
@@ -137,8 +157,14 @@
             <tr>
                 <th colspan="5" style="font-weight:bold;">
                     <i:inline key="yukon.web.import.display.valueDependentColumnsName" />
-                    <cti:url var="infoImg" value="/WebConfig/yukon/Icons/information.gif"/>
-                    <img src="${infoImg}" title="<cti:msg2 key="yukon.web.import.display.valueDependentColumnsIntro"/>"/>
+
+                    <cti:button renderMode="image" icon="icon-information" classes="fn" nameKey="info"
+                        data-popup="#${id}-value-dependent" data-popup-toggle="true"/>
+                    <div id="${id}-value-dependent" class="dn" data-width="400"
+                        data-title="<cti:msg2 key='import.display.valueDependentColumnsName'/>">
+
+                        <p><i:inline key="yukon.web.import.display.valueDependentColumnsIntro"/></p>
+                    </div>
                 </th>
             </tr>
             <tr>
