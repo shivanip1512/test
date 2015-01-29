@@ -158,7 +158,7 @@ public class ScheduleController {
         return "schedule/scheduleassignmentTable.jsp";
     }
 
-    @RequestMapping("scheduleAssignments")
+    @RequestMapping("assignments")
     public String scheduleAssignments(HttpServletRequest request, LiteYukonUser user, ModelMap model) {
         
         setUpModel(request, user, model);
@@ -230,7 +230,7 @@ public class ScheduleController {
     }
 
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
-    @RequestMapping(value="{id}", method=RequestMethod.POST)
+    @RequestMapping(value={"{id}","create"}, method=RequestMethod.POST)
     public String save(HttpServletResponse response, ModelMap model, @ModelAttribute("schedule") PaoSchedule schedule, BindingResult bindingResult) {
         if (schedule.getLastRunTime() == null) {
             schedule.setLastRunTime(epoch1990);
@@ -328,7 +328,7 @@ public class ScheduleController {
      * Run multiple schedule assignment commands.  The schedule assignments are optionally 
      * filtered by command and/or schedule.
      */
-    @RequestMapping("startMultiple")
+    @RequestMapping("start-multiple")
     public @ResponseBody Map<String, Object> startMultiple(HttpServletRequest request, YukonUserContext context, 
             LiteYukonUser user, ModelMap map) {
         
@@ -367,7 +367,7 @@ public class ScheduleController {
      * filtered by command and/or schedule.  This is only applicable to "verify" commands.  
      * Any other schedule assignment commands that match the filter criteria will be ignored. 
      */
-    @RequestMapping("stopMultiple")
+    @RequestMapping("stop-multiple")
     public  @ResponseBody Map<String, Object> stopMultiple(HttpServletRequest request, YukonUserContext context, 
             ModelMap map) {
         String filterByCommand = ServletRequestUtils.getStringParameter(request, "stopCommand", "");
@@ -428,7 +428,7 @@ public class ScheduleController {
     /**
      * Run a single schedule assignment command.
      */
-    @RequestMapping("startSchedule")
+    @RequestMapping("start")
     public @ResponseBody Map<String, Object> startSchedule(Integer eventId, String deviceName, YukonUserContext context) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         String result;
@@ -453,7 +453,7 @@ public class ScheduleController {
     /**
      * Send a stop verify command to the specified subbus. 
      */
-    @RequestMapping("stopSchedule")
+    @RequestMapping("stop")
     public @ResponseBody Map<String, Object> stopSchedule(Integer deviceId, String deviceName, YukonUserContext context) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
 
@@ -472,7 +472,7 @@ public class ScheduleController {
         return json;
     }
     
-    @RequestMapping(value="removePao", method=RequestMethod.POST)
+    @RequestMapping(value="remove-assignment", method=RequestMethod.POST)
     public String removePao(Integer eventId, Integer paoId, ModelMap map, FlashScope flash) {
         boolean success = paoScheduleDao.unassignCommandByEventId(eventId);
         
@@ -490,10 +490,10 @@ public class ScheduleController {
             flash.setWarning(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.scheduleAssignments.deleteFailed"));
         }
         
-        return "redirect:scheduleAssignments";
+        return "redirect:assignments";
     }
 
-    @RequestMapping("setOvUv")
+    @RequestMapping("set-ovuv")
     public @ResponseBody Map<String, Object> setOvUv(Integer eventId, Integer ovuv, ModelMap map, 
             YukonUserContext context) {
         boolean success = false;
@@ -572,7 +572,7 @@ public class ScheduleController {
             flash.setError(message);
         }
         
-        return "redirect:scheduleAssignments";
+        return "redirect:assignments";
     }
     
     /**
@@ -596,7 +596,7 @@ public class ScheduleController {
     /**
      * Returns the "Stop Multiple Schedule Assignment Commands" popup form.
      */
-    @RequestMapping("stopMultiScheduleAssignmentPopup")
+    @RequestMapping("stop-multiple-settings")
     public String stopMultiScheduleAssignmentPopup(ModelMap map,
             @RequestParam(defaultValue="All") String schedule,
             @RequestParam(defaultValue="All") String command) {
@@ -614,7 +614,7 @@ public class ScheduleController {
     /**
      * Returns the "Run Multiple Schedule Assignment Commands" popup form.
      */
-    @RequestMapping("newScheduleAssignmentPopup")
+    @RequestMapping("create-settings")
     public String newScheduleAssignmentPopup(ModelMap map,
             @RequestParam(defaultValue="All") String schedule,
             @RequestParam(defaultValue="All") String command) {

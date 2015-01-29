@@ -23,7 +23,7 @@
         data-width="500" 
         class="dn"></div>
     
-    <cti:url value="/capcontrol/schedules/stopMultiScheduleAssignmentPopup" var="stopAssignmentsUrl">
+    <cti:url value="/capcontrol/schedules/stop-multiple-settings" var="stopAssignmentsUrl">
         <cti param name="schedule" value="${param.schedule}" />
         <cti param name="command" value="${param.command}" />
     </cti:url>
@@ -34,7 +34,7 @@
         data-url="${stopAssignmentsUrl}" 
         data-width="500" class="dn"></div>
 
-    <cti:url value="/capcontrol/schedules/newScheduleAssignmentPopup" var="newAssignmentsUrl">
+    <cti:url value="/capcontrol/schedules/create-settings" var="newAssignmentsUrl">
         <cti param name="schedule" value="${param.schedule}" />
         <cti param name="command" value="${param.command}" />
     </cti:url>
@@ -50,10 +50,10 @@
     </div>
     <cti:linkTabbedContainer mode="section">
         <cti:linkTab selectorKey="yukon.web.modules.capcontrol.schedules.tab.title">
-            <c:url value="/capcontrol/schedules" />
+            <cti:url value="/capcontrol/schedules" />
         </cti:linkTab>
         <cti:linkTab selectorKey="yukon.web.modules.capcontrol.scheduleAssignments.tab.title" initiallySelected="${true}">
-            <c:url value="/capcontrol/schedules/scheduleAssignments" />
+            <cti:url value="/capcontrol/schedules/assignments" />
         </cti:linkTab>
     </cti:linkTabbedContainer>
     
@@ -101,9 +101,6 @@
     
     <cti:msg2 var="confirmCommand" key=".confirmCommand"/>
     <cti:msg2 var="sendTimeSyncsCommand" key=".sendTimeSyncsCommand"/>
-    
-    <c:set var="baseUrl" value="/capcontrol/schedules/scheduleAssignments"/>
-    <cti:url var="showAllUrl" value="/capcontrol/schedules/scheduleAssignments"/>
 
     <div id="schedule-assignments-table" class="scroll-xl">
         <%@include file="scheduleassignmentTable.jsp" %>

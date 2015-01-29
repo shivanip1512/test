@@ -1,3 +1,4 @@
+yukon.namespace('yukon.da.scheduleAssignments');
 /**
  * Handles the schedule and schedule assignment pages.
  * @module yukon.da.scheduleAssignments
@@ -6,9 +7,7 @@
  * @requires yukon.da
  */
 
-yukon.namespace('yukon.da.scheduleAssignments');
-
-yukon.da.common.scheduleAssignments = (function () {
+yukon.da.scheduleAssignments = (function () {
     
     var _initialized = false,
     
@@ -27,7 +26,7 @@ yukon.da.common.scheduleAssignments = (function () {
                 var deviceName = $(ev.target).closest('li').attr('data-device-name');
                 var eventId = $(ev.target).closest('li').attr('data-event-id');
                 
-                $.getJSON(yukon.url('/capcontrol/schedules/startSchedule'), {
+                $.getJSON(yukon.url('/capcontrol/schedules/start'), {
                     'eventId': eventId, 
                     'deviceName': deviceName
                 }).done(function (json) {
@@ -44,7 +43,7 @@ yukon.da.common.scheduleAssignments = (function () {
                 var deviceName = $(ev.target).closest('li').attr('data-device-name');
                 var deviceId = $(ev.target).closest('li').attr('data-device-id');
                 
-                $.getJSON(yukon.url('/capcontrol/schedules/stopSchedule'), {
+                $.getJSON(yukon.url('/capcontrol/schedules/stop'), {
                     'deviceId': deviceId, 
                     'deviceName': deviceName
                 }).done(function (json) {
@@ -61,7 +60,7 @@ yukon.da.common.scheduleAssignments = (function () {
 
             $(document).on('yukon_da_schedules_remove', '.deleteAssignment', function () {
                 var btn = $(this),
-                    removeUrl = yukon.url('/capcontrol/schedules/removePao'),
+                    removeUrl = yukon.url('/capcontrol/schedules/remove-assignment'),
                     data = {'eventId': btn.data('eventId'),
                             'paoId': btn.data('paoId'),
                             'com.cannontech.yukon.request.csrf.token': btn.data('csrfToken')
@@ -81,7 +80,7 @@ yukon.da.common.scheduleAssignments = (function () {
 
             /** Click detection to post stop schedules form. */
             $('#stop-assignments').on('yukon.vv.schedules.stop.all', function (ev) {
-                var reviewTableUrl = yukon.url('/capcontrol/schedules/stopMultiple');
+                var reviewTableUrl = yukon.url('/capcontrol/schedules/stop-multiple');
                 $.post(reviewTableUrl, $('#stop-multiple-schedules-form').serialize()).done(function(json) {
                     $('#stop-assignments').dialog('close');
                     yukon.da.common.showAlertMessageForAction(json.schedule, '', json.resultText, 'green');
@@ -92,7 +91,7 @@ yukon.da.common.scheduleAssignments = (function () {
             
             /** Click detection to submit start assignment form. */
             $('#start-assignments').on('yukon.vv.schedules.start.all', function (ev) {
-                var reviewTableUrl = yukon.url('/capcontrol/schedules/startMultiple');
+                var reviewTableUrl = yukon.url('/capcontrol/schedules/start-multiple');
                 $.post(reviewTableUrl, $('#start-multiple-schedules-form').serialize()).done(function(json) {
                     $('#start-assignments').dialog('close');
                     yukon.da.common.showAlertMessageForAction(json.schedule, '', json.resultText, 'green');
@@ -104,7 +103,7 @@ yukon.da.common.scheduleAssignments = (function () {
             /** Click detection for enable OvUv menu click. */
             $(document).on('click', '.js-enable-ovuv', function (ev) {
                 var eventId = $(ev.target).closest('li').attr('value');
-                $.post(yukon.url('/capcontrol/schedules/setOvUv'), {
+                $.post(yukon.url('/capcontrol/schedules/set-ovuv'), {
                     'eventId': eventId, 
                     'ovuv': 1
                 }).done(function (json) {
@@ -121,7 +120,7 @@ yukon.da.common.scheduleAssignments = (function () {
             /** Click detection for disable OvUv menu click. */
             $(document).on('click', '.js-disable-ovuv', function (ev) {
                 var eventId = $(ev.target).closest('li').attr('value');
-                $.post(yukon.url('/capcontrol/schedules/setOvUv'), {
+                $.post(yukon.url('/capcontrol/schedules/set-ovuv'), {
                     'eventId': eventId, 
                     'ovuv': 0
                 }).done(function (json) {

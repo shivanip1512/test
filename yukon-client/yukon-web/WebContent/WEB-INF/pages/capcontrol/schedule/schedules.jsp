@@ -15,7 +15,7 @@
             <cti:url value="/capcontrol/schedules" />
         </cti:linkTab>
         <cti:linkTab selectorKey="yukon.web.modules.capcontrol.scheduleAssignments.tab.title">
-            <cti:url value="/capcontrol/schedules/scheduleAssignments" />
+            <cti:url value="/capcontrol/schedules/assignments" />
         </cti:linkTab>
     </cti:linkTabbedContainer>
 
