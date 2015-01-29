@@ -3,9 +3,9 @@ package com.cannontech.web.bulk.ada;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -50,7 +50,7 @@ public class AdaResultsController {
     private final static String baseKey = "yukon.web.modules.tools.bulk.analysis";
     private final static int TABULAR_SIZE_LIMIT = 5000; //maximum number of data points before tabular link is disabled
     private final static int BAR_WIDTH = 400;
-    private Map<Integer, List<AdaDevice>> adaResultsCache = new HashMap<>();
+    private Map<Integer, List<AdaDevice>> adaResultsCache = new ConcurrentHashMap<>(16);
     
     private static enum Column implements DisplayableEnum {
         NAME(AdaDevice.ON_NAME), 
