@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/7/2015 3:47:13 PM                          */
+/* Created on:     1/28/2015 11:49:54 AM                        */
 /*==============================================================*/
 
 
@@ -696,7 +696,7 @@ create table CAPCONTROLSUBSTATIONBUS  (
    ControlFlag          CHAR(1)                         not null,
    VoltReductionPointId NUMBER                          not null,
    DisableBusPointId    NUMBER                          not null,
-   constraint SYS_C0013476 primary key (SubstationBusID)
+   constraint PK_CapControlSubstationBus primary key (SubstationBusID)
 );
 
 /*==============================================================*/
@@ -1246,7 +1246,7 @@ create index Indx_CICustBase_CompName on CICustomerBase (
 create table COLUMNTYPE  (
    TYPENUM              NUMBER                          not null,
    NAME                 VARCHAR2(20)                    not null,
-   constraint SYS_C0013414 primary key (TYPENUM)
+   constraint PK_ColumnType primary key (TYPENUM)
 );
 
 insert into columntype values (1, 'PointID');
@@ -1394,7 +1394,7 @@ create table CommPort  (
    PERFORMANCEALARM     VARCHAR2(1)                     not null,
    SharedPortType       VARCHAR2(20)                    not null,
    SharedSocketNumber   NUMBER                          not null,
-   constraint SYS_C0013112 primary key (PORTID)
+   constraint PK_CommPort primary key (PORTID)
 );
 
 /*==============================================================*/
@@ -2139,7 +2139,7 @@ create table DISPLAY  (
    TYPE                 VARCHAR2(40)                    not null,
    TITLE                VARCHAR2(30),
    DESCRIPTION          VARCHAR2(200),
-   constraint SYS_C0013412 primary key (DISPLAYNUM)
+   constraint PK_Display primary key (DISPLAYNUM)
 );
 
 insert into display values(-1, 'All Categories', 'Scheduler Client', 'Metering And Control Scheduler', 'com.cannontech.macs.gui.Scheduler');
@@ -5118,7 +5118,7 @@ create table GRAPHDATASERIES  (
    Multiplier           FLOAT                           not null,
    Renderer             SMALLINT                        not null,
    MoreData             VARCHAR2(100)                   not null,
-   constraint SYS_GrphDserID primary key (GRAPHDATASERIESID)
+   constraint PK_GraphDataSeries primary key (GRAPHDATASERIESID)
 );
 
 /*==============================================================*/
@@ -5144,7 +5144,7 @@ create table GRAPHDEFINITION  (
    RightMin             FLOAT                           not null,
    RightMax             FLOAT                           not null,
    Type                 CHAR(1)                         not null,
-   constraint SYS_C0015109 primary key (GRAPHDEFINITIONID)
+   constraint PK_GraphDefinition primary key (GRAPHDEFINITIONID)
 );
 
 alter table GRAPHDEFINITION
@@ -6366,7 +6366,7 @@ create table LOGIC  (
    PERIODICRATE         NUMBER                          not null,
    STATEFLAG            VARCHAR2(10)                    not null,
    SCRIPTNAME           VARCHAR2(20)                    not null,
-   constraint SYS_C0013445 primary key (LOGICID)
+   constraint PK_Logic primary key (LOGICID)
 );
 
 /*==============================================================*/
@@ -7244,7 +7244,7 @@ create table RAWPOINTHISTORY  (
    QUALITY              NUMBER                          not null,
    VALUE                FLOAT                           not null,
    millis               SMALLINT                        not null,
-   constraint SYS_C0013322 primary key (CHANGEID)
+   constraint PK_RawPointHistory primary key (CHANGEID)
 );
 
 /*==============================================================*/
@@ -7424,7 +7424,7 @@ create table Route  (
    RouteID              NUMBER                          not null,
    DeviceID             NUMBER                          not null,
    DefaultRoute         CHAR(1)                         not null,
-   constraint SYS_RoutePK primary key (RouteID)
+   constraint PK_Route primary key (RouteID)
 );
 
 INSERT INTO Route VALUES (0,0,'N');
@@ -7451,7 +7451,7 @@ create table SYSTEMLOG  (
    DESCRIPTION          VARCHAR2(120),
    USERNAME             VARCHAR2(64),
    millis               SMALLINT                        not null,
-   constraint SYS_C0013407 primary key (LOGID)
+   constraint PK_SystemLog primary key (LOGID)
 );
 
 /*==============================================================*/
@@ -7746,7 +7746,7 @@ create table StateGroup  (
    StateGroupId         NUMBER                          not null,
    Name                 VARCHAR2(60)                    not null,
    GroupType            VARCHAR2(20)                    not null,
-   constraint SYS_C0013128 primary key (StateGroupId)
+   constraint PK_StateGroup primary key (StateGroupId)
 );
 
 INSERT INTO StateGroup VALUES(-19, 'RF Demand Reset', 'Status');
@@ -7943,7 +7943,7 @@ create table TEMPLATE  (
    TEMPLATENUM          NUMBER                          not null,
    NAME                 VARCHAR2(40)                    not null,
    DESCRIPTION          VARCHAR2(200),
-   constraint SYS_C0013425 primary key (TEMPLATENUM)
+   constraint PK_Template primary key (TEMPLATENUM)
 );
 
 insert into template values( 1, 'Standard', 'First Standard Cannon Template');
@@ -8161,7 +8161,7 @@ create table UNITMEASURE  (
    CalcType             NUMBER                          not null,
    LongName             VARCHAR2(40)                    not null,
    Formula              VARCHAR2(80)                    not null,
-   constraint SYS_C0013344 primary key (UOMID)
+   constraint PK_UnitMeasure primary key (UOMID)
 );
 
 INSERT INTO UnitMeasure VALUES ( 0,'kW', 0,'kW','(none)' );
@@ -10292,7 +10292,7 @@ alter table BaseLine
       references HolidaySchedule (HolidayScheduleID);
 
 alter table CALCBASE
-   add constraint SYS_C0013434 foreign key (POINTID)
+   add constraint FK_CalcBase_Point foreign key (POINTID)
       references POINT (POINTID);
 
 alter table CALCCOMPONENT
@@ -10304,16 +10304,16 @@ alter table CALCCOMPONENT
       references POINT (POINTID);
 
 alter table CAPBANK
-   add constraint SYS_C0013453 foreign key (DEVICEID)
+   add constraint FK_CapBank_Device_ControlDev foreign key (CONTROLDEVICEID)
       references DEVICE (DEVICEID);
 
 alter table CAPBANK
-   add constraint SYS_C0013454 foreign key (CONTROLPOINTID)
+   add constraint FK_CapBank_Device_DeviceId foreign key (DEVICEID)
+      references DEVICE (DEVICEID);
+
+alter table CAPBANK
+   add constraint FK_CapBank_Point foreign key (CONTROLPOINTID)
       references POINT (POINTID);
-
-alter table CAPBANK
-   add constraint SYS_C0013455 foreign key (CONTROLDEVICEID)
-      references DEVICE (DEVICEID);
 
 alter table CAPBANKADDITIONAL
    add constraint FK_CAPBANKA_CAPBANK foreign key (DeviceID)
@@ -10343,24 +10343,24 @@ alter table CAPCONTROLSUBSTATION
       on delete cascade;
 
 alter table CAPCONTROLSUBSTATIONBUS
-   add constraint FK_CAPCONTR_SWPTID foreign key (SwitchPointID)
+   add constraint FK_CapContrSubBus_Point_Switch foreign key (SwitchPointID)
       references POINT (POINTID);
 
 alter table CAPCONTROLSUBSTATIONBUS
-   add constraint FK_CAPCONTR_CVOLTPTID foreign key (CurrentVoltLoadPointID)
+   add constraint FK_CapContrSubBus_Point_VarPt foreign key (CurrentVarLoadPointID)
       references POINT (POINTID);
 
 alter table CAPCONTROLSUBSTATIONBUS
-   add constraint FK_CpSbBus_YPao foreign key (SubstationBusID)
+   add constraint FK_CapContrSubBus_Point_VoltPt foreign key (CurrentVoltLoadPointID)
+      references POINT (POINTID);
+
+alter table CAPCONTROLSUBSTATIONBUS
+   add constraint FK_CapContrSubBus_Point_WattPt foreign key (CurrentWattLoadPointID)
+      references POINT (POINTID);
+
+alter table CAPCONTROLSUBSTATIONBUS
+   add constraint FK_CapContrSubBus_YukonPAO foreign key (SubstationBusID)
       references YukonPAObject (PAObjectID);
-
-alter table CAPCONTROLSUBSTATIONBUS
-   add constraint SYS_C0013478 foreign key (CurrentWattLoadPointID)
-      references POINT (POINTID);
-
-alter table CAPCONTROLSUBSTATIONBUS
-   add constraint SYS_C0013479 foreign key (CurrentVarLoadPointID)
-      references POINT (POINTID);
 
 alter table CCEventLog
    add constraint FK_CCEventLog_Point foreign key (PointID)
@@ -10630,7 +10630,7 @@ alter table CapControlFeeder
       references YukonPAObject (PAObjectID);
 
 alter table CarrierRoute
-   add constraint SYS_C0013264 foreign key (ROUTEID)
+   add constraint FK_CarrierRoute_Route foreign key (ROUTEID)
       references Route (RouteID);
 
 alter table CommPort
@@ -10777,11 +10777,11 @@ alter table DEVICE
       references YukonPAObject (PAObjectID);
 
 alter table DEVICECARRIERSETTINGS
-   add constraint SYS_C0013216 foreign key (DEVICEID)
+   add constraint FK_DeviceCarrierSetting_Device foreign key (DEVICEID)
       references DEVICE (DEVICEID);
 
 alter table DEVICEDIALUPSETTINGS
-   add constraint SYS_C0013193 foreign key (DEVICEID)
+   add constraint FK_DeviceDialupSettings_Device foreign key (DEVICEID)
       references DEVICE (DEVICEID);
 
 alter table DEVICEGROUPMEMBER
@@ -10795,23 +10795,23 @@ alter table DEVICEGROUPMEMBER
       on delete cascade;
 
 alter table DEVICEIDLCREMOTE
-   add constraint SYS_C0013241 foreign key (DEVICEID)
+   add constraint FK_DeviceIdlcRemote_Device foreign key (DEVICEID)
       references DEVICE (DEVICEID);
 
 alter table DEVICEIED
-   add constraint SYS_C0013245 foreign key (DEVICEID)
+   add constraint FK_DeviceIed_Device foreign key (DEVICEID)
       references DEVICE (DEVICEID);
 
 alter table DEVICELOADPROFILE
-   add constraint SYS_C0013234 foreign key (DEVICEID)
+   add constraint FK_DeviceLoadProfile_Device foreign key (DEVICEID)
       references DEVICE (DEVICEID);
 
 alter table DEVICEMCTIEDPORT
-   add constraint SYS_C0013253 foreign key (DEVICEID)
+   add constraint FK_DeviceMctIedPort_Device foreign key (DEVICEID)
       references DEVICE (DEVICEID);
 
 alter table DEVICEMETERGROUP
-   add constraint SYS_C0013213 foreign key (DEVICEID)
+   add constraint FK_DeviceMeterGroup_Device foreign key (DEVICEID)
       references DEVICE (DEVICEID);
 
 alter table DEVICEREADLOG
@@ -10823,28 +10823,28 @@ alter table DEVICEREADREQUESTLOG
       references DEVICEREADJOBLOG (DeviceReadJobLogID);
 
 alter table DEVICESCANRATE
-   add constraint SYS_C0013198 foreign key (DEVICEID)
+   add constraint FK_DeviceScanRate_Device foreign key (DEVICEID)
       references DEVICE (DEVICEID);
 
 alter table DEVICETAPPAGINGSETTINGS
-   add constraint SYS_C0013237 foreign key (DEVICEID)
+   add constraint FK_DeviceTapPagingSet_Device foreign key (DEVICEID)
       references DEVICE (DEVICEID);
+
+alter table DISPLAY2WAYDATA
+   add constraint FK_Display2WayData_Display foreign key (DISPLAYNUM)
+      references DISPLAY (DISPLAYNUM);
 
 alter table DISPLAY2WAYDATA
    add constraint FK_DISPLAY2W_REF_POINT foreign key (POINTID)
       references POINT (POINTID);
 
-alter table DISPLAY2WAYDATA
-   add constraint SYS_C0013422 foreign key (DISPLAYNUM)
-      references DISPLAY (DISPLAYNUM);
-
 alter table DISPLAYCOLUMNS
-   add constraint SYS_C0013418 foreign key (DISPLAYNUM)
-      references DISPLAY (DISPLAYNUM);
-
-alter table DISPLAYCOLUMNS
-   add constraint SYS_C0013419 foreign key (TYPENUM)
+   add constraint FK_DisplayColumns_ColumnType foreign key (TYPENUM)
       references COLUMNTYPE (TYPENUM);
+
+alter table DISPLAYCOLUMNS
+   add constraint FK_DisplayColumns_Display foreign key (DISPLAYNUM)
+      references DISPLAY (DISPLAYNUM);
 
 alter table DYNAMICACCUMULATOR
    add constraint FK_DynamicAccumulator_Point foreign key (POINTID)
@@ -10916,11 +10916,11 @@ alter table DeviceAddress
       references DEVICE (DEVICEID);
 
 alter table DeviceCBC
-   add constraint SYS_C0013459 foreign key (DEVICEID)
+   add constraint FK_DeviceCbc_Device foreign key (DEVICEID)
       references DEVICE (DEVICEID);
 
 alter table DeviceCBC
-   add constraint SYS_C0013460 foreign key (ROUTEID)
+   add constraint FK_DeviceCbc_Route foreign key (ROUTEID)
       references Route (RouteID);
 
 alter table DeviceCollectionByField
@@ -10986,12 +10986,12 @@ alter table DeviceDataMonitorProcessor
       references StateGroup (StateGroupId);
 
 alter table DeviceDirectCommSettings
-   add constraint SYS_C0013186 foreign key (DEVICEID)
-      references DEVICE (DEVICEID);
+   add constraint FK_DeviceDirectCommSet_CommPrt foreign key (PORTID)
+      references CommPort (PORTID);
 
 alter table DeviceDirectCommSettings
-   add constraint SYS_C0013187 foreign key (PORTID)
-      references CommPort (PORTID);
+   add constraint FK_DeviceDirectCommSet_Device foreign key (DEVICEID)
+      references DEVICE (DEVICEID);
 
 alter table DeviceGroup
    add constraint FK_DeviceGroup_DeviceGroup foreign key (ParentDeviceGroupId)
@@ -11024,11 +11024,11 @@ alter table DeviceRTC
       references DEVICE (DEVICEID);
 
 alter table DeviceRoutes
-   add constraint SYS_C0013219 foreign key (DEVICEID)
+   add constraint FK_DeviceRoutes_Device foreign key (DEVICEID)
       references DEVICE (DEVICEID);
 
 alter table DeviceRoutes
-   add constraint SYS_C0013220 foreign key (ROUTEID)
+   add constraint FK_DeviceRoutes_Route foreign key (ROUTEID)
       references Route (RouteID);
 
 alter table DeviceSeries5RTU
@@ -11384,7 +11384,7 @@ alter table FDRInterfaceOption
       references FDRInterface (InterfaceId);
 
 alter table FDRTranslation
-   add constraint SYS_C0015066 foreign key (PointId)
+   add constraint FK_FdrTranslation_Point foreign key (PointId)
       references POINT (POINTID);
 
 alter table GRAPHDATASERIES
@@ -11657,11 +11657,11 @@ alter table LMGroup
       references DEVICE (DEVICEID);
 
 alter table LMGroupEmetcon
-   add constraint SYS_C0013356 foreign key (DEVICEID)
+   add constraint FK_LmGroupEmetcon_LMGroup foreign key (DEVICEID)
       references LMGroup (DeviceID);
 
 alter table LMGroupEmetcon
-   add constraint SYS_C0013357 foreign key (ROUTEID)
+   add constraint FK_LmGroupEmetcon_Route foreign key (ROUTEID)
       references Route (RouteID);
 
 alter table LMGroupExpressCom
@@ -11759,12 +11759,12 @@ alter table LMGroupSepDeviceClass
       on delete cascade;
 
 alter table LMGroupVersacom
-   add constraint FK_LMGrp_LMGrpVers foreign key (DEVICEID)
-      references LMGroup (DeviceID);
+   add constraint FK_LmGroupVersacom_Route foreign key (ROUTEID)
+      references Route (RouteID);
 
 alter table LMGroupVersacom
-   add constraint SYS_C0013367 foreign key (ROUTEID)
-      references Route (RouteID);
+   add constraint FK_LMGrp_LMGrpVers foreign key (DEVICEID)
+      references LMGroup (DeviceID);
 
 alter table LMHardwareBase
    add constraint FK_LMHrdB_Rt foreign key (RouteID)
@@ -11924,11 +11924,11 @@ alter table LMThermostatManualEvent
       references LMCustomerEventBase (EventID);
 
 alter table MACROROUTE
-   add constraint SYS_C0013274 foreign key (ROUTEID)
+   add constraint FK_MacroRoute_Route_RouteId foreign key (ROUTEID)
       references Route (RouteID);
 
 alter table MACROROUTE
-   add constraint SYS_C0013275 foreign key (SINGLEROUTEID)
+   add constraint FK_MacroRoute_Route_SingleRtId foreign key (SINGLEROUTEID)
       references Route (RouteID);
 
 alter table MACSchedule
@@ -12076,15 +12076,15 @@ alter table POINT
       references StateGroup (StateGroupId);
 
 alter table POINTACCUMULATOR
-   add constraint SYS_C0013317 foreign key (POINTID)
+   add constraint FK_PointAccumulator_Point foreign key (POINTID)
       references POINT (POINTID);
 
 alter table POINTANALOG
-   add constraint SYS_C0013300 foreign key (POINTID)
+   add constraint FK_PointAnalog_Point foreign key (POINTID)
       references POINT (POINTID);
 
 alter table POINTLIMITS
-   add constraint SYS_C0013289 foreign key (POINTID)
+   add constraint FK_PointLimits_Point foreign key (POINTID)
       references POINT (POINTID);
 
 alter table POINTPROPERTYVALUE
@@ -12116,23 +12116,23 @@ alter table POINTUNIT
       references POINT (POINTID);
 
 alter table PORTDIALUPMODEM
-   add constraint SYS_C0013175 foreign key (PORTID)
+   add constraint FK_PortDialupModem_CommPort foreign key (PORTID)
       references CommPort (PORTID);
 
 alter table PORTLOCALSERIAL
-   add constraint SYS_C0013147 foreign key (PORTID)
+   add constraint FK_PortLocalSerial_CommPort foreign key (PORTID)
       references CommPort (PORTID);
 
 alter table PORTRADIOSETTINGS
-   add constraint SYS_C0013169 foreign key (PORTID)
+   add constraint FK_PortRadioSettings_CommPort foreign key (PORTID)
       references CommPort (PORTID);
 
 alter table PORTSETTINGS
-   add constraint SYS_C0013156 foreign key (PORTID)
+   add constraint FK_PortSettings_CommPort foreign key (PORTID)
       references CommPort (PORTID);
 
 alter table PORTTERMINALSERVER
-   add constraint SYS_C0013151 foreign key (PORTID)
+   add constraint FK_PortTerminalServer_CommPort foreign key (PORTID)
       references CommPort (PORTID);
 
 alter table PROFILEPEAKRESULT
@@ -12179,7 +12179,7 @@ alter table PointToZoneMapping
       on delete cascade;
 
 alter table PortTiming
-   add constraint SYS_C0013163 foreign key (PORTID)
+   add constraint FK_PortTiming_CommPort foreign key (PORTID)
       references CommPort (PORTID);
 
 alter table PorterResponseMonitor
@@ -12235,12 +12235,12 @@ alter table RegulatorToZoneMapping
       on delete cascade;
 
 alter table RepeaterRoute
-   add constraint SYS_C0013269 foreign key (ROUTEID)
-      references Route (RouteID);
+   add constraint FK_RepeaterRoute_Device foreign key (DEVICEID)
+      references DEVICE (DEVICEID);
 
 alter table RepeaterRoute
-   add constraint SYS_C0013270 foreign key (DEVICEID)
-      references DEVICE (DEVICEID);
+   add constraint FK_RepeaterRoute_Route foreign key (ROUTEID)
+      references Route (RouteID);
 
 alter table ReportedAddressExpressCom
    add constraint FK_RepAddExpressCom_Device foreign key (DeviceId)
@@ -12318,12 +12318,12 @@ alter table SiteInformation
       references Substation (SubstationID);
 
 alter table State
-   add constraint FK_YkIm_St foreign key (ImageId)
-      references YukonImage (ImageID);
+   add constraint FK_State_StateGroup foreign key (StateGroupId)
+      references StateGroup (StateGroupId);
 
 alter table State
-   add constraint SYS_C0013342 foreign key (StateGroupId)
-      references StateGroup (StateGroupId);
+   add constraint FK_YkIm_St foreign key (ImageId)
+      references YukonImage (ImageID);
 
 alter table StaticPAOInfo
    add constraint FK_StatPAOInfo foreign key (PAObjectId)
@@ -12387,12 +12387,12 @@ alter table SurveyResultAnswer
       on delete cascade;
 
 alter table TEMPLATECOLUMNS
-   add constraint SYS_C0013429 foreign key (TEMPLATENUM)
-      references TEMPLATE (TEMPLATENUM);
+   add constraint FK_TemplateColumns_ColumnType foreign key (TYPENUM)
+      references COLUMNTYPE (TYPENUM);
 
 alter table TEMPLATECOLUMNS
-   add constraint SYS_C0013430 foreign key (TYPENUM)
-      references COLUMNTYPE (TYPENUM);
+   add constraint FK_TemplateColumns_Template foreign key (TEMPLATENUM)
+      references TEMPLATE (TEMPLATENUM);
 
 alter table TOUDayMapping
    add constraint FK_TOUd_TOUSc foreign key (TOUScheduleID)
