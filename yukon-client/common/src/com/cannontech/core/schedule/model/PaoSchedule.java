@@ -101,6 +101,7 @@ public class PaoSchedule {
 
     @Override
     public String toString() {
-        return "[Schedule " + id + ": " + name + "]" ;
+        return String.format("PaoSchedule [id=%s, nextRunTime=%s, lastRunTime=%s, repeatSeconds=%s, name=%s, disabled=%s]",
+            id, nextRunTime, lastRunTime, repeatSeconds, name, disabled);
     }
 }
