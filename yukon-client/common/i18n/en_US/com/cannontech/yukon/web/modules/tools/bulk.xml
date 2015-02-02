@@ -136,7 +136,7 @@
     <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportLabel">Device Report</entry>
     <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionReportDescription">View a report detailing devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionMapLabel">Map Devices</entry>
-    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionMapDescription">View a device locations on a map.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.deviceCollectionMapDescription">View device locations on a map.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.dataAnalysisLabel">Data Analysis</entry>
     <entry key="yukon.common.device.bulk.collectionActions.dataAnalysisDiscription">View a report detailing archived reads.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.archivedValueDataExporterLabel">Data Export</entry> 
