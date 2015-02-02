@@ -16,26 +16,26 @@ import com.cannontech.common.bulk.collection.device.DeviceCollection;
  * through a page
  */
 public class DeviceCollectionTag extends SimpleTagSupport {
-
+    
     DeviceCollection deviceCollection = null;
-
+    
     public void setDeviceCollection(DeviceCollection deviceCollection) {
         this.deviceCollection = deviceCollection;
     }
-
+    
     @Override
     public void doTag() throws JspException, IOException {
-
+        
         JspWriter out = getJspContext().getOut();
-
+        
         // Write out all of the parameters as hidden fields
         if (deviceCollection != null) {
             Map<String, String> collectionParameters = deviceCollection.getCollectionParameters();
             for (String name : collectionParameters.keySet()) {
                 String value = collectionParameters.get(name);
-                out.write("<input type=\"hidden\" name=\"" + name + "\" value=\"" + StringEscapeUtils.escapeXml(value) + "\" >");
+                out.write("<input type=\"hidden\" name=\"" + name + "\" value=\"" + StringEscapeUtils.escapeXml10(value) + "\" >");
             }
         }
-
+        
     }
 }

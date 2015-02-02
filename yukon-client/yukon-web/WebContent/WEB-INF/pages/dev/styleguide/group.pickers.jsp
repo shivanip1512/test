@@ -102,12 +102,12 @@ public String groupPickers(ModelMap model, HttpServletRequest request, YukonUser
 
 <p class="description">
     A group picker with the <em>/Meters/Billing</em> preselected and using a callback that disables the 
-    <em>/Meters/Monitors</em> group from selection.
+    <em>/Meters/Flags</em> group from selection.
 </p>
 <div class="column-4-20 clearfix">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <tags:deviceGroupPicker inputName="group" inputValue="${group}" callbacks="${noMonitors}"/>
+        <tags:deviceGroupPicker inputName="group" inputValue="${group}" callbacks="${noFlags}"/>
     </div>
 </div>
 <h4 class="subtle">Controller Code:</h4>
@@ -115,17 +115,17 @@ public String groupPickers(ModelMap model, HttpServletRequest request, YukonUser
 @RequestMapping(&quot;/styleguide/group-pickers&quot;)
 public String groupPickers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
     
-    DeviceGroup monitors = deviceGroupService.findGroupName(&quot;/Meters/Monitors&quot;);
-    DisableCurrentCallback noMonitors = DisableCurrentCallback.of(monitors);
+    DeviceGroup flags = deviceGroupService.findGroupName(&quot;/Meters/Flags&quot;);
+    DisableCurrentCallback noFlags = DisableCurrentCallback.of(flags);
     model.addAttribute(&quot;group&quot;, Lists.newArrayList(&quot;/Meters/Billing&quot;));
-    model.addAttribute(&quot;noMonitors&quot;, ImmutableSet.of(noMonitors));
+    model.addAttribute(&quot;noFlags&quot;, ImmutableSet.of(noFlags));
     
     return &quot;styleguide/group.pickers.jsp&quot;;
 }
 </pre>
 <h4 class="subtle">JSP Code:</h4>
 <pre class="code prettyprint">
-&lt;tags:deviceGroupPicker inputName=&quot;group&quot; inputValue=&quot;&#36;{group}&quot; callbacks=&quot;&#36;{noMonitors}&quot;/&gt;
+&lt;tags:deviceGroupPicker inputName=&quot;group&quot; inputValue=&quot;&#36;{group}&quot; callbacks=&quot;&#36;{noFlags}&quot;/&gt;
 </pre>
 
 <h2>Predicates</h2>

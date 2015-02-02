@@ -45,6 +45,8 @@
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/date-pickers"/>">Date & Time Pickers</a></li>
             <c:set var="clazz" value="${page == 'group-pickers' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/group-pickers"/>">Group Pickers</a></li>
+            <c:set var="clazz" value="${page == 'device-collections' ? 'selected' : ''}"/>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/device-collections"/>">Device Collecitons</a></li>
         </ul>
     </div>
     <div class="column two nogutter"><jsp:doBody/></div>

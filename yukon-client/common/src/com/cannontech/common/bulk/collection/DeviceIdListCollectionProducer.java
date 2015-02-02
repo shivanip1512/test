@@ -34,9 +34,10 @@ import com.google.common.collect.Iterables;
  * Implementation of DeviceCollectionProducer for an id list
  */
 public class DeviceIdListCollectionProducer implements DeviceCollectionProducer {
+    
     @Autowired private DeviceDao deviceDao;
     @Autowired @Qualifier("memory") private DeviceMemoryCollectionProducer memoryCollectionProducer;
-
+    
     @Override
     public DeviceCollectionType getSupportedType() {
         return DeviceCollectionType.idList;
@@ -67,10 +68,10 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
     public DeviceCollection createDeviceCollection(HttpServletRequest request) throws ServletRequestBindingException {
         final String ids = ServletRequestUtils.getStringParameter(request, getSupportedType().getParameterName("ids"));
         final List<Integer> idList = ServletUtil.getIntegerListFromString(ids);
-
+        
         boolean containsSystemDevice = Iterables.any(idList, Predicates.equalTo(Device.SYSTEM_DEVICE_ID));
         Validate.isTrue(!containsSystemDevice, "cannot create DeviceCollection that contains the system device");
-
+        
         if (idList.size() > 200) {
             /* For large lists of ids, convert to memory list since url's can only be so long. */
             return memoryCollectionProducer.createDeviceCollection(idList);
@@ -89,33 +90,33 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
             
             @Override
             public Map<String, String> getCollectionParameters() {
-
+                
                 Map<String, String> paramMap = new HashMap<String, String>();
-
+                
                 paramMap.put("collectionType", getSupportedType().name());
                 paramMap.put(getSupportedType().getParameterName("ids"), ids);
-
+                
                 return paramMap;
             }
-
+            
             @Override
             public List<SimpleDevice> getDeviceList() {
-
+                
                 List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>();
-
+                
                 for (int id : deviceIds) {
                     SimpleDevice device = deviceDao.getYukonDevice(id);
                     deviceList.add(device);
                 }
-
+                
                 return deviceList;
             }
-
+            
             @Override
             public int getDeviceCount() {
                 return deviceIds.size();
             }
-
+            
             @Override
             public MessageSourceResolvable getDescription() {
                 return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.idList");

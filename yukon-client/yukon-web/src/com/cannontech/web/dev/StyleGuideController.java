@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -24,6 +26,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
+import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.config.MasterConfigBooleanKeysEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -37,6 +41,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.model.Person;
 import com.cannontech.web.group.DisableNodeCallback;
 import com.cannontech.web.security.annotation.AuthorizeByCparm;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -46,6 +51,7 @@ import com.google.common.collect.Lists;
 public class StyleGuideController {
     
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     
     private Map<Integer, Person> people = new ConcurrentHashMap<>(ImmutableMap.of(
             1, new Person(1, "Bob Vila", "bob@thisoldhouse.com", 50, true),
@@ -171,13 +177,25 @@ public class StyleGuideController {
         List<String> groups = Lists.newArrayList("/Meters/Billing", "/Meters/Alternate", 
                 "/Meters/Collection");
         model.addAttribute("groups", groups);
-        
-        DeviceGroup monitors = deviceGroupService.findGroupName("/Meters/Monitors");
-        DisableNodeCallback noMonitors = DisableNodeCallback.of(monitors);
         model.addAttribute("group", Lists.newArrayList("/Meters/Billing"));
-        model.addAttribute("noMonitors", ImmutableSet.of(noMonitors));
+        
+        DeviceGroup flags = deviceGroupService.findGroupName("/Meters/Flags");
+        DisableNodeCallback noFlags = DisableNodeCallback.of(flags);
+        model.addAttribute("noFlags", ImmutableSet.of(noFlags));
         
         return "styleguide/group.pickers.jsp";
+    }
+    
+    @RequestMapping("/styleguide/device-collections")
+    public String deviceCollections(ModelMap model) {
+        
+        DeviceGroup meterGroup = deviceGroupService.findGroupName("/Meters");
+        Set<Integer> deviceIds = deviceGroupService.getDeviceIds(ImmutableList.of(meterGroup));
+        DeviceCollection dc = dcProducer.createDeviceCollection(new ArrayList<>(deviceIds), null);
+        
+        model.addAttribute("dc", dc);
+        
+        return "styleguide/device.collections.jsp";
     }
     
     private void setupSprites(ModelMap model, HttpServletRequest request) throws IOException {

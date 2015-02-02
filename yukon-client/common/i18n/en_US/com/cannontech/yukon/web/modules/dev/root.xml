@@ -323,6 +323,7 @@
     <entry key="yukon.web.modules.dev.icons.pageName">Icons</entry>
     <entry key="yukon.web.modules.dev.datePickers.pageName">Date - Time Pickers</entry>
     <entry key="yukon.web.modules.dev.groupPickers.pageName">Group Pickers</entry>
+    <entry key="yukon.web.modules.dev.deviceCollections.pageName">Device Collections</entry>
     
     <entry key="yukon.web.modules.dev.name">Name</entry>
     <entry key="yukon.web.modules.dev.age">Age</entry>

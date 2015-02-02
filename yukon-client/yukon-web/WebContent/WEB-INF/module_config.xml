@@ -1503,6 +1503,7 @@
               <page name="dialogs" type="BASIC"/>
               <page name="datePickers" type="BASIC"/>
               <page name="groupPickers" type="BASIC"/>
+              <page name="deviceCollections" type="BASIC"/>
             </pages>
           </page>
         </pages>

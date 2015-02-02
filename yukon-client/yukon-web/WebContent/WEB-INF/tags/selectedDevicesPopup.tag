@@ -5,8 +5,13 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="deviceCollection" type="java.lang.Object" %>
-<%@ attribute name="groupName" %>
+<%@ attribute name="deviceCollection" type="java.lang.Object" 
+              description="The device collection: any implementation of the DeviceCollection interface.
+                           Either 'deviceCollection' or 'groupName' are required and only one should be used." %>
+<%@ attribute name="groupName"
+              description="The device group name, used when referencing a device group based collection.
+                           Either 'deviceCollection' or 'groupName' are required and only one should be used." %>
+                           
 <%@ attribute name="type" description="'link' or 'button'. Default: 'link'" %>
 <%@ attribute name="icon" description="Icon to use. Default: 'icon-magnifier'" %>
 
@@ -21,15 +26,15 @@
 <%-- CREATE URL --%>
 <c:choose>
     <c:when test="${not empty pageScope.deviceCollection}">
-        <c:url var="selectedDevicesTableUrl" value="/bulk/selectedDevicesTableForDeviceCollection">
-            <c:forEach var="deviceCollectionParam" items="${pageScope.deviceCollection.collectionParameters}">
+        <c:url var="url" value="/bulk/selectedDevicesTableForDeviceCollection">
+            <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
                 <c:param name="${deviceCollectionParam.key}" value="${fn:escapeXml(deviceCollectionParam.value)}"/>
             </c:forEach>
         </c:url>
     </c:when>
-
+    
     <c:when test="${not empty pageScope.groupName}">
-        <c:url var="selectedDevicesTableUrl" value="/bulk/selectedDevicesTableForGroupName">
+        <c:url var="url" value="/bulk/selectedDevicesTableForGroupName">
             <c:param name="groupName" value="${fn:escapeXml(pageScope.groupName)}"/>
         </c:url>
     </c:when>
@@ -47,4 +52,5 @@
         <cti:button renderMode="buttonImage" icon="${icon}" title="${targetTitle}" data-popup="#${id}" data-popup-toggle=""/>
     </c:otherwise>
 </c:choose>
-<div data-title="${popupTitle}" id="${id}" class="dn" data-url="${selectedDevicesTableUrl}" data-width="450" data-height="300"></div>
+
+<div data-title="${popupTitle}" id="${id}" class="dn" data-url="${url}" data-width="500" data-height="300"></div>
