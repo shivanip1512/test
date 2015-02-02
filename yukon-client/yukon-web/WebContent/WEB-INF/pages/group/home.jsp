@@ -9,7 +9,11 @@
 
 <cti:msg2 var="removeGroupAreYouSure" key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.areYouSure" javaScriptEscape="true"/>
 <cti:msg2 var="invalidGroupNameError" key="yukon.web.deviceGroups.editor.operationsContainer.invalidGroupNameError" javaScriptEscape="true"/>
-    
+
+<cti:includeScript link="JQUERY_FILE_UPLOAD"/>
+<!--[if lte IE 8]><cti:includeScript link="JQUERY_IFRAME_TRANSPORT" /><![endif]-->
+<cti:includeScript link="/JavaScript/yukon.device.selection.js" />
+
 <script type="text/javascript">
 $(function() {
     $(".js-edit-grp-name").click(function(event) {
@@ -274,17 +278,18 @@ function confirmRemoveAllDevices(confirmText) {
                                     
                                     <%-- ADD DEVICES --%>
                                     &nbsp;|&nbsp;
-                                    <cti:msg2 var="addDevicesText" key="yukon.web.deviceGroups.editor.operationsContainer.addDevicesText" />
                                     <c:choose>
                                         <c:when test="${groupModifiable}">
-                                            <cti:url var="addByDeviceCollectionUrl" value="/group/editor/showAddDevicesByCollection">
-                                                <cti:param name="groupName" value="${fn:escapeXml(group.fullName)}" />
-                                            </cti:url>
-                                            <a title="Click to add multiple devices" href="${addByDeviceCollectionUrl}">${addDevicesText}</a>
+                                            <cti:url value="/group/editor/addDevicesByCollection" var="selectionUrl"/>
+                                            <form action="${selectionUrl}" class="dib">
+                                                <cti:msg2 var="addText" key=".addDevices"/>
+                                                <tags:deviceCollectionPicker groupDataJson="${addGroupDataJson}" text="${addText}" submitOnCompletion="true" />
+                                                <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}"/>
+                                            </form>
                                         </c:when>
                                         <c:otherwise>
                                             <cti:msg2 var="cannotAddDevicesText" key="yukon.web.deviceGroups.editor.operationsContainer.cannotAddDevicesText"/>
-                                            <span class="disabled" title="${cannotAddDevicesText}">${addDevicesText}</span>
+                                            <span class="disabled" title="${cannotAddDevicesText}"><i:inline key=".addDevices"/></span>
                                         </c:otherwise>
                                     </c:choose>
                                 </c:if>

@@ -1076,6 +1076,21 @@ input.dateTimePicker { width: 150px; }
 
 .ui-datepicker-trigger:hover { cursor: pointer; }
 
+.file-upload .button {
+    position: relative;
+    overflow: hidden;
+}
+.file-upload input[type="file"] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+
 /* DROPDOWN MENUS */
 .dropdown-trigger { 
     display: inline-block;

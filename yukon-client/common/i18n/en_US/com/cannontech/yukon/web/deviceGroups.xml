@@ -26,6 +26,8 @@
 <entry key="yukon.web.modules.tools.deviceGroups.addDevices.pageDescription">{0}</entry>
 <entry key="yukon.web.modules.tools.deviceGroups.addDevices.pageHeading">Add Devices: {0}</entry>
 
+<entry key="yukon.web.modules.tools.deviceGroups.addDevices">Add Devices</entry>
+
 <entry key="yukon.web.deviceGroups.editor.pageName">Groups Home</entry>
 <entry key="yukon.web.deviceGroups.editor.tab.title">Editor</entry>
 <entry key="yukon.web.deviceGroups.editor.title">Device Groups</entry>

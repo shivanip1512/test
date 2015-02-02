@@ -54,6 +54,8 @@
     <!-- deviceSelection.jsp -->
     <entry key="yukon.web.modules.tools.bulk.deviceSelection.pageName">Device Selection</entry>
     
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDevices">Select Devices</entry>
+
     <entry key="yukon.common.device.bulk.deviceSelection.selectByDevice.label">Select By Device</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesTitle">Select devices individually</entry>
     <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesPopupButtonText">Select Devices</entry>

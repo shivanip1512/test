@@ -460,6 +460,17 @@ yukon.ui = (function () {
                 }
             });
             
+            $(document).on('change', '.file-upload input[type="file"]', function () {
+                var input = $(this),
+                    container = input.closest('.file-upload'),
+                    nameInput = container.find('.file-name'),
+                    value = input.val();
+
+                //Windwows adds C:\fakepath\ for security reasons
+                value = value.replace('C:\\fakepath\\', '');
+                nameInput.text(value);
+            });
+
             /** Paging Handler: Get the next or previous page, or change page size. */
             $(document).on('click', '.paging-area .previous-page .button,' 
                     + ' .paging-area .next-page .button, .paging-area .page-size a', function (ev) {

@@ -32,7 +32,13 @@ public class DeviceCollectionFactoryImpl implements DeviceCollectionFactory {
             throws ServletRequestBindingException {
 
         String type = request.getParameter("collectionType");
-        DeviceCollectionType deviceCollectionType = DeviceCollectionType.valueOf(type);
+        DeviceCollectionType deviceCollectionType;
+
+        try {
+            deviceCollectionType = DeviceCollectionType.valueOf(type);
+        } catch (NullPointerException e) {
+            throw new IllegalArgumentException("collectionType: " + type + " is not supported.");
+        }
 
         if (collectionProducerMap.containsKey(deviceCollectionType)) {
             DeviceCollectionProducer producer = collectionProducerMap.get(deviceCollectionType);

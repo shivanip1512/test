@@ -165,7 +165,7 @@ public class GroupEditorController {
         // MOVE GROUPS TREE JSON
         Predicate<DeviceGroup> canMoveUnderPredicate = deviceGroupDao.getGroupCanMovePredicate(selectedDeviceGroup);
         DeviceGroupHierarchy moveGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canMoveUnderPredicate);
-        JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, Collections.EMPTY_SET);
+        JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, Collections.emptySet());
         
         String moveGroupJson = JsonUtils.toJson(moveGroupRoot.toMap());
         mav.addObject("moveGroupDataJson", moveGroupJson); 
@@ -178,7 +178,7 @@ public class GroupEditorController {
             }
         };
         DeviceGroupHierarchy copyGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, canCopyIntoPredicate);
-        JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, Collections.EMPTY_SET);
+        JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, Collections.emptySet());
         
         String copyGroupJson = JsonUtils.toJson(copyExtRoot.toMap());
         mav.addObject("copyGroupDataJson", copyGroupJson); 
@@ -187,6 +187,8 @@ public class GroupEditorController {
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(selectedDeviceGroup);
         mav.addObject("deviceCollection", deviceCollection);
         
+        mav.addObject("addGroupDataJson", getJsonForGroup(group, userContext));
+
         return mav;
     }
     
@@ -564,5 +566,24 @@ public class GroupEditorController {
 
         return mav;
 
+    }
+
+    private String getJsonForGroup(final DeviceGroup group, YukonUserContext userContext) throws JsonProcessingException {
+        DeviceGroup rootGroup = deviceGroupService.getRootGroup();
+        DeviceGroupHierarchy groupHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
+
+        String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
+
+        JsTreeNode root = DeviceGroupTreeUtils.makeDeviceGroupJsTree(groupHierarchy, groupsLabel, new NodeAttributeSettingCallback<DeviceGroup>() {
+            @Override
+            public void setAdditionalAttributes(JsTreeNode node, DeviceGroup deviceGroup) {
+
+                if (group.equals(deviceGroup)) {
+                    node.setAttribute("disabled", true);
+                }
+            }
+        });
+
+        return JsonUtils.toJson(root.toMap());
     }
 }
