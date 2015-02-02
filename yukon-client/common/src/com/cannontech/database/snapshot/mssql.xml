@@ -2851,6 +2851,20 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
+            <string>PK_CapControlSubstationBus</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>CAPCONTROLSUBSTATIONBUS</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>SubstationBusID</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>PK_CapControlSubstationBus</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
             <string>Indx_CSUBVPT</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
@@ -2862,20 +2876,6 @@
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>Indx_CSUBVPT</indexName>
-            </com.cariboulake.db.schemacompare.business.domain.db.Index>
-          </entry>
-          <entry>
-            <string>SYS_C0013476</string>
-            <com.cariboulake.db.schemacompare.business.domain.db.Index>
-              <indexSegments>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>CAPCONTROLSUBSTATIONBUS</i__tableName>
-                  <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>SubstationBusID</i__columnName>
-                  <i__nonNonUnique>false</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-              </indexSegments>
-              <indexName>SYS_C0013476</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -9275,7 +9275,7 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
-            <string>SYS_GrphDserID</string>
+            <string>PK_GraphDataSeries</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -9285,7 +9285,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>SYS_GrphDserID</indexName>
+              <indexName>PK_GraphDataSeries</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
@@ -10545,7 +10545,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CpSbBus_YPao</i__foreignKeyName>
+            <i__foreignKeyName>FK_CapContrSubBus_YukonPAO</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>SubstationBusID</i__columnName>
             <i__foreignColumnName>PAObjectID</i__foreignColumnName>
@@ -15050,7 +15050,7 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013419</i__foreignKeyName>
+            <i__foreignKeyName>FK_DisplayColumns_ColumnType</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>TYPENUM</i__columnName>
             <i__foreignColumnName>TYPENUM</i__foreignColumnName>
@@ -15059,7 +15059,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013430</i__foreignKeyName>
+            <i__foreignKeyName>FK_TemplateColumns_ColumnType</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>TYPENUM</i__columnName>
             <i__foreignColumnName>TYPENUM</i__foreignColumnName>
@@ -15070,7 +15070,7 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
-            <string>SYS_C0013414</string>
+            <string>PK_ColumnType</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -15080,7 +15080,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>SYS_C0013414</indexName>
+              <indexName>PK_ColumnType</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -20904,7 +20904,7 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
-            <string>SYS_C0013344</string>
+            <string>PK_UnitMeasure</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -20914,7 +20914,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>SYS_C0013344</indexName>
+              <indexName>PK_UnitMeasure</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -22479,7 +22479,7 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
-            <string>SYS_C0015109</string>
+            <string>PK_GraphDefinition</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -22489,7 +22489,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>SYS_C0015109</indexName>
+              <indexName>PK_GraphDefinition</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
@@ -24921,7 +24921,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013241</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceIdlcRemote_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -24930,7 +24930,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013237</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceTapPagingSet_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -24993,7 +24993,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013234</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceLoadProfile_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -25002,7 +25002,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013459</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceCbc_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -25020,7 +25020,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013270</i__foreignKeyName>
+            <i__foreignKeyName>FK_RepeaterRoute_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -25047,7 +25047,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013219</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceRoutes_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -25182,7 +25182,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013245</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceIed_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -25191,7 +25191,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013213</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceMeterGroup_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -25200,7 +25200,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013186</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceDirectCommSet_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -25209,7 +25209,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013198</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceScanRate_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -25218,16 +25218,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013453</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>DEVICEID</i__columnName>
-            <i__foreignColumnName>DEVICEID</i__foreignColumnName>
-            <i__foreignTableName>DEVICE</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>1</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013455</i__foreignKeyName>
+            <i__foreignKeyName>FK_CapBank_Device_ControlDev</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CONTROLDEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -25236,7 +25227,16 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013216</i__foreignKeyName>
+            <i__foreignKeyName>FK_CapBank_Device_DeviceId</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>DEVICEID</i__columnName>
+            <i__foreignColumnName>DEVICEID</i__foreignColumnName>
+            <i__foreignTableName>DEVICE</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_DeviceCarrierSetting_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -25254,7 +25254,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013253</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceMctIedPort_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -25263,7 +25263,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013193</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceDialupSettings_Device</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DEVICEID</i__foreignColumnName>
@@ -30734,7 +30734,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CAPCONTR_SWPTID</i__foreignKeyName>
+            <i__foreignKeyName>FK_CapContrSubBus_Point_Switch</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>SwitchPointID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -30743,7 +30743,16 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_CAPCONTR_CVOLTPTID</i__foreignKeyName>
+            <i__foreignKeyName>FK_CapContrSubBus_Point_VarPt</i__foreignKeyName>
+            <i__keySequence>1</i__keySequence>
+            <i__columnName>CurrentVarLoadPointID</i__columnName>
+            <i__foreignColumnName>POINTID</i__foreignColumnName>
+            <i__foreignTableName>POINT</i__foreignTableName>
+            <i__updateRule>1</i__updateRule>
+            <i__deleteRule>1</i__deleteRule>
+          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
+            <i__foreignKeyName>FK_CapContrSubBus_Point_VoltPt</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CurrentVoltLoadPointID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -30752,18 +30761,9 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013478</i__foreignKeyName>
+            <i__foreignKeyName>FK_CapContrSubBus_Point_WattPt</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CurrentWattLoadPointID</i__columnName>
-            <i__foreignColumnName>POINTID</i__foreignColumnName>
-            <i__foreignTableName>POINT</i__foreignTableName>
-            <i__updateRule>1</i__updateRule>
-            <i__deleteRule>1</i__deleteRule>
-          </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-          <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013479</i__foreignKeyName>
-            <i__keySequence>1</i__keySequence>
-            <i__columnName>CurrentVarLoadPointID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
             <i__foreignTableName>POINT</i__foreignTableName>
             <i__updateRule>1</i__updateRule>
@@ -30779,7 +30779,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013289</i__foreignKeyName>
+            <i__foreignKeyName>FK_PointLimits_Point</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>POINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -30833,7 +30833,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0015066</i__foreignKeyName>
+            <i__foreignKeyName>FK_FdrTranslation_Point</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PointId</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -30869,7 +30869,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013300</i__foreignKeyName>
+            <i__foreignKeyName>FK_PointAnalog_Point</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>POINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -30878,7 +30878,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013434</i__foreignKeyName>
+            <i__foreignKeyName>FK_CalcBase_Point</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>POINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -30986,7 +30986,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013317</i__foreignKeyName>
+            <i__foreignKeyName>FK_PointAccumulator_Point</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>POINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -31076,7 +31076,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013454</i__foreignKeyName>
+            <i__foreignKeyName>FK_CapBank_Point</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>CONTROLPOINTID</i__columnName>
             <i__foreignColumnName>POINTID</i__foreignColumnName>
@@ -32824,7 +32824,7 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013163</i__foreignKeyName>
+            <i__foreignKeyName>FK_PortTiming_CommPort</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PORTID</i__columnName>
             <i__foreignColumnName>PORTID</i__foreignColumnName>
@@ -32833,7 +32833,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013169</i__foreignKeyName>
+            <i__foreignKeyName>FK_PortRadioSettings_CommPort</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PORTID</i__columnName>
             <i__foreignColumnName>PORTID</i__foreignColumnName>
@@ -32842,7 +32842,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013147</i__foreignKeyName>
+            <i__foreignKeyName>FK_PortLocalSerial_CommPort</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PORTID</i__columnName>
             <i__foreignColumnName>PORTID</i__foreignColumnName>
@@ -32851,7 +32851,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013175</i__foreignKeyName>
+            <i__foreignKeyName>FK_PortDialupModem_CommPort</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PORTID</i__columnName>
             <i__foreignColumnName>PORTID</i__foreignColumnName>
@@ -32860,7 +32860,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013187</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceDirectCommSet_CommPrt</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PORTID</i__columnName>
             <i__foreignColumnName>PORTID</i__foreignColumnName>
@@ -32869,7 +32869,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013156</i__foreignKeyName>
+            <i__foreignKeyName>FK_PortSettings_CommPort</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PORTID</i__columnName>
             <i__foreignColumnName>PORTID</i__foreignColumnName>
@@ -32878,7 +32878,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013151</i__foreignKeyName>
+            <i__foreignKeyName>FK_PortTerminalServer_CommPort</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>PORTID</i__columnName>
             <i__foreignColumnName>PORTID</i__foreignColumnName>
@@ -32889,7 +32889,7 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
-            <string>SYS_C0013112</string>
+            <string>PK_CommPort</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -32899,7 +32899,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>SYS_C0013112</indexName>
+              <indexName>PK_CommPort</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -40121,7 +40121,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013264</i__foreignKeyName>
+            <i__foreignKeyName>FK_CarrierRoute_Route</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>ROUTEID</i__columnName>
             <i__foreignColumnName>RouteID</i__foreignColumnName>
@@ -40148,7 +40148,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013274</i__foreignKeyName>
+            <i__foreignKeyName>FK_MacroRoute_Route_RouteId</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>ROUTEID</i__columnName>
             <i__foreignColumnName>RouteID</i__foreignColumnName>
@@ -40157,7 +40157,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013275</i__foreignKeyName>
+            <i__foreignKeyName>FK_MacroRoute_Route_SingleRtId</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>SINGLEROUTEID</i__columnName>
             <i__foreignColumnName>RouteID</i__foreignColumnName>
@@ -40166,7 +40166,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013460</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceCbc_Route</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>ROUTEID</i__columnName>
             <i__foreignColumnName>RouteID</i__foreignColumnName>
@@ -40175,7 +40175,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013269</i__foreignKeyName>
+            <i__foreignKeyName>FK_RepeaterRoute_Route</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>ROUTEID</i__columnName>
             <i__foreignColumnName>RouteID</i__foreignColumnName>
@@ -40193,7 +40193,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013357</i__foreignKeyName>
+            <i__foreignKeyName>FK_LmGroupEmetcon_Route</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>ROUTEID</i__columnName>
             <i__foreignColumnName>RouteID</i__foreignColumnName>
@@ -40202,7 +40202,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013220</i__foreignKeyName>
+            <i__foreignKeyName>FK_DeviceRoutes_Route</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>ROUTEID</i__columnName>
             <i__foreignColumnName>RouteID</i__foreignColumnName>
@@ -40229,7 +40229,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013367</i__foreignKeyName>
+            <i__foreignKeyName>FK_LmGroupVersacom_Route</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>ROUTEID</i__columnName>
             <i__foreignColumnName>RouteID</i__foreignColumnName>
@@ -40276,6 +40276,20 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
+            <string>PK_Route</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>Route</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>RouteID</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>PK_Route</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
             <string>Indx_RouteDevID</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
@@ -40293,20 +40307,6 @@
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>Indx_RouteDevID</indexName>
-            </com.cariboulake.db.schemacompare.business.domain.db.Index>
-          </entry>
-          <entry>
-            <string>SYS_RoutePK</string>
-            <com.cariboulake.db.schemacompare.business.domain.db.Index>
-              <indexSegments>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>Route</i__tableName>
-                  <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>RouteID</i__columnName>
-                  <i__nonNonUnique>false</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-              </indexSegments>
-              <indexName>SYS_RoutePK</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -40573,7 +40573,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013356</i__foreignKeyName>
+            <i__foreignKeyName>FK_LmGroupEmetcon_LMGroup</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DEVICEID</i__columnName>
             <i__foreignColumnName>DeviceID</i__foreignColumnName>
@@ -43250,7 +43250,7 @@
         <i__primaryKeys/>
         <i__foreignKeys>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013422</i__foreignKeyName>
+            <i__foreignKeyName>FK_Display2WayData_Display</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DISPLAYNUM</i__columnName>
             <i__foreignColumnName>DISPLAYNUM</i__foreignColumnName>
@@ -43268,7 +43268,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013418</i__foreignKeyName>
+            <i__foreignKeyName>FK_DisplayColumns_Display</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>DISPLAYNUM</i__columnName>
             <i__foreignColumnName>DISPLAYNUM</i__foreignColumnName>
@@ -43279,7 +43279,7 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
-            <string>SYS_C0013412</string>
+            <string>PK_Display</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -43289,7 +43289,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>SYS_C0013412</indexName>
+              <indexName>PK_Display</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
@@ -43867,6 +43867,20 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
+            <string>PK_RawPointHistory</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>RAWPOINTHISTORY</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>CHANGEID</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>PK_RawPointHistory</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
             <string>Index_PointID</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
@@ -43898,20 +43912,6 @@
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>Indx_RwPtHisTstPtId</indexName>
-            </com.cariboulake.db.schemacompare.business.domain.db.Index>
-          </entry>
-          <entry>
-            <string>SYS_C0013322</string>
-            <com.cariboulake.db.schemacompare.business.domain.db.Index>
-              <indexSegments>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>RAWPOINTHISTORY</i__tableName>
-                  <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>CHANGEID</i__columnName>
-                  <i__nonNonUnique>false</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-              </indexSegments>
-              <indexName>SYS_C0013322</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
@@ -53045,7 +53045,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013342</i__foreignKeyName>
+            <i__foreignKeyName>FK_State_StateGroup</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>StateGroupId</i__columnName>
             <i__foreignColumnName>StateGroupId</i__foreignColumnName>
@@ -53074,7 +53074,7 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
-            <string>SYS_C0013128</string>
+            <string>PK_StateGroup</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -53084,7 +53084,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>SYS_C0013128</indexName>
+              <indexName>PK_StateGroup</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
@@ -54225,7 +54225,7 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
-            <string>SYS_C0013445</string>
+            <string>PK_Logic</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -54235,7 +54235,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>SYS_C0013445</indexName>
+              <indexName>PK_Logic</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -58557,7 +58557,7 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>SYS_C0013429</i__foreignKeyName>
+            <i__foreignKeyName>FK_TemplateColumns_Template</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
             <i__columnName>TEMPLATENUM</i__columnName>
             <i__foreignColumnName>TEMPLATENUM</i__foreignColumnName>
@@ -58568,7 +58568,7 @@
         </i__foreignKeys>
         <i__indexes>
           <entry>
-            <string>SYS_C0013425</string>
+            <string>PK_Template</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
@@ -58578,7 +58578,7 @@
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>SYS_C0013425</indexName>
+              <indexName>PK_Template</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
@@ -63355,6 +63355,20 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
+            <string>PK_SystemLog</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>SYSTEMLOG</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>LOGID</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>PK_SystemLog</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
             <string>Indx_SYSLG_PtId</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
@@ -63380,20 +63394,6 @@
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>Indx_SYSLG_Date</indexName>
-            </com.cariboulake.db.schemacompare.business.domain.db.Index>
-          </entry>
-          <entry>
-            <string>SYS_C0013407</string>
-            <com.cariboulake.db.schemacompare.business.domain.db.Index>
-              <indexSegments>
-                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-                  <i__tableName>SYSTEMLOG</i__tableName>
-                  <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>LOGID</i__columnName>
-                  <i__nonNonUnique>false</i__nonNonUnique>
-                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
-              </indexSegments>
-              <indexName>SYS_C0013407</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
