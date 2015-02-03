@@ -31,6 +31,7 @@ import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.bulk.field.impl.BulkYukonDeviceFieldFactory;
+import com.cannontech.common.bulk.field.impl.NameBulkField;
 import com.cannontech.common.bulk.field.impl.UpdateableDevice;
 import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
 import com.cannontech.common.bulk.field.processor.BlankHandlingEnum;
@@ -405,10 +406,10 @@ public abstract class BaseBulkService {
                     if (StringUtils.isBlank(fieldStringValue)
                         && (blankHandlingEnum.equals(BlankHandlingEnum.IGNORE_BLANK) || blankHandlingEnum.equals(BlankHandlingEnum.NOT_APPLICABLE))) {
                         fieldStringValue = null;
-                    } else if (("Device Name".equals(bulkField.getInputSource().getDisplayName()))
+                    } else if ((bulkField instanceof NameBulkField)
                         && !(PaoUtils.isValidPaoName(fieldStringValue))) {
                         throw new DeviceCreationException(
-                            "Device name cannot include any of the following characters: / \\ ,\" ' |");
+                            "Device name cannot include any of the following characters " +  String.valueOf(PaoUtils.ILLEGAL_NAME_CHARS));
                     }
 
                     valueMap.put(inputSource.getField(), fieldStringValue);
