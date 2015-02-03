@@ -183,7 +183,7 @@ public:
     bool UpdateCapBankOperationalStateInDB(CtiCCCapBank* capbank);
     bool UpdateCapBankInDB(CtiCCCapBank* capbank);
     bool UpdateFeederBankListInDB(CtiCCFeeder* feeder);
-    bool UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* bus);
+    virtual bool UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* bus);
 
     static bool InsertCCEventLogInDB(const Cti::CapControl::EventLogEntry &msg);
 

@@ -16,8 +16,11 @@ namespace {
 
 struct Test_CtiCCSubstationBusStore : CtiCCSubstationBusStore
 {
-    virtual bool UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag)
+    bool UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag, bool forceFullReload) override
         {   pao->setDisableFlag(disableFlag); return true;  }
+
+    bool UpdateFeederSubAssignmentInDB(CtiCCSubstationBus *bus) override
+        {   return true;  }
 
     using CtiCCSubstationBusStore::addAreaToPaoMap;
     using CtiCCSubstationBusStore::addSubstationToPaoMap;
