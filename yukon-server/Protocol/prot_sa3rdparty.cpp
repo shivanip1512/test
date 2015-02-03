@@ -339,8 +339,8 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
     if(str.find(" assign")!=string::npos)
     {
         string mstr;
-        string rwsslot;
-        string rwsaddr;
+        string slotStr;
+        string addrStr;
 
         int i;
         for(i = 1; i <= 6; i++)
@@ -367,18 +367,18 @@ INT CtiProtocolSA3rdParty::assemblePutConfig(CtiCommandParser &parse)
 
                 if( tok_iter != slotok.end() )
                 {
-                    rwsslot = *tok_iter;
+                    slotStr = *tok_iter;
                 }
                 if( _tok_iter != _slotok.end() )
                 {
-                    rwsaddr = *_tok_iter;
+                    addrStr = *_tok_iter;
                 }
 
-                int addr = atoi(rwsaddr.c_str());
+                int addr = atoi(addrStr.c_str());
 
                 mstr = string("sa_slot") + CtiNumStr(i); // sa_slot1, sa_slot2,... sa_slot6.
 
-                parse.setValue(mstr, rwsaddr);              // Stored as a string because the Telvent lib wants it that way!!
+                parse.setValue(mstr, addrStr);              // Stored as a string because the Telvent lib wants it that way!!
 
                 CTILOG_INFO(slog, "Address config command. Serial "<< parse.getiValue("serial") <<" writing address "<< addr <<" to slot "<< i <<" on the receiver");
             }

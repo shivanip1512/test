@@ -155,8 +155,8 @@ public:
     void initUnsolicited( void );
 
     //  comm functions
-    YukonError_t generate( DatalinkLayer &datalink, TransportLayer &transport, CtiXfer &xfer );
-    YukonError_t decode  ( DatalinkLayer &datalink, TransportLayer &transport,  CtiXfer &xfer, YukonError_t status );
+    YukonError_t generate( TransportLayer &transport );
+    YukonError_t decode  ( TransportLayer &transport );
 
     //  checking completion
     bool isTransactionComplete( void ) const;

@@ -1,18 +1,5 @@
 #include "precompiled.h"
 
-#include <crtdbg.h>
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <rw/thr/thrfunc.h>
-#include <rw/thr/mutex.h>
-
 #include "queue.h"
 #include "netports.h"
 #include "message.h"
@@ -26,6 +13,12 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "pt_accum.h"
 #include "amq_constants.h"
 #include "logManager.h"
+
+#include <crtdbg.h>
+
+#include <windows.h>
+#include <iostream>
+using namespace std;
 
 BOOL           bQuit = FALSE;
 
@@ -135,7 +128,7 @@ void main(int argc, char **argv)
             // start the connection
             Connect.start();
 
-            Connect.WriteConnQue(new CtiRegistrationMsg(argv[0], rwThreadId(), false));
+            Connect.WriteConnQue(new CtiRegistrationMsg(argv[0], GetCurrentThreadId(), false));
             CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_NOTHING);
             Connect.WriteConnQue(PtRegMsg);
 

@@ -7,17 +7,11 @@
 #include <boost/bind.hpp>
 #include <iostream>
 #include <set>
-#include <SQLAPI.h>
+#include <thread>
 
 using namespace std;
 
 BOOST_AUTO_TEST_SUITE( test_queue )
-
-inline double xtime_duration(boost::xtime &begin, boost::xtime &end)
-{
-    return static_cast<double>(end.sec  - begin.sec) +
-           static_cast<double>(end.nsec - begin.nsec) * 1e-9;
-}
 
 struct instance_counter
 {
@@ -31,31 +25,6 @@ struct instance_counter
 int instance_counter::counter;
 
 
-/* Removed due to this failing builds.
-   BOOST_AUTO_TEST_CASE(test_queue_timing)
-{
-    CtiQueue<int, std::less<int> > testQueue;
-
-    boost::xtime start_xtime, end_xtime;
-
-    //  Test reading off an empty queue
-    boost::xtime_get(&start_xtime, boost::TIME_UTC);
-    testQueue.getQueue(500);
-    boost::xtime_get(&end_xtime,   boost::TIME_UTC);
-
-    //  The end time must be between 0.49 and 0.55 seconds past the start time (10ms fuzz-factor)
-    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) > 0.49 );
-    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) < 0.55 );
-
-    boost::xtime_get(&start_xtime, boost::TIME_UTC);
-    testQueue.getQueue(100);
-    boost::xtime_get(&end_xtime,   boost::TIME_UTC);
-
-    //  The end time must be between 0.09 and 0.15 seconds past the start time (10ms fuzz-factor)
-    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) > 0.09 );
-    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) < 0.15 );
-}*/
-
 struct test_element
 {
     long value, insertOrder;
@@ -66,7 +35,7 @@ struct test_element
     bool operator<(const test_element& rhs) const  {  return value < rhs.value;  }
 };
 
-void setInsertOrder(test_element *&dataStruct, void* d)
+void setInsertOrder(test_element *dataStruct, void* d)
 {
     dataStruct->insertOrder = (int)d;
 }
@@ -127,55 +96,6 @@ BOOST_AUTO_TEST_CASE(test_queue_apply)
     element = greaterQueue.getQueue();  BOOST_CHECK_EQUAL(element->insertOrder, 5);  delete element;
     element = greaterQueue.getQueue();  BOOST_CHECK_EQUAL(element->insertOrder, 5);  delete element;
 }
-
-
-//  This inserts 100,000 objects into a queue and makes sure it does not take
-//  an unreasonable amount of time
-/* removed due to this failing builds
-BOOST_AUTO_TEST_CASE(test_queue_sort_speed)
-{
-    CtiQueue<test_element, greater<test_element> > greaterQueue;
-
-    greaterQueue.putQueue(new test_element(1, 1));
-
-    time_t start = ::time(0);
-
-    for( int i = 0; i < 100 * 1000; ++i )
-    {
-        //  i % 1000 gives a sort key that should
-        //    stress the insert a little
-        greaterQueue.putQueue(new test_element(i % 1000, i));
-    }
-
-    BOOST_CHECK(::time(0) < (start + 2));  //  2 seconds is quite a while, actually.
-
-    greaterQueue.clearAndDestroy();
-}
-
-
-BOOST_AUTO_TEST_CASE(test_fifo_queue_timing)
-{
-    CtiFIFOQueue<int> testQueue;
-
-    boost::xtime start_xtime, end_xtime;
-
-    //  Test reading off an empty queue
-    boost::xtime_get(&start_xtime, boost::TIME_UTC);
-    testQueue.getQueue(500);
-    boost::xtime_get(&end_xtime,   boost::TIME_UTC);
-
-    //  The end time must be between 0.49 and 0.55 seconds past the start time (10ms fuzz-factor)
-    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) > 0.490 );
-    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) < 0.550 );
-
-    boost::xtime_get(&start_xtime, boost::TIME_UTC);
-    testQueue.getQueue(100);
-    boost::xtime_get(&end_xtime,   boost::TIME_UTC);
-
-    //  The end time must be between 0.09 and 0.15 seconds past the start time (10ms fuzz-factor)
-    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) > 0.090 );
-    BOOST_CHECK( xtime_duration(start_xtime, end_xtime) < 0.150 );
-}*/
 
 
 BOOST_AUTO_TEST_CASE(test_fifoqueue_single_threaded)
@@ -256,9 +176,9 @@ BOOST_AUTO_TEST_CASE(test_fifoqueue_multi_threaded)
 
     q.putQueue(new int(3));
 
-    boost::thread t1(boost::bind(read_success<int>, boost::ref(q), 3)),
-                  t2(boost::bind(read_success<int>, boost::ref(q), 3)),
-                  t3(boost::bind(read_success<int>, boost::ref(q), 3));
+    std::thread t1(read_success<int>, std::ref(q), 3),
+                t2(read_success<int>, std::ref(q), 3),
+                t3(read_success<int>, std::ref(q), 3);
 
     q.putQueue(new int(3));
     q.putQueue(new int(3));
@@ -267,7 +187,7 @@ BOOST_AUTO_TEST_CASE(test_fifoqueue_multi_threaded)
     t2.join();
     t3.join();
 
-    boost::thread t4(boost::bind(read_fail<int>, boost::ref(q)));
+    std::thread t4(read_fail<int>, std::ref(q));
 
     t4.join();
 }

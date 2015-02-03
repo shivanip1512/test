@@ -2,7 +2,6 @@
 
 #include "lmenergyexchangeofferrevision.h"
 #include "row_reader.h"
-#include "rwutil.h"
 
 class CtiLMEnergyExchangeOffer
 {

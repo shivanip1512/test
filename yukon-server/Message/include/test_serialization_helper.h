@@ -6,13 +6,7 @@
 #include <boost/scoped_ptr.hpp>
 #include "ctitime.h"
 
-//#define TEST_ROGUEWAVE_SERIALIZATION
-
-#ifdef TEST_ROGUEWAVE_SERIALIZATION
-#include <rw/bstream.h>
-#else
 #include "message_factory.h"
-#endif
 
 
 /*-----------------------------------------------------------------------------
@@ -151,15 +145,9 @@ struct TestSequence
 
     void DoSerialization()
     {
-#ifdef TEST_ROGUEWAVE_SERIALIZATION
-        std::stringstream ss;
-        _testcase._imsg->saveGuts( RWbostream(ss) );
-        _testcase._omsg->restoreGuts( RWbistream(ss) );
-#else
         std::vector<unsigned char> bytes;
         const string msg_type = Cti::Messaging::Serialization::g_messageFactory.serialize( *(_testcase._imsg.get()), bytes );
         _testcase._omsg = Cti::Messaging::Serialization::g_messageFactory.deserialize( msg_type, bytes );
-#endif
     }
 
     int Run()

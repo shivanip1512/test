@@ -98,7 +98,7 @@ VerificationExecutor::VerificationAction VerificationExecutor::convertVerificati
 void VerificationExecutor::startVerification()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
     long subID = _deviceId;
     CtiCCSubstationBus* currentSubstationBus = store->findSubBusByPAObjectID(subID);
@@ -313,7 +313,7 @@ void VerificationExecutor::startVerification()
 void VerificationExecutor::stopVerification(bool forceStopImmediately)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
     CapControlType type = store->determineTypeById(_deviceId);
     CtiCCSubstationBus_vec buses = store->getAllSubBusesByIdAndType(_deviceId, type);

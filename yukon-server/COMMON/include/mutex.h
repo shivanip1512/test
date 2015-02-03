@@ -1,15 +1,13 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include "dlldefs.h"
+
+#include <boost/noncopyable.hpp>
 
 #include <windows.h>
 #include <assert.h>
 
-class IM_EX_CTIBASE CtiMutex
+class IM_EX_CTIBASE CtiMutex : boost::noncopyable
 {
 public:
     CtiMutex();

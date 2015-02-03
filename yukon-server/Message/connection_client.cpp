@@ -1,12 +1,13 @@
 #include "precompiled.h"
 
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include "activemq/core/ActiveMQConnection.h"
 #include "connection_client.h"
+#include "dllbase.h"
 #include "amq_constants.h"
 #include "amq_util.h"
 
+#include <activemq/core/ActiveMQConnection.h>
+
+using namespace std;
 using namespace Cti::Messaging::ActiveMQ;
 
 namespace { // anonymous

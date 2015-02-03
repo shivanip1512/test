@@ -1,18 +1,10 @@
-/*
- *
- *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
- *
- */
 #include "precompiled.h"
 
-#include <iostream>
-#include <sstream>
+#include "fdrscadahelper.h"
 
 #include "msg_cmd.h"
 #include "fdrdebuglevel.h"
-
-// this class header
-#include "fdrscadahelper.h"
+#include "logger.h"
 
 using std::string;
 using std::endl;

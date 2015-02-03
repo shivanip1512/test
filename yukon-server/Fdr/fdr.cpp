@@ -1,13 +1,6 @@
 #include "precompiled.h"
 
-#include <crtdbg.h>
-#include <iostream>
-
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <rw/thr/thrfunc.h>
 #include "ctitime.h"
-
 #include "dlldefs.h"
 #include "ctibase.h"
 #include "logManager.h"
@@ -17,6 +10,11 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "fdrservice.h"
 #include "id_fdr.h"
 #include "connection_base.h"
+
+#include <crtdbg.h>
+#include <iostream>
+
+using namespace std;
 
 // Shutdown logging when this object is destroyed
 Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;

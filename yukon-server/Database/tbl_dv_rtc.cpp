@@ -43,7 +43,7 @@ int  CtiTableDeviceRTC::getLBTMode() const
 
 void CtiTableDeviceRTC::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    string rwsTemp;
+    string tmpStr;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -52,9 +52,9 @@ void CtiTableDeviceRTC::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     rdr["deviceid"]      >> _deviceID;
     rdr["rtcaddress"] >> _rtcAddress;
-    rdr["response"]  >> rwsTemp;
+    rdr["response"]  >> tmpStr;
 
-    if(rwsTemp.find("Y")!=string::npos||rwsTemp.find("y")!=string::npos) _responseBit = true;
+    if(tmpStr.find("Y")!=string::npos||tmpStr.find("y")!=string::npos) _responseBit = true;
     else _responseBit = false;
 
     rdr["lbtmode"]  >> _lbtMode;

@@ -48,6 +48,8 @@
 #include <boost/interprocess/creation_tags.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
+#include <process.h>
+
 #define NEXT_SCAN       0
 #define REMOTE_SCAN     1
 #define DLC_LP_SCAN     2
@@ -389,7 +391,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     // Initialize the connection to VanGogh....
     VanGoghConnection.setName("Scanner to Dispatch");
     VanGoghConnection.start();
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, rwThreadId(), true));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(SCANNER_REGISTRATION_NAME, GetCurrentThreadId(), true));
 
     CtiTime NextScan[MAX_SCAN_TYPE];
 

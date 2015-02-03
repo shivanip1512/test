@@ -1,12 +1,12 @@
 #pragma once
 
-#include <time.h>
-#include <map>
 #include "dlldefs.h"
-#include "rwutil.h"
 #include "configkey.h"
 #include "configval.h"
 
+#include <windows.h>
+
+#include <map>
 
 // Forward decls.
 class CtiConfigParameters;

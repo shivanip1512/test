@@ -5,10 +5,10 @@
 
 #include "calcthread.h"
 
-//ecs 1/4/2005
 #include "thread_monitor.h"
 #include "thread_register_data.h"
-//
+#include "worker_thread.h"
+
 #include "msg_dbchg.h"
 #include <queue>
 
@@ -44,18 +44,16 @@ protected:
 
 private:
 
-    RWThreadFunction _inputFunc;
-    RWThreadFunction _outputFunc;
+    Cti::WorkerThread _inputFunc;
+    Cti::WorkerThread _outputFunc;
 
-    CtiTime _dispatchPingedFailed, _lastDispatchMessageTime;
+    CtiTime _lastDispatchMessageTime;
     bool _dispatchConnectionBad;
     bool _ok, _restart, _update;
     bool _threadsStarted;
 
     typedef std::queue<CtiDBChangeMsg> messageQueue;
     messageQueue _dbChangeMessages;
-
-    CtiCalculateThread::CtiCalcThreadInterruptReason _interruptReason;
 
     boost::scoped_ptr<CtiCalculateThread>  calcThread;
     boost::scoped_ptr<CtiClientConnection> dispatchConnection;

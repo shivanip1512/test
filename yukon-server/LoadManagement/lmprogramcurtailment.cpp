@@ -605,9 +605,7 @@ void CtiLMProgramCurtailment::notifyCustomers(CtiMultiMsg* multiNotificationMsg)
         emailBody += currentCustomer->getCompanyName();
         emailBody += "\r\n\r\n";// 2 return lines
         emailBody += "Scheduled Start:  ";
-        emailBody += getCurtailmentStartTime().asString();
-        emailBody += " ";
-        emailBody += (getCurtailmentStartTime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
+        emailBody += getCurtailmentStartTime().asString(CtiTime::Local, CtiTime::IncludeTimezone);
         emailBody += "\r\n\r\n";// 2 return lines
         emailBody += "Scheduled Duration:  ";
         ULONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();
@@ -676,9 +674,7 @@ void CtiLMProgramCurtailment::notifyCustomersOfStop(CtiMultiMsg* multiNotificati
         emailBody += currentCustomer->getCompanyName();
         emailBody += "\r\n\r\n";// 2 return lines
         emailBody += "Scheduled Start:  ";
-        emailBody += getCurtailmentStartTime().asString();
-        emailBody += " ";
-        emailBody += (getCurtailmentStartTime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
+        emailBody += getCurtailmentStartTime().asString(CtiTime::Local, CtiTime::IncludeTimezone);
         emailBody += "\r\n\r\n";// 2 return lines
         emailBody += "Scheduled Duration:  ";
         ULONG durationInSeconds = getCurtailmentStopTime().seconds() - getCurtailmentStartTime().seconds();

@@ -71,7 +71,6 @@ public:
 
     CtiTableSignal &setLogID(LONG id);
     CtiTableSignal &setPointID(LONG id);
-    CtiTableSignal &setTime(const CtiTime rwt);
     CtiTableSignal &setMillis(INT millis);
     CtiTableSignal &setPriority(INT cls);
     CtiTableSignal &setText(const std::string &str);

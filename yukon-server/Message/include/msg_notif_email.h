@@ -8,8 +8,6 @@
 #include "message.h"
 #include "yukon.h"
 
-#include <rw/ordcltn.h>
-
 
 class IM_EX_MSG CtiNotifEmailMsg : public CtiMessage
 {

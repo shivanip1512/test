@@ -2,9 +2,6 @@
 
 #include <limits.h>
 
-#include <rw/thr/mutex.h>
-#include <rw/thr/thrfunc.h>
-
 #include "message.h"
 #include "vgexe_factory.h"
 

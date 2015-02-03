@@ -1,17 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   expresscom
-*
-* Date:   8/13/2002
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.52.2.1 $
-* DATE         :  $Date: 2008/11/17 19:46:17 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "expresscom.h"
@@ -22,12 +8,8 @@
 #include "cmdparse.h"
 #include "ctidate.h"
 #include "BeatThePeakAlertLevel.h"
-#include "ctistring.h"
 
 #define EXPRESSCOM_CRC_LENGTH 2
-
-#include <rw\ctoken.h>
-
 
 
 using namespace std;
@@ -967,11 +949,11 @@ YukonError_t CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFla
     msgBlock[2] = timePeriod;
 
     //Workaround for our improper ascii conversions
-    CtiString payloadStr = str;
+    std::string payloadStr = str;
     boost::regex centSignWorkaround("[*]CENTSSIGN[*]");
     std::string centSign(1, 0xa2);  //  Unicode character 'CENT SIGN' (U+00A2), which maps to 0xa2 in UTF-8 and Windows-1252 encodings
 
-    payloadStr.replace(centSignWorkaround, centSign);
+    payloadStr = boost::regex_replace(payloadStr, centSignWorkaround, centSign);
 
     while (i < payloadStr.length() && i < 121)
     {
@@ -1107,7 +1089,7 @@ YukonError_t CtiProtocolExpresscom::parseRequest(CtiCommandParser &parse)
     //This applies to the Beat the Peak gear, which needs to have its Control command transformed into a PutConfig command.
     if( parse.isKeyValid("btp") )
     {
-        CtiString alert_level = parse.getsValue("btp_alert_level");
+        std::string alert_level = parse.getsValue("btp_alert_level");
 
         command = PutConfigRequest;
 
@@ -2713,13 +2695,13 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
 
         if(address == UINT_MAX)
         {
-            static const boost::regex   number_regexp( CtiString("((0x[0-9a-f]+)|([0-9]+))") );
-            static const boost::regex   regexp( CtiString("serial[= ]+((0x[0-9a-f]+)|([0-9]+))") );
+            static const boost::regex   number_regexp( "((0x[0-9a-f]+)|([0-9]+))" );
+            static const boost::regex   regexp( "serial[= ]+((0x[0-9a-f]+)|([0-9]+))" );
 
             char        buffer[64];
-            CtiString   command = parse.getCommandStr();
-            CtiString   token = command.match(regexp);
-            CtiString   number_token = token.match(number_regexp);
+            std::string command = parse.getCommandStr();
+            std::string token = Cti::matchRegex(command, regexp);
+            std::string number_token = Cti::matchRegex(token, number_regexp);
 
             if(number_token.length() >= 2 && number_token[0] == '0' && number_token[1] == 'x')   // entered in hex...
             {
@@ -2731,7 +2713,7 @@ bool CtiProtocolExpresscom::validateParseAddressing(const CtiCommandParser &pars
                 _snprintf(buffer, 64, "%u", address);
             }
 
-            valid &= ( number_token == CtiString(buffer) );
+            valid &= (number_token == buffer);
         }
     }
 

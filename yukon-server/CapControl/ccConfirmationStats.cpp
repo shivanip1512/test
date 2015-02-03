@@ -14,8 +14,6 @@ extern unsigned long _CC_DEBUG;
 
 using Cti::CapControl::setVariableIfDifferent;
 
-//RWDEFINE_COLLECTABLE( CtiCCConfirmationStats, CtiCCConfirmationStats_ID )
-
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/

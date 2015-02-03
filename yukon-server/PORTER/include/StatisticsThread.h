@@ -3,7 +3,7 @@
 namespace Cti {
 namespace Porter {
 
-void StatisticsThread(void *);
+void StatisticsThread();
 
 }
 }

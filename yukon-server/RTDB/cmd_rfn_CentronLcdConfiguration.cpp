@@ -171,7 +171,7 @@ RfnCommandResult RfnCentronGetLcdConfigurationCommand::decodeCommand(const CtiTi
 
     const OptionalString status = mapFind(StatusItems, response[1]);
 
-    validate(Condition(status, ClientErrors::InvalidData)
+    validate(Condition( !! status, ClientErrors::InvalidData)
             << "Invalid status code - (" << response[1] << ")");
 
     const int metrics_nbr = response[2];
@@ -262,7 +262,7 @@ RfnCommandResult RfnCentronSetLcdConfigurationCommand::decodeCommand(const CtiTi
 
     const OptionalString status = mapFind(StatusItems, response[1]);
 
-    validate(Condition(status, ClientErrors::InvalidData)
+    validate(Condition( !! status, ClientErrors::InvalidData)
             << "Invalid status code - (" << response[1] << ")");
 
     const int metrics_nbr = response[2];

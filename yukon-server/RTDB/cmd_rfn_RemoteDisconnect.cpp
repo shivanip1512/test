@@ -81,7 +81,7 @@ RfnCommandResult RfnRemoteDisconnectConfigurationCommand::decodeResponseHeader( 
     boost::optional<std::string> status = mapFind( remoteDisconnectStatusResolver, response[2] );
 
     // invalid status byte -- not found in map
-    validate( Condition( status, ClientErrors::InvalidData )
+    validate( Condition( !! status, ClientErrors::InvalidData )
             << "Invalid Status (" << response[2] << ")" );
 
     validate( Condition( response[2] == 0, ClientErrors::InvalidData ) // success
@@ -118,7 +118,7 @@ std::string RfnRemoteDisconnectConfigurationCommand::decodeDisconnectConfigTlv( 
 
     _disconnectMode = mapFind( disconnectModes, tlv.type );
 
-    validate( Condition( _disconnectMode, ClientErrors::InvalidData )
+    validate( Condition( !! _disconnectMode, ClientErrors::InvalidData )
             << "Invalid TLV type received in response (" << tlv.type << ")" );
 
     description << "\nDisconnect mode: " << *mapFind( disconnectModeResolver, *_disconnectMode );
@@ -127,7 +127,7 @@ std::string RfnRemoteDisconnectConfigurationCommand::decodeDisconnectConfigTlv( 
     boost::optional<Reconnect> reconnect = mapFind( remoteDisconnectReconnectResolver, tlv.value[0] );
 
     // invalid reconnect byte -- not found in map
-    validate( Condition( reconnect, ClientErrors::InvalidData )
+    validate( Condition( !! reconnect, ClientErrors::InvalidData )
             << "Response reconnect param invalid (" << tlv.value[0]
             << ") expecting 0 or 1" );
 
@@ -196,8 +196,13 @@ std::string RfnRemoteDisconnectConfigurationCommand::decodeDisconnectConfigTlv( 
             validate( Condition( tlv.value.size() == 5, ClientErrors::InvalidData )
                     << "Response TLV too small (" << tlv.value.size() << " != 5)" );
 
-            validate( Condition( getReconnectParam() == Reconnect_Immediate, ClientErrors::InvalidData ) // must be 1 for cycling!
-                    << "Response reconnect param invalid " << getReconnectParam()
+            const boost::optional<Reconnect> reconnectParam = getReconnectParam();
+
+            validate( Condition( !! reconnectParam, ClientErrors::DataMissing ) // must be 1 for cycling!
+                    << "Response reconnect param missing, expecting 1)" );
+
+            validate( Condition( reconnectParam == Reconnect_Immediate, ClientErrors::InvalidData ) // must be 1 for cycling!
+                    << "Response reconnect param invalid " << *reconnectParam
                     << ") expecting 1)" );
 
             // Bytes 1-2 : disconnect minutes

@@ -60,7 +60,7 @@ string CtiTblPAOLite::getTableName()
 void CtiTblPAOLite::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
-    string rwsTemp, category;
+    string tmpStr, category;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -69,18 +69,18 @@ void CtiTblPAOLite::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     rdr["paobjectid"] >> _paObjectID;
     rdr >> category;
-    rdr >> rwsTemp;
+    rdr >> tmpStr;
 
-    _class = resolvePAOClass(rwsTemp);
+    _class = resolvePAOClass(tmpStr);
 
     rdr >> _name;
-    rdr >> rwsTemp; // type
+    rdr >> tmpStr; // type
 
-    _type = resolvePAOType(category, rwsTemp);
+    _type = resolvePAOType(category, tmpStr);
 
-    rdr >> rwsTemp;
-    transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
-    _disableFlag = ((rwsTemp == "y") ? true : false);
+    rdr >> tmpStr;
+    transform(tmpStr.begin(), tmpStr.end(), tmpStr.begin(), tolower);
+    _disableFlag = ((tmpStr == "y") ? true : false);
 }
 
 std::string CtiTblPAOLite::toString() const

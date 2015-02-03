@@ -14,6 +14,8 @@
 #include "amq_connection.h"
 #include "ControlHistoryAssociationResponse.h"
 
+#include "std_helper.h"
+
 using namespace std;
 
 extern CtiPointClientManager  PointMgr;  // The RTDB for memory points....
@@ -22,17 +24,16 @@ extern int CntlHistInterval;
 extern int CntlHistPointPostInterval;
 extern int CntlStopInterval;
 
-CtiPendingOpThread::CtiPendingOpSet_t CtiPendingOpThread::_pendingControls;
-CtiPendingOpThread::CtiPendingOpSet_t CtiPendingOpThread::_pendingPointData;
-CtiPendingOpThread::CtiPendingOpSet_t CtiPendingOpThread::_pendingPointLimit;
+CtiPendingOpThread::PendingOpMap CtiPendingOpThread::_pendingControls;
+CtiPendingOpThread::PendingOpMap CtiPendingOpThread::_pendingPointData;
+CtiPendingOpThread::PendingOpMap CtiPendingOpThread::_pendingPointLimit;
 
 
 CtiPendingOpThread::CtiPendingOpThread() :
 _multi(0),
 _pMainQueue(0)
 {
-    _dbThread  = rwMakeThreadFunction(*this, &CtiPendingOpThread::dbWriterThread);
-    _dbThread.start();
+    _dbThread = boost::thread(&CtiPendingOpThread::dbWriterThread, this);
 }
 
 CtiPendingOpThread::~CtiPendingOpThread()
@@ -259,13 +260,13 @@ void CtiPendingOpThread::doPendingControls(bool bShutdown)
             }
 
             // There are pending operations for points out there in the world!
-            CtiPendingOpSet_t::iterator it = _pendingControls.begin();
+            auto it = _pendingControls.begin();
 
             while( it != _pendingControls.end() )
             {
                 now = now.now();
 
-                CtiPendingPointOperations &ppo = *it;
+                CtiPendingPointOperations &ppo = it->second;
 
                 if(ppo.getType() == CtiPendingPointOperations::pendingControl)
                 {
@@ -409,13 +410,13 @@ void CtiPendingOpThread::doPendingPointData(bool bShutdown)
             CtiTime now;
 
             // There are pending operations for points out there in the world!
-            CtiPendingOpSet_t::iterator it = _pendingPointData.begin();
+            auto it = _pendingPointData.begin();
 
             while( it != _pendingPointData.end() )
             {
                 now = now.now();
 
-                CtiPendingPointOperations &ppo = *it;
+                CtiPendingPointOperations &ppo = it->second;
 
                 if(ppo.getType() == CtiPendingPointOperations::pendingPointData)
                 {
@@ -480,13 +481,13 @@ void CtiPendingOpThread::doPendingLimits(bool bShutdown)
             CtiTime now;
 
             // There are pending operations for points out there in the world!
-            CtiPendingOpSet_t::iterator it = _pendingPointLimit.begin();
+            auto it = _pendingPointLimit.begin();
 
             while( it != _pendingPointLimit.end() )
             {
                 now = now.now();
 
-                CtiPendingPointOperations &ppo = *it;
+                CtiPendingPointOperations &ppo = it->second;
 
                 if(CtiPendingPointOperations::pendingLimit <= ppo.getType() && ppo.getType() <= CtiPendingPointOperations::pendingLimit + 9)    // we are a limit ppo.
                 {
@@ -855,10 +856,10 @@ CtiTime CtiPendingOpThread::getPendingControlCompleteTime(LONG pointid)
 
     if(!_pendingControls.empty())
     {
-        CtiPendingOpSet_t::iterator it = _pendingControls.find(CtiPendingPointOperations(pointid, CtiPendingPointOperations::pendingControl));
+        auto it = _pendingControls.find(PendingOpKey(pointid, CtiPendingPointOperations::pendingControl));
         if(it != _pendingControls.end())
         {
-            retVal = it->getControl().getControlCompleteTime();
+            retVal = it->second.getControl().getControlCompleteTime();
         }
     }
 
@@ -872,10 +873,10 @@ int CtiPendingOpThread::getCurrentControlPriority(LONG pointid)
 
     if(!_pendingControls.empty())
     {
-        CtiPendingOpSet_t::iterator it = _pendingControls.find(CtiPendingPointOperations(pointid, CtiPendingPointOperations::pendingControl));
+        auto it = _pendingControls.find(PendingOpKey(pointid, CtiPendingPointOperations::pendingControl));
         if(it != _pendingControls.end())
         {
-            retVal = it->getControl().getControlPriority();
+            retVal = it->second.getControl().getControlPriority();
         }
     }
 
@@ -1169,7 +1170,10 @@ bool CtiPendingOpThread::loadICControlMap()
                         ppc.setTime( dynC.getStartTime() );
                         ppc.setControl(dynC);
 
-                        _pendingControls.insert( ppc ); // Writes to this set in this way can only occur prior to the thread starting up.  All others via processPendableQueue
+                        // Writes to this set in this way can only occur prior to the thread starting up.  All others via processPendableQueue
+                        _pendingControls.emplace(
+                                PendingOpKey(ppc.getPointID(), ppc.getType()),
+                                ppc );
                     }
                 }
 
@@ -1295,12 +1299,12 @@ bool CtiPendingOpThread::getICControlHistory( CtiTableLMControlHistory &lmch )
 void CtiPendingOpThread::checkForControlBegin( CtiPendable *&pendable )
 {
     CtiLockGuard<CtiMutex> guard(_controlMux);
-    CtiPendingOpSet_t::iterator it = _pendingControls.find(CtiPendingPointOperations(pendable->_pointID, CtiPendingPointOperations::pendingControl));
+    auto it = _pendingControls.find(PendingOpKey(pendable->_pointID, CtiPendingPointOperations::pendingControl));
 
     if( it != _pendingControls.end() )
     {
         // OK, we just got a change in value on a Status type point, and it is awaiting control!
-        CtiPendingPointOperations &ppo = *it;
+        CtiPendingPointOperations &ppo = it->second;
 
         if( ppo.isInControlCompleteState(pendable->_value) )                // We are in the control state (value)?
         {
@@ -1334,12 +1338,12 @@ void CtiPendingOpThread::checkForControlBegin( CtiPendable *&pendable )
 void CtiPendingOpThread::checkControlStatusChange( CtiPendable *&pendable )
 {
     CtiLockGuard<CtiMutex> guard(_controlMux);
-    CtiPendingOpSet_t::iterator it = _pendingControls.find(CtiPendingPointOperations(pendable->_pointID, CtiPendingPointOperations::pendingControl));
+    auto it = _pendingControls.find(PendingOpKey(pendable->_pointID, CtiPendingPointOperations::pendingControl));
 
     if( it != _pendingControls.end() )
     {
         // OK, we just got a change in value on a Status type point, and it is awaiting control!
-        CtiPendingPointOperations &ppo = *it;
+        CtiPendingPointOperations &ppo = it->second;
 
         if( pendable->_value != ppo.getControlCompleteValue() )  // One final check to make sure we are NOT in the controlled state (value)?
         {
@@ -1360,11 +1364,11 @@ void CtiPendingOpThread::removeLimit(CtiPendable *&pendable)
     if( !_pendingPointLimit.empty() )
     {
         // There are pending operations for points out there in the world!
-        CtiPendingOpSet_t::iterator it = _pendingPointLimit.begin();
+        auto it = _pendingPointLimit.begin();
 
         while( it != _pendingPointLimit.end() )
         {
-            CtiPendingPointOperations &ppo = *it;
+            CtiPendingPointOperations &ppo = it->second;
 
             if(ppo.getPointID() == pendable->_pointID &&
                (CtiPendingPointOperations::pendingLimit <= ppo.getType() && ppo.getType() <= CtiPendingPointOperations::pendingLimit + 9))    // we are a limit ppo.
@@ -1384,7 +1388,7 @@ void CtiPendingOpThread::removePointData(CtiPendable *&pendable)
 {
     if( !_pendingPointData.empty() )
     {
-        CtiPendingOpSet_t::iterator it = _pendingPointData.find(CtiPendingPointOperations(pendable->_pointID, CtiPendingPointOperations::pendingPointData));
+        auto it = _pendingPointData.find(PendingOpKey(pendable->_pointID, CtiPendingPointOperations::pendingPointData));
 
         if( it != _pendingPointData.end() )
         {
@@ -1404,10 +1408,9 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
         case (CtiPendingPointOperations::pendingControl):
             {
                 CtiLockGuard<CtiMutex> guard(_controlMux);
-                pair< CtiPendingOpSet_t::iterator, bool > resultpair;
-                resultpair = insertPendingControl( *pendable->_ppo );            // Add a copy (ppo) to the pending operations.
+                auto resultpair = insertPendingControl( *pendable->_ppo );            // Add a copy (ppo) to the pending operations.
 
-                CtiPendingPointOperations &ppo = *resultpair.first;
+                CtiPendingPointOperations &ppo = resultpair.first->second;
 
                 if(resultpair.second != true)
                 {
@@ -1514,15 +1517,10 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
             }
         case (CtiPendingPointOperations::pendingPointData):
             {
-                pair< CtiPendingOpSet_t::iterator, bool > resultpair;
-                resultpair = _pendingPointData.insert( *pendable->_ppo );            // Add a copy (ppo) to the pending operations.
+                const auto key = std::make_pair(pendable->_ppo->getPointID(),
+                                                pendable->_ppo->getType());
 
-                CtiPendingPointOperations &ppo = *resultpair.first;
-
-                if(resultpair.second != true)
-                {
-                    ppo = *pendable->_ppo;    // Copy it.
-                }
+                _pendingPointData[key] = *pendable->_ppo;
 
                 break;
             }
@@ -1537,13 +1535,15 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
         case (CtiPendingPointOperations::pendingLimit + 8):
         case (CtiPendingPointOperations::pendingLimit + 9):
             {
-                pair< CtiPendingOpSet_t::iterator, bool > resultpair;
-                resultpair = _pendingPointLimit.insert( *pendable->_ppo );            // Add a copy (ppo) to the pending operations.
+                const auto key = std::make_pair(pendable->_ppo->getPointID(),
+                                                pendable->_ppo->getType());
 
-                CtiPendingPointOperations &ppo = *resultpair.first;
+                const auto resultpair = _pendingPointLimit.emplace( key, *pendable->_ppo );            // Add a copy (ppo) to the pending operations.
 
                 if(resultpair.second != true)
                 {
+                    CtiPendingPointOperations &ppo = resultpair.first->second;
+
                     CtiTime origTime = ppo.getTime();
                     ppo = *pendable->_ppo;              // Copy it.
                     ppo.setTime(origTime);              // Don't move the time.  The violation timer requires the initial time!
@@ -1569,6 +1569,7 @@ void CtiPendingOpThread::dbWriterThread()
 
     try
     {
+        //  checking the main thread's shutdown flag
         for(;!isSet(CtiThread::SHUTDOWN);)
         {
             try
@@ -1578,7 +1579,7 @@ void CtiPendingOpThread::dbWriterThread()
                     CTILOG_INFO(dout, "PendingOp DB Writer Thread Active ");
                 }
 
-                rwSleep(1000);
+                Sleep(1000);
 
                 writeDynamicLMControlHistoryToDB();
                 writeLMControlHistoryToDB();
@@ -1592,7 +1593,6 @@ void CtiPendingOpThread::dbWriterThread()
         // Make sure no one snuck in under the wire..
         writeDynamicLMControlHistoryToDB(true);
         writeLMControlHistoryToDB(true);
-
     }
     catch( ... )
     {
@@ -1627,9 +1627,9 @@ CtiPointNumericSPtr CtiPendingOpThread::getPointOffset(CtiPendingPointOperations
     return pPoint;
 }
 
-CtiPendingOpThread::CtiPendingOpSet_t::iterator CtiPendingOpThread::erasePendingControl(CtiPendingOpThread::CtiPendingOpSet_t::iterator iter)
+CtiPendingOpThread::PendingOpMap::iterator CtiPendingOpThread::erasePendingControl(CtiPendingOpThread::PendingOpMap::iterator iter)
 {
-    if( const CtiPointSPtr pPoint = PointMgr.getPoint(iter->getPointID()) )
+    if( const CtiPointSPtr pPoint = PointMgr.getPoint(iter->second.getPointID()) )
     {
         if( CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*pPoint) )
         {
@@ -1639,7 +1639,7 @@ CtiPendingOpThread::CtiPendingOpSet_t::iterator CtiPendingOpThread::erasePending
     return _pendingControls.erase(iter);
 }
 
-pair< CtiPendingOpThread::CtiPendingOpSet_t::iterator, bool > CtiPendingOpThread::insertPendingControl(CtiPendingPointOperations &ppo)
+pair< CtiPendingOpThread::PendingOpMap::iterator, bool > CtiPendingOpThread::insertPendingControl(CtiPendingPointOperations &ppo)
 {
-    return _pendingControls.insert(ppo);
+    return _pendingControls.emplace(PendingOpKey(ppo.getPointID(), ppo.getType()), ppo);
 }

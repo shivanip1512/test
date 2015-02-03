@@ -1,7 +1,7 @@
 #include "precompiled.h"
 #include "encryption.h"
 #include "shlwapi.h"
-#include "ctistring.h"
+#include "string_util.h"
 #include "mutex.h"
 #include "guard.h"
 
@@ -154,10 +154,10 @@ namespace
 
     std::string getPasswordFromXml( const Buffer & xmlData )
     {
-        CtiString strData;
+        std::string strData;
 
         strData.assign( xmlData.begin(), xmlData.end() );
-        strData = strData.match( "<pk>.*</pk>" );
+        strData = matchRegex(strData, "<pk>.*</pk>");
 
         if ( strData.length() <= 9 )
         {

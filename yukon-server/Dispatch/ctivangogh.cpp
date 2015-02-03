@@ -86,6 +86,7 @@ using namespace std;
 DLLEXPORT BOOL  bGCtrlC = FALSE;
 
 using Cti::ThreadStatusKeeper;
+using Cti::DeviceBaseLite;
 
 /* Global Variables */
 CtiPointClientManager      PointMgr;   // The RTDB for memory points....
@@ -205,7 +206,7 @@ string& TrimAlarmTagText(string& text)
     return text;
 }
 
-void ApplyBlankDeletedConnection(CtiMessage*&Msg, void *Conn);
+void ApplyBlankDeletedConnection(CtiMessage *Msg, void *Conn);
 
 /*
  *  This function can be used to pull out connectinos which have become bachy over time.
@@ -224,15 +225,7 @@ CtiVanGogh::~CtiVanGogh()
 
 int CtiVanGogh::execute()
 {
-    try
-    {
-        MainThread_ = rwMakeThreadFunction(*this, &CtiVanGogh::VGMainThread);
-        MainThread_.start();
-    }
-    catch(const RWxmsg& x)
-    {
-        CTILOG_EXCEPTION_ERROR(dout, x);
-    }
+    _mainThread = boost::thread(&CtiVanGogh::VGMainThread, this);
 
     return 0;
 }
@@ -302,39 +295,22 @@ void CtiVanGogh::VGMainThread()
         _pendingOpThread.setSignalManager( &_signalManager );
         _pendingOpThread.start();
 
-        _rphThread = rwMakeThreadFunction(*this, &CtiVanGogh::VGRPHWriterThread);
-        _rphThread.start();
+        _rphThread        = boost::thread(&CtiVanGogh::VGRPHWriterThread,      this);
+        _archiveThread    = boost::thread(&CtiVanGogh::VGArchiverThread,       this);
+        _timedOpThread    = boost::thread(&CtiVanGogh::VGTimedOperationThread, this);
+        _dbSigThread      = boost::thread(&CtiVanGogh::VGDBSignalWriterThread, this);
+        _dbSigEmailThread = boost::thread(&CtiVanGogh::VGDBSignalEmailThread,  this);
+        _appMonitorThread = boost::thread(&CtiVanGogh::VGAppMonitorThread,     this);
 
-        _archiveThread = rwMakeThreadFunction(*this, &CtiVanGogh::VGArchiverThread);
-        _archiveThread.start();
-
-        _timedOpThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGTimedOperationThread);
-        _timedOpThread.start();
-
-        _dbSigThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGDBSignalWriterThread);
-        _dbSigThread.start();
-
-        _dbSigEmailThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGDBSignalEmailThread);
-        _dbSigEmailThread.start();
-
-        _appMonitorThread  = rwMakeThreadFunction(*this, &CtiVanGogh::VGAppMonitorThread);
-        _appMonitorThread.start();
-
-        _cacheHandlerThread1 = rwMakeThreadFunction(*this, &CtiVanGogh::VGCacheHandlerThread,1);
-        _cacheHandlerThread1.start();
-
-        _cacheHandlerThread2 = rwMakeThreadFunction(*this, &CtiVanGogh::VGCacheHandlerThread,2);
-        _cacheHandlerThread2.start();
-
-        _cacheHandlerThread3 = rwMakeThreadFunction(*this, &CtiVanGogh::VGCacheHandlerThread,3);
-        _cacheHandlerThread3.start();
+        _cacheHandlerThread1 = boost::thread(&CtiVanGogh::VGCacheHandlerThread, this, 1);
+        _cacheHandlerThread2 = boost::thread(&CtiVanGogh::VGCacheHandlerThread, this, 2);
+        _cacheHandlerThread3 = boost::thread(&CtiVanGogh::VGCacheHandlerThread, this, 3);
 
          // Prime the connection to the notification server
          getNotificationConnection();
 
         // all that is good and ready has been started, open up for business from clients
-        ConnThread_ = rwMakeThreadFunction(*this, &CtiVanGogh::VGConnectionHandlerThread);
-        ConnThread_.start();
+        _connThread = boost::thread(&CtiVanGogh::VGConnectionHandlerThread, this);
 
         Cti::Timing::MillisecondTimer timer;
 
@@ -459,23 +435,15 @@ void CtiVanGogh::VGMainThread()
                     CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
             }
-            else
+            else if( _connThread.timed_join(boost::posix_time::milliseconds(0)) )
             {
-                if( !(ConnThread_.isValid() &&
-                      ConnThread_.getExecutionState() & RW_THR_ACTIVE &&
-                      ConnThread_.getCompletionState() == RW_THR_PENDING) )
-                {
-                    if(ConnThread_.getCompletionState() != RW_THR_PENDING)
-                    {
-                        CtiServerExclusion pmguard(_server_exclusion, 10000);
+                //  thread isn't running - restart it
+                CtiServerExclusion pmguard(_server_exclusion, 10000);
 
-                        CTILOG_INFO(dout, "Restarting ConnThread");
+                CTILOG_INFO(dout, "Restarting ConnThread");
 
-                        // all that is good and ready has been started, open up for business from clients
-                        ConnThread_ = rwMakeThreadFunction(*this, &CtiVanGogh::VGConnectionHandlerThread);
-                        ConnThread_.start();
-                    }
-                }
+                // all that is good and ready has been started, open up for business from clients
+                _connThread = boost::thread(&CtiVanGogh::VGConnectionHandlerThread, this);
             }
 
             threadStatus.monitorCheck(CtiThreadRegData::None);
@@ -570,11 +538,6 @@ void CtiVanGogh::VGConnectionHandlerThread()
             reportOnThreads();
         }
     }
-    catch( RWxmsg& ex )
-    {
-        CTILOG_EXCEPTION_ERROR(dout, ex);
-        throw; // FIXME: why do we only rethrow for RWxmsg?
-    }
     catch(...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
@@ -586,8 +549,6 @@ void CtiVanGogh::VGConnectionHandlerThread()
 
 void CtiVanGogh::registration(CtiServer::ptr_type pCM, const CtiPointRegistrationMsg &aReg)
 {
-    CtiTime     NowTime;
-
     CtiVanGoghConnectionManager *CM = (CtiVanGoghConnectionManager*)pCM.get();
 
     if(gDispatchDebugLevel & DISPATCH_DEBUG_CONNECTIONS)
@@ -679,17 +640,14 @@ void CtiVanGogh::registration(CtiServer::ptr_type pCM, const CtiPointRegistratio
 }
 
 // Assumes lock on _server_exclusion has been obtained.
-int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
+void CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 {
-    int status = ClientErrors::None;
-    int i;
-
     switch( Cmd->getOperation() )
     {
     case (CtiCommandMsg::ClearAlarm):
         {
             CTILOG_WARN(dout, "Alarms can no longer be CtiCommandMsg::ClearAlarm");
-            break;
+            return;
         }
     case (CtiCommandMsg::AcknowledgeAlarm):
         {
@@ -699,7 +657,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                         *Cmd);
             }
 
-            for(i = 1; i + 1 < Cmd->getOpArgList().size(); i += 2)
+            for(int i = 1; i + 1 < Cmd->getOpArgList().size(); i += 2)
             {
                 int pid = Cmd->getOpArgList()[i];
                 int alarmcondition = Cmd->getOpArgList()[i+1];
@@ -711,12 +669,12 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 }
             }
 
-            break;
+            return;
         }
     case (CtiCommandMsg::PorterConsoleInput):
         {
             writeMessageToClient(Cmd, string(PORTER_REGISTRATION_NAME));
-            break;
+            return;
         }
     case (CtiCommandMsg::ControlRequest):
         {
@@ -724,164 +682,153 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
              *  This block receives a CommandMsg from a requesting client and processes it for submission to
              *  pil/porter.
              */
-            if(Cmd->getOpArgList().size() >= 4)
+            if(Cmd->getOpArgList().size() < 4)
             {
-                LONG token     = Cmd->getOpArgList()[0];
-                LONG did       = Cmd->getOpArgList()[1];
-                LONG pid       = Cmd->getOpArgList()[2];
-                LONG rawstate  = Cmd->getOpArgList()[3];
-                INT  ctrl_offset = 0;
+                CTILOG_ERROR(dout, "Control Request did not have a valid command vector");
+                return;
+            }
+            LONG token     = Cmd->getOpArgList()[0];
+            LONG did       = Cmd->getOpArgList()[1];
+            LONG pid       = Cmd->getOpArgList()[2];
+            LONG rawstate  = Cmd->getOpArgList()[3];
+            INT  ctrl_offset = 0;
 
-                // Find PIL in the connection list.
-                try
+            CtiPointSPtr pPoint;
+            if(Cmd->getOpArgList().size() >= 5)
+            {
+                // This is a BOOL which indicates whether a ctrl offset is spec'd by pid.
+                // If this is so, "did" MUST also be specified!
+                ctrl_offset = Cmd->getOpArgList()[4];
+
+                if(did == 0 || ctrl_offset == 0)
                 {
-                    {
-                        CtiPointSPtr pPoint;
-                        if(Cmd->getOpArgList().size() >= 5)
-                        {
-                            // This is a BOOL which indicates whether a ctrl offset is spec'd by pid.
-                            // If this is so, "did" MUST also be specified!
-                            ctrl_offset = Cmd->getOpArgList()[4];
-
-                            if(did == 0 || ctrl_offset == 0)
-                            {
-                                CTILOG_WARN(dout, "CtiCommandMsg::ControlRequest sent with DeviceID = "<< did <<" and Ctrl Offset = "<< ctrl_offset);
-                            }
-                            else
-                            {
-                                pPoint = PointMgr.getControlOffsetEqual( did, ctrl_offset );
-                            }
-                        }
-                        else
-                        {
-                            pPoint = PointMgr.getPoint(pid);
-                        }
-
-                        if(pPoint)
-                        {
-                            CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*pPoint);
-
-                            int controlTimeout = DefaultControlExpirationTime;
-
-                            if( pPoint->isStatus() )
-                            {
-                                const CtiPointStatus &status = static_cast<const CtiPointStatus &>(*pPoint);
-
-                                if( const boost::optional<CtiTablePointStatusControl> controlParameters = status.getControlParameters() )
-                                {
-                                    controlTimeout = controlParameters->getCommandTimeout();
-                                }
-                            }
-
-                            if(pDyn
-                               && pDyn->getDispatch().getTags() & TAG_ATTRIB_CONTROL_AVAILABLE
-                               && !(pDyn->getDispatch().getTags() & (TAG_DISABLE_CONTROL_BY_POINT | TAG_DISABLE_CONTROL_BY_DEVICE)))
-                            {
-                                if(did == 0)      // We need to find the point's device
-                                {
-                                    did = pPoint->getDeviceID();
-                                }
-
-                                bool is_a_control = writeControlMessageToPIL(did, rawstate, static_cast<const CtiPointStatus &>(*pPoint), Cmd);
-
-                                CtiPointDataMsg *pPseudoValPD = 0;
-
-                                CtiPendingPointOperations *pendingControlRequest = CTIDBG_new CtiPendingPointOperations(pPoint->getID());
-                                pendingControlRequest->setType(CtiPendingPointOperations::pendingControl);
-                                pendingControlRequest->setControlState( CtiPendingPointOperations::controlSentToPorter );
-                                pendingControlRequest->setTime( Cmd->getMessageTime() );
-                                pendingControlRequest->setControlCompleteValue( (DOUBLE) rawstate );
-                                pendingControlRequest->setControlTimeout( controlTimeout );
-                                pendingControlRequest->setExcludeFromHistory(!isDeviceGroupType(did));
-
-                                pendingControlRequest->getControl().setPAOID( did );
-                                pendingControlRequest->getControl().setStartTime(CtiTime(YUKONEOT));
-                                pendingControlRequest->getControl().setControlDuration(0);
-
-                                string devicename= resolveDeviceName(*pPoint);
-
-                                if( pPoint->isPseudoPoint() )
-                                {
-                                    // We are going to fake a rawstate behavior here since no one else is likely to do it for us...
-                                    pPseudoValPD = CTIDBG_new CtiPointDataMsg(pPoint->getID(), (DOUBLE) rawstate, NormalQuality, pPoint->getType());
-                                    pPseudoValPD->setSource(DISPATCH_APPLICATION_NAME);
-                                }
-                                else if( is_a_control )
-                                {
-                                    const CtiTablePointAlarming alarming = PointMgr.getAlarming(*pPoint);
-
-                                    CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
-
-                                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK));
-                                    if(pFailSig->getSignalCategory() > SignalEvent)
-                                    {
-                                        pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | (alarming.isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
-                                        pFailSig->setLogType(AlarmCategoryLogType);
-                                    }
-                                    pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
-
-                                    pendingControlRequest->setSignal( pFailSig );
-                                }
-
-                                addToPendingSet(pendingControlRequest, Cmd->getMessageTime());
-
-                                if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
-                                {
-                                    CTILOG_DEBUG(dout, devicename <<" / "<< pPoint->getName() <<" has gone CONTROL SUBMITTED. Control expires at "<< CtiTime(Cmd->getMessageTime() + controlTimeout));
-                                }
-
-                                CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", string(), GeneralLogType, SignalEvent, Cmd->getUser());
-                                pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
-                                pCRP->setTags(pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK);
-                                MainQueue_.putQueue( pCRP );
-                                pCRP = 0;
-                                if(pPseudoValPD) MainQueue_.putQueue( pPseudoValPD );
-                                pPseudoValPD = 0;
-                            }
-                            else
-                            {
-                                CTILOG_INFO(dout, resolveDeviceName(*pPoint) <<" / "<< pPoint->getName() <<" CONTROL SENT to port control. Control expires at "<< CtiTime(Cmd->getMessageTime() + controlTimeout));
-                            }
-                        }
-                    }
+                    CTILOG_WARN(dout, "CtiCommandMsg::ControlRequest sent with DeviceID = "<< did <<" and Ctrl Offset = "<< ctrl_offset);
                 }
-                catch(const RWxmsg& x)
+                else
                 {
-                    CTILOG_EXCEPTION_ERROR(dout, x);
-                    break;
+                    pPoint = PointMgr.getControlOffsetEqual( did, ctrl_offset );
                 }
             }
             else
             {
-                CTILOG_ERROR(dout, "Control Request did not have a valid command vector");
+                pPoint = PointMgr.getPoint(pid);
             }
-            break;
+
+            if( ! pPoint )
+            {
+                return;
+            }
+            CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*pPoint);
+
+            int controlTimeout = DefaultControlExpirationTime;
+
+            if( pPoint->isStatus() )
+            {
+                const CtiPointStatus &ptStatus = static_cast<const CtiPointStatus &>(*pPoint);
+
+                if( const boost::optional<CtiTablePointStatusControl> controlParameters = ptStatus.getControlParameters() )
+                {
+                    controlTimeout = controlParameters->getCommandTimeout();
+                }
+            }
+
+            if(pDyn
+               && pDyn->getDispatch().getTags() & TAG_ATTRIB_CONTROL_AVAILABLE
+               && !(pDyn->getDispatch().getTags() & (TAG_DISABLE_CONTROL_BY_POINT | TAG_DISABLE_CONTROL_BY_DEVICE)))
+            {
+                if(did == 0)      // We need to find the point's device
+                {
+                    did = pPoint->getDeviceID();
+                }
+
+                bool is_a_control = writeControlMessageToPIL(did, rawstate, static_cast<const CtiPointStatus &>(*pPoint), Cmd);
+
+                CtiPointDataMsg *pPseudoValPD = 0;
+
+                CtiPendingPointOperations *pendingControlRequest = CTIDBG_new CtiPendingPointOperations(pPoint->getID());
+                pendingControlRequest->setType(CtiPendingPointOperations::pendingControl);
+                pendingControlRequest->setControlState( CtiPendingPointOperations::controlSentToPorter );
+                pendingControlRequest->setTime( Cmd->getMessageTime() );
+                pendingControlRequest->setControlCompleteValue( (DOUBLE) rawstate );
+                pendingControlRequest->setControlTimeout( controlTimeout );
+                pendingControlRequest->setExcludeFromHistory(!isDeviceGroupType(did));
+
+                pendingControlRequest->getControl().setPAOID( did );
+                pendingControlRequest->getControl().setStartTime(CtiTime(YUKONEOT));
+                pendingControlRequest->getControl().setControlDuration(0);
+
+                string devicename= resolveDeviceName(*pPoint);
+
+                if( pPoint->isPseudoPoint() )
+                {
+                    // We are going to fake a rawstate behavior here since no one else is likely to do it for us...
+                    pPseudoValPD = CTIDBG_new CtiPointDataMsg(pPoint->getID(), (DOUBLE) rawstate, NormalQuality, pPoint->getType());
+                    pPseudoValPD->setSource(DISPATCH_APPLICATION_NAME);
+                }
+                else if( is_a_control )
+                {
+                    const CtiTablePointAlarming alarming = PointMgr.getAlarming(*pPoint);
+
+                    CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), devicename + " / " + pPoint->getName() + ": Commanded Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Failed", getAlarmStateName( alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure), Cmd->getUser());
+
+                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK));
+                    if(pFailSig->getSignalCategory() > SignalEvent)
+                    {
+                        pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | (alarming.isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
+                        pFailSig->setLogType(AlarmCategoryLogType);
+                    }
+                    pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
+
+                    pendingControlRequest->setSignal( pFailSig );
+                }
+
+                addToPendingSet(pendingControlRequest, Cmd->getMessageTime());
+
+                if(gDispatchDebugLevel & DISPATCH_DEBUG_CONTROLS)
+                {
+                    CTILOG_DEBUG(dout, devicename <<" / "<< pPoint->getName() <<" has gone CONTROL SUBMITTED. Control expires at "<< CtiTime(Cmd->getMessageTime() + controlTimeout));
+                }
+
+                CtiSignalMsg *pCRP = CTIDBG_new CtiSignalMsg(pPoint->getID(), Cmd->getSOE(), "Control " + ResolveStateName(pPoint->getStateGroupID(), rawstate) + " Sent", string(), GeneralLogType, SignalEvent, Cmd->getUser());
+                pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
+                pCRP->setTags(pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK);
+                MainQueue_.putQueue( pCRP );
+                pCRP = 0;
+                if(pPseudoValPD) MainQueue_.putQueue( pPseudoValPD );
+                pPseudoValPD = 0;
+            }
+            else
+            {
+                CTILOG_INFO(dout, resolveDeviceName(*pPoint) <<" / "<< pPoint->getName() <<" CONTROL SENT to port control. Control expires at "<< CtiTime(Cmd->getMessageTime() + controlTimeout));
+            }
+            return;
         }
     case (CtiCommandMsg::AnalogOutput):
         {
-            if(Cmd->getOpArgList().size() >= 2)
-            {
-                const long point_id = Cmd->getOpArgList()[0];
-                const long value    = Cmd->getOpArgList()[1];
-
-                if(const CtiPointSPtr point = PointMgr.getPoint(point_id))
-                {
-                    if(const long device_id = point->getDeviceID())
-                    {
-                        writeAnalogOutputMessageToPIL(device_id, point_id, value, Cmd);
-                    }
-                }
-            }
-            else
+            if(Cmd->getOpArgList().size() < 2)
             {
                 CTILOG_ERROR(dout, "Control Request did not have a valid command vector");
+                return;
             }
+            const long point_id = Cmd->getOpArgList()[0];
+            const long value    = Cmd->getOpArgList()[1];
 
-            break;
+            if(const CtiPointSPtr point = PointMgr.getPoint(point_id))
+            {
+                if(const long device_id = point->getDeviceID())
+                {
+                    writeAnalogOutputMessageToPIL(device_id, point_id, value, Cmd);
+                }
+            }
+            return;
         }
     case (CtiCommandMsg::InitiateScan):
-        if(Cmd->getOpArgList().size() >= 1)
         {
+            if(Cmd->getOpArgList().size() < 1)
+            {
+                CTILOG_ERROR(dout, "Control Request did not have a valid command vector");
+                return;
+            }
             const long paoID = Cmd->getOpArgList()[0];
 
             CtiRequestMsg pReq(paoID, "scan integrity");
@@ -891,147 +838,124 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
             writeMessageToClient(&pReq, string(PIL_REGISTRATION_NAME));
 
             CTILOG_INFO(dout, "Scan Integrity Request sent to DeviceID: " << paoID);
+            return;
         }
-        else
-        {
-            CTILOG_ERROR(dout, "Control Request did not have a valid command vector");
-        }
-        break;
     case (CtiCommandMsg::Ablement):
     case (CtiCommandMsg::ControlAblement):
         {
             messageDump((CtiMessage*)Cmd);
 
-            if(Cmd->getOpArgList().size() >= 4)
-            {
-                LONG token     = Cmd->getOpArgList()[0];
-
-                for(i = 1; i < Cmd->getOpArgList().size(); i = i + 3 )
-                {
-                    LONG idtype   = Cmd->getOpArgList()[i];
-                    LONG id       = Cmd->getOpArgList()[i+1];
-                    bool disable  = !((Cmd->getOpArgList()[i+2] != 0));
-                    int  tagmask  = 0;           // This mask represents all the bits which are to be adjusted.
-                    int  setmask  = 0;         // This mask represents the state of the adjusted-masked bit.. Ok, read it again.
-
-                    try
-                    {
-                        CtiMultiMsg *pMulti = CTIDBG_new CtiMultiMsg;
-
-                        if(pMulti)
-                        {
-                            pMulti->setSource(DISPATCH_APPLICATION_NAME);
-                            pMulti->setUser(Cmd->getUser());
-
-                            if(Cmd->getOperation() == CtiCommandMsg::Ablement)
-                            {
-                                if(idtype == CtiCommandMsg::OP_DEVICEID)
-                                {
-                                    tagmask = TAG_DISABLE_DEVICE_BY_DEVICE;
-                                    setmask |= (disable ? TAG_DISABLE_DEVICE_BY_DEVICE : 0);    // Set it, or clear it?
-                                }
-                                else if(idtype == CtiCommandMsg::OP_POINTID)
-                                {
-                                    tagmask = TAG_DISABLE_POINT_BY_POINT;
-                                    setmask |= (disable ? TAG_DISABLE_POINT_BY_POINT : 0);      // Set it, or clear it?
-                                }
-                            }
-                            else if(Cmd->getOperation() == CtiCommandMsg::ControlAblement)
-                            {
-                                if(idtype == CtiCommandMsg::OP_DEVICEID)
-                                {
-                                    tagmask = TAG_DISABLE_CONTROL_BY_DEVICE;
-                                    setmask |= (disable ? TAG_DISABLE_CONTROL_BY_DEVICE : 0);   // Set it, or clear it?
-                                }
-                                else if(idtype == CtiCommandMsg::OP_POINTID)
-                                {
-                                    tagmask = TAG_DISABLE_CONTROL_BY_POINT;
-                                    setmask |= (disable ? TAG_DISABLE_CONTROL_BY_POINT : 0);    // Set it, or clear it?
-                                }
-                            }
-
-                            if(idtype == CtiCommandMsg::OP_DEVICEID)
-                            {
-                                CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(id);
-                                if(dliteit != _deviceLiteSet.end() && ablementDevice(dliteit, setmask, tagmask))
-                                {
-                                    adjustDeviceDisableTags(id, false, Cmd->getUser());    // We always have an id here.
-                                }
-                            }
-                            else if(idtype == CtiCommandMsg::OP_POINTID)
-                            {
-                                if( CtiPointSPtr pPt = PointMgr.getPoint(id) )
-                                {
-                                    bool devicedifferent;
-
-                                    ablementPoint(*pPt, devicedifferent, setmask, tagmask, Cmd->getUser(), *pMulti);
-
-                                    if(devicedifferent)     // The device became interesting because of this change.
-                                    {
-                                        CTILOG_INFO(dout, "Device enabled/disabled change due to Command to pointid "<< id);
-                                    }
-                                }
-                            }
-
-                            if(pMulti->getData().size())
-                            {
-                                MainQueue_.putQueue(pMulti);
-                                pMulti = 0;
-                            }
-                            else
-                            {
-                                delete pMulti;
-                            }
-                        }
-                    }
-                    catch(const RWxmsg& x)
-                    {
-                        CTILOG_EXCEPTION_ERROR(dout, x);
-                        break;
-                    }
-                }
-            }
-            else
+            if(Cmd->getOpArgList().size() < 4)
             {
                 CTILOG_ERROR(dout, "Control Request did not have a valid command vector");
+                return;
             }
-            break;
+            for(int i = 1; i < Cmd->getOpArgList().size(); i = i + 3 )
+            {
+                LONG idtype   = Cmd->getOpArgList()[i];
+                LONG id       = Cmd->getOpArgList()[i+1];
+                bool disable  = !((Cmd->getOpArgList()[i+2] != 0));
+                int  tagmask  = 0;           // This mask represents all the bits which are to be adjusted.
+                int  setmask  = 0;         // This mask represents the state of the adjusted-masked bit.. Ok, read it again.
+
+                std::auto_ptr<CtiMultiMsg> pMulti(new CtiMultiMsg);
+
+                pMulti->setSource(DISPATCH_APPLICATION_NAME);
+                pMulti->setUser(Cmd->getUser());
+
+                if(Cmd->getOperation() == CtiCommandMsg::Ablement)
+                {
+                    if(idtype == CtiCommandMsg::OP_DEVICEID)
+                    {
+                        tagmask = TAG_DISABLE_DEVICE_BY_DEVICE;
+                        setmask |= (disable ? TAG_DISABLE_DEVICE_BY_DEVICE : 0);    // Set it, or clear it?
+                    }
+                    else if(idtype == CtiCommandMsg::OP_POINTID)
+                    {
+                        tagmask = TAG_DISABLE_POINT_BY_POINT;
+                        setmask |= (disable ? TAG_DISABLE_POINT_BY_POINT : 0);      // Set it, or clear it?
+                    }
+                }
+                else if(Cmd->getOperation() == CtiCommandMsg::ControlAblement)
+                {
+                    if(idtype == CtiCommandMsg::OP_DEVICEID)
+                    {
+                        tagmask = TAG_DISABLE_CONTROL_BY_DEVICE;
+                        setmask |= (disable ? TAG_DISABLE_CONTROL_BY_DEVICE : 0);   // Set it, or clear it?
+                    }
+                    else if(idtype == CtiCommandMsg::OP_POINTID)
+                    {
+                        tagmask = TAG_DISABLE_CONTROL_BY_POINT;
+                        setmask |= (disable ? TAG_DISABLE_CONTROL_BY_POINT : 0);    // Set it, or clear it?
+                    }
+                }
+
+                if(idtype == CtiCommandMsg::OP_DEVICEID)
+                {
+                    if( auto optDevLite = findDeviceLite(id) )
+                    {
+                        if( ablementDevice(*optDevLite, setmask, tagmask))
+                        {
+                            adjustDeviceDisableTags(id, false, Cmd->getUser());    // We always have an id here.
+                        }
+                    }
+                }
+                else if(idtype == CtiCommandMsg::OP_POINTID)
+                {
+                    if( CtiPointSPtr pPt = PointMgr.getPoint(id) )
+                    {
+                        bool devicedifferent;
+
+                        ablementPoint(*pPt, devicedifferent, setmask, tagmask, Cmd->getUser(), *pMulti);
+
+                        if(devicedifferent)     // The device became interesting because of this change.
+                        {
+                            CTILOG_INFO(dout, "Device enabled/disabled change due to Command to pointid "<< id);
+                        }
+                    }
+                }
+
+                if(pMulti->getData().size())
+                {
+                    MainQueue_.putQueue(pMulti.release());
+                }
+            }
+            return;
         }
     case (CtiCommandMsg::UpdateFailed):
         {
             processMessage( (CtiMessage*)Cmd );
-            break;
+            return;
         }
     case (CtiCommandMsg::AlternateScanRate):
         {
             writeMessageToScanner( Cmd );
-            break;
+            return;
         }
     case (CtiCommandMsg::PointTagAdjust):
         {
-            if(Cmd->getOpArgList().size() >= 4)
-            {
-                // Vector contains token, pointid, tag(s) to set.
-                LONG token      = Cmd->getOpArgList()[0];
-                LONG pointid    = Cmd->getOpArgList()[1];
-                LONG tagstoset  = Cmd->getOpArgList()[2];
-                LONG tagstoreset= Cmd->getOpArgList()[3];
-
-                if( const CtiPointSPtr pPt = PointMgr.getPoint(pointid) )
-                {
-                    if( CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*pPt) )
-                    {
-                        pDyn->getDispatch().setTags( tagstoset );
-                        pDyn->getDispatch().resetTags( tagstoreset );
-                    }
-                }
-            }
-            else
+            if(Cmd->getOpArgList().size() < 4)
             {
                 CTILOG_ERROR(dout, "Invalid PointTagAdjust vector size");
+                return;
             }
 
-            break;
+            // Vector contains token, pointid, tag(s) to set.
+            LONG token      = Cmd->getOpArgList()[0];
+            LONG pointid    = Cmd->getOpArgList()[1];
+            LONG tagstoset  = Cmd->getOpArgList()[2];
+            LONG tagstoreset= Cmd->getOpArgList()[3];
+
+            if( const CtiPointSPtr pPt = PointMgr.getPoint(pointid) )
+            {
+                if( CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*pPt) )
+                {
+                    pDyn->getDispatch().setTags( tagstoset );
+                    pDyn->getDispatch().resetTags( tagstoreset );
+                }
+            }
+
+            return;
         }
     case (CtiCommandMsg::ResetControlHours):
         {
@@ -1040,17 +964,15 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
             try
             {
-                CtiDeviceLiteSet_t::iterator iter = _deviceLiteSet.begin();
-                CtiDeviceLiteSet_t::iterator end  = _deviceLiteSet.end();
-                long deviceID;
-
-                for( ; iter != end; iter++ )
+                for( auto kv : _deviceLites )
                 {
-                    if(isDeviceGroupType(&(*iter)))
-                    {
-                        deviceID = iter->getID();
+                    const DeviceBaseLite &dLite = kv.second;
 
-                        CTILOG_INFO(dout, iter->getName() <<" resetting seasonal hours");
+                    if( dLite.isGroup() )
+                    {
+                        const long deviceID = dLite.getID();
+
+                        CTILOG_INFO(dout, dLite.getName() <<" resetting seasonal hours");
 
                         CtiPointSPtr pControlPoint = PointMgr.getControlOffsetEqual( deviceID, 1);     // This is the control status control point which keeps control in play.
 
@@ -1085,7 +1007,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
-            break;
+            return;
         }
     case (CtiCommandMsg::Shutdown):
         {
@@ -1093,7 +1015,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     << *Cmd);
 
             // bGCtrlC = TRUE;
-            break;
+            return;
         }
     case (CtiCommandMsg::PointDataRequest):
         {
@@ -1158,7 +1080,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
-            break;
+            return;
         }
     case (CtiCommandMsg::AlarmCategoryRequest):
         {
@@ -1170,7 +1092,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 CtiServerExclusion pmguard(_server_exclusion);
                 int payload_status = CtiServerResponseMsg::OK;
 
-                for(i = 0; i < Cmd->getOpArgList().size(); i++ )
+                for(int i = 0; i < Cmd->getOpArgList().size(); i++ )
                 {
                     unsigned alarm_category = Cmd->getOpArgList()[i];
 
@@ -1188,7 +1110,9 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     sptrCM->WriteConnQue(pMulti, 0, payload_status);
                 }
                 else
+                {
                     delete pMulti;
+                }
 
             }
             catch(...)
@@ -1196,7 +1120,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
-            break;
+            return;
         }
     case (CtiCommandMsg::ControlStatusVerification):
         {
@@ -1209,12 +1133,9 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
         }
     default:
         {
-            status = Inherited::commandMsgHandler(Cmd);
-            break;
+            return Inherited::commandMsgHandler(Cmd);
         }
     }
-
-    return status;
 }
 
 void CtiVanGogh::clientShutdown(CtiServer::ptr_type CM)
@@ -1400,7 +1321,7 @@ void CtiVanGogh::VGArchiverThread()
                 }
 
                 // This should be an WaitForSync API call.
-                rwSleep(1000);
+                Sleep(1000);
             }
         }
 
@@ -1439,7 +1360,7 @@ void CtiVanGogh::VGTimedOperationThread()
                 threadStatus.monitorCheck(CtiThreadRegData::None);
             }
 
-            rwSleep(1000);
+            Sleep(1000);
 
             CtiTime start;
             purifyClientConnectionList();
@@ -1901,11 +1822,6 @@ void CtiVanGogh::postMessageToClients(CtiMessage *pMsg)
                     pMulti = NULL;
                 }
             }
-            catch(const RWxmsg& x)
-            {
-                CTILOG_EXCEPTION_ERROR(dout, x);
-                break;
-            }
             catch(...)
             {
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
@@ -2271,120 +2187,113 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
     int status = ClientErrors::None;
     bool isPseudo = false;
 
-    try
-    {
-        CtiServerExclusion pmguard(_server_exclusion);
+    CtiServerExclusion pmguard(_server_exclusion);
 
-        if( CtiPointSPtr pPoint = PointMgr.getPoint(pMsg->getPointId()) )
+    if( CtiPointSPtr pPoint = PointMgr.getPoint(pMsg->getPointId()) )
+    {
+        CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*pPoint);
+
+        if(pDyn
+           && pDyn->getDispatch().getTags() & TAG_ATTRIB_CONTROL_AVAILABLE
+           && !(pDyn->getDispatch().getTags() & TAG_DISABLE_CONTROL_BY_POINT ||
+                pDyn->getDispatch().getTags() & TAG_DISABLE_CONTROL_BY_DEVICE))
         {
-            CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(*pPoint);
-
-            if(pDyn
-               && pDyn->getDispatch().getTags() & TAG_ATTRIB_CONTROL_AVAILABLE
-               && !(pDyn->getDispatch().getTags() & TAG_DISABLE_CONTROL_BY_POINT ||
-                    pDyn->getDispatch().getTags() & TAG_DISABLE_CONTROL_BY_DEVICE))
+            if(pMsg->getPAOId() == 0)      // We need to find the point's device
             {
-                if(pMsg->getPAOId() == 0)      // We need to find the point's device
-                {
-                    pMsg->setPAOId( pPoint->getDeviceID() );
-                }
-
-                int controlTimeout = DefaultControlExpirationTime;
-
-                if( pPoint->isStatus() )
-                {
-                    CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(pPoint);
-
-                    if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
-                    {
-                        controlTimeout = controlParameters->getCommandTimeout();
-                    }
-                }
-
-                CtiPendingPointOperations *pendingControlLMMsg = CTIDBG_new CtiPendingPointOperations(pPoint->getID());
-                pendingControlLMMsg->setType(CtiPendingPointOperations::pendingControl);
-                pendingControlLMMsg->setControlState( CtiPendingPointOperations::controlPending );
-                pendingControlLMMsg->setTime( pMsg->getStartDateTime() );
-                pendingControlLMMsg->setControlCompleteValue( (DOUBLE) pMsg->getRawState() );
-                pendingControlLMMsg->setControlTimeout( controlTimeout );
-                pendingControlLMMsg->setExcludeFromHistory(!isDeviceGroupType(pPoint->getDeviceID()));
-
-                // We prime the pending control object here, where we know all there is to know.
-                pendingControlLMMsg->getControl().setPAOID(pMsg->getPAOId());
-                pendingControlLMMsg->getControl().setActiveRestore(pMsg->getActiveRestore());
-                pendingControlLMMsg->getControl().setDefaultActiveRestore(pMsg->getActiveRestore());
-                pendingControlLMMsg->getControl().setControlDuration(pMsg->getControlDuration());
-                pendingControlLMMsg->getControl().setControlType(pMsg->getControlType());
-                pendingControlLMMsg->getControl().setReductionValue(pMsg->getReductionValue());
-                pendingControlLMMsg->getControl().setReductionRatio(pMsg->getReductionRatio());
-                pendingControlLMMsg->getControl().setStartTime(pMsg->getStartDateTime());
-                pendingControlLMMsg->getControl().setControlPriority(pMsg->getControlPriority());
-                pendingControlLMMsg->setAssociationKey(pMsg->getAssociationKey());
-
-                CtiTime cntrlStopTime(pMsg->getStartDateTime().seconds() + pMsg->getControlDuration());
-                if(pMsg->getControlDuration() < 0) cntrlStopTime = pMsg->getStartDateTime();
-
-                pendingControlLMMsg->getControl().setStopTime(cntrlStopTime);
-                pendingControlLMMsg->getControl().setControlCompleteTime(cntrlStopTime);
-                pendingControlLMMsg->getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
-
-                const CtiTablePointAlarming alarming = PointMgr.getAlarming(*pPoint);
-
-                CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure), pMsg->getUser());
-
-                pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK));
-                if(pFailSig->getSignalCategory() > SignalEvent)
-                {
-                    pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | (alarming.isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
-                    pFailSig->setLogType(AlarmCategoryLogType);
-                }
-                pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
-
-                pendingControlLMMsg->setSignal( pFailSig );
-
-                if(isDeviceGroupType(pMsg->getPAOId()) && _pendingOpThread.getCurrentControlPriority(pMsg->getPointId()) >= pMsg->getControlPriority())
-                {
-                    CtiPointSPtr pControlStatus = PointMgr.getControlOffsetEqual(pMsg->getPAOId() , 1);
-                    if(pControlStatus->isPseudoPoint())
-                    {
-                        // There is no physical point to observe and respect.  We lie to the control point.
-                        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), pMsg->getRawState(), NormalQuality, StatusPointType, (pMsg->getRawState() == CONTROLLED ? string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " controlling") : string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " restoring")));
-                        pData->setMessagePriority( pData->getMessagePriority() + 1 );
-                        MainQueue_.putQueue(pData);
-                    }
-
-                    if(pMsg->getRawState() == CONTROLLED && pMsg->getControlDuration() > 0)
-                    {
-                        // Present the restore as a delayed update to dispatch.  Note that the order of opened and closed have reversed
-                        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)UNCONTROLLED, NormalQuality, StatusPointType, string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " restoring (delayed)"), TAG_POINT_DELAYED_UPDATE);
-                        pData->setTime( CtiTime() + pMsg->getControlDuration() );
-                        pData->setMessagePriority( pData->getMessagePriority() - 1 );
-                        //vgList.push_back(pData);
-                        MainQueue_.putQueue(pData);
-                    }
-                }
-
-                if( isPseudo )
-                {
-                    CtiPendingPointOperations *controlCompleteControlMsg = CTIDBG_new CtiPendingPointOperations(*pendingControlLMMsg);
-                    addToPendingSet( pendingControlLMMsg, pMsg->getMessageTime() );
-
-                    controlCompleteControlMsg->setControlState(CtiPendingPointOperations::controlCompleteCommanded);
-                    addToPendingSet( controlCompleteControlMsg, pMsg->getMessageTime() );
-                }
-                else
-                {
-                    addToPendingSet( pendingControlLMMsg, pMsg->getMessageTime() );
-                }
-
-                pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
-                bumpDeviceToAlternateRate( *pPoint );
+                pMsg->setPAOId( pPoint->getDeviceID() );
             }
+
+            int controlTimeout = DefaultControlExpirationTime;
+
+            if( pPoint->isStatus() )
+            {
+                CtiPointStatusSPtr pStatus = boost::static_pointer_cast<CtiPointStatus>(pPoint);
+
+                if( const boost::optional<CtiTablePointStatusControl> controlParameters = pStatus->getControlParameters() )
+                {
+                    controlTimeout = controlParameters->getCommandTimeout();
+                }
+            }
+
+            CtiPendingPointOperations *pendingControlLMMsg = CTIDBG_new CtiPendingPointOperations(pPoint->getID());
+            pendingControlLMMsg->setType(CtiPendingPointOperations::pendingControl);
+            pendingControlLMMsg->setControlState( CtiPendingPointOperations::controlPending );
+            pendingControlLMMsg->setTime( pMsg->getStartDateTime() );
+            pendingControlLMMsg->setControlCompleteValue( (DOUBLE) pMsg->getRawState() );
+            pendingControlLMMsg->setControlTimeout( controlTimeout );
+            pendingControlLMMsg->setExcludeFromHistory(!isDeviceGroupType(pPoint->getDeviceID()));
+
+            // We prime the pending control object here, where we know all there is to know.
+            pendingControlLMMsg->getControl().setPAOID(pMsg->getPAOId());
+            pendingControlLMMsg->getControl().setActiveRestore(pMsg->getActiveRestore());
+            pendingControlLMMsg->getControl().setDefaultActiveRestore(pMsg->getActiveRestore());
+            pendingControlLMMsg->getControl().setControlDuration(pMsg->getControlDuration());
+            pendingControlLMMsg->getControl().setControlType(pMsg->getControlType());
+            pendingControlLMMsg->getControl().setReductionValue(pMsg->getReductionValue());
+            pendingControlLMMsg->getControl().setReductionRatio(pMsg->getReductionRatio());
+            pendingControlLMMsg->getControl().setStartTime(pMsg->getStartDateTime());
+            pendingControlLMMsg->getControl().setControlPriority(pMsg->getControlPriority());
+            pendingControlLMMsg->setAssociationKey(pMsg->getAssociationKey());
+
+            CtiTime cntrlStopTime(pMsg->getStartDateTime().seconds() + pMsg->getControlDuration());
+            if(pMsg->getControlDuration() < 0) cntrlStopTime = pMsg->getStartDateTime();
+
+            pendingControlLMMsg->getControl().setStopTime(cntrlStopTime);
+            pendingControlLMMsg->getControl().setControlCompleteTime(cntrlStopTime);
+            pendingControlLMMsg->getControl().setSoeTag( CtiTableLMControlHistory::getNextSOE() );
+
+            const CtiTablePointAlarming alarming = PointMgr.getAlarming(*pPoint);
+
+            CtiSignalMsg *pFailSig = CTIDBG_new CtiSignalMsg(pPoint->getID(), 0, "Control " + ResolveStateName(pPoint->getStateGroupID(), pMsg->getRawState()) + " Failed", getAlarmStateName( alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure) ), GeneralLogType, alarming.getAlarmCategory(CtiTablePointAlarming::commandFailure), pMsg->getUser());
+
+            pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK));
+            if(pFailSig->getSignalCategory() > SignalEvent)
+            {
+                pFailSig->setTags((pDyn->getDispatch().getTags() & ~SIGNAL_MANAGER_MASK) | (alarming.isAutoAcked(CtiTablePointAlarming::commandFailure) ? 0 : TAG_UNACKNOWLEDGED_ALARM));
+                pFailSig->setLogType(AlarmCategoryLogType);
+            }
+            pFailSig->setCondition(CtiTablePointAlarming::commandFailure);
+
+            pendingControlLMMsg->setSignal( pFailSig );
+
+            if(isDeviceGroupType(pMsg->getPAOId()) && _pendingOpThread.getCurrentControlPriority(pMsg->getPointId()) >= pMsg->getControlPriority())
+            {
+                CtiPointSPtr pControlStatus = PointMgr.getControlOffsetEqual(pMsg->getPAOId() , 1);
+                if(pControlStatus->isPseudoPoint())
+                {
+                    // There is no physical point to observe and respect.  We lie to the control point.
+                    CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), pMsg->getRawState(), NormalQuality, StatusPointType, (pMsg->getRawState() == CONTROLLED ? string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " controlling") : string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " restoring")));
+                    pData->setMessagePriority( pData->getMessagePriority() + 1 );
+                    MainQueue_.putQueue(pData);
+                }
+
+                if(pMsg->getRawState() == CONTROLLED && pMsg->getControlDuration() > 0)
+                {
+                    // Present the restore as a delayed update to dispatch.  Note that the order of opened and closed have reversed
+                    CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)UNCONTROLLED, NormalQuality, StatusPointType, string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " restoring (delayed)"), TAG_POINT_DELAYED_UPDATE);
+                    pData->setTime( CtiTime() + pMsg->getControlDuration() );
+                    pData->setMessagePriority( pData->getMessagePriority() - 1 );
+                    //vgList.push_back(pData);
+                    MainQueue_.putQueue(pData);
+                }
+            }
+
+            if( isPseudo )
+            {
+                CtiPendingPointOperations *controlCompleteControlMsg = CTIDBG_new CtiPendingPointOperations(*pendingControlLMMsg);
+                addToPendingSet( pendingControlLMMsg, pMsg->getMessageTime() );
+
+                controlCompleteControlMsg->setControlState(CtiPendingPointOperations::controlCompleteCommanded);
+                addToPendingSet( controlCompleteControlMsg, pMsg->getMessageTime() );
+            }
+            else
+            {
+                addToPendingSet( pendingControlLMMsg, pMsg->getMessageTime() );
+            }
+
+            pDyn->getDispatch().setTags( TAG_CONTROL_PENDING );
+            bumpDeviceToAlternateRate( *pPoint );
         }
-    }
-    catch(const RWxmsg& x)
-    {
-        CTILOG_EXCEPTION_ERROR(dout, x);
     }
 
     return status;
@@ -3667,10 +3576,10 @@ int CtiVanGogh::clientPurgeQuestionables(PULONG pDeadClients)
 YukonError_t CtiVanGogh::clientRegistration(CtiServer::ptr_type CM)
 {
     YukonError_t nRet = ClientErrors::None;
-    CtiTime      NowTime;
-    RWBoolean   validEntry(TRUE);
-    RWBoolean   questionedEntry(FALSE);
-    RWBoolean   removeMgr(FALSE);
+    CtiTime NowTime;
+    bool    validEntry(TRUE);
+    bool    questionedEntry(FALSE);
+    bool    removeMgr(FALSE);
     CtiServer::ptr_type Mgr;
 
     CtiServerExclusion guard(_server_exclusion);
@@ -3698,7 +3607,7 @@ YukonError_t CtiVanGogh::clientRegistration(CtiServer::ptr_type CM)
             if(Mgr->getClientName() == CM->getClientName())
             {
                 // Names match, what do I do.
-                if(CM->getClientAppId() != (RWThreadId)0 && (Mgr->getClientAppId() == CM->getClientAppId()))
+                if(CM->getClientAppId() && Mgr->getClientAppId() == CM->getClientAppId())
                 {
                     // This guy is already registered. Might have lost his connection??
                     CTILOG_WARN(dout, CM->getClientName() << " just re-registered");
@@ -3798,7 +3707,7 @@ int  CtiVanGogh::clientArbitrationWinner(CtiServer::ptr_type CM)
 
         if((Mgr != CM)                                     &&       // Don't match on yourself
            (Mgr->getClientName() == CM->getClientName())   &&       // Names match
-           (Mgr->getClientRegistered() == RWBoolean(FALSE)))        // Other Mgr is not registered completely yet
+           (Mgr->getClientRegistered() == false))                   // Other Mgr is not registered completely yet
         {
             CTILOG_WARN(dout, "Connection "<< Mgr->getClientName() <<" on "<< Mgr->getPeer() <<" has been blocked by a prior client of the same name - Dispatch will shut it down now");
 
@@ -3980,18 +3889,17 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                         // The device has been deleted.  Knock down all the device lites for a reload!!
                         CTILOG_INFO(dout, "Device delete for PAO id " << pChg->getId());
 
-                        _deviceLiteSet.erase(pChg->getId());
+                        _deviceLites.erase(pChg->getId());
 
                         // erase all associated points for the pao id
                         PointMgr.erasePao(pChg->getId());
                     }
                     else if(pChg && pChg->getTypeOfChange() == ChangeTypeUpdate)
                     {
-                        CtiDeviceLiteSet_t::iterator iter = _deviceLiteSet.find(id);
-                        if(iter != _deviceLiteSet.end())
+                        if( auto optDevLite = Cti::mapFindRef(_deviceLites, id) )
                         {
-                            deviceDisabled =   iter->isDisabled();
-                            controlInhibited = iter->isControlInhibited();
+                            deviceDisabled   = optDevLite->isDisabled();
+                            controlInhibited = optDevLite->isControlInhibited();
                         }
                     }
 
@@ -4013,10 +3921,10 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     // If the device has disable or inhibited set on add, we call adjust.
                     if(pChg && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
                     {
-                        CtiDeviceLiteSet_t::iterator iter = _deviceLiteSet.find(id);
-                        if(iter != _deviceLiteSet.end())
+                        if( auto optDevLite = Cti::mapFindRef(_deviceLites, id ) )
                         {
-                            if(deviceDisabled != iter->isDisabled() || controlInhibited != iter->isControlInhibited())
+                            if( deviceDisabled   != optDevLite->isDisabled() ||
+                                controlInhibited != optDevLite->isControlInhibited() )
                             {
                                 adjustDeviceDisableTags(id, true, username);
                             }
@@ -4036,18 +3944,6 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
             }
 
             Now = Now.now();
-            if( pChg == NULL || (pChg->getDatabase() == ChangeCustomerContactDb) )
-            {
-                id = ((pChg == NULL) ? 0 : pChg->getId());
-                loadCICustomers(id);
-            }
-
-            deltaT = Now.now().seconds() - Now.seconds();
-            if( deltaT > 5 )
-            {
-                CTILOG_INFO(dout, deltaT << " seconds to load CI Customers");
-            }
-            Now = Now.now();
 
             if(pChg != NULL && (pChg->getDatabase() == ChangeNotificationGroupDb || pChg->getDatabase() == ChangeNotificationRecipientDb))
             {
@@ -4066,25 +3962,10 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                         CTILOG_INFO(dout, "Notification Groups will be reloaded on next usage");
 
                         // Group or destinations have changed!
-                        CtiNotificationGroupSet_t::iterator git;
-
-                        for(git = _notificationGroupSet.begin(); git != _notificationGroupSet.end(); git++ )
+                        for( auto &kv : _notificationGroups )
                         {
-                            CtiTableNotificationGroup &theGroup = *git;
+                            CtiTableNotificationGroup &theGroup = kv.second;
                             theGroup.setDirty(true);
-                        }
-                    }
-                    else if(pChg->getDatabase() == ChangeNotificationRecipientDb )
-                    {
-                        CTILOG_INFO(dout, "Notification Recipients will be reloaded on next usage");
-
-                        // Recipients have changed
-                        CtiContactNotificationSet_t::iterator cnit;
-
-                        for(cnit = _contactNotificationSet.begin(); cnit != _contactNotificationSet.end(); cnit++)
-                        {
-                            CtiTableContactNotification &CNotif = *cnit;
-                            CNotif.setDirty(true);
                         }
                     }
                 }
@@ -4116,28 +3997,6 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
 }
 
 /*
- *  returns description of the device which IS this pao.
- */
-string CtiVanGogh::resolveDeviceDescription(LONG PAO)
-{
-    string rStr;
-
-    if(PAO > 0)
-    {
-        CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(PAO);
-
-        if( dliteit != _deviceLiteSet.end() )
-        {
-            // dliteit should be an iterator which represents the lite device now!
-            CtiDeviceBaseLite &dLite = *dliteit;
-            rStr = dLite.getDescription();
-        }
-    }
-
-    return rStr;
-}
-
-/*
  *  returns name of the device which owns this point.
  */
 string CtiVanGogh::resolveDeviceName(const CtiPointBase &aPoint)
@@ -4147,11 +4006,9 @@ string CtiVanGogh::resolveDeviceName(const CtiPointBase &aPoint)
 
     if(devid > 0)
     {
-        CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(devid);
-
-        if( dliteit != _deviceLiteSet.end() )
+        if( auto optDevLite = findDeviceLite(devid) )
         {
-            rStr = dliteit->getName();
+            rStr = optDevLite->getName();
         }
     }
 
@@ -4166,13 +4023,9 @@ string CtiVanGogh::resolveDeviceNameByPaoId(const LONG PAOId)
     string rStr;
     if(PAOId > 0)
     {
-        CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(PAOId);
-
-        if( dliteit != _deviceLiteSet.end() )
+        if( auto optDevLite = findDeviceLite(PAOId) )
         {
-            // dliteit should be an iterator which represents the lite device now!
-            CtiDeviceBaseLite &dLite = *dliteit;
-            rStr = dLite.getName();
+            rStr = optDevLite->getName();
         }
     }
 
@@ -4185,53 +4038,25 @@ string CtiVanGogh::resolveDeviceObjectType(const LONG devid)
 
     if(devid > 0)
     {
-        CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(devid);
-
-        if( dliteit != _deviceLiteSet.end() )
+        if( auto optDevLite = findDeviceLite(devid) )
         {
             // dliteit should be an iterator which represents the lite device now!
-            CtiDeviceBaseLite &dLite = *dliteit;
-            rStr = dLite.getObjectType();
+            rStr = optDevLite->getObjectType();
         }
     }
 
     return rStr;
 }
 
-bool CtiVanGogh::isDeviceIdValid(const LONG devid)
-{
-    bool bret = false;
-
-    if(devid > 0)
-    {
-        try
-        {
-            CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(devid);
-            bret = (dliteit != _deviceLiteSet.end() );
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
-    }
-
-    return bret;
-}
-
 bool CtiVanGogh::isDeviceGroupType(const LONG devid)
 {
-    bool bret = false;
-
     if(devid > 0)
     {
         try
         {
-            CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(devid);
-            if( dliteit != _deviceLiteSet.end() )
+            if( auto optDevLite = findDeviceLite(devid) )
             {
-                // dliteit should be an iterator which represents the lite device now!
-                CtiDeviceBaseLite &dLite = *dliteit;
-                bret = ciStringEqual(dLite.getClass(), "group");
+                return optDevLite->isGroup();
             }
         }
         catch(...)
@@ -4240,26 +4065,7 @@ bool CtiVanGogh::isDeviceGroupType(const LONG devid)
         }
     }
 
-    return bret;
-}
-
-bool CtiVanGogh::isDeviceGroupType(const CtiDeviceBaseLite *device)
-{
-    bool bret = false;
-
-    if(device != NULL)
-    {
-        try
-        {
-            bret = ciStringEqual(device->getClass(), "group");
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
-    }
-
-    return bret;
+    return false;
 }
 
 
@@ -4275,7 +4081,7 @@ void CtiVanGogh::loadDeviceLites(LONG id)
         CTILOG_DEBUG(dout, "Loading DeviceLites");
     }
 
-    const string sql = CtiDeviceBaseLite().getSQLCoreStatement(id);
+    const string sql = DeviceBaseLite().getSQLCoreStatement(id);
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader rdr(connection, sql);
@@ -4289,19 +4095,10 @@ void CtiVanGogh::loadDeviceLites(LONG id)
 
     while( rdr() )
     {
-        CtiDeviceBaseLite dLite;
+        DeviceBaseLite dLite;
         dLite.DecodeDatabaseReader(rdr);
 
-        pair< CtiDeviceLiteSet_t::iterator, bool > resultpair;
-
-        resultpair = _deviceLiteSet.insert( dLite );
-        if(resultpair.second == false)                          // Couldn't insert
-        {
-            if( resultpair.first != _deviceLiteSet.end() )      // Found a match
-            {
-                *(resultpair.first) = dLite;                    // Copy it over the match in case it has changed.
-            }
-        }
+        _deviceLites[id] = dLite;
     }
 
     if(DebugLevel & 0x00010000)
@@ -4309,116 +4106,6 @@ void CtiVanGogh::loadDeviceLites(LONG id)
         CTILOG_DEBUG(dout, "Done Loading DeviceLites");
     }
 }
-
-/*
- *  This method reloads all currently loaded devicelites in memory.
- */
-void CtiVanGogh::loadDeviceNames()
-{
-    CtiServerExclusion guard(_server_exclusion, 10000);
-
-    if(guard.isAcquired() && !_deviceLiteSet.empty())
-    {
-        CtiDeviceLiteSet_t::iterator dnit;
-        bool reloadFailed = false;
-
-        for(dnit = _deviceLiteSet.begin(); dnit != _deviceLiteSet.end(); dnit++ )
-        {
-            CtiDeviceBaseLite &dLite = *dnit;
-            if(!dLite.Restore())
-            {
-                reloadFailed = true;
-                break;
-            }
-        }
-
-        if(reloadFailed)
-        {
-            _deviceLiteSet.clear();          // All stategroups will be reloaded on their next usage..  This shouldn't happen very often
-            CTILOG_WARN(dout, "Device Lite Set reset");
-        }
-    }
-}
-
-void CtiVanGogh::loadCICustomers(LONG id)
-{
-    CtiServerExclusion guard(_server_exclusion, 2500);
-
-    if(guard.isAcquired())
-    {
-        CtiDeviceCICustSet_t::iterator it;
-        bool reloadFailed = false;
-
-        if(id)
-        {
-            it = _ciCustSet.find(id);
-            if( it != _ciCustSet.end() )
-            {
-                CtiTableCICustomerBase &theCust = *it;
-                theCust.Restore();
-            }
-        }
-        else
-        {
-            for(it = _ciCustSet.begin(); it != _ciCustSet.end(); it++ )
-            {
-                CtiTableCICustomerBase &theCust = *it;
-                if(!theCust.Restore())
-                {
-                    reloadFailed = true;
-                    break;
-                }
-            }
-
-            if(reloadFailed)
-            {
-                _ciCustSet.clear();          // All cicustomers will be reloaded on their next usage..  This shouldn't happen very often
-                CTILOG_WARN(dout, "CI Customer Set has been reset");
-            }
-        }
-    }
-    else
-    {
-        CTILOG_ERROR(dout, "CI Customer Set was not reloaded. Exclusion could not be acquired");
-    }
-}
-
-CtiTableContactNotification* CtiVanGogh::getContactNotification(LONG cNotifID)
-{
-    CtiTableContactNotification* pCNotif = NULL;
-    CtiServerExclusion guard(_server_exclusion);
-    CtiTableContactNotification cNotif(cNotifID);
-
-    CtiContactNotificationSet_t::iterator cnit = _contactNotificationSet.find(cNotif);
-
-    if(cnit == _contactNotificationSet.end())
-    {
-        // We need to load it up, and then insert it!
-        cNotif.Restore();
-
-        pair< CtiContactNotificationSet_t::iterator, bool > resultpair;
-        resultpair = _contactNotificationSet.insert(cNotif);
-
-        if(resultpair.second == true)
-        {
-            cnit = resultpair.first;
-        }
-    }
-
-    if(cnit != _contactNotificationSet.end())
-    {
-        pCNotif = &(*cnit);
-
-        if(pCNotif->isDirty())
-        {
-            CTILOG_INFO(dout, "Reloading ContactNotification "<< pCNotif->getContactNotificationID());
-            pCNotif->Restore();
-        }
-    }
-
-    return pCNotif;
-}
-
 
 // Next figure out the translation from alarm group to notification group.
 LONG CtiVanGogh::alarmToNotificationGroup(INT signaltrx)
@@ -4440,18 +4127,18 @@ LONG CtiVanGogh::alarmToNotificationGroup(INT signaltrx)
 
 void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
 {
-    CtiTableNotificationGroup mygroup( ngid );
     CtiServerExclusion guard(_server_exclusion);
 
-    CtiNotificationGroupSet_t::iterator git = _notificationGroupSet.find( mygroup );
+    auto git = _notificationGroups.find( ngid );
 
-    if( git == _notificationGroupSet.end() )
+    if( git == _notificationGroups.end() )
     {
+        CtiTableNotificationGroup mygroup( ngid );
+
         // We need to load it up, and then insert it!
         mygroup.Restore();
 
-        pair< CtiNotificationGroupSet_t::iterator, bool > resultpair;
-        resultpair = _notificationGroupSet.insert( mygroup );
+        auto resultpair = _notificationGroups.emplace( ngid, mygroup );
 
         if(resultpair.second == true)
         {
@@ -4459,18 +4146,18 @@ void CtiVanGogh::sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig)
         }
     }
 
-    if( git != _notificationGroupSet.end() )
+    if( git != _notificationGroups.end() )
     {
         // git should be an iterator which represents the group now!
-        CtiTableNotificationGroup &theGroup = *git;
+        CtiTableNotificationGroup &theGroup = git->second;
 
         if(theGroup.isDirty())
         {
             CTILOG_INFO(dout, "Reloading Notification Group "<< theGroup.getGroupName());
             theGroup.Restore();     // Clean the thing then!
         }
-        sendMail(sig, theGroup);
 
+        sendMail(sig, theGroup);
     }
 }
 
@@ -4583,24 +4270,22 @@ bool CtiVanGogh::ablementPoint(const CtiPointBase &point, bool &devicedifferent,
  *  setmask decides what those bits are to be set to.
  *   they will only be marked as "delta" if the setting was not already in effect.
  */
-bool CtiVanGogh::ablementDevice(CtiDeviceLiteSet_t::iterator &dliteit, UINT setmask, UINT tagmask)
+bool CtiVanGogh::ablementDevice(DeviceBaseLite &dLite, UINT setmask, UINT tagmask)
 {
     bool delta = false;     // Anything changed???
-
-    CtiDeviceBaseLite &dLite = *dliteit;
 
     if( tagmask & TAG_DISABLE_DEVICE_BY_DEVICE )
     {
         bool initialsetting = dLite.isDisabled();
-        dLite.setDisableFlag((TAG_DISABLE_DEVICE_BY_DEVICE & setmask ? "Y" : "N"));
-        if(initialsetting != dLite.isDisabled()) delta = true;
+        dLite.setDisableFlag(TAG_DISABLE_DEVICE_BY_DEVICE & setmask);
+        delta |= (initialsetting != dLite.isDisabled());
     }
 
     if( tagmask & TAG_DISABLE_CONTROL_BY_DEVICE )
     {
         bool initialsetting = dLite.isControlInhibited();
-        dLite.setControlInhibitFlag((TAG_DISABLE_CONTROL_BY_DEVICE & setmask ? "Y" : "N"));
-        if(initialsetting != dLite.isControlInhibited()) delta = true;
+        dLite.setControlInhibitFlag(TAG_DISABLE_CONTROL_BY_DEVICE & setmask);
+        delta |= (initialsetting != dLite.isControlInhibited());
     }
 
     if( tagmask & TAG_DISABLE_ALARM_BY_DEVICE )
@@ -4610,38 +4295,6 @@ bool CtiVanGogh::ablementDevice(CtiDeviceLiteSet_t::iterator &dliteit, UINT setm
 
     return delta;
 }
-
-CtiTableCICustomerBase* CtiVanGogh::getCustomer( LONG custid )
-{
-    CtiTableCICustomerBase *pCustomer = NULL;
-
-    CtiServerExclusion guard(_server_exclusion);
-    CtiTableCICustomerBase customer( custid );
-    CtiDeviceCICustSet_t::iterator custit = _ciCustSet.find( customer );
-
-    if( custit == _ciCustSet.end() )
-    {
-        // We need to load it up, and then insert it!
-        customer.Restore();
-
-        pair< CtiDeviceCICustSet_t::iterator, bool > resultpair;
-        resultpair = _ciCustSet.insert( customer );
-
-        if(resultpair.second == true)
-        {
-            custit = resultpair.first;
-        }
-    }
-
-    if( custit != _ciCustSet.end() )
-    {
-        // rit should be an iterator which represents the recipient now!
-        pCustomer = &(*custit);
-    }
-
-    return pCustomer;
-}
-
 
 CtiVanGogh::CtiVanGogh() :
     _notificationConnection(NULL),
@@ -4735,7 +4388,7 @@ void CtiVanGogh::VGRPHWriterThread()
 
             if( elapsed < MinimumLoopTime )
             {
-                rwSleep(MinimumLoopTime - elapsed);
+                Sleep(MinimumLoopTime - elapsed);
             }
 
             loopTimer += timer.elapsed();
@@ -4768,7 +4421,7 @@ void CtiVanGogh::VGAppMonitorThread()
     //on startup wait for 10 minutes!
     for(int i=0;i<120 && !bGCtrlC;i++)
     {
-        rwSleep(5000);//5 second sleep
+        Sleep(5000);//5 second sleep
 
         if(NextThreadMonitorReportTime.now() > NextThreadMonitorReportTime)
         {
@@ -4816,7 +4469,7 @@ void CtiVanGogh::VGAppMonitorThread()
             //no need to process very often, wait say.... randomly ill pick 3 minutes or so
             for(int i=0;i<=36 && !bGCtrlC;i++)
             {
-                rwSleep(5000);//5 second sleep
+                Sleep(5000);//5 second sleep
 
                 //Check thread watcher status
                 if(pointID!=0)
@@ -4845,7 +4498,7 @@ void CtiVanGogh::VGAppMonitorThread()
  * that some number of them have a pointer to the to-be-deleted connection.
  * That connection in the mainqueue must be nullified.
  *----------------------------------------------------------------------------*/
-void ApplyBlankDeletedConnection(CtiMessage*&Msg, void *Conn)
+void ApplyBlankDeletedConnection(CtiMessage *Msg, void *Conn)
 {
     if( Msg->getConnectionHandle() == Conn )
     {
@@ -4855,31 +4508,28 @@ void ApplyBlankDeletedConnection(CtiMessage*&Msg, void *Conn)
     }
 }
 
-CtiVanGogh::CtiDeviceLiteSet_t::iterator CtiVanGogh::deviceLiteFind(const LONG paoId)
+boost::optional<DeviceBaseLite &> CtiVanGogh::findDeviceLite(const LONG paoId)
 {
-    CtiDeviceBaseLite &dLite = CtiDeviceBaseLite(paoId);
-    CtiDeviceLiteSet_t::iterator dliteit = _deviceLiteSet.end();
-
     CtiServerExclusion guard(_server_exclusion, 30000);
 
     if(guard.isAcquired())
     {
-        dliteit = _deviceLiteSet.find( dLite );
-
-        if( dliteit == _deviceLiteSet.end() )
+        if( auto optDev = Cti::mapFindRef(_deviceLites, paoId) )
         {
-            // We need to load it up, and/or then insert it!
-            if(dLite.Restore())
+            return *optDev;
+        }
+
+        DeviceBaseLite &dLite = DeviceBaseLite(paoId);
+
+        // We need to load it up, and/or then insert it!
+        if(dLite.Restore())
+        {
+            // Try to insert. Return indicates success.
+            auto resultpair = _deviceLites.emplace( paoId, dLite );
+
+            if(resultpair.second == true)
             {
-                pair< CtiDeviceLiteSet_t::iterator, bool > resultpair;
-
-                // Try to insert. Return indicates success.
-                resultpair = _deviceLiteSet.insert( dLite );
-
-                if(resultpair.second == true)
-                {
-                    dliteit = resultpair.first;      // Iterator which points to the set entry.
-                }
+                return resultpair.first->second;
             }
         }
     }
@@ -4888,67 +4538,47 @@ CtiVanGogh::CtiDeviceLiteSet_t::iterator CtiVanGogh::deviceLiteFind(const LONG p
         CTILOG_ERROR(dout, "Unable to aqcuire the _server_exclusion, owned by TID " << _server_exclusion.lastAcquiredByTID());
     }
 
-    return dliteit;
+    return boost::none;
 }
 
 
 void CtiVanGogh::reportOnThreads()
 {
-
     try
     {
         CtiServerExclusion sguard(_server_exclusion, 100);
 
-        if(sguard.isAcquired())
-        {
-            RWThreadFunction &aThr = _rphThread;
-
-            if( !(aThr.isValid() &&
-                  aThr.getExecutionState() & RW_THR_ACTIVE  &&
-                  aThr.getCompletionState() == RW_THR_PENDING ) )
-            {
-                CTILOG_ERROR(dout, "RawPointHistory Writer Thread is not running");
-            }
-
-            aThr = _archiveThread;
-
-            if( !(aThr.isValid() &&
-                  aThr.getExecutionState() & RW_THR_ACTIVE  &&
-                  aThr.getCompletionState() == RW_THR_PENDING ) )
-            {
-                CTILOG_ERROR(dout, "Archiver Thread is not running");
-            }
-
-            aThr = _timedOpThread;
-
-            if( !(aThr.isValid() &&
-                  aThr.getExecutionState() & RW_THR_ACTIVE  &&
-                  aThr.getCompletionState() == RW_THR_PENDING ) )
-            {
-                CTILOG_ERROR(dout, "Timed Operation Thread is not running");
-            }
-
-            aThr = _dbSigThread;
-
-            if( !(aThr.isValid() &&
-                  aThr.getExecutionState() & RW_THR_ACTIVE  &&
-                  aThr.getCompletionState() == RW_THR_PENDING ) )
-            {
-                CTILOG_ERROR(dout, "DB Signal Thread is not running");
-            }
-
-            aThr = _dbSigEmailThread;
-
-            if( !(aThr.isValid() &&
-                  aThr.getExecutionState() & RW_THR_ACTIVE  &&
-                  aThr.getCompletionState() == RW_THR_PENDING ) )
-            {
-                CTILOG_ERROR(dout, "DB Signal Email Thread is not running");
-            }
-        }
-        else
+        if( ! sguard.isAcquired())
         {
             // OK, we just had a potential deadlock prevention here...
+            return;
+        }
+
+        boost::posix_time::milliseconds shake(0);
+
+        if( _rphThread.timed_join(shake) )
+        {
+            CTILOG_ERROR(dout, "RawPointHistory Writer Thread is not running");
+        }
+
+        if( _archiveThread.timed_join(shake) )
+        {
+            CTILOG_ERROR(dout, "Archiver Thread is not running");
+        }
+
+        if( _timedOpThread.timed_join(shake) )
+        {
+            CTILOG_ERROR(dout, "Timed Operation Thread is not running");
+        }
+
+        if( _dbSigThread.timed_join(shake) )
+        {
+            CTILOG_ERROR(dout, "DB Signal Thread is not running");
+        }
+
+        if( _dbSigEmailThread.timed_join(shake) )
+        {
+            CTILOG_ERROR(dout, "DB Signal Email Thread is not running");
         }
     }
     catch(...)
@@ -5222,7 +4852,7 @@ INT CtiVanGogh::updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, st
  */
 void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
 {
-    if(!_deviceLiteSet.empty())
+    if(!_deviceLites.empty())
     {
         bool devicedifferent = false;
 
@@ -5247,19 +4877,17 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
                     vector<CtiPointManager::ptr_type> points;
                     PointMgr.getEqualByPAO(id, points);
 
-                    CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(id);
-
-                    if( dliteit != _deviceLiteSet.end() )
+                    if( auto optDevLite = findDeviceLite(id) )
                     {
-                        const CtiDeviceBaseLite &dLite = *dliteit;
+                        const DeviceBaseLite &dLite = *optDevLite;
 
                         for each( CtiPointSPtr pPoint in points )
                         {
                             if( pPoint )
                             {
                                 UINT setmask = 0;
-                                setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
-                                setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
+                                setmask |= (dLite.isDisabled() ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
+                                setmask |= (dLite.isControlInhibited() ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
 
                                 ablementPoint(*pPoint, devicedifferent, setmask, tagmask, user, *pMulti);
                             }
@@ -5269,16 +4897,14 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
 
                 if(devicedifferent && !dbchange)
                 {
-                    CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(id);
-
-                    if( dliteit != _deviceLiteSet.end() )   // We do know this device..
+                    if( auto optDevLite = findDeviceLite(id) )   // We do know this device..
                     {
-                        CtiDeviceBaseLite &dLite = *dliteit;
+                        DeviceBaseLite &dLite = *optDevLite;
 
                         UINT setmask = 0;
 
-                        setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
-                        setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
+                        setmask |= (dLite.isDisabled() ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
+                        setmask |= (dLite.isControlInhibited() ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
 
                         if(updateDeviceStaticTables(dLite.getID(), setmask, tagmask, user, *pMulti))
                         {
@@ -5995,44 +5621,37 @@ int CtiVanGogh::processTagMessage(CtiTagMsg &tagMsg)
 
     if(resultAction != CtiTagManager::ActionNone)
     {
-        try
+        CtiMultiMsg *pMulti = CTIDBG_new CtiMultiMsg;
+
+        if(pMulti)
         {
-            CtiMultiMsg *pMulti = CTIDBG_new CtiMultiMsg;
+            pMulti->setSource(DISPATCH_APPLICATION_NAME);
+            pMulti->setUser(tagMsg.getUser());
 
-            if(pMulti)
+            tagmask = TAG_DISABLE_CONTROL_BY_POINT;
+            setmask |= (disable ? TAG_DISABLE_CONTROL_BY_POINT : 0);    // Set it, or clear it?
+
+            if( CtiPointSPtr pPt = PointMgr.getPoint(id) )
             {
-                pMulti->setSource(DISPATCH_APPLICATION_NAME);
-                pMulti->setUser(tagMsg.getUser());
+                bool devicedifferent;
 
-                tagmask = TAG_DISABLE_CONTROL_BY_POINT;
-                setmask |= (disable ? TAG_DISABLE_CONTROL_BY_POINT : 0);    // Set it, or clear it?
+                ablementPoint(*pPt, devicedifferent, setmask, tagmask, tagMsg.getUser(), *pMulti);
 
-                if( CtiPointSPtr pPt = PointMgr.getPoint(id) )
+                if( devicedifferent )     // The device became interesting because of this change.
                 {
-                    bool devicedifferent;
-
-                    ablementPoint(*pPt, devicedifferent, setmask, tagmask, tagMsg.getUser(), *pMulti);
-
-                    if( devicedifferent )     // The device became interesting because of this change.
-                    {
-                        CTILOG_INFO(dout, "Device enabled/disabled change due to Command to pointid "<< id);
-                    }
-                }
-
-                if(pMulti->getData().size())
-                {
-                    MainQueue_.putQueue(pMulti);
-                    pMulti = 0;
-                }
-                else
-                {
-                    delete pMulti;
+                    CTILOG_INFO(dout, "Device enabled/disabled change due to Command to pointid "<< id);
                 }
             }
-        }
-        catch(const RWxmsg& x)
-        {
-            CTILOG_EXCEPTION_ERROR(dout, x);
+
+            if(pMulti->getData().size())
+            {
+                MainQueue_.putQueue(pMulti);
+                pMulti = 0;
+            }
+            else
+            {
+                delete pMulti;
+            }
         }
     }
 
@@ -6064,7 +5683,7 @@ void CtiVanGogh::VGDBSignalWriterThread()
                     threadStatus.monitorCheck(CtiThreadRegData::None);
                 }
 
-                rwSleep(1000);
+                Sleep(1000);
                 writeSignalsToDB();
             }
             catch(...)
@@ -6436,8 +6055,6 @@ void CtiVanGogh::queueSignalToSystemLog( CtiSignalMsg *&pSig )
 
 void CtiVanGogh::stopDispatch()
 {
-    RWWaitStatus rwwait;
-
     bGCtrlC = TRUE;     // set this flag so vangogh main thread signals the rest to shutdown.  YUK-8884
 
     try
@@ -6454,41 +6071,41 @@ void CtiVanGogh::stopDispatch()
     _pendingOpThread.interrupt(CtiThread::SHUTDOWN);
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
 
-    if(RW_THR_TIMEOUT == ConnThread_.join(30000))
+    if( ! _connThread.timed_join(boost::posix_time::seconds(30)) )
     {
         CTILOG_WARN(dout, "Terminating connection thread");
-        ConnThread_.terminate();
+        TerminateThread(_connThread.native_handle(), EXIT_SUCCESS);
     }
     _pendingOpThread.join();
-    if(RW_THR_TIMEOUT == _archiveThread.join(30000))
+    if( ! _archiveThread.timed_join(boost::posix_time::seconds(30)) )
     {
         CTILOG_WARN(dout, "Terminating archive thread");
-        _archiveThread.terminate();
+        TerminateThread(_archiveThread.native_handle(), EXIT_SUCCESS);
     }
-    if(RW_THR_TIMEOUT == _dbSigThread.join(30000))
+    if( ! _dbSigThread.timed_join(boost::posix_time::seconds(30)) )
     {
         CTILOG_WARN(dout, "Terminating dbsig thread");
-        _dbSigThread.terminate();
+        TerminateThread(_dbSigThread.native_handle(), EXIT_SUCCESS);
     }
-    if(RW_THR_TIMEOUT == _dbSigEmailThread.join(30000))
+    if( ! _dbSigEmailThread.timed_join(boost::posix_time::seconds(30)) )
     {
         CTILOG_WARN(dout, "Terminating email thread");
-        _dbSigEmailThread.terminate();
+        TerminateThread(_dbSigEmailThread.native_handle(), EXIT_SUCCESS);
     }
-    if(RW_THR_TIMEOUT == _appMonitorThread.join(30000))
+    if( ! _appMonitorThread.timed_join(boost::posix_time::seconds(30)) )
     {
         CTILOG_WARN(dout, "Terminating app thread");
-        _appMonitorThread.terminate();
+        TerminateThread(_appMonitorThread.native_handle(), EXIT_SUCCESS);
     }
-    if(RW_THR_TIMEOUT == _timedOpThread.join(gConfigParms.getValueAsInt("SHUTDOWN_TERMINATE_TIME", 300)*1000))
+    if( ! _timedOpThread.timed_join(boost::posix_time::seconds(gConfigParms.getValueAsInt("SHUTDOWN_TERMINATE_TIME", 300))) )
     {
         CTILOG_WARN(dout, "Terminating timed op thread");
-        _timedOpThread.terminate();
+        TerminateThread(_timedOpThread.native_handle(), EXIT_SUCCESS);
     }
-    if(RW_THR_TIMEOUT == _rphThread.join(gConfigParms.getValueAsInt("SHUTDOWN_TERMINATE_TIME", 300)*1000))
+    if( ! _rphThread.timed_join(boost::posix_time::seconds(gConfigParms.getValueAsInt("SHUTDOWN_TERMINATE_TIME", 300))) )
     {
         CTILOG_WARN(dout, "Terminating RPH thread");
-        _rphThread.terminate();
+        TerminateThread(_rphThread.native_handle(), EXIT_SUCCESS);
     }
     ThreadMonitor.join();
 
@@ -6545,14 +6162,14 @@ CtiMultiMsg* CtiVanGogh::resetControlHours()
         try
         {
             CtiServerExclusion pmguard(_server_exclusion);
-            CtiDeviceLiteSet_t::iterator iter = _deviceLiteSet.begin();
-            CtiDeviceLiteSet_t::iterator end  = _deviceLiteSet.end();
 
-            for( ; iter != end; iter++ )
+            for( auto kv : _deviceLites )
             {
-                if(isDeviceGroupType(&(*iter)))
+                DeviceBaseLite &dLite = kv.second;
+
+                if( dLite.isGroup() )
                 {
-                    const long deviceID = iter->getID();
+                    const long deviceID = dLite.getID();
 
                     if( CtiPointSPtr point = PointMgr.getOffsetTypeEqual(deviceID, ANNUALCONTROLHISTOFFSET, AnalogPointType) )
                     {

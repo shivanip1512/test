@@ -1,18 +1,13 @@
 include $(COMPILEBASE)\global.inc
-include $(COMPILEBASE)\rwglobal.inc
 
 
 all:
-            @build -nologo -f $(PRECOMPILED)\makepch.mak
             @build -nologo -f makeres.mak
 
 copy:
-            @build -nologo -f $(PRECOMPILED)\makepch.mak $@
             @build -nologo -f makeres.mak $@
 
 deps:
-            @build -nologo -f makeres.mak $@
-
 
 clean:
         -del \

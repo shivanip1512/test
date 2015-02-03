@@ -174,7 +174,7 @@ void CtiLMService::OnStop()
 
     try
     {
-        CtiLMControlAreaStore::deleteInstance();
+        CtiLMClientListener::getInstance().stop();
     }
     catch( ... )
     {
@@ -183,7 +183,7 @@ void CtiLMService::OnStop()
 
     try
     {
-        CtiLMClientListener::getInstance().stop();
+        CtiLMControlAreaStore::deleteInstance();
     }
     catch( ... )
     {
@@ -240,7 +240,6 @@ void CtiLMService::Run()
 
             CtiLMControlAreaStore* store = CtiLMControlAreaStore::getInstance();
             {
-                //RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
                 vector<CtiLMControlArea*>* controlAreas = store->getControlAreas(CtiTime());
 
 
@@ -259,16 +258,16 @@ void CtiLMService::Run()
 
         if( _LM_DEBUG & LM_DEBUG_STANDARD )
         {
+            CTILOG_DEBUG(dout, "Starting client listener thread...");
+        }
+        CtiLMClientListener::getInstance().start();
+
+        if( _LM_DEBUG & LM_DEBUG_STANDARD )
+        {
             CTILOG_DEBUG(dout, "Starting load manager thread...");
         }
         CtiLoadManager* manager = CtiLoadManager::getInstance();
         manager->start();
-
-        if( _LM_DEBUG & LM_DEBUG_STANDARD )
-        {
-            CTILOG_DEBUG(dout, "Starting client listener thread...");
-        }
-        CtiLMClientListener::getInstance().start();
 
         /*{
             CTILOG_INFO(dout, "Load management started.");

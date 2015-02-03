@@ -1,15 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_ilex
-*
-* Date:   2/15/2001
-*
-* PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.29.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:40 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "dsm2.h"
@@ -36,8 +24,6 @@
 #include "utility.h"
 
 using namespace std;
-
-#define DEBUG_PRINT_DECODE 0
 
 CtiDeviceILEX::CtiDeviceILEX() :
     _freezeNumber(0),

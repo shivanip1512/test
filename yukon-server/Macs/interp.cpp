@@ -4,9 +4,7 @@
 #include "interp.h"
 #include "logger.h"
 
-#include <tcl.h>
-
-#include <rw/thr/thrutil.h>
+#include <tcl/tcl.h>
 
 #include <boost/algorithm/string.hpp>
 
@@ -157,7 +155,9 @@ void CtiInterpreter::stopEval()
     _dostop = true;
 
     while ( _isevaluating && isRunning() )
-        rwSleep( 50 );
+    {
+        Sleep( 50 );
+    }
 
     _dostop = false;
 }
@@ -219,7 +219,7 @@ void CtiInterpreter::run()
 
                     if( r != 0 )
                     {
-                       char* result = Tcl_GetStringResult(_interp);
+                       const char* result = Tcl_GetStringResult(_interp);
 
                        // check for interrupted as to not alarm the reader
                        if( strcmp(result, "interrupted") != 0)

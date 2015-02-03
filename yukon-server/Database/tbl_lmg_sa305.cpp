@@ -1,49 +1,5 @@
 #include "precompiled.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   tbl_lmg_sa305
-*
-* Date:   1/30/2004
-*
-* Author: Corey G. Plender
-*
-* CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:06 $
-*
-* HISTORY      :
-* $Log: tbl_lmg_sa305.cpp,v $
-* Revision 1.4  2005/12/20 17:16:06  tspar
-* Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-*
-* Revision 1.3.2.4  2005/08/12 19:53:39  jliu
-* Date Time Replaced
-*
-* Revision 1.3.2.3  2005/07/18 22:30:51  jliu
-* rebuild_cppunit&correct_find
-*
-* Revision 1.3.2.2  2005/07/14 22:26:53  jliu
-* RWCStringRemoved
-*
-* Revision 1.3.2.1  2005/07/12 21:08:32  jliu
-* rpStringWithoutCmpParser
-*
-* Revision 1.3  2005/02/10 23:23:48  alauinger
-* Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-*
-* Revision 1.2  2004/03/18 19:46:44  cplender
-* Added code to support the SA305 protocol and load group
-*
-* Revision 1.1  2004/02/17 15:08:03  cplender
-* New files for GRE/SA support
-*
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-
 #include "logger.h"
 #include "tbl_lmg_sa305.h"
 
@@ -193,7 +149,7 @@ string CtiTableSA305LoadGroup::getTableName()
 
 void CtiTableSA305LoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    string rwsTemp;
+    string tmpStr;
 
     rdr["groupid"           ] >> _lmGroupId;
     rdr["routeid"           ] >> _routeId;
@@ -202,26 +158,26 @@ void CtiTableSA305LoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["groupaddress"      ] >> _group;
     rdr["divisionaddress"   ] >> _division;
     rdr["substationaddress" ] >> _substation;
-    rdr["individualaddress" ] >> rwsTemp;
-    _individual = atoi(rwsTemp.c_str());
+    rdr["individualaddress" ] >> tmpStr;
+    _individual = atoi(tmpStr.c_str());
 
     rdr["ratefamily"        ] >> _rateFamily;
     rdr["ratemember"        ] >> _rateMember;
     rdr["ratehierarchy"     ] >> _hierarchy;
-    rdr["loadnumber"        ] >> rwsTemp;       // _function;
+    rdr["loadnumber"        ] >> tmpStr;       // _function;
 
     _function &= 0x0000000F;
 
-    if(rwsTemp.find("1")!=string::npos)       _function |= 0x00000001;
+    if(tmpStr.find("1")!=string::npos)       _function |= 0x00000001;
     else                            _function &= ~0x00000001;
 
-    if(rwsTemp.find("2")!=string::npos)       _function |= 0x00000002;
+    if(tmpStr.find("2")!=string::npos)       _function |= 0x00000002;
     else                            _function &= ~0x00000002;
 
-    if(rwsTemp.find("3")!=string::npos)       _function |= 0x00000004;
+    if(tmpStr.find("3")!=string::npos)       _function |= 0x00000004;
     else                            _function &= ~0x00000004;
 
-    if(rwsTemp.find("4")!=string::npos)       _function |= 0x00000008;
+    if(tmpStr.find("4")!=string::npos)       _function |= 0x00000008;
     else                            _function &= ~0x00000008;
 
 }

@@ -77,7 +77,7 @@ inline void StreamBufferBase<StreamBufferT>::appendSStream(const SStreamT& ss)
 {
     if( _osstream )
     {
-        *_osstream << ss;
+        *_osstream << ss.str();
     }
     else if( _text.empty() )
     {

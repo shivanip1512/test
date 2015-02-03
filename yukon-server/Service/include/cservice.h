@@ -3,10 +3,6 @@
 #define NUMEVENTS 4
 #define MAX_SERVICE_LEN 256
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 #include "dlldefs.h"
 ///////////////////////////////////////////////////////

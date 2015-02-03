@@ -1,7 +1,6 @@
 #Build name MUST BE FIRST!!!!
 
 include $(COMPILEBASE)\global.inc
-include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(SERVER)\include \
@@ -13,7 +12,6 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
--I$(RW) \
 
 
 .PATH.cpp = .
@@ -31,10 +29,10 @@ INCLPATHS+= \
 ;$(PROT)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
-;$(RW)
 
 
 SIMULATOR_TEST_OBJS=\
+$(PRECOMPILED_OBJ) \
 test_main.obj \
 test_ccusim.obj \
 test_behavior_collection.obj \
@@ -79,19 +77,18 @@ $(SIMULATOR_TEST_FULLBUILD) :
 	@touch $@
 	@echo:
 	@echo Compiling cpp to obj
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(SIMULATOR_TEST_OBJS)]
+	$(CC) $(CCOPTS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(SIMULATOR_TEST_OBJS)]
 
 test_simulator.exe:    $(SIMULATOR_TEST_FULLBUILD) $(SIMULATOR_TEST_OBJS) Makefile
 	@echo:
 	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
 	@%cd $(OBJ)
-	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(@B).exe \
-	$(SIMULATOR_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(CCU_SIMULATOR_BASE_OBJS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(CCOPTS)  /Fe..\$(BIN)\$(@B).exe \
+	$(SIMULATOR_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(CCU_SIMULATOR_BASE_OBJS) $(BOOST_TEST_LIBS) $(LIBS) $(LINKFLAGS)
 	@%cd ..
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	$(MANIFEST_TOOL) -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
 	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
 	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
@@ -128,7 +125,7 @@ copy:
         @echo Compiling $< to
         @echo           $(OBJ)\$(@B).obj
         @echo:
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
+	$(CC) $(CCOPTS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
 
 ######################################################################################
@@ -207,9 +204,9 @@ ccu_simulator.obj:	precompiled.h SimulatorUtils.h types.h Simulator.h \
 		PlcTransmitter.h CommInterface.h streamSocketConnection.h \
 		socket_helper.h win_helper.h CommsBehavior.h portlogger.h \
 		CcuIDLC.h Ccu721.h ctidate.h DelayBehavior.h BchBehavior.h \
-		cparms.h rwutil.h database_connection.h dbaccess.h \
-		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h StreamSocketListener.h module_util.h
+		cparms.h configkey.h configval.h StreamSocketListener.h \
+		module_util.h database_reader.h database_connection.h \
+		dbaccess.h row_reader.h
 comminterface.obj:	precompiled.h CommInterface.h \
 		streamSocketConnection.h streamConnection.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h timing_util.h immutable.h \
@@ -251,11 +248,7 @@ mct410.obj:	precompiled.h Mct410.h EmetconWords.h types.h ctitime.h \
 		utility.h queues.h cticalls.h yukon.h ctidbgmem.h os2_2w32.h \
 		constants.h numstr.h critical_section.h atomic.h \
 		DeviceMemoryManager.h BehaviorCollection.h MctBehavior.h \
-		ScopedLogger.h cparms.h rwutil.h database_connection.h \
-		dbaccess.h dllbase.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h guard.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h database_reader.h row_reader.h \
-		boost_time.h configkey.h configval.h \
+		ScopedLogger.h cparms.h configkey.h configval.h guard.h \
 		FrozenReadParityBehavior.h FrozenPeakTimestampBehavior.h \
 		RandomConsumptionBehavior.h InvalidUsageReadingBehavior.h
 plcinfrastructure.obj:	precompiled.h plcinfrastructure.h Mct410.h \

@@ -12,8 +12,6 @@
 
 #include <float.h>
 #include <limits.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 
 #define  LIMIT_IN_RANGE    0

@@ -86,137 +86,124 @@ int TransportLayer::initForInput(unsigned char *buf, unsigned max_len)
 }
 
 
-YukonError_t TransportLayer::generate( DatalinkLayer &_datalink, CtiXfer &xfer )
+YukonError_t TransportLayer::generate( DatalinkLayer &_datalink )
 {
-    YukonError_t retVal = ClientErrors::None;
-
-    if( _datalink.isTransactionComplete() )
+    switch( _ioState )
     {
-        switch( _ioState )
+        case Output:
         {
-            case Output:
-            {
-                TransportPacket out_packet(_payload_out.used == 0,
-                                           _sequence_out,
-                                           _payload_out.data + _payload_out.used,
-                                           _payload_out.length - _payload_out.used);
+            TransportPacket out_packet(_payload_out.used == 0,
+                                       _sequence_out,
+                                       _payload_out.data + _payload_out.used,
+                                       _payload_out.length - _payload_out.used);
 
-                _current_payload_length = out_packet.payloadLength();
+            _current_payload_length = out_packet.payloadLength();
 
-                vector<unsigned char> serialized = out_packet;
+            vector<unsigned char> serialized = out_packet;
 
-                //  do we need to observe a return value to handle any errors, or can we let it explode in generate()?
-                _datalink.setToOutput(&serialized.front(), serialized.size());
+            //  do we need to observe a return value to handle any errors, or can we let it explode in generate()?
+            _datalink.setToOutput(&serialized.front(), serialized.size());
 
-                break;
-            }
+            break;
+        }
 
-            case Input:
-            {
-                _datalink.setToInput();
+        case Input:
+        {
+            _datalink.setToInput();
 
-                break;
-            }
+            break;
+        }
 
-            default:
-            {
-                CTILOG_ERROR(dout, "unhandled state ("<< _ioState <<")");
-            }
-            case Failed:
-            {
-                retVal = ClientErrors::Abnormal;
-            }
+        default:
+        {
+            CTILOG_ERROR(dout, "unhandled state ("<< _ioState <<")");
+        }
+        case Failed:
+        {
+            return ClientErrors::Abnormal;
         }
     }
 
-    if( !retVal )
-    {
-        retVal = _datalink.generate(xfer);
-    }
-
-    return retVal;
+    return ClientErrors::None;
 }
 
 
-YukonError_t TransportLayer::decode( DatalinkLayer &_datalink, CtiXfer &xfer, YukonError_t status )
+YukonError_t TransportLayer::decode( DatalinkLayer &_datalink )
 {
-    YukonError_t retVal = ClientErrors::None;
-
-    if( retVal = _datalink.decode(xfer, status) )
+    if( YukonError_t retVal = _datalink.errorCondition() )
     {
-        //  make this more robust
         _ioState = Failed;
+
+        return retVal;
     }
-    else if( _datalink.isTransactionComplete() )
+
+    switch( _ioState )
     {
-        switch( _ioState )
+        case Output:
         {
-            case Output:
+            _sequence_out = (_sequence_out + 1) & 0x3f;
+
+            _payload_out.used += _current_payload_length;
+
+            if( _payload_out.length <= _payload_out.used )
             {
-                _sequence_out = (_sequence_out + 1) & 0x3f;
+                _ioState = Complete;
 
-                _payload_out.used += _current_payload_length;
-
-                if( _payload_out.length <= _payload_out.used )
+                if( _payload_out.length < _payload_out.used )
                 {
+                    CTILOG_ERROR(dout, "payload sent > length ("<< _payload_out.used <<" > "<< _payload_out.length <<")");
+                }
+            }
+
+            break;
+        }
+
+        case Input:
+        {
+            unsigned dataLen;
+
+            std::vector<unsigned char> inbound = _datalink.getInPayload();
+
+            //  copy out the data
+            if( inbound.size() >= TransportPacket::HeaderLen )
+            {
+                TransportPacket packet(inbound.front(), ++inbound.begin(), inbound.end());
+
+                _inbound_packets.insert(packet);
+
+                if( isPacketSequenceValid(_inbound_packets) )
+                {
+                    std::vector<unsigned char> payload = extractPayload(_inbound_packets);
+
+                    if( payload.size() >= _payload_in.length )
+                    {
+                        CTILOG_ERROR(dout, "payload.size() >= _payload_in.length ("<< payload.size() <<" >= "<< _payload_in.length <<")");
+                    }
+
+                    _payload_in.used = std::min(_payload_in.length, payload.size());
+
+                    memcpy(_payload_in.data, &payload.front(), _payload_in.used);
+
                     _ioState = Complete;
-
-                    if( _payload_out.length < _payload_out.used )
-                    {
-                        CTILOG_ERROR(dout, "payload sent > length ("<< _payload_out.used <<" > "<< _payload_out.length <<")");
-                    }
                 }
-
-                break;
             }
-
-            case Input:
+            else
             {
-                unsigned dataLen;
-
-                std::vector<unsigned char> inbound = _datalink.getInPayload();
-
-                //  copy out the data
-                if( inbound.size() >= TransportPacket::HeaderLen )
-                {
-                    TransportPacket packet(inbound.front(), ++inbound.begin(), inbound.end());
-
-                    _inbound_packets.insert(packet);
-
-                    if( isPacketSequenceValid(_inbound_packets) )
-                    {
-                        std::vector<unsigned char> payload = extractPayload(_inbound_packets);
-
-                        if( payload.size() >= _payload_in.length )
-                        {
-                            CTILOG_ERROR(dout, "payload.size() >= _payload_in.length ("<< payload.size() <<" >= "<< _payload_in.length <<")");
-                        }
-
-                        _payload_in.used = std::min(_payload_in.length, payload.size());
-
-                        memcpy(_payload_in.data, &payload.front(), _payload_in.used);
-
-                        _ioState = Complete;
-                    }
-                }
-                else
-                {
-                    _ioState = Failed;
-                }
-
-                break;
-            }
-
-            default:
-            {
-                CTILOG_ERROR(dout, "unhandled state ("<< _ioState <<")");
-
                 _ioState = Failed;
             }
+
+            break;
+        }
+
+        default:
+        {
+            CTILOG_ERROR(dout, "unhandled state ("<< _ioState <<")");
+
+            _ioState = Failed;
         }
     }
 
-    return retVal;
+    return ClientErrors::None;
 }
 
 

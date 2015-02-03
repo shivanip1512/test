@@ -24,7 +24,7 @@ string CtiTablePointBase::getSQLCoreStatement()
 void CtiTablePointBase::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
    static const string pointid = "pointid";
-   string   rwsTemp;
+   string   tmpStr;
 
    if(getDebugLevel() & DEBUGLEVEL_DATABASE)
    {
@@ -34,24 +34,24 @@ void CtiTablePointBase::DecodeDatabaseReader(Cti::RowReader &rdr)
    rdr[pointid]         >> _pointID;
    rdr                  >> _name;
 
-   rdr                  >> rwsTemp;
-   _type = (CtiPointType_t) resolvePointType(rwsTemp);
+   rdr                  >> tmpStr;
+   _type = (CtiPointType_t) resolvePointType(tmpStr);
 
    rdr                  >> _paObjectID;
    rdr                  >> _stateGroupID;
    rdr                  >> _pointOffset;
 
-   rdr                  >> rwsTemp;
-   _outOfService = ciStringEqual(rwsTemp, "y");
+   rdr                  >> tmpStr;
+   _outOfService = ciStringEqual(tmpStr, "y");
 
-   rdr                  >> rwsTemp;
-   _alarmDisable = ciStringEqual(rwsTemp, "y");
+   rdr                  >> tmpStr;
+   _alarmDisable = ciStringEqual(tmpStr, "y");
 
-   rdr                  >> rwsTemp;
-   _pseudoPoint = !_pointOffset || ciStringEqual(rwsTemp, "p");
+   rdr                  >> tmpStr;
+   _pseudoPoint = !_pointOffset || ciStringEqual(tmpStr, "p");
 
-   rdr                 >> rwsTemp;
-   _archiveType = resolvePointArchiveType(rwsTemp);
+   rdr                 >> tmpStr;
+   _archiveType = resolvePointArchiveType(tmpStr);
 
    rdr                 >> _archiveInterval;
 

@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include "dsm2.h"
 #include "os2_2w32.h"
 #include "cticalls.h"
@@ -15,7 +11,6 @@
 #include <set>
 
 #include <boost/tokenizer.hpp>
-#include <rw\thr\mutex.h>
 
 // Used with "DB_DEBUGLEVEL"
 #define DEBUGLEVEL_LUDICROUS        0x00000001
@@ -50,7 +45,7 @@ typedef boost::tokenizer<boost::char_separator<char> > Tokenizer;
 typedef boost::char_separator<char> Separator;
 
 IM_EX_CTIBASE extern Cti::StreamSocketConnection PorterNexus;
-IM_EX_CTIBASE extern RWMutexLock                 coutMux;
+IM_EX_CTIBASE extern CtiCriticalSection          coutMux;
 
 IM_EX_CTIBASE extern std::string      gLogDirectory;
 IM_EX_CTIBASE extern unsigned long    gLogRetention;

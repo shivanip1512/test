@@ -267,7 +267,11 @@ std::string inputStrings[] = {
 "getvalue lp channel 1 12/24/1997 12/25/1997 12:35",
 "getvalue lp channel 1 12/24/1997 12:34 12/25/1997 12:35",
 "putstatus emetcon freeze one",
+//  240
 "putstatus emetcon freeze two",
-"putstatus freeze"
+"putstatus freeze",
+"putvalue asciiraw \"abc jimmy\"",
+"putvalue hexraw 0xbadf00d",
+"putconfig template \"sauce\"",
 };
 

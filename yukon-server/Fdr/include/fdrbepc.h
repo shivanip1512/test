@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 
 #include "dlldefs.h"
@@ -45,7 +41,7 @@ public:
     static const CHAR * KEY_APPEND_FILE;
 
 private:
-    RWThreadFunction _threadWriteToFile;
+    Cti::WorkerThread _threadWriteToFile;
     bool _appendFlag;
     std::map<std::string,std::string> coopIdToFileName;
 };

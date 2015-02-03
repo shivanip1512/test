@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 #include <vector>
 #include <map>
@@ -67,15 +63,16 @@ protected:
 
 
 public:
-  class FdrException : public exception {
+  class FdrException : public std::exception {
   public:
-    FdrException(int err) : exception("FdrException") {}
-    FdrException() : exception("FdrException") {}
+    FdrException(int err) : std::exception("FdrException") {}
+    FdrException() : std::exception("FdrException") {}
   };
 
 private:
 
-  RWThreadFunction  _threadGetData;
+  Cti::WorkerThread _threadGetData;
+
   bool        _connected;
   long        _linkStatusId;
 

@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-
-#include <iostream>
-#include <iomanip>
-#include <cctype>
-
 #include "dsm2.h"
 #include "expresscom.h"
 #include "rte_xcu.h"
@@ -38,15 +33,9 @@ CtiRouteXCU::CtiRouteXCU()
 {
 }
 
-void CtiRouteXCU::resetDevicePointer()
-{
-    _transmitterDevice.reset();
-}
-
-CtiRouteXCU&  CtiRouteXCU::setDevicePointer(CtiDeviceSPtr p)
+void CtiRouteXCU::setDevicePointer(CtiDeviceSPtr p)
 {
     _transmitterDevice = p;
-    return *this;
 }
 
 std::string CtiRouteXCU::toString() const
@@ -59,8 +48,6 @@ std::string CtiRouteXCU::toString() const
 
 void CtiRouteXCU::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    INT iTemp;
-
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CTILOG_DEBUG(dout, "Decoding DB reader");
@@ -76,81 +63,76 @@ YukonError_t CtiRouteXCU::ExecuteRequest(CtiRequestMsg        *pReq,
                                          list< CtiMessage* >  &retList,
                                          list< OUTMESS* >     &outList)
 {
-    YukonError_t status = ClientErrors::None;
-    ULONG    BytesWritten;
+    if( ! _transmitterDevice )      // This is the pointer which refers this rte to its transmitter device.
+    {
+        CTILOG_ERROR(dout, "Route "<< getName() <<" has no associated transmitter device");
+
+        return ClientErrors::NoTransmitterForRoute;
+    }
 
     try
     {
-        if(_transmitterDevice)      // This is the pointer which refers this rte to its transmitter device.
+        if( const YukonError_t inhibitedStatus = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage) )
         {
-            if((status = _transmitterDevice->checkForInhibitedDevice(retList, OutMessage)) != ClientErrors::DeviceInhibited)
-            {
-                // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
-                OutMessage->Request.CheckSum = _transmitterDevice->getUniqueIdentifier();
-
-                enablePrefix(false);        // Most protocols will not want this on.
-
-                if(parse.getiValue("type") == ProtocolExpresscomType)
-                {
-                    enablePrefix(true);
-                    status = assembleExpresscomRequest(pReq, parse, OutMessage, vgList, retList, outList);
-                }
-                else if(parse.getiValue("type") == ProtocolSA305Type)
-                {
-                    status = assembleSA305Request(pReq, parse, OutMessage, vgList, retList, outList);
-                }
-                else if(parse.getiValue("type") == ProtocolSA205Type)
-                {
-                    status = assembleSA105205Request(pReq, parse, OutMessage, vgList, retList, outList);
-                }
-                else if(parse.getiValue("type") == ProtocolSA105Type)
-                {
-                    status = assembleSA105205Request(pReq, parse, OutMessage, vgList, retList, outList);
-                }
-                else if(parse.getiValue("type") == ProtocolSADigitalType)
-                {
-                    status = assembleSASimpleRequest(pReq, parse, OutMessage, vgList, retList, outList);
-                }
-                else if(parse.getiValue("type") == ProtocolGolayType)
-                {
-                    status = assembleSASimpleRequest(pReq, parse, OutMessage, vgList, retList, outList);
-                }
-                else if( parse.getiValue("type") == ProtocolEmetconType )
-                {
-                    status = ClientErrors::Abnormal;
-                }
-                else if(OutMessage->EventCode & VERSACOM)
-                {
-                    enablePrefix(true);
-                    status = assembleVersacomRequest(pReq, parse, OutMessage, vgList, retList, outList);
-                }
-                else if(OutMessage->EventCode & FISHERPIERCE)
-                {
-                    status = assembleFisherPierceRequest(pReq, parse, OutMessage, vgList, retList, outList);
-                }
-                else if(OutMessage->EventCode & RIPPLE)
-                {
-                    status = assembleRippleRequest(pReq, parse, OutMessage, vgList, retList, outList);
-                }
-                else
-                {
-                    status = ClientErrors::BadRoute;
-                }
-            }
+            return inhibitedStatus;
         }
-        else
+
+        // ALL Routes MUST do this, since they are the final gasp before the trxmitting device
+        OutMessage->Request.CheckSum = _transmitterDevice->getUniqueIdentifier();
+
+        enablePrefix(false);        // Most protocols will not want this on.
+
+        if(parse.getiValue("type") == ProtocolExpresscomType)
         {
-            CTILOG_ERROR(dout, "Route "<< getName() <<" has no associated transmitter device");
-
-            status = ClientErrors::NoTransmitterForRoute;
+            enablePrefix(true);
+            return assembleExpresscomRequest(pReq, parse, OutMessage, vgList, retList, outList);
         }
+        else if(parse.getiValue("type") == ProtocolSA305Type)
+        {
+            return assembleSA305Request(pReq, parse, OutMessage, vgList, retList, outList);
+        }
+        else if(parse.getiValue("type") == ProtocolSA205Type)
+        {
+            return assembleSA105205Request(pReq, parse, OutMessage, vgList, retList, outList);
+        }
+        else if(parse.getiValue("type") == ProtocolSA105Type)
+        {
+            return assembleSA105205Request(pReq, parse, OutMessage, vgList, retList, outList);
+        }
+        else if(parse.getiValue("type") == ProtocolSADigitalType)
+        {
+            return assembleSASimpleRequest(pReq, parse, OutMessage, vgList, retList, outList);
+        }
+        else if(parse.getiValue("type") == ProtocolGolayType)
+        {
+            return assembleSASimpleRequest(pReq, parse, OutMessage, vgList, retList, outList);
+        }
+        else if( parse.getiValue("type") == ProtocolEmetconType )
+        {
+            return ClientErrors::Abnormal;
+        }
+        else if(OutMessage->EventCode & VERSACOM)
+        {
+            enablePrefix(true);
+            return assembleVersacomRequest(pReq, parse, OutMessage, vgList, retList, outList);
+        }
+        else if(OutMessage->EventCode & FISHERPIERCE)
+        {
+            return assembleFisherPierceRequest(pReq, parse, OutMessage, vgList, retList, outList);
+        }
+        else if(OutMessage->EventCode & RIPPLE)
+        {
+            return assembleRippleRequest(pReq, parse, OutMessage, vgList, retList, outList);
+        }
+
+        return ClientErrors::BadRoute;
     }
     catch(...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    return status;
+    return ClientErrors::None;
 }
 
 

@@ -19,14 +19,14 @@ int Logic_Init(Tcl_Interp* interp) {
     return TCL_OK;
 }
 
-int Dispatch_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]) {
+int Dispatch_Connect(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[]) {
     if(gDispatchConnection != 0) {
     return TCL_OK;
     }
 
     gDispatchConnection.reset( new CtiClientConnection( Cti::Messaging::ActiveMQ::Queue::dispatch ));
     gDispatchConnection->start();
-    
+
     //Send a registration message
     CtiRegistrationMsg* reg2 = new CtiRegistrationMsg("CTILOGIC", 0, false );
     gDispatchConnection->WriteConnQue( reg2 );
@@ -34,7 +34,7 @@ int Dispatch_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
     return TCL_OK;
 }
 
-int SetPoint(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]) {
+int SetPoint(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[]) {
     if(argc != 3) {
     Tcl_SetErrorCode(interp, "SendPointData - wrong number of arguments");
     return TCL_ERROR;

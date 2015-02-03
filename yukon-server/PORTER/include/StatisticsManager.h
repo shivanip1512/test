@@ -7,6 +7,10 @@
 #include <vector>
 
 namespace Cti {
+namespace Database {
+    class DatabaseConnection;
+}
+
 namespace Porter {
 
 class StatisticsManager

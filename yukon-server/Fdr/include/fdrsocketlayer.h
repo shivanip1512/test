@@ -1,13 +1,9 @@
 #pragma once
 
-#include <rw/thr/mutex.h>
-#include <rw/thr/barrier.h>
-#include <rw/thr/condtion.h>
-#include <rw/thr/thrfunc.h>
-
 #include "dlldefs.h"
 #include "queues.h"
 #include "fdrsocketconnection.h"
+#include "worker_thread.h"
 
 class CtiFDRInterface;
 class CtiFDRServerConnection;
@@ -103,7 +99,7 @@ class IM_EX_FDRBASE CtiFDRSocketLayer
 
     protected:
 
-        RWThreadFunction    iThreadConnectionStatus;
+        Cti::WorkerThread   iThreadConnectionStatus;
         void threadFunctionConnectionStatus( void );
 
     private:

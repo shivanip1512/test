@@ -1,17 +1,13 @@
 #pragma once
 
-#include "ctibase.h"
-#include "dlldefs.h"
 #include "dbmemobject.h"
-#include "pointdefs.h"
-#include "yukon.h"
-#include "database_connection.h"
-#include "rwutil.h"
-#include "loggable.h"
 
 #include <string>
 #include <map>
 
+namespace Cti {
+    class RowReader;
+}
 
 class IM_EX_CTIYUKONDB CtiTableStaticPaoInfo : public CtiMemDBObject, public Cti::Loggable
 {
@@ -71,12 +67,7 @@ public:
     CtiTableStaticPaoInfo(const CtiTableStaticPaoInfo &aRef);
     CtiTableStaticPaoInfo(long paoid, PaoInfoKeys k);  //  owner doesn't matter until the new row gets written to the DB
 
-    virtual ~CtiTableStaticPaoInfo();
-
     CtiTableStaticPaoInfo& operator=(const CtiTableStaticPaoInfo &aRef);
-    bool                    operator<(const CtiTableStaticPaoInfo &rhs) const;  //  this is for the set in dev_base
-
-    bool hasRow() const;
 
     static std::string getSQLCoreStatement();
 

@@ -13,7 +13,7 @@
 #include <boost/algorithm/string/classification.hpp>
 
 namespace {
-boost::scoped_ptr<Cti::Fdr::DnpSlave> dnpSlaveInterface;
+std::unique_ptr<Cti::Fdr::DnpSlave> dnpSlaveInterface;
 }
 
 extern "C" {
@@ -21,7 +21,7 @@ extern "C" {
 DLLEXPORT int RunInterface(void)
 {
     // make a point to the interface
-    dnpSlaveInterface.reset(new Cti::Fdr::DnpSlave);
+    dnpSlaveInterface = std::make_unique<Cti::Fdr::DnpSlave>();
     dnpSlaveInterface->startup();
     // now start it up
     return dnpSlaveInterface->run();
@@ -118,11 +118,11 @@ bool DnpSlave::readConfig()
     const std::string serverNames =
             gConfigParms.getValueAsString(KEY_FDR_DNPSLAVE_SERVER_NAMES);
 
-    typedef boost::iterator_range<std::string::const_iterator> substring_range;
+    using substring_range = boost::iterator_range<std::string::const_iterator>;
     std::vector<substring_range> mappings;
     boost::algorithm::split(mappings, serverNames, boost::is_any_of(","));
 
-    for each(const substring_range &mapping in mappings)
+    for( const auto &mapping : mappings)
     {
         std::vector<std::string> name_address;
         boost::algorithm::split(name_address, mapping, boost::is_any_of("= "));
@@ -196,7 +196,7 @@ bool DnpSlave::translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sen
         return false;
     }
 
-    for each (CtiFDRDestination pointDestination in destinations)
+    for( const auto &pointDestination : destinations )
     {
         // translate and put the point id the list
 
@@ -220,7 +220,7 @@ void DnpSlave::cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool 
 {
     DnpDestinationMap &pointMap = recvList ? _receiveMap : _sendMap;
 
-    for each( const CtiFDRDestination &dest in translationPoint->getDestinationList() )
+    for( const auto &dest : translationPoint->getDestinationList() )
     {
         DnpDestinationMap::iterator itr = pointMap.find(dest);
 
@@ -357,12 +357,12 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
 
     const CtiTime Now;
 
-    for each( DnpDestinationMap::value_type mapping in _sendMap )
+    for( const auto &kv : _sendMap )
     {
-        const DnpId &dnpId = mapping.second;
+        const DnpId &dnpId = kv.second;
         if (dnpId.SlaveId == dest.sh && dnpId.MasterId == src.sh )
         {
-            const CtiFDRDestination &fdrdest = mapping.first;
+            const CtiFDRDestination &fdrdest = kv.first;
             CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
             CtiLockGuard<CtiMutex> sendGuard(getSendToList().getMutex());
             if (!findPointIdInList(fdrPoint->getPointID(),getSendToList(),*fdrPoint) )
@@ -409,7 +409,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
 
      while( !_dnpSlave.isTransactionComplete() )
      {
-         if( _dnpSlave.slaveGenerate(xfer) == 0 )
+         if( _dnpSlave.slaveGenerate(xfer) == ClientErrors::None )
          {
              if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
              {
@@ -622,15 +622,15 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
     else
     {
         //  look for the point with the correct control offset
-        for each( DnpDestinationMap::value_type mapping in _receiveMap )
+        for( const auto &kv : _receiveMap )
         {
-            const DnpId &dnpId = mapping.second;
+            const DnpId &dnpId = kv.second;
             if (dnpId.PointType   == StatusPointType
                 && dnpId.SlaveId  == dest
                 && dnpId.MasterId == src
                 && dnpId.Offset   == control.offset)
             {
-                const CtiFDRDestination &fdrdest = mapping.first;
+                const CtiFDRDestination &fdrdest = kv.first;
                 CtiFDRPoint* fdrPoint = fdrdest.getParentPoint();
 
                 {
@@ -675,7 +675,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
     //  reply with success
     while( !_dnpSlave.isTransactionComplete() )
     {
-        if( _dnpSlave.slaveGenerate(xfer) == 0 )
+        if( _dnpSlave.slaveGenerate(xfer) == ClientErrors::None )
         {
             if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
             {
@@ -702,7 +702,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
 }
 
 
-DnpId DnpSlave::ForeignToYukonId(CtiFDRDestination pointDestination)
+DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
 {
     DnpId dnpId;
 

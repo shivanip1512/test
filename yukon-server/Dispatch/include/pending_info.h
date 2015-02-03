@@ -147,5 +147,5 @@ private:
     void addOffset(int offset, long pid);
 
     CtiTime getLastHistoryPost() const;       // Time this was last posted.
-    void setLastHistoryPost(CtiTime rwt);
+    void setLastHistoryPost(CtiTime lastPostTime);
 };

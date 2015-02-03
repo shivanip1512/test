@@ -1,20 +1,21 @@
 #include "precompiled.h"
 
 #include "tbl_rtrepeater.h"
+#include "row_reader.h"
+#include "dllbase.h"
 #include "logger.h"
 
 using std::string;
-using std::endl;
 
 std::string CtiTableRepeaterRoute::toString() const
 {
     Cti::FormattedList itemList;
 
     itemList <<"CtiTableRepeaterRoute";
-    itemList.add("Repeater DeviceID")      << DeviceID;
+    itemList.add("Repeater DeviceID")      << _deviceID;
     itemList.add("Repeater RouteID")       << _routeID;
-    itemList.add("Repeater Variable Bits") << VarBit;
-    itemList.add("Repeater Order")         << RepeaterOrder;
+    itemList.add("Repeater Variable Bits") << _varBit;
+    itemList.add("Repeater Order")         << _repeaterOrder;
 
     return itemList.toString();
 }
@@ -30,35 +31,23 @@ string CtiTableRepeaterRoute::getSQLCoreStatement()
 
 CtiTableRepeaterRoute::CtiTableRepeaterRoute(Cti::RowReader &rdr)
 {
-    string rwsTemp;
-
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
-        CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
+        CTILOG_DEBUG(dout, "Decoding DB read from RepeaterRoute");
     }
 
-    rdr["deviceid"] >> DeviceID;
-    rdr["routeid"] >> _routeID;
+    rdr["deviceid"] >> _deviceID;
+    rdr["routeid"]  >> _routeID;
 
-    rdr["variablebits"] >> rwsTemp;
-    VarBit = atoi(rwsTemp.c_str());
+    string varBitStr;
+    rdr["variablebits"] >> varBitStr;
+    _varBit = atoi(varBitStr.c_str());
 
-    rdr["repeaterorder"] >> RepeaterOrder;
+    rdr["repeaterorder"] >> _repeaterOrder;
 }
 
-RWBoolean CtiTableRepeaterRoute::operator<( const CtiTableRepeaterRoute& RP )
+bool CtiTableRepeaterRoute::operator<( const CtiTableRepeaterRoute& RP ) const
 {
-    return(RepeaterOrder < RP.getRepeaterOrder() );
-}
-
-RWBoolean CtiTableRepeaterRoute::operator==( const CtiTableRepeaterRoute& RP )
-{
-    // This better not ever happen!
-    return( RepeaterOrder == RP.getRepeaterOrder() );
-}
-
-string CtiTableRepeaterRoute::getTableName()
-{
-    return "RepeaterRoute";
+    return _repeaterOrder < RP.getRepeaterOrder();
 }
 

@@ -23,22 +23,23 @@ class CtiPendingOpThread : public CtiThread
 
 public:
 
-    typedef std::set< CtiPendingPointOperations >  CtiPendingOpSet_t;
+    typedef std::pair<long, int> PendingOpKey;
+    typedef std::map< PendingOpKey, CtiPendingPointOperations > PendingOpMap;
     typedef std::map< long, CtiTableLMControlHistory >  CtiICLMControlHistMap_t;       // Contains the intial conditions for controls history and control state.
 
 private:
 
     CtiMultiMsg *_multi;
-    RWThreadFunction  _dbThread;
+    boost::thread _dbThread;
 
     CtiConnection::Que_t *_pMainQueue;    // Main queue
     CtiSignalManager     *_pSignalManager;
 
     //  the input queue
     CtiFIFOQueue< CtiPendable > _input;
-    static CtiPendingOpSet_t _pendingControls;
-    static CtiPendingOpSet_t _pendingPointData;
-    static CtiPendingOpSet_t _pendingPointLimit;
+    static PendingOpMap _pendingControls;
+    static PendingOpMap _pendingPointData;
+    static PendingOpMap _pendingPointLimit;
 
     CtiMutex _controlMux;
 
@@ -50,8 +51,8 @@ private:
     static CtiICLMControlHistMap_t _initialConditionControlHistMap;
 
     void dbWriterThread();
-    static CtiPendingOpSet_t::iterator erasePendingControl(CtiPendingOpSet_t::iterator iter);
-    static std::pair< CtiPendingOpSet_t::iterator, bool > insertPendingControl(CtiPendingPointOperations &ppo);
+    static PendingOpMap::iterator erasePendingControl(PendingOpMap::iterator iter);
+    static std::pair< PendingOpMap::iterator, bool > insertPendingControl(CtiPendingPointOperations &ppo);
 
 public:
 

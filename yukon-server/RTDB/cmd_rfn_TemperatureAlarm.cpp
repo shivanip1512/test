@@ -104,7 +104,7 @@ RfnCommandResult RfnTemperatureAlarmCommand::decodeResponseHeader( const CtiTime
 
     boost::optional<std::string> status = mapFind( statusResolver, response[2] );
 
-    validate( Condition( status, ClientErrors::InvalidData )
+    validate( Condition( !! status, ClientErrors::InvalidData )
             << "Invalid Status (" << response[2] << ")" );
 
     result.description += "Status: " + *status + " (" + CtiNumStr(response[2]) + ")";
@@ -261,7 +261,7 @@ RfnCommandResult RfnGetTemperatureAlarmConfigurationCommand::decodeCommand( cons
 
     boost::optional<std::string> enabledState = mapFind( alarmStateResolver, tlv.value[0] );
 
-    validate( Condition( enabledState, ClientErrors::InvalidData )
+    validate( Condition( !! enabledState, ClientErrors::InvalidData )
             << "Invalid Alarm Enabled State ( " << tlv.value[0] << ")" );
 
     _configuration.alarmEnabled = ( tlv.value[0] == AlarmState_AlarmEnabled );

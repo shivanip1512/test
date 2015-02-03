@@ -26,12 +26,12 @@ void APIENTRY PorterCleanUp (ULONG);
 YukonError_t SendError(OUTMESS *&, YukonError_t, INMESS *InMessage = NULL);
 
 /* Prototypes from PORTFILL.C */
-void FillerThread (PVOID);
+void FillerThread();
 
 /* Prototypes from PORTPIPE.C */
-void PorterConnectionThread (PVOID);
+void PorterConnectionThread();
 
-void PorterInterfaceThread (PVOID);
+void PorterInterfaceThread();
 
 /*  */
 void PortThread(void *);
@@ -39,16 +39,16 @@ void PortDialbackThread(void *);
 bool RemoteReset (CtiDeviceSPtr &Device, const CtiPortSPtr &pPort);
 
 /* Prototypes from PORTQUE.C */
-void QueueThread (PVOID);
+void QueueThread();
 YukonError_t CCUResponseDecode (INMESS &, CtiDeviceSPtr , OUTMESS *OutMessage);
-void KickerThread (PVOID);
+void KickerThread();
 YukonError_t DeQueue(INMESS &);
 INT QueueFlush       (CtiDeviceSPtr Dev);
 INT BuildLGrpQ       (CtiDeviceSPtr Dev);
 INT BuildActinShed   (CtiDeviceSPtr Dev);
 
 /* Prototypes from PORTTIME.C */
-void TimeSyncThread (PVOID);
+void TimeSyncThread();
 INT LoadXTimeMessage (PBYTE);
 
 INT RefreshMCTTimeSync (OUTMESS *);
@@ -59,7 +59,7 @@ INT LoadWelcoTimeMessage (PBYTE, USHORT);
 INT LoadSES92TimeMessage (PBYTE, USHORT);
 
 /* Prototypes from PORTCONF.C */
-void VConfigThread (PVOID);
+void VConfigThread();
 INT VSend (VSTRUCT *, PCHAR, USHORT);
 INT VSend2 (VSTRUCT *, CtiRouteSPtr );
 

@@ -1,22 +1,19 @@
 #pragma once
 
-#include <functional>
-
-#include <rw/tphdict.h>
-#include <rw/thr/thrfunc.h>
-#include <map>
-#include <vector>
-
-#include "hashkey.h"
 #include "msg_multi.h"
 
 #include "calc.h"
 #include "pointstore.h"
 #include "ctiqueues.h"
 
-//ecs 1/5/2005
 #include "thread_monitor.h"
 #include "thread_register_data.h"
+#include "worker_thread.h"
+
+#include <functional>
+
+#include <map>
+#include <vector>
 
 class CtiCalculateThread
 {
@@ -37,7 +34,7 @@ private:
     CtiCalcPointMap _periodicPoints, _onUpdatePoints, _constantPoints, _historicalPoints;
     CtiValDeque<long> _auAffectedPoints;
     CtiPtrDeque<CtiMultiMsg> _outbox;
-    RWMutexLock _pointDataMutex;
+    CtiCriticalSection _pointDataMutex;
 
     struct BaselineData
     {
@@ -65,14 +62,12 @@ private:
     void baselineThread( void );
     static void sendUserQuit( const std::string & who );
 
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
+    mutable CtiCriticalSection _mutex;
 
-    RWThreadFunction _periodicThreadFunc;
-    RWThreadFunction _onUpdateThreadFunc;
-    RWThreadFunction _historicalThreadFunc;
-    RWThreadFunction _baselineThreadFunc;
-
-    CtiCalcThreadInterruptReason _interruptReason;
+    Cti::WorkerThread _periodicThreadFunc;
+    Cti::WorkerThread _onUpdateThreadFunc;
+    Cti::WorkerThread _historicalThreadFunc;
+    Cti::WorkerThread _baselineThreadFunc;
 
     void getCalcHistoricalLastUpdatedTime(PointTimeMap &dbTimeMap);
     void getHistoricalTableData(CtiCalc *calcPoint, CtiTime &lastTime, DynamicTableData &data);
@@ -86,13 +81,10 @@ private:
 
 public:
 
-    CtiCalculateThread( void )
-    {
-    };
+    CtiCalculateThread();
+    ~CtiCalculateThread();
 
-    ~CtiCalculateThread( void );
-
-    RWMutexLock outboxMux;
+    CtiCriticalSection outboxMux;
 
     void calcThread( void );
     bool appendPoint( long pointID, std::string &updateType, int updateInterval, std::string &qualityFlag );
@@ -113,17 +105,17 @@ public:
 
     int outboxEntries( void )   {   return _outbox.entries( ); };
     CtiMultiMsg *getOutboxEntry( void )                         {   return _outbox.popFront( ); };
-    //Bad?
-    RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, std::equal_to<CtiHashKey> >
-    *getPointDependencyIterator( void )                         {   return CTIDBG_new RWTPtrHashMapIterator<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, std::equal_to<CtiHashKey> >( *CtiPointStore::getInstance() );   };
 
-    void startThreads(  );
-    void joinThreads(  );
+    std::set<long> getPointDependencies() const;
 
-    void interruptThreads( CtiCalcThreadInterruptReason reason );
-    void resumeThreads(  );
+    void startThreads();
+    void joinThreads();
 
-    void sendConstants( );
+    void interruptThreads();
+    void pauseThreads();
+    void resumeThreads();
+
+    void sendConstants();
 
     CtiCalcPointMap getPeriodicPointMap() const;
     CtiCalcPointMap getOnUpdatePointMap() const;

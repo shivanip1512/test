@@ -2,13 +2,11 @@
 # nmake file YUKON 1.0
 
 include $(COMPILEBASE)\global.inc
-include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(SIGNAL)\include \
 -I$(DATABASE)\include \
 -I$(COMMON)\include \
--I$(RW) \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 
@@ -26,11 +24,11 @@ INCLPATHS+= \
 ;$(PROT)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
-;$(RW)
 
 
 
 BASEOBJS=\
+$(PRECOMPILED_OBJ) \
 dbsigsend.obj
 
 TABLETESTLIBS=\
@@ -49,11 +47,10 @@ sigsend.exe:    $(BASEOBJS) $(OBJ)\sigsend.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(TABLETESTLIBS) sigsend.res
+                $(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$@ \
+$(BASEOBJS) -link $(LIBS) $(BOOST_LIBS) $(TABLETESTLIBS) sigsend.res
                 @echo:
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-               $(MANIFEST_TOOL) -manifest ..\$@.manifest -outputresource:..\$@;1
                -@copy ..\$@ $(YUKONOUTPUT)
                 @echo Done building Target ..\$@
                 @%cd $(CWD)
@@ -77,7 +74,7 @@ clean:
                 @echo C-Options: $(CFLAGS)
                 @echo Output   : $@
                 @echo:
-                $(RWCPPINVOKE) $(CFLAGS) $(RWCPPFLAGS) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(CC) $(CFLAGS) $(CCOPTS) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
 
 deps:
                 scandeps -Output makeexe.mak *.cpp

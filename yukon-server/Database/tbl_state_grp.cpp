@@ -1,51 +1,22 @@
 #include "precompiled.h"
 
-#include "dbaccess.h"
-#include "mutex.h"
-#include "guard.h"
 #include "tbl_state_grp.h"
+
+#include "database_connection.h"
+#include "database_reader.h"
+#include "guard.h"
 #include "logger.h"
 
 using namespace std;
 
 LONG CtiTableStateGroup::getStateGroupID() const
 {
-
     return _stateGroupID;
 }
+
 const string& CtiTableStateGroup::getName() const
 {
-
     return _name;
-}
-const CtiTableStateGroup::CtiStateSet_t& CtiTableStateGroup::getStateSet() const
-{
-
-    return _stateSet;
-}
-
-CtiTableStateGroup& CtiTableStateGroup::setStateGroupID( const LONG id )
-{
-
-    _stateGroupID = id;
-    return *this;
-}
-CtiTableStateGroup& CtiTableStateGroup::setName( const string &str )
-{
-
-    _name = str;
-    return *this;
-}
-CtiTableStateGroup& CtiTableStateGroup::setStateSet( const CtiStateSet_t& aSet )
-{
-
-    _stateSet = aSet;
-    return *this;
-}
-
-string CtiTableStateGroup::getTableName()
-{
-    return string("StateGroup");
 }
 
 bool CtiTableStateGroup::Restore()
@@ -71,30 +42,25 @@ bool CtiTableStateGroup::Restore()
     }
 
     // Now refresh any states I've already loaded up in the past!
+    if( !_stateMap.empty() )
     {
-        CtiLockGuard<CtiMutex> stateguard(_stateMux);   // Lock down the states!
+        bool bStatesBad = false;
 
-        if( !_stateSet.empty() )
+        for( auto &kv : _stateMap )
         {
-            bool bStatesBad = false;
-            CtiStateSet_t::iterator sit;
+            CtiTableState &theState = kv.second;
 
-            for(sit = _stateSet.begin(); sit != _stateSet.end(); sit++)
+            if(!theState.Restore())
             {
-                CtiTableState &theState = *sit;
-
-                if(!theState.Restore())
-                {
-                    // There is something very very wrong with this state, it should be blown away.
-                    bStatesBad = true;
-                    break;
-                }
+                // There is something very very wrong with this state, it should be blown away.
+                bStatesBad = true;
+                break;
             }
+        }
 
-            if(bStatesBad)
-            {
-                _stateSet.clear();      // Get rid of the offender by making all good states be reloaded on next usage
-            }
+        if(bStatesBad)
+        {
+            _stateMap.clear();      // Get rid of the offender by making all good states be reloaded on next usage
         }
     }
 
@@ -102,32 +68,10 @@ bool CtiTableStateGroup::Restore()
 }
 
 
-bool CtiTableStateGroup::operator<( const CtiTableStateGroup &rhs ) const
-{
-
-    return(getStateGroupID() < rhs.getStateGroupID());
-}
-
-bool CtiTableStateGroup::operator==( const CtiTableStateGroup &rhs ) const
-{
-
-    return(getStateGroupID() == rhs.getStateGroupID());
-}
-
-bool CtiTableStateGroup::operator()(const CtiTableStateGroup& aRef) const
-{
-
-    return operator<(aRef);
-}
-
 void CtiTableStateGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-
-
     rdr["stategroupid"] >>   _stateGroupID;
     rdr["name"] >>           _name;
-
-    return;
 }
 
 std::string CtiTableStateGroup::toString() const
@@ -139,12 +83,10 @@ std::string CtiTableStateGroup::toString() const
     itemList.add("Name")           << getName();
 
     unsigned index = 0;
-    CtiStateSet_t::const_iterator sit;
-    for(sit = _stateSet.begin(); sit != _stateSet.end(); sit++)
+    for( const auto &kv : _stateMap )
     {
         itemList<<"state index "<< index++;
-        const CtiTableState &theState = *sit;
-        itemList<<theState;
+        itemList<<kv.second;
     }
 
     return itemList.toString();
@@ -154,20 +96,16 @@ string CtiTableStateGroup::getRawState(LONG rawValue)
 {
     string rStr;      // NULL string
 
+    auto sit = _stateMap.find( rawValue );
 
-    CtiTableState mystate( getStateGroupID(), rawValue  );
-    CtiLockGuard<CtiMutex> stateguard(_stateMux);   // Lock down the states!
-    CtiStateSet_t::iterator sit = _stateSet.find( mystate );
-
-    if( sit == _stateSet.end() )
+    if( sit == _stateMap.end() )
     {
+        CtiTableState mystate( getStateGroupID(), rawValue  );
         // We need to load it up, and/or then insert it!
         if( mystate.Restore() )
         {
-            pair< CtiStateSet_t::iterator, bool > resultpair;
-
             // Try to insert. Return indicates success.
-            resultpair = _stateSet.insert( mystate );
+            auto resultpair = _stateMap.emplace( rawValue, mystate );
 
             if(resultpair.second == true)   // Insertion occured
             {
@@ -176,9 +114,9 @@ string CtiTableStateGroup::getRawState(LONG rawValue)
         }
     }
 
-    if( sit != _stateSet.end() )
+    if( sit != _stateMap.end() )
     {
-        CtiTableState &theState = *sit;
+        CtiTableState &theState = sit->second;
 
         rStr = theState.getText();
     }
@@ -189,25 +127,4 @@ string CtiTableStateGroup::getRawState(LONG rawValue)
 CtiTableStateGroup::CtiTableStateGroup(LONG id) :
 _stateGroupID(id)
 {}
-
-CtiTableStateGroup::CtiTableStateGroup(const CtiTableStateGroup& aRef)
-{
-    *this = aRef;
-}
-
-CtiTableStateGroup::~CtiTableStateGroup() {}
-
-CtiTableStateGroup& CtiTableStateGroup::operator=(const CtiTableStateGroup& aRef)
-{
-    if(this != &aRef)
-    {
-
-        setStateGroupID(aRef.getStateGroupID());
-        setName(aRef.getName());
-        setStateSet(aRef.getStateSet());
-    }
-
-    return *this;
-}
-
 

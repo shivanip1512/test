@@ -1,19 +1,6 @@
-/*-----------------------------------------------------------------------------
-    Filename:  critical_section.h
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Header file for CtiCriticalSection
-
-    Initial Date:  10/1/04
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2004
------------------------------------------------------------------------------*/
 #pragma once
 
-#ifdef _WINDOWS
-    #include <windows.h>
-#endif
+#include <windows.h>
 
 #include <assert.h>
 #include "dlldefs.h"
@@ -29,17 +16,11 @@ public:
     bool tryAcquire();
     void release();
 
-/// #ifdef _DEBUG
     DWORD lastAcquiredByTID() const;
-/// #endif
 
 private:
 
-#ifdef _WINDOWS
     CRITICAL_SECTION _critical_section;
-/// #ifdef _DEBUG
     DWORD  _threadID;
-/// #endif
-#endif
 };
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include "rwutil.h"
-
 #include "types.h"
 #include "dlldefs.h"
 #include "dllbase.h"

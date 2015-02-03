@@ -352,7 +352,7 @@ struct MetricQualifierFields
     {
         boost::optional<std::string> desc = mapFind( resolverMap, val );
 
-        validate( Condition( desc, ClientErrors::InvalidData )
+        validate( Condition( !! desc, ClientErrors::InvalidData )
                 << "Invalid metric qualifier value for \"" << name << "\" ("<< val << ")" );
 
         if( *desc == "" )
@@ -400,7 +400,7 @@ void RfnChannelConfigurationCommand::decodeHeader( const Bytes &response, RfnCom
     boost::optional<std::string> status = mapFind( responseStatusResolver, response[2] );
 
     // invalid status byte -- not found in map
-    validate( Condition( status, ClientErrors::InvalidData )
+    validate( Condition( !! status, ClientErrors::InvalidData )
             << "Invalid Status (" << response[2] << ")" );
 
     // make sure status is success

@@ -81,7 +81,7 @@ CtiTableCommRoute& CtiTableCommRoute::setDefaultRoute( const bool aDefaultRoute 
 
 void CtiTableCommRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    string rwsTemp;
+    string defaultRouteStr;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -91,9 +91,9 @@ void CtiTableCommRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["routeid"] >> _routeID;
     rdr["deviceid"] >> DeviceID;
 
-    rdr["defaultroute"] >> rwsTemp;
-    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
-    DefaultRoute = ((rwsTemp == "y") ? TRUE : FALSE);
+    rdr["defaultroute"] >> defaultRouteStr;
+    std::transform(defaultRouteStr.begin(), defaultRouteStr.end(), defaultRouteStr.begin(), tolower);
+    DefaultRoute = ((defaultRouteStr == "y") ? TRUE : FALSE);
 }
 
 string CtiTableCommRoute::getTableName()

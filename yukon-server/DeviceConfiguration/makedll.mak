@@ -1,7 +1,6 @@
 # nmake file YUKON 1.0
 
 include $(COMPILEBASE)\global.inc
-include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(COMMON)\include \
@@ -12,7 +11,6 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
--I$(RW) \
 
 
 .PATH.H = \
@@ -29,12 +27,12 @@ INCLPATHS+= \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(BOOST_INCLUDE) \
-;$(RW)
 
 LIBS=\
 $(COMPILEBASE)\lib\ctibase.lib \
 
 DLLOBJS = \
+$(PRECOMPILED_OBJ) \
 config_device.obj \
 config_strings.obj \
 da_lp_deviceconfig.obj \
@@ -59,7 +57,7 @@ $(DEVCONF_FULLBUILD) :
         @touch $@
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) /D_DLL_CONFIG -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(DLLOBJS)]
+        $(CC) $(CCOPTS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) /D_DLL_CONFIG -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(DLLOBJS)]
 
 
 cticonfig.dll:  $(DEVCONF_FULLBUILD) $(DLLOBJS) Makedll.mak $(OBJ)\cticonfig.res
@@ -67,7 +65,7 @@ cticonfig.dll:  $(DEVCONF_FULLBUILD) $(DLLOBJS) Makedll.mak $(OBJ)\cticonfig.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLOBJS) id_dcdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(BOOST_LIBS) $(LINKFLAGS) cticonfig.res
+                $(CC) $(CCOPTS) $(DLLFLAGS) $(DLLOBJS) id_dcdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(BOOST_LIBS) cticonfig.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -106,7 +104,7 @@ id_dcdll.obj:    id_dcdll.cpp include\id_dcdll.h
 .cpp.obj:
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) /D_DLL_CONFIG -Fo$(OBJ)\ -c $<
+        $(CC) $(CCOPTS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) /D_DLL_CONFIG -Fo$(OBJ)\ -c $<
 
 
 ######################################################################################
@@ -119,9 +117,8 @@ config_device.obj:	precompiled.h config_device.h yukon.h types.h \
 		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h hashkey.h hash_functions.h \
-		DeviceConfigDescription.h devicetypes.h pointtypes.h \
-		PointAttribute.h std_helper.h
+		macro_offset.h DeviceConfigDescription.h devicetypes.h \
+		pointtypes.h PointAttribute.h std_helper.h
 config_strings.obj:	precompiled.h config_data_mct.h yukon.h types.h \
 		ctidbgmem.h dllbase.h dsm2.h streamConnection.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -137,8 +134,7 @@ da_lp_deviceconfig.obj:	precompiled.h da_lp_deviceconfig.h yukon.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		constants.h numstr.h logger.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h hashkey.h \
-		hash_functions.h config_data_mct.h
+		dsm2err.h words.h optional.h macro_offset.h config_data_mct.h
 id_dcdll.obj:	precompiled.h id_dcdll.h module_util.h dlldefs.h \
 		ctitime.h
 mgr_config.obj:	precompiled.h mgr_config.h dllbase.h dsm2.h \
@@ -148,18 +144,17 @@ mgr_config.obj:	precompiled.h mgr_config.h dllbase.h dsm2.h \
 		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h config_device.h hashkey.h hash_functions.h \
-		devicetypes.h readers_writer_lock.h dbaccess.h \
-		database_connection.h database_reader.h row_reader.h \
-		DeviceConfigDescription.h pointtypes.h PointAttribute.h \
-		debug_timer.h std_helper.h
+		macro_offset.h config_device.h devicetypes.h \
+		readers_writer_lock.h dbaccess.h database_connection.h \
+		database_reader.h row_reader.h DeviceConfigDescription.h \
+		pointtypes.h PointAttribute.h debug_timer.h std_helper.h
 test_device_config.obj:	boostutil.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
 		constants.h numstr.h config_device.h dllbase.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
 		atomic.h critical_section.h guard.h logger.h streamBuffer.h \
 		loggable.h string_util.h exception_helper.h mutex.h dsm2err.h \
-		words.h optional.h macro_offset.h hashkey.h hash_functions.h
+		words.h optional.h macro_offset.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

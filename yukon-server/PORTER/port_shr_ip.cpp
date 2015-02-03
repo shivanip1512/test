@@ -40,8 +40,6 @@ CtiPortShareIP::CtiPortShareIP(CtiPortSPtr myPort, INT listenPort) :
     _ipPort(-1)
 {
     set(CtiPortShareIP::INWAITFOROUT, false);
-    set(CtiPortShareIP::SOCKCONNECTED, false);
-    set(CtiPortShareIP::SOCKFAILED, true);
     set(CtiPortShareIP::RUNCOMPLETE, false);
 }
 
@@ -437,158 +435,143 @@ void CtiPortShareIP::outThread()
     string thread_name = "PSout" + CtiNumStr(_port->getPortID()).zpad(4);
     SetThreadName(-1, thread_name.c_str());
 
-    try
+    while(!isSet(CtiThread::SHUTDOWN))
     {
-        while(!isSet(CtiThread::SHUTDOWN))
+        try
         {
-            try
+            //  make sure inThread can read whenever the nexus is set up
+            set(CtiPortShareIP::INWAITFOROUT, false);
+            interrupt();                                // set INWAITFOROUT false and interrupt the sleep!
+
+            if(outThreadValidateNexus())
             {
-                //  make sure inThread can read whenever the nexus is set up
-                set(CtiPortShareIP::INWAITFOROUT, false);
-                interrupt();                                // set INWAITFOROUT false and interrupt the sleep!
-
-                if(outThreadValidateNexus())
+                //  wait forever to hear back from the port
+                if( _internalNexus.read(&InMessage, sizeof(InMessage), Chrono::infinite, &_shutdownEvent) != sizeof(InMessage) )
                 {
-                    //  wait forever to hear back from the port
-                    if( _internalNexus.read(&InMessage, sizeof(InMessage), Chrono::infinite, &_shutdownEvent) != sizeof(InMessage) )
+                    //  This cannot be
+                    set(CtiPortShareIP::INWAITFOROUT, false);
+
+                    CTILOG_ERROR(dout, getIDString() <<" - Internal connection failed to read InMessage");
+
+                    return;
+                }
+
+                //  We got one so see if we need to embed the error code
+                if(InMessage.ErrorCode)
+                {
+                    // first byte of non-DLC section of message
+                    // for ACS set byte 11 to 7d (error) and set byte 12 to event code
+                    InMessage.IDLCStat[11] = 0x7d;
+                    InMessage.IDLCStat[12] = ProcessEventCode(InMessage.ErrorCode);
+                    InMessage.InLength = 2;
+                }
+                else
+                {
+                    // No need to add this on - we already have the proper length for the message
+                    // InMessage.InLength += (2 + PREIDLEN);
+                }
+
+                //  Go ahead and send it on over
+                if( _scadaNexus.isValid() )
+                {
+                    if( getRequestCount() == 0 && !_sequenceFailReported)        // This means something went wrong between submittal and response.
                     {
-                        //  This cannot be
-                        set(CtiPortShareIP::INWAITFOROUT, false);
-
-                        CTILOG_ERROR(dout, getIDString() <<" - Internal connection failed to read InMessage");
-
-                        return;
+                        CTILOG_ERROR(dout, getIDString() <<" - port sharing sequence problem: Unexpected field response. "<< getRequestCount() <<" pending operations.");
                     }
 
-                    //  We got one so see if we need to embed the error code
-                    if(InMessage.ErrorCode)
+                    decRequestCount();
+                    if( getRequestCount() > 0 )
                     {
-                        // first byte of non-DLC section of message
-                        // for ACS set byte 11 to 7d (error) and set byte 12 to event code
-                        InMessage.IDLCStat[11] = 0x7d;
-                        InMessage.IDLCStat[12] = ProcessEventCode(InMessage.ErrorCode);
-                        InMessage.InLength = 2;
+                        if(!_sequenceFailReported)
+                        {
+                            CTILOG_ERROR(dout, getIDString() <<" - port sharing sequence problem: Multiple responses pending. "<< getRequestCount() <<" pending operations.");
+                        }
+
+                        _sequenceFailReported = true;      // We are OUT of sequence!  Do not report additional failures.
                     }
                     else
                     {
-                        // No need to add this on - we already have the proper length for the message
-                        // InMessage.InLength += (2 + PREIDLEN);
+                        _sequenceFailReported = false;      // We are IN sequence!  Next failure may be reported again.
                     }
 
-                    //  Go ahead and send it on over
-                    if( _scadaNexus.isValid() )
+                    if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )  // Debug the outbound back to SCADA
                     {
-                        if( getRequestCount() == 0 && !_sequenceFailReported)        // This means something went wrong between submittal and response.
+                        CTILOG_DEBUG(dout, getIDString() <<" - Write "<< InMessage.InLength <<" to SCADA bytes: "<<
+                                endl << arrayToRange(&InMessage.IDLCStat[11], InMessage.InLength));
+                    }
+
+                    //  is this a CCU-711?  This is shaky, since there's no guarantee that this should be set to 0...
+                    //    the good news is that we generally don't scan RTUs and CCU-711s on the same shared port
+                    if( InMessage.IDLCStat[0] == 0x7e )
+                    {
+                        unsigned char address = InMessage.IDLCStat[1] >> 1;
+
+                        if( InMessage.InLength > 5 && hasSharedCCUError(address) )
                         {
-                            CTILOG_ERROR(dout, getIDString() <<" - port sharing sequence problem: Unexpected field response. "<< getRequestCount() <<" pending operations.");
+                            InMessage.IDLCStat[6] |= getSharedCCUError(address);
+
+                            //  refer to PostIDLC() for the proper way to do this - I didn't want to have to export/import the function
+                            unsigned short crc = NCrcCalc_C(InMessage.IDLCStat + 1, InMessage.InLength - 3);
+
+                            InMessage.IDLCStat[InMessage.InLength - 2] = (crc >> 8) & 0xff;
+                            InMessage.IDLCStat[InMessage.InLength - 1] =  crc       & 0xff;
+
+                            clearSharedCCUError(address);
                         }
 
-                        decRequestCount();
-                        if( getRequestCount() > 0 )
+                        if( _scadaNexus.write((char*)InMessage.IDLCStat, InMessage.InLength, Chrono::seconds(10)) != InMessage.InLength )
                         {
-                            if(!_sequenceFailReported)
-                            {
-                                CTILOG_ERROR(dout, getIDString() <<" - port sharing sequence problem: Multiple responses pending. "<< getRequestCount() <<" pending operations.");
-                            }
-
-                            _sequenceFailReported = true;      // We are OUT of sequence!  Do not report additional failures.
+                            CTILOG_ERROR(dout, getIDString() <<" - SCADA Nexus send Failed");
+                            _scadaNexus.close();
                         }
-                        else
+                        else if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )
                         {
-                            _sequenceFailReported = false;      // We are IN sequence!  Next failure may be reported again.
-                        }
-
-                        if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )  // Debug the outbound back to SCADA
-                        {
-                            CTILOG_DEBUG(dout, getIDString() <<" - Write "<< InMessage.InLength <<" to SCADA bytes: "<<
-                                    endl << arrayToRange(&InMessage.IDLCStat[11], InMessage.InLength));
-                        }
-
-                        //  is this a CCU-711?  This is shaky, since there's no guarantee that this should be set to 0...
-                        //    the good news is that we generally don't scan RTUs and CCU-711s on the same shared port
-                        if( InMessage.IDLCStat[0] == 0x7e )
-                        {
-                            unsigned char address = InMessage.IDLCStat[1] >> 1;
-
-                            if( InMessage.InLength > 5 && hasSharedCCUError(address) )
-                            {
-                                InMessage.IDLCStat[6] |= getSharedCCUError(address);
-
-                                //  refer to PostIDLC() for the proper way to do this - I didn't want to have to export/import the function
-                                unsigned short crc = NCrcCalc_C(InMessage.IDLCStat + 1, InMessage.InLength - 3);
-
-                                InMessage.IDLCStat[InMessage.InLength - 2] = (crc >> 8) & 0xff;
-                                InMessage.IDLCStat[InMessage.InLength - 1] =  crc       & 0xff;
-
-                                clearSharedCCUError(address);
-                            }
-
-                            if( _scadaNexus.write((char*)InMessage.IDLCStat, InMessage.InLength, Chrono::seconds(10)) != InMessage.InLength )
-                            {
-                                CTILOG_ERROR(dout, getIDString() <<" - SCADA Nexus send Failed");
-                                _scadaNexus.close();
-                            }
-                            else if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )
-                            {
-                                CTILOG_DEBUG(dout, getIDString() <<" - Successful write back to SCADA");
-                            }
-                        }
-                        else  // if InMessage.IDLCStat[11] == 0x7e OR InMessage.IDLCStat[13] == HDLC_UD
-                        {
-                            if( _scadaNexus.write((char*)(InMessage.IDLCStat + 11), InMessage.InLength, Chrono::seconds(10)) != InMessage.InLength )
-                            {
-                                CTILOG_ERROR(dout, getIDString() <<" - SCADA Nexus send Failed");
-                                _scadaNexus.close();
-                            }
-                            else if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )
-                            {
-                                CTILOG_DEBUG(dout, getIDString() <<" - Successful write back to SCADA");
-                            }
+                            CTILOG_DEBUG(dout, getIDString() <<" - Successful write back to SCADA");
                         }
                     }
-                    else
+                    else  // if InMessage.IDLCStat[11] == 0x7e OR InMessage.IDLCStat[13] == HDLC_UD
                     {
-                        CTILOG_ERROR(dout, getIDString() <<" - Attempted send on invalid SCADA Nexus");
+                        if( _scadaNexus.write((char*)(InMessage.IDLCStat + 11), InMessage.InLength, Chrono::seconds(10)) != InMessage.InLength )
+                        {
+                            CTILOG_ERROR(dout, getIDString() <<" - SCADA Nexus send Failed");
+                            _scadaNexus.close();
+                        }
+                        else if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )
+                        {
+                            CTILOG_DEBUG(dout, getIDString() <<" - Successful write back to SCADA");
+                        }
                     }
                 }
-                else if( !isSet(CtiThread::SHUTDOWN) )//Ignore this if we are shutting down
+                else
                 {
-                    CTILOG_ERROR(dout, getIDString() <<" - unable to create listenNexus");
-                    sleep(1000);
+                    CTILOG_ERROR(dout, getIDString() <<" - Attempted send on invalid SCADA Nexus");
                 }
             }
-            catch(RWCancellation& rwx)
+            else if( !isSet(CtiThread::SHUTDOWN) )//Ignore this if we are shutting down
             {
-                interrupt(CtiThread::SHUTDOWN);    // Close it out.
-                CTILOG_EXCEPTION_WARN(dout, rwx, getIDString() <<" - Port Share IP OutThread cancellation");
-            }
-            catch( const StreamConnectionException &ex )
-            {
-                CTILOG_EXCEPTION_ERROR(dout, ex, getIDString());
-            }
-            catch(...)
-            {
-                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, getIDString());
+                CTILOG_ERROR(dout, getIDString() <<" - unable to create listenNexus");
+                sleep(1000);
             }
         }
+        catch( const StreamConnectionException &ex )
+        {
+            CTILOG_EXCEPTION_ERROR(dout, ex, getIDString());
+        }
+        catch(...)
+        {
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, getIDString());
+        }
+    }
 
-        _scadaNexus.close();
-    }
-    catch(RWCancellation& rwx)
-    {
-        CTILOG_EXCEPTION_WARN(dout, rwx, getIDString() <<" - Port Share IP OutThread cancellation");
-    }
+    _scadaNexus.close();
 }
 
 void CtiPortShareIP::run()
 {
     try
     {
-        _outThread = rwMakeThreadFunction(*this, &CtiPortShareIP::outThread );
-        _outThread.start();
-
-        _inThread  = rwMakeThreadFunction(*this, &CtiPortShareIP::inThread );
-        _inThread.start();
+        _outThread = boost::thread(&CtiPortShareIP::outThread, this);
+        _inThread  = boost::thread(&CtiPortShareIP::inThread,  this);
 
         while( !isSet(SHUTDOWN) )
         {
@@ -631,27 +614,23 @@ void CtiPortShareIP::shutDown()
     try
     {
 
-        if(RW_THR_COMPLETED != _outThread.join( 250 ))
+        if( ! _outThread.timed_join(boost::posix_time::milliseconds(250)) )
         {
             if( getDebugLevel(DEBUG_THREAD) )
             {
                 CTILOG_WARN(dout, getIDString() <<" - Port Share OutThread did not shutdown gracefully. Will attempt a forceful shutdown.");
             }
-            _outThread.terminate();
+            TerminateThread(_outThread.native_handle(), EXIT_SUCCESS);
         }
 
-        if(RW_THR_COMPLETED != _inThread.join( 250 ))
+        if( ! _inThread.timed_join(boost::posix_time::milliseconds(250)) )
         {
             if( getDebugLevel(DEBUG_THREAD) )
             {
                 CTILOG_WARN(dout, getIDString() <<" - Port Share InThread did not shutdown gracefully. Will attempt a forceful shutdown.");
             }
-            _inThread.terminate();
+            TerminateThread(_inThread.native_handle(), EXIT_SUCCESS);
         }
-    }
-    catch(const RWxmsg &ex)
-    {
-        CTILOG_EXCEPTION_ERROR(dout, ex, getIDString());
     }
     catch(...)
     {

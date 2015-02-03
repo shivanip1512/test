@@ -6,7 +6,6 @@
 #include "loggable.h"
 
 #include <set>
-#include <rw/thr/recursiv.h>
 
 
 class IM_EX_CTIYUKONDB CtiTableNotificationGroup : public Cti::Loggable

@@ -4,8 +4,6 @@
 #include <set>
 
 #include "row_reader.h"
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 #include "database_connection.h"
 #include "dlldefs.h"

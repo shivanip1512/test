@@ -429,9 +429,7 @@ void CtiLMProgramEnergyExchange::notifyCustomers(CtiLMEnergyExchangeOffer* offer
             emailBody += tempchar;
             emailBody += "\r\n\r\n";// 2 return lines
             emailBody += "Offer Expires:  ";
-            emailBody += currentOfferRevision->getOfferExpirationDateTime().asString();
-            emailBody += " ";
-            emailBody += (currentOfferRevision->getOfferExpirationDateTime().isDST() ? RWZone::local().altZoneName() : RWZone::local().timeZoneName() );
+            emailBody += currentOfferRevision->getOfferExpirationDateTime().asString(CtiTime::Local, CtiTime::IncludeTimezone);
             emailBody += "\r\n\r\n";// 2 return lines
 
             emailBody += getMessageFooter();

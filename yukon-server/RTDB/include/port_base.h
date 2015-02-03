@@ -1,25 +1,18 @@
 #pragma once
 
-#include <windows.h>
-#include <list>
-#include <iostream>
-#include <boost/shared_ptr.hpp>
-#include <rw/thr/thrfunc.h>
-
-#include "dev_base.h"
-#include "dlldefs.h"
 #include "logManager.h"
 #include "tbl_port_base.h"
 #include "tbl_pao_lite.h"
 #include "tbl_paoexclusion.h"
 #include "xfer.h"
 #include "critical_section.h"
-#include "counter.h"
-#include "devicetypes.h"
-
-#define DEFAULT_QUEUE_GRIPE_POINT 50
+#include "dev_base.h"
 
 #include <boost/noncopyable.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/thread.hpp>
+
+#include <windef.h>
 
 class CtiPort;
 typedef boost::shared_ptr< CtiPort > CtiPortSPtr;
@@ -125,8 +118,6 @@ public:
     INT verifyPortIsRunnable(HANDLE hQuit = NULL);
 
     INT writeShareQueue(ULONG Request, LONG DataSize, PVOID Data, ULONG Priority, HANDLE hQuit);
-
-    RWThreadFunction& getPortThread();
 
     void haltLog();
 
@@ -245,7 +236,7 @@ protected:
     CtiTblPAOLite       _tblPAO;
     CtiTablePortBase    _tblPortBase;
 
-    RWThreadFunction  _portThread;
+    boost::thread     _portThread;
     HCTIQUEUE         _portQueue;
     HCTIQUEUE         _portShareQueue;        // This queue is used for ALL portsharing OMs.
     LONG              _connectedDevice;       // this is NON-ZERO if we are currently connected/communicating.
@@ -316,6 +307,7 @@ inline std::string CtiPort::getSharedPortType() const { return _tblPortBase.getS
 inline INT CtiPort::getSharedSocketNumber() const   { return _tblPortBase.getSharedSocketNumber();}
 inline INT CtiPort::getProtocolWrap() const { return _tblPortBase.getProtocol();}
 
+#include "devicetypes.h"
 inline INT CtiPort::isDialup() const { return ((getType() == PortTypeLocalDialup || getType() == PortTypeTServerDialup || getType() == PortTypePoolDialout)); }
 
 inline bool CtiPort::operator<(const CtiPort& rhs) const { return getPortID() < rhs.getPortID(); }

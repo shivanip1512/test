@@ -1,5 +1,4 @@
 include $(COMPILEBASE)\global.inc
-include $(COMPILEBASE)\rwglobal.inc
 
 .PATH.lib = $(BIN)
 
@@ -32,7 +31,7 @@ $(OBJS): $(SOURCES_H) $(SOURCES_CPP)
         @echo:
         @echo Compiling cpp to obj
         @%cd $(THRIFTMSG_DIR)
-        $(RWCPPINVOKE) $(CFLAGS) $(PARALLEL) $(INCLPATHS) -Fo.\ -c $[FileList,*.cpp]
+        $(CC) $(CFLAGS) $(PARALLEL) $(INCLPATHS) -Fo.\ -c $[FileList,*.cpp]
         @%cd $(CWD)
 
 copy:

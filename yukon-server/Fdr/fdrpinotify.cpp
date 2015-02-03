@@ -1,12 +1,5 @@
 #include "precompiled.h"
 
-#include <math.h>
-#include <stdlib.h>
-
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <stdio.h>
-
 #define _WINDLL
 
 #include "ctitime.h"
@@ -18,6 +11,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 // this class header
 #include "fdrpinotify.h"
 
+using namespace std;
 
 /**
  * Constructor.
@@ -65,7 +59,7 @@ void CtiFDRPiNotify::handleNewPoints()
       int err = pisn_evmestablish(&count, piIdArray);
       if (err != 0 || count != initial_count)
       {
-          CTILOG_ERROR(dout, logNow() <<"Unable to register for "<< 
+          CTILOG_ERROR(dout, logNow() <<"Unable to register for "<<
                   (initial_count - count) <<" of "<< initial_count <<
                   " point notications from Pi, pisn_evmestablish returned "<<
                   getPiErrorDescription(err, "pisn_evmestablish"));
@@ -141,7 +135,7 @@ void CtiFDRPiNotify::unregisterAllPoints()
       if (err != 0 || count != initial_count) {
         if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
         {
-            CTILOG_DEBUG(dout, logNow() <<"Unable to unregistered for "<< 
+            CTILOG_DEBUG(dout, logNow() <<"Unable to unregistered for "<<
                     (initial_count - count) <<" of "<< initial_count <<
                     " point notications from Pi, pisn_evmdisestablish returned "<<
                     getPiErrorDescription(err, "pisn_evmdisestablish"));
@@ -176,7 +170,7 @@ void CtiFDRPiNotify::unregisterPoint(PiPointId& pid)
       if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
       {
           CTILOG_DEBUG(dout, logNow() <<"Unable to unregister for point notifications from Pi point "<< pid <<
-                  ", pisn_evmdisestablish returned "<< 
+                  ", pisn_evmdisestablish returned "<<
                   getPiErrorDescription(err, "pisn_evmdisestablish"));
       }
     }
@@ -245,7 +239,7 @@ void CtiFDRPiNotify::doUpdates()
         // vectors are guaranteed to have contiguous memory
         PiPointId piId    = _notifyInfo.pointList[0].piPointId;
         PI_EVENT piEvent  = _notifyInfo.eventList[0];
-        
+
         int32 pointCount = points_at_a_time;
         // loop until the number of points returned is less than number requested
         while (points_at_a_time == pointCount)
@@ -262,7 +256,7 @@ void CtiFDRPiNotify::doUpdates()
                 {
                     if( getDebugLevel() & MIN_DETAIL_FDR_DEBUGLEVEL )
                     {
-                        CTILOG_DEBUG(dout, logNow() <<"Unable to update values from Pi, pisn_evmexceptions returned "<< 
+                        CTILOG_DEBUG(dout, logNow() <<"Unable to update values from Pi, pisn_evmexceptions returned "<<
                                 getPiErrorDescription(err, "pisn_evmexceptions"));
                     }
 
@@ -272,7 +266,7 @@ void CtiFDRPiNotify::doUpdates()
 
                 processPiEventResults(piId, piEvent, 0);
                 err =  pisn_evmexceptionsx(&pointCount, &piId, &piEvent, GETNEXT);
-               
+
             };
         }
     }
@@ -301,16 +295,16 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
     PI_EVENT piEvent;
     int32 error;
 
-    int err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
+    int err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize,
                                  &piEvent.istat, NULL, &piEvent.timestamp, &error, GETFIRST);
     if (!err)
     {
         int i = 0;
-        do 
+        do
         {
             processPiEventResults(piIdArray[i], piEvent, error);
             i++;
-            err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
+            err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize,
                                  &piEvent.istat, NULL, &piEvent.timestamp, &error, GETNEXT);
         } while (!err);
     }
@@ -324,7 +318,7 @@ void CtiFDRPiNotify::forceUpdateAllPoints()
   }
 }
 
-void CtiFDRPiNotify::processPiEventResults(PiPointId piId, PI_EVENT &piEvent, int32 error ) 
+void CtiFDRPiNotify::processPiEventResults(PiPointId piId, PI_EVENT &piEvent, int32 error )
 {
     // remove local offset (might not be thread-safe)
     time_t timeToSend = piToYukonTime(piEvent.timestamp);
@@ -338,7 +332,7 @@ void CtiFDRPiNotify::processPiEventResults(PiPointId piId, PI_EVENT &piEvent, in
           ++myIter)
     {
         const PiPointInfo &info = (*myIter).second;
-      
+
         // pisn_evmesceptions doesn't return error codes per point, default to 0
         handlePiUpdate(info, piEvent.drval, piEvent.ival, piEvent.istat, timeToSend, error);
     }

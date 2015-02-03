@@ -1,18 +1,5 @@
 #include "precompiled.h"
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
-#include <process.h>
-#include "os2_2w32.h"
-#include "cticalls.h"
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-
 #include "cparms.h"
 #include "queues.h"
 #include "dsm2.h"
@@ -37,6 +24,8 @@
 #include "dev_ccu.h"
 #include "dev_ccu721.h"
 #include "prot_emetcon.h"
+
+#include <sys\timeb.h>
 
 using namespace std;
 using Cti::ThreadStatusKeeper;
@@ -205,7 +194,7 @@ struct buildLGRPQ
 };
 
 /* Thread to process and dispatch entries from Queue & ACTIN queues */
-void QueueThread (void *Arg)
+void QueueThread()
 {
     USHORT Port, Remote;
     DWORD  dwWait = 0;
@@ -1150,7 +1139,7 @@ struct kick
 };
 
 /* Thread to kick the CCU-711 if no activity and it might have data */
-void KickerThread (void *Arg)
+void KickerThread()
 {
     USHORT Port, Remote;
     ULONG i;
@@ -1683,7 +1672,7 @@ YukonError_t DeQueue (INMESS &InMessage)
 
                         PorterStatisticsManager.newCompletion( ResultMessage.Port, InMessage.DeviceID, ResultMessage.TargetID, ResultMessage.ErrorCode, ResultMessage.MessageFlags );
 
-                  		boost::optional<std::string> writeError;
+                        boost::optional<std::string> writeError;
 
                         /* Now send it back */
                         try
@@ -1702,7 +1691,7 @@ YukonError_t DeQueue (INMESS &InMessage)
                         {
                             writeError = ex.what();
                         }
-                        
+
                         if( writeError )
                         {
                             CTILOG_ERROR(dout, "Could not write to the Return Nexus"<<

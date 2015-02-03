@@ -72,7 +72,7 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         unsigned int getHeaderLength() override;
 
     private:
-        DnpId ForeignToYukonId(CtiFDRDestination pointDestination);
+        DnpId ForeignToYukonId(const CtiFDRDestination &pointDestination);
         bool  YukonToForeignQuality(const int aQuality, const CtiTime lastTimeStamp, const CtiTime Now);
         int processScanSlaveRequest(ServerConnection &connection, const char *data, unsigned int size);
         int processControlRequest  (ServerConnection &connection, const char *data, unsigned int size);

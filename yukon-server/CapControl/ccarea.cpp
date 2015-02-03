@@ -234,7 +234,7 @@ CtiCCArea& CtiCCArea::setReEnableAreaFlag(bool flag)
 void CtiCCArea::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
 
     CtiCCSubstationPtr currentSubstation = NULL;
@@ -254,7 +254,7 @@ void CtiCCArea::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capM
 void CtiCCArea::checkAndUpdateChildVoltReductionFlags()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
     bool isChildSubstationReducing = false;
 

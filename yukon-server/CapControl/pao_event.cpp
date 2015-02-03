@@ -1,21 +1,8 @@
-/*-----------------------------------------------------------------------------
-    Filename:  pao_event.cpp
-
-    Programmer:  Julie Richter
-
-    Description:
-
-    Initial Date:  1/27/2005
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2005
------------------------------------------------------------------------------*/
-
 #include "precompiled.h"
-#include "dbaccess.h"
-#include "connection.h"
-#include "msg_dbchg.h"
-#include "capcontroller.h"
-#include "pao_schedule.h"
+
+#include "pao_event.h"
+#include "row_reader.h"
+#include "ccutil.h"
 
 using Cti::CapControl::setVariableIfDifferent;
 using std::string;

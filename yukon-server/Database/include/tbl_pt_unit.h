@@ -11,8 +11,6 @@
 #include "tbl_unitmeasure.h"
 
 #include <limits.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 
 class IM_EX_CTIYUKONDB CtiTablePointUnit : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable

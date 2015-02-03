@@ -1,19 +1,18 @@
 #pragma once
 
-#include "row_reader.h"
-#include "loggable.h"
+namespace Cti {
+   class RowReader;
+}
+
 #include "dlldefs.h"
-#include "dllbase.h"
-#include "dbaccess.h"
+#include "loggable.h"
 
 class IM_EX_CTIYUKONDB CtiTableRepeaterRoute : public Cti::Loggable
 {
-private:
-
-   LONG                 _routeID;
-   LONG                 DeviceID;
-   INT                  VarBit;
-   INT                  RepeaterOrder;
+   long _routeID;
+   long _deviceID;
+   int  _varBit;
+   int  _repeaterOrder;
 
 public:
 
@@ -21,16 +20,13 @@ public:
 
    virtual std::string toString() const override;
 
-   LONG getDeviceID()      const {  return DeviceID;       };
-   LONG getRouteID()       const {  return _routeID;       };
-   INT  getVarBit()        const {  return VarBit;         };
-   INT  getRepeaterOrder() const {  return RepeaterOrder;  };
+   LONG getDeviceID()      const {  return _deviceID;       };
+   LONG getRouteID()       const {  return _routeID;        };
+   INT  getVarBit()        const {  return _varBit;         };
+   INT  getRepeaterOrder() const {  return _repeaterOrder;  };
 
    static std::string getSQLCoreStatement();
 
-   RWBoolean operator<( const CtiTableRepeaterRoute& t2 );
-   RWBoolean operator==( const CtiTableRepeaterRoute& t2 );
-
-   static std::string getTableName();
+   bool operator<(const CtiTableRepeaterRoute& t2) const;
 };
 

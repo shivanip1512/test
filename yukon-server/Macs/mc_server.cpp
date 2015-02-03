@@ -146,7 +146,7 @@ void CtiMCServer::run()
 
                 if( gMacsDebugLevel & MC_DEBUG_EVENTS )
                 {
-                    CTILOG_DEBUG(dout, "Checking event queue"<< 
+                    CTILOG_DEBUG(dout, "Checking event queue"<<
                             _scheduler.dumpEventQueue());
                 }
 
@@ -481,8 +481,7 @@ void CtiMCServer::postScriptFunction(CtiInterpreter *interp)
 
     if( interp != NULL && (tclInterpreter = interp->getTclInterpreter()) != NULL )
     {
-        char* jobIdStr = Tcl_GetVar(tclInterpreter, "DeviceReadLogId", 0 );
-        if( jobIdStr != NULL )
+        if( const char* jobIdStr = Tcl_GetVar(tclInterpreter, "DeviceReadLogId", 0 ) )
         {
             jobId = atoi(jobIdStr);
             Tcl_UnsetVar(tclInterpreter, "DeviceReadLogId", 0 );

@@ -5,6 +5,7 @@
 #include "fdrpoint.h"
 #include "fdrdestination.h"
 #include "logger.h"
+#include "dllbase.h"  //  for Boost_char_tokenizer
 #include "guard.h"
 
 using std::string;

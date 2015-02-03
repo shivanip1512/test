@@ -1,29 +1,12 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_dbchg
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_dbchg.cpp-arc  $
-* REVISION     :  $Revision: 1.7.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <rw\thr\mutex.h>
-#include <rw/collect.h>
 
 #include "collectable.h"
 #include "msg_dbchg.h"
 #include "dlldefs.h"
 #include "ctibase.h"
 #include "logger.h"
+
+using namespace std;
 
 DEFINE_COLLECTABLE( CtiDBChangeMsg, MSG_DBCHANGE );
 

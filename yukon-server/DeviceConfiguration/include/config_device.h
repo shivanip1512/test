@@ -2,7 +2,6 @@
 
 #include "yukon.h"
 #include "dllbase.h"
-#include "hashkey.h"
 
 #include <boost/shared_ptr.hpp>
 #include <boost/optional.hpp>

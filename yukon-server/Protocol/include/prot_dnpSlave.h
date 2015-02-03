@@ -20,7 +20,7 @@ public:
     void setOptions( int options, int seqNumber=0 );
 
     YukonError_t slaveDecode( CtiXfer &xfer );
-    int slaveGenerate( CtiXfer &xfer );
+    YukonError_t slaveGenerate( CtiXfer &xfer );
     void slaveTransactionComplete();
 
     void addInputPoint(const input_point &ip);

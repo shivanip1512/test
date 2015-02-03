@@ -4,9 +4,9 @@
 #include "guard.h"
 #include "thread.h"
 
-#include <tcl.h>
+#include <tcl/tcl.h>
 
-#include <rw/thr/barrier.h>
+#include <boost/thread/barrier.hpp>
 
 #include <set>
 
@@ -54,7 +54,7 @@ private:
         WAITING
     };
 
-    RWBarrier _eval_barrier;
+    boost::barrier _eval_barrier;
 
     void (*preEvalFunction)(CtiInterpreter* interp);
     void (*postEvalFunction)(CtiInterpreter* interp);

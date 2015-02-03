@@ -26,7 +26,6 @@
 #include "dev_macro.h"
 #include "dev_grp_ripple.h"
 #include "logger.h"
-#include "hashkey.h"
 #include "pt_numeric.h"
 #include "numstr.h"
 #include "rte_base.h"

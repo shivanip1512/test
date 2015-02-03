@@ -2,9 +2,6 @@
 
 #include <limits.h>
 
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
-
 #include "dlldefs.h"
 #include "dllbase.h"
 #include "dbmemobject.h"

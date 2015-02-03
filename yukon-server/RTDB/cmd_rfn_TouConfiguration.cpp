@@ -157,21 +157,21 @@ RfnCommandResult RfnTouConfigurationCommand::decodeCommand(const CtiTime now, co
 
     boost::optional<string> statusDesc = mapFind( statusItems, statusCode );
 
-    validate( Condition( statusDesc, ClientErrors::InvalidData )
+    validate( Condition( !! statusDesc, ClientErrors::InvalidData )
             << "Invalid status - (" << statusCode << ")" );
 
     // decode asc/asq
 
     boost::optional<std::string> additionalStatusDesc = findDescriptionForAscAsq( response[2], response[3] );
 
-    validate( Condition( additionalStatusDesc, ClientErrors::InvalidData )
+    validate( Condition( !! additionalStatusDesc, ClientErrors::InvalidData )
             << "Invalid Additional Status (ASC: " << CtiNumStr(response[2]).xhex(2) << ", ASCQ: " << CtiNumStr(response[3]).xhex(2) << ")" );
 
     // decode tou state
 
     _touState_received = mapFind( touStateItems, touStateCode );
 
-    validate( Condition( _touState_received, ClientErrors::InvalidData )
+    validate( Condition( !! _touState_received, ClientErrors::InvalidData )
             << "Invalid TOU state - (" << touStateCode << ")");
 
     string touStateDesc = ( *_touState_received == TouEnable ) ? "Enabled" : "Disabled";
@@ -356,7 +356,7 @@ RfnCommand::Bytes RfnTouScheduleSetConfigurationCommand::createCommandData( cons
 
                 boost::optional<Rate> rate = Cti::mapFind( rateResolver, rate_str );
 
-                validate( Condition( rate, ClientErrors::BadParameter )
+                validate( Condition( !! rate, ClientErrors::BadParameter )
                         << "Invalid rate for " << scheduleName << " - (" << rate_str << ")" );
 
                 setBits_lEndian(tlv.value, rate_nbr*3, 3, *rate);
@@ -373,7 +373,7 @@ RfnCommand::Bytes RfnTouScheduleSetConfigurationCommand::createCommandData( cons
 
         boost::optional<Rate> rate = Cti::mapFind( rateResolver, schedule_to_send._defaultRate );
 
-        validate( Condition( rate, ClientErrors::BadParameter )
+        validate( Condition( !! rate, ClientErrors::BadParameter )
                 << "Invalid default rate - (" << schedule_to_send._defaultRate << ")" );
 
         tlv.value.push_back( (unsigned char)*rate );
@@ -558,7 +558,7 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnCommandResult& 
         const unsigned char rate = getValueFromBits_lEndian( value, rate_nbr*3, 3 );
         boost::optional<string> rate_str = mapFind( rateItems, rate );
 
-        validate( Condition( rate_str, ClientErrors::InvalidData )
+        validate( Condition( !! rate_str, ClientErrors::InvalidData )
                 << "Invalid schedule rate - (" << rate << ")");
 
         result.description += string(" ") + switchRates[rate_nbr] + " rate - " + *rate_str + "\n";
@@ -590,7 +590,7 @@ void RfnTouScheduleConfigurationCommand::decodeDefaultTouRate( RfnCommandResult&
     const unsigned char rate = value[0];
     boost::optional<string> rate_str = mapFind( rateItems, rate );
 
-    validate( Condition( rate_str, ClientErrors::InvalidData )
+    validate( Condition( !! rate_str, ClientErrors::InvalidData )
             << "Invalid default rate - (" << rate << ")");
 
     result.description += "Default TOU rate : " + *rate_str + "\n";
@@ -624,7 +624,7 @@ RfnTouScheduleConfigurationCommand::ScheduleNbr RfnTouScheduleConfigurationComma
 {
     boost::optional<ScheduleNbr> schedule_nbr = Cti::mapFind( scheduleResolver, schedule_name );
 
-    validate( Condition( schedule_nbr, ClientErrors::BadParameter )
+    validate( Condition( !! schedule_nbr, ClientErrors::BadParameter )
             << "Invalid schedule - (" << schedule_name << ")" );
 
     return *schedule_nbr;
@@ -968,7 +968,7 @@ RfnTouCriticalPeakCommand::RfnTouCriticalPeakCommand( const std::string & rate, 
 
     boost::optional<Rate>   rateLookup = Cti::mapFind( rateResolver, rate );
 
-    validate( Condition( rateLookup, ClientErrors::BadParameter )
+    validate( Condition( !! rateLookup, ClientErrors::BadParameter )
             << "Invalid rate - (" << rate << ")" );
 
     _rate = *rateLookup;

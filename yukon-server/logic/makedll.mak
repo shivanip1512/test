@@ -1,5 +1,4 @@
 !include $(COMPILEBASE)\global.inc
-!include $(COMPILEBASE)\rwglobal.inc
 
 DLLDEF=..\include\logic.def
 
@@ -8,11 +7,11 @@ INCLPATHS+= \
 -I$(TCL)\include \
 -I$(MSG)\include  \
 -I$(MESSAGE)\include \
--I$(RW) \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 
 INTERPOBJS=\
+$(PRECOMPILED_OBJ) \
 logic.obj
 
 CTILIBS=\
@@ -32,7 +31,7 @@ logic.dll:  $(INTERPOBJS) Makefile $(OBJ)\logic.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(INTERPOBJS) -link $(RWLIBS) $(BOOST_LIBS) $(CTILIBS) $(TCL_LIBS) advapi32.lib -link /def:$(DLLDEF) logic.res
+                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(INTERPOBJS) -link $(BOOST_LIBS) $(CTILIBS) $(TCL_LIBS) advapi32.lib -link /def:$(DLLDEF) logic.res
                 -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                 -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                 -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -68,7 +67,7 @@ clean:
 .cpp.obj:
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) /D_DLL_INTERP -I..\include $(INCLPATHS) -Fo$(OBJ)\ -c $<
+        $(CC) $(CCOPTS) $(DLLFLAGS) $(PCHFLAGS) /D_DLL_INTERP -I..\include $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
 
 ######################################################################################

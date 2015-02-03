@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 #include "ctitime.h"
 
@@ -53,7 +49,7 @@ public:
    virtual ~CtiTableMeterReadLog() {}
 
    CtiTableMeterReadLog& operator=(const CtiTableMeterReadLog& aRef);
-   virtual RWBoolean operator<(const CtiTableMeterReadLog& aRef) const;
+   virtual bool operator<(const CtiTableMeterReadLog& aRef) const;
 
    virtual void Insert();
    virtual void Insert(Cti::Database::DatabaseConnection &conn);
@@ -71,7 +67,7 @@ public:
    CtiTableMeterReadLog&   setDeviceID(LONG id);
    CtiTableMeterReadLog&   setRequestLogID(LONG id);
    CtiTableMeterReadLog&   setStatusCode(LONG code);
-   CtiTableMeterReadLog&   setTime(const CtiTime &rwt);
+   CtiTableMeterReadLog&   setTime(const CtiTime &newTime);
 };
 
 typedef shared_ptr< CtiTableMeterReadLog > CtiTableMeterReadLogSPtr;

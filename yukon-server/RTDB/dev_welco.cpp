@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_welco
-*
-* Date:   2/15/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.41.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:42 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "cparms.h"
@@ -39,7 +26,7 @@
 #include "dlldefs.h"
 #include "utility.h"
 
-#define DEBUG_PRINT_DECODE 0
+#include <sys/timeb.h>
 
 using std::string;
 using std::endl;

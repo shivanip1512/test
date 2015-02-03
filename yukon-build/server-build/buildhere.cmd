@@ -13,22 +13,17 @@ setlocal
 
 set cwd=%cd%
 
-rem Make Visual Studio 2008 toolset available.
+rem Make Visual Studio toolset available.
 
-if exist "C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat" (
-        call "C:\Program Files\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat"
+if exist "C:\Program Files\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" (
+        call "C:\Program Files\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
 ) else (
-        if exist "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat" (
-                call "C:\Program Files (x86)\Microsoft Visual Studio 9.0\VC\bin\vcvars32.bat"
+        if exist "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" (
+                call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
         ) else (
-                echo Couldn't locate Visual Studio 2008 toolset.
+                echo Couldn't locate Visual Studio toolset.
         )
 )
-
-rem Roguewave configuration settings.
-
-set rw=
-set rwbuildlevel=12
 
 rem Preset the exit code to failure.  This will only be set to 0 on a successful compilation.
 
@@ -39,7 +34,7 @@ rem     --exit
 rem             exits the script after completion and returns the build.exe return value.
 rem     --debug
 rem             build in debug mode.  Release mode is the default.
-rem     --basedir directory    
+rem     --basedir directory
 rem             sets the base directory to the supplied directory
 rem     --labels build-version build-version-details
 rem             set the corresponding build information labels
@@ -60,15 +55,14 @@ if "%~1" == "" goto Done_Processing
         shift
         goto Process_Args
     )
-    
+
     if /i "%~1" == "--debug" (
         set debug=true
         set build_mode=DEBUG
-        set rwbuildlevel=15
         shift
         goto Process_Args
     )
-    
+
     if /i "%~1" == "--basedir" (
         if "%~2" == "" (
             echo Missing Argument to --basedir:  --basedir directory
@@ -80,7 +74,7 @@ if "%~1" == "" goto Done_Processing
         )
         goto Process_Args
     )
-    
+
     if /i "%~1" == "--labels" (
         if "%~3" == "" (
             echo Missing Argument to --labels:  --labels build-version build-version-details
@@ -95,7 +89,7 @@ rem The following preserves any special characters that may be passed in on the 
         )
         goto Process_Args
     )
-    
+
     set _build_args=%_build_args% %~1
     shift
     goto Process_Args

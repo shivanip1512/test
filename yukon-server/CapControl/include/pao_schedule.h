@@ -1,12 +1,14 @@
 #pragma once
 
-#include "row_reader.h"
-
-#include "ctibase.h"
-#include "logger.h"
-#include "pao_event.h"
 #include "dbmemobject.h"
-                       
+#include "ctitime.h"
+
+namespace Cti
+{
+class RowReader;
+}
+
+
 class CtiPAOSchedule  : public CtiMemDBObject
 {
 public:

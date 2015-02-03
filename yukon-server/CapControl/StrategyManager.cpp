@@ -9,8 +9,8 @@
 const StrategyManager::SharedPtr StrategyManager::_defaultStrategy( new NoStrategy );
 
 
-StrategyManager::StrategyManager( std::auto_ptr<StrategyLoader> loader )
-    : _loader( loader )
+StrategyManager::StrategyManager( std::unique_ptr<StrategyLoader> loader )
+    : _loader( std::move(loader) )
 {
 
 }

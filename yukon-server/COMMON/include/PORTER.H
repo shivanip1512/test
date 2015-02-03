@@ -4,7 +4,6 @@
 
 class CtiPort;
 class CtiDeviceBase;
-class CtiHashKey;
 
 /* Include the btrieve error defines */
 #include "dsm2.h"

@@ -72,11 +72,6 @@ void CtiDeviceGroupPoint::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 YukonError_t CtiDeviceGroupPoint::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&tempOut, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    YukonError_t nRet = ClientErrors::None;
-    string resultString;
-
-    CtiRouteSPtr Route;
-
     bool control = parse.getControlled();   // Is is controlled?
 
     // Add these two items to the list for control accounting!
@@ -100,16 +95,11 @@ YukonError_t CtiDeviceGroupPoint::ExecuteRequest(CtiRequestMsg *pReq, CtiCommand
         reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, removeCommandDynamicText(parse.getCommandStr()) );
     }
 
-    return nRet;
+    return ClientErrors::None;
 }
 
 INT CtiDeviceGroupPoint::generateRequest(CtiRequestMsg *pReq, CtiCommandParser &parse)
 {
-    INT   nRet = ClientErrors::None;
-    RWCString resultString;
-
-    CtiRouteSPtr Route;
-
     bool control = parse.getControlled();   // Is is controlled?
 
     // Add these two items to the list for control accounting!
@@ -130,7 +120,7 @@ INT CtiDeviceGroupPoint::generateRequest(CtiRequestMsg *pReq, CtiCommandParser &
         pReq->setMessagePriority( MAXPRIORITY - 1 );    // Make it sing!
     }
 
-    return nRet;
+    return ClientErrors::None;
 }
 
 LONG CtiDeviceGroupPoint::getRouteID()

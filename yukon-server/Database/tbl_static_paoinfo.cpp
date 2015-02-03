@@ -71,11 +71,6 @@ CtiTableStaticPaoInfo::CtiTableStaticPaoInfo(long paoid, PaoInfoKeys k) :
 }
 
 
-CtiTableStaticPaoInfo::~CtiTableStaticPaoInfo()
-{
-}
-
-
 CtiTableStaticPaoInfo& CtiTableStaticPaoInfo::operator=(const CtiTableStaticPaoInfo& aRef)
 {
     if(this != &aRef)
@@ -91,18 +86,6 @@ CtiTableStaticPaoInfo& CtiTableStaticPaoInfo::operator=(const CtiTableStaticPaoI
     return *this;
 }
 
-
-bool CtiTableStaticPaoInfo::operator<(const CtiTableStaticPaoInfo &rhs) const
-{
-    //  there should not be more than one of these in any device's collection of table entries, so this is safe for a total ordering
-    //    it makes set-based lookups possible, as well - i didn't want to use a map in the device
-    return getKey() < rhs.getKey();
-}
-
-bool CtiTableStaticPaoInfo::hasRow() const
-{
-    return (_entry_id > 0);
-}
 
 string CtiTableStaticPaoInfo::getSQLCoreStatement()
 {

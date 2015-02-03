@@ -1,11 +1,5 @@
 #include "precompiled.h"
 
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <rw/thr/thrfunc.h>
-#include <rw/thr/mutex.h>
-
 #include "queue.h"
 #include "netports.h"
 #include "message.h"
@@ -19,6 +13,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 #include "connection_client.h"
 #include "amq_constants.h"
+
+#include <iostream>
+using namespace std;
 
 void main( int argc, char **argv )
 {
@@ -38,7 +35,7 @@ void main( int argc, char **argv )
         Connect.start();
 
         // Send registration message
-        Connect.WriteConnQue( new CtiRegistrationMsg(argv[1], rwThreadId(), false ));
+        Connect.WriteConnQue( new CtiRegistrationMsg(argv[1], GetCurrentThreadId(), false ));
 
         // Register for a few points which "test.exe" will change.
         Connect.WriteConnQue( new CtiPointRegistrationMsg(REG_EVENTS | REG_ALARMS | REG_NO_UPLOAD ));

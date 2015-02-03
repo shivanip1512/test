@@ -1,5 +1,4 @@
 include $(COMPILEBASE)\global.inc
-include $(COMPILEBASE)\rwglobal.inc
 
 
 INCLPATHS+= \
@@ -7,7 +6,6 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
--I$(RW) \
 -I$(ACTIVEMQ_INCLUDE) \
 -I$(APR_INCLUDE) \
 -I$(THRIFT_INCLUDE) \
@@ -29,6 +27,7 @@ INCLPATHS+= \
 
 
 OBJS=\
+$(PRECOMPILED_OBJ) \
 rfn_e2e_messenger.obj \
 RfnE2eMsgSerialization.obj \
 dll_rfn_e2e.obj \
@@ -39,7 +38,6 @@ LIBS = \
 $(COMPILEBASE)\lib\ctibase.lib \
 $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctithriftmsg.lib \
-$(RWLIBS) \
 $(BOOST_LIBS) \
 $(ACTIVEMQ_LIB) \
 $(THRIFT_LIB) \
@@ -63,14 +61,14 @@ $(MESSAGE_FULLBUILD) :
         @touch $@
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(PARALLEL) $(INCLPATHS) /D_DLL_MESSAGE -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(OBJS)] $(SERIALIZATION_CPP)
+        $(CC) $(CCOPTS) $(DLLFLAGS) $(PCHFLAGS) $(PARALLEL) $(INCLPATHS) /D_DLL_MESSAGE -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(OBJS)] $(SERIALIZATION_CPP)
 
 
 rfn-e2e.dll:    $(MESSAGE_FULLBUILD) $(OBJS) $(SERIALIZATION_OBJS) Makefile $(OBJ)\rfn-e2e.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) -link $(LIBS) $(LINKFLAGS) rfn-e2e.res
+                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(OBJS) -link $(LIBS) rfn-e2e.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -112,7 +110,7 @@ $(BIN)\*.exe
 .cpp.obj:
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) /D_DLL_RFN_E2E -Fo$(OBJ)\ -c $<
+        $(CC) $(CCOPTS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) /D_DLL_RFN_E2E -Fo$(OBJ)\ -c $<
 
 
 ######################################################################################

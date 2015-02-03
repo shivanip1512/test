@@ -1,9 +1,5 @@
 #pragma once
 
-#include <rw/thr/rwlock.h>
-//#include <rw/thr/semaphore.h>
-#include <ostream>
-
 #include "dlldefs.h"
 #include "critical_section.h"
 #include "guard.h"

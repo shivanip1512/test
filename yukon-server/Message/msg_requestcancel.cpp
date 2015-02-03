@@ -1,33 +1,13 @@
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_requestcancel
-*
-* Date:   1/22/2007
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_queuedata.h-arc  $
-* REVISION     :  $Revision: 1.3.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-#include <iostream>
-#include <iomanip>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
 
 #include "message.h"
 #include "logger.h"
 #include "msg_requestcancel.h"
 #include "collectable.h"
 
+using namespace std;
 
 DEFINE_COLLECTABLE( CtiRequestCancelMsg, MSG_REQUESTCANCEL );
-
-//REGISTER_MSG_FACTORY( CtiRequestCancelMsg );
 
 CtiRequestCancelMsg::CtiRequestCancelMsg(
                                 long       requestId,

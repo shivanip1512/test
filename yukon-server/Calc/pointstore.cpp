@@ -1,70 +1,47 @@
 #include "precompiled.h"
 #include "pointstore.h"
 
+#include "std_helper.h"
+
+#include <boost/range/algorithm/transform.hpp>
+#include <boost/smart_ptr/scoped_ptr.hpp>
+
 using std::endl;
 
-RWDEFINE_NAMED_COLLECTABLE(CtiPointStoreElement,"CtiPointStoreElement")
-
-CtiPointStoreElement *CtiPointStore::insertPointElement( long pointNum, long dependentId, enum PointUpdateType updateType )
+CtiPointStoreElement *CtiPointStore::insert( long pointNum, long dependentId, enum PointUpdateType updateType )
 {
-    CtiPointStoreElement *newElement;
-    CtiHashKey *newHashKey;
-
     try
     {
-        if( pointNum == 0 )
-            return NULL;
-
-        newElement = CTIDBG_new CtiPointStoreElement( pointNum );
-        newHashKey = CTIDBG_new CtiHashKey( pointNum );
-
-        //  if the insertion wasn't successful, that means this point is already in the pointstore
-        if( !(this->insert( newHashKey, newElement )) )
+        if( pointNum )
         {
-            delete newElement;
-            //  may as well use the indexing hashkey before deleting it...
-            newElement = (CtiPointStoreElement *)((*this).findValue(newHashKey));
-            delete newHashKey;
-        }
+            IdToElementPtrMap::iterator itr;
+            boost::tie(itr, boost::tuples::ignore) = instance()._store.insert(pointNum, new CtiPointStoreElement(pointNum));
 
-        //  in either case, newElement now points to the CtiPointStoreElement of pointID pointNum...
-
-        //  we append the pointID of the calc point that is dependent on it...
-        if( newElement != rwnil
-            && ( updateType == allUpdate || updateType == anyUpdate || updateType == periodicPlusUpdate || dependentId == 0)
-            && dependentId >= 0 )// this be for the calc points cause they ain't got no dependents
-        {
-            newElement->appendDependent( dependentId, updateType );
-        }
-    }
-    catch(...)
-    {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-    }
-
-    return newElement;
-}
-
-void CtiPointStore::removePointElement( long pointNum )
-{
-    CtiPointStoreElement *element;
-    CtiHashKey *hashKey;
-
-    try
-    {
-        if( pointNum !=0 )
-        {
-            hashKey = CTIDBG_new CtiHashKey( pointNum );
-
-            element = (CtiPointStoreElement *)((*this).findValue(hashKey));
-            this->removeAll( hashKey );
-
-            if( element != rwnil )
+            //  we append the pointID of the calc point that is dependent on it...
+            if( (updateType == allUpdate || updateType == anyUpdate || updateType == periodicPlusUpdate || dependentId == 0) 
+                && dependentId >= 0 )
             {
-                delete element;
+                itr->second->appendDependent(dependentId);
             }
 
-            delete hashKey;
+            return itr->second;
+        }
+    }
+    catch(...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+    }
+
+    return 0;
+}
+
+void CtiPointStore::remove( long pointNum )
+{
+    try
+    {
+        if( pointNum )
+        {
+            instance()._store.erase(pointNum);
         }
     }
     catch(...)
@@ -73,31 +50,53 @@ void CtiPointStore::removePointElement( long pointNum )
     }
 }
 
-/* Pointer to the singleton instance of CtiPointStore
-   Instantiate lazily by Instance */
-CtiPointStore* CtiPointStore::_instance = NULL;
-
-/*---------------------------------------------------------------------------
-    getInstance
-
-    Returns a pointer to the singleton instance of CtiPointStore
----------------------------------------------------------------------------*/
-CtiPointStore *CtiPointStore::getInstance()
+std::set<long> CtiPointStore::getPointIds()
 {
-    if ( _instance == NULL )
+    std::set<long> results;
+
+    for each( IdToElementPtrMap::value_type &element in instance()._store )
     {
-        _instance = CTIDBG_new CtiPointStore();
+        results.insert(element.second->getPointNum());
     }
 
-    return _instance;
+    return results;
 }
 
-void CtiPointStore::removeInstance()
+CtiPointStoreElement *CtiPointStore::find( long pointId )
 {
-    if ( _instance != NULL )
+    IdToElementPtrMap::iterator itr = instance()._store.find(pointId);
+
+    if( itr != instance()._store.end() )
     {
-        delete _instance;
-        _instance = NULL;
+        return itr->second;
     }
+
+    return 0;
+}
+
+
+namespace {
+/* Pointer to the singleton instance of CtiPointStore
+   Instantiate lazily by Instance */
+boost::scoped_ptr<CtiPointStore> scopedInstance;
+}
+
+CtiPointStore::CtiPointStore()
+{
+}
+
+CtiPointStore &CtiPointStore::instance()
+{
+    if( ! scopedInstance )
+    {
+        scopedInstance.reset(new CtiPointStore);
+    }
+
+    return *scopedInstance;
+}
+
+void CtiPointStore::freeInstance()
+{
+    scopedInstance.reset();
 }
 

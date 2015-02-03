@@ -41,9 +41,6 @@ public:
     typedef CtiSmartMap< CtiRouteBase >::insert_pair    insert_pair;
     typedef CtiSmartMap< CtiRouteBase >::const_spiterator  const_spiterator;
 
-    CtiRouteManager();
-    virtual ~CtiRouteManager();
-
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d);
 
     virtual std::string toString() const override;

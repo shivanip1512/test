@@ -479,7 +479,7 @@ StringMessageContainer::~StringMessageContainer()
 
 void StringMessageContainer::setMessage( CtiMessage* m )
 {
-    shared_ptr<CtiMessage> ptr(m);
+    boost::shared_ptr<CtiMessage> ptr(m);
     msg = ptr;
 }
 void StringMessageContainer::setName( string n )
@@ -490,7 +490,7 @@ string StringMessageContainer::getName()
 {
     return name;
 }
-shared_ptr<CtiMessage> StringMessageContainer::getMessage()
+boost::shared_ptr<CtiMessage> StringMessageContainer::getMessage()
 {
     return msg;
 }

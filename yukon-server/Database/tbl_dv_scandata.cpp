@@ -1,8 +1,8 @@
 #include "precompiled.h"
 
-#include "dbaccess.h"
 #include "logger.h"
 #include "tbl_dv_scandata.h"
+#include "database_reader.h"
 #include "database_writer.h"
 #include "database_util.h"
 

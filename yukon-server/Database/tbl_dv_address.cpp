@@ -74,8 +74,6 @@ void CtiTableDeviceAddress::setPostDelay(int d)
 
 void CtiTableDeviceAddress::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    string rwsTemp;
-
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
         CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());

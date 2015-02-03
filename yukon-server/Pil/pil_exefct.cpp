@@ -1,36 +1,31 @@
 #include "precompiled.h"
 
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
 #include "executorfactory.h"
 #include "pil_exefct.h"
 #include "exe_pcreq.h"
 
+#include "message.h"
+#include "logger.h"
+
 CtiExecutor* CtiPILExecutorFactory::getExecutor(CtiMessage* msg)
 {
-   CtiExecutor *Ex = NULL;
+    switch( msg->isA() )
+    {
+        case MSG_PCREQUEST:
+        case MSG_MULTI:
+        {
+            return new CtiRequestExecutor(msg);
+        }
+    }
 
-   switch(msg->isA())
-   {
-   case MSG_PCREQUEST:
-   case MSG_MULTI:
-      {
-         Ex = CTIDBG_new CtiRequestExecutor(msg);
-         break;
-      }
-   default:
-      {
-         Ex = Inherited::getExecutor(msg);
+    if( CtiExecutor *Ex = Inherited::getExecutor(msg) )
+    {
+        return Ex;
+    }
 
-         if(!Ex)
-            cout << "PIL Executor failed to manufacture an executor for " << msg->isA() << endl;
+    CTILOG_WARN(dout,  "Failed to manufacture an executor for " << msg->isA());
 
-         break;
-      }
-   }
-
-   return Ex;
+    return NULL;
 }
 
 

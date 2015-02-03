@@ -1,25 +1,12 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   scansvc
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7.34.1 $
-* DATE         :  $Date: 2008/11/13 17:23:39 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-#include <iostream>
-using namespace std;
-
-#include <rw/thr/thrfunc.h>
 
 #include "scanglob.h"
 #include "scansvc.h"
+
+#include <boost/thread.hpp>
+
+#include <iostream>
+using namespace std;
 
 
 extern INT ScannerMainFunction(INT argc, CHAR** argv);
@@ -92,9 +79,7 @@ void CtiScannerService::Run()
    SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
    //Start scanner
-   RWThreadFunction _scannerThread = rwMakeThreadFunction( ScannerMainFunction, _myargc, _myargv );
-
-   _scannerThread.start();
+   boost::thread _scannerThread( ScannerMainFunction, _myargc, _myargv );
 
    // set service as running
    SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );

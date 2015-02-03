@@ -1,12 +1,3 @@
-// Queue wrapper
-// Thain Spar
-
-
-/* 
- *   Different Queue implementations to replace some of the RW queues.
- *
- */
-
 #pragma once
 
 #include <queue>

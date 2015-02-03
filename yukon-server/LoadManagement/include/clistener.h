@@ -1,9 +1,9 @@
 #pragma once
 
-#include <rw/thr/thread.h>
-
 #include "connection_server.h"
 #include "lmmessage.h"
+
+#include <boost/thread.hpp>
 
 typedef boost::shared_ptr<CtiServerConnection> CtiLMConnectionPtr;
 typedef std::vector<CtiLMConnectionPtr> CtiLMConnectionVec;
@@ -29,12 +29,13 @@ private:
 
     CtiListenerConnection _listenerConnection;
 
-    RWThread _listenerthr;
-    RWThread _checkthr;
+    boost::thread   _listenerthr;
+    boost::thread   _checkthr;
+
     CtiConnection::Que_t _incomingQueue;
 
     CtiLMConnectionVec _connections;
-    RWRecursiveLock<RWMutexLock> _connmutex;
+    CtiCriticalSection _connmutex;
 
     static CtiLMClientListener _instance;
 

@@ -1,29 +1,12 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_pdata
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pdata.cpp-arc  $
-* REVISION     :  $Revision: 1.15.10.1 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
-#include <iostream>
-#include <iomanip>
-
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include "message.h"
 #include "logger.h"
 #include "pointtypes.h"
 #include "msg_pdata.h"
 #include "collectable.h"
 #include "numstr.h"
+
+using namespace std;
 
 DEFINE_COLLECTABLE( CtiPointDataMsg, MSG_POINTDATA );
 

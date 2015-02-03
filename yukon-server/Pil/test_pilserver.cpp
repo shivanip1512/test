@@ -86,22 +86,22 @@ struct Test_PilServer : Cti::Pil::PilServer
     {
         if( groupname == "/pi" )
         {
-            return boost::assign::list_of(3),1,4,1,5,9,2,6,5,3;
+            return { 3,1,4,1,5,9,2,6,5,3 };
         }
         if( groupname == "/meters/collection/testing old-style group" )
         {
-            return boost::assign::list_of(1),2,3,4,5;
+            return { 1,2,3,4,5 };
         }
         if( groupname == "/meters/alternate/testing old-style alternate group" )
         {
-            return boost::assign::list_of(8),7,6,5,4;
+            return { 8,7,6,5,4 };
         }
         if( groupname == "/meters/billing/testing old-style billing group" )
         {
-            return boost::assign::list_of(10),11,12,13,14;
+            return { 10,11,12,13,14 };
         }
 
-        return std::vector<long>();
+        return {};
     }
 
     boost::ptr_vector<CtiMessage> vgList, retList;

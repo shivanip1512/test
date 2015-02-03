@@ -4,8 +4,6 @@
 using namespace std;
 
 #include "ctitime.h"
-#include <rw/thr/thrfunc.h>
-#include <rw/thr/thrutil.h>
 
 #include "dispsvc.h"
 #include "dllvg.h"

@@ -1,22 +1,8 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   portsvc
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10.14.1 $
-* DATE         :  $Date: 2008/11/13 17:23:44 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <iostream>
 using namespace std;
 
-#include <rw/thr/thrfunc.h>
 #include "ctitime.h"
 
 #include "dlldefs.h"
@@ -24,6 +10,8 @@ using namespace std;
 #include "ctibase.h"
 #include "portglob.h"
 #include "utility.h"
+
+#include <boost/thread.hpp>
 
 extern INT PorterMainFunction(INT argc, CHAR** argv);
 
@@ -96,8 +84,7 @@ void CtiPorterService::Run()
    SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
    //Start porter
-   RWThreadFunction _porterThread = rwMakeThreadFunction( PorterMainFunction, _myargc, _myargv );
-   _porterThread.start();
+   boost::thread _porterThread(PorterMainFunction, _myargc, _myargv);
 
    SetThreadName(-1, "PorterSvc");
 

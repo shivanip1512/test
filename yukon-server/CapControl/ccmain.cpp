@@ -10,10 +10,13 @@
 #include "CServiceConfig.h"
 #include "rtdb.h"
 #include "ctibase.h"
-
 #include "module_util.h"
-
 #include "connection_base.h"
+#include "logManager.h"
+
+// Shutdown logging when this object is destroyed
+Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
+
 // Close all yukon messaging connections when this object is destroyed
 Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 

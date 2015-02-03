@@ -2,7 +2,6 @@
 
 #include "logger.h"
 #include "msg_notif_alarm.h"
-#include "rwutil.h"
 
 using namespace std;
 

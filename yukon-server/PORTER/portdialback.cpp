@@ -5,10 +5,6 @@
 #include <iomanip>
 #include <set>
 
-#include <rw/regexp.h>
-#include <rw\ctoken.h>
-#include <rw\thr\mutex.h>
-
 #include "cticalls.h"
 
 #include "cparms.h"

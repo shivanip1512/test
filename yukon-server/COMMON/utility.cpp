@@ -16,6 +16,8 @@
 #include <boost/regex.hpp>
 #include <boost/optional.hpp>
 
+#include <sys/timeb.h>
+
 using namespace std;
 
 using Cti::Database::DatabaseConnection;
@@ -52,24 +54,25 @@ LONG GetMaxLMControl(long pao)
 
 LONG LMControlHistoryIdGen(bool force)
 {
-    static RWMutexLock   mux;
+    static CtiCriticalSection mux;
 
-    LONG tempid = -1;
     static BOOL init_id = FALSE;
     static LONG id = 0;
     static const CHAR sql[] = "SELECT MAX(LMCTRLHISTID) FROM LMCONTROLHISTORY";
 
-    RWMutexLock::TryLockGuard guard(mux);
-
-    int trycnt = 0;
-    while(!guard.isAcquired() && trycnt++ < 20)
+    for( int trycnt = 0; trycnt < 20; trycnt++ )
     {
-        Sleep(500);
-        guard.tryAcquire();
-    }
+        Cti::TryLockGuard<CtiCriticalSection> guard(mux);
 
-    if(guard.isAcquired())
-    {
+        if( ! guard.isAcquired() )
+        {
+            Sleep(500);
+
+            continue;
+        }
+
+        LONG tempid = -1;
+
         if(!init_id || force)
         {
             DatabaseConnection conn;
@@ -97,33 +100,29 @@ LONG LMControlHistoryIdGen(bool force)
             init_id = TRUE;
         }   // Temporary results are destroyed to free the connection
 
-        tempid =  ++id;
-    }
-    else
-    {
-        CTILOG_ERROR(dout, "Unable to acquire mutex for LMControlHistoryGen");
+        return ++id;
     }
 
-    return(tempid);
+    CTILOG_ERROR(dout, "Unable to acquire mutex");
+
+    return -1;
 }
 
 //  force = true on its own will force a database read,
 //    force = true, force_value > 0 will set the id to force_value
 LONG VerificationSequenceGen(bool force, int force_value)
 {
-    LONG tempid = -1;
-
     static LONG vs_id = 0;
-    static RWMutexLock mux;
+    static CtiCriticalSection mux;
 
     static BOOL init_id = false;
     static const CHAR sql[] = "SELECT MAX(CODESEQUENCE) FROM DYNAMICVERIFICATION";
 
+    for( int trycnt = 0; trycnt < 50; trycnt++ )
     {
-        RWMutexLock::TryLockGuard guard(mux);
+        Cti::TryLockGuard<CtiCriticalSection> guard(mux);
 
-        int trycnt = 0;
-        while( !guard.isAcquired() && trycnt++ < 50 )
+        if( ! guard.isAcquired() )
         {
             if( !(trycnt % 10) )
             {
@@ -131,65 +130,62 @@ LONG VerificationSequenceGen(bool force, int force_value)
             }
 
             Sleep(500);
-            guard.tryAcquire();
+
+            continue;
         }
 
-        if( guard.isAcquired() )
+        //  is the value being forced?
+        if( force && force_value > 0 )
         {
-            //  is the value being forced?
-            if( force && force_value > 0 )
+            if( force_value >= vs_id )
             {
-                if( force_value >= vs_id )
-                {
-                    tempid = vs_id = force_value;
-                    init_id = true;
-                }
-                else
-                {
-                    CTILOG_ERROR(dout, "force_value < vs_id (" << force_value << " < " << vs_id << ")");
-                }
+                init_id = true;
+
+                return vs_id = force_value;
+            }
+
+            CTILOG_ERROR(dout, "force_value < vs_id (" << force_value << " < " << vs_id << ")");
+
+            return -1;
+        }
+
+        //  do we need to do a database select?
+        if( !init_id || force )
+        {
+            DatabaseConnection conn;
+            DatabaseReader rdr(conn, sql);
+            rdr.execute();
+
+            LONG tempid = -1;
+
+            if(rdr())
+            {
+                rdr >> tempid;
+            }
+            else if( ! rdr.isValid() )
+            {
+                CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
             }
             else
             {
-                //  do we need to do a database select?
-                if( !init_id || force )
-                {
-                    DatabaseConnection conn;
-                    DatabaseReader rdr(conn, sql);
-                    rdr.execute();
-
-                    if(rdr())
-                    {
-                        rdr >> tempid;
-                    }
-                    else if( ! rdr.isValid() )
-                    {
-                        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-                    }
-                    else
-                    {
-                        CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
-                    }
-
-                    if( tempid >= vs_id )
-                    {
-                        vs_id = tempid;
-                    }
-
-                    init_id = true;
-                    // Temporary results are destroyed to free the connection
-                }
-
-                tempid = ++vs_id;
+                CTILOG_INFO(dout, "DB read returned no rows for SQL query: "<< rdr.asString());
             }
+
+            if( tempid >= vs_id )
+            {
+                vs_id = tempid;
+            }
+
+            init_id = true;
+            // Temporary results are destroyed to free the connection
         }
-        else
-        {
-            CTILOG_ERROR(dout, "Unable to acquire mutex for VerificationSequenceGen");
-        }
+
+        return ++vs_id;
     }
 
-    return tempid;
+    CTILOG_ERROR(dout, "Unable to acquire mutex for VerificationSequenceGen");
+
+    return -1;
 }
 
 /**
@@ -201,8 +197,8 @@ LONG VerificationSequenceGen(bool force, int force_value)
  */
 int DynamicPaoStatisticsIdGen()
 {
-    static RWMutexLock mux;
-    RWMutexLock::LockGuard guard(mux);
+    static CtiCriticalSection mux;
+    CtiLockGuard<CtiCriticalSection> guard(mux);
 
     static boost::optional<int> id;
 
@@ -238,8 +234,8 @@ int DynamicPaoStatisticsIdGen()
 
 __int64 ChangeIdGen(bool force)
 {
-    static RWMutexLock   mux;
-    RWMutexLock::LockGuard guard(mux);
+    static CtiCriticalSection   mux;
+    CtiLockGuard<CtiCriticalSection> guard(mux);
 
     __int64 tempid = 0;
     static BOOL init_id = FALSE;
@@ -280,7 +276,7 @@ INT SystemLogIdGen()
 {
     static BOOL init_id = FALSE;
     static INT id = 0;
-    static RWMutexLock   mux;
+    static CtiCriticalSection   mux;
     static const CHAR sql[] = "SELECT MAX(LOGID) FROM SYSTEMLOG";
 
 
@@ -306,7 +302,7 @@ INT SystemLogIdGen()
         init_id = TRUE;
     }   // Temporary results are destroyed to free the connection
 
-    RWMutexLock::LockGuard guard(mux);
+    CtiLockGuard<CtiCriticalSection> guard(mux);
     return(++id);
 }
 
@@ -347,7 +343,7 @@ INT CCEventLogIdGen()
 {
     static BOOL init_id = FALSE;
     static INT id = 0;
-    static RWMutexLock   mux;
+    static CtiCriticalSection   mux;
     static const CHAR sql[] = "SELECT MAX(LOGID) FROM CCEVENTLOG";
 
 
@@ -373,7 +369,7 @@ INT CCEventLogIdGen()
         init_id = TRUE;
     }   // Temporary results are destroyed to free the connection
 
-    RWMutexLock::LockGuard guard(mux);
+    CtiLockGuard<CtiCriticalSection> guard(mux);
     return(++id);
 }
 
@@ -381,7 +377,7 @@ INT CCEventSeqIdGen()
 {
     static BOOL init_id = FALSE;
     static INT id = 0;
-    static RWMutexLock   mux;
+    static CtiCriticalSection   mux;
     static const CHAR sql[] = "SELECT MAX(SEQID) FROM CCEVENTLOG";
 
 
@@ -407,7 +403,7 @@ INT CCEventSeqIdGen()
         init_id = TRUE;
     }   // Temporary results are destroyed to free the connection
 
-    RWMutexLock::LockGuard guard(mux);
+    CtiLockGuard<CtiCriticalSection> guard(mux);
     return(++id);
 }
 
@@ -670,8 +666,8 @@ bool isRepeater(INT Type)
 int generateTransmissionID()
 {
     static int id = 0;
-    static RWMutexLock   mux;
-    RWMutexLock::LockGuard guard(mux);
+    static CtiCriticalSection   mux;
+    CtiLockGuard<CtiCriticalSection> guard(mux);
     return ++id;
 }
 

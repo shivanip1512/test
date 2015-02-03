@@ -1,139 +1,76 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_base_lite
-*
-* Date:   1/2/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base_lite.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2008/10/28 19:21:41 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
-#include <iostream>
-#include <sstream>
-
 #include "dev_base_lite.h"
+#include "database_connection.h"
+#include "database_reader.h"
 
 using std::string;
 
-CtiDeviceBaseLite::CtiDeviceBaseLite(LONG id) :
-_deviceID(id),
-_portID(0),
-_disableFlag("N"),
-_controlInhibitFlag("N")
+namespace Cti {
+
+DeviceBaseLite::DeviceBaseLite(LONG id) :
+    _deviceID(id),
+    _portID(0),
+    _disableFlag(false),
+    _controlInhibitFlag(false)
 {
 }
 
-CtiDeviceBaseLite::CtiDeviceBaseLite(const CtiDeviceBaseLite& aRef)
+DeviceBaseLite::DeviceBaseLite(const DeviceBaseLite& aRef)
 {
     *this = aRef;
 }
 
-CtiDeviceBaseLite::~CtiDeviceBaseLite()
+DeviceBaseLite::~DeviceBaseLite()
 {
 }
 
-LONG CtiDeviceBaseLite::getID() const
+LONG DeviceBaseLite::getID() const
 {
     return _deviceID;
 }
 
-LONG CtiDeviceBaseLite::getPortID() const
+LONG DeviceBaseLite::getPortID() const
 {
     return _portID;
 }
 
-string CtiDeviceBaseLite::getClass() const
-{
-    return _class;
-}
-string CtiDeviceBaseLite::getName() const
+string DeviceBaseLite::getName() const
 {
     return _name;
 }
 
-string CtiDeviceBaseLite::getDescription() const
-{
-    return _description;
-}
-
-string CtiDeviceBaseLite::getObjectType() const
+string DeviceBaseLite::getObjectType() const
 {
     return _objectType;
 }
 
-string CtiDeviceBaseLite::getDisableFlag() const
+void DeviceBaseLite::setDisableFlag( const bool flag )
 {
-    return _disableFlag;
+    _disableFlag = flag;
 }
-
-CtiDeviceBaseLite& CtiDeviceBaseLite::setDisableFlag( const string &str )
+void DeviceBaseLite::setControlInhibitFlag( const bool flag )
 {
-    _disableFlag = str;
-    return *this;
-}
-CtiDeviceBaseLite& CtiDeviceBaseLite::setControlInhibitFlag( const string &str )
-{
-    _controlInhibitFlag = str;
-    return *this;
-}
-
-string CtiDeviceBaseLite::getControlInhibitFlag() const
-{
-    return _controlInhibitFlag;
+    _controlInhibitFlag = flag;
 }
 
 
-CtiDeviceBaseLite& CtiDeviceBaseLite::setID( LONG id )
-{
-    _deviceID = id;
-    return *this;
-}
-CtiDeviceBaseLite& CtiDeviceBaseLite::setPortID( LONG id )
-{
-    _portID = id;
-    return *this;
-}
-
-CtiDeviceBaseLite& CtiDeviceBaseLite::setName( const string &str )
-{
-    _name = str;
-    return *this;
-}
-CtiDeviceBaseLite& CtiDeviceBaseLite::setClass( const string &str )
-{
-    _class = str;
-    return *this;
-}
-
-CtiDeviceBaseLite& CtiDeviceBaseLite::setDescription( const string &str )
-{
-    _description = str;
-    return *this;
-}
-
-bool CtiDeviceBaseLite::operator<( const CtiDeviceBaseLite &rhs ) const
+bool DeviceBaseLite::operator<( const DeviceBaseLite &rhs ) const
 {
     return(getID() < rhs.getID() );
 }
-bool CtiDeviceBaseLite::operator==( const CtiDeviceBaseLite &rhs ) const
+bool DeviceBaseLite::operator==( const DeviceBaseLite &rhs ) const
 {
     return(getID() == rhs.getID() );
 }
-bool CtiDeviceBaseLite::operator()(const CtiDeviceBaseLite& aRef) const
+bool DeviceBaseLite::operator()(const DeviceBaseLite& aRef) const
 {
     return operator<(aRef);
 }
 
-string CtiDeviceBaseLite::getSQLCoreStatement(long paoid)
+string DeviceBaseLite::getSQLCoreStatement(long paoid)
 {
-    static const string sqlNoID = "SELECT YP.paobjectid, YP.paoclass, YP.paoname, YP.type, YP.description, YP.disableflag, "
+    static const string sqlNoID = "SELECT YP.paobjectid, YP.paoclass, YP.paoname, YP.type, YP.disableflag, "
                                     "DV.controlinhibit "
                                   "FROM YukonPAObject YP "
                                   "JOIN Device DV ON YP.paobjectid = DV.deviceid";
@@ -148,23 +85,30 @@ string CtiDeviceBaseLite::getSQLCoreStatement(long paoid)
     }
 }
 
-void CtiDeviceBaseLite::DecodeDatabaseReader(Cti::RowReader &rdr)
+void DeviceBaseLite::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    rdr["paobjectid"] >> _deviceID;
-    rdr["paoclass"] >> _class;
-    rdr["paoname"] >> _name;
-    rdr["type"] >> _objectType;
-    rdr["description"] >> _description;
-    rdr["disableflag"] >> _disableFlag;
-    rdr["controlinhibit"] >> _controlInhibitFlag;
+    rdr["paobjectid"]  >> _deviceID;
+    rdr["paoname"]     >> _name;
+    rdr["type"]        >> _objectType;
+
+    std::string tmp;
+
+    rdr["paoclass"]    >> tmp;
+    _isGroup = ciStringEqual(tmp, "group");
+
+    rdr["disableflag"] >> tmp;
+    _disableFlag = ciStringEqual(tmp, "Y");
+
+    rdr["controlinhibit"] >> tmp;
+    _controlInhibitFlag = ciStringEqual(tmp, "Y");
 }
 
-string CtiDeviceBaseLite::getTableName()
+string DeviceBaseLite::getTableName()
 {
     return string("YukonPAObject");
 }
 
-bool CtiDeviceBaseLite::Restore()
+bool DeviceBaseLite::Restore()
 {
     {
         static const string sql =  "SELECT YP.paobjectid, YP.paoclass, YP.paoname, YP.type, YP.description, "
@@ -189,33 +133,35 @@ bool CtiDeviceBaseLite::Restore()
     return false;
 }
 
-CtiDeviceBaseLite& CtiDeviceBaseLite::operator=(const CtiDeviceBaseLite& aRef)
+DeviceBaseLite& DeviceBaseLite::operator=(const DeviceBaseLite& aRef)
 {
     if(this != &aRef)
     {
         _deviceID = aRef.getID();
         _portID = aRef.getPortID();
-        _class = aRef.getClass();
         _name = aRef.getName();
         _objectType = aRef.getObjectType();
-        _description = aRef.getDescription();
-        _disableFlag = aRef.getDisableFlag();
-        _controlInhibitFlag = aRef.getControlInhibitFlag();
+        _disableFlag = aRef.isDisabled();
+        _controlInhibitFlag = aRef.isControlInhibited();
+        _isGroup = aRef.isGroup();
     }
     return *this;
 }
 
-bool CtiDeviceBaseLite::isDisabled() const
+bool DeviceBaseLite::isDisabled() const
 {
-    string str(getDisableFlag());
-    std::transform(str.begin(), str.end(), str.begin(), tolower);
-    return (str == "y");
+    return _disableFlag;
 }
 
-bool CtiDeviceBaseLite::isControlInhibited() const
+bool DeviceBaseLite::isControlInhibited() const
 {
-    string str(getControlInhibitFlag());
-    std::transform(str.begin(), str.end(), str.begin(), tolower);
-    return (str == "y");
+    return _controlInhibitFlag;
+}
+
+bool DeviceBaseLite::isGroup() const
+{
+    return _isGroup;
+}
+
 }
 

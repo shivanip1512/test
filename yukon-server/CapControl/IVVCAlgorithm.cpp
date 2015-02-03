@@ -992,7 +992,6 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
 
     ZoneManager & zoneManager = store->getZoneManager();
-    boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> regulatorManager = store->getVoltageRegulatorManager();
 
     Zone::IdSet subbusZoneIds = zoneManager.getZoneIdsBySubbus( subbus->getPaoId() );
 

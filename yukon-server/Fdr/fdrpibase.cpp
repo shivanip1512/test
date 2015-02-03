@@ -1,13 +1,5 @@
 #include "precompiled.h"
 
-#include <math.h>
-#include <stdlib.h>
-#include <iostream>
-
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <stdio.h>
-
 #define _WINDLL
 
 #include "ctitime.h"
@@ -27,9 +19,7 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "logger.h"
 #include "guard.h"
 #include "dbaccess.h"
-#include "hashkey.h"
 #include "resolvers.h"
-#include "ctistring.h"
 
 #include "fdr.h"
 #include "fdrdebuglevel.h"
@@ -45,6 +35,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 // this class header
 #include "fdrpibase.h"
+
+using namespace std;
 
 /** global used to start the interface by c functions **/
 CtiFDRPiBase * myInterface;
@@ -552,7 +544,7 @@ void CtiFDRPiBase::readThisConfig()
 {
   CtiFDRSimple::readThisConfig();
 
-  CtiString serverNodeNames = gConfigParms.getValueAsString( KEY_SERVER_NODE_NAME, "" );
+  std::string serverNodeNames = gConfigParms.getValueAsString( KEY_SERVER_NODE_NAME, "" );
 
   // Determine if multiple server node names are present.
   boost::char_separator<char> sep(", ");

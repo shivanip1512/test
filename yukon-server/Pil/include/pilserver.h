@@ -1,12 +1,5 @@
 #pragma once
 
-#include <rw\thr\thrfunc.h>
-#include <rw/toolpro/winsock.h>
-#include <rw/toolpro/socket.h>
-#include <rw/toolpro/neterr.h>
-#include <rw\rwerr.h>
-#include <rw\thr\mutex.h>
-
 #include "dsm2.h"
 #include "server_b.h"
 #include "dlldefs.h"
@@ -45,12 +38,12 @@ class IM_EX_CTIPIL PilServer : public CtiServer
    CtiPointManager     *PointManager;
    CtiRouteManager     *RouteManager;
 
-   RWThreadFunction     ResultThread_;     // Thread which translates INMESS to CtiReturnMsg
-   RWThreadFunction     _vgConnThread;     // Thread which manages VanGogh requests!
-   RWThreadFunction     _schedulerThread;
-   RWThreadFunction     _nexusThread;
-   RWThreadFunction     _nexusWriteThread;
-   RWThreadFunction     _periodicActionThread;
+   WorkerThread         _resultThread;     // Thread which translates INMESS to CtiReturnMsg
+   WorkerThread         _vgConnThread;     // Thread which manages VanGogh requests!
+   WorkerThread         _schedulerThread;
+   WorkerThread         _nexusThread;
+   WorkerThread         _nexusWriteThread;
+   WorkerThread         _periodicActionThread;
 
    CtiCommandParser     _currentParse;
    long                 _currentUserMessageId;
@@ -91,8 +84,8 @@ public:
    PilServer(CtiDeviceManager *DM = NULL, CtiPointManager *PM = NULL, CtiRouteManager *RM = NULL);
    virtual ~PilServer();
 
-   virtual void  clientShutdown(CtiServer::ptr_type CM);
-   virtual void  shutdown();
+   void  clientShutdown(CtiServer::ptr_type CM) override;
+   void  shutdown() override;
 
    YukonError_t executeRequest(const CtiRequestMsg*);
    YukonError_t executeMulti(const CtiMultiMsg*);

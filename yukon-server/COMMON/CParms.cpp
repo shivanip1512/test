@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <iomanip>
 
-#include "ctistring.h"
 #include "cparms.h"
 #include "utility.h"
 #include "shlwapi.h"

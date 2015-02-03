@@ -1,28 +1,12 @@
 #include "precompiled.h"
 
+#include "dispsvc.h"
+#include "dlldefs.h"
 
-
-/*-----------------------------------------------------------------------------*
-*
-* File:   dispsvc
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/dispsvc.cpp-arc  $
-* REVISION     :  $Revision: 1.6.34.1 $
-* DATE         :  $Date: 2008/11/13 17:23:48 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
+#include <boost/thread.hpp>
 
 #include <iostream>
 using namespace std;
-
-#include <rw/thr/thrfunc.h>
-
-#include "dispsvc.h"
-#include "dlldefs.h"
 
 DLLIMPORT extern BOOL  bGCtrlC;
 extern BOOL CtrlHandler(DWORD fdwCtrlType);
@@ -106,8 +90,7 @@ void CtiDispatchService::Run()
     SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
     //Start dispatch main thread
-    RWThreadFunction _dispatchThread = rwMakeThreadFunction( DispatchMainFunction, _myargc, _myargv );
-    _dispatchThread.start();
+    boost::thread _dispatchThread(DispatchMainFunction, _myargc, _myargv);
 
     // set service as running
     SetStatus(SERVICE_RUNNING, 0, 0,

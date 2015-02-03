@@ -269,4 +269,7 @@ std::string parse_asString[] = {
 //  240
 "command=4:flags=0::freeze=(none),2,2.000:type=emetcon,7,7.000",
 "command=4:flags=0::freeze=(none),0,0.000:type=versacom,0,0.000",
+"command=2:flags=0::asciiraw=abc jimmy,-1,-1.000:type=versacom,0,0.000",
+"command=2:flags=0::hexraw=badf00d,-1,-1.000:type=versacom,0,0.000",
+"command=6:flags=0::template=sauce,-2147483648,0.000:templateinservice=(none),-2147483648,0.000:type=versacom,0,0.000",
 };

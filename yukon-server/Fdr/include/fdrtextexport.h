@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 
 #include "dlldefs.h"
@@ -50,7 +46,7 @@ public:
     static const CHAR * KEY_APPEND_FILE;
     static const CHAR * KEY_FORMAT;
 private:
-    RWThreadFunction    _threadWriteToFile;
+    Cti::WorkerThread   _threadWriteToFile;
     bool                _appendFlag;
     int                 _format;
 };

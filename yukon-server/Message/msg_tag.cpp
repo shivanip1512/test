@@ -1,12 +1,11 @@
 #include "precompiled.h"
 
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
 #include "collectable.h"
 #include "logger.h"
 #include "msg_tag.h"
 #include "numstr.h"
+
+using namespace std;
 
 DEFINE_COLLECTABLE( CtiTagMsg, MSG_TAG );
 

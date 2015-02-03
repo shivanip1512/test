@@ -1,6 +1,5 @@
 
 include $(COMPILEBASE)\global.inc
-include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I.\include \
@@ -19,9 +18,6 @@ TARGET_OBJS= \
 dllmain.obj
 
 
-RESOURCES_FULLBUILD = $[Filename,$(OBJ),ResourcesFullBuild,target]
-
-
 TARGET= \
 yukon-resource.dll
 
@@ -33,18 +29,11 @@ $(TARGET)
 all:    $(TARGET)
 
 
-$(RESOURCES_FULLBUILD):
-        @touch $@
-        @echo:
-        @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PARALLEL) $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(TARGET_OBJS)]
-
-
-$(TARGET):  $(RESOURCES_FULLBUILD) $(TARGET_OBJS) Makefile resource.res $(OBJ)\yukon-resource.res
+$(TARGET):  $(TARGET_OBJS) Makefile resource.res $(OBJ)\yukon-resource.res
         @echo:
         @echo Compiling $@
         @%cd $(OBJ)
-        $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(TARGET_OBJS) -link $(LINKFLAGS) resource.res yukon-resource.res
+        $(CC) $(DLLFLAGS) -Fe..\$@ $(TARGET_OBJS) -link resource.res yukon-resource.res
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
         -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
         -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -83,11 +72,7 @@ clean:
 .cpp.obj:
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) /D_DLL_DEVDB -Fo$(OBJ)\ -c $<
+        $(CC) $(CCOPTS) $(DLLFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
 ######################################################################################
 
-
-#UPDATE#
-dllmain.obj:	precompiled.h
-#ENDUPDATE#

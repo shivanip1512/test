@@ -115,11 +115,11 @@ int CSxlField::processData(uchar *rec, vector< CtiSxlRecord > &_recordData, UINT
                 _recordData.push_back( newRec );
 
                 // Process the analog data as a demand accumulator..
-                FIELDHISTORYPAIR duece = _history.insert(hist);
+                auto duece = _history.emplace(hist._offset, hist);
 
                 if (duece.second == false)
                 {
-                    CtiSxlFieldHistory &aHist = *(duece.first);
+                    CtiSxlFieldHistory &aHist = duece.first->second;
 
                     uint16 prev = aHist._pulses;
                     uint16 curr = hist._pulses;
@@ -387,7 +387,8 @@ int CtiDeviceSixnet::processGetRecords(int &recProcessed)
         {
             int j;
             int offset = i * _recSize;
-            uchar *tBuf = CTIDBG_new uchar[_recSize + 1];
+            std::vector<uchar> tBuf;
+            tBuf.reserve(_recSize + 1);
 
             for (j = offset; j < offset + _recSize; j++)
             {
@@ -399,9 +400,8 @@ int CtiDeviceSixnet::processGetRecords(int &recProcessed)
             // Each field entry must examine the row, adding values to _recordData.
             for (fit = _fields.begin(); fit != _fields.end(); fit++)
             {
-                (*fit).processData( tBuf, _recordData, _logRate );
+                fit->second.processData( tBuf.data(), _recordData, _logRate );
             }
-            delete [] tBuf;
         }
     }
 
@@ -454,8 +454,6 @@ int CtiDeviceSixnet::processGetFields()
     // copy the field information for each field
     if (bOk)
     {
-        FIELDCOLLECTIONPAIR fpair;
-
         for (int i = 0; i < _fieldCnt; ++i)
         {
             CSxlField fld;
@@ -485,13 +483,7 @@ int CtiDeviceSixnet::processGetFields()
 
             _registerCnt += fld.m_nNumRegs;
 
-            fpair = _fields.insert( fld );  // Copy it onto the vector.
-
-            if (fpair.second == false)
-            {
-                // Insert failed it is in there
-                (*fpair.first) = fld;               // Copy the thing.
-            }
+            _fields[CSxlField::FIELDKEY(fld.m_eType, fld.m_nOffset)] = fld;
         }
     }
     else
@@ -673,7 +665,6 @@ CtiDeviceSixnet::CtiDeviceSixnet() :
     _msStationNum = CtiProtocolSixnet::ANY_STATION;
     _targetStationNum = CtiProtocolSixnet::ANY_STATION;
     _fieldCnt = 0;
-    _fields.clear();
     _dataFormat = CtiProtocolSixnet::BIN;        // Binary message Format is for me/for now anyway
     _lengthFormat = CtiProtocolSixnet::ADDR_OLD; // 1 byte length and station numbers
 
@@ -690,7 +681,6 @@ CtiDeviceSixnet::~CtiDeviceSixnet()
     CtiLockGuard<CtiMutex> guard(_classMutex);
     flushVectors();
     destroyBuffers();
-    _fields.clear();
 }
 
 CtiProtocolSixnet& CtiDeviceSixnet::getSixnetProtocol()

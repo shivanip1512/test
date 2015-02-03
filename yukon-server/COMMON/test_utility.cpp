@@ -202,79 +202,6 @@ BOOST_AUTO_TEST_CASE(test_csv_output_iterator)
     BOOST_CHECK_EQUAL(ostr.str(), "1,1,2,3,5,8");
 }
 
-BOOST_AUTO_TEST_CASE(test_padded_output_iterator)
-{
-    {
-        std::ostringstream ostr;
-        std::vector<long> source;
-
-        std::copy(source.begin(), source.end(), padded_output_iterator<long, std::ostringstream>(ostr, '0', 2));
-
-        BOOST_CHECK_EQUAL(ostr.str(), "");
-    }
-
-    {
-        std::ostringstream ostr;
-        std::vector<long> source;
-
-        source.push_back(1);
-
-        std::copy(source.begin(), source.end(), padded_output_iterator<long, std::ostringstream>(ostr, '0', 2));
-
-        BOOST_CHECK_EQUAL(ostr.str(), "01");
-    }
-
-    {
-        std::ostringstream ostr;
-        std::vector<long> source;
-
-        source.push_back(0);
-        source.push_back(1);
-        source.push_back(1);
-        source.push_back(2);
-        source.push_back(3);
-        source.push_back(5);
-        source.push_back(8);
-        source.push_back(13);
-        source.push_back(21);
-        source.push_back(34);
-        source.push_back(55);
-        source.push_back(89);
-        source.push_back(144);
-        source.push_back(233);
-
-        std::copy(source.begin(), source.end(), padded_output_iterator<long, std::ostringstream>(ostr, '0', 4));
-
-        BOOST_CHECK_EQUAL(ostr.str(), "0000 0001 0001 0002 0003 0005 0008 0013 0021 0034 0055 0089 0144 0233");
-    }
-
-    {
-        std::ostringstream ostr;
-        std::vector<long> source;
-
-        source.push_back(0);
-        source.push_back(1);
-        source.push_back(1);
-        source.push_back(2);
-        source.push_back(3);
-        source.push_back(5);
-        source.push_back(8);
-        source.push_back(13);
-        source.push_back(21);
-        source.push_back(34);
-        source.push_back(55);
-        source.push_back(89);
-        source.push_back(144);
-        source.push_back(233);
-
-        ostr << std::hex;
-
-        std::copy(source.begin(), source.end(), padded_output_iterator<long, std::ostringstream>(ostr, '0', 2));
-
-        BOOST_CHECK_EQUAL(ostr.str(), "00 01 01 02 03 05 08 0d 15 22 37 59 90 e9");
-    }
-}
-
 BOOST_AUTO_TEST_CASE(test_isExpresscomGroup)
 {
     //True cases
@@ -379,6 +306,13 @@ BOOST_AUTO_TEST_CASE(test_convertHexStringToBytes)
         BOOST_CHECK_EQUAL_COLLECTIONS( result.begin(),  result.end(),
                                        inputAsArray,    inputAsArray + sizeof(inputAsArray) );
     }
+}
+
+BOOST_AUTO_TEST_CASE(test_stringCompareIgnoreCase)
+{
+    std::string s1 = "My Compare";
+    std::string s2 = "my cOmParE";
+    BOOST_CHECK_EQUAL( ciStringEqual(s1, s2),true );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

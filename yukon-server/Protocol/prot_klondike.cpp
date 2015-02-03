@@ -368,21 +368,21 @@ void KlondikeProtocol::doOutput(CommandCode command_code)
 
             while( waiting_itr != waiting_end && processed < _device_queue_entries_available )
             {
-                if( waiting_itr->requester )
+                if( waiting_itr->second.requester )
                 {
-                    if( outbound.size() + QueueEntryHeaderLength + waiting_itr->outbound.size() > _wrap->getMaximumPayload() )
+                    if( outbound.size() + QueueEntryHeaderLength + waiting_itr->second.outbound.size() > _wrap->getMaximumPayload() )
                     {
                         break;
                     }
                     else
                     {
-                        outbound.push_back(waiting_itr->priority);
-                        outbound.push_back(waiting_itr->dlc_parms);
-                        outbound.push_back(waiting_itr->stages);
-                        outbound.push_back(waiting_itr->outbound.size());
+                        outbound.push_back(waiting_itr->second.priority);
+                        outbound.push_back(waiting_itr->second.dlc_parms);
+                        outbound.push_back(waiting_itr->second.stages);
+                        outbound.push_back(waiting_itr->second.outbound.size());
 
-                        outbound.insert(outbound.end(), waiting_itr->outbound.begin(),
-                                                        waiting_itr->outbound.end());
+                        outbound.insert(outbound.end(), waiting_itr->second.outbound.begin(),
+                                                        waiting_itr->second.outbound.end());
 
                         _pending_requests.insert(make_pair(_device_queue_sequence + processed, waiting_itr));
 
@@ -805,7 +805,7 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
                             }
                             else
                             {
-                                queue_entry_t &rejected_entry = *(pending_itr->second);
+                                queue_entry_t &rejected_entry = pending_itr->second->second;
 
                                 if( rejected_entry.resubmissions++ > QueueEntryResubmissionsMaximum
                                     || (rejected_nak_code != NAK_LoadBuffer_QueueFull &&
@@ -869,9 +869,9 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
 
                 while( (pending_itr != pending_end) && accepted )
                 {
-                    if( pending_itr->second->requester )
+                    if( pending_itr->second->second.requester )
                     {
-                        _remote_requests.insert(make_pair(pending_itr->first, *(pending_itr->second)));
+                        _remote_requests.insert(make_pair(pending_itr->first, pending_itr->second->second));
                     }
 
                     _waiting_requests.erase(pending_itr->second);
@@ -1059,7 +1059,7 @@ bool KlondikeProtocol::addQueuedWork(void *requester, const byte_buffer_t &paylo
 {
     sync_guard_t guard(_sync);
 
-    _waiting_requests.insert(queue_entry_t(payload, priority, dlc_parms, stages, requester));
+    _waiting_requests.insert(make_pair(priority, queue_entry_t(payload, priority, dlc_parms, stages, requester)));
 
     return true;
 }
@@ -1072,10 +1072,10 @@ bool KlondikeProtocol::removeQueuedWork(void *handle)
 
     while( itr != _waiting_requests.end() )
     {
-        if( itr->requester == handle )
+        if( itr->second.requester == handle )
         {
             //  this keeps us from propagating this into _remote_requests
-            itr->requester = 0;
+            itr->second.requester = 0;
 
             return true;
         }
@@ -1130,20 +1130,20 @@ void KlondikeProtocol::getRequestStatus(request_statuses &waiting, request_statu
 
     request_status s;
 
-    for each(const queue_entry_t &entry in _waiting_requests)
+    for each(const local_work_t::value_type &entry in _waiting_requests)
     {
-        s.requester = entry.requester;
-        s.priority       = entry.priority;
-        s.queue_id       = 0;
+        s.requester = entry.second.requester;
+        s.priority  = entry.second.priority;
+        s.queue_id  = 0;
 
         waiting.push_back(s);
     }
 
     for each(const pending_work_t::value_type &pending_request in _pending_requests)
     {
-        s.requester = pending_request.second->requester;
-        s.priority       = pending_request.second->priority;
-        s.queue_id       = pending_request.first;
+        s.requester = pending_request.second->second.requester;
+        s.priority  = pending_request.second->second.priority;
+        s.queue_id  = pending_request.first;
 
         pending.push_back(s);
     }
@@ -1151,8 +1151,8 @@ void KlondikeProtocol::getRequestStatus(request_statuses &waiting, request_statu
     for each(const remote_work_t::value_type &remote_request in _remote_requests)
     {
         s.requester = remote_request.second.requester;
-        s.priority       = remote_request.second.priority;
-        s.queue_id       = remote_request.first;
+        s.priority  = remote_request.second.priority;
+        s.queue_id  = remote_request.first;
 
         queued.push_back(s);
     }
@@ -1160,8 +1160,8 @@ void KlondikeProtocol::getRequestStatus(request_statuses &waiting, request_statu
     for each(const queue_result_t &result in _plc_results)
     {
         s.requester = result.requester;
-        s.priority       = 0;
-        s.queue_id       = 0;
+        s.priority  = 0;
+        s.queue_id  = 0;
 
         completed.push_back(s);
     }
@@ -1224,7 +1224,7 @@ unsigned KlondikeProtocol::getWaitingWorkPriority() const
     //  The first entry in the set will always have the highest priority
     if( !_waiting_requests.empty() )
     {
-        priority = max(priority, _waiting_requests.begin()->priority);
+        priority = max(priority, _waiting_requests.begin()->second.priority);
     }
 
     return priority;

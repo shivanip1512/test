@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include "row_reader.h"
 #include "dbaccess.h"
 #include "dllbase.h"
@@ -17,8 +13,6 @@
 
 #include <windows.h>
 #include <limits.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 
 class IM_EX_CTIYUKONDB CtiTableCommRoute : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable

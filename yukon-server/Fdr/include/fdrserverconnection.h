@@ -1,10 +1,11 @@
 #pragma once
 
-#include <rw/thr/thrfunc.h> 
 #include "dlldefs.h"
 #include "queues.h"
 #include "fdrsocketlayer.h"
 #include "fdrsocketconnection.h"
+#include "worker_thread.h"
+
 
 class IM_EX_FDRBASE CtiFDRServerConnection : public CtiFDRSocketConnection
 {                                    
@@ -24,9 +25,7 @@ class IM_EX_FDRBASE CtiFDRServerConnection : public CtiFDRSocketConnection
 
     protected:
 
-        RWThreadFunction    iThreadReceive;
-        RWThreadFunction    iThreadConnectionStatus;
+        Cti::WorkerThread   iThreadReceive;
         
         void threadFunctionGetDataFrom( void );
-        void threadFunctionConnectionStatus( void );
 };

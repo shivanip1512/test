@@ -47,6 +47,19 @@ boost::optional<typename Map::mapped_type &> mapFindRef( Map &m, const typename 
     return itr->second;
 }
 
+template <class Map>
+boost::optional<const typename Map::mapped_type &> mapFindRef( const Map &m, const typename Map::key_type &key )
+{
+    Map::const_iterator itr = m.find(key);
+
+    if( itr == m.end() )
+    {
+        return boost::none;
+    }
+
+    return itr->second;
+}
+
 template <class Cont, class UnaryPredicate>
 boost::optional<typename Cont::value_type> findIf(Cont& c, UnaryPredicate pred)
 {
@@ -79,20 +92,6 @@ boost::iterator_range<T*> arrayToRange(T* arr, size_t len)
     return boost::make_iterator_range(arr, arr+len);
 }
 
-// TODO: remove this function when std::begin() is available
-template <typename T, size_t size>
-T* begin(T(&array)[size])
-{
-    return array;
-}
-
-// TODO: remove this function when std::end() is available
-template <typename T, size_t size>
-T* end(T(&array)[size])
-{
-    return array + size;
-}
-
 namespace Logging {
 namespace Vector {
 namespace Hex {
@@ -101,7 +100,13 @@ inline std::ostream &operator<<(std::ostream &logger, const std::vector<unsigned
 {
     const std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex );
 
-    copy(buf.begin(), buf.end(), padded_output_iterator<int, std::ostream>(logger, '0', 2));
+    const char oldFill = logger.fill('0');
+
+    std::for_each(buf.begin(), buf.end(), [&](int ch) {
+        logger << std::setw(2) << ch << " ";
+    });
+
+    logger.fill(oldFill);
 
     logger.flags(oldflags);
 
@@ -118,7 +123,13 @@ inline std::ostream &operator<<(std::ostream &logger, const boost::iterator_rang
 {
     const std::ios_base::fmtflags oldflags = logger.flags( std::ios::hex );
 
-    copy(buf.begin(), buf.end(), padded_output_iterator<int, std::ostream>(logger, '0', 2));
+    const char oldFill = logger.fill('0');
+
+    std::for_each(buf.begin(), buf.end(), [&](int ch) {
+        logger << std::setw(2) << ch << " ";
+    });
+
+    logger.fill(oldFill);
 
     logger.flags(oldflags);
 

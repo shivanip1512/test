@@ -1,13 +1,5 @@
 #include "precompiled.h"
 
-
-#include <iostream>
-
-  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <stdio.h>
-
-/** include files **/
 #include "ctitime.h"
 #include "ctidate.h"
 #include "utility.h"
@@ -259,17 +251,7 @@ bool CtiFDR_Valmet::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, 
             successful = true;
 
         }   // invalid
-    } // end try
-
-    catch (const RWExternalErr& e )
-    {
-        getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-        getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-
-        CTILOG_EXCEPTION_ERROR(dout, e);
-        RWTHROW(e);
     }
-
     // try and catch the thread death
     catch ( ... )
     {

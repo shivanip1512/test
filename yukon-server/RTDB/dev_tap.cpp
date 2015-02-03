@@ -1123,7 +1123,7 @@ YukonError_t CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, YukonErr
                     }
                     else  // This is the good state;
                     {
-                        if(!_inStr.find("<ACK>")!=string::npos)
+                        if(_inStr.find("<ACK>")==string::npos)
                         {
                             if(_inStr.find("<RS>")!=string::npos)
                             {

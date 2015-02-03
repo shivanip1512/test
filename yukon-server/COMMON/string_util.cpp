@@ -5,6 +5,7 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/replace.hpp>
 
 #include "string_util.h"
 
@@ -136,6 +137,99 @@ std::string commaFormatted(__int64 value)
 
     return formatted;
 }
+
+
+std::string matchRegex(const std::string &src, const boost::regex &pattern)
+{
+    boost::smatch what;
+
+    if( boost::regex_search(src, what, pattern) )
+    {
+        return what[0];
+    }
+
+    return std::string();
+}
+
+
+std::string matchRegex(const std::string &src, const std::string &pattern)
+{
+    return matchRegex(src, boost::regex(pattern));
+}
+
+
+size_t locateRegex(const std::string &src, const boost::regex &pattern, size_t *matchLength, size_t substrIndex)
+{
+    boost::smatch what;
+
+    std::string str = src.substr(substrIndex);
+
+    if(boost::regex_search(str, what, pattern))
+    {
+        *matchLength = what.length();
+        return substrIndex + what.position();
+    }
+
+    *matchLength = 0;
+    return std::string::npos;
+}
+
+
+void removeRegex(std::string &src, const boost::regex& re)
+{
+    src = boost::regex_replace(src, re, "");
+}
+
+void removeRegex(std::string &src, const char *re)
+{
+    src = boost::regex_replace(src, boost::regex(re), "");
+}
+
+void removeString(std::string &src, const std::string &pattern)
+{
+    std::string::size_type pos = src.find(pattern);
+
+    if( pos != std::string::npos )
+    {
+        src.erase(pos, pattern.length());
+    }
+}
+
+
+void replaceString(std::string &src, const std::string &pattern, const std::string &replacement)
+{
+    std::string::size_type pos = src.find(pattern);
+
+    if( pos != std::string::npos )
+    {
+        src.erase(pos, pattern.length());
+
+        src.insert(pos, replacement);
+    }
+}
+
+
+bool containsRegex(const std::string &src, const boost::regex &pattern)
+{
+    return boost::regex_search(src, pattern);
+}
+
+bool containsRegex(const std::string &src, const std::string &pattern)
+{
+    return containsRegex(src, boost::regex(pattern));
+}
+
+bool containsString(const std::string &src, const std::string &pattern)
+{
+    return src.find(pattern) != std::string::npos;
+}
+
+bool icontainsString(const std::string &src, const std::string &pattern)
+{
+    return containsString(boost::to_lower_copy(src), boost::to_lower_copy(pattern));
+}
+
+
 
 /// StringFormatter ///
 

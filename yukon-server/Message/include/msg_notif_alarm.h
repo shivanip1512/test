@@ -2,8 +2,6 @@
 
 #include <vector>
 
-#include <rw/collect.h>
-
 #include "dlldefs.h"
 #include "message.h"
 

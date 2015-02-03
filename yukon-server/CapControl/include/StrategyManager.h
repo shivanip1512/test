@@ -28,7 +28,7 @@ public:
     typedef Lock::reader_lock_guard_t           ReaderGuard;
     typedef Lock::writer_lock_guard_t           WriterGuard;
 
-    StrategyManager( std::auto_ptr<StrategyLoader> loader );
+    StrategyManager( std::unique_ptr<StrategyLoader> loader );
 
     void reload(const long ID);
     void reloadAll();
@@ -49,7 +49,7 @@ public:
 
     void restoreStates(const long ID);
     void restoreAllStates();
-    
+
 private:
 
     mutable Lock    _lock;
@@ -59,6 +59,6 @@ private:
     StrategyMap _strategies;
     StrategyMap _strategyBackup;
 
-    std::auto_ptr<StrategyLoader>   _loader;
+    std::unique_ptr<StrategyLoader>   _loader;
 };
 

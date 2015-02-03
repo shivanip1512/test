@@ -44,72 +44,26 @@ public:
     bool getLPStruct(BYTE *bp, UINT tag = 0x00000000);
 };
 
-class CtiSxlFieldHistory
+struct CtiSxlFieldHistory
 {
-public:
    // int         _type;      // Type is catually defined byt the field we are found in.
    time_t      _time;         // When this all went and happened.
    int         _offset;       // 1 based offset on this device for this point type.
    short       _pulses;       // Go figure.
-
-   bool operator==(const CtiSxlFieldHistory& aRef) const
-   {
-      return _offset == aRef._offset;
-   }
-
-   bool operator<(const CtiSxlFieldHistory& aRef) const
-   {
-      return _offset < aRef._offset;
-   }
-
-   bool operator()(const CtiSxlFieldHistory& y) const
-   {
-      return operator<(y);    // *this < y
-   }
-
 };
 
 class CSxlField
 {
 public:
 
-   typedef std::set< CtiSxlFieldHistory > FIELDHISTORY;
-   typedef std::pair< FIELDHISTORY::iterator, bool > FIELDHISTORYPAIR;
+   typedef std::map< int, CtiSxlFieldHistory > FIELDHISTORY;
 
    CSxlField()
    {
       m_eType = NOTSET;
    }
-   virtual ~CSxlField()
-   {
-      _history.clear();
-   }
 
    int processData(uchar *rec, std::vector< CtiSxlRecord > & _recordData, UINT interval);
-
-   bool operator==(const CSxlField& aRef) const
-   {
-      bool bOffset = m_nOffset == aRef.m_nOffset;
-      bool bSame = (m_eType == aRef.m_eType);
-
-      return (bOffset && bSame);
-   }
-
-   bool operator<(const CSxlField& aRef) const
-   {
-      bool bType = (m_eType < aRef.m_eType);
-      bool bOffset = m_nOffset < aRef.m_nOffset;
-      bool bSame = (m_eType == aRef.m_eType);
-
-
-
-      return ( bType || (bSame && bOffset) );
-   }
-
-   bool operator()(const CSxlField& y) const
-   {
-      return operator<(y);    // *this < y
-   }
 
    // Sixnet I/O types:
    typedef enum
@@ -130,6 +84,8 @@ public:
    int m_nFirst;
    int m_nOffset;
 
+   typedef std::pair<iotypes_t, int> FIELDKEY;
+
    FIELDHISTORY _history;
 };
 
@@ -149,8 +105,7 @@ private:
 public:
 
    typedef std::vector< CtiSxlRecord >   DATACOLLECTION;
-   typedef std::set< CSxlField >         FIELDCOLLECTION;
-   typedef std::pair< FIELDCOLLECTION::iterator, bool > FIELDCOLLECTIONPAIR;
+   typedef std::map< CSxlField::FIELDKEY, CSxlField >   FIELDCOLLECTION;
 
    enum
    {

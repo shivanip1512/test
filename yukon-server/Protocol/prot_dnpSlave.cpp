@@ -28,10 +28,24 @@ YukonError_t DnpSlaveProtocol::slaveDecode( CtiXfer &xfer )
         return ClientErrors::None;
     }
 
-    return _app_layer.decode(_datalink, _transport, xfer, ClientErrors::None);
+    YukonError_t retVal = _datalink.decode(xfer, ClientErrors::None);
+
+    if( ! _datalink.isTransactionComplete() )
+    {
+        return retVal;
+    }
+
+    retVal = _transport.decode(_datalink);
+
+    if( ! _transport.isTransactionComplete() )
+    {
+        return retVal;
+    }
+
+    return _app_layer.decode(_transport);
 }
 
-int DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
+YukonError_t DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
 {
     if( _app_layer.isTransactionComplete() )
     {
@@ -149,11 +163,31 @@ int DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
         _app_layer.initForSlaveOutput();
     }
 
-    int retVal = _app_layer.generate(_datalink, _transport, xfer);
-    if( retVal )
+    YukonError_t retVal = ClientErrors::None;
+
+    if( _transport.isTransactionComplete() )
     {
-        slaveTransactionComplete();
+        retVal = _app_layer.generate(_transport);
+
+        if( retVal )
+        {
+            slaveTransactionComplete();
+        }
     }
+
+    if( ! retVal )
+    {
+        if( _datalink.isTransactionComplete() )
+        {
+            retVal = _transport.generate(_datalink);
+        }
+    }
+
+    if( !retVal )
+    {
+        retVal = _datalink.generate(xfer);
+    }
+
     return retVal;
 }
 

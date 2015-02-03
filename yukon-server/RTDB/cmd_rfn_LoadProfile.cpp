@@ -90,7 +90,7 @@ RfnCommandResult RfnLoadProfileCommand::decodeResponseHeader( const CtiTime now,
 
     // invalid status byte -- not found in map
 
-    validate( Condition( status, ClientErrors::InvalidData )
+    validate( Condition( !! status, ClientErrors::InvalidData )
             << "Invalid Status (" << response[2] << ")" );
 
     validate( Condition( response[2] == 0, ClientErrors::InvalidData ) // success
@@ -294,7 +294,7 @@ RfnCommandResult RfnLoadProfileGetRecordingCommand::decodeCommand( const CtiTime
 
     boost::optional<std::string> state = Cti::mapFind( loadProfileStateResolver, tlv.value[0] );
 
-    validate( Condition( state, ClientErrors::InvalidData )
+    validate( Condition( !! state, ClientErrors::InvalidData )
             << "Invalid State (" << tlv.value[0] << ")" );
 
     _option = tlv.value[0] ? EnableRecording : DisableRecording;
@@ -580,7 +580,7 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnCommandResult & 
 
     boost::optional<PointTypeDesc> pointTypeDesc = mapFind( pointTypeDescriptionMap, pointType );
 
-    validate( Condition( pointTypeDesc, ClientErrors::InvalidData )
+    validate( Condition( !! pointTypeDesc, ClientErrors::InvalidData )
             << "Invalid point type (" << pointType << ")" );
 
     const unsigned value_size = pointTypeDesc->_size;
@@ -608,7 +608,7 @@ unsigned RfnLoadProfileReadPointsCommand::decodePointRecord( RfnCommandResult & 
 
         boost::optional<PointStatusDesc> pointStatusDesc = mapFind(pointStatusDescriptionMap, status);
 
-        validate( Condition( pointStatusDesc, ClientErrors::InvalidData )
+        validate( Condition( !! pointStatusDesc, ClientErrors::InvalidData )
                 << "Invalid point status (" << status << ")" );
 
         point_data point;

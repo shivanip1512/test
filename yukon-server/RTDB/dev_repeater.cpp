@@ -6,7 +6,6 @@
 #include "porter.h"
 #include "utility.h"
 #include "numstr.h"
-#include "ctistring.h"
 
 using namespace Cti::Protocols;
 using std::string;
@@ -601,7 +600,7 @@ YukonError_t Repeater900Device::decodePutConfigRole(const INMESS &InMessage, con
 
     INT   j;
     ULONG pfCount = 0;
-    string resultString, tempString;
+    string resultString;
     bool expectMore = false;
 
     CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -609,14 +608,14 @@ YukonError_t Repeater900Device::decodePutConfigRole(const INMESS &InMessage, con
     ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
 
-    CtiString cmdStr = InMessage.Return.CommandStr;
+    string cmdStr = InMessage.Return.CommandStr;
     //This should look like "putconfig emetcon mrole 1 2 3 4.... : 6 3 4 5 5 .... : 12 3 4 1 4...
     //We want to grab the numbers after the leading : then remove the leading :
 
-    if( cmdStr.contains(": ") )
+    if( containsString(cmdStr, ": ") )
     {
-        cmdStr.replace("( [0-9]+)+ *:", "");
-        if( !(tempString = cmdStr.contains("( [0-9]+)+")).empty() )
+        removeRegex(cmdStr, "( [0-9]+)+ *:");
+        if( containsRegex(cmdStr, "( [0-9]+)+") )
         {
             //We stripped one, another still exists. We need to re-submit this.
             CtiRequestMsg *newReq = new CtiRequestMsg( getID(),

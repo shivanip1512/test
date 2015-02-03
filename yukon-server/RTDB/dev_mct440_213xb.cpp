@@ -8,7 +8,6 @@
 #include "utility.h"
 #include "tbl_ptdispatch.h"
 #include "pt_status.h"
-#include "ctistring.h"
 #include "config_data_mct.h"
 #include "portglob.h"
 #include "dllyukon.h"
@@ -1725,8 +1724,8 @@ YukonError_t Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
 */
 long Mct440_213xBDevice::resolveScheduleName(const string & scheduleName)
 {
-    CtiString schedule = scheduleName;
-    schedule.toLower();
+    std::string schedule = scheduleName;
+    CtiToLower(schedule);
 
     if( schedule == "schedule 1" )
     {
@@ -2225,7 +2224,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq
 
         for( itr = ratechanges.begin(); itr != ratechanges.end(); itr++ )
         {
-            ratechange_t &rc = *itr;
+            const ratechange_t &rc = *itr;
 
             if( rc.schedule != current_schedule )
             {

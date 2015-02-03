@@ -3,7 +3,6 @@
 #define private public
 #define protected public
 
-#include "logManager.h"
 #include "message.h"
 #include "msg_cmd.h"
 #include "msg_dbchg.h"
@@ -30,10 +29,12 @@
 
 #include "test_serialization.h"
 
-#include <crtdbg.h>
 #include "connection_server.h"
-#include "boost/assign/list_of.hpp"
+#include "logManager.h"
 #include "std_helper.h"
+
+#include <boost/assign/list_of.hpp>
+#include <boost/algorithm/string/case_conv.hpp>
 
 using namespace std;
 

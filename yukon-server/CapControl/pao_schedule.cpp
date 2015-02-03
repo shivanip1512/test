@@ -1,25 +1,9 @@
-
-
-/*-----------------------------------------------------------------------------
-    Filename:  pao_schedule.cpp
-
-    Programmer:  Julie Richter
-
-    Description:
-
-    Initial Date:  1/27/2005
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2005
------------------------------------------------------------------------------*/
-
 #include "precompiled.h"
-#include "dbaccess.h"
-#include "connection.h"
-#include "msg_dbchg.h"
-#include "capcontroller.h"
-#include "pao_schedule.h"
 
-using std::endl;
+#include "pao_schedule.h"
+#include "row_reader.h"
+#include "ccutil.h"
+
 using std::string;
 using Cti::CapControl::setVariableIfDifferent;
 

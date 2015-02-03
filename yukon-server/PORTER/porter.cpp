@@ -15,8 +15,6 @@
 #include <string>
 #include <vector>
 
-#include <rw/thr/thrfunc.h>
-
 #include "color.h"
 #include "cparms.h"
 #include "queues.h"
@@ -106,9 +104,9 @@ bool processInputFunction(CHAR Char);
 
 void reportOnWorkObjects();
 
-extern void QueueThread (void *);
-extern void KickerThread (void *);
-extern void DispatchMsgHandlerThread(void *Arg);
+extern void QueueThread();
+extern void KickerThread();
+extern void DispatchMsgHandlerThread();
 extern HCTIQUEUE* QueueHandle(LONG pid);
 void commFail(const CtiDeviceSPtr &Device);
 bool addCommResult(long deviceID, bool wasFailure, bool retryGtZero);
@@ -123,7 +121,6 @@ CtiDeviceManager   DeviceManager;
 CtiPointManager    PorterPointManager;
 CtiRouteManager    RouteManager;
 map< long, CtiPortShare * > PortShareManager;
-void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RteMgr);
 
 //These form the connection between Pil and Porter
 extern DLLIMPORT StreamLocalConnection<OUTMESS, INMESS> PilToPorter; //Pil handles this one
@@ -132,18 +129,18 @@ extern DLLIMPORT CtiFIFOQueue< CtiMessage > PorterSystemMessageQueue;
 
 Cti::Porter::SystemMsgThread _sysMsgThread(PorterSystemMessageQueue, DeviceManager, PortManager, PilToPorter);
 
-RWThreadFunction _connThread;
-RWThreadFunction _dispThread;
-RWThreadFunction _guiThread;
-RWThreadFunction _gwThread;
-RWThreadFunction _pilThread;
-RWThreadFunction _tsyncThread;
-RWThreadFunction _statisticsThread;
-RWThreadFunction _fillerThread;
-RWThreadFunction _vconfThread;
+using Cti::WorkerThread;
 
-RWThreadFunction _queueCCU711Thread;
-RWThreadFunction _kickerCCU711Thread;
+WorkerThread _connThread (WorkerThread::Function(PorterConnectionThread)  .name("_connThread"));
+WorkerThread _dispThread (WorkerThread::Function(DispatchMsgHandlerThread).name("_dispThread"));
+WorkerThread _pilThread  (WorkerThread::Function(PorterInterfaceThread)   .name("_pilThread"));
+WorkerThread _tsyncThread(WorkerThread::Function(TimeSyncThread)          .name("_tsyncThread"));
+WorkerThread _statisticsThread(WorkerThread::Function(Cti::Porter::StatisticsThread).name("_statisticsThread"));
+WorkerThread _fillerThread(WorkerThread::Function(FillerThread)           .name("_fillerThread"));
+WorkerThread _vconfThread (WorkerThread::Function(VConfigThread)          .name("_vconfThread"));
+
+WorkerThread _queueCCU711Thread (WorkerThread::Function(QueueThread) .name("_queueCCU711Thread"));
+WorkerThread _kickerCCU711Thread(WorkerThread::Function(KickerThread).name("_kickerCCU711Thread"));
 
 CtiPorterVerification PorterVerificationThread;
 
@@ -171,20 +168,15 @@ bool isTAPTermPort(LONG PortNumber)
     return find_if(devices.begin(), devices.end(), isTAPTerm()) != devices.end();
 }
 
-void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
+void populateRouteAssociations(CtiDeviceManager *DM, CtiRouteManager *RM)
 {
-    int            i;
-    LONG           dID;
-    CtiRouteSPtr   pRte;
-    CtiDeviceManager::ptr_type pDev;
-
-    CtiRouteManager::spiterator itr;
-
     try
     {
+        CtiRouteManager::spiterator itr;
+
         for(itr = RM->begin(); itr != RM->end() ; RM->nextPos(itr))
         {
-            pRte = itr->second;
+            CtiRouteSPtr pRte = itr->second;
 
             switch(pRte->getType())
             {
@@ -203,39 +195,26 @@ void attachTransmitterDeviceToRoutes(CtiDeviceManager *DM, CtiRouteManager *RM)
                 {
                     CtiRouteXCUSPtr pXCU = boost::static_pointer_cast<CtiRouteXCU>(itr->second);
 
-                    dID = pXCU->getCommRoute().getTrxDeviceID();
+                    const long dID = pXCU->getCommRoute().getTrxDeviceID();
 
                     if( dID > 0 )
                     {
-                        pDev = DM->getDeviceByID(dID);
-
-                        if(pDev)
-                        {
-                            //cout << "Attaching device " << pDev->getDeviceName() << " to route " << pXCU->getName() << endl;
-                            pXCU->setDevicePointer(pDev);
-                        }
-                        else
-                        {
-                            pXCU->resetDevicePointer();
-                        }
+                        pXCU->setDevicePointer(DM->getDeviceByID(dID));
                     }
                     break;
                 }
                 case RouteTypeMacro:
                 {
-                    CtiRouteMacroSPtr pMac = boost::static_pointer_cast<CtiRouteMacro>(itr->second);
+                    Cti::Routes::MacroRouteSPtr pMac = boost::static_pointer_cast<Cti::Routes::MacroRoute>(itr->second);
 
                     try
                     {
                         // Lock it so that it cannot conflict with an ExecuteRequest() on the route!!
-                        CtiLockGuard< CtiMutex > listguard(pMac->getRouteListMux());
+                        CtiLockGuard< CtiMutex > listguard(pMac->getMacroMux());
 
-                        pMac->getRoutePtrList().clear();
-
-                        for(int i = 0; i < pMac->getRouteList().length(); i++)
+                        for each( const long subrouteId in pMac->getSubrouteIds() )
                         {
-                            CtiRouteSPtr pSingleRoute = RM->getRouteById(pMac->getRouteList()[i].getSingleRouteID());
-                            pMac->getRoutePtrList().insert( pSingleRoute );
+                            pMac->addSubroute(RM->getRouteById(subrouteId));
                         }
                     }
                     catch(...)
@@ -799,16 +778,9 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     pfnOldCrtAllocHook = _CrtSetAllocHook(MyAllocHook);
 
-    _pilThread = rwMakeThreadFunction( PorterInterfaceThread, (void*)NULL );
     _pilThread.start();
-
-    _dispThread = rwMakeThreadFunction( DispatchMsgHandlerThread, (void*)NULL );
     _dispThread.start();
-
-    _tsyncThread = rwMakeThreadFunction( TimeSyncThread, (void*)NULL );
     _tsyncThread.start();
-
-    _statisticsThread = rwMakeThreadFunction( Cti::Porter::StatisticsThread, (void*)NULL );
     _statisticsThread.start();
 
     /* Start the verification thread */
@@ -835,23 +807,18 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
 
     /* all of the port threads are started so now start first socket connection handler */
-    _connThread = rwMakeThreadFunction( PorterConnectionThread, (void*)NULL );
     _connThread.start();
 
 
     /* Check if we need to start the filler thread */
     if(gConfigParms.isOpt("PORTER_START_FILLERTHREAD") && !(stricmp ("TRUE", gConfigParms.getValueAsString("PORTER_START_FILLERTHREAD").c_str())))
     {
-        /* go ahead and start the thread passing the variable */
-        _fillerThread = rwMakeThreadFunction( FillerThread, (void*)NULL );
         _fillerThread.start();
     }
 
     /* Check if we need to start the versacom config thread */
     if( !((gConfigParms.getValueAsString("PORTER_START_VCONFIGTHREAD")).empty()) && !(stricmp ("TRUE", gConfigParms.getValueAsString("PORTER_START_VCONFIGTHREAD").c_str())))
     {
-        /* go ahead and start the thread passing the variable */
-        _vconfThread = rwMakeThreadFunction( VConfigThread, (void*)NULL );
         _vconfThread.start();
     }
 
@@ -1003,26 +970,24 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
     _sysMsgThread.interrupt(CtiThread::SHUTDOWN);
 
-    if(_gwThread.isValid())                 _gwThread.requestCancellation(200);
-    if(_pilThread.isValid())                _pilThread.requestCancellation(200);
-    if(_dispThread.isValid())               _dispThread.requestCancellation(200);
-    if(_connThread.isValid())               _connThread.requestCancellation(200);
-    if(_guiThread.isValid())                _guiThread.requestCancellation(200);
-    if(_tsyncThread.isValid())              _tsyncThread.requestCancellation(200);
-    if(_statisticsThread.isValid())         _statisticsThread.requestCancellation(200);
-    if(_fillerThread.isValid())             _fillerThread.requestCancellation(200);
-    if(_vconfThread.isValid())              _vconfThread.requestCancellation(200);
-    if(_queueCCU711Thread.isValid())        _queueCCU711Thread.requestCancellation(200);
-    if(_kickerCCU711Thread.isValid())       _kickerCCU711Thread.requestCancellation(200);
+    if(_pilThread         .isRunning())    _pilThread         .interrupt();
+    if(_dispThread        .isRunning())    _dispThread        .interrupt();
+    if(_connThread        .isRunning())    _connThread        .interrupt();
+    if(_tsyncThread       .isRunning())    _tsyncThread       .interrupt();
+    if(_statisticsThread  .isRunning())    _statisticsThread  .interrupt();
+    if(_fillerThread      .isRunning())    _fillerThread      .interrupt();
+    if(_vconfThread       .isRunning())    _vconfThread       .interrupt();
+    if(_queueCCU711Thread .isRunning())    _queueCCU711Thread .interrupt();
+    if(_kickerCCU711Thread.isRunning())    _kickerCCU711Thread.interrupt();
 
     if(PorterVerificationThread.isRunning())    PorterVerificationThread.interrupt(CtiPorterVerification::SHUTDOWN);
 
     ThreadMonitor.join();
     _sysMsgThread.join();
 
-    if(_connThread.isValid())
+    if( _connThread.isRunning() )
     {
-        if(_connThread.join(2000) != RW_THR_COMPLETED )
+        if( ! _connThread.tryJoinFor(Cti::Timing::Chrono::seconds(2)) )
         {
             CTILOG_ERROR(dout, "_connThread did not shutdown");
         }
@@ -1032,21 +997,9 @@ void APIENTRY PorterCleanUp (ULONG Reason)
         }
     }
 
-    if(_guiThread.isValid())
+    if( _tsyncThread.isRunning() )
     {
-        if(_guiThread.join(2000) != RW_THR_COMPLETED )
-        {
-            CTILOG_ERROR(dout, "_guiThread did not shutdown");
-        }
-        else
-        {
-            CTILOG_INFO(dout, "_guiThread shutdown");
-        }
-    }
-
-    if(_tsyncThread.isValid())
-    {
-        if(_tsyncThread.join(2000) != RW_THR_COMPLETED )
+        if( ! _tsyncThread.tryJoinFor(Cti::Timing::Chrono::seconds(2)) )
         {
             CTILOG_ERROR(dout, "_tsyncThread did not shutdown");
         }
@@ -1056,9 +1009,9 @@ void APIENTRY PorterCleanUp (ULONG Reason)
         }
     }
 
-    if(_fillerThread.isValid())
+    if( _fillerThread.isRunning() )
     {
-        if(_fillerThread.join(2000) != RW_THR_COMPLETED)
+        if( ! _fillerThread.tryJoinFor(Cti::Timing::Chrono::seconds(2)) )
         {
             CTILOG_ERROR(dout, "_fillerThread did not shutdown");
         }
@@ -1068,9 +1021,9 @@ void APIENTRY PorterCleanUp (ULONG Reason)
         }
     }
 
-    if(_vconfThread.isValid())
+    if( _vconfThread.isRunning() )
     {
-        if(_vconfThread.join(2000) != RW_THR_COMPLETED )
+        if(_vconfThread.tryJoinFor(Cti::Timing::Chrono::seconds(2)) )
         {
             CTILOG_ERROR(dout, "_vconfThread did not shutdown");
         }
@@ -1081,9 +1034,9 @@ void APIENTRY PorterCleanUp (ULONG Reason)
     }
 
 
-    if(_dispThread.isValid())
+    if( _dispThread.isRunning() )
     {
-        if(_dispThread.join(15000) != RW_THR_COMPLETED )
+        if( ! _dispThread.tryJoinFor(Cti::Timing::Chrono::seconds(15)) )
         {
             CTILOG_ERROR(dout, "_dispThread did not shutdown");
         }
@@ -1093,21 +1046,9 @@ void APIENTRY PorterCleanUp (ULONG Reason)
         }
     }
 
-    if(_gwThread.isValid())
+    if( _pilThread.isRunning() )
     {
-        if(_gwThread.join(15000) != RW_THR_COMPLETED )
-        {
-            CTILOG_ERROR(dout, "_gwThread did not shutdown");
-        }
-        else
-        {
-            CTILOG_INFO(dout, "_gwThread shutdown");
-        }
-    }
-
-    if(_pilThread.isValid())
-    {
-        if(_pilThread.join(15000) != RW_THR_COMPLETED )
+        if( ! _pilThread.tryJoinFor(Cti::Timing::Chrono::seconds(15)) )
         {
             CTILOG_ERROR(dout, "_pilThread did not shutdown");
         }
@@ -1117,9 +1058,9 @@ void APIENTRY PorterCleanUp (ULONG Reason)
         }
     }
 
-    if(_queueCCU711Thread.isValid())
+    if( _queueCCU711Thread.isRunning() )
     {
-        if(_queueCCU711Thread.join(1500) != RW_THR_COMPLETED )
+        if( ! _queueCCU711Thread.tryJoinFor(Cti::Timing::Chrono::milliseconds(1500)) )
         {
             CTILOG_ERROR(dout, "_queueCCU711Thread did not shutdown");
         }
@@ -1129,9 +1070,9 @@ void APIENTRY PorterCleanUp (ULONG Reason)
         }
     }
 
-    if(_kickerCCU711Thread.isValid())
+    if( _kickerCCU711Thread.isRunning() )
     {
-        if(_kickerCCU711Thread.join(1500) != RW_THR_COMPLETED )
+        if( ! _kickerCCU711Thread.tryJoinFor(Cti::Timing::Chrono::milliseconds(1500)) )
         {
             CTILOG_ERROR(dout, "_kickerCCU711Thread did not shutdown");
         }
@@ -1148,9 +1089,9 @@ void APIENTRY PorterCleanUp (ULONG Reason)
         CTILOG_INFO(dout, "_verificationThread shutdown");
     }
 
-    if(_statisticsThread.isValid())
+    if( _statisticsThread.isRunning() )
     {
-        while( _statisticsThread.join(1500) != RW_THR_COMPLETED )
+        while( ! _dispThread.tryJoinFor(Cti::Timing::Chrono::milliseconds(1500)) )
         {
             CTILOG_ERROR(dout, "_statisticsThread has not shutdown");
         }
@@ -1407,8 +1348,8 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
     {
         RouteManager.RefreshList();
 
-        /* Make routes associate with devices */
-        attachTransmitterDeviceToRoutes(&DeviceManager, &RouteManager);
+        //  Assign transmitter devices and fill macro subroute pointers
+        populateRouteAssociations(&DeviceManager, &RouteManager);
 
         refreshRepeaterRoutes(pChg);
     }
@@ -1477,14 +1418,12 @@ INT RefreshPorterRTDB(const CtiDBChangeMsg *pChg)
     /* see if we need to start process's for queuing */
     {
         if( (DeviceManager.containsType(TYPE_CCU711) || DeviceManager.containsType(TYPE_CCU721))
-            && !(_queueCCU711Thread.isValid()) )
+            && !(_queueCCU711Thread.isRunning()) )
         {
-            _queueCCU711Thread = rwMakeThreadFunction( QueueThread, (void*)NULL );
             _queueCCU711Thread.start();
 
-            if( !(_kickerCCU711Thread.isValid()) )
+            if( ! _kickerCCU711Thread.isRunning() )
             {
-                _kickerCCU711Thread = rwMakeThreadFunction( KickerThread, (void*)NULL );
                 _kickerCCU711Thread.start();
             }
         }
@@ -1644,15 +1583,17 @@ void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool co
     {
         Port->fileTraces(traceList);
 
+        for( int attempt = 5; attempt >= 0; attempt-- )
         {
-            int attempts = 5;
-            RWMutexLock::TryLockGuard coutTryGuard(coutMux);
+            Cti::TryLockGuard<CtiCriticalSection> coutTryGuard(coutMux);
 
-            while(!coutTryGuard.isAcquired() && attempts-- > 0 )
+            if( ! coutTryGuard.isAcquired() && attempt )
             {
                 Sleep(100);
-                coutTryGuard.tryAcquire();
+
+                continue;
             }
+
             for each( const CtiMessage *msg in traceList )
             {
                 if( msg )
@@ -1672,6 +1613,8 @@ void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool co
             }
 
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
+
+            break;
         }
 
         if(consume)
@@ -1743,26 +1686,17 @@ void KickPIL()
 {
     // TEARDOWN
 
-    if(_pilThread.isValid())
-        _pilThread.requestCancellation(200);
-
-    if(_pilThread.isValid())
+    if( _pilThread.isRunning() )
     {
-        if(_pilThread.join(15000) != RW_THR_COMPLETED )
-        {
-            CTILOG_ERROR(dout, "_pilThread did not shutdown");
-        }
-        else
-        {
-            CTILOG_INFO(dout, "_pilThread shutdown");
-        }
+        _pilThread.interrupt();
+
+        _pilThread.tryJoinOrTerminateFor(Cti::Timing::Chrono::seconds(15));
     }
 
     Sleep(2500);
 
     // AND RESTART
 
-    _pilThread = rwMakeThreadFunction( PorterInterfaceThread, (void*)NULL );
     _pilThread.start();
 
     return;

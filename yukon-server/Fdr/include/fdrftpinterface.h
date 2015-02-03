@@ -1,13 +1,11 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 #include "dlldefs.h"
 #include <wininet.h>
 #include "fdrinterface.h"
+#include "atomic.h"
+
 
 class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
 {
@@ -28,14 +26,14 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
 
     protected:
 
-        RWThreadFunction    iThreadRetrieveFrom;
+        Cti::WorkerThread   iThreadRetrieveFrom;
         void threadFunctionRetrieveFrom( void );
 
-        RWThreadFunction    iThreadFTPGetFile;
-        RWCompletionState threadFunctionWorkerFTPGetFile( void );
+        Cti::WorkerThread   iThreadFTPGetFile;
+        void threadFunctionWorkerFTPGetFile( void );
 
-        RWThreadFunction    iThreadInternetConnect;
-        RWCompletionState threadFunctionWorkerInternetConnection(void);
+        Cti::WorkerThread   iThreadInternetConnect;
+        void threadFunctionWorkerInternetConnection(void);
 
         HINTERNET iSessionHandle;
         HINTERNET iInitialHandle;
@@ -96,4 +94,6 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
         std::string      iServerFileName;
         std::string      iLocalFileName;
         std::string      iFTPDirectory;
+
+        Cti::Atomic<bool>   threadOperationSuccess;
 };

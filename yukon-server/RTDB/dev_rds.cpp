@@ -1,7 +1,6 @@
 #include "precompiled.h"
 #include "dev_rds.h"
 #include "tbl_static_paoinfo.h"
-#include "ctistring.h"
 #include "cparms.h"
 
 using std::string;
@@ -51,9 +50,9 @@ YukonError_t RDSTransmitter::recvCommRequest( OUTMESS *OutMessage )
 
         // do we have a AppID outmessage?
 
-        CtiString command( _outMessage.Request.CommandStr );
+        std::string command( _outMessage.Request.CommandStr );
 
-        if ( command.contains( "putvalue application-id" ) )
+        if( containsString(command, "putvalue application-id") )
         {
             _repeatCount = 0;
             _command = Complete;    // ignore this if we've sent an AppID message withing the last getAIDRepeatRate() time.
@@ -411,14 +410,14 @@ unsigned char RDSTransmitter::getSequenceCount() const
 unsigned char RDSTransmitter::getGroupTypeCode() const
 {
     // Convert string (11A) to integer ((Number(11) << 1) | A = 0, B =  1)
-    CtiString groupType;
+    std::string groupType;
     unsigned char retVal = 0;
 
     if( getStaticInfo(CtiTableStaticPaoInfo::Key_RDS_Group_Type, groupType) )
     {
         retVal = (atoi(groupType.c_str())) << 1;
 
-        if (groupType.contains("b",CtiString::ignoreCase))
+        if (icontainsString(groupType, "b"))
         {
             retVal |= 1;
         }
@@ -498,7 +497,7 @@ YukonError_t RDSTransmitter::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParse
         }
         else if( parse.isKeyValid("hexraw") && gConfigParms.isTrue("ALLOW_RAW_PAGE_MESSAGES") )
         {
-            CtiString outputValue = parse.getsValue("hexraw");
+            std::string outputValue = parse.getsValue("hexraw");
             if( (outputValue.size()%2) != 0 )
             {
                 outputValue.append("0");

@@ -1,15 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_davis
-*
-* Date:   6/17/2002
-*
-* PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.12.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:39 $
-*
-* Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "cmdparse.h"
@@ -37,8 +25,6 @@
 using std::string;
 using std::endl;
 using std::list;
-
-#define DEBUG_PRINT_DECODE 0
 
 // DLLIMPORT extern CtiConnection VanGoghConnection;
 

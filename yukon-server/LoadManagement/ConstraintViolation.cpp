@@ -2,7 +2,6 @@
 
 #include "ConstraintViolation.h"
 #include "lmid.h"
-#include "rwutil.h"
 
 #include <algorithm>
 

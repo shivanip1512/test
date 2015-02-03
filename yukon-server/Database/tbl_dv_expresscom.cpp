@@ -178,7 +178,7 @@ string CtiTableExpresscomLoadGroup::getTableName()
 
 void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    string rwsTemp;
+    string tmpStr;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -203,9 +203,9 @@ void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     rdr["paobjectid"        ] >> _lmGroupId;
     rdr["routeid"           ] >> _routeId;
-    rdr["serialnumber"      ] >> rwsTemp;
+    rdr["serialnumber"      ] >> tmpStr;
 
-    _serial = atoi(rwsTemp.c_str());
+    _serial = atoi(tmpStr.c_str());
 
     rdr["serviceaddress"    ] >> _serviceProvider;
     rdr["geoaddress"        ] >> _geo;
@@ -216,13 +216,13 @@ void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["programaddress"    ] >> _program;
     rdr["splinteraddress"   ] >> _splinter;
 
-    rdr["addressusage"      ] >> rwsTemp;
-    _addressUsage = resolveAddressUsage( rwsTemp.c_str(), Cti::AddressUsage_Expresscom );
+    rdr["addressusage"      ] >> tmpStr;
+    _addressUsage = resolveAddressUsage( tmpStr.c_str(), Cti::AddressUsage_Expresscom );
 
-    rdr["relayusage"        ] >> rwsTemp;
+    rdr["relayusage"        ] >> tmpStr;
     rdr["protocolpriority"  ] >> _priority;
 
-    _loads = resolveRelayUsage(rwsTemp.c_str());
+    _loads = resolveRelayUsage(tmpStr.c_str());
 }
 
 bool CtiTableExpresscomLoadGroup::Insert()

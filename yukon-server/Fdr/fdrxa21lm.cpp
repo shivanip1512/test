@@ -1,23 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-*    FILE NAME: fdrxa21lm.cpp
-*
-*    DATE: 11/21/04
-*
-*    AUTHOR: Aaron Lauinger
-*
-*    Copyright (C) 2004 Cannon Technologies, Inc.  All rights reserved.
-*-----------------------------------------------------------------------------*
-*/
 #include "precompiled.h"
 
-#include <iostream>
-
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <stdio.h>
-
-/** include files **/
 #include "ctitime.h"
 #include "ctidate.h"
 
@@ -44,6 +26,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 // this class header
 #include "fdrxa21lm.h"
+
+using namespace std;
 
 /*
  * MPCFunction corresponds with the function sent from lmsdlnk in
@@ -385,17 +369,7 @@ bool CtiFDR_XA21LM::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, 
                 translationPoint->getDestinationList()[aDestinationIndex].setTranslation (tempString1);
                 successful = true;
         }   // first token invalid
-    } // end try
-
-    catch (const RWExternalErr& e )
-    {
-        getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-        getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-
-        CTILOG_EXCEPTION_ERROR(dout, e);
-        RWTHROW(e);
     }
-
     // try and catch the thread death
     catch ( ... )
     {

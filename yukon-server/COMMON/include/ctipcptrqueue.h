@@ -73,7 +73,7 @@ class CtiPCPtrQueue{
             boost::mutex::scoped_lock scoped_lock(mux);
             bool success = true;
             struct boost::xtime xt;
-            boost::xtime_get(&xt, boost::TIME_UTC);
+            boost::xtime_get(&xt, boost::TIME_UTC_);
             xt.sec  += milli/1000;
             xt.nsec += (milli%1000)*1000000;
 

@@ -719,23 +719,22 @@ bool CtiDeviceBase::hasDynamicInfo(PaoInfoKeys k) const
 
 bool CtiDeviceBase::hasStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const
 {
-    return (_staticPaoInfo.find(CtiTableStaticPaoInfo(getID(), k)) != _staticPaoInfo.end());
+    return _staticPaoInfo.count(k);
 }
 
 bool CtiDeviceBase::setStaticInfo(const CtiTableStaticPaoInfo &info)
 {
     bool new_record = false;
-    std::set<CtiTableStaticPaoInfo>::iterator itr;
 
-    itr = _staticPaoInfo.find(info);
+    auto itr = _staticPaoInfo.find(info.getKey());
 
     if( itr != _staticPaoInfo.end() )
     {
-        *itr = info;
+        itr->second = info;
     }
     else
     {
-        _staticPaoInfo.insert(info);
+        _staticPaoInfo.emplace(info.getKey(), info);
         new_record = true;
     }
 
@@ -746,11 +745,11 @@ bool CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, double &
 {
     bool success = false;
 
-    std::set<CtiTableStaticPaoInfo>::const_iterator itr;
+    auto itr = _staticPaoInfo.find(k);
 
-    if( (itr = _staticPaoInfo.find(CtiTableStaticPaoInfo(getID(), k))) != _staticPaoInfo.end() )
+    if( itr != _staticPaoInfo.end() )
     {
-        itr->getValue(destination);
+        itr->second.getValue(destination);
         success = true;
     }
 
@@ -761,11 +760,11 @@ bool CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, string &
 {
     bool success = false;
 
-    std::set<CtiTableStaticPaoInfo>::const_iterator itr;
+    auto itr = _staticPaoInfo.find(k);
 
-    if( (itr = _staticPaoInfo.find(CtiTableStaticPaoInfo(getID(), k))) != _staticPaoInfo.end() )
+    if( itr != _staticPaoInfo.end() )
     {
-        itr->getValue(destination);
+        itr->second.getValue(destination);
         success = true;
     }
 
@@ -774,12 +773,13 @@ bool CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, string &
 
 long CtiDeviceBase::getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const
 {
-    std::set<CtiTableStaticPaoInfo>::const_iterator itr;
-
     long value = 0;
-    if( (itr = _staticPaoInfo.find(CtiTableStaticPaoInfo(getID(), k))) != _staticPaoInfo.end() )
+
+    auto itr = _staticPaoInfo.find(k);
+
+    if( itr != _staticPaoInfo.end() )
     {
-        itr->getValue(value);
+        itr->second.getValue(value);
     }
 
     return value;

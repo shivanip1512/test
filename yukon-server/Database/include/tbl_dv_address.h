@@ -1,13 +1,6 @@
 #pragma once
 
 #include <limits.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
-#include <rw/thr/monitor.h>
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
 
 #include <windows.h>
 

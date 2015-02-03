@@ -294,27 +294,52 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
 
-        BOOST_REQUIRE( cmd.getTouScheduleReceived() );
+        const boost::optional<RfnTouScheduleConfigurationCommand::Schedule> sched_rcv = cmd.getTouScheduleReceived();
 
-        RfnTouScheduleConfigurationCommand::Schedule sched_rcv = *cmd.getTouScheduleReceived();
+        BOOST_REQUIRE( !! sched_rcv );
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                            sched_rcv._dayTable.begin(), sched_rcv._dayTable.end(),
-                            sched._dayTable.begin(),     sched._dayTable.end());
+        BOOST_CHECK_EQUAL_RANGES( sched_rcv->_dayTable,
+                                  sched._dayTable);
 
-        BOOST_CHECK_EQUAL( sched_rcv._defaultRate, sched._defaultRate );
+        BOOST_CHECK_EQUAL( sched_rcv->_defaultRate,
+                           sched._defaultRate );
 
-        BOOST_CHECK_EQUAL( Cti::mapFind(sched_rcv._times,  RfnTouScheduleConfigurationCommand::Schedule1),
-                           Cti::mapFind(sched._times,      RfnTouScheduleConfigurationCommand::Schedule1) );
+        {
+            const boost::optional<RfnTouScheduleConfigurationCommand::DailyTimes> timesRcv = Cti::mapFind(sched_rcv->_times,  RfnTouScheduleConfigurationCommand::Schedule1);
+            const boost::optional<RfnTouScheduleConfigurationCommand::DailyTimes> timesExp = Cti::mapFind(sched._times,       RfnTouScheduleConfigurationCommand::Schedule1);
 
-        BOOST_CHECK_EQUAL( Cti::mapFind(sched_rcv._times,  RfnTouScheduleConfigurationCommand::Schedule2),
-                           Cti::mapFind(sched._times,      RfnTouScheduleConfigurationCommand::Schedule2) );
+            BOOST_REQUIRE( !! timesRcv );
+            BOOST_REQUIRE( !! timesExp );
 
-        BOOST_CHECK_EQUAL( Cti::mapFind(sched_rcv._times,  RfnTouScheduleConfigurationCommand::Schedule3),
-                           Cti::mapFind(sched._times,      RfnTouScheduleConfigurationCommand::Schedule3) );
+            BOOST_CHECK_EQUAL_RANGES( *timesRcv, *timesExp );
+        }
+        {
+            const boost::optional<RfnTouScheduleConfigurationCommand::DailyTimes> timesRcv = Cti::mapFind(sched_rcv->_times,  RfnTouScheduleConfigurationCommand::Schedule2);
+            const boost::optional<RfnTouScheduleConfigurationCommand::DailyTimes> timesExp = Cti::mapFind(sched._times,       RfnTouScheduleConfigurationCommand::Schedule2);
 
-        BOOST_CHECK_EQUAL( Cti::mapFind(sched_rcv._times,  RfnTouScheduleConfigurationCommand::Schedule4),
-                           Cti::mapFind(sched._times,      RfnTouScheduleConfigurationCommand::Schedule4) );
+            BOOST_REQUIRE( !! timesRcv );
+            BOOST_REQUIRE( !! timesExp );
+
+            BOOST_CHECK_EQUAL_RANGES( *timesRcv, *timesExp );
+        }
+        {
+            const boost::optional<RfnTouScheduleConfigurationCommand::DailyTimes> timesRcv = Cti::mapFind(sched_rcv->_times,  RfnTouScheduleConfigurationCommand::Schedule3);
+            const boost::optional<RfnTouScheduleConfigurationCommand::DailyTimes> timesExp = Cti::mapFind(sched._times,       RfnTouScheduleConfigurationCommand::Schedule3);
+
+            BOOST_REQUIRE( !! timesRcv );
+            BOOST_REQUIRE( !! timesExp );
+
+            BOOST_CHECK_EQUAL_RANGES( *timesRcv, *timesExp );
+        }
+        {
+            const boost::optional<RfnTouScheduleConfigurationCommand::DailyTimes> timesRcv = Cti::mapFind(sched_rcv->_times,  RfnTouScheduleConfigurationCommand::Schedule4);
+            const boost::optional<RfnTouScheduleConfigurationCommand::DailyTimes> timesExp = Cti::mapFind(sched._times,       RfnTouScheduleConfigurationCommand::Schedule4);
+
+            BOOST_REQUIRE( !! timesRcv );
+            BOOST_REQUIRE( !! timesExp );
+
+            BOOST_CHECK_EQUAL_RANGES( *timesRcv, *timesExp );
+        }
     }
 }
 
@@ -398,13 +423,11 @@ BOOST_AUTO_TEST_CASE( test_RfnTouHolidayConfigurationCommand )
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
 
-        BOOST_REQUIRE( cmd.getHolidaysReceived() );
+        const boost::optional<RfnTouHolidayConfigurationCommand::Holidays> holidays_rcv = cmd.getHolidaysReceived();
 
-        RfnTouHolidayConfigurationCommand::Holidays holidays_rcv = *cmd.getHolidaysReceived();
+        BOOST_REQUIRE( !! holidays_rcv );
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                holidays_rcv.begin(), holidays_rcv.end(),
-                holidays.begin(),     holidays.end());
+        BOOST_CHECK_EQUAL_RANGES(*holidays_rcv, holidays);
     }
 }
 
@@ -472,11 +495,11 @@ BOOST_AUTO_TEST_CASE( test_RfnTouStateConfigurationCommand )
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
 
-        BOOST_REQUIRE( cmd.getTouStateReceived() );
+        const boost::optional<RfnTouConfigurationCommand::TouState> touState_rcv = cmd.getTouStateReceived();
 
-        RfnTouConfigurationCommand::TouState touState_rcv = *cmd.getTouStateReceived();
+        BOOST_REQUIRE( !! touState_rcv );
 
-        BOOST_CHECK_EQUAL( touState_rcv, RfnTouConfigurationCommand::TouEnable );
+        BOOST_CHECK_EQUAL( *touState_rcv, RfnTouConfigurationCommand::TouEnable );
 
     }
 
@@ -497,11 +520,11 @@ BOOST_AUTO_TEST_CASE( test_RfnTouStateConfigurationCommand )
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
 
-        BOOST_REQUIRE( cmd.getTouStateReceived() );
+        const boost::optional<RfnTouConfigurationCommand::TouState> touState_rcv = cmd.getTouStateReceived();
 
-        RfnTouConfigurationCommand::TouState touState_rcv = *cmd.getTouStateReceived();
+        BOOST_REQUIRE( !! touState_rcv );
 
-        BOOST_CHECK_EQUAL( touState_rcv, RfnTouConfigurationCommand::TouDisable );
+        BOOST_CHECK_EQUAL( *touState_rcv, RfnTouConfigurationCommand::TouDisable );
     }
 
 }

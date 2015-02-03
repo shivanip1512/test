@@ -7,7 +7,6 @@
 #include "pt_accum.h"
 #include "pt_status.h"
 #include "dllyukon.h"
-#include "ctistring.h"
 #include "config_data_mct.h"
 #include "config_exceptions.h"
 #include "da_lp_deviceconfig.h"
@@ -1498,8 +1497,8 @@ YukonError_t Mct470Device::ErrorDecode(const INMESS &InMessage, const CtiTime Ti
     YukonError_t retVal = ClientErrors::None;
     CtiCommandParser  parse(InMessage.Return.CommandStr);
     CtiReturnMsg     *retMsg = new CtiReturnMsg(getID(),
-                                                CtiString(InMessage.Return.CommandStr),
-                                                CtiString(),
+                                                InMessage.Return.CommandStr,
+                                                "",
                                                 InMessage.ErrorCode,
                                                 InMessage.Return.RouteID,
                                                 InMessage.Return.RetryMacroOffset,
@@ -1935,8 +1934,8 @@ YukonError_t Mct470Device::executeScan(CtiRequestMsg *pReq, CtiCommandParser &pa
             populateDlcOutMessage(*OutMessage);
             OutMessage->Request.RouteID   = getRouteID();
 
-            CtiString originalString = pReq->CommandString();
-            boost::regex re_scan ("scan integrity");
+            std::string originalString = pReq->CommandString();
+            const std::string scanString ("scan integrity");
 
             if( getType() == TYPEMCT470 )
             {
@@ -1947,11 +1946,11 @@ YukonError_t Mct470Device::executeScan(CtiRequestMsg *pReq, CtiCommandParser &pa
                     if( getOperation(function, OutMessage->Buffer.BSt) )
                     {
                         OutMessage->Sequence  = function;     // Helps us figure it out later!
-                        CtiString createdString = originalString;
-                        CtiString replaceString = "getconfig channels";
+                        std::string createdString = originalString;
+                        const std::string replacement = "getconfig channels";
 
-                        createdString.toLower();
-                        createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                        CtiToLower(createdString);
+                        replaceString(createdString, scanString, replacement);//This had better be here, or we have issues.
                         strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
 
                         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
@@ -1968,11 +1967,11 @@ YukonError_t Mct470Device::executeScan(CtiRequestMsg *pReq, CtiCommandParser &pa
                     {
                         OutMessage->Sequence  = function;     // Helps us figure it out later!
 
-                        CtiString createdString = originalString;
-                        CtiString replaceString = "getvalue demand";
+                        std::string createdString = originalString;
+                        const std::string replacement = "getvalue demand";
 
-                        createdString.toLower();
-                        createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                        CtiToLower(createdString);
+                        replaceString(createdString, scanString, replacement);//This had better be here, or we have issues.
                         strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
 
                         outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
@@ -1996,11 +1995,11 @@ YukonError_t Mct470Device::executeScan(CtiRequestMsg *pReq, CtiCommandParser &pa
                     if( getOperation(function, OutMessage->Buffer.BSt) )
                     {
                         OutMessage->Sequence  = function;     // Helps us figure it out later!
-                        CtiString createdString = originalString;
-                        CtiString replaceString = "getconfig ied time";
+                        std::string createdString = originalString;
+                        const std::string replacement = "getconfig ied time";
 
-                        createdString.toLower();
-                        createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                        CtiToLower(createdString);
+                        replaceString(createdString, scanString, replacement);//This had better be here, or we have issues.
                         strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
 
                         sendBackground(*OutMessage, outList);
@@ -2018,11 +2017,11 @@ YukonError_t Mct470Device::executeScan(CtiRequestMsg *pReq, CtiCommandParser &pa
                 if( getOperation(function, OutMessage->Buffer.BSt) )
                 {
                     OutMessage->Sequence  = function;     // Helps us figure it out later!
-                    CtiString createdString = originalString;
-                    CtiString replaceString = "getvalue ied demand";
+                    std::string createdString = originalString;
+                    const std::string replacement = "getvalue ied demand";
 
-                    createdString.toLower();
-                    createdString.replace(re_scan, replaceString);//This had better be here, or we have issues.
+                    CtiToLower(createdString);
+                    replaceString(createdString, scanString, replacement);//This had better be here, or we have issues.
                     strncpy(OutMessage->Request.CommandStr, createdString.data(), COMMAND_STR_SIZE);
 
                     outList.push_back(CTIDBG_new OUTMESS(*OutMessage));
@@ -2255,8 +2254,8 @@ YukonError_t Mct470Device::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
     int function;
 
     CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   CtiString(OutMessage->Request.CommandStr),
-                                                   CtiString(),
+                                                   OutMessage->Request.CommandStr,
+                                                   "",
                                                    nRet,
                                                    OutMessage->Request.RouteID,
                                                    OutMessage->Request.RetryMacroOffset,
@@ -2585,8 +2584,8 @@ YukonError_t Mct470Device::executePutValue(CtiRequestMsg *pReq, CtiCommandParser
     std::auto_ptr<CtiReturnMsg> errRet(
         new CtiReturnMsg(
                 getID( ),
-                CtiString(OutMessage->Request.CommandStr),
-                CtiString(),
+                OutMessage->Request.CommandStr,
+                "",
                 nRet,
                 OutMessage->Request.RouteID,
                 OutMessage->Request.RetryMacroOffset,
@@ -4965,7 +4964,7 @@ YukonError_t Mct470Device::decodeGetStatusDNP( const INMESS &InMessage, const Ct
 
     CtiCommandParser parse(InMessage.Return.CommandStr);
 
-    CtiString resultString;
+    std::string resultString;
     CtiTime errTime;
 
     CtiReturnMsg     *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
@@ -5475,18 +5474,17 @@ YukonError_t Mct470Device::decodeGetValuePhaseCurrent(const INMESS &InMessage, c
 //This expects a string in the format: "01 0x01 01 020 055 0x0040" ect..
 void Mct470Device::getBytesFromString(string &values, BYTE* buffer, int buffLen, int &numValues, int fillCount, int bytesPerValue)
 {
-    CtiString   valueCopy(values);
-    CtiString   temp;
-    CtiString   token;
+    std::string   valueCopy(values);
+    std::string   temp;
+    std::string   token;
     int iValue;
     numValues = 0;
 
     if( buffer != NULL )
     {
-        CtiString anyNum;
-        anyNum = "(([0-9]+) *|(0x[0-9a-f]+) *)+";
+        const boost::regex anyNum("(([0-9]+) *|(0x[0-9a-f]+) *)+");
 
-        if(!(token = valueCopy.match( (const boost::regex &)anyNum)).empty())
+        if(!(token = matchRegex(valueCopy, anyNum)).empty())
         {
             CtiTokenizer cmdtok(token);
 
@@ -5566,8 +5564,8 @@ string Mct470Device::resolveIEDName(int bits)
 Mct470Device::IED_Types Mct470Device::resolveIEDType(const string &iedType)
 {
     IED_Types retVal = IED_Type_None;
-    CtiString iedString = iedType;
-    iedString.toLower();
+    std::string iedString = iedType;
+    CtiToLower(iedString);
 
     if(      iedString == "s4" )        retVal = IED_Type_LG_S4;
     else if( iedString == "alphaa3" )   retVal = IED_Type_Alpha_A3;
@@ -5582,8 +5580,8 @@ Mct470Device::IED_Types Mct470Device::resolveIEDType(const string &iedType)
 
 long Mct470Device::resolveScheduleName(const string & scheduleName)
 {
-    CtiString schedule = scheduleName;
-    schedule.toLower();
+    std::string schedule = scheduleName;
+    CtiToLower(schedule);
 
     if (schedule == "schedule 1")
     {

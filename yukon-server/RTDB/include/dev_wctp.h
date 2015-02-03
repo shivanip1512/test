@@ -1,7 +1,5 @@
 #pragma once
 
-#include <rw\thr\mutex.h>
-
 #include <xercesc/sax2/DefaultHandler.hpp>
 #include <xercesc/sax2/Attributes.hpp>
 #include <xercesc/sax2/SAX2XMLReader.hpp>

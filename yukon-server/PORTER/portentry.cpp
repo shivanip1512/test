@@ -47,7 +47,7 @@ void ConnectionThread(StreamConnection *Nexus);
 bool realignNexus(OUTMESS *&OutMessage);
 
 /* Threads to field incoming messages from the pipes */
-void PorterConnectionThread (void *Arg)
+void PorterConnectionThread()
 {
     CTILOG_INFO(dout, "PorterConnectionThread started");
 

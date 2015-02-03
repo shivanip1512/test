@@ -528,6 +528,8 @@ void CtiRouteCCU::adjustOutboundStagesToFollow(unsigned short &stagesToFollow, u
         }
     }
 
+    const int MaxStagesToFollow = 7;
+
     stagesToFollow = std::min<unsigned short>(stagesToFollow, MaxStagesToFollow);
 }
 
@@ -994,20 +996,20 @@ std::string CtiRouteCCU::toString() const
     itemList <<"CtiRouteCCU";
     itemList << Carrier;
 
-    for(int i = 0; i < RepeaterList.length(); i++)
+    for each( const CtiTableRepeaterRoute &rte in _repeaters )
     {
-        itemList << RepeaterList[i];
+        itemList << rte;
     }
 
     return (Inherited::toString() += itemList.toString());
 }
 
-CtiRouteCCU::CtiRepeaterList_t&  CtiRouteCCU::getRepeaterList()
+const CtiRouteCCU::RepeaterSet & CtiRouteCCU::getRepeaters() const
 {
-    return RepeaterList;
+    return _repeaters;
 }
 
-INT CtiRouteCCU::getStages()     const  {   return RepeaterList.entries();      }
+INT CtiRouteCCU::getStages()     const  {   return _repeaters.size();           }
 INT CtiRouteCCU::getBus()        const  {   return Carrier.getBus();            }
 INT CtiRouteCCU::getCCUFixBits() const  {   return Carrier.getCCUFixBits();     }
 INT CtiRouteCCU::getCCUVarBits() const  {   return Carrier.getCCUVarBits();     }
@@ -1037,6 +1039,10 @@ void CtiRouteCCU::DecodeDatabaseReader(Cti::RowReader &rdr)
 
 void CtiRouteCCU::addRepeater(const CtiTableRepeaterRoute &Rpt)
 {
-    RepeaterList.insert(Rpt);
+    _repeaters.insert(Rpt);
 }
 
+void CtiRouteCCU::clearRepeaters()
+{
+    _repeaters.clear();
+}

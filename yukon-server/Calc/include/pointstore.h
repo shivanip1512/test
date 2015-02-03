@@ -2,18 +2,14 @@
 
 #include <functional>
 
-#include <rw/collect.h>
-
-#include <rw/tphdict.h>
-#include <rw/tvhset.h>
-
-#include "hashkey.h"
 #include "rtdb.h"
 #include "pointdefs.h"
 #include "regression.h"
 #include "tbl_pt_limit.h"
 #include "ctitime.h"
 #include "ctidate.h"
+
+#include <boost/ptr_container/ptr_map.hpp>
 
 #define CALC_DEBUG_INBOUND_POINTS                   0x00000001
 #define CALC_DEBUG_OUTBOUND_POINTS                  0x00000002
@@ -41,19 +37,8 @@ enum PointUpdateType
     constant
 };
 
-struct depStore
+class CtiPointStoreElement
 {
-    long dependentID;
-    int operator<( const depStore &other ) const    { return (dependentID <  other.dependentID); };
-    int operator==( const depStore &other ) const   { return (dependentID == other.dependentID); };
-    int operator()( const depStore &one, const depStore &two ) const    { return (one == two); };
-    int operator()( const depStore &one ) const     { return (one.dependentID); };
-};
-
-class CtiPointStoreElement : public RWCollectable
-{
-    RWDECLARE_COLLECTABLE(CtiPointStoreElement)
-
     //  so they can access the "appendPointComponent" and "setPointValue" functions.
     //    that's so we don't have to worry about the calccomponent code modifying the values.
     friend class CtiCalculateThread;
@@ -66,7 +51,7 @@ private:
     unsigned _pointTags;
     bool _useRegression, _isPrimed;
     CtiTime _pointTime, _calcPointWindowEndTime;
-    RWTValHashSet<depStore, depStore, depStore> _dependents;
+    std::set<long> _dependents;
 
     // The following two elements are used to determine if the VALUE changes from one scan to the next.
     CtiTime _lastValueChangedTime;
@@ -95,14 +80,14 @@ public:
         }
     }
 
-    long    getPointNum( void )            {   return _pointNum;   };
+    long    getPointNum( void ) const      {   return _pointNum;   };
     double  getPointValue( void )          {   return _pointValue; };
     unsigned  getPointQuality( void )      {   return _pointQuality; };
     unsigned  getPointTags( void )         {   return _pointTags; };
     CtiTime  getPointTime( void )           {   return _pointTime;  };
     long    getNumUpdates( void )          {   return _numUpdates; };
     long    getSecondsSincePreviousPointTime( void )       {   return _secondsSincePreviousPointTime; }; //mostly used for demand average points
-    RWTValHashSetIterator<depStore, depStore, depStore> *getDependents( void )      {   return CTIDBG_new RWTValHashSetIterator<depStore, depStore, depStore>( _dependents );    };
+    std::set<long> getDependents( void )   {   return _dependents;  }
 
     CtiTime  getLastValueChangedTime( void )        {   return _lastValueChangedTime;  };
     void resize_regession(int data_elements)
@@ -136,12 +121,9 @@ public:
     //removes the dependent and returns the number of dependents remaining
     unsigned int removeDependent( long dependentID )
     {
-        struct depStore newDependent;
-        newDependent.dependentID = dependentID;
-        int size = _dependents.entries();
-        _dependents.remove( newDependent );
+        _dependents.erase(dependentID);
 
-        return _dependents.entries();
+        return _dependents.size();
     }
 
     void readLimits( Cti::RowReader &rdr )
@@ -238,36 +220,34 @@ protected:
         _pointTags = newTags;
     }
 
-    void appendDependent( long dependentID, PointUpdateType updateType )
+    void appendDependent( long dependentID )
     {
         if( dependentID != _pointNum ) //You are not allowed to be dependent on yourself!!
         {
-            struct depStore newDependent;
-            newDependent.dependentID = dependentID;
-            _dependents.insert( newDependent );
+            _dependents.insert( dependentID );
         }
     };
 };
 
 
-class CtiPointStore : public RWTPtrHashMap<CtiHashKey, CtiPointStoreElement, my_hash<CtiHashKey>, std::equal_to<CtiHashKey> >
+class CtiPointStore
 {
 public:
-    static CtiPointStore *getInstance();
-    static void          removeInstance();
-    CtiPointStoreElement *insertPointElement( long pointNum, long dependentId, enum PointUpdateType updateType );
-    void                 removePointElement( long pointNum );
+    static CtiPointStoreElement *find(long pointId);
+    static CtiPointStoreElement *insert(long pointId, long dependentId, enum PointUpdateType updateType);
+    static void remove(long pointId);
+
+    static std::set<long> getPointIds();
+
+    static void freeInstance();
 
 private:
 
-    CtiPointStore( void )  {  };
-    ~CtiPointStore( )
-    {
-        this->clearAndDestroy( );
-    };
+    CtiPointStore();
 
-    //The singleton instance of CtiPointStore
-    static CtiPointStore* _instance;
+    typedef boost::ptr_map<long, CtiPointStoreElement> IdToElementPtrMap;
 
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
+    IdToElementPtrMap _store;
+
+    static CtiPointStore &instance();
 };

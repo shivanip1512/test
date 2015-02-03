@@ -65,7 +65,6 @@
 #include "c_port_interface.h"
 #include "dev_base.h"
 #include "portdecl.h"
-#include "hashkey.h"
 #include "mgr_device.h"
 #include "mgr_route.h"
 
@@ -127,7 +126,7 @@ INT GetUtilID (PUSHORT a)
 }
 
 
-void VConfigThread (void *Arg)
+void VConfigThread()
 {
    ULONG i;
    HANDLE HFile;

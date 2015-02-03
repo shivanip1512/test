@@ -143,16 +143,16 @@ bool CtiTableContactNotification::Restore()
 }
 
 void CtiTableContactNotification::DecodeDatabaseReader(Cti::RowReader& rdr) {
-  string rwstemp;
+  string tmpStr;
 
   rdr["contactnotifid"] >> _contactNotifID;
   rdr["contactid"] >> _contactID;
   rdr["notificationcategoryid"] >> _notificationCategoryID;
-  rdr["disableflag"] >> rwstemp;
+  rdr["disableflag"] >> tmpStr;
   rdr["notification"] >> _notification;
 
-  std::transform(rwstemp.begin(), rwstemp.end(), rwstemp.begin(), tolower);
-  _disabled = (rwstemp[(size_t)0] == 'y');
+  std::transform(tmpStr.begin(), tmpStr.end(), tmpStr.begin(), tolower);
+  _disabled = (tmpStr[(size_t)0] == 'y');
 
   setDirty(false);  // Not dirty anymore
 }

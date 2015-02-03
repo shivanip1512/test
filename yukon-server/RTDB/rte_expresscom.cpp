@@ -1,18 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   rte_expresscom
-*
-* Date:   7/18/2006
-*
-* Author: Jess Otteson
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/rte_versacom.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/10/28 19:21:43 $
-*
-* Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 
@@ -26,7 +11,6 @@
 #include "rte_expresscom.h"
 #include "expresscom.h"
 #include "numstr.h"
-#include "ctistring.h"
 
 using std::endl;
 using std::list;
@@ -84,7 +68,7 @@ YukonError_t CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *
 
     YukonError_t status = ClientErrors::None;
     bool      xmore = true;
-    CtiString resultString;
+    std::string resultString;
     BYTE      ABuf[ABUFSIZE];
     ULONG     BytesWritten;
 
@@ -226,17 +210,15 @@ YukonError_t CtiRouteExpresscom::ExecuteRequest(CtiRequestMsg                  *
         xmore = false;
         resultString = "Route " + getName() + " did not transmit Versacom/AWord commands";
 
-        CtiString   desc, actn;
-
-        desc = "Route: " + getName();
-        actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
+        const std::string desc = "Route: " + getName();
+        const std::string actn = "FAILURE: Command \"" + parse.getCommandStr() + "\" failed on route";
 
         vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
     }
 
 
     CtiReturnMsg *retReturn = CTIDBG_new CtiReturnMsg(OutMessage->TargetID,
-                                                      CtiString(OutMessage->Request.CommandStr),
+                                                      OutMessage->Request.CommandStr,
                                                       resultString,
                                                       status,
                                                       OutMessage->Request.RouteID,

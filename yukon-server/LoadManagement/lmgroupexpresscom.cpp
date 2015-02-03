@@ -5,7 +5,6 @@
 #include "lmid.h"
 #include "logger.h"
 #include "loadmanager.h"
-#include "ctistring.h"
 #include "ctitokenizer.h"
 #include "numstr.h"
 #include "BeatThePeakControlInterface.h"
@@ -504,18 +503,18 @@ CtiRequestMsg* CtiLMGroupExpresscom::createTargetCycleRequestMsg(LONG percent, L
         int iValue[8];
         int count = 0;
 
-        CtiString token;
-        CtiString temp;
-        CtiString str_hexnum = "(0x[0-9a-f]+)";
-        CtiString str_num = "([0-9]+)";
-        CtiString str_anynum = CtiString ("(") + str_num + CtiString("|") + str_hexnum + CtiString(")");
-        CtiString tempStr = "adjustments";
+        std::string token;
+        std::string temp;
+        std::string str_hexnum = "(0x[0-9a-f]+)";
+        std::string str_num = "([0-9]+)";
+        std::string str_anynum = "(" + str_num + "|" + str_hexnum + ")";
+        std::string tempStr = "adjustments";
         tempStr += "( ";
         tempStr += str_anynum;
         tempStr += ")+";
-        CtiString CmdStr = additionalInfo.c_str();
+        std::string CmdStr = additionalInfo.c_str();
 
-        if( !(token = CmdStr.match(tempStr)).empty() )
+        if( !(token = Cti::matchRegex(CmdStr, tempStr)).empty() )
         {
             CtiTokenizer cmdtok(token);
             cmdtok(); //go past adjustment

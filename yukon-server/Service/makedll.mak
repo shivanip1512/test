@@ -1,12 +1,10 @@
 # nmake file YUKON 1.0
 
 include $(COMPILEBASE)\global.inc
-include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(SERVICE)\include \
 -I$(COMMON)\include \
--I$(RW) \
 -I$(R_COMMON)\include \
 -I$(R_SERVICE)\include \
 -I$(R_CPARMS)\include \
@@ -14,6 +12,7 @@ INCLPATHS+= \
 .PATH.cpp = .;$(R_SERVICE)
 
 DLLOBJS=\
+$(PRECOMPILED_OBJ) \
 cservice.obj \
 cserviceconfig.obj \
 eventlog.obj
@@ -22,7 +21,8 @@ CPPFLAGS=\
 -D_DLL_SERVICE
 
 LIBS=\
-advapi32.lib
+advapi32.lib \
+User32.lib
 
 CTIPROGS=\
 service.dll
@@ -38,7 +38,7 @@ ALL:        $(CTIPROGS)
 service.dll:  $(DLLOBJS) Makedll.mak $(OBJ)\service.res
               @echo Building  $@
               @%cd $(OBJ)
-              $(CC) /Gd $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(LIBS) $(RWLIBS) /Fe..\$@ service.res
+              $(CC) /Gd $(DLLFLAGS) $(DLLOBJS) $(INCLPATHS) $(LIBS) /Fe..\$@ service.res
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -@if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
               -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -62,7 +62,7 @@ deps:
                 @echo C-Options: $(DLLFLAGS)
                 @echo Output   : bin\$@
                 @echo:
-                $(RWCPPINVOKE) $(CPPFLAGS) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
+                $(CC) $(CPPFLAGS) $(CCOPTS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) -DWINDOWS -Fo$(OBJ)\ -c $<
 
 #UPDATE#
 #ENDUPDATE#

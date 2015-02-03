@@ -126,17 +126,17 @@ void CtiTableDeviceScanRate::DecodeDatabaseReader(Cti::RowReader &rdr)
         CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
-    string rwstemp;
+    string scantypeStr;
 
-    rdr["scantype"] >> rwstemp;
+    rdr["scantype"] >> scantypeStr;
 
-    _scanType = resolveScanType( rwstemp ); //??????
-        rdr["intervalrate"] >> _scanRate;
-        rdr["scangroup"] >> _scanGroup;
-        rdr["alternaterate"] >> _alternateRate;
+    _scanType = resolveScanType( scantypeStr ); //??????
+    rdr["intervalrate"] >> _scanRate;
+    rdr["scangroup"] >> _scanGroup;
+    rdr["alternaterate"] >> _alternateRate;
 
-        _updated = TRUE;                    // _ONLY_ _ONLY_ place this is set.
-    }
+    _updated = TRUE;                    // _ONLY_ _ONLY_ place this is set.
+}
 
 std::string CtiTableDeviceScanRate::toString() const
 {

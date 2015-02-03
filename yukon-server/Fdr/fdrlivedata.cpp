@@ -1,15 +1,5 @@
 #include "precompiled.h"
 
-#include <math.h>
-#include <stdlib.h>
-#include <iostream>
-
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <stdio.h>
-
-#define _WINDLL
-
 #include "ctitime.h"
 #include "ctidate.h"
 
@@ -27,7 +17,6 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "logger.h"
 #include "guard.h"
 #include "dbaccess.h"
-#include "hashkey.h"
 #include "resolvers.h"
 
 #include "fdr.h"
@@ -37,6 +26,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 // this class header
 #include "fdrlivedata.h"
+
+using namespace std;
 
 /** global used to start the interface by c functions **/
 CtiFDRLiveData * myInterface;

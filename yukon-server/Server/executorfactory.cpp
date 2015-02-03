@@ -1,51 +1,21 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   executorfactory
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/executorfactory.cpp-arc  $
-* REVISION     :  $Revision: 1.6.34.1 $
-* DATE         :  $Date: 2008/11/13 17:23:38 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
 #include "executorfactory.h"
+#include "message.h"
+#include "exe_cmd.h"
+#include "exe_reg.h"
+#include "logger.h"
 
 CtiExecutor* CtiExecutorFactory::getExecutor(CtiMessage* msg)
 {
-   CtiExecutor *Ex = NULL;
-
    switch(msg->isA())
    {
-   case MSG_COMMAND:
-      {
-         Ex = CTIDBG_new CtiCommandExecutor(msg);
-         break;
-      }
-   case MSG_REGISTER:
-      {
-         Ex = CTIDBG_new CtiRegistrationExecutor(msg);
-         break;
-      }
-   default:
-      {
-         cout << "CtiExecutorFactory failed to manufacture an executor for " << msg->isA() << endl;
-         break;
-      }
+      case MSG_COMMAND:    return new CtiCommandExecutor     (msg);
+      case MSG_REGISTER:   return new CtiRegistrationExecutor(msg);
    }
 
-   return Ex;
-}
+   CTILOG_WARN(dout,  "CtiExecutorFactory failed to manufacture an executor for " << msg->isA());
 
-CtiExecutorFactory::CtiExecutorFactory()
-   {}
-CtiExecutorFactory::~CtiExecutorFactory()
-   {}
+   return NULL;
+}
 

@@ -1,12 +1,14 @@
 #pragma once
 
-#include <rw/tvordvec.h>
 #include "rte_xcu.h"
 #include "tbl_rtcarrier.h"
 #include "tbl_rtrepeater.h"
 
 class IM_EX_DEVDB CtiRouteCCU : public CtiRouteXCU
 {
+public:
+    typedef std::set< CtiTableRepeaterRoute > RepeaterSet;
+
 private:
     // WORKAROUND:
     // Declare copy ctor and assignment operator private with no implementation
@@ -20,29 +22,23 @@ protected:
    CtiTableCarrierRoute    Carrier;
 
    // This is a vector of repeaters 0 to 7 in length... currently we rely on DBEditor to assure this...
-   RWTValOrderedVector< CtiTableRepeaterRoute >  RepeaterList;
+   RepeaterSet _repeaters;
 
    static void adjustOutboundStagesToFollow(unsigned short &stagesToFollow, unsigned &messageFlags, const int type);
 
 private:
 
-    enum
-    {
-        MaxStagesToFollow = 7
-    };
+    typedef CtiRouteXCU Inherited;
 
 public:
-
-   typedef CtiRouteXCU Inherited;
-   typedef RWTValOrderedVector< CtiTableRepeaterRoute > CtiRepeaterList_t;
 
    CtiRouteCCU();
 
    virtual std::string toString() const override;
 
-   CtiRepeaterList_t &getRepeaterList();
+   const RepeaterSet &getRepeaters() const;
 
-   virtual INT        getStages() const;
+   INT getStages() const override;
 
    YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList) override;
 
@@ -51,14 +47,15 @@ public:
 
    YukonError_t assembleDLCRequest (CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList);
 
-   virtual INT  getBus() const;
-   virtual INT  getCCUFixBits() const;
-   virtual INT  getCCUVarBits() const;
+   INT  getBus() const override;
+   INT  getCCUFixBits() const override;
+   INT  getCCUVarBits() const override;
 
    static std::string getSQLCoreStatement();
 
    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
-   virtual void addRepeater(const CtiTableRepeaterRoute &Rpt);
+   void addRepeater(const CtiTableRepeaterRoute &Rpt);
+   void clearRepeaters();
 };
 
 typedef boost::shared_ptr<CtiRouteCCU> CtiRouteCCUSPtr;

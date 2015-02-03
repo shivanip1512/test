@@ -2,7 +2,7 @@
 
 #include <crtdbg.h>
 #include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+using namespace std;
 
 //
 #include "cparms.h"
@@ -44,73 +44,63 @@ BOOL MyCtrlHandler(DWORD fdwCtrlType)
 
 int inspectMessage( CtiMessage *message );
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     if( argc != 3 )
     {
         cout << "Arg 1:   dispatch server machine name" << endl;
         cout << "Arg 2:   # of messages to receive/seconds to wait" << endl;
 
-        exit(-1);
+        return -1;
     }
 
     CtiTime startTime;
     long msgNum = 0;
 
-
-    try
+    if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE))
     {
-        if(!SetConsoleCtrlHandler((PHANDLER_ROUTINE) MyCtrlHandler,  TRUE))
-        {
-            cerr << "Could not install control handler" << endl;
-            return;
-        }
-
-        CtiClientConnection myConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
-        myConnection.start();
-
-        //  write the registration message (this is only done once, because if the database changes,
-        //    the program name and such doesn't change - only our requested points.)
-
-        string regStr = "Lurker";
-
-        myConnection.WriteConnQue( CTIDBG_new CtiRegistrationMsg(regStr, rwThreadId( ), true) );
-        myConnection.WriteConnQue( CTIDBG_new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ) );
-
-        CtiMessage *incomingMsg;
-
-        for( int i = 0, msg = 0; i < atoi( argv[2] ) && !bQuit; i++ )
-        {
-            //  wait up to a second for a message
-            for( ; NULL == (incomingMsg = myConnection.ReadConnQue( 1000 )) && !bQuit; )
-                ;
-
-            if( bQuit )
-                continue;  // so we exit the for without inspecting the NULL message
-
-            float nowTime = ((float)clock( )/(float)CLOCKS_PER_SEC);
-
-            cout << nowTime << " I just got message #" << ++msg << " on loop #" << (i + 1) << endl;
-
-            msgNum += inspectMessage( incomingMsg );
-
-            delete incomingMsg;   //  Make sure to delete this - its on the heap
-        }
-
-        //  tell Dispatch we're going away, then leave
-        myConnection.WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
-        myConnection.close();
-
+        cerr << "Could not install control handler" << endl;
+        return -1;
     }
-    catch( RWxmsg &msg )
+
+    CtiClientConnection myConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
+    myConnection.start();
+
+    //  write the registration message (this is only done once, because if the database changes,
+    //    the program name and such doesn't change - only our requested points.)
+
+    string regStr = "Lurker";
+
+    myConnection.WriteConnQue( CTIDBG_new CtiRegistrationMsg(regStr, GetCurrentThreadId(), true) );
+    myConnection.WriteConnQue( CTIDBG_new CtiPointRegistrationMsg( REG_ALL_PTS_MASK ) );
+
+    CtiMessage *incomingMsg;
+
+    for( int i = 0, msg = 0; i < atoi( argv[2] ) && !bQuit; i++ )
     {
-        cout << "Exception in Lurker: ";
-        cout << msg.why() << endl;
+        //  wait up to a second for a message
+        for( ; NULL == (incomingMsg = myConnection.ReadConnQue( 1000 )) && !bQuit; )
+            ;
+
+        if( bQuit )
+            continue;  // so we exit the for without inspecting the NULL message
+
+        float nowTime = ((float)clock( )/(float)CLOCKS_PER_SEC);
+
+        cout << nowTime << " I just got message #" << ++msg << " on loop #" << (i + 1) << endl;
+
+        msgNum += inspectMessage( incomingMsg );
+
+        delete incomingMsg;   //  Make sure to delete this - its on the heap
     }
+
+    //  tell Dispatch we're going away, then leave
+    myConnection.WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
+    myConnection.close();
 
     cout << msgNum << " messages in " << CtiTime( ).seconds( ) - startTime.seconds( ) << " seconds" << endl;
 
-    exit(0);
+    return 0;
 }
 
 

@@ -341,382 +341,420 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
         }
     }
 
-    return _app_layer.generate(_datalink, _transport, xfer);
+    YukonError_t retVal = ClientErrors::None;
+
+    if( _transport.isTransactionComplete() )
+    {
+        retVal = _app_layer.generate(_transport);
+    }
+
+    if( ! retVal )
+    {
+        if( _datalink.isTransactionComplete() )
+        {
+            retVal = _transport.generate(_datalink);
+        }
+    }
+
+    if( !retVal )
+    {
+        retVal = _datalink.generate(xfer);
+    }
+
+    return retVal;
 }
 
 
 YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 {
-    YukonError_t retVal;
     bool final = true;
 
-    retVal = _app_layer.decode(_datalink, _transport, xfer, status);
+    YukonError_t retVal = _datalink.decode(xfer, status);
+
+    if( ! _datalink.isTransactionComplete() )
+    {
+        return retVal;
+    }
+
+    retVal = _transport.decode(_datalink);
+
+    if( ! _transport.isTransactionComplete() )
+    {
+        return retVal;
+    }
+
+    retVal = _app_layer.decode(_transport);
+
+    if( ! _app_layer.isTransactionComplete() )
+    {
+        return retVal;
+    }
 
     if( _app_layer.errorCondition() )
     {
         _string_results.push_back(CTIDBG_new string("Operation failed"));
         setCommand(Command_Complete);
+
+        return retVal;
     }
-    else if( _app_layer.isTransactionComplete() )
+
+    _app_layer.getObjects(_object_blocks);
+
+    //  does the command need any special processing, or is it just pointdata?
+    switch( _command )
     {
-        _app_layer.getObjects(_object_blocks);
-
-        //  does the command need any special processing, or is it just pointdata?
-        switch( _command )
+        case Command_SetAnalogOut:
         {
-            case Command_SetAnalogOut:
+            if( ! _object_blocks.empty() )
             {
-                if( ! _object_blocks.empty() )
+                if( const ObjectBlock *ob = _object_blocks.front() )
                 {
-                    if( const ObjectBlock *ob = _object_blocks.front() )
+                    if( ! ob->empty() && ob->getGroup() == AnalogOutput::Group )
                     {
-                        if( ! ob->empty() && ob->getGroup() == AnalogOutput::Group )
+                        const ObjectBlock::object_descriptor od = ob->at(0);
+
+                        if( od.object )
                         {
-                            const ObjectBlock::object_descriptor od = ob->at(0);
+                            const AnalogOutput *ao = reinterpret_cast<const AnalogOutput *>(od.object);
 
-                            if( od.object )
+                            std::ostringstream o;
+
+                            o << "Analog output request ";
+
+                            if( ao->getStatus() )
                             {
-                                const AnalogOutput *ao = reinterpret_cast<const AnalogOutput *>(od.object);
+                                retVal = ClientErrors::Abnormal;
 
-                                std::ostringstream o;
+                                o << "unsuccessful\n";
 
-                                o << "Analog output request ";
-
-                                if( ao->getStatus() )
-                                {
-                                    retVal = ClientErrors::Abnormal;
-
-                                    o << "unsuccessful\n";
-
-                                    o << "(status = " << ao->getStatus() << ", offset = " << od.index << ", value " << ao->getValue() << ")";
-                                }
-                                else
-                                {
-                                    o << "successful\n";
-
-                                    o << "(offset = " << od.index << ", value " << ao->getValue() << ")";
-                                }
-
-                                _string_results.push_back(new string(o.str()));
-
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                retVal = ClientErrors::Abnormal;
-
-                _string_results.push_back(new string("Analog output block not echoed"));
-
-                break;
-            }
-            case Command_SetDigitalOut_Direct:
-            case Command_SetDigitalOut_SBO_Select:
-            case Command_SetDigitalOut_SBO_SelectOnly:
-            case Command_SetDigitalOut_SBO_Operate:
-            {
-                const ObjectBlock *ob;
-
-                if( !_object_blocks.empty() &&
-                    (ob = _object_blocks.front()) &&
-                    !ob->empty() &&
-                    ob->getGroup()     == BinaryOutputControl::Group &&
-                    ob->getVariation() == BinaryOutputControl::BOC_ControlRelayOutputBlock )
-                {
-                    ObjectBlock::object_descriptor od = ob->at(0);
-
-                    if( od.object )
-                    {
-                        const BinaryOutputControl *boc = reinterpret_cast<const BinaryOutputControl *>(od.object);
-
-                        //  if the select went successfully, transition to operate
-                        if( _command == Command_SetDigitalOut_SBO_Select && boc->getStatus() == BinaryOutputControl::Status_Success )
-                        {
-                            if( !_command_parameters.empty() )
-                            {
-                                //  make a copy because _command_parameters will be cleared out when setCommand is called...  freaky deaky
-                                output_point op = _command_parameters.at(0);
-
-                                if( od.index == op.control_offset )
-                                {
-                                    //  transition to the operate phase
-                                    setCommand(Command_SetDigitalOut_SBO_Operate, op);
-                                    final = false;
-
-                                    _string_results.push_back(CTIDBG_new string("Select successful, sending operate"));
-                                }
-                                else
-                                {
-                                    string str;
-
-                                    str += "Select returned mismatched control offset (";
-                                    str += CtiNumStr(od.index);
-                                    str += " != ";
-                                    str += CtiNumStr(op.control_offset);
-                                    str += ")";
-
-                                    _string_results.push_back(CTIDBG_new string(str));
-                                    retVal = ClientErrors::Abnormal;
-                                }
+                                o << "(status = " << ao->getStatus() << ", offset = " << od.index << ", value " << ao->getValue() << ")";
                             }
                             else
                             {
-                                CTILOG_ERROR(dout, "empty command parameters for SBO operate");
+                                o << "successful\n";
 
-                                _string_results.push_back(CTIDBG_new string("Empty command parameter list for operate"));
+                                o << "(offset = " << od.index << ", value " << ao->getValue() << ")";
+                            }
+
+                            _string_results.push_back(new string(o.str()));
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            retVal = ClientErrors::Abnormal;
+
+            _string_results.push_back(new string("Analog output block not echoed"));
+
+            break;
+        }
+        case Command_SetDigitalOut_Direct:
+        case Command_SetDigitalOut_SBO_Select:
+        case Command_SetDigitalOut_SBO_SelectOnly:
+        case Command_SetDigitalOut_SBO_Operate:
+        {
+            const ObjectBlock *ob;
+
+            if( !_object_blocks.empty() &&
+                (ob = _object_blocks.front()) &&
+                !ob->empty() &&
+                ob->getGroup()     == BinaryOutputControl::Group &&
+                ob->getVariation() == BinaryOutputControl::BOC_ControlRelayOutputBlock )
+            {
+                ObjectBlock::object_descriptor od = ob->at(0);
+
+                if( od.object )
+                {
+                    const BinaryOutputControl *boc = reinterpret_cast<const BinaryOutputControl *>(od.object);
+
+                    //  if the select went successfully, transition to operate
+                    if( _command == Command_SetDigitalOut_SBO_Select && boc->getStatus() == BinaryOutputControl::Status_Success )
+                    {
+                        if( !_command_parameters.empty() )
+                        {
+                            //  make a copy because _command_parameters will be cleared out when setCommand is called...  freaky deaky
+                            output_point op = _command_parameters.at(0);
+
+                            if( od.index == op.control_offset )
+                            {
+                                //  transition to the operate phase
+                                setCommand(Command_SetDigitalOut_SBO_Operate, op);
+                                final = false;
+
+                                _string_results.push_back(CTIDBG_new string("Select successful, sending operate"));
+                            }
+                            else
+                            {
+                                string str;
+
+                                str += "Select returned mismatched control offset (";
+                                str += CtiNumStr(od.index);
+                                str += " != ";
+                                str += CtiNumStr(op.control_offset);
+                                str += ")";
+
+                                _string_results.push_back(CTIDBG_new string(str));
                                 retVal = ClientErrors::Abnormal;
                             }
                         }
+                        else
+                        {
+                            CTILOG_ERROR(dout, "empty command parameters for SBO operate");
 
-                        _string_results.push_back(CTIDBG_new string(getControlResultString(boc->getStatus())));
+                            _string_results.push_back(CTIDBG_new string("Empty command parameter list for operate"));
+                            retVal = ClientErrors::Abnormal;
+                        }
                     }
-                    else
-                    {
-                        _string_results.push_back(CTIDBG_new string("Device did not return a control result"));
-                        retVal = ClientErrors::Abnormal;
-                    }
+
+                    _string_results.push_back(CTIDBG_new string(getControlResultString(boc->getStatus())));
                 }
                 else
                 {
                     _string_results.push_back(CTIDBG_new string("Device did not return a control result"));
                     retVal = ClientErrors::Abnormal;
                 }
-
-                break;
+            }
+            else
+            {
+                _string_results.push_back(CTIDBG_new string("Device did not return a control result"));
+                retVal = ClientErrors::Abnormal;
             }
 
-            case Command_ReadTime:
+            break;
+        }
+
+        case Command_ReadTime:
+        {
+            //  make sure it's there - if not, yelp
+            if( _object_blocks.empty()
+                || !_object_blocks.front()
+                || _object_blocks.front()->empty()
+                || _object_blocks.front()->getGroup()     != DNP::Time::Group
+                || _object_blocks.front()->getVariation() != DNP::Time::T_TimeAndDate
+                || !_object_blocks.front()->at(0).object )
             {
-                //  make sure it's there - if not, yelp
-                if( _object_blocks.empty()
-                    || !_object_blocks.front()
-                    || _object_blocks.front()->empty()
-                    || _object_blocks.front()->getGroup()     != DNP::Time::Group
-                    || _object_blocks.front()->getVariation() != DNP::Time::T_TimeAndDate
-                    || !_object_blocks.front()->at(0).object )
+                _string_results.push_back(CTIDBG_new string("Device did not return a time result"));
+                retVal = ClientErrors::Abnormal;
+            }
+
+            break;
+        }
+
+        case Command_WriteTime:
+        {
+            _string_results.push_back(CTIDBG_new string("Time sync sent"));
+
+            break;
+        }
+
+        case Command_UnsolicitedEnable:
+        {
+            _string_results.push_back(CTIDBG_new string("Unsolicited reporting enabled"));
+
+            break;
+        }
+
+        case Command_UnsolicitedDisable:
+        {
+            _string_results.push_back(CTIDBG_new string("Unsolicited reporting disabled"));
+
+            break;
+        }
+
+        case Command_Loopback:
+        {
+            _string_results.push_back(CTIDBG_new string("Loopback successful"));
+
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+    scoped_ptr<TimeCTO> cto;
+    scoped_ptr<Time>    time_sent;
+
+    scoped_ptr<const ObjectBlock> ob;
+
+    //  and this is where the pointdata gets harvested
+    while( !_object_blocks.empty() )
+    {
+        ob.reset(_object_blocks.front());
+
+        if( ob && !ob->empty() )
+        {
+            if( ob->getGroup() == TimeCTO::Group )
+            {
+                cto.reset(CTIDBG_new TimeCTO(*(reinterpret_cast<const TimeCTO *>(ob->at(0).object))));
+
+                if( _config->useLocalTime )
+                {
+                    const unsigned local_seconds = cto->getSeconds();
+                    const unsigned utc_seconds = convertLocalSecondsToUtcSeconds(local_seconds);
+                    cto->setSeconds(utc_seconds);
+                }
+
+                CtiTime t(cto->getSeconds());
+
+                CTILOG_WARN(dout, "found CTO object in stream for device \""<< _name <<"\" ("<< t <<", "<< cto->getMilliseconds() <<"ms)");
+            }
+            else if( ob->getGroup()     == DNP::Time::Group &&
+                     ob->getVariation() == DNP::Time::T_TimeAndDate )
+            {
+                ObjectBlock::object_descriptor od = ob->at(0);
+
+                if( od.object )
+                {
+                    time_sent.reset(CTIDBG_new Time(*(reinterpret_cast<const DNP::Time *>(od.object))));
+
+                    if( _config->useLocalTime )
+                    {
+                        const unsigned local_seconds = time_sent->getSeconds();
+                        const unsigned utc_seconds = convertLocalSecondsToUtcSeconds(local_seconds);
+                        time_sent->setSeconds(utc_seconds);
+                    }
+
+                    string s;
+
+                    CtiTime t(time_sent->getSeconds());
+                    CtiTime now;
+
+                    s = "Device time: ";
+                    s.append(t.asString());
+                    s.append(".");
+                    s.append(CtiNumStr((int)time_sent->getMilliseconds()).zpad(3));
+
+                    if( _nextTimeComplaint <= now
+                        && ((t - TimeDifferential) > now || (t + TimeDifferential) < now) )
+                    {
+                        _nextTimeComplaint = nextScheduledTimeAlignedOnRate(now, ComplaintInterval);
+
+                        CTILOG_WARN(dout, "large time differential for device \""<< _name <<"\" ("<< t <<"); "
+                                "will not complain again until "<< _nextTimeComplaint);
+                    }
+
+                    _string_results.push_back(CTIDBG_new string(s));
+                }
+                else
                 {
                     _string_results.push_back(CTIDBG_new string("Device did not return a time result"));
                     retVal = ClientErrors::Abnormal;
                 }
-
-                break;
-            }
-
-            case Command_WriteTime:
-            {
-                _string_results.push_back(CTIDBG_new string("Time sync sent"));
-
-                break;
-            }
-
-            case Command_UnsolicitedEnable:
-            {
-                _string_results.push_back(CTIDBG_new string("Unsolicited reporting enabled"));
-
-                break;
-            }
-
-            case Command_UnsolicitedDisable:
-            {
-                _string_results.push_back(CTIDBG_new string("Unsolicited reporting disabled"));
-
-                break;
-            }
-
-            case Command_Loopback:
-            {
-                _string_results.push_back(CTIDBG_new string("Loopback successful"));
-
-                break;
-            }
-
-            default:
-            {
-                break;
-            }
-        }
-
-        scoped_ptr<TimeCTO> cto;
-        scoped_ptr<Time>    time_sent;
-
-        scoped_ptr<const ObjectBlock> ob;
-
-        //  and this is where the pointdata gets harvested
-        while( !_object_blocks.empty() )
-        {
-            ob.reset(_object_blocks.front());
-
-            if( ob && !ob->empty() )
-            {
-                if( ob->getGroup() == TimeCTO::Group )
-                {
-                    cto.reset(CTIDBG_new TimeCTO(*(reinterpret_cast<const TimeCTO *>(ob->at(0).object))));
-
-                    if( _config->useLocalTime )
-                    {
-                        const unsigned local_seconds = cto->getSeconds();
-                        const unsigned utc_seconds = convertLocalSecondsToUtcSeconds(local_seconds);
-                        cto->setSeconds(utc_seconds);
-                    }
-
-                    CtiTime t(cto->getSeconds());
-
-                    CTILOG_WARN(dout, "found CTO object in stream for device \""<< _name <<"\" ("<< t <<", "<< cto->getMilliseconds() <<"ms)");
-                }
-                else if( ob->getGroup()     == DNP::Time::Group &&
-                         ob->getVariation() == DNP::Time::T_TimeAndDate )
-                {
-                    ObjectBlock::object_descriptor od = ob->at(0);
-
-                    if( od.object )
-                    {
-                        time_sent.reset(CTIDBG_new Time(*(reinterpret_cast<const DNP::Time *>(od.object))));
-
-                        if( _config->useLocalTime )
-                        {
-                            const unsigned local_seconds = time_sent->getSeconds();
-                            const unsigned utc_seconds = convertLocalSecondsToUtcSeconds(local_seconds);
-                            time_sent->setSeconds(utc_seconds);
-                        }
-
-                        string s;
-
-                        CtiTime t(time_sent->getSeconds());
-                        CtiTime now;
-
-                        s = "Device time: ";
-                        s.append(t.asString());
-                        s.append(".");
-                        s.append(CtiNumStr((int)time_sent->getMilliseconds()).zpad(3));
-
-                        if( _nextTimeComplaint <= now
-                            && ((t - TimeDifferential) > now || (t + TimeDifferential) < now) )
-                        {
-                            _nextTimeComplaint = nextScheduledTimeAlignedOnRate(now, ComplaintInterval);
-
-                            CTILOG_WARN(dout, "large time differential for device \""<< _name <<"\" ("<< t <<"); "
-                                    "will not complain again until "<< _nextTimeComplaint);
-                        }
-
-                        _string_results.push_back(CTIDBG_new string(s));
-                    }
-                    else
-                    {
-                        _string_results.push_back(CTIDBG_new string("Device did not return a time result"));
-                        retVal = ClientErrors::Abnormal;
-                    }
-                }
-                else
-                {
-                    pointlist_t points;
-                    int count = ob->size();
-
-                    ob->getPoints(points, cto.get(), time_sent.get());
-
-                    recordPoints(ob->getGroup(), points);
-
-                    _point_results.insert(_point_results.end(), points.begin(), points.end());
-                }
-            }
-
-            _object_blocks.pop();
-        }
-
-        if( final )
-        {
-            if( _command == Command_UnsolicitedInbound )
-            {
-                delete_container(_string_results);
-
-                _string_results.clear();
             }
             else
             {
-                _string_results.push_back(CTIDBG_new string(_app_layer.getInternalIndications()));
+                pointlist_t points;
+                int count = ob->size();
 
-                switch( _command )
+                ob->getPoints(points, cto.get(), time_sent.get());
+
+                recordPoints(ob->getGroup(), points);
+
+                _point_results.insert(_point_results.end(), points.begin(), points.end());
+            }
+        }
+
+        _object_blocks.pop();
+    }
+
+    if( final )
+    {
+        if( _command == Command_UnsolicitedInbound )
+        {
+            delete_container(_string_results);
+
+            _string_results.clear();
+        }
+        else
+        {
+            _string_results.push_back(CTIDBG_new string(_app_layer.getInternalIndications()));
+
+            switch( _command )
+            {
+                case Command_Class0Read:
+                case Command_Class1Read:
+                case Command_Class2Read:
+                case Command_Class3Read:
+                case Command_Class123Read:
+                case Command_Class123Read_WithTime:
+                case Command_Class1230Read:
+                case Command_Class1230Read_WithTime:
                 {
-                    case Command_Class0Read:
-                    case Command_Class1Read:
-                    case Command_Class2Read:
-                    case Command_Class3Read:
-                    case Command_Class123Read:
-                    case Command_Class123Read_WithTime:
-                    case Command_Class1230Read:
-                    case Command_Class1230Read_WithTime:
-                    {
-                        _string_results.push_back(CTIDBG_new string(pointSummary(5)));
+                    _string_results.push_back(CTIDBG_new string(pointSummary(5)));
 
-                        break;
-                    }
+                    break;
                 }
             }
+        }
 
-            if( _app_layer.needsTime() && _command != Command_WriteTime )
+        if( _app_layer.needsTime() && _command != Command_WriteTime )
+        {
+            Command_deq::iterator itr = boost::range::find(_additional_commands, Command_WriteTime);
+
+            if( itr == _additional_commands.end() )
             {
-                Command_deq::iterator itr = boost::range::find(_additional_commands, Command_WriteTime);
+                _additional_commands.insert(_additional_commands.begin(), Command_WriteTime);
+            }
+        }
+
+        // Point value for the message regarding device restart.
+        bool deviceRestarted = false;
+
+        if( _app_layer.hasDeviceRestarted() )
+        {
+            deviceRestarted = true;
+
+            if (_command != Command_ResetDeviceRestartBit )
+            {
+                _string_results.push_back(new string("Attempting to clear Device Restart bit"));
+                setCommand(Command_ResetDeviceRestartBit);
+            }
+
+            if( _config->isAnyUnsolicitedEnabled() )
+            {
+                Command_deq::iterator itr = boost::range::find(_additional_commands, Command_UnsolicitedEnable);
 
                 if( itr == _additional_commands.end() )
                 {
-                    _additional_commands.insert(_additional_commands.begin(), Command_WriteTime);
+                    // Device restarted, so let's tell it to enabled unsolicited commands.
+                    _additional_commands.push_back(Command_UnsolicitedEnable);
                 }
             }
-
-            // Point value for the message regarding device restart.
-            bool deviceRestarted = false;
-
-            if( _app_layer.hasDeviceRestarted() )
+        }
+        else
+        {
+            if ( !_additional_commands.empty() )
             {
-                deviceRestarted = true;
-
-                if (_command != Command_ResetDeviceRestartBit )
-                {
-                    _string_results.push_back(new string("Attempting to clear Device Restart bit"));
-                    setCommand(Command_ResetDeviceRestartBit);
-                }
-
-                if( _config->isAnyUnsolicitedEnabled() )
-                {
-                    Command_deq::iterator itr = boost::range::find(_additional_commands, Command_UnsolicitedEnable);
-
-                    if( itr == _additional_commands.end() )
-                    {
-                        // Device restarted, so let's tell it to enabled unsolicited commands.
-                        _additional_commands.push_back(Command_UnsolicitedEnable);
-                    }
-                }
+                setCommand(_additional_commands.front());
+                _additional_commands.pop_front();
             }
             else
             {
-                if ( !_additional_commands.empty() )
-                {
-                    setCommand(_additional_commands.front());
-                    _additional_commands.pop_front();
-                }
-                else
-                {
-                    setCommand(Command_Complete);
-                }
+                setCommand(Command_Complete);
             }
-
-            // Add the point message for the restart bit.
-            CtiPointDataMsg* pt_msg =
-                new CtiPointDataMsg(IINStatusPointOffset_RestartBit,
-                                    deviceRestarted,
-                                    NormalQuality,
-                                    StatusPointType);
-
-            // We need to set up a millisecond time for the point message.
-            SYSTEMTIME st;
-            GetLocalTime(&st);
-
-            pt_msg->setTimeWithMillis(
-               CtiTime( CtiDate(st.wDay, st.wMonth, st.wYear), st.wHour, st.wMinute, st.wSecond ),
-               st.wMilliseconds );
-
-            _point_results.insert(_point_results.end(), pt_msg);
         }
+
+        // Add the point message for the restart bit.
+        CtiPointDataMsg* pt_msg =
+            new CtiPointDataMsg(IINStatusPointOffset_RestartBit,
+                                deviceRestarted,
+                                NormalQuality,
+                                StatusPointType);
+
+        // We need to set up a millisecond time for the point message.
+        SYSTEMTIME st;
+        GetLocalTime(&st);
+
+        pt_msg->setTimeWithMillis(
+           CtiTime( CtiDate(st.wDay, st.wMonth, st.wYear), st.wHour, st.wMinute, st.wSecond ),
+           st.wMilliseconds );
+
+        _point_results.insert(_point_results.end(), pt_msg);
     }
 
     return retVal;

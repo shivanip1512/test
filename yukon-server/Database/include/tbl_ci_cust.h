@@ -1,16 +1,11 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include "dlldefs.h"
 #include "yukon.h"
 #include "row_reader.h"
 #include "loggable.h"
 
 #include <windows.h>
-#include <rw/thr/recursiv.h>
 #include <set>
 #include <vector>
 

@@ -71,16 +71,16 @@ string CtiTableTag::getSQLCoreStatement()
 
 void CtiTableTag::DecodeDatabaseReader(Cti::RowReader& rdr)
 {
-    string rwsTemp;
+    string tmpStr;
 
     rdr["tagid"]        >> _tagId;
     rdr["tagname"]      >> _tagName;
     rdr["taglevel"]     >> _tagLevel;
-    rdr["inhibit"]      >> rwsTemp;
+    rdr["inhibit"]      >> tmpStr;
     rdr["colorid"]      >> _colorId;
     rdr["imageid"]      >> _imageId;
 
-    _inhibit = ciStringEqual(rwsTemp,"Y");
+    _inhibit = ciStringEqual(tmpStr,"Y");
 
     resetDirty(FALSE);
 }

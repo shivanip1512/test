@@ -82,7 +82,7 @@ bool CtiTableDynamicPointAlarming::Insert(Cti::Database::DatabaseConnection &con
     }
 
     setDirty(false);
-    
+
     return true; // No error occured!
 }
 
@@ -236,9 +236,9 @@ CtiTime CtiTableDynamicPointAlarming::getAlarmTime() const
     return _alarmTime;
 }
 
-CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setAlarmTime(const CtiTime &rwt)
+CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setAlarmTime(const CtiTime &newTime)
 {
-    _alarmTime = CtiTime( rwt );
+    _alarmTime = newTime;
     return *this;
 }
 
@@ -246,9 +246,9 @@ CtiTime CtiTableDynamicPointAlarming::getAlarmDBTime() const
 {
     return _alarmTime;
 }
-CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setAlarmDBTime(const CtiTime &rwt)
+CtiTableDynamicPointAlarming& CtiTableDynamicPointAlarming::setAlarmDBTime(const CtiTime &newTime)
 {
-    _alarmTime = rwt;
+    _alarmTime = newTime;
     return *this;
 }
 

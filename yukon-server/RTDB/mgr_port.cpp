@@ -209,18 +209,12 @@ void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* 
 }
 
 
-struct PortNotNull
-{
-    bool operator()(CtiPortSPtr p) const
-    {
-        return p;
-    }
-};
-
-
 std::vector<CtiPortSPtr> CtiPortManager::getPorts() const
 {
-    return _smartMap.findAll(PortNotNull());
+    return _smartMap.findAll(
+            [](const CtiPortSPtr &p){
+                    return !!p;
+                });
 }
 
 

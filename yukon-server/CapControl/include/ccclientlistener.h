@@ -1,11 +1,9 @@
 #pragma once
 
-#include <rw/thr/thread.h>
-
-#include <vector>
-
 #include "ccclientconn.h"
-#include "ccstate.h"
+#include "connection_listener.h"
+
+#include <boost/thread.hpp>
 
 typedef boost::ptr_vector<CtiCCClientConnection> CtiCCConnectionVec;
 
@@ -23,17 +21,15 @@ public:
 
     static CtiCCClientListener& getInstance();
 
-    RWRecursiveLock<RWMutexLock> & getMux() { return _connmutex; };
-
 private:
 
     CtiListenerConnection _listenerConnection;
 
-    RWThread _listenerthr;
-    RWThread _checkthr;
+    boost::thread   _listenerThr;
+    boost::thread   _checkThr;
 
     CtiCCConnectionVec _connections;
-    RWRecursiveLock<RWMutexLock> _connmutex;
+    CtiCriticalSection _connmutex;
 
     static CtiCCClientListener _instance;
 

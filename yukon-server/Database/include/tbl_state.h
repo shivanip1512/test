@@ -4,9 +4,6 @@
 #include "loggable.h"
 #include "dlldefs.h"
 
-#include <rw/thr/recursiv.h>
-#include <rw\thr\mutex.h>
-
 
 class IM_EX_CTIYUKONDB CtiTableState : public Cti::Loggable
 {

@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "ctitime.h"
-#include <rw/thr/thrutil.h>
 
 #include "ccusimsvc.h"
 #include "CServiceConfig.h"

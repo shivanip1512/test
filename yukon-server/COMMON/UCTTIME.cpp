@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <sys\timeb.h>
+#include <sys/timeb.h>
 #include <string.h>
 #include "dllbase.h"
 #include "os2_2w32.h"

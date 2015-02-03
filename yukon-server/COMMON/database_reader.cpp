@@ -3,6 +3,8 @@
 #include "logger.h"
 #include "CParms.h"
 
+#include <boost/date_time/posix_time/conversion.hpp>
+
 using namespace Cti::Database;
 using Cti::RowReader;
 using std::endl;

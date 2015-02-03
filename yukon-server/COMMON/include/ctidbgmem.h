@@ -2,10 +2,6 @@
 
 #define _CRTDBG_MAP_ALLOC
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 #include <crtdbg.h>
 

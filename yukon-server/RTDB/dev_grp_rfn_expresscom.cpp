@@ -13,7 +13,6 @@
 #include "amq_connection.h"
 #include "RfnBroadcastMessage.h"
 #include "RfnBroadcastReplyMessage.h"
-#include "ctistring.h"
 
 #include "std_helper.h"
 
@@ -56,7 +55,7 @@ YukonError_t CtiDeviceGroupRfnExpresscom::ExecuteRequest(CtiRequestMsg *pReq, Ct
     }
     else if( parse.isKeyValid("hexraw") && gConfigParms.isTrue("ALLOW_RAW_PAGE_MESSAGES") )
     {
-        CtiString outputValue = parse.getsValue("hexraw");
+        std::string outputValue = parse.getsValue("hexraw");
         if( (outputValue.size()%2) != 0 )
         {
             outputValue.append("0");

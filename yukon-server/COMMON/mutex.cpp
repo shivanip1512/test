@@ -5,8 +5,8 @@
 #include "std_helper.h"
 #include "win_helper.h"
 
-using Cti::begin;
-using Cti::end;
+using std::begin;
+using std::end;
 
 CtiMutex::CtiMutex() :
 hMutex(INVALID_HANDLE_VALUE)

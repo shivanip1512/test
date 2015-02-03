@@ -1,5 +1,4 @@
 include $(COMPILEBASE)\global.inc
-include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(BOOST_INCLUDE) \
@@ -10,7 +9,6 @@ INCLPATHS+= \
 -I$(DATABASE)\include \
 -I$(RTDB)\include \
 -I$(DEVICECONFIGURATION)\include \
--I$(RW) \
 -I$(SQLAPI)\include \
 
 
@@ -30,10 +28,10 @@ INCLPATHS+= \
 ;$(PROT)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
-;$(RW)
 
 
 PROTOCOL_TEST_OBJS=\
+$(PRECOMPILED_OBJ) \
 test_main.obj \
 test_prot_klondike.obj \
 test_prot_expresscom.obj \
@@ -50,8 +48,6 @@ $(COMPILEBASE)\lib\ctimsg.lib \
 $(COMPILEBASE)\lib\ctiprot.lib
 
 
-SQLAPILIB=$(SQLAPI)\lib\$(SQLAPI_LIB).lib
-
 LIBS=\
 kernel32.lib user32.lib advapi32.lib wsock32.lib
 
@@ -64,19 +60,18 @@ $(PROTOCOL_TEST_FULLBUILD) :
 	@touch $@
 	@echo:
 	@echo Compiling cpp to obj
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(PROTOCOL_TEST_OBJS)]
+	$(CC) $(CCOPTS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(PROTOCOL_TEST_OBJS)]
 
 test_protocol.exe:    $(PROTOCOL_TEST_FULLBUILD) $(PROTOCOL_TEST_OBJS)  Makefile
         @echo:
 	@echo Creating Executable $(BIN)\$(_TargetF)
         @echo:
 	@%cd $(OBJ)
-	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
-        $(PROTOCOL_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(PROTLIBS) $(LINKFLAGS)
+	$(CC) $(CFLAGS) $(INCLPATHS)  /Fe..\$(BIN)\$(_TargetF) \
+        $(PROTOCOL_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(PROTLIBS) $(LINKFLAGS)
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
         @%cd $(CWD)
         @echo.
@@ -114,11 +109,13 @@ copy:
         @echo Compiling $< to
         @echo           $(OBJ)\$(@B).obj
         @echo:
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
+	$(CC) $(CCOPTS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
 ######################################################################################
 
 #UPDATE#
+test_dnp_datalink.obj:	dnp_datalink_packet.h dlldefs.h \
+		boost_test_helpers.h millisecond_timer.h ctitime.h
 test_dnp_objects.obj:	dnp_object_internalindications.h dnp_objects.h \
 		dllbase.h dsm2.h streamConnection.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h netports.h timing_util.h immutable.h \

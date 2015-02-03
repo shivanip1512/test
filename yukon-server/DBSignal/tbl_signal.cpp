@@ -208,12 +208,6 @@ CtiTableSignal& CtiTableSignal::setPointID(LONG id)
     return *this;
 }
 
-CtiTableSignal& CtiTableSignal::setTime(const CtiTime rwt)
-{
-    _time = rwt;
-    return *this;
-}
-
 CtiTableSignal& CtiTableSignal::setMillis(INT millis)
 {
     if( millis > 999 )

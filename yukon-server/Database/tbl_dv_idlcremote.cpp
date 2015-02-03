@@ -76,7 +76,7 @@ INT CtiTableDeviceIDLC::getAmp()
 
 void CtiTableDeviceIDLC::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    string rwsTemp;
+    string ampStr;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -86,9 +86,9 @@ void CtiTableDeviceIDLC::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["deviceid"] >> _deviceID;
     rdr["address"]       >> _address;
     rdr["postcommwait"]  >> _postdelay;
-    rdr["ccuampusetype"] >> rwsTemp;
+    rdr["ccuampusetype"] >> ampStr;
 
-    _ccuAmpUseType = resolveAmpUseType(rwsTemp);
+    _ccuAmpUseType = resolveAmpUseType(ampStr);
 }
 
 string CtiTableDeviceIDLC::getTableName()

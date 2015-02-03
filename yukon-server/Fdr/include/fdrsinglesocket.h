@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 
 #include "dlldefs.h"
@@ -76,10 +72,10 @@ class IM_EX_FDRBASE CtiFDRSingleSocket : public CtiFDRSocketInterface
 
     protected:
 
-        RWThreadFunction    iThreadSendDebugData;
+        Cti::WorkerThread   iThreadSendDebugData;
         void threadFunctionSendDebugData( void );
 
-        RWThreadFunction    iThreadConnection;
+        Cti::WorkerThread   iThreadConnection;
         void threadFunctionConnection( void );
 
     private:

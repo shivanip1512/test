@@ -1,7 +1,5 @@
 #pragma once
 
-#include <rw\thr\mutex.h>
-
 #include "tbl_metergrp.h"
 #include "dev_ied.h"
 #include "dlldefs.h"

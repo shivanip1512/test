@@ -2,7 +2,6 @@
 
 #include "dlldefs.h"
 #include "fdr.h"
-#include "rwutil.h"
 #include "loggable.h"
 
 #include <string>

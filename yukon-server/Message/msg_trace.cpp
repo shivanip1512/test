@@ -1,16 +1,12 @@
 #include "precompiled.h"
 
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <rw\thr\mutex.h>
-#include <rw/collect.h>
-
 #include "dllbase.h"
 #include "collectable.h"
 #include "dlldefs.h"
 #include "logger.h"
 #include "msg_trace.h"
+
+using namespace std;
 
 DEFINE_COLLECTABLE( CtiTraceMsg, MSG_TRACE );
 

@@ -51,12 +51,12 @@ BOOST_AUTO_TEST_CASE( test_commands )
 
     CtiCCSubstationBusStore::setInstance(store);
 
-    StrategyManager *strategyManager = new StrategyManager(std::auto_ptr<StrategyLoader>(new StrategyUnitTestLoader));
-    std::auto_ptr<StrategyManager> manager = std::auto_ptr<StrategyManager>(strategyManager);
+    std::unique_ptr<StrategyManager> manager = std::make_unique<StrategyManager>(std::make_unique<StrategyUnitTestLoader>());
+    StrategyManager *strategyManager = manager.get();
 
     manager->reloadAll();
 
-    store->setStrategyManager(manager);
+    store->setStrategyManager(std::move(manager));
 
     CtiCCArea           *area       = create_object<CtiCCArea>           (1, "test area");
     CtiCCSubstation     *substation = create_object<CtiCCSubstation>     (2, "test substation");

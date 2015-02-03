@@ -1,21 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   exe_ptchg
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/exe_ptchg.cpp-arc  $
-* REVISION     :  $Revision: 1.10.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-#include <iostream>
-
-#include <rw\thr\threadid.h>
 
 #include "message.h"
 #include "con_mgr_vg.h"

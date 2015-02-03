@@ -1,28 +1,8 @@
 #include <boost/test/unit_test.hpp>
 
-#include "rwutil.h"
-#include "utility.h"
-#include "ctitime.h"
-#include "ctidate.h"
-#include "boost_time.h"
 #include "dbaccess.h"
 
-#include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/date_time/local_time_adjustor.hpp>
-#include <boost/date_time/c_local_time_adjustor.hpp>
-
-#include <string>
-
-BOOST_AUTO_TEST_SUITE( test_rwutil )
-
-
-BOOST_AUTO_TEST_CASE(test_stringCompareIgnoreCase)
-{
-    std::string s1 = "My Compare";
-    std::string s2 = "my cOmParE";
-    BOOST_CHECK_EQUAL( ciStringEqual(s1, s2),true );
-}
-
+BOOST_AUTO_TEST_SUITE( test_dbaccess )
 
 BOOST_AUTO_TEST_CASE(test_assignSQLPlaceholders)
 {

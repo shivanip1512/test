@@ -1,15 +1,16 @@
 #include "precompiled.h"
 
-#include <iostream>
-using namespace std;
-
-#include <rw/thr/thrfunc.h>
 #include "ctitime.h"
 
 #include "dlldefs.h"
 #include "ccusimsvc.h"
 #include "ctibase.h"
 #include "utility.h"
+
+#include <boost/thread.hpp>
+
+#include <iostream>
+using namespace std;
 
 namespace Cti {
 namespace Simulator {
@@ -87,15 +88,14 @@ void CtiSimulatorService::Run()
    SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
    // Start simulator
-   RWThreadFunction _simulatorThread = rwMakeThreadFunction( Cti::Simulator::SimulatorMainFunction, _myargc, _myargv );
-   _simulatorThread.start();
+   boost::thread simulatorThread( Cti::Simulator::SimulatorMainFunction, _myargc, _myargv );
 
    SetThreadName(-1, "SimulatorSvc ");
 
    // set service as running Now
    SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
 
-   _simulatorThread.join();
+   simulatorThread.join();
 
    SetStatus(SERVICE_STOP_PENDING, 50, 40000 );
 }

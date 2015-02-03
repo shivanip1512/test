@@ -1,12 +1,5 @@
 #pragma once
 
-#include <rw/thr/thrfunc.h>
-#include <rw/thr/mutex.h>
-#include <rw/thr/barrier.h>
-#include <rw/thr/condtion.h>
-#include <rw/tvhset.h>
-#include <rw/tvdeque.h>
-
 #include "dlldefs.h"
 #include "message.h"
 #include "msg_dbchg.h"
@@ -16,6 +9,7 @@
 #include "fdrdebuglevel.h"
 #include "fdrpointlist.h"
 #include "msg_cmd.h"
+#include "worker_thread.h"
 
 
 class IM_EX_FDRBASE CtiFDRInterface
@@ -91,11 +85,9 @@ class IM_EX_FDRBASE CtiFDRInterface
         //This is the interfaces hook to know when a point is removed. Most do not care so a default was written.
         virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
 
-        CtiFDRPointList   getSendToList () const;
         CtiFDRPointList & getSendToList ();
         CtiFDRInterface& setSendToList (CtiFDRPointList & aList);
 
-        CtiFDRPointList   getReceiveFromList () const;
         CtiFDRPointList & getReceiveFromList ();
         CtiFDRInterface& setReceiveFromList (CtiFDRPointList & aList);
 
@@ -111,16 +103,14 @@ class IM_EX_FDRBASE CtiFDRInterface
 
         CtiMutex            iCparmMutex;
 
-        RWThreadFunction    iThreadFromDispatch;
-        RWThreadFunction    iThreadDbChange;
-        RWThreadFunction    iThreadToDispatch;
-        RWThreadFunction    iThreadConnectToDispatch;
-        RWThreadFunction    iThreadReloadCparm;
+        Cti::WorkerThread   iThreadFromDispatch;
+        Cti::WorkerThread   iThreadDbChange;
+        Cti::WorkerThread   iThreadToDispatch;
+        Cti::WorkerThread   iThreadReloadCparm;
 
         void threadFunctionSendToDispatch( void );
         void threadFunctionReceiveFromDispatch( void );
         void threadFunctionReloadDb( void );
-        void threadFunctionConnectToDispatch( void );
         void threadFunctionReloadCparm( void );
 
         void printLists(std::string title, int pid);

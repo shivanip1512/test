@@ -4,7 +4,6 @@
 #include "logFileAppender.h"
 #include "truncatingConsoleAppender.h"
 #include "logManager.h"
-#include "ctistring.h"
 #include "cparms.h"
 
 #include "log4cxx/logmanager.h"
@@ -67,13 +66,13 @@ bool FileInfo::shouldDeleteFile(const std::string& fileToDelete, const CtiDate& 
     const std::string date_regex_spec = "2\\d{7}";
     const std::string file_regex_spec = "\\\\" + lowercaseFileName + "_?" + date_regex_spec + "\\.log$";
 
-    CtiString input(fileToDelete);
-    input.toLower();
+    std::string input(fileToDelete);
+    CtiToLower(input);
 
     // Check if the filename portion is in the proper format
     // '\filenameYYYYMMDD.log' or
     // '\filename_YYYYMMDD.log'
-    CtiString output = input.match( file_regex_spec );
+    std::string output = matchRegex(input, file_regex_spec );
 
     if( output.empty() )
     {
@@ -82,7 +81,7 @@ bool FileInfo::shouldDeleteFile(const std::string& fileToDelete, const CtiDate& 
 
     // Check the date format
     // Previous 'file_regex_spec' match ensures a match here too.
-    CtiString date = output.match(date_regex_spec);
+    std::string date = matchRegex(output, date_regex_spec);
 
     unsigned long date_num = std::strtoul(date.c_str(), NULL, 10);
 

@@ -1,13 +1,16 @@
 #pragma once
 
-#include <string>
-#include "boost/lexical_cast.hpp"
-#include "boost/optional.hpp"
-#include "boost/ptr_container/ptr_vector.hpp"
 #include "dlldefs.h"
 #include "streamBuffer.h"
 
-#include <wtypes.h>
+#include <boost/lexical_cast.hpp>
+#include <boost/optional.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
+#include <boost/regex.hpp>
+
+#include <wtypes.h>  //  for SYSTEMTIME
+
+#include <string>
 
 /*
  * A few functions to trim your c++ strings
@@ -43,6 +46,17 @@ IM_EX_CTIBASE char toAscii   (char dec);
 IM_EX_CTIBASE char toAsciiHex(char nibble);
 IM_EX_CTIBASE std::string formatSystemTime(SYSTEMTIME systime);
 IM_EX_CTIBASE std::string commaFormatted(__int64 value);
+IM_EX_CTIBASE std::string matchRegex  (const std::string &src, const boost::regex &pattern);
+IM_EX_CTIBASE std::string matchRegex  (const std::string &src, const std::string  &pattern);
+IM_EX_CTIBASE size_t      locateRegex (const std::string &src, const boost::regex &pattern, size_t *matchLength, size_t substrIndex);
+IM_EX_CTIBASE void        removeRegex       (std::string &src, const boost::regex& re);
+IM_EX_CTIBASE void        removeRegex       (std::string &src, const char *re);
+IM_EX_CTIBASE void        removeString      (std::string &src, const std::string  &pattern);
+IM_EX_CTIBASE void       replaceString      (std::string &src, const std::string  &pattern, const std::string &replacement);
+IM_EX_CTIBASE bool    containsRegex   (const std::string &src, const boost::regex &pattern);
+IM_EX_CTIBASE bool    containsRegex   (const std::string &src, const std::string  &pattern);
+IM_EX_CTIBASE bool    containsString  (const std::string &src, const std::string  &pattern);
+IM_EX_CTIBASE bool   icontainsString  (const std::string &src, const std::string  &pattern);
 
 class IM_EX_CTIBASE StringFormatter
 {

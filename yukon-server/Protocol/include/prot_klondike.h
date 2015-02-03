@@ -120,7 +120,7 @@ private:
         bool operator>(const queue_entry_t &rhs) const   {  return priority > rhs.priority;  };
     };
 
-    typedef std::multiset<queue_entry_t, std::greater<queue_entry_t> > local_work_t;
+    typedef std::multimap<unsigned, queue_entry_t, std::greater<unsigned>> local_work_t;
     typedef std::map<unsigned, local_work_t::iterator>                 pending_work_t;
     typedef std::map<unsigned, queue_entry_t>                          remote_work_t;
 

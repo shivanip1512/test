@@ -1,12 +1,7 @@
 #pragma once
 
-#include <iostream>
-
-#include <rw/collstr.h>
-
-#include "logger.h"
-#include "guard.h"
-#include "types.h"
+#include <vector>
+#include <string>
 
 bool DecodePMSIFile(const std::string& file, std::vector<std::string*>* results);
 static bool isValidPMSILine( char* line, char &command, std::string &serialNum, std::string &programming);

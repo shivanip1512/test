@@ -1,15 +1,8 @@
 #include "precompiled.h"
 
-#include <map>
-
-#include <rw/thr/thrfunc.h>
-#include <rw/timer.h>
-
 #include "mgr_holiday.h"
 #include "mgr_season.h"
-
 #include "msg_signal.h"
-
 #include "lmcontrolareastore.h"
 #include "lmcurtailcustomer.h"
 #include "lmenergyexchangecustomer.h"
@@ -58,20 +51,18 @@
 #include "debug_timer.h"
 #include "clistener.h"
 #include "lmprogrambeatthepeakgear.h"
+#include "std_helper.h"
+#include "millisecond_timer.h"
 
 using namespace std;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
+using Cti::Timing::MillisecondTimer;
 
 extern ULONG _LM_DEBUG;
 extern set<long> _CHANGED_GROUP_LIST;
 extern set<long> _CHANGED_CONTROL_AREA_LIST;
 extern set<long> _CHANGED_PROGRAM_LIST;
-
-struct id_hash
-{
-    LONG operator()(LONG x) const { return x;}
-};
 
 void lmprogram_delete(const LONG& program_id, CtiLMProgramBase*const& lm_program, void* d)
 {
@@ -83,12 +74,9 @@ void lmprogram_delete(const LONG& program_id, CtiLMProgramBase*const& lm_program
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterforpoints(true), _lastdbreloadtime(gInvalidCtiTime), _wascontrolareadeletedflag(false)
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _controlAreas = CTIDBG_new vector<CtiLMControlArea*>;
     //Start the reset thread
-    RWThreadFunction func = rwMakeThreadFunction( *this, &CtiLMControlAreaStore::doResetThr );
-    _resetthr = func;
-    func.start();
+    _resetthr = boost::thread( &CtiLMControlAreaStore::doResetThr, this );
 }
 
 /*--------------------------------------------------------------------------
@@ -96,12 +84,14 @@ CtiLMControlAreaStore::CtiLMControlAreaStore() : _isvalid(false), _reregisterfor
 -----------------------------------------------------------------------------*/
 CtiLMControlAreaStore::~CtiLMControlAreaStore()
 {
-    if( _resetthr.isValid() )
+    _resetthr.interrupt();
+
+    if (!_resetthr.timed_join(boost::posix_time::seconds(30))) 
     {
-        // 30 seconds seems to be the standard across Yukon. If you do not wait for the cancellation,
-        // bad things can happen in some cases.
-        _resetthr.requestCancellation(30000);
-        _resetthr.join(30000);
+        CTILOG_WARN( dout, "Load Manager thread did not shutdown gracefully. "
+                           "Attempting a forced shutdown" );
+
+        TerminateThread( _resetthr.native_handle(), EXIT_SUCCESS );
     }
 
     shutdown();
@@ -135,7 +125,6 @@ vector<CtiLMControlArea*>* CtiLMControlAreaStore::getControlAreas(CtiTime curren
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::findProgram(LONG programID, CtiLMProgramBaseSPtr& program, CtiLMControlArea** controlArea)
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     vector<CtiLMControlArea*>* controlAreas = getControlAreas(CtiTime());
     for( LONG i=0; i < controlAreas->size(); i++ )
     {
@@ -283,14 +272,12 @@ void CtiLMControlAreaStore::reset()
         std::map<long, CtiLMProgramBaseSPtr > temp_all_program_map;
         std::map<long, CtiLMControlArea* > temp_all_control_area_map;
 
-        RWTimer overallTimer;
-        overallTimer.start();
+        MillisecondTimer    overallTimer;
         CTILOG_INFO(dout, "Starting Database Reload...");
 
         {
             Cti::Database::DatabaseConnection connection;
             {
-                //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
                 if( _controlAreas->size() > 0 )   //Save off current data to database so that if can be loaded by new objects on reload
                 {
                     dumpAllDynamicData();
@@ -300,7 +287,7 @@ void CtiLMControlAreaStore::reset()
             }
             CtiTime currentDateTime;
 
-            RWTValHashMap<LONG,LONG,id_hash,equal_to<LONG> > controlPointHashMap;
+            std::set<long>  controlPointHashMap;
             {//loading controllable statuses
 
                 static const string sql =
@@ -328,12 +315,11 @@ void CtiLMControlAreaStore::reset()
                     LONG tempPointId = 0;
                     rdr["pointid"] >> tempPointId;
 
-                    controlPointHashMap.insert( tempPointId, tempPointId );
+                    controlPointHashMap.insert( tempPointId );
                 }
             }
 
-            RWTimer allGroupTimer;
-            allGroupTimer.start();
+            MillisecondTimer    componentLoadingTimer;
 
             /* First load all the groups, and put them into a map by group id */
             std::map< long, CtiLMGroupPtr > all_assigned_group_map; //remember which groups we have assigned
@@ -511,10 +497,9 @@ void CtiLMControlAreaStore::reset()
                         case StatusPointType:
                             if( point_offset == 0 )
                             {
-                                long control_status_point_id;
-                                if( controlPointHashMap.findValue(point_id, control_status_point_id) )
+                                if( controlPointHashMap.count(point_id) )
                                 {
-                                    lm_group->setControlStatusPointId(control_status_point_id);
+                                    lm_group->setControlStatusPointId(point_id);
                                     temp_point_group_map.insert(make_pair(point_id,lm_group));
                                 }
                             }
@@ -746,17 +731,14 @@ void CtiLMControlAreaStore::reset()
 
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CTILOG_DEBUG(dout, "DB Load Timer for All Groups is: " << allGroupTimer.elapsedTime()
+                CTILOG_DEBUG(dout, "DB Load Timer for All Groups is: " << componentLoadingTimer.elapsed() / 1000
                              << endl << "Loaded a total of " << temp_all_group_map.size() << " groups, " << group_macro_map.size() << " of them are in macro groups"
                              << endl << all_program_group_map.size() << "==" << all_assigned_group_map.size() << " groups are assigned to programs");
-
-                allGroupTimer.reset();
             }
 
-            RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > directProgramHashMap;
+            std::map<long, CtiLMProgramBaseSPtr>  directProgramHashMap;
 
-            RWTimer dirProgsTimer;
-            dirProgsTimer.start();
+            componentLoadingTimer.reset();
             {//loading direct programs start
 
                 static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
@@ -821,7 +803,7 @@ void CtiLMControlAreaStore::reset()
                         }
 
                         //Inserting this direct program into hash map
-                        directProgramHashMap.insert( currentLMProgramDirect->getPAOId(), currentLMProgramDirect );
+                        directProgramHashMap.insert(make_pair(currentLMProgramDirect->getPAOId(), currentLMProgramDirect));
                         temp_all_program_map.insert(make_pair(currentLMProgramDirect->getPAOId(), currentLMProgramDirect));
                     }
 
@@ -844,14 +826,10 @@ void CtiLMControlAreaStore::reset()
             }//loading direct programs end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CTILOG_DEBUG(dout, "DB Load Timer for Direct Programs is: " << dirProgsTimer.elapsedTime());
-
-                dirProgsTimer.reset();
+                CTILOG_DEBUG(dout, "DB Load Timer for Direct Programs is: " << componentLoadingTimer.elapsed() / 1000);
             }
 
-            RWTimer masterSubordinateTimer;
-            masterSubordinateTimer.start();
-
+            componentLoadingTimer.reset();
             { // loading master - subordinate direct program relationships
                 static const string sql =  "SELECT PEX.paoid, PEX.excludedpaoid "
                                            "FROM paoexclusion PEX "
@@ -875,14 +853,13 @@ void CtiLMControlAreaStore::reset()
                     rdr["paoid"] >> master_program_id;
                     rdr["excludedpaoid"] >> subordinate_program_id;
 
-                    CtiLMProgramBaseSPtr master_program;
-                    CtiLMProgramBaseSPtr subordinate_program;
+                    boost::optional<CtiLMProgramBaseSPtr>   master_program      = Cti::mapFind( directProgramHashMap, master_program_id ),
+                                                            subordinate_program = Cti::mapFind( directProgramHashMap, subordinate_program_id );
 
-                    if( directProgramHashMap.findValue(master_program_id, master_program) &&
-                        directProgramHashMap.findValue(subordinate_program_id, subordinate_program) )
+                    if ( master_program && subordinate_program )
                     {
-                        (boost::static_pointer_cast< CtiLMProgramDirect >(master_program))->getSubordinatePrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(subordinate_program));
-                        (boost::static_pointer_cast< CtiLMProgramDirect >(subordinate_program))->getMasterPrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(master_program));
+                        (boost::static_pointer_cast< CtiLMProgramDirect >(*master_program))->getSubordinatePrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(*subordinate_program));
+                        (boost::static_pointer_cast< CtiLMProgramDirect >(*subordinate_program))->getMasterPrograms().insert(boost::static_pointer_cast< CtiLMProgramDirect >(*master_program));
                     }
                     else
                     {
@@ -895,12 +872,10 @@ void CtiLMControlAreaStore::reset()
 
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CTILOG_DEBUG(dout, "DB Load Timer for associating master/subordinate programs is: " << dirProgsTimer.elapsedTime());
-                dirProgsTimer.reset();
+                CTILOG_DEBUG(dout, "DB Load Timer for associating master/subordinate programs is: " << componentLoadingTimer.elapsed() / 1000);
             }
 
-            RWTimer gearsTimer;
-            gearsTimer.start();
+            componentLoadingTimer.reset();
             {//loading direct gears start
 
                 static const string sql =  "SELECT PDG.deviceid, PDG.gearname, PDG.gearnumber, PDG.controlmethod, "
@@ -977,10 +952,9 @@ void CtiLMControlAreaStore::reset()
 
                     if( newDirectGear != NULL )
                     {
-                        CtiLMProgramBaseSPtr programToPutGearIn;
-                        if( directProgramHashMap.findValue(newDirectGear->getProgramPAOId(),programToPutGearIn) )
+                        if( boost::optional<CtiLMProgramBaseSPtr> programToPutGearIn = Cti::mapFind( directProgramHashMap, newDirectGear->getProgramPAOId() ) )
                         {
-                            vector<CtiLMProgramDirectGear*>& lmProgramDirectGearList = boost::static_pointer_cast< CtiLMProgramDirect>(programToPutGearIn)->getLMProgramDirectGears();
+                            vector<CtiLMProgramDirectGear*>& lmProgramDirectGearList = boost::static_pointer_cast< CtiLMProgramDirect>(*programToPutGearIn)->getLMProgramDirectGears();
                             lmProgramDirectGearList.push_back(newDirectGear);
                         }
                     }
@@ -997,14 +971,10 @@ void CtiLMControlAreaStore::reset()
             }//loading direct gears end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CTILOG_DEBUG(dout, "DB Load Timer for Direct Gears is: " << gearsTimer.elapsedTime());
-
-                gearsTimer.reset();
+                CTILOG_DEBUG(dout, "DB Load Timer for Direct Gears is: " << componentLoadingTimer.elapsed() / 1000);
             }
 
-            RWTimer notificationGroupTimer;
-            notificationGroupTimer.start();
-
+            componentLoadingTimer.reset();
             { //loading notification groups start
 
                 static const string sql = "SELECT DNG.programid, DNG.notificationgrpid "
@@ -1028,10 +998,9 @@ void CtiLMControlAreaStore::reset()
                     rdr["programid"] >> program_id;
                     rdr["notificationgrpid"] >> notif_grp_id;
 
-                    CtiLMProgramBaseSPtr program;
-                    if( directProgramHashMap.findValue(program_id, program ) )
+                    if( boost::optional<CtiLMProgramBaseSPtr> program = Cti::mapFind( directProgramHashMap, program_id ) )
                     {
-                        boost::static_pointer_cast< CtiLMProgramDirect >(program)->getNotificationGroupIDs().push_back(notif_grp_id);
+                        boost::static_pointer_cast< CtiLMProgramDirect >(*program)->getNotificationGroupIDs().push_back(notif_grp_id);
                     }
                     else
                     {
@@ -1042,15 +1011,12 @@ void CtiLMControlAreaStore::reset()
 
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CTILOG_DEBUG(dout, "DB Load Timer for Direct Program Notification Groups is: " << notificationGroupTimer.elapsedTime());
-
-                notificationGroupTimer.reset();
+                CTILOG_DEBUG(dout, "DB Load Timer for Direct Program Notification Groups is: " << componentLoadingTimer.elapsed() / 1000);
             }
 
-            RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > curtailmentProgramHashMap;
+            std::map<long, CtiLMProgramBaseSPtr> curtailmentProgramHashMap;
 
-            RWTimer curtailProgsTimer;
-            curtailProgsTimer.start();
+            componentLoadingTimer.reset();
             {//loading curtailment programs start
 
                 static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
@@ -1097,7 +1063,7 @@ void CtiLMControlAreaStore::reset()
                             currentLMProgramCurtailment->restoreDynamicData();
                         }
                         //Inserting this curtailment program into hash map
-                        curtailmentProgramHashMap.insert( currentLMProgramCurtailment->getPAOId(), currentLMProgramCurtailment );
+                        curtailmentProgramHashMap.insert(make_pair(currentLMProgramCurtailment->getPAOId(), currentLMProgramCurtailment));
                         temp_all_program_map.insert(make_pair(currentLMProgramCurtailment->getPAOId(), currentLMProgramCurtailment));
                     }
 
@@ -1118,11 +1084,10 @@ void CtiLMControlAreaStore::reset()
                     }
                 }
 
-                RWTValHashMapIterator<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > itr(curtailmentProgramHashMap);
-
-                for( ;itr(); )
+                for( std::map<long, CtiLMProgramBaseSPtr>::iterator itr = curtailmentProgramHashMap.begin();
+                     itr != curtailmentProgramHashMap.end(); ++itr )
                 {
-                    CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(itr.value());
+                    CtiLMProgramCurtailmentSPtr currentLMProgramCurtailment = boost::static_pointer_cast< CtiLMProgramCurtailment >(itr->second);
 
                     static const string sql =  "SELECT CIC.customerid, CIC.companyname, CIC.customerdemandlevel, "
                                                    "CIC.curtailamount, CIC.curtailmentagreement, CUS.timezone, "
@@ -1160,16 +1125,13 @@ void CtiLMControlAreaStore::reset()
             }//loading curtailment programs end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CTILOG_DEBUG(dout, "DB Load Timer for Curtailment Programs is: " << curtailProgsTimer.elapsedTime());
-
-                curtailProgsTimer.reset();
+                CTILOG_DEBUG(dout, "DB Load Timer for Curtailment Programs is: " << componentLoadingTimer.elapsed() / 1000);
             }
 
 
-            RWTValHashMap<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > energyExchangeProgramHashMap;
+            std::map<long,CtiLMProgramBaseSPtr> energyExchangeProgramHashMap;
 
-            RWTimer eeProgsTimer;
-            eeProgsTimer.start();
+            componentLoadingTimer.reset();
             {//loading energy exchange programs start
 
                 static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
@@ -1210,7 +1172,7 @@ void CtiLMControlAreaStore::reset()
                     {
                         currentLMProgramEnergyExchange.reset(CTIDBG_new CtiLMProgramEnergyExchange(rdr));
                         //Inserting this curtailment program into hash map
-                        energyExchangeProgramHashMap.insert( currentLMProgramEnergyExchange->getPAOId(), currentLMProgramEnergyExchange );
+                        energyExchangeProgramHashMap.insert(make_pair(currentLMProgramEnergyExchange->getPAOId(), currentLMProgramEnergyExchange));
                         temp_all_program_map.insert(make_pair(currentLMProgramEnergyExchange->getPAOId(), currentLMProgramEnergyExchange));
                     }
 
@@ -1231,11 +1193,10 @@ void CtiLMControlAreaStore::reset()
                     }
                 }
 
-                RWTValHashMapIterator<LONG,CtiLMProgramBaseSPtr,id_hash,equal_to<LONG> > itr(energyExchangeProgramHashMap);
-
-                for( ;itr(); )
+                for( std::map<long,CtiLMProgramBaseSPtr>::iterator itr = energyExchangeProgramHashMap.begin();
+                     itr != energyExchangeProgramHashMap.end(); ++itr )
                 {
-                    CtiLMProgramEnergyExchangeSPtr currentLMProgramEnergyExchange = boost::static_pointer_cast< CtiLMProgramEnergyExchange >(itr.value());
+                    CtiLMProgramEnergyExchangeSPtr currentLMProgramEnergyExchange = boost::static_pointer_cast< CtiLMProgramEnergyExchange >(itr->second);
 
                     if( currentLMProgramEnergyExchange->getManualControlReceivedFlag() )
                     {
@@ -1430,14 +1391,11 @@ void CtiLMControlAreaStore::reset()
             }//loading energy exchange programs end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CTILOG_DEBUG(dout, "DB Load Timer for Energy Exchange Programs is: " << eeProgsTimer.elapsedTime());
-
-                eeProgsTimer.reset();
+                CTILOG_DEBUG(dout, "DB Load Timer for Energy Exchange Programs is: " << componentLoadingTimer.elapsed() / 1000);
             }
 
 
-            RWTimer progWinTimer;
-            progWinTimer.start();
+            componentLoadingTimer.reset();
             {//loading program control windows start
 
                 static const string sql =  "SELECT PCW.deviceid, PCW.windownumber, PCW.availablestarttime, "
@@ -1458,10 +1416,23 @@ void CtiLMControlAreaStore::reset()
                 while( rdr() )
                 {
                     CtiLMProgramControlWindow* newWindow = CTIDBG_new CtiLMProgramControlWindow(rdr);
+
                     CtiLMProgramBaseSPtr programToPutWindowIn;
-                    if( directProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) ||
-                        curtailmentProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) ||
-                        energyExchangeProgramHashMap.findValue(newWindow->getPAOId(),programToPutWindowIn) )
+
+                    if ( boost::optional<CtiLMProgramBaseSPtr> lookup = Cti::mapFind( directProgramHashMap, newWindow->getPAOId() ) )
+                    {
+                        programToPutWindowIn = *lookup;
+                    }
+                    else if ( boost::optional<CtiLMProgramBaseSPtr> lookup = Cti::mapFind( curtailmentProgramHashMap, newWindow->getPAOId() ) )
+                    {
+                        programToPutWindowIn = *lookup;
+                    }
+                    else if ( boost::optional<CtiLMProgramBaseSPtr> lookup = Cti::mapFind( energyExchangeProgramHashMap, newWindow->getPAOId() ) )
+                    {
+                        programToPutWindowIn = *lookup;
+                    }
+
+                    if( programToPutWindowIn )
                     {
                         std::vector<CtiLMProgramControlWindow*>& lmProgramControlWindowList = programToPutWindowIn->getLMProgramControlWindows();
                         lmProgramControlWindowList.push_back(newWindow);
@@ -1476,14 +1447,11 @@ void CtiLMControlAreaStore::reset()
             }//loading program control windows end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CTILOG_DEBUG(dout, "DB Load Timer for Program Control Windows is: " << progWinTimer.elapsedTime());
-
-                progWinTimer.reset();
+                CTILOG_DEBUG(dout, "DB Load Timer for Program Control Windows is: " << componentLoadingTimer.elapsed() / 1000);
             }
 
 
-            RWTimer caTimer;
-            caTimer.start();
+            componentLoadingTimer.reset();
             {//loading control areas start
 
                 static const string sql =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
@@ -1543,29 +1511,38 @@ void CtiLMControlAreaStore::reset()
                         {
                             vector<CtiLMProgramBaseSPtr>& lmControlAreaProgramList = currentLMControlArea->getLMPrograms();
 
-                            if( directProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
+                            if( boost::optional<CtiLMProgramBaseSPtr> lookup = Cti::mapFind( directProgramHashMap,tempProgramId ) )
                             {
+                                currentLMProgramBase = *lookup;
+
                                 currentLMProgramBase->setStartPriority(start_priority);
                                 currentLMProgramBase->setStopPriority(stop_priority);
                                 currentLMProgramBase->setControlArea(currentLMControlArea);
                                 lmControlAreaProgramList.push_back(currentLMProgramBase);
-                                directProgramHashMap.remove(tempProgramId);
+
+                                directProgramHashMap.erase(tempProgramId);
                             }
-                            else if( curtailmentProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
+                            else if( boost::optional<CtiLMProgramBaseSPtr> lookup = Cti::mapFind( curtailmentProgramHashMap,tempProgramId ) )
                             {
+                                currentLMProgramBase = *lookup;
+
                                 currentLMProgramBase->setStartPriority(start_priority);
                                 currentLMProgramBase->setStopPriority(stop_priority);
                                 currentLMProgramBase->setControlArea(currentLMControlArea);
                                 lmControlAreaProgramList.push_back(currentLMProgramBase);
-                                curtailmentProgramHashMap.remove(tempProgramId);
+
+                                curtailmentProgramHashMap.erase(tempProgramId);
                             }
-                            else if( energyExchangeProgramHashMap.findValue(tempProgramId,currentLMProgramBase) )
+                            else if( boost::optional<CtiLMProgramBaseSPtr> lookup = Cti::mapFind( energyExchangeProgramHashMap,tempProgramId ) )
                             {
+                                currentLMProgramBase = *lookup;
+
                                 currentLMProgramBase->setStartPriority(start_priority);
                                 currentLMProgramBase->setStopPriority(stop_priority);
                                 currentLMProgramBase->setControlArea(currentLMControlArea);
                                 lmControlAreaProgramList.push_back(currentLMProgramBase);
-                                energyExchangeProgramHashMap.remove(tempProgramId);
+
+                                energyExchangeProgramHashMap.erase(tempProgramId);
                             }
                             else
                             {
@@ -1604,15 +1581,12 @@ void CtiLMControlAreaStore::reset()
             }//loading control areas end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CTILOG_DEBUG(dout, "DB Load Timer for Control Areas is: " << caTimer.elapsedTime()
-                             << endl << "directprghashmap size: " << directProgramHashMap.entries());
-
-                caTimer.reset();
+                CTILOG_DEBUG(dout, "DB Load Timer for Control Areas is: " << componentLoadingTimer.elapsed() / 1000
+                             << endl << "directprghashmap size: " << directProgramHashMap.size());
             }
 
 
-            RWTimer trigTimer;
-            trigTimer.start();
+            componentLoadingTimer.reset();
             {//loading control area triggers start
 
                 static const string sql =  "SELECT CAT.ThresholdPointId, CAT.triggerid, CAT.deviceid, CAT.triggernumber, CAT.triggertype, "
@@ -1673,9 +1647,7 @@ void CtiLMControlAreaStore::reset()
             }//loading control area triggers end
             if( _LM_DEBUG & LM_DEBUG_DATABASE )
             {
-                CTILOG_DEBUG(dout, "DB Load Timer for Triggers is: " << trigTimer.elapsedTime());
-
-                trigTimer.reset();
+                CTILOG_DEBUG(dout, "DB Load Timer for Triggers is: " << componentLoadingTimer.elapsed() / 1000);
             }
 
             //Make sure holidays and season schedules are refreshed
@@ -1684,8 +1656,6 @@ void CtiLMControlAreaStore::reset()
         }
 
         {
-            //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-
             // Clear out our old working objects
             _all_control_area_map.clear();
             delete_container(*_controlAreas);
@@ -1714,11 +1684,8 @@ void CtiLMControlAreaStore::reset()
 
             if( _LM_DEBUG & LM_DEBUG_TIMING )
             {
-                CTILOG_DEBUG(dout, "DB Load Timer for entire LM DB: " << overallTimer.elapsedTime());
-
-                overallTimer.reset();
+                CTILOG_DEBUG(dout, "DB Load Timer for entire LM DB: " << overallTimer.elapsed() / 1000);
             }
-
         }
     }
     catch( ... )
@@ -1804,7 +1771,8 @@ void CtiLMControlAreaStore::doResetThr()
 
         while( TRUE )
         {
-            rwRunnable().serviceCancellation();
+            boost::this_thread::interruption_point();
+
             CtiTime now;
 
             // When we cross midnight these dates won't match and we can do our daily midnight maintenance
@@ -1819,7 +1787,6 @@ void CtiLMControlAreaStore::doResetThr()
 
             if( now.seconds() >= lastPeriodicDatabaseRefresh.seconds()+refreshrate )
             {
-                //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
                 if( _LM_DEBUG & LM_DEBUG_STANDARD )
                 {
                     CTILOG_DEBUG(dout, "Periodic restore of control area list from the database");
@@ -1831,13 +1798,13 @@ void CtiLMControlAreaStore::doResetThr()
             else
             {
                 lastCheck = now;
-                rwRunnable().sleep(5000);
+
+                boost::this_thread::sleep( boost::posix_time::seconds( 5 ) );
             }
         }
     }
-    catch( RWCancellation& )
+    catch ( boost::thread_interrupted & )
     {
-        throw;
     }
     catch( ... )
     {
@@ -1895,7 +1862,6 @@ void CtiLMControlAreaStore::deleteInstance()
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::isValid()
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     return _isvalid;
 }
 
@@ -1906,7 +1872,6 @@ bool CtiLMControlAreaStore::isValid()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::setValid(bool valid)
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _isvalid = valid;
 }
 
@@ -1917,7 +1882,6 @@ void CtiLMControlAreaStore::setValid(bool valid)
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::getReregisterForPoints()
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     return _reregisterforpoints;
 }
 
@@ -1928,19 +1892,16 @@ bool CtiLMControlAreaStore::getReregisterForPoints()
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaStore::setReregisterForPoints(bool reregister)
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _reregisterforpoints = reregister;
 }
 
 bool CtiLMControlAreaStore::getWasControlAreaDeletedFlag()
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     return _wascontrolareadeletedflag;
 }
 
 void CtiLMControlAreaStore::setWasControlAreaDeletedFlag(bool wasDeleted)
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     _wascontrolareadeletedflag = wasDeleted;
 }
 
@@ -2096,7 +2057,6 @@ bool CtiLMControlAreaStore::UpdateTriggerInDB(CtiLMControlArea* controlArea, Cti
 ---------------------------------------------------------------------------*/
 CtiLMGroupPtr CtiLMControlAreaStore::getLMGroup(long groupID)
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     CtiLMGroupPtr retVal;
 
     typedef map< long, CtiLMGroupPtr >::iterator GroupMapIter;
@@ -2118,7 +2078,6 @@ CtiLMGroupPtr CtiLMControlAreaStore::getLMGroup(long groupID)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBaseSPtr CtiLMControlAreaStore::getLMProgram(long programID)
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     CtiLMProgramBaseSPtr retVal;
 
     typedef map< long, CtiLMProgramBaseSPtr >::iterator ProgramMapIter;
@@ -2140,7 +2099,6 @@ CtiLMProgramBaseSPtr CtiLMControlAreaStore::getLMProgram(long programID)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea* CtiLMControlAreaStore::getLMControlArea(long controlAreaID)
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
     CtiLMControlArea* retVal = NULL;
 
     typedef map< long, CtiLMControlArea* >::iterator ControlAreaMapIter;
@@ -2163,8 +2121,6 @@ CtiLMControlArea* CtiLMControlAreaStore::getLMControlArea(long controlAreaID)
 ---------------------------------------------------------------------------*/
 bool CtiLMControlAreaStore::checkMidnightDefaultsForReset()
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-
     bool returnBool = false;
     vector<CtiLMControlArea*>& controlAreas = *getControlAreas(CtiTime());
     for( long i=0;i<controlAreas.size();i++ )

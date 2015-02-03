@@ -277,52 +277,17 @@ inline bool list_contains( const std::list<T> &V, T x )
 template <class Numeric, class Stream>
 struct csv_output_iterator : public std::iterator<std::output_iterator_tag, void, void, void, void>
 {
-    Stream &s;
+    Stream *s;
     bool first;
     Numeric num;
 
-    csv_output_iterator(Stream &s_) : s(s_), first(true) {}
+    csv_output_iterator(Stream &s_) : s(&s_), first(true) {}
 
     csv_output_iterator &operator*()  {  return *this;  }
     csv_output_iterator &operator=(Numeric num_)  {  num = num_;  return *this;  }
-    csv_output_iterator &operator++()  { (first?(first = false, s):(s << ",")) << num;  return *this;  }
+    csv_output_iterator &operator++()  { (first?(first = false, *s):(*s << ",")) << num;  return *this;  }
 };
 
-
-//  usage is as an output iterator - e.g.
-//  vector<char> source;
-//    ...
-//  std::copy(source.begin(), source.end(), padded_output_iterator<int>(dout, '0', 2));
-template <class Numeric, class Stream>
-struct padded_output_iterator : public std::iterator<std::output_iterator_tag, void, void, void, void>
-{
-    Stream &s;
-    bool first;
-    Numeric num;
-    char old_fill;
-    unsigned width;
-
-    padded_output_iterator(Stream &s_, char fill_, unsigned width_) : s(s_), width(width_), first(true), old_fill(s.fill(fill_)) {}
-    ~padded_output_iterator() {  s.fill(old_fill);  }
-
-    padded_output_iterator &operator*()  {  return *this;  }
-    padded_output_iterator &operator=(Numeric num_)  {  num = num_;  return *this;  }
-    padded_output_iterator &operator++()
-    {
-        if( first )
-        {
-            first = false;
-        }
-        else
-        {
-            s << " ";
-        }
-
-        s << std::setw(width) << num;
-
-        return *this;
-    }
-};
 
 template <class T>
 struct priority_sort : public std::binary_function<T, T, bool>

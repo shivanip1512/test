@@ -1,24 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_fpcbc
-*
-* Date:   6/15/2001
-*
-* Author: Corey G. Plender
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_fpcbc.cpp-arc  $
-* REVISION     :  $Revision: 1.11.4.1 $
-* DATE         :  $Date: 2008/11/13 17:23:43 $
-*
-* Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-#include <iomanip>
-#include <iostream>
-
-
 
 #include "cmdparse.h"
 #include "dllbase.h"
@@ -29,7 +9,7 @@
 #include "prot_fpcbc.h"
 #include "utility.h"
 
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+using namespace std;
 
 INT CtiProtocolFisherPierceCBC::parseRequest(CtiCommandParser  &parse, const FPSTRUCT &aFPSt)
 {

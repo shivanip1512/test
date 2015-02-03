@@ -161,7 +161,7 @@ CtiTableVersacomLoadGroup& CtiTableVersacomLoadGroup::setRouteID( const LONG a_r
 
 void CtiTableVersacomLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    string rwsTemp;
+    string tmpStr;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -170,21 +170,21 @@ void CtiTableVersacomLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     rdr["paobjectid"]       >> _deviceID;
 
-    rdr["serialaddress"]    >> rwsTemp;
-    _serial = atoi(rwsTemp.c_str());
+    rdr["serialaddress"]    >> tmpStr;
+    _serial = atoi(tmpStr.c_str());
     rdr["utilityaddress"]   >> _utilityID;
     rdr["sectionaddress"]   >> _section;
     rdr["classaddress"]     >> _class;
     rdr["divisionaddress"]  >> _division;
     rdr["routeid"]          >> _routeID;
 
-    rdr["addressusage"]     >> rwsTemp;
-    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
+    rdr["addressusage"]     >> tmpStr;
+    std::transform(tmpStr.begin(), tmpStr.end(), tmpStr.begin(), tolower);
 
-    _addressUsage = resolveAddressUsage(rwsTemp, Cti::AddressUsage_Versacom);
+    _addressUsage = resolveAddressUsage(tmpStr, Cti::AddressUsage_Versacom);
 
-    rdr["relayusage"]       >> rwsTemp;
-    _relayMask = resolveRelayUsage(rwsTemp);
+    rdr["relayusage"]       >> tmpStr;
+    _relayMask = resolveRelayUsage(tmpStr);
 }
 
 LONG CtiTableVersacomLoadGroup::getDeviceID() const

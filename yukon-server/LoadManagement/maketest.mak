@@ -1,7 +1,6 @@
 # nmake file YUKON 1.0
 
 !include $(COMPILEBASE)\global.inc
-!include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(LOADMANAGEMENT)\include \
@@ -12,7 +11,6 @@ INCLPATHS+= \
 -I$(SERVICE)\include \
 -I$(SERVER)\include \
 -I$(BOOST_INCLUDE) \
--I$(RW) \
 -I$(SQLAPI)\include \
 -I$(THRIFT_INCLUDE) \
 -I$(MSG)\Serialization \
@@ -27,8 +25,7 @@ INCLPATHS+= \
 ;$(SERVICE)\include \
 ;$(SERVER)\include \
 ;$(MSG)\include \
-;$(BOOST_INCLUDE) \
-;$(RW)
+;$(BOOST_INCLUDE)
 
 LIBS=\
 advapi32.lib \
@@ -49,6 +46,7 @@ test_lm_constraintviolations.obj \
 test_lmthermostatgear.obj
 
 LOADMANAGEMENTBASEOBJS= \
+$(PRECOMPILED_OBJ) \
 clistener.obj \
 executor.obj \
 ConstraintViolation.obj \
@@ -110,19 +108,18 @@ $(LOADMANAGEMENT_TEST_FULLBUILD) :
 	@touch $@
 	@echo:
 	@echo Compiling cpp to obj
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(LOADMANAGEMENT_TEST_OBJS)]
+	$(CC) $(CCOPTS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(LOADMANAGEMENT_TEST_OBJS)]
 
 test_loadmanagement.exe:    $(LOADMANAGEMENT_TEST_FULLBUILD) $(LOADMANAGEMENT_TEST_OBJS)  Makefile
         @echo:
 	@echo Creating Executable $(BIN)\$(_TargetF)
         @echo:
 	@%cd $(OBJ)
-	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
-        $(LOADMANAGEMENT_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LOADMANAGEMENTBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	$(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$(BIN)\$(_TargetF) \
+        $(LOADMANAGEMENT_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LOADMANAGEMENTBASEOBJS) $(LIBS) $(LINKFLAGS)
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
         @%cd $(CWD)
         @echo.
@@ -132,12 +129,11 @@ lm_server_client_serialization_test.exe:    $(LOADMANAGEMENT_TEST_FULLBUILD) lm_
 	@echo Creating Executable $(BIN)\$(_TargetF)
         @echo:
 	@%cd $(OBJ)
-	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
-        lm_server_client_serialization_test.obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LOADMANAGEMENTBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	$(CC) $(CFLAGS) $(INCLPATHS) /Fe..\$(BIN)\$(_TargetF) \
+        lm_server_client_serialization_test.obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LOADMANAGEMENTBASEOBJS) $(LIBS) $(LINKFLAGS)
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
         @%cd $(CWD)
         @echo.
@@ -160,7 +156,7 @@ deps:
         @echo Compiling $< to
         @echo           $(OBJ)\$(@B).obj
         @echo:
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
+	$(CC) $(CCOPTS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
 ######################################################################################
 #UPDATE#
@@ -176,12 +172,12 @@ test_lmobjects.obj:	devicetypes.h lmutility.h CtiTime.h dlldefs.h \
 		optional.h macro_offset.h msg_cmd.h row_reader.h \
 		database_connection.h dbaccess.h dllbase.h \
 		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
-		database_reader.h boost_time.h configkey.h configval.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		test_reader.h lmgroupecobee.h GroupControlInterface.h \
-		ecobeeControlInterface.h ecobeeCycleGear.h lmprogramdirect.h \
-		lmprogramdirectgear.h tbl_lmprogramhistory.h smartgearbase.h
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h test_reader.h lmgroupecobee.h \
+		GroupControlInterface.h ecobeeControlInterface.h \
+		ecobeeCycleGear.h lmprogramdirect.h lmprogramdirectgear.h \
+		tbl_lmprogramhistory.h smartgearbase.h
 test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		dlldefs.h queues.h cticalls.h yukon.h types.h ctidbgmem.h \
 		os2_2w32.h constants.h numstr.h lmprogrambase.h dbmemobject.h \
@@ -194,9 +190,8 @@ test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		row_reader.h database_connection.h dbaccess.h dllbase.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramdirectgear.h \
 		lmcontrolarea.h connection.h msg_ptreg.h msg_reg.h queue.h \
-		cparms.h rwutil.h database_reader.h boost_time.h configkey.h \
-		configval.h readers_writer_lock.h connection_base.h \
-		worker_thread.h tbl_lmprogramhistory.h \
+		cparms.h configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h tbl_lmprogramhistory.h \
 		lmprogramcontrolwindow.h lmutility.h lmconstraint.h \
 		lmmessage.h ConstraintViolation.h executor.h msg_server_req.h \
 		lmprogramcurtailment.h lmcurtailcustomer.h lmcicustomerbase.h \
@@ -212,12 +207,11 @@ test_lmthermostatgear.obj:	lmutility.h CtiTime.h dlldefs.h ctidate.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h msg_cmd.h \
 		row_reader.h database_connection.h dbaccess.h dllbase.h \
 		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
-		database_reader.h boost_time.h configkey.h configval.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		test_reader.h lmProgramThermostatGear.h lmprogramdirectgear.h \
-		lmGroupExpresscom.h BeatThePeakControlInterface.h \
-		BeatThePeakAlertLevel.h
+		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h test_reader.h lmProgramThermostatGear.h \
+		lmprogramdirectgear.h lmGroupExpresscom.h \
+		BeatThePeakControlInterface.h BeatThePeakAlertLevel.h
 test_lm_constraintviolations.obj:	ConstraintViolation.h ctitime.h \
 		dlldefs.h collectable.h ctidate.h
 #ENDUPDATE#

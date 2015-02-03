@@ -197,7 +197,6 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
         if( !Port->isInhibited() )
         {
             /*Scan ports */
-            // RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
             CtiRouteManager::coll_type::reader_lock_guard_t guard(RouteManager.getLock());
             CtiRouteManager::spiterator   rte_itr;
 
@@ -548,8 +547,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
 }
 
 /* Routine to generate filler messages */
-void FillerThread (PVOID Arg)
-
+void FillerThread()
 {
     ULONG FillerRate = {300L};
 

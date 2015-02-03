@@ -57,8 +57,8 @@ public:
     int initForOutput( unsigned char *buf, unsigned len );
     int initForInput ( unsigned char *buf, unsigned len );
 
-    YukonError_t generate( DatalinkLayer &datalink, CtiXfer &xfer );
-    YukonError_t decode  ( DatalinkLayer &datalink, CtiXfer &xfer, YukonError_t status );
+    YukonError_t generate( DatalinkLayer &datalink );
+    YukonError_t decode  ( DatalinkLayer &datalink );
 
     bool isTransactionComplete( void );
     bool errorCondition( void );

@@ -16,7 +16,7 @@ ThreadStatusKeeper::ThreadStatusKeeper(const std::string &threadName) :
 
 ThreadStatusKeeper::~ThreadStatusKeeper()
 {
-    ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), _threadName, CtiThreadRegData::LogOut ) );
+    ThreadMonitor.tickle( new CtiThreadRegData( GetCurrentThreadId(), _threadName, CtiThreadRegData::LogOut ) );
 }
 
 bool ThreadStatusKeeper::monitorCheck()
@@ -55,10 +55,10 @@ bool ThreadStatusKeeper::monitorCheck(CtiThreadRegData::Behaviors behavior, int 
         if( now > _announceTime )
         {
             _announceTime = nextScheduledTimeAlignedOnRate( now, CtiThreadMonitor::StandardMonitorTime );
-            CTILOG_INFO(dout, _threadName << " TID: " << rwThreadId() );
+            CTILOG_INFO(dout, _threadName);
         }
 
-        ThreadMonitor.tickle( new CtiThreadRegData( rwThreadId(), _threadName, behavior, tickleInterval, fnPtr, _threadName) );
+        ThreadMonitor.tickle( new CtiThreadRegData( GetCurrentThreadId(), _threadName, behavior, tickleInterval, fnPtr, _threadName) );
     }
 
     return retVal;

@@ -2,10 +2,6 @@
 
 #include <stdio.h>
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 #include <eh.h>
 

@@ -1,7 +1,5 @@
 #pragma once
 
-#include <rw/thr/thread.h>
-
 #include "ccarea.h"
 #include "ccsparea.h"
 #include "ccid.h"
@@ -22,6 +20,8 @@
 #include "DatabaseDaoFactory.h"
 
 #include "EventLogEntry.h"
+
+#include <boost/thread.hpp>
 
 struct CcDbReloadInfo
 {
@@ -158,7 +158,7 @@ public:
     CtiCCArea_vec* getCCGeoAreas(unsigned long secondsFrom1901, bool checkReload = false);
     CtiCCSpArea_vec* getCCSpecialAreas(unsigned long secondsFrom1901, bool checkReload = false);
 
-    static CtiCCSubstationBusStore* getInstance(bool startThreads=true);
+    static CtiCCSubstationBusStore* getInstance();
     static void deleteInstance();
     static void setInstance(CtiCCSubstationBusStore* substationBusStore);
 
@@ -488,7 +488,7 @@ public:
     bool getStoreRecentlyReset();
     void setStoreRecentlyReset(bool flag);
 
-    RWRecursiveLock<RWMutexLock> & getMux() { return _storeMutex; };
+    CtiCriticalSection & getMux() { return _storeMutex; };
 
     /* Relating to Max Kvar Cparm */
     bool addKVAROperation( long capbankId, long kvar );
@@ -535,13 +535,13 @@ public:
 
     void executeAllStrategies() const;
 
+    void startThreads();
+    void stopThreads();
+
 private:
 
     /* Relating to Max Kvar Cparm */
     long isKVARAvailable( long kvarNeeded );
-
-    void startThreads();
-    void stopThreads();
 
     void reset();
     //bool CtiCCSubstationBusStore::findPointId(long pointId);
@@ -577,9 +577,9 @@ private:
     CtiCCArea_vec *_ccGeoAreas;
     CtiCCSpArea_vec *_ccSpecialAreas;
 
-    RWThread _resetthr;
-    RWThread _amfmthr;
-    RWThread _opstatsthr;
+    boost::thread   _resetThr;
+    boost::thread   _amfmThr;
+    boost::thread   _opStatThr;
 
     bool _isvalid;
     bool _storeRecentlyReset;
@@ -636,15 +636,15 @@ private:
     PointIdToFeederMultiMap      _pointid_feeder_map;
     PointIdToCapBankMultiMap     _pointid_capbank_map;
 
-    std::auto_ptr<StrategyManager> _strategyManager;
+    std::unique_ptr<StrategyManager> _strategyManager;
 
     Cti::CapControl::ZoneManager _zoneManager;
 
 protected:
-    boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> _voltageRegulatorManager;
+    std::unique_ptr<Cti::CapControl::VoltageRegulatorManager> _voltageRegulatorManager;
 
     void setAttributeService( std::auto_ptr<AttributeService> service );
-    void setStrategyManager ( std::auto_ptr<StrategyManager> strategyManager );
+    void setStrategyManager ( std::unique_ptr<StrategyManager> strategyManager );
 
 private:
     ChildToParentMultiMap _substation_specialarea_map;
@@ -670,14 +670,14 @@ private:
 
     Cti::CapControl::DaoFactory::SharedPtr _daoFactory;
 
-    mutable RWRecursiveLock<RWMutexLock> _storeMutex;
+    mutable CtiCriticalSection _storeMutex;
 
 public:
 
     Cti::CapControl::ZoneManager & getZoneManager();
     bool reloadZoneFromDatabase(const long zoneId);
 
-    boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> getVoltageRegulatorManager();
+    Cti::CapControl::VoltageRegulatorManager *getVoltageRegulatorManager();
     bool reloadVoltageRegulatorFromDatabase(const long regulatorId);
 
     static AttributeService &getAttributeService();

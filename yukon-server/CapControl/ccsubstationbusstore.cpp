@@ -23,17 +23,17 @@
 #include "database_transaction.h"
 #include "database_writer.h"
 #include "database_util.h"
-#include "ctistring.h"
 #include "PointResponse.h"
 #include "PointResponseDao.h"
 #include "ThreadStatusKeeper.h"
 #include "ExecutorFactory.h"
 
 #include <boost/algorithm/string/join.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/assign/list_of.hpp>
 
-#include <rw/rwfile.h>
-#include <rw/thr/thrfunc.h>
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 
 #define HOURLY_RATE 3600
 
@@ -71,11 +71,11 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() :
     _lastdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
     _wassubbusdeletedflag(false),
     _lastindividualdbreloadtime(CtiTime(CtiDate(1,1,1990),0,0,0)),
-    _strategyManager( new StrategyManager( std::auto_ptr<StrategyDBLoader>( new StrategyDBLoader ) ) ),
-    _zoneManager( std::auto_ptr<ZoneDBLoader>( new ZoneDBLoader ) ),
-    _voltageRegulatorManager( new Cti::CapControl::VoltageRegulatorManager(std::auto_ptr<VoltageRegulatorDBLoader>( new VoltageRegulatorDBLoader ) ) )
+    _strategyManager        ( make_unique<StrategyManager>( make_unique<StrategyDBLoader>() ) ),
+    _zoneManager            ( make_unique<ZoneDBLoader>() ),
+    _voltageRegulatorManager( make_unique<Cti::CapControl::VoltageRegulatorManager>( make_unique<VoltageRegulatorDBLoader>() ) )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
     _ccSubstations = new CtiCCSubstation_vec;
     _ccCapBankStates = new CtiCCState_vec;
@@ -102,68 +102,56 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() :
 -----------------------------------------------------------------------------*/
 CtiCCSubstationBusStore::~CtiCCSubstationBusStore()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
-    stopThreads();
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     shutdown();
 }
 
-
-
 void CtiCCSubstationBusStore::startThreads()
 {
-    //Start the reset thread
-    RWThreadFunction func = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doResetThr );
-    _resetthr = func;
-    func.start();
-    //Start the amfm thread
-    RWThreadFunction func2 = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doAMFMThr );
-    _amfmthr = func2;
-    func2.start();
-    //Start the opstats thread
-    RWThreadFunction func3 = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doOpStatsThr );
-    _opstatsthr = func3;
-    func3.start();
+    CTILOG_DEBUG(dout, "Starting the SubstationBusStore");
+
+    _resetThr  = boost::thread( &CtiCCSubstationBusStore::doResetThr, this );
+    _amfmThr   = boost::thread( &CtiCCSubstationBusStore::doAMFMThr, this );
+    _opStatThr = boost::thread( &CtiCCSubstationBusStore::doOpStatsThr, this );
+
+    CTILOG_DEBUG(dout, "SubstationBusStore is running");
 }
 
 void CtiCCSubstationBusStore::stopThreads()
 {
     try
     {
-        if (_resetthr.isValid() && _resetthr.requestCancellation() == RW_THR_ABORTED)
-        {
-            _resetthr.terminate();
+        CTILOG_DEBUG(dout, "Stopping the SubstationBusStore");
 
-            CTILOG_INFO(dout, "Store Reset Thread forced to terminate.");
-        }
-        else
-        {
-            _resetthr.requestCancellation();
-            _resetthr.join();
-        }
+        _resetThr.interrupt();
+        _amfmThr.interrupt();
+        _opStatThr.interrupt();
 
-        if (_amfmthr.isValid() && _amfmthr.requestCancellation() == RW_THR_ABORTED)
+        if ( ! _resetThr.timed_join( boost::posix_time::milliseconds( 250 ) ) )
         {
-            _amfmthr.terminate();
+            CTILOG_WARN( dout, "SubstationBusStore reset thread did not shutdown gracefully. "
+                               "Attempting a forced shutdown" );
 
-            CTILOG_INFO(dout, "AMFM Thread forced to terminate.");
-        }
-        else
-        {
-            _amfmthr.requestCancellation();
-            _amfmthr.join();
+            TerminateThread( _resetThr.native_handle(), EXIT_SUCCESS );
         }
 
-        if (_opstatsthr.isValid() && _opstatsthr.requestCancellation() == RW_THR_ABORTED)
+        if ( ! _amfmThr.timed_join( boost::posix_time::milliseconds( 250 ) ) )
         {
-            _opstatsthr.terminate();
+            CTILOG_WARN( dout, "SubstationBusStore AMFM thread did not shutdown gracefully. "
+                               "Attempting a forced shutdown" );
 
-            CTILOG_INFO(dout, "Store Op Stat Thread forced to terminate.");
+            TerminateThread( _amfmThr.native_handle(), EXIT_SUCCESS );
         }
-        else
+
+        if ( ! _opStatThr.timed_join( boost::posix_time::milliseconds( 250 ) ) )
         {
-            _opstatsthr.requestCancellation();
-            _opstatsthr.join();
+            CTILOG_WARN( dout, "SubstationBusStore OpStats thread did not shutdown gracefully. "
+                               "Attempting a forced shutdown" );
+
+            TerminateThread( _opStatThr.native_handle(), EXIT_SUCCESS );
         }
+
+        CTILOG_DEBUG(dout, "SubstationBusStore is stopped");
     }
     catch (...)
     {
@@ -178,7 +166,7 @@ void CtiCCSubstationBusStore::stopThreads()
 ---------------------------------------------------------------------------*/
 CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(unsigned long secondsFrom1901, bool checkReload)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     if (!checkReload)
     {
@@ -221,7 +209,7 @@ CtiCCSubstationBus_vec* CtiCCSubstationBusStore::getCCSubstationBuses(unsigned l
 ---------------------------------------------------------------------------*/
 CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(unsigned long secondsFrom1901, bool checkReload)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     if (!checkReload)
     {
@@ -243,7 +231,7 @@ CtiCCArea_vec* CtiCCSubstationBusStore::getCCGeoAreas(unsigned long secondsFrom1
 ---------------------------------------------------------------------------*/
 CtiCCSpArea_vec* CtiCCSubstationBusStore::getCCSpecialAreas(unsigned long secondsFrom1901, bool checkReload)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     if (!checkReload)
     {
@@ -264,7 +252,7 @@ CtiCCSpArea_vec* CtiCCSubstationBusStore::getCCSpecialAreas(unsigned long second
 ---------------------------------------------------------------------------*/
 CtiCCSubstation_vec* CtiCCSubstationBusStore::getCCSubstations(unsigned long secondsFrom1901, bool checkReload)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     if (!checkReload)
     {
@@ -287,7 +275,7 @@ CtiCCSubstation_vec* CtiCCSubstationBusStore::getCCSubstations(unsigned long sec
 ---------------------------------------------------------------------------*/
 CtiCCState_vec* CtiCCSubstationBusStore::getCCCapBankStates(unsigned long secondsFrom1901)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+90 )
     {//is not valid and has been at 1.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
@@ -1029,7 +1017,7 @@ bool CtiCCSubstationBusStore::handlePointDataByPaoId(int paoId, CtiPointDataMsg*
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::dumpAllDynamicData()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     /*{
         CTILOG_INFO(dout, "Store START dumpAllDynamicData");
@@ -1129,7 +1117,7 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
 bool CtiCCSubstationBusStore::deleteCapControlMaps()
 {
     bool wasAlreadyRunning = false;
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     try
     {
         setStoreRecentlyReset(true);
@@ -1218,13 +1206,11 @@ void CtiCCSubstationBusStore::setStoreRecentlyReset(bool flag)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::reset()
 {
-    //RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-
     bool wasAlreadyRunning = false;
     try
     {
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+            CtiLockGuard<CtiCriticalSection>  guard(getMux());
             {
                 CTILOG_INFO(dout, "Obtained connection to the database..." << " - Resetting substation buses from database...");            }
 
@@ -1441,7 +1427,7 @@ void CtiCCSubstationBusStore::reset()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     CTILOG_INFO(dout, "Checking AMFM system for updates...");
 
@@ -1449,20 +1435,31 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
         Cti::Database::DatabaseConnection connection;
         CtiTime lastAMFMUpdateTime = gInvalidCtiTime;
 
-        RWFile amfmFile((gConfigParms.getYukonBase() + "\\server\\config\\amfm.dat").c_str());
+        //  This code was changed in http://fisheye.cooperpowereas.net/browse/software-yukon/trunk/yukon-server/CapControl/ccsubstationbusstore.cpp?r1=14596&r2=14999#seg37
+        //  and no longer loads or saves the lastAMFMUpdateTime to a file.
 
-        if ( amfmFile.Exists() )
+        const std::string   filename = gConfigParms.getYukonBase() + "\\server\\config\\amfm.dat";
+        const std::wstring  wideFilename( filename.begin(), filename.end() );
+
+        boost::filesystem::path amfmFile( wideFilename );
+
+        boost::filesystem::ofstream fileWriter( amfmFile );
+
+        if ( boost::filesystem::exists( amfmFile ) )
         {
-            if ( !amfmFile.IsEmpty() )
+            if ( ! boost::filesystem::is_empty( amfmFile ) )
             {
                 lastAMFMUpdateTime = timeSaver;
             }
             else
             {
                 CTILOG_INFO(dout, "Creating amfm.dat");
-                amfmFile.Erase();
                 timeSaver = lastAMFMUpdateTime;
-                amfmFile.Flush();
+
+                boost::filesystem::resize_file( amfmFile, 0 );
+
+//                fileWriter
+//                    << timeSaver;
             }
         }
         else
@@ -1507,18 +1504,20 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
 
         if( newAMFMChanges )
         {
-            if( amfmFile.Exists() )
+            if ( boost::filesystem::exists( amfmFile ) )
             {
-                amfmFile.Erase();
                 timeSaver = lastAMFMUpdateTime;
-                amfmFile.Flush();
+
+                boost::filesystem::resize_file( amfmFile, 0 );
+
+//                fileWriter
+//                    << timeSaver;
             }
 
             //sending a signal message to dispatch so that changes from the amfm are in the system log
             string text("Import from AMFM system caused database changes");
             string additional = string();
             CtiCapController::getInstance()->sendMessageToDispatch( new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control") );
-
         }
     }
 
@@ -1532,7 +1531,7 @@ void CtiCCSubstationBusStore::checkAMFMSystemForUpdates()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::handleAMFMChanges(Cti::RowReader& rdr)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     string       capacitor_id_string;
     long            circt_id_normal;
@@ -1714,7 +1713,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
                                                         string& cap_disable_type, string& inoperable_bad_order_equipnote,
                                                         string& open_tag_note, string& cap_change_type )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     //long capacitor_id = atol(capacitor_id_string);
 
@@ -1909,7 +1908,7 @@ void CtiCCSubstationBusStore::feederReconfigureM3IAMFM( string& capacitor_id_str
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeeder, CtiCCCapBank* movedCapBank, long feederid, long capswitchingorder)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     CtiCCCapBank_SVector& oldFeederCapBanks = oldFeeder->getCCCapBanks();
 
@@ -2019,7 +2018,7 @@ void CtiCCSubstationBusStore::capBankMovedToDifferentFeeder(CtiCCFeeder* oldFeed
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* currentFeeder, CtiCCCapBank* currentCapBank, long capswitchingorder)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     long oldControlOrder = currentCapBank->getControlOrder();
 
@@ -2062,7 +2061,7 @@ void CtiCCSubstationBusStore::capBankDifferentOrderSameFeeder(CtiCCFeeder* curre
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(long feederid, long capid, string& enableddisabled, string& fixedswitched)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     bool found = false;
     if( _ccSubstationBuses->size() > 0 )
@@ -2127,7 +2126,7 @@ void CtiCCSubstationBusStore::capOutOfServiceM3IAMFM(long feederid, long capid, 
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(long feederid, string& fixedswitched, string& enableddisabled)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     bool found = false;
     if( _ccSubstationBuses->size() > 0 )
@@ -2183,7 +2182,7 @@ void CtiCCSubstationBusStore::feederOutOfServiceM3IAMFM(long feederid, string& f
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::shutdown()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     dumpAllDynamicData();
     delete_container(*_ccSubstationBuses);
@@ -2211,6 +2210,8 @@ void CtiCCSubstationBusStore::shutdown()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::doOpStatsThr()
 {
+    CTILOG_DEBUG(dout, "SubstationBusStore OpStats thread is starting");
+
     string str;
     char var[128];
     int refreshrate = 3600;
@@ -2231,73 +2232,89 @@ void CtiCCSubstationBusStore::doOpStatsThr()
     ThreadStatusKeeper threadStatus("CapControl doOpsThr");
     bool startUpSendStats = true;
     long lastOpStatsThreadPulse = 0;
-    CtiTime rwnow;
-    CtiTime announceTime((unsigned long) 0);
-    CtiTime tickleTime((unsigned long) 0);
     CtiTime currentTime;
     CtiTime opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  _OP_STATS_REFRESH_RATE );
 
     unsigned long secondsFrom1901 = 0;
 
-    while(true)
+    try
     {
-        currentTime = CtiTime();
-        secondsFrom1901 = currentTime.seconds();
-
-        if( (currentTime.seconds() > opStatRefreshRate.seconds() && secondsFrom1901 != lastOpStatsThreadPulse) ||
-            startUpSendStats )
+        while(true)
         {
-            CTILOG_INFO(dout, "Controller refreshing OP STATS");
+            currentTime = CtiTime();
+            secondsFrom1901 = currentTime.seconds();
 
+            if( (currentTime.seconds() > opStatRefreshRate.seconds() && secondsFrom1901 != lastOpStatsThreadPulse) ||
+                startUpSendStats )
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+                CTILOG_INFO(dout, "Controller refreshing OP STATS");
 
-                CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
-                CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
-
-                resetAllOperationStats();
-                resetAllConfirmationStats();
-                reCalculateOperationStatsFromDatabase( );
-                reCalculateConfirmationStatsFromDatabase( );
-                try
                 {
-                    reCalculateAllStats( );
-                    lastOpStatsThreadPulse = secondsFrom1901;
-                    opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  _OP_STATS_REFRESH_RATE );
-                    CTILOG_INFO(dout, "Next OP STATS CHECKTIME : "<<opStatRefreshRate);
+                    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
-                    createAllStatsPointDataMsgs(pointChanges);
+                    CtiMultiMsg* multiDispatchMsg = new CtiMultiMsg();
+                    CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
+
+                    resetAllOperationStats();
+                    resetAllConfirmationStats();
+                    reCalculateOperationStatsFromDatabase( );
+                    reCalculateConfirmationStatsFromDatabase( );
                     try
                     {
-                        //send point changes to dispatch
-                        if( multiDispatchMsg->getCount() > 0 )
+                        reCalculateAllStats( );
+                        lastOpStatsThreadPulse = secondsFrom1901;
+                        opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentTime,  _OP_STATS_REFRESH_RATE );
+                        CTILOG_INFO(dout, "Next OP STATS CHECKTIME : "<<opStatRefreshRate);
+
+                        createAllStatsPointDataMsgs(pointChanges);
+                        try
                         {
-                            multiDispatchMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
-                            CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
+                            //send point changes to dispatch
+                            if( multiDispatchMsg->getCount() > 0 )
+                            {
+                                multiDispatchMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
+                                CtiCapController::getInstance()->sendMessageToDispatch(multiDispatchMsg);
+                            }
+                            else
+                            {
+                                delete multiDispatchMsg;
+                            }
                         }
-                        else
-                            delete multiDispatchMsg;
+                        catch ( boost::thread_interrupted & )
+                        {
+                            throw;
+                        }
+                        catch(...)
+                        {
+                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                        }
+                    }
+                    catch ( boost::thread_interrupted & )
+                    {
+                        throw;
                     }
                     catch(...)
                     {
                         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                     }
                 }
-                catch(...)
-                {
-                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-                }
-
+                startUpSendStats = false;
             }
-            startUpSendStats = false;
-        }
 
-        threadStatus.monitorCheck();
-        {
-            rwRunnable().sleep(500);
-            rwRunnable().serviceCancellation();
+            threadStatus.monitorCheck();
+
+            boost::this_thread::sleep( boost::posix_time::milliseconds( 500 ) );
         }
     }
+    catch ( boost::thread_interrupted & )
+    {
+    }
+    catch (...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+    }
+
+    CTILOG_DEBUG(dout, "SubstationBusStore OpStats thread is stopping");
 }
 
 
@@ -2308,6 +2325,8 @@ void CtiCCSubstationBusStore::doOpStatsThr()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::doResetThr()
 {
+    CTILOG_DEBUG(dout, "SubstationBusStore reset thread is starting");
+
     string str;
     char var[128];
     int refreshrate = 3600;
@@ -2329,28 +2348,37 @@ void CtiCCSubstationBusStore::doResetThr()
     CtiTime lastPeriodicDatabaseRefresh = CtiTime();
     ThreadStatusKeeper threadStatus("CapControl doResetThr");
 
-    while(true)
+    try
     {
-        CtiTime currentTime;
-        currentTime = currentTime.now();
-
-        if( currentTime.seconds() >= lastPeriodicDatabaseRefresh.seconds()+refreshrate )
+        while(true)
         {
-            CTILOG_INFO(dout, "Periodic restore of substation list from the database");
+            CtiTime currentTime;
+            currentTime = currentTime.now();
 
-            dumpAllDynamicData();
-            setValid(false);
+            if( currentTime.seconds() >= lastPeriodicDatabaseRefresh.seconds()+refreshrate )
+            {
+                CTILOG_INFO(dout, "Periodic restore of substation list from the database");
 
-            lastPeriodicDatabaseRefresh = CtiTime();
-        }
+                dumpAllDynamicData();
+                setValid(false);
 
-        threadStatus.monitorCheck();
+                lastPeriodicDatabaseRefresh = CtiTime();
+            }
 
-        {
-            rwRunnable().serviceCancellation();
-            rwRunnable().sleep(500);
+            threadStatus.monitorCheck();
+
+            boost::this_thread::sleep( boost::posix_time::milliseconds( 500 ) );
         }
     }
+    catch ( boost::thread_interrupted & )
+    {
+    }
+    catch (...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+    }
+
+    CTILOG_DEBUG(dout, "SubstationBusStore reset thread is stopping");
 }
 
 /*---------------------------------------------------------------------------
@@ -2360,6 +2388,8 @@ void CtiCCSubstationBusStore::doResetThr()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::doAMFMThr()
 {
+    CTILOG_DEBUG(dout, "SubstationBusStore AMFM thread is starting");
+
     string str;
     char var[128];
     string amfm_interface = "NONE";
@@ -2464,48 +2494,43 @@ void CtiCCSubstationBusStore::doAMFMThr()
             CTILOG_INFO(dout, "Obtaining connection to the AMFM database...");
             setDatabaseParams(amFmDbType,amFmDbName,amFmDbUser,amFmDbPassword);
 
-            time_t start = ::time(NULL);
-
             CtiTime currenttime = CtiTime();
             unsigned long tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+(2*refreshrate);
             CtiTime nextAMFMRefresh = CtiTime(CtiTime(tempsum));
 
-            CtiTime rwnow;
-            CtiTime announceTime((unsigned long) 0);
-            CtiTime tickleTime((unsigned long) 0);
-
-
-            while(true)
+            try
             {
-                rwRunnable().serviceCancellation();
-
-                if ( CtiTime() >= nextAMFMRefresh )
+                while(true)
                 {
-                    if( _CC_DEBUG & CC_DEBUG_STANDARD )
+                    if ( CtiTime() >= nextAMFMRefresh )
                     {
-                        CTILOG_DEBUG(dout, "Setting AMFM reload flag.");
+                        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+                        {
+                            CTILOG_DEBUG(dout, "Setting AMFM reload flag.");
+                        }
+
+                        dumpAllDynamicData();
+                        setReloadFromAMFMSystemFlag(true);
+
+                        currenttime = CtiTime();
+                        tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+refreshrate;
+                        nextAMFMRefresh = CtiTime(CtiTime(tempsum));
                     }
 
-                    dumpAllDynamicData();
-                    setReloadFromAMFMSystemFlag(true);
-
-                    currenttime = CtiTime();
-                    tempsum = (currenttime.seconds()-(currenttime.seconds()%refreshrate))+refreshrate;
-                    nextAMFMRefresh = CtiTime(CtiTime(tempsum));
+                    boost::this_thread::sleep( boost::posix_time::milliseconds( 500 ) );
                 }
-                else
-                {
-                    rwRunnable().sleep(500);
-                }
-
             }
-
+            catch ( boost::thread_interrupted & )
+            {
+            }
         }
         else
         {
             CTILOG_INFO(dout, "Can't find AMFM DB setting in master.cfg!!!");
         }
     }
+
+    CTILOG_DEBUG(dout, "SubstationBusStore AMFM thread is stopping");
 }
 
 /* Pointer to the singleton instance of CtiCCSubstationBusStore
@@ -2517,15 +2542,11 @@ CtiCCSubstationBusStore* CtiCCSubstationBusStore::_instance = NULL;
 
     Returns a pointer to the singleton instance of CtiCCSubstationBusStore
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBusStore* CtiCCSubstationBusStore::getInstance(bool startCCThreads)
+CtiCCSubstationBusStore* CtiCCSubstationBusStore::getInstance()
 {
     if ( _instance == NULL )
     {
         _instance = new CtiCCSubstationBusStore();
-        if (startCCThreads)
-        {
-            _instance->startThreads();
-        }
     }
 
     return _instance;
@@ -2577,11 +2598,11 @@ void CtiCCSubstationBusStore::setAttributeService(std::auto_ptr<AttributeService
     }
 }
 
-void CtiCCSubstationBusStore::setStrategyManager(std::auto_ptr<StrategyManager> manager)
+void CtiCCSubstationBusStore::setStrategyManager(std::unique_ptr<StrategyManager> manager)
 {
     if( manager.get() )
     {
-        _strategyManager = manager;
+        _strategyManager.swap(manager);
     }
 }
 
@@ -2592,7 +2613,7 @@ void CtiCCSubstationBusStore::setStrategyManager(std::auto_ptr<StrategyManager> 
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::isValid()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     return _isvalid;
 }
 
@@ -2603,7 +2624,7 @@ bool CtiCCSubstationBusStore::isValid()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::setValid(bool valid)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     _isvalid = valid;
 }
 
@@ -2614,7 +2635,7 @@ void CtiCCSubstationBusStore::setValid(bool valid)
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::getReregisterForPoints()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     return _reregisterforpoints;
 }
 
@@ -2625,7 +2646,7 @@ bool CtiCCSubstationBusStore::getReregisterForPoints()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::setReregisterForPoints(bool reregister)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     _reregisterforpoints = reregister;
 }
 
@@ -2636,7 +2657,7 @@ void CtiCCSubstationBusStore::setReregisterForPoints(bool reregister)
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::getReloadFromAMFMSystemFlag()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     return _reloadfromamfmsystemflag;
 }
 
@@ -2647,31 +2668,31 @@ bool CtiCCSubstationBusStore::getReloadFromAMFMSystemFlag()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::setReloadFromAMFMSystemFlag(bool reload)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     _reloadfromamfmsystemflag = reload;
 }
 
 bool CtiCCSubstationBusStore::getWasSubBusDeletedFlag()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     return _wassubbusdeletedflag;
 }
 
 void CtiCCSubstationBusStore::setWasSubBusDeletedFlag(bool wasDeleted)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     _wassubbusdeletedflag = wasDeleted;
 }
 
 bool CtiCCSubstationBusStore::get2wayFlagUpdate()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     return _2wayFlagUpdate;
 }
 
 void CtiCCSubstationBusStore::set2wayFlagUpdate(bool flag)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     _2wayFlagUpdate = flag;
 }
 
@@ -2685,7 +2706,7 @@ void CtiCCSubstationBusStore::set2wayFlagUpdate(bool flag)
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     for(int i=0;i<_ccSubstationBuses->size();i++)
     {
@@ -2916,7 +2937,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusStore::resetDailyOperations()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     CtiMultiMsg* multiPointMsg = new CtiMultiMsg();
     CtiMultiMsg_vec& pointChanges = multiPointMsg->getData();
 
@@ -3008,7 +3029,7 @@ void CtiCCSubstationBusStore::resetDailyOperations()
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus* bus)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     static const string updateSql = "update dynamicccsubstationbus set "
                                     "verificationflag = ? "
@@ -3056,7 +3077,7 @@ bool CtiCCSubstationBusStore::updateDisableFlag(unsigned int paoid, bool isDisab
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdatePaoDisableFlagInDB(CapControlPao* pao, bool disableFlag, bool forceFullReload)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     bool updateSuccessful = updateDisableFlag(pao->getPaoId(), disableFlag);
 
@@ -3096,7 +3117,7 @@ bool CtiCCSubstationBusStore::UpdatePaoDisableFlagInDB(CapControlPao* pao, bool 
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* capbank)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     static const string updateSql = "update capbank set operationalstate = ? "
                                     " where deviceid = ?";
@@ -3129,7 +3150,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankOperationalStateInDB(CtiCCCapBank* ca
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     static const string paobjectUpdateSql = "update yukonpaobject set paoname = ?, disableflag = ?, description = ? "
                                     " where capbank = ?";
@@ -3175,7 +3196,7 @@ bool CtiCCSubstationBusStore::UpdateCapBankInDB(CtiCCCapBank* capbank)
 ---------------------------------------------------------------------------*/
 bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     bool insertSuccessful = true;
 
     Cti::Database::DatabaseConnection   connection;
@@ -3222,56 +3243,47 @@ bool CtiCCSubstationBusStore::UpdateFeederBankListInDB(CtiCCFeeder* feeder)
 
 bool CtiCCSubstationBusStore::UpdateFeederSubAssignmentInDB(CtiCCSubstationBus* bus)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
-    if (!_resetthr.isValid())
+    CtiTime currentDateTime = CtiTime();
+    Cti::Database::DatabaseConnection   connection;
     {
-        return false;
+        static const std::string sql = "delete from ccfeedersubassignment where substationbusid = ?";
+
+        Cti::Database::DatabaseWriter       deleter(connection, sql);
+
+        deleter << bus->getPaoId();
+        deleter.execute();
     }
 
+    static const string insertSql = "insert into ccfeedersubassignment values( "
+                                    "?, ?, ?)";
+
+    Cti::Database::DatabaseWriter dbInserter(connection, insertSql);
+    bool insertSuccesful = true;
+
+    CtiFeeder_vec& ccFeeders = bus->getCCFeeders();
+    for(long i=0;i<ccFeeders.size();i++)
     {
+        CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[i];
 
-        CtiTime currentDateTime = CtiTime();
-        Cti::Database::DatabaseConnection   connection;
-        {
-            static const std::string sql = "delete from ccfeedersubassignment where substationbusid = ?";
+        currentFeeder->dumpDynamicData(connection, currentDateTime);
 
-            Cti::Database::DatabaseWriter       deleter(connection, sql);
+        dbInserter << bus->getPaoId()
+                 << currentFeeder->getPaoId()
+                 << currentFeeder->getDisplayOrder();
 
-            deleter << bus->getPaoId();
-            deleter.execute();
-        }
-
-        static const string insertSql = "insert into ccfeedersubassignment values( "
-                                        "?, ?, ?)";
-
-        Cti::Database::DatabaseWriter dbInserter(connection, insertSql);
-        bool insertSuccesful = true;
-
-        CtiFeeder_vec& ccFeeders = bus->getCCFeeders();
-        for(long i=0;i<ccFeeders.size();i++)
-        {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders[i];
-
-            currentFeeder->dumpDynamicData(connection, currentDateTime);
-
-            dbInserter << bus->getPaoId()
-                     << currentFeeder->getPaoId()
-                     << currentFeeder->getDisplayOrder();
-
-            insertSuccesful = dbInserter.execute( );
-        }
-
-        CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPaoId(), ChangePAODb,
-                                                      bus->getPaoCategory(),
-                                                      bus->getPaoType(),
-                                                      ChangeTypeUpdate);
-        dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
-        CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
-
-        return insertSuccesful;
+        insertSuccesful = dbInserter.execute( );
     }
-    return false;
+
+    CtiDBChangeMsg* dbChange = new CtiDBChangeMsg(bus->getPaoId(), ChangePAODb,
+                                                  bus->getPaoCategory(),
+                                                  bus->getPaoType(),
+                                                  ChangeTypeUpdate);
+    dbChange->setSource(CAP_CONTROL_DBCHANGE_MSG_SOURCE);
+    CtiCapController::getInstance()->sendMessageToDispatch(dbChange);
+
+    return insertSuccesful;
 }
 
 /*---------------------------------------------------------------------------
@@ -3378,7 +3390,7 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(const EventLogEntry &msg)
 bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     try
     {
@@ -3499,7 +3511,7 @@ bool CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId)
 void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long strategyId)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
 
     try
@@ -3576,7 +3588,7 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
 void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyId)
 {
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     try
 {
         CtiTime currentDateTime;
@@ -3659,7 +3671,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
         substationToUpdate = findSubstationByPAObjectID(substationId);
     }
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     try
     {
         if (substationToUpdate != NULL)
@@ -4018,7 +4030,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId,
         areaToUpdate = findAreaByPAObjectID(areaId);
     }
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     try
     {
         if (areaToUpdate != NULL)
@@ -4374,7 +4386,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(PaoIdToSpecialAreaMa
                                   CtiCCSpArea_vec *ccSpecialAreas)
 {
     CtiCCSpecialPtr spAreaToUpdate = NULL;
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     try
     {
         CtiTime currentDateTime;
@@ -4661,7 +4673,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
         }
     }
 
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     try
     {
         if (subBusToUpdate != NULL)
@@ -6905,7 +6917,7 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
 {
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+        CtiLockGuard<CtiCriticalSection>  guard(getMux());
         {
             if ( _ccCapBankStates->size() > 0 )
             {
@@ -6981,7 +6993,7 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                     CTILOG_INFO(dout, rdr.asString());
                 }
 
-                CtiString str;
+                std::string str;
                 char var[128];
                 std::strcpy(var, "FDR_INTERFACES");
                 if( (str = gConfigParms.getValueAsString(var)).empty() )
@@ -6996,11 +7008,9 @@ void CtiCCSubstationBusStore::reloadMiscFromDatabase()
                     rdr["pointid"] >> pointID;
                     rdr["translation"] >> translation;
 
-                    if (stringContainsIgnoreCase(str, "fdr"))
+                    if (boost::algorithm::istarts_with(str, "fdr"))
                     {
-                        str = str.strip(CtiString::leading, 'f');
-                        str = str.strip(CtiString::leading, 'd');
-                        str = str.strip(CtiString::leading, 'r');
+                        str.erase(0, 3);  //  trim off "fdr"
                     }
                     if (stringContainsIgnoreCase(translation, str))
                     {
@@ -7025,7 +7035,7 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
 {
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+        CtiLockGuard<CtiCriticalSection>  guard(getMux());
         {
             const CtiTime fallbackTimeNow( CtiTime() - fallBackConstant ),
                           fallbackLastSendTime( lastSendTime - fallBackConstant );
@@ -7114,7 +7124,7 @@ void CtiCCSubstationBusStore::locateOrphans(PaoIdVector *orphanCaps, PaoIdVector
 {
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+        CtiLockGuard<CtiCriticalSection>  guard(getMux());
         {
         orphanFeeders->clear();
         PaoIdToFeederMap::iterator iter = paobject_feeder_map.begin();
@@ -7148,7 +7158,7 @@ bool CtiCCSubstationBusStore::isFeederOrphan(long feederId)
 {
    try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+        CtiLockGuard<CtiCriticalSection>  guard(getMux());
         {
             for each(long orphanId in _orphanedFeeders)
             {
@@ -7167,7 +7177,7 @@ bool CtiCCSubstationBusStore::isCapBankOrphan(long capBankId)
 {
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+        CtiLockGuard<CtiCriticalSection>  guard(getMux());
         {
             for each (long orphanId in _orphanedCapBanks)
             {
@@ -7192,7 +7202,7 @@ void CtiCCSubstationBusStore::removeFromOrphanList(long ccId)
 {
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+        CtiLockGuard<CtiCriticalSection>  guard(getMux());
         _orphanedFeeders.erase(remove(_orphanedFeeders.begin(), _orphanedFeeders.end(), ccId), _orphanedFeeders.end());
         _orphanedCapBanks.erase(remove(_orphanedCapBanks.begin(), _orphanedCapBanks.end(), ccId), _orphanedCapBanks.end());
     }
@@ -7263,7 +7273,7 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
             {
                 if ( CtiCCAreaPtr area = findAreaByPAObjectID(areaId) )
                 {
-                    area->removeSubstationId(substationId); 
+                    area->removeSubstationId(substationId);
                 }
             }
             for each ( CtiCCSpecialPtr spArea in *_ccSpecialAreas )
@@ -8312,7 +8322,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+        CtiLockGuard<CtiCriticalSection>  guard(getMux());
         {
 
             if (_reloadList.empty() && _2wayFlagUpdate)
@@ -8529,7 +8539,7 @@ void CtiCCSubstationBusStore::clearDBReloadList()
 
 void CtiCCSubstationBusStore::insertUnsolicitedCapBankList(CtiCCCapBankPtr x)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     if (!list_contains(_unsolicitedCapBanks, x))
     {
@@ -8539,14 +8549,14 @@ void CtiCCSubstationBusStore::insertUnsolicitedCapBankList(CtiCCCapBankPtr x)
 
 void CtiCCSubstationBusStore::removeCapbankFromUnsolicitedCapBankList(CtiCCCapBankPtr x)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     _unsolicitedCapBanks.remove(x);
 }
 
 void CtiCCSubstationBusStore::clearUnsolicitedCapBankList()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     if (!_unsolicitedCapBanks.empty())
     {
@@ -8568,7 +8578,7 @@ void CtiCCSubstationBusStore::clearUnsolicitedCapBankList()
 
 void CtiCCSubstationBusStore::checkUnsolicitedList()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     CapBankList tempList = getUnsolicitedCapBankList();
     CapBankList::iterator listIter = tempList.begin();
@@ -8611,7 +8621,7 @@ void CtiCCSubstationBusStore::checkUnsolicitedList()
 
 void CtiCCSubstationBusStore::insertUnexpectedUnsolicitedList(CtiCCCapBankPtr x)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     if (!list_contains(_unexpectedUnsolicited, x))
     {
@@ -8621,14 +8631,14 @@ void CtiCCSubstationBusStore::insertUnexpectedUnsolicitedList(CtiCCCapBankPtr x)
 
 void CtiCCSubstationBusStore::removeFromUnexpectedUnsolicitedList(CtiCCCapBankPtr x)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     _unexpectedUnsolicited.remove(x);
 }
 
 void CtiCCSubstationBusStore::clearUnexpectedUnsolicitedList()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     if (!_unexpectedUnsolicited.empty())
     {
@@ -8649,7 +8659,7 @@ void CtiCCSubstationBusStore::clearUnexpectedUnsolicitedList()
 
 void CtiCCSubstationBusStore::checkUnexpectedUnsolicitedList()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     for (CapBankList::iterator listIter = _unexpectedUnsolicited.begin(); listIter != _unexpectedUnsolicited.end(); listIter++)
     {
@@ -8687,7 +8697,7 @@ void CtiCCSubstationBusStore::checkUnexpectedUnsolicitedList()
 
 void CtiCCSubstationBusStore::insertRejectedCapBankList(CtiCCCapBankPtr x)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     if (!list_contains(_rejectedCapBanks, x))
     {
@@ -8697,14 +8707,14 @@ void CtiCCSubstationBusStore::insertRejectedCapBankList(CtiCCCapBankPtr x)
 
 void CtiCCSubstationBusStore::removeCapbankFromRejectedCapBankList(CtiCCCapBankPtr x)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     _rejectedCapBanks.remove(x);
 }
 
 void CtiCCSubstationBusStore::clearRejectedCapBankList()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     if (!_rejectedCapBanks.empty())
     {
@@ -8713,7 +8723,7 @@ void CtiCCSubstationBusStore::clearRejectedCapBankList()
 }
 void CtiCCSubstationBusStore::checkRejectedList()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     CapBankList tempList = getRejectedControlCapBankList();
     CapBankList::iterator listIter = tempList.begin();
@@ -9221,7 +9231,7 @@ void CtiCCSubstationBusStore::resetAllConfirmationStats()
 
 void CtiCCSubstationBusStore::reCalculateAllStats( )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
     {
         long i = 0;
         for(i=0;i<_ccSubstationBuses->size();i++)
@@ -9966,7 +9976,7 @@ Cti::CapControl::ZoneManager & CtiCCSubstationBusStore::getZoneManager()
 
 bool CtiCCSubstationBusStore::reloadZoneFromDatabase(const long zoneId)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     try
     {
@@ -9988,15 +9998,15 @@ bool CtiCCSubstationBusStore::reloadZoneFromDatabase(const long zoneId)
 }
 
 
-boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> CtiCCSubstationBusStore::getVoltageRegulatorManager()
+Cti::CapControl::VoltageRegulatorManager *CtiCCSubstationBusStore::getVoltageRegulatorManager()
 {
-    return _voltageRegulatorManager;
+    return _voltageRegulatorManager.get();
 }
 
 
 bool CtiCCSubstationBusStore::reloadVoltageRegulatorFromDatabase(const long regulatorId)
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(getMux());
 
     try
     {

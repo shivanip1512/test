@@ -1,12 +1,5 @@
 #include "precompiled.h"
 
-#include <iostream>
-
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <stdio.h>
-
-/** include files **/
 #include "ctitime.h"
 #include "ctidate.h"
 
@@ -31,6 +24,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 // this class header
 #include "fdracs.h"
 #include "utility.h"
+
+using namespace std;
 
 /** local definitions **/
 
@@ -331,18 +326,7 @@ bool CtiFDR_ACS::translateAndUpdatePoint(CtiFDRPointSPtr & translationPoint, int
                 }   // category invalid
             }
         }   // first token invalid
-    } // end try
-
-    catch (RWExternalErr e )
-    {
-        getLayer()->setInBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-        getLayer()->setOutBoundConnectionStatus (CtiFDRSocketConnection::Failed );
-
-        CTILOG_EXCEPTION_ERROR(dout, e);
-
-        RWTHROW(e);
     }
-
     // try and catch the thread death
     catch ( ... )
     {

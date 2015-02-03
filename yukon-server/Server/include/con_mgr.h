@@ -2,9 +2,6 @@
 
 #include <limits.h>
 
-#include <rw/thr/mutex.h>
-#include <rw/thr/thrfunc.h>
-
 #include "connection_server.h"
 #include "ctibase.h"
 
@@ -21,7 +18,7 @@ protected:
       unsigned       ClientQuestionable : 1;
    };
 
-   std::string         ClientName;
+   std::string       ClientName;
    int               ClientAppId;
 
    int              _serverRequestId;
@@ -36,24 +33,24 @@ public:
 
    virtual ~CtiConnectionManager();
 
-   int         getClientAppId() const;//              { return ClientAppId; }
-   int         setClientAppId(int id);//       { return ClientAppId = id; }
+   int         getClientAppId() const;
+   int         setClientAppId(int id);
 
-   std::string   getClientName() const;//               { return ClientName; }
+   std::string getClientName() const;
    void        setClientName(std::string str);
-   RWBoolean   getClientUnique() const;//             { return RWBoolean(ClientUnique);  }
-   void        setClientUnique(RWBoolean b = TRUE);// { ClientUnique = RWBoolean(b);     }
+   bool getClientUnique() const;
+   void setClientUnique(bool b = true);
 
-   RWBoolean   getClientQuestionable() const;//             { return RWBoolean(ClientQuestionable);  }
-   void        setClientQuestionable(RWBoolean b = TRUE);// { ClientQuestionable = RWBoolean(b);     }
+   bool getClientQuestionable() const;
+   void setClientQuestionable(bool b = true);
 
-   RWBoolean   getClientRegistered();//               { return RWBoolean(ClientRegistered);}
-   void        setClientRegistered(RWBoolean b = TRUE);// { ClientRegistered = RWBoolean(b); }
+   bool getClientRegistered();
+   void setClientRegistered(bool b = true);
 
-   int   getClientExpirationDelay() const;//    {return _clientExpirationDelay; }
-   void  setClientExpirationDelay(int p);//     {_clientExpirationDelay = p; }
+   int   getClientExpirationDelay() const;
+   void  setClientExpirationDelay(int p);
 
-   RWBoolean operator==(const CtiConnectionManager& aRef) const;
+   bool operator==(const CtiConnectionManager& aRef) const;
    static unsigned hash(const CtiConnectionManager& aRef);
 
    int getRequestId() const;

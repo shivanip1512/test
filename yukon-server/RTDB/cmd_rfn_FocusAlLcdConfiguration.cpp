@@ -176,7 +176,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
 
         const boost::optional<MetricDescription> metric = mapFind( MetricDescriptions, metric_code );
 
-        validate( Condition( metric, ClientErrors::InvalidData )
+        validate( Condition( !! metric, ClientErrors::InvalidData )
                 << "Invalid metric code (" << metric_code << ")" );
 
         std::string alphamericId;
@@ -187,7 +187,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
 
             const boost::optional<char> alpha_char = convertCodeToAscii( alpha_code );
 
-            validate( Condition( alpha_char, ClientErrors::InvalidData )
+            validate( Condition( !! alpha_char, ClientErrors::InvalidData )
                     << "Invalid alpha display code (" << alpha_code << ")" );
 
             alphamericId += *alpha_char;
@@ -301,7 +301,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationWriteCommand::decodeCommand(const Cti
 
     const boost::optional<std::string> status = mapFind(statusResolver, statusCode);
 
-    validate( Condition( status, ClientErrors::InvalidData )
+    validate( Condition( !! status, ClientErrors::InvalidData )
             << "Invalid Status (" << statusCode << ")");
 
     validate( Condition( statusCode == 0x00, ClientErrors::Unknown )
@@ -326,7 +326,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationWriteCommand::decodeCommand(const Cti
     {
         const boost::optional<MetricDescription> metric = mapFind( MetricDescriptions, m );
 
-        validate( Condition( metric, ClientErrors::InvalidData )
+        validate( Condition( !! metric, ClientErrors::InvalidData )
                 << "Invalid metric code (" << m << ")" );
 
         result.description += "\nDisplay metric " + CtiNumStr(++item) + " : " + metric->description;

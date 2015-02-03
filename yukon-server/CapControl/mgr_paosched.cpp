@@ -1,25 +1,18 @@
 #include "precompiled.h"
+
 #include "mgr_paosched.h"
+#include "pao_schedule.h"
 #include "pao_event.h"
 #include "capcontroller.h"
 #include "ctitokenizer.h"
-#include "thread_monitor.h"
 #include "utility.h"
 #include "msg_signal.h"
-#include "ctistring.h"
-#include "database_connection.h"
-#include "database_transaction.h"
 #include "database_reader.h"
-#include "database_writer.h"
 #include "database_util.h"
 #include "ThreadStatusKeeper.h"
 #include "ExecutorFactory.h"
 #include "MsgVerifyBanks.h"
 #include "MsgVerifyInactiveBanks.h"
-
-#include <boost/regex.hpp>
-
-#include <rw/thr/thrfunc.h>
 
 extern unsigned long _CC_DEBUG;
 extern bool CC_TERMINATE_THREAD_TEST;
@@ -81,15 +74,12 @@ CtiPAOScheduleManager::~CtiPAOScheduleManager()
 ---------------------------------------------------------------------------*/
 void CtiPAOScheduleManager::start()
 {
-    RWThreadFunction threadfunc = rwMakeThreadFunction( *this, &CtiPAOScheduleManager::mainLoop );
-    _scheduleThread = threadfunc;
-    threadfunc.start();
+    CTILOG_DEBUG(dout, "Starting the Schedule Manager");
 
-    //Start the reset thread
-    RWThreadFunction resetfunc = rwMakeThreadFunction( *this, &CtiPAOScheduleManager::doResetThr );
-    _resetThr = resetfunc;
-    resetfunc.start();
+    _scheduleThr = boost::thread( &CtiPAOScheduleManager::mainLoop, this );
+    _resetThr    = boost::thread( &CtiPAOScheduleManager::doResetThr, this );
 
+    CTILOG_DEBUG(dout, "Schedule Manager is running");
 }
 
 /*---------------------------------------------------------------------------
@@ -101,29 +91,28 @@ void CtiPAOScheduleManager::stop()
 {
     try
     {
-        if ( _scheduleThread.isValid() && _scheduleThread.requestCancellation() == RW_THR_ABORTED )
-        {
-            _scheduleThread.terminate();
+        CTILOG_DEBUG(dout, "Stopping the Schedule Manager");
 
-            CTILOG_INFO(dout, "Pao Schedule Thread forced to terminate.");
-        }
-        else
+        _scheduleThr.interrupt();
+        _resetThr.interrupt();
+
+        if ( ! _scheduleThr.timed_join( boost::posix_time::milliseconds( 250 ) ) )
         {
-            _scheduleThread.requestCancellation();
-            _scheduleThread.join();
+            CTILOG_WARN( dout, "Schedule Manager main thread did not shutdown gracefully. "
+                               "Attempting a forced shutdown" );
+
+            TerminateThread( _scheduleThr.native_handle(), EXIT_SUCCESS );
         }
 
-        if ( _resetThr.isValid() && _resetThr.requestCancellation() == RW_THR_ABORTED )
+        if ( ! _resetThr.timed_join( boost::posix_time::milliseconds( 250 ) ) )
         {
-            _resetThr.terminate();
+            CTILOG_WARN( dout, "Schedule Manager reset thread did not shutdown gracefully. "
+                               "Attempting a forced shutdown" );
 
-            CTILOG_INFO(dout, "Pao Schedule Reset Thread forced to terminate.");
+            TerminateThread( _resetThr.native_handle(), EXIT_SUCCESS );
         }
-        else
-        {
-            _resetThr.requestCancellation();
-            _resetThr.join();
-        }
+
+        CTILOG_DEBUG(dout, "Schedule Manager is stopped");
     }
     catch (...)
     {
@@ -133,9 +122,12 @@ void CtiPAOScheduleManager::stop()
 
 void CtiPAOScheduleManager::doResetThr()
 {
+    CTILOG_DEBUG(dout, "Schedule Manager reset thread is starting");
+
     try
     {
-        Sleep(1000);
+        boost::this_thread::sleep( boost::posix_time::milliseconds( 1000 ) );
+
         CtiTime lastPeriodicDatabaseRefresh = CtiTime();
 
         ThreadStatusKeeper threadStatus("CapControl mgrPAOSchedule doResetThr");
@@ -143,7 +135,7 @@ void CtiPAOScheduleManager::doResetThr()
         while (true)
         {
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+                CtiLockGuard<CtiCriticalSection>  guard(_mutex);
 
                 CtiTime currentTime = CtiTime();
 
@@ -159,31 +151,30 @@ void CtiPAOScheduleManager::doResetThr()
 
             threadStatus.monitorCheck();
 
-            for (int i = 0; i < 10; ++i)
-            {
-                rwRunnable().serviceCancellation();
-                rwRunnable().sleep(500);
-            }
+            boost::this_thread::sleep( boost::posix_time::milliseconds( 5000 ) );
         }
     }
-    catch(RWCancellation& )
+    catch ( boost::thread_interrupted & )
     {
-        throw;
     }
     catch (...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
+
+    CTILOG_DEBUG(dout, "Schedule Manager reset thread is stopping");
 }
 
 void CtiPAOScheduleManager::mainLoop()
 {
+    CTILOG_DEBUG(dout, "Schedule Manager main thread is starting");
+
     try
     {
         ThreadStatusKeeper threadStatus("CapControl mgrPAOSchedule mainLoop");
 
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+            CtiLockGuard<CtiCriticalSection>  guard(_mutex);
             refreshSchedulesFromDB();
             refreshEventsFromDB();
         }
@@ -198,7 +189,7 @@ void CtiPAOScheduleManager::mainLoop()
         while(true)
         {
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+                CtiLockGuard<CtiCriticalSection>  guard(_mutex);
                 currentTime= CtiTime();
                 mySchedules.clear();
 
@@ -264,37 +255,21 @@ void CtiPAOScheduleManager::mainLoop()
                     CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                 }
             }
-            try
-            {
-                rwRunnable().serviceCancellation();
-                rwRunnable().sleep( 500 );
-
-                if (CC_TERMINATE_THREAD_TEST)
-                {
-                    _resetThr.requestCancellation();
-
-                }
-            }
-            catch(RWCancellation& )
-            {
-                throw;
-            }
-            catch(...)
-            {
-                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-            }
 
             threadStatus.monitorCheck();
+
+            boost::this_thread::sleep( boost::posix_time::milliseconds( 500 ) );
         }
     }
-    catch(RWCancellation& )
+    catch ( boost::thread_interrupted & )
     {
-        throw;
     }
     catch (...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
+
+    CTILOG_DEBUG(dout, "Schedule Manager main thread is stopping");
 }
 
 bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list<CtiPAOSchedule*> &schedules)
@@ -328,7 +303,7 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
                                 text += (*iter)->getScheduleName();
 
                                 string additional = string("Schedule ID ");
-                                additional += longToString((*iter)->getScheduleId());
+                                additional += CtiNumStr((*iter)->getScheduleId()).toString();
                                 additional += " did not run at: ";
                                 additional += tempNextTime.asString();
 
@@ -409,8 +384,8 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *paoEvent)
             break;
         }
     }
-
 }
+
 int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, long &secsSinceLastOperation)
 {
     string command = _command;
@@ -445,33 +420,33 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
         }
         else if (stringContainsIgnoreCase(command,"Verify CapBanks that have not operated in"))
         {
-            CtiString CmdStr(command);
-            CtiString token;
+            std::string CmdStr(command);
+            std::string token;
             int val = 0;
             boost::regex re("[0-9]+");
             secsSinceLastOperation = 0;
 
-            if(!(token = CmdStr.match("[0-9]+ min")).empty())
+            if(!(token = Cti::matchRegex(CmdStr, "[0-9]+ min")).empty())
             {
-                val = atoi((token.match(re)).c_str());
+                val = atoi(Cti::matchRegex(token, re).c_str());
                 multiplier = 60;
                 secsSinceLastOperation += val * multiplier;
             }
-            if(!(token = CmdStr.match("[0-9]+ hr")).empty())
+            if(!(token = Cti::matchRegex(CmdStr, "[0-9]+ hr")).empty())
             {
-                val = atoi((token.match(re)).c_str());
+                val = atoi(Cti::matchRegex(token, re).c_str());
                 multiplier = 3600;
                 secsSinceLastOperation += val * multiplier;
             }
-            if(!(token = CmdStr.match("[0-9]+ day")).empty())
+            if(!(token = Cti::matchRegex(CmdStr, "[0-9]+ day")).empty())
             {
-                val = atoi((token.match(re)).c_str());
+                val = atoi(Cti::matchRegex(token, re).c_str());
                 multiplier = 86400;
                 secsSinceLastOperation += val * multiplier;
             }
-            if(!(token = CmdStr.match("[0-9]+ wk")).empty())
+            if(!(token = Cti::matchRegex(CmdStr, "[0-9]+ wk")).empty())
             {
-                val = atoi((token.match(re)).c_str());
+                val = atoi(Cti::matchRegex(token, re).c_str());
                 multiplier = 604800;
                 secsSinceLastOperation += val * multiplier;
             }
@@ -521,7 +496,7 @@ void CtiPAOScheduleManager::updateRunTimes(CtiPAOSchedule *schedule)
             text += schedule->getScheduleName();
 
             string additional = string("Schedule ID ");
-            additional += longToString(schedule->getScheduleId());
+            additional += CtiNumStr(schedule->getScheduleId()).toString();
             additional += " did not run at: ";
             additional += tempNextTime.asString();
 
@@ -534,103 +509,8 @@ void CtiPAOScheduleManager::updateRunTimes(CtiPAOSchedule *schedule)
         }
         schedule->setNextRunTime(tempNextTime);
     }
-
-
 }
 
-void CtiPAOScheduleManager::addSchedule(const CtiPAOSchedule &sched)
-{
-
-}
-bool CtiPAOScheduleManager::updateSchedule(const CtiPAOSchedule &sched)
-{
-    bool retVal = false;
-
-    return retVal;
-}
-bool CtiPAOScheduleManager::deleteSchedule(long schedId)
-{
-    bool retVal = false;
-
-    CtiPAOSchedule sched;
-    if (!_schedules.empty())
-    {
-        if (findSchedule(schedId, sched))
-        {
-            _schedules.remove(&sched);
-            retVal = true;
-        }
-    }
-
-    return retVal;
-}
-bool CtiPAOScheduleManager::findSchedule(long id, CtiPAOSchedule &sched)
-{
-    bool retVal = false;
-
-    if (!_schedules.empty())
-    {
-        std::list <CtiPAOSchedule*>::iterator iter = _schedules.begin();
-        while (iter != _schedules.end())
-        {
-            if ((*iter)->getScheduleId() == id)
-            {
-                sched = *(*iter);
-                retVal = true;
-                break;
-            }
-            iter++;
-        }
-    }
-
-    return retVal;
-}
-
-void CtiPAOScheduleManager::addEvent(long schedId, const CtiPAOEvent &event)
-{
-}
-bool CtiPAOScheduleManager::updateEvent(long eventId, const CtiPAOEvent &event)
-{
-    bool retVal = false;
-    CtiPAOEvent currentUpdateEvent;
-    if (findEvent(eventId, currentUpdateEvent))
-    {
-        currentUpdateEvent = event;
-        retVal = true;
-    }
-    return retVal;
-}
-bool CtiPAOScheduleManager::deleteEvent(long eventId)
-{
-    bool retVal = false;
-    CtiPAOEvent currentDeleteEvent;
-    if (findEvent(eventId, currentDeleteEvent))
-    {
-        _events.remove(&currentDeleteEvent);
-        retVal = true;
-    }
-
-    return retVal;
-}
-bool CtiPAOScheduleManager::findEvent(long id, CtiPAOEvent &event)
-{
-    bool retVal = false;
-    if (!_events.empty())
-    {
-        std::list <CtiPAOEvent*>::iterator iter = _events.begin();
-        while (iter != _events.end())
-        {
-            if ((*iter)->getEventId() == id)
-            {
-                event = *(*iter);
-                retVal = true;
-                break;
-            }
-            iter++;
-        }
-    }
-    return retVal;
-}
 bool CtiPAOScheduleManager::getEventsBySchedId(long id, std::list<CtiPAOEvent*> &events)
 {
     bool retVal = false;
@@ -656,23 +536,21 @@ bool CtiPAOScheduleManager::getEventsBySchedId(long id, std::list<CtiPAOEvent*> 
     return retVal;
 }
 
-
 bool CtiPAOScheduleManager::isValid()
 {
     return _valid;
 }
+
 void CtiPAOScheduleManager::setValid(bool valid)
 {
     _valid = valid;
 }
 
-
 void CtiPAOScheduleManager::refreshSchedulesFromDB()
 {
-
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+        CtiLockGuard<CtiCriticalSection>  guard(_mutex);
 
         bool wasAlreadyRunning = false;
 
@@ -726,15 +604,13 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
-    return;
 }
+
 void CtiPAOScheduleManager::refreshEventsFromDB()
 {
-
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+        CtiLockGuard<CtiCriticalSection>  guard(_mutex);
 
         bool wasAlreadyRunning = false;
 
@@ -788,18 +664,13 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
-    return;
-
 }
-
 
 void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &schedules)
 {
-
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+        CtiLockGuard<CtiCriticalSection>  guard(_mutex);
 
 
         if ( !schedules.empty() )
@@ -850,19 +721,5 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
-
-
 }
-
-string CtiPAOScheduleManager::longToString(long val)
-{
-    char tempchar[20] = "";
-    string retString = string("");
-    _snprintf(tempchar,20,"%d", 0, val);
-    retString += tempchar;
-
-    return retString;
-}
-
-
 

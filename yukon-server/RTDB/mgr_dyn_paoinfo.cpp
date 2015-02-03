@@ -387,7 +387,7 @@ Database::id_set DynamicPaoInfoManager::writeInfo( void )
 
                 if( ! written )
                 {
-                    CTILOG_ERROR(dout, "Could not insert/update DynamicPaoInfo" << dirtyInfo);
+                    CTILOG_ERROR(dout, "Could not insert/update DynamicPaoInfo" << *dirtyInfo);
 
                     //  bypass it, try again next time
                     dirtyItr++;

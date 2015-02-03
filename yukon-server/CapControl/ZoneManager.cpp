@@ -22,8 +22,8 @@ const ZoneManager::SharedPtr ZoneManager::_defaultZone( new Zone( -1,       // Z
                                                                 ) );
 
 
-ZoneManager::ZoneManager( std::auto_ptr<ZoneLoader> loader )
-    : _loader( loader )
+ZoneManager::ZoneManager( std::unique_ptr<ZoneLoader> loader )
+    : _loader( std::move(loader) )
 {
 
 }

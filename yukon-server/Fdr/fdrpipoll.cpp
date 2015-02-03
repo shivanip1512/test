@@ -1,13 +1,5 @@
 #include "precompiled.h"
 
-#include <math.h>
-#include <stdlib.h>
-#include <iostream>
-
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <stdio.h>
-
 #define _WINDLL
 
 #include "ctitime.h"
@@ -19,6 +11,8 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 
 // this class header
 #include "fdrpipoll.h"
+
+using namespace std;
 
 const CHAR * CtiFDRPiPoll::KEY_ALWAYS_SEND              = "FDR_PI_ALWAYS_SEND";
 const CHAR * CtiFDRPiPoll::KEY_DEFAULT_PERIOD           = "FDR_PI_DEFAULT_PERIOD";
@@ -254,22 +248,22 @@ void CtiFDRPiPoll::doUpdates()
             PI_EVENT piEvent = pollInfo.eventList[0];
             int32 error;
 
-            int err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
+            int err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize,
                                    &piEvent.istat, NULL, &piEvent.timestamp, &error, GETFIRST);
 
             if (!err)
             {
                 int i = 0;
-                do 
+                do
                 {
                     // if 'alwaysSendValues' send the time we were supposed to poll, this has the
                     // effect of always sending the values
                     time_t timeToSend = _alwaysSendValues ? pollInfo.nextUpdate: piToYukonTime(piEvent.timestamp);
-    
+
                    /* handle results */
                     processPiPollResults(pollInfo.pointList[i], piEvent, error, timeToSend);
                     i++;
-                    err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize, 
+                    err = pisn_getsnapshotsx(piIdArray, &pointCount, &piEvent.drval, &piEvent.ival, &piEvent.bval, &piEvent.bsize,
                                                     &piEvent.istat, NULL, &piEvent.timestamp, &error, GETNEXT);
                 } while (!err);
             }
@@ -293,11 +287,11 @@ void CtiFDRPiPoll::doUpdates()
         }
     }
 }
-void CtiFDRPiPoll::processPiPollResults(PiPointInfo info, PI_EVENT &piEvent, int32 error, time_t timeToSend) 
+void CtiFDRPiPoll::processPiPollResults(PiPointInfo info, PI_EVENT &piEvent, int32 error, time_t timeToSend)
 {
-                      
+
     handlePiUpdate(info, piEvent.drval, piEvent.ival, piEvent.istat, timeToSend, error);
-      
+
     piEvent.bsize = sizeof(piEvent.bval);
 }
 

@@ -62,7 +62,7 @@ CtiPointBase* PointFactory(Cti::RowReader &rdr);
 
 
 // Return TRUE if it is NOT SET
-inline RWBoolean isPointNotUpdated(CtiPointSPtr &pPoint, void* d)  {  return(RWBoolean(!pPoint->getUpdatedFlag()));  }
+inline bool isPointNotUpdated(CtiPointSPtr &pPoint, void* d)  {  return ! pPoint->getUpdatedFlag();  }
 
 void ApplyPointResetUpdated(const long key, CtiPointSPtr pPoint, void* d)
 {
@@ -578,24 +578,24 @@ CtiPointBase* PointFactory(Cti::RowReader &rdr)
     static const string pointtype = "pointtype";
     static const string pseudoflag = "pseudoflag";
 
-    string rwsType;
-    string rwsPseudo;
+    string typeStr;
+    string pseudoStr;
 
-    rdr[pointtype]  >> rwsType;
-    rdr[pseudoflag] >> rwsPseudo;
-
-    if(getDebugLevel() & DEBUGLEVEL_FACTORY)
-    {
-        CTILOG_DEBUG(dout, "Creating a Point of type "<< rwsType);
-    }
-    const CtiPointType_t PtType = resolvePointType(rwsType);
+    rdr[pointtype]  >> typeStr;
+    rdr[pseudoflag] >> pseudoStr;
 
     if(getDebugLevel() & DEBUGLEVEL_FACTORY)
     {
-        CTILOG_DEBUG(dout, "Is point a pseudo point? "<< rwsPseudo);
+        CTILOG_DEBUG(dout, "Creating a Point of type "<< typeStr);
+    }
+    const CtiPointType_t PtType = resolvePointType(typeStr);
+
+    if(getDebugLevel() & DEBUGLEVEL_FACTORY)
+    {
+        CTILOG_DEBUG(dout, "Is point a pseudo point? "<< pseudoStr);
     }
 
-    const bool PseudoPt = ciStringEqual(rwsPseudo, "y");
+    const bool PseudoPt = ciStringEqual(pseudoStr, "y");
 
     CtiPointBase *Point = NULL;
 

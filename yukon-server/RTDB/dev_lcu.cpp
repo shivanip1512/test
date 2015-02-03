@@ -1897,11 +1897,7 @@ bool CtiDeviceLCU::isLCULockedOut( const INMESS &InMessage )
 
 CtiTime CtiDeviceLCU::selectCompletionTime() const
 {
-    OUTMESS *pOM = 0;
-    // CtiTime rwt = CtiTime::now() + lcuTime(pOM, getLCUType()); // Inherited::selectCompletionTime();
-    CtiTime rwt = Inherited::selectCompletionTime();
-
-    return rwt;
+    return Inherited::selectCompletionTime();
 }
 
 void CtiDeviceLCU::lcuResetFlagsAndTags()

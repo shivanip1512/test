@@ -1,8 +1,6 @@
 #pragma once
 
 #include "row_reader.h"
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 #include "dbmemobject.h"
 #include "dbaccess.h"

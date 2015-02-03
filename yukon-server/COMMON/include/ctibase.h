@@ -1,8 +1,5 @@
 #pragma once
 
-#include <rw\thr\mutex.h>
-#include <rw/thr/guard.h>
-
 #include "streamSocketConnection.h"
 #include "dllbase.h"
 

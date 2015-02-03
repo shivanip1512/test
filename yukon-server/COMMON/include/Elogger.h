@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include "loggable.h"
 #include "StreamBuffer.h"
 #include "ctitime.h"

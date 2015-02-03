@@ -4,7 +4,7 @@
 #include "dsm2.h"  //  for PIL_ECHO
 #include "logger.h"
 
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+using namespace std;
 
 DEFINE_COLLECTABLE( CtiReturnMsg, MSG_PCRETURN );
 

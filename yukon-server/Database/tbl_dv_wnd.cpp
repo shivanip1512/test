@@ -207,11 +207,11 @@ void CtiTableDeviceWindow::DecodeDatabaseReader(Cti::RowReader &aRdr)
         CTILOG_DEBUG(dout, "Decoding DB read from "<< getTableName());
     }
 
-    string rwstemp;
+    string tmpStr;
 
-    aRdr["type"]  >> rwstemp;
+    aRdr["type"]  >> tmpStr;
 
-    _type = resolveDeviceWindowType( rwstemp );
+    _type = resolveDeviceWindowType( tmpStr );
     aRdr["winopen"] >> _open;
     aRdr["winclose"] >> close;
     aRdr["alternateopen"] >> _alternateOpen;

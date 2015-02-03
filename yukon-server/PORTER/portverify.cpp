@@ -657,8 +657,8 @@ void CtiPorterVerification::pruneEntries(const ptime::time_duration_type &age)
 
 long long CtiPorterVerification::logIDGen(bool force)
 {
-    static RWMutexLock mux;
-    RWMutexLock::LockGuard guard(mux);
+    static CtiCriticalSection mux;
+    CtiLockGuard<CtiCriticalSection> guard(mux);
 
     long long tempid = 0;
     static bool init_id = FALSE;

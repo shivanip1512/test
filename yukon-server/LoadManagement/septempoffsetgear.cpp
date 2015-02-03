@@ -3,7 +3,6 @@
 #include "septempoffsetgear.h"
 #include "GroupControlInterface.h"
 #include "SepControlInterface.h"
-#include "ctistring.h"
 #include "logger.h"
 
 using std::endl;
@@ -26,7 +25,7 @@ bool SEPTemperatureOffsetGear::attemptControl(CtiLMGroupPtr currentLMGroup, long
         bool randomizeStart = (getFrontRampOption() == CtiLMProgramDirectGear::RandomizeRandomOptionType);
         bool randomizeStop = (getBackRampOption() == CtiLMProgramDirectGear::RandomizeRandomOptionType);
 
-        bool isCelsius = CtiString(getSettings()).contains("c", CtiString::ignoreCase);
+        bool isCelsius = Cti::icontainsString(getSettings(), "c");
 
         int heatOffset = getDelayTime();
         int coolOffset = getPrecoolTime();

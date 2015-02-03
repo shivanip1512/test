@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include "streamConnection.h"
 #include "dlldefs.h"
 #include "netports.h"

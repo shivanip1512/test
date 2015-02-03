@@ -1,18 +1,18 @@
 #include "precompiled.h"
 
-#include "boost/algorithm/string/replace.hpp"
-
 #include "collectable.h"
 #include "connection.h"
 #include "message.h"
 #include "numstr.h"
-#include "dlldefs.h"
+#include "dllbase.h"
 #include "logger.h"
 #include "amq_util.h"
 #include "message_factory.h"
 #include "millisecond_timer.h"
 
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+#include <boost/algorithm/string/replace.hpp>
+
+using namespace std;
 using namespace Cti::Messaging::Serialization;
 using namespace Cti::Messaging::ActiveMQ;
 
@@ -202,6 +202,11 @@ void CtiConnection::sendMessage( const CtiMessage& msg )
 {
     vector<unsigned char> obytes;
 
+    if( isDebugLudicrous() )
+    {
+        CTILOG_TRACE(dout, getName() << " sending " << msg);
+    }
+
     // serialize message
     const string msgType = g_messageFactory.serialize( msg, obytes );
 
@@ -305,6 +310,11 @@ void CtiConnection::onMessage( const cms::Message* message )
     catch(...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, who() <<" - Error calling _inQueue->isFull()");
+    }
+
+    if( isDebugLudicrous() )
+    {
+        CTILOG_TRACE(dout, getName() << " just received " << *omsg);
     }
 
     // Refresh the time...
@@ -423,7 +433,7 @@ void CtiConnection::close()
             {
                 CTILOG_DEBUG(dout, who() << " - waiting for outbound Queue to flush " << entries << " entries");
             }
-            
+
             // sleep for 100 ms or less
             Sleep( std::min<DWORD>( 100, _termDuration.milliseconds() - elapsedMillis ));
         }
@@ -735,7 +745,7 @@ int CtiConnection::outQueueCount() const
  * @param aRef reference to a connection to compare with
  * @return true if both connection are the same
  */
-RWBoolean CtiConnection::operator==(const CtiConnection& aRef) const
+bool CtiConnection::operator==(const CtiConnection& aRef) const
 {
     return (this == &aRef);
 }

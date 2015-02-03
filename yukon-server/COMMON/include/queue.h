@@ -1,11 +1,5 @@
 #pragma once
 
-#include <iostream>
-#include <functional>
-#include <iostream>
-#include <LIMITS>
-#include <queue>
-
 #include "cparms.h"
 #include "dlldefs.h"
 #include "logger.h"
@@ -14,6 +8,9 @@
 #include <boost/thread/condition.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/xtime.hpp>
+
+#include <queue>
+#include <set>
 
 
 // Template Queuing class
@@ -63,7 +60,7 @@ private:
     boost::condition           dataAvailable;
     mutable boost::timed_mutex mux;
 
-    typedef std::set<QueueDataStruct, std::greater<struct QueueDataStruct> > queue_t;
+    typedef std::set<QueueDataStruct, std::greater<QueueDataStruct>> queue_t;
     typedef boost::timed_mutex::scoped_timed_lock lock_t;
 
     queue_t      *_col;
@@ -205,6 +202,10 @@ public:
             // make sure the interrupt flag is false
             _interruptBlockingRead = false;
         }
+        catch ( boost::thread_interrupted & )
+        {
+            throw;
+        }
         catch(...)
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
@@ -221,7 +222,7 @@ public:
         {
             bool wRes = false;
             struct boost::xtime xt;
-            boost::xtime_get(&xt, boost::TIME_UTC);
+            boost::xtime_get(&xt, boost::TIME_UTC_);
             xt.sec  += (time/1000);
             xt.nsec += (time%1000)*1000000;
 
@@ -239,7 +240,7 @@ public:
                     }
 
                     wRes = dataAvailable.timed_wait(scoped_lock,xt); // monitor mutex released automatically
-                    // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
+                    // thread must have been signalled AND mutex reacquired to reach here OR mux timed out
                     if(wRes == true && !getCollection().empty())
                     {
                         pval = (getCollection().begin())->dataPointer;
@@ -256,6 +257,10 @@ public:
                 _interruptBlockingRead = false;
             }
             // mutex automatically released in LockGuard destructor
+        }
+        catch ( boost::thread_interrupted & )
+        {
+            throw;
         }
         catch(...)
         {
@@ -350,7 +355,7 @@ public:
             operation((*first).dataPointer, parameter);
 
     }
-    void apply(void (*fn)(T*&,void*), void* d)
+    void apply(void (*fn)(T*,void*), void* d)
     {
         lock_t scoped_lock(mux, xt_eot);
         operand_for_each(getCollection().begin(),getCollection().end(),fn,d);
@@ -513,6 +518,10 @@ public:
             _col.pop_front();
 
         }
+        catch ( boost::thread_interrupted & )
+        {
+            throw;
+        }
         catch(...)
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
@@ -528,7 +537,7 @@ public:
         {
             bool wRes = true;
             struct boost::xtime xt;
-            boost::xtime_get(&xt, boost::TIME_UTC);
+            boost::xtime_get(&xt, boost::TIME_UTC_);
             xt.sec  += (time/1000);
             xt.nsec += (time%1000)*1000000;
 
@@ -540,7 +549,7 @@ public:
                 if(_col.empty())
                 {
                     wRes = dataAvailable.timed_wait(scoped_lock,xt); // monitor mutex released automatically
-                    // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
+                    // thread must have been signalled AND mutex reacquired to reach here OR mux timed out
                     if(wRes == true && !_col.empty())
                     {
                         pval = _col.front();
@@ -554,6 +563,10 @@ public:
                 }
             }
             // mutex automatically released in LockGuard destructor
+        }
+        catch ( boost::thread_interrupted & )
+        {
+            throw;
         }
         catch(...)
         {

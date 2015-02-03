@@ -123,7 +123,7 @@ string CtiTableEmetconLoadGroup::getTableName()
 
 void CtiTableEmetconLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    string rwsTemp;
+    string tmpStr;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -135,12 +135,12 @@ void CtiTableEmetconLoadGroup::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["silveraddress"] >> _silver;
     rdr["routeid"]       >> _routeID;
 
-    rdr["addressusage"] >> rwsTemp;
-    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
-    _addressUsage = ((rwsTemp == "g") ? GOLDADDRESS : SILVERADDRESS);
+    rdr["addressusage"] >> tmpStr;
+    std::transform(tmpStr.begin(), tmpStr.end(), tmpStr.begin(), tolower);
+    _addressUsage = ((tmpStr == "g") ? GOLDADDRESS : SILVERADDRESS);
 
-    rdr["relayusage"] >> rwsTemp;
-    _relay = resolveRelayUsage(rwsTemp.c_str());
+    rdr["relayusage"] >> tmpStr;
+    _relay = resolveRelayUsage(tmpStr.c_str());
 
     // Make these guys right with a binary world;
     _silver -= 1;     // Silver is 0 through 59

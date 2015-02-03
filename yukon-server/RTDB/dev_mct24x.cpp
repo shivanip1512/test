@@ -532,7 +532,7 @@ YukonError_t Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTi
     CtiPointDataMsg *pData     = NULL;
 
     double Value;
-    string rwtemp, disc;
+    string tmpStr, disc;
 
     ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
@@ -566,19 +566,19 @@ YukonError_t Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTi
             //  Send this value to requestor via retList.
             if(pPoint)
             {
-                rwtemp = ResolveStateName(pPoint->getStateGroupID(), Value);
+                tmpStr = ResolveStateName(pPoint->getStateGroupID(), Value);
 
-                if( rwtemp != "" )
+                if( tmpStr != "" )
                 {
-                    rwtemp = getName() + " / " + pPoint->getName() + ":" + rwtemp;
+                    tmpStr = getName() + " / " + pPoint->getName() + ":" + tmpStr;
                 }
                 else
                 {
-                    rwtemp = getName() + " / " + pPoint->getName() + ":" + disc;
+                    tmpStr = getName() + " / " + pPoint->getName() + ":" + disc;
                 }
 
 
-                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
+                pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, tmpStr);
                 if(pData != NULL)
                 {
                     ReturnMsg->PointData().push_back(pData);
@@ -591,8 +591,8 @@ YukonError_t Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTi
             else if( i == 0 )
             {
                 //  complain if point 1 isn't defined (this will be stomped later if any of 2-4 are defined)
-                rwtemp  = getName() + " / No external status points defined in database";
-                ReturnMsg->setResultString( rwtemp );
+                tmpStr  = getName() + " / No external status points defined in database";
+                ReturnMsg->setResultString( tmpStr );
             }
         }
     }
@@ -628,18 +628,18 @@ YukonError_t Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTi
         //  Send this value to requestor via retList.
         if(pPoint)
         {
-            rwtemp = ResolveStateName(pPoint->getStateGroupID(), Value);
+            tmpStr = ResolveStateName(pPoint->getStateGroupID(), Value);
 
-            if( rwtemp != "" )
+            if( tmpStr != "" )
             {
-                rwtemp = getName() + " / " + pPoint->getName() + ":" + rwtemp;
+                tmpStr = getName() + " / " + pPoint->getName() + ":" + tmpStr;
             }
             else
             {
-                rwtemp = getName() + " / " + pPoint->getName() + ":" + disc;
+                tmpStr = getName() + " / " + pPoint->getName() + ":" + disc;
             }
 
-            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, rwtemp);
+            pData = CTIDBG_new CtiPointDataMsg(pPoint->getPointID(), Value, NormalQuality, StatusPointType, tmpStr);
 
             if(pData != NULL)
             {
@@ -649,8 +649,8 @@ YukonError_t Mct24xDevice::decodeScanStatus(const INMESS &InMessage, const CtiTi
         }
         else
         {
-            rwtemp = getName() + " / Disconnect:" + disc + "  --  point undefined in DB";
-            ReturnMsg->setResultString( rwtemp );
+            tmpStr = getName() + " / Disconnect:" + disc + "  --  point undefined in DB";
+            ReturnMsg->setResultString( tmpStr );
         }
     }
 

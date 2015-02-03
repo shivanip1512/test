@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-#include <rw/rwerr.h>
 #include <SQLAPI.h>
 #include <xercesc/util/XMLException.hpp>
 #include <xercesc/sax/SAXException.hpp>
@@ -29,14 +28,6 @@ std::string getExceptionCause(const SAException& e)
 }
 
 /**
- * Retrieve exception cause if the object is (or is derived from) RWxmsg
- */
-std::string getExceptionCause(const RWxmsg& e)
-{
-    return e.why();
-}
-
-/**
  * XML exceptions cause defined in COMMON\xml.cpp
  * Retrieve exception cause if the objects are (or are derived from) XMLException / SAXException
  */
@@ -60,10 +51,6 @@ std::string getUnknownExceptionCause()
         cause <<"exception "<< typeid(e).name() <<" - "<< getExceptionCause(e);
     }
     catch(const SAException& e)
-    {
-        cause <<"exception "<< typeid(e).name() <<" - "<< getExceptionCause(e);
-    }
-    catch(const RWxmsg &e)
     {
         cause <<"exception "<< typeid(e).name() <<" - "<< getExceptionCause(e);
     }

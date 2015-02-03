@@ -603,11 +603,11 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
         {
             //  there is no outmessage, so we don't call recvCommRequest -
             //    we have to call the Device::DNP-specific initUnsolicited
-            shared_ptr<Devices::DnpDevice> dnp_device = boost::static_pointer_cast<Devices::DnpDevice>(dr->device);
+            Devices::DnpDevice &dnp_device = static_cast<Devices::DnpDevice &>(*dr->device);
 
             try
             {
-                dnp_device->initUnsolicited();
+                dnp_device.initUnsolicited();
 
                 dr->xfer.setInCountExpected(Protocols::DNP::DatalinkPacket::HeaderLength);  //  we expect at least a header
 
@@ -618,7 +618,7 @@ void UnsolicitedHandler::startPendingRequest(device_record *dr)
             }
             catch( MissingConfigException &e )
             {
-                CTILOG_EXCEPTION_ERROR(dout, e, "DNP Device "<< dnp_device->getName() <<" is not assigned a DNP configuration. Unable to process inbound message.");
+                CTILOG_EXCEPTION_ERROR(dout, e, "DNP Device "<< dnp_device.getName() <<" is not assigned a DNP configuration. Unable to process inbound message.");
             }
         }
         else if( isGpuffDevice(*dr->device) )
@@ -1136,14 +1136,15 @@ void UnsolicitedHandler::trace()
         CTILOG_INFO(_portLog, output);
     }
 
+    for( int attempt = 5; attempt >= 0; attempt-- )
     {
-        int attempts = 5;
-        RWMutexLock::TryLockGuard coutTryGuard(coutMux);
+        Cti::TryLockGuard<CtiCriticalSection> coutTryGuard(coutMux);
 
-        while( !coutTryGuard.isAcquired() && attempts-- > 0 )
+        if( ! coutTryGuard.isAcquired() && attempt )
         {
             Sleep(100);
-            coutTryGuard.tryAcquire();
+
+            continue;
         }
 
         for each( CtiMessage *msg in _traceList )
@@ -1157,8 +1158,10 @@ void UnsolicitedHandler::trace()
             }
         }
 
-        SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
+        break;
     }
+
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
 
     delete_container(_traceList);
     _traceList.clear();

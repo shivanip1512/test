@@ -439,8 +439,14 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_OnDemand )
                                  "\nDisconnect mode: On Demand"
                                  "\nReconnect param: Immediate reconnect" );
 
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::DisconnectMode_OnDemand, command.getDisconnectMode() );
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::Reconnect_Immediate, command.getReconnectParam() );
+        const boost::optional<RfnRemoteDisconnectConfigurationCommand::DisconnectMode> disconnectMode = command.getDisconnectMode();
+        const boost::optional<RfnRemoteDisconnectConfigurationCommand::Reconnect>      reconnect      = command.getReconnectParam();
+
+        BOOST_REQUIRE( !! disconnectMode );
+        BOOST_REQUIRE( !! reconnect );
+
+        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::DisconnectMode_OnDemand, *disconnectMode );
+        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::Reconnect_Immediate,     *reconnect );
 
         // Still shouldn't have any of these
         BOOST_CHECK( ! command.getConnectDelay() );
@@ -511,12 +517,26 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_DemandThres
                                  "\nConnect delay: 10 minutes"
                                  "\nMax disconnects: disable" );
 
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::DisconnectMode_DemandThreshold, command.getDisconnectMode() );
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::Reconnect_Immediate, command.getReconnectParam() );
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::DemandInterval_Fifteen,  *command.getDemandInterval() );
-        BOOST_CHECK_EQUAL(   10, *command.getConnectDelay() );
-        BOOST_CHECK_EQUAL(    0, *command.getMaxDisconnects() );
-        BOOST_CHECK_EQUAL( 10.0, *command.getDemandThreshold() );
+        const boost::optional<RfnRemoteDisconnectConfigurationCommand::DisconnectMode> disconnectMode = command.getDisconnectMode();
+        const boost::optional<RfnRemoteDisconnectConfigurationCommand::Reconnect>      reconnect      = command.getReconnectParam();
+        const boost::optional<unsigned> demandInterval  = command.getDemandInterval();
+        const boost::optional<unsigned> connectDelay    = command.getConnectDelay();
+        const boost::optional<unsigned> maxDisconnects  = command.getMaxDisconnects();
+        const boost::optional<double>   demandThreshold = command.getDemandThreshold();
+
+        BOOST_REQUIRE( !! disconnectMode );
+        BOOST_REQUIRE( !! reconnect );
+        BOOST_REQUIRE( !! demandInterval );
+        BOOST_REQUIRE( !! connectDelay );
+        BOOST_REQUIRE( !! maxDisconnects );
+        BOOST_REQUIRE( !! demandThreshold );
+
+        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::DisconnectMode_DemandThreshold, *disconnectMode );
+        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::Reconnect_Immediate,            *reconnect );
+        BOOST_CHECK_EQUAL(   15, *demandInterval );
+        BOOST_CHECK_EQUAL(   10, *connectDelay );
+        BOOST_CHECK_EQUAL(    0, *maxDisconnects );
+        BOOST_CHECK_EQUAL( 10.0, *demandThreshold );
 
         // Still shouldn't have any of these
         BOOST_CHECK( ! command.getConnectMinutes() );
@@ -581,10 +601,20 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_RemoteDisconnect_GetConfiguration_Cycling )
                                  "\nDisconnect minutes: 1000"
                                  "\nConnect minutes: 60" );
 
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::DisconnectMode_Cycling, command.getDisconnectMode() );
-        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::Reconnect_Immediate, command.getReconnectParam() );
-        BOOST_CHECK_EQUAL( 1000, *command.getDisconnectMinutes() );
-        BOOST_CHECK_EQUAL( 60, *command.getConnectMinutes() );
+        const boost::optional<RfnRemoteDisconnectConfigurationCommand::DisconnectMode> disconnectMode = command.getDisconnectMode();
+        const boost::optional<RfnRemoteDisconnectConfigurationCommand::Reconnect>      reconnect      = command.getReconnectParam();
+        const boost::optional<unsigned> disconnectMinutes = command.getDisconnectMinutes();
+        const boost::optional<unsigned> connectMinutes    = command.getConnectMinutes();
+
+        BOOST_REQUIRE( !! disconnectMode );
+        BOOST_REQUIRE( !! reconnect );
+        BOOST_REQUIRE( !! disconnectMinutes );
+        BOOST_REQUIRE( !! connectMinutes );
+
+        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::DisconnectMode_Cycling, *disconnectMode );
+        BOOST_CHECK_EQUAL( RfnRemoteDisconnectConfigurationCommand::Reconnect_Immediate, *reconnect );
+        BOOST_CHECK_EQUAL( 1000, *disconnectMinutes );
+        BOOST_CHECK_EQUAL( 60,   *connectMinutes );
 
         // Still shouldn't have any of these
         BOOST_CHECK( ! command.getConnectDelay() );

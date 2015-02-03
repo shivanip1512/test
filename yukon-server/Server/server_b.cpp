@@ -1,25 +1,10 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   server_b
-*
-* Date:   7/18/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SERVER/server_b.cpp-arc  $
-* REVISION     :  $Revision: 1.25.14.1 $
-* DATE         :  $Date: 2008/11/17 19:46:17 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "server_b.h"
-#include "executor.h"
 #include "msg_cmd.h"
-#include "numstr.h"
-#include "logger.h"
-#include "utility.h"
 #include "id_svr.h"
+
+#include <boost/date_time/posix_time/posix_time_duration.hpp>
 
 using namespace std;
 
@@ -70,10 +55,10 @@ void CtiServer::clientShutdown(CtiServer::ptr_type CM)
 YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type CM)
 {
     YukonError_t nRet = ClientErrors::None;
-    CtiTime      NowTime;
-    RWBoolean   validEntry(TRUE);
-    RWBoolean   removeMgr(FALSE);
-    RWBoolean   questionedEntry(FALSE);
+    CtiTime  NowTime;
+    bool     validEntry(TRUE);
+    bool     removeMgr(FALSE);
+    bool     questionedEntry(FALSE);
     ptr_type Mgr;
 
     CtiServerExclusion server_guard(_server_exclusion);
@@ -95,7 +80,7 @@ YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type CM)
             if(Mgr->getClientName() == CM->getClientName())
             {
                 // Names match, what do I do.
-                if(CM->getClientAppId() != (RWThreadId)0 && (Mgr->getClientAppId() == CM->getClientAppId()))
+                if(CM->getClientAppId() && Mgr->getClientAppId() == CM->getClientAppId())
                 {
                     // This guy is already registered. Might have lost his connection??
                     CTILOG_INFO(dout, CM->getClientName() <<" just re-registered.");
@@ -185,10 +170,8 @@ YukonError_t CtiServer::clientRegistration(CtiServer::ptr_type CM)
 /*----------------------------------------------------------------------------*
  * This is a passthrough to handle specific commands on the server.
  *----------------------------------------------------------------------------*/
-int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
+void CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
 {
-    int status = ClientErrors::None;
-
     ptr_type pConn = mConnectionTable.find((long)Cmd->getConnectionHandle());
 
     if(pConn)
@@ -239,7 +222,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                         if( CompileInfo.version != Cmd->getOpString() )
                         {
                             // This is a mismatch.  We should yelp about it.
-                            CTILOG_WARN(dout, "!!!! WARNING !!!!   Client "<< pConn->getClientName() <<" has a version mismatch.  Client revision "<< Cmd->getOpString());
+                            CTILOG_WARN(dout, "Client "<< pConn->getClientName() <<" has a version mismatch.  Client revision "<< Cmd->getOpString());
                         }
                     }
 
@@ -287,7 +270,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
             {
                 if( DebugLevel & 0x00000001)
                 {
-                    CTILOG_DEBUG(dout, "MainThread: "<< rwThreadId() <<" New connection (*** WARNING *** Use of this message is deprecated)");
+                    CTILOG_DEBUG(dout, "NewClient request (*** WARNING *** Use of this message is deprecated)");
                 }
                 clientConnect(pConn);
 
@@ -298,9 +281,7 @@ int  CtiServer::commandMsgHandler(CtiCommandMsg *Cmd)
                 CTILOG_WARN(dout, "Unhandled command message "<< Cmd->getOperation() <<" sent to Main..");
             }
         }
-      }
-
-    return status;
+    }
 }
 
 
@@ -324,7 +305,7 @@ int  CtiServer::clientArbitrationWinner(CtiServer::ptr_type CM)
 
         if((Mgr != CM)                                     &&      // Don't match on yourself
            (Mgr->getClientName() == CM->getClientName())   &&
-           (Mgr->getClientRegistered() == RWBoolean(FALSE)))
+           (Mgr->getClientRegistered() == false))
         {
             // The connection Mgr has been refuted by the prior manager. Shut Mgr down...
             CTILOG_INFO(dout, "Connection "<< Mgr->getClientName() <<" to "<< Mgr->getPeer() <<" has been denied, entry will be deleted.");
@@ -423,17 +404,17 @@ CtiServer::~CtiServer()
 
 void CtiServer::join()
 {
-    MainThread_.join();     // He will have waited for this to terminate.
+    _mainThread.join();     // He will have waited for this to terminate.
 }
-RWWaitStatus CtiServer::join(unsigned long millis)
+bool CtiServer::join(unsigned long millis)
 {
-    return MainThread_.join(millis);     // He will have waited for this to terminate.
+    return _mainThread.timed_join(boost::posix_time::milliseconds(millis));
 }
 
 /* Use Only as a last resort */
 void CtiServer::terminate()
 {
-    MainThread_.terminate(); //This is a last resort
+    TerminateThread(_mainThread.native_handle(), EXIT_SUCCESS); //This is a last resort
 }
 
 string CtiServer::getMyServerName() const

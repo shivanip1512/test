@@ -1,11 +1,10 @@
 #include "precompiled.h"
 
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
 #include "connection_server.h"
 #include "amq_constants.h"
 #include "amq_util.h"
 
+using namespace std;
 using namespace Cti::Messaging::ActiveMQ;
 
 volatile long CtiServerConnection::_serverConnectionCount = 0;

@@ -95,20 +95,20 @@ const TestAttributeService::AttributeStore TestAttributeService::_store = initSt
 
 struct TestCapControlBusStore : public CtiCCSubstationBusStore
 {
-    void setVoltageRegulatorManager(boost::shared_ptr<Cti::CapControl::VoltageRegulatorManager> manager)
+    void setVoltageRegulatorManager(std::unique_ptr<Cti::CapControl::VoltageRegulatorManager> manager)
     {
-        _voltageRegulatorManager = manager;
+        _voltageRegulatorManager = std::move(manager);
     }
 
     void initialize()
     {
         TestAttributeService    attributes;
 
-        boost::shared_ptr<VoltageRegulatorManager> manager( new VoltageRegulatorManager( std::auto_ptr<VoltageRegulatorUnitTestLoader>( new VoltageRegulatorUnitTestLoader ) ) );
+        std::unique_ptr<VoltageRegulatorManager> manager = std::make_unique<VoltageRegulatorManager>( std::make_unique<VoltageRegulatorUnitTestLoader>() );
         manager->setAttributeService( & attributes );
 
-        setVoltageRegulatorManager(manager);
-        reloadVoltageRegulatorFromDatabase(-1);   // reload all 
+        setVoltageRegulatorManager(std::move(manager));
+        reloadVoltageRegulatorFromDatabase(-1);   // reload all
     }
 };
 
@@ -119,7 +119,7 @@ BOOST_AUTO_TEST_CASE(test_VoltageRegulatorManager_test_getter_exceptions)
     CtiCCSubstationBusStore::setInstance( theStore );
     theStore->initialize();
 
-    boost::shared_ptr<VoltageRegulatorManager>  manager = theStore->getVoltageRegulatorManager();
+    VoltageRegulatorManager *manager = theStore->getVoltageRegulatorManager();
 
     BOOST_CHECK_THROW( manager->getVoltageRegulator(100), NoVoltageRegulator );
 
@@ -135,7 +135,7 @@ BOOST_AUTO_TEST_CASE(test_VoltageRegulatorManager_LoadTapChanger_Loads_OK)
     CtiCCSubstationBusStore::setInstance( theStore );
     theStore->initialize();
 
-    boost::shared_ptr<VoltageRegulatorManager>  manager = theStore->getVoltageRegulatorManager();
+    VoltageRegulatorManager *manager = theStore->getVoltageRegulatorManager();
 
     VoltageRegulatorManager::SharedPtr regulator = manager->getVoltageRegulator(25);
 
@@ -171,7 +171,7 @@ BOOST_AUTO_TEST_CASE(test_VoltageRegulatorManager_LoadTapChanger_Loads_with_miss
     CtiCCSubstationBusStore::setInstance( theStore );
     theStore->initialize();
 
-    boost::shared_ptr<VoltageRegulatorManager>  manager = theStore->getVoltageRegulatorManager();
+    VoltageRegulatorManager *manager = theStore->getVoltageRegulatorManager();
 
     VoltageRegulatorManager::SharedPtr regulator = manager->getVoltageRegulator(30);
 

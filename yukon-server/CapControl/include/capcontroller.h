@@ -1,7 +1,5 @@
 #pragma once
 
-#include <rw/thr/thread.h>
-
 #include "dbaccess.h"
 #include "connection_client.h"
 #include "DispatchConnection.h"
@@ -21,6 +19,8 @@
 #include "logger.h"
 #include "yukon.h"
 #include "ctdpcptrq.h"
+
+#include <boost/thread.hpp>
 
 class CtiReturnMsg;
 
@@ -110,10 +110,11 @@ class CtiCapController : public MessageListener
         CcDbReloadInfo resolveCapControlTypeByDataBase(CtiDBChangeMsg *dbChange);
 
         static CtiCapController* _instance;
-        RWThread _substationBusThread;
-        RWThread _outClientMsgThread;
-        RWThread _messageSenderThread;
-        RWThread _incomingMessageProcessorThread;
+
+        boost::thread   _substationBusThread;
+        boost::thread   _outClientMsgThread;
+        boost::thread   _messageSenderThread;
+        boost::thread   _incomingMessageProcessorThread;
 
         boost::shared_ptr<CtiClientConnection> _porterConnection;
         DispatchConnectionPtr _dispatchConnection;

@@ -362,77 +362,63 @@ YukonError_t ApplicationLayer::errorCondition( void ) const
 }
 
 
-YukonError_t ApplicationLayer::generate( DatalinkLayer &_datalink, TransportLayer &_transport, CtiXfer &xfer )
+YukonError_t ApplicationLayer::generate( TransportLayer &_transport )
 {
-    YukonError_t retVal = ClientErrors::None;
-
-    if( _transport.isTransactionComplete() )
+    switch( _appState )
     {
-        switch( _appState )
+        case SendFirstResponse:
         {
-            case SendFirstResponse:
-            {
-                _transport.initForOutput((unsigned char *)&_response, _response.buf_len + RspHeaderSize);
-            }
-            case SendResponse:
-            {
-                break;
-            }
-            case SendRequest:
-            {
-                //  _request was initialized by DNPInterface::generate()
-                _transport.initForOutput((unsigned char *)&_request, _request.buf_len + ReqHeaderSize);
+            _transport.initForOutput((unsigned char *)&_response, _response.buf_len + RspHeaderSize);
+        }
+        case SendResponse:
+        {
+            break;
+        }
+        case SendRequest:
+        {
+            //  _request was initialized by DNPInterface::generate()
+            _transport.initForOutput((unsigned char *)&_request, _request.buf_len + ReqHeaderSize);
 
-                break;
-            }
+            break;
+        }
 
-            case RecvUnsolicited:
-            case RecvResponse:
-            {
-                _transport.initForInput((unsigned char *)&_response, BufferSize);
+        case RecvUnsolicited:
+        case RecvResponse:
+        {
+            _transport.initForInput((unsigned char *)&_response, BufferSize);
 
-                break;
-            }
+            break;
+        }
 
-            case SendUnexpectedConfirm:
-            case SendConfirm:
-            {
-                generateAck(&_acknowledge, _response.ctrl);
+        case SendUnexpectedConfirm:
+        case SendConfirm:
+        {
+            generateAck(&_acknowledge, _response.ctrl);
 
-                _transport.initForOutput((unsigned char *)&_acknowledge, sizeof(_acknowledge));
+            _transport.initForOutput((unsigned char *)&_acknowledge, sizeof(_acknowledge));
 
-                break;
-            }
+            break;
+        }
 
-            default:
-            {
-                CTILOG_ERROR(dout, "unhandled state "<< _appState);
-                _appState = Complete;
+        default:
+        {
+            CTILOG_ERROR(dout, "unhandled state "<< _appState);
+            _appState = Complete;
 
-            }
-            case Complete:
-            {
-                retVal = ClientErrors::Abnormal;
-
-                break;
-            }
+        }
+        case Complete:
+        {
+            return ClientErrors::Abnormal;
         }
     }
 
-    if( !retVal )
-    {
-        retVal = _transport.generate(_datalink, xfer);
-    }
-
-    return retVal;
+    return ClientErrors::None;
 }
 
 
-YukonError_t ApplicationLayer::decode( DatalinkLayer &_datalink, TransportLayer &_transport, CtiXfer &xfer, YukonError_t status )
+YukonError_t ApplicationLayer::decode( TransportLayer &_transport )
 {
-    YukonError_t retVal = ClientErrors::None;
-
-    if( retVal = _transport.decode(_datalink, xfer, status) )
+    if( _transport.errorCondition() )
     {
         if( ! _config )
         {
@@ -453,95 +439,61 @@ YukonError_t ApplicationLayer::decode( DatalinkLayer &_datalink, TransportLayer 
             _errorCondition = ClientErrors::Abnormal;
         }
 
-        if( isDebugLudicrous() )
-        {
-            CTILOG_DEBUG(dout, "_transport.decode returned "<< retVal);
-        }
+        return _errorCondition;
     }
-    else if( _transport.isTransactionComplete() )
+
+    switch( _appState )
     {
-        switch( _appState )
+        case SendFirstResponse:
         {
-            case SendFirstResponse:
-            {
-                _appState = SendResponse;
-            }
-            case SendResponse:
+            _appState = SendResponse;
+        }
+        case SendResponse:
+        {
+            _appState = Complete;
+
+            break;
+        }
+
+        case SendRequest:
+        {
+            if( isOneWay() )
             {
                 _appState = Complete;
-
-                break;
+            }
+            else
+            {
+                _appState = RecvResponse;
             }
 
-            case SendRequest:
+            break;
+        }
+
+        case RecvUnsolicited:
+        case RecvResponse:
+        {
+            //  rudimentary bounds check on our input
+            if( _transport.getInputSize() >= RspHeaderSize )
             {
-                if( isOneWay() )
+                _response.buf_len = _transport.getInputSize() - RspHeaderSize;
+
+                //  add filtering for duplicate/unexpected/bad sequence packets
+                processResponse();
+
+                if( _response.ctrl.app_confirm )
                 {
-                    _appState = Complete;
-                }
-                else
-                {
-                    _appState = RecvResponse;
-                }
-
-                break;
-            }
-
-            case RecvUnsolicited:
-            case RecvResponse:
-            {
-                //  rudimentary bounds check on our input
-                if( _transport.getInputSize() >= RspHeaderSize )
-                {
-                    _response.buf_len = _transport.getInputSize() - RspHeaderSize;
-
-                    //  add filtering for duplicate/unexpected/bad sequence packets
-                    processResponse();
-
-                    if( _response.ctrl.app_confirm )
+                    if( _response.ctrl.unsolicited && _appState == RecvResponse )
                     {
-                        if( _response.ctrl.unsolicited && _appState == RecvResponse )
-                        {
-                            //  we weren't expecting an unsolicited -
-                            //  acknowledge it so we can get back to business
-                            _appState = SendUnexpectedConfirm;
-                        }
-                        else
-                        {
-                            _appState = SendConfirm;
-                        }
-                    }
-                    else if( !_response.ctrl.final )
-                    {
-                        _appState = RecvResponse;
+                        //  we weren't expecting an unsolicited -
+                        //  acknowledge it so we can get back to business
+                        _appState = SendUnexpectedConfirm;
                     }
                     else
                     {
-                        _appState = Complete;
+                        _appState = SendConfirm;
                     }
                 }
-                else
-                {
-                    _response.buf_len = 0;
-                    _appState = Complete;
-                    _errorCondition = ClientErrors::Abnormal;
-                }
-
-                break;
-            }
-
-            case SendUnexpectedConfirm:
-            {
-                //  get back to business - listen for the real response now
-                _appState = RecvResponse;
-
-                break;
-            }
-
-            case SendConfirm:
-            {
-                //  _response is untouched between Input and OutputAck, so this is still good data
-                if( !_response.ctrl.final )
+                else if( !_response.ctrl.final )
                 {
                     _appState = RecvResponse;
                 }
@@ -549,21 +501,50 @@ YukonError_t ApplicationLayer::decode( DatalinkLayer &_datalink, TransportLayer 
                 {
                     _appState = Complete;
                 }
-
-                break;
             }
-
-            default:
+            else
             {
-                CTILOG_ERROR(dout, "unknown state ("<< _appState <<")");
-
+                _response.buf_len = 0;
                 _appState = Complete;
                 _errorCondition = ClientErrors::Abnormal;
             }
+
+            break;
+        }
+
+        case SendUnexpectedConfirm:
+        {
+            //  get back to business - listen for the real response now
+            _appState = RecvResponse;
+
+            break;
+        }
+
+        case SendConfirm:
+        {
+            //  _response is untouched between Input and OutputAck, so this is still good data
+            if( !_response.ctrl.final )
+            {
+                _appState = RecvResponse;
+            }
+            else
+            {
+                _appState = Complete;
+            }
+
+            break;
+        }
+
+        default:
+        {
+            CTILOG_ERROR(dout, "unknown state ("<< _appState <<")");
+
+            _appState = Complete;
+            _errorCondition = ClientErrors::Abnormal;
         }
     }
 
-    return retVal;
+    return ClientErrors::None;
 }
 
 

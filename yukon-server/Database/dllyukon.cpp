@@ -1,22 +1,7 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dllyukon
-*
-* Date:   7/16/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/dllyukon.cpp-arc  $
-* REVISION     :  $Revision: 1.8.16.1 $
-* DATE         :  $Date: 2008/11/13 17:23:49 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include <iostream>
 using namespace std;
-
-
 
 #include "tbl_route.h"
 #include "tbl_rtcarrier.h"
@@ -25,18 +10,14 @@ using namespace std;
 #include "tbl_rtrepeater.h"
 #include "tbl_rtversacom.h"
 
-
 #include "dlldefs.h"
 #include "msg_pcrequest.h"
-
 
 #include "pt_base.h"
 #include "tbl_state_grp.h"
 #include "mutex.h"
 
-typedef set< CtiTableStateGroup >   CtiStateGroupSet_t;
-CtiStateGroupSet_t                  _stateGroupSet;
-bool                                _stateGroupsLoaded = false;
+map< long, CtiTableStateGroup >     _stateGroups;
 CtiMutex                            _stateGroupMux;
 
 
@@ -77,13 +58,11 @@ DLLEXPORT void ReloadStateNames(void)
 
     if(guard.isAcquired())
     {
-        CtiStateGroupSet_t::iterator sgit;
-
         bool reloadFailed = false;
 
-        for(sgit = _stateGroupSet.begin(); sgit != _stateGroupSet.end(); sgit++ )
+        for( auto &kv : _stateGroups )
         {
-            CtiTableStateGroup &theGroup = *sgit;
+            CtiTableStateGroup &theGroup = kv.second;
             if(!theGroup.Restore())
             {
                 reloadFailed = true;
@@ -93,7 +72,7 @@ DLLEXPORT void ReloadStateNames(void)
 
         if(reloadFailed)
         {
-            _stateGroupSet.clear();          // All stategroups will be reloaded on their next usage..  This shouldn't happen very often
+            _stateGroups.clear();          // All stategroups will be reloaded on their next usage..  This shouldn't happen very often
 
             CTILOG_WARN(dout, "State Group Set reset.");
         }
@@ -112,28 +91,21 @@ DLLEXPORT string ResolveStateName(LONG grpid, LONG rawValue)
 {
     string rStr;
 
-/*    if( !_stateGroupsLoaded )
-    {
-        loadStateNames();
-    }
-*/
     if(grpid)
     {
-        CtiTableStateGroup mygroup( grpid );
-
         CtiLockGuard<CtiMutex> guard(_stateGroupMux);
 
-        CtiStateGroupSet_t::iterator sgit = _stateGroupSet.find( mygroup );
+        auto sgit = _stateGroups.find( grpid );
 
-        if( sgit == _stateGroupSet.end() )
+        if( sgit == _stateGroups.end() )
         {
+            CtiTableStateGroup mygroup( grpid );
+
             // We need to load it up, and/or then insert it!
             mygroup.Restore();
 
-            pair< CtiStateGroupSet_t::iterator, bool > resultpair;
-
             // Try to insert. Return indicates success.
-            resultpair = _stateGroupSet.insert( mygroup );
+            auto resultpair = _stateGroups.emplace( grpid, mygroup );
 
             if(resultpair.second == true)
             {
@@ -141,10 +113,10 @@ DLLEXPORT string ResolveStateName(LONG grpid, LONG rawValue)
             }
         }
 
-        if( sgit != _stateGroupSet.end() )
+        if( sgit != _stateGroups.end() )
         {
             // git should be an iterator which represents the group now!
-            CtiTableStateGroup &theGroup = *sgit;
+            CtiTableStateGroup &theGroup = sgit->second;
             rStr = theGroup.getRawState(rawValue);
         }
     }

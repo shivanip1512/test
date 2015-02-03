@@ -9,8 +9,6 @@
 #include "tbl_pt_alarm.h"
 #include "MsgVerifyBanks.h"
 
-#include <rw/tpsrtvec.h>
-
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointResponsePtr;
 using Cti::CapControl::PointIdVector;
@@ -3015,15 +3013,17 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     try
     {
-        RWTPtrSortedVector<CtiCCFeeder, FeederVARComparison<CtiCCFeeder> > varSortedFeeders;
-        //double setpoint = figureCurrentSetPoint(currentDateTime);
+        typedef std::vector<CtiCCFeederPtr> SortedFeeders;
 
-        for(int i=0;i<_ccfeeders.size();i++)
+        SortedFeeders   varSortedFeeders;
+
+        for each ( CtiCCFeederPtr feeder in _ccfeeders )
         {
-            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-            currentFeeder->fillOutBusOptimizedInfo(getPeakTimeFlag());
-            varSortedFeeders.insert(currentFeeder);
+            feeder->fillOutBusOptimizedInfo(getPeakTimeFlag());
+            varSortedFeeders.push_back(feeder);
         }
+
+        std::sort( varSortedFeeders.begin(), varSortedFeeders.end(), FeederVARComparison() );
 
         if( ( ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::KVarControlUnit) && getCurrentVarLoadPointId() > 0) ||
             ( ciStringEqual(getStrategy()->getControlUnits(),ControlStrategy::VoltsControlUnit) && getCurrentVoltLoadPointId() > 0 ) )
@@ -3044,10 +3044,14 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
                     CTILOG_INFO(dout, "Attempting to Increase Volt level in substation bus: " << getPaoName().c_str());
                 }
 
-                CtiCCCapBank* capBank = NULL;
-                for(int j=0;j<varSortedFeeders.entries();j++)
+                CtiCCCapBankPtr capBank = 0;
+                SortedFeeders::size_type index = 0;
+                for ( SortedFeeders::iterator itr = varSortedFeeders.begin(),
+                                              end = varSortedFeeders.end();
+                      itr != end; ++itr, ++index )
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)varSortedFeeders[j];
+                    CtiCCFeederPtr currentFeeder = *itr;
+
                     if( !currentFeeder->getDisableFlag() &&
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
@@ -3066,14 +3070,13 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
                             CTILOG_WARN(dout, "Bus Optimized Volt Control requires Feeder Var PointID.  Var PointID not found in feeder: " << currentFeeder->getPaoName());
                         }
                     }
-                    if( capBank != NULL )
+                    if( capBank )
                     {
                         currentFeeder->checkMaxDailyOpCountExceeded(pointChanges);
 
                         if (!currentFeeder->getDisableFlag())
                         {
-                            if( capBank != NULL &&
-                                capBank->getRecloseDelay() > 0 &&
+                            if( capBank->getRecloseDelay() > 0 &&
                                 currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
                             {
                                 Cti::StreamBuffer s;
@@ -3096,12 +3099,11 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
                             else
                             {
                                 double controlValue = ( ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() : getIVControl());
-                                string text =  ((CtiCCFeeder*)varSortedFeeders[j])->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue());
-                                request = ((CtiCCFeeder*)varSortedFeeders[j])->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue(),
-                                                                                                        ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseAValue(), ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseBValue(),
-                                                                                                        ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseCValue());
-                                lastFeederControlled = (CtiCCFeeder*)varSortedFeeders[j];
-                                positionLastFeederControlled = j;
+                                string text = currentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, currentFeeder->getCurrentVarLoadPointValue());
+                                request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, currentFeeder->getCurrentVarLoadPointValue(),
+                                                                                  currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
+                                lastFeederControlled = currentFeeder;
+                                positionLastFeederControlled = index;
                             }
                         }
                         break;
@@ -3132,10 +3134,14 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
                     CTILOG_INFO(dout, "Attempting to Decrease Volt level in substation bus: " << getPaoName().c_str());
                 }
 
-                CtiCCCapBank* capBank = NULL;
-                for(int j=varSortedFeeders.entries()-1;j>=0;j--)
+                CtiCCCapBankPtr capBank = 0;
+                SortedFeeders::size_type index = varSortedFeeders.size() - 1;
+                for ( SortedFeeders::reverse_iterator itr = varSortedFeeders.rbegin(),
+                                                      end = varSortedFeeders.rend();
+                      itr != end; ++itr, --index )
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)varSortedFeeders[j];
+                    CtiCCFeederPtr currentFeeder = *itr;
+
                     if( !currentFeeder->getDisableFlag() &&
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
@@ -3154,19 +3160,18 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
                             CTILOG_WARN(dout, "Bus Optimized Volt Control requires Feeder Var PointID.  Var PointID not found in feeder: " << currentFeeder->getPaoName());
                         }
                     }
-                    if( capBank != NULL )
+                    if( capBank )
                     {
                         currentFeeder->checkMaxDailyOpCountExceeded(pointChanges);
 
                         if (!currentFeeder->getDisableFlag())
                         {
                             double controlValue = ( ciStringEqual(getStrategy()->getControlUnits(), ControlStrategy::VoltsControlUnit) ? getCurrentVoltLoadPointValue() :  getIVControl());
-                            string text =  ((CtiCCFeeder*)varSortedFeeders[j])->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue());
-                            request = ((CtiCCFeeder*)varSortedFeeders[j])->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue(),
-                                                                                                    ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseAValue(), ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseBValue(),
-                                                                                                    ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseCValue());
-                            lastFeederControlled = (CtiCCFeeder*)varSortedFeeders[j];
-                            positionLastFeederControlled = j;
+                            string text = currentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, currentFeeder->getCurrentVarLoadPointValue());
+                            request = currentFeeder->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, currentFeeder->getCurrentVarLoadPointValue(),
+                                                                              currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
+                            lastFeederControlled = currentFeeder;
+                            positionLastFeederControlled = index;
                         }
                         break;
                     }
@@ -3197,10 +3202,14 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
                     CTILOG_DEBUG(dout, "Attempting to Decrease Var level in substation bus: " << getPaoName().c_str());
                 }
 
-                CtiCCCapBank* capBank = NULL;
-                for(int j=0;j<varSortedFeeders.entries();j++)
+                CtiCCCapBankPtr capBank = 0;
+                SortedFeeders::size_type index = 0;
+                for ( SortedFeeders::iterator itr = varSortedFeeders.begin(),
+                                              end = varSortedFeeders.end();
+                      itr != end; ++itr, ++index )
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)varSortedFeeders[j];
+                    CtiCCFeederPtr currentFeeder = *itr;
+
                     if( !currentFeeder->getDisableFlag() &&
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
@@ -3215,19 +3224,18 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
                             CTILOG_WARN(dout, "Bus Optimized Volt Control requires Feeder Var PointID.  Var PointID not found or NOT NORMAL quality in feeder: " << currentFeeder->getPaoName());
                         }
                     }
-                    if( capBank != NULL )
+                    if( capBank )
                     {
                         currentFeeder->checkMaxDailyOpCountExceeded(pointChanges);
 
                         if (!currentFeeder->getDisableFlag())
                         {
-                            lastFeederControlled = (CtiCCFeeder*)varSortedFeeders[j];
-                            positionLastFeederControlled = j;
+                            lastFeederControlled = currentFeeder;
+                            positionLastFeederControlled = index;
                             double adjustedBankKVARReduction = (lagLevel/100.0)*((double)capBank->getBankSize());
                             if( adjustedBankKVARReduction <= (-1.0*getKVARSolution()) )
                             {
-                                if( capBank != NULL &&
-                                    capBank->getRecloseDelay() > 0 &&
+                                if( capBank->getRecloseDelay() > 0 &&
                                     currentDateTime.seconds() < capBank->getLastStatusChangeTime().seconds() + capBank->getRecloseDelay() )
                                 {
                                     Cti::StreamBuffer s;
@@ -3249,10 +3257,9 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
                                 }
                                 else
                                 {
-                                    string text =  ((CtiCCFeeder*)varSortedFeeders[j])->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, getIVControl(), ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue());
-                                    request = ((CtiCCFeeder*)varSortedFeeders[j])->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue(),
-                                                                                                            ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseAValue(), ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseBValue(),
-                                                                                                            ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseCValue());
+                                    string text = currentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, getIVControl(), currentFeeder->getCurrentVarLoadPointValue());
+                                    request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, currentFeeder->getCurrentVarLoadPointValue(),
+                                                                                      currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
                                 }
                             }
                             else
@@ -3264,7 +3271,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
                     }
                 }
 
-                if( capBank == NULL && request == NULL )
+                if( ! capBank && request == NULL )
                 {
                     createCannotControlBankText("Decrease Var", "Close", ccEvents);
                 }
@@ -3281,10 +3288,14 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
                     CTILOG_DEBUG(dout, "Attempting to Increase Var level in substation bus: " << getPaoName().c_str());
                 }
 
-                CtiCCCapBank* capBank = NULL;
-                for(int j=varSortedFeeders.entries()-1;j>=0;j--)
+                CtiCCCapBankPtr capBank = 0;
+                SortedFeeders::size_type index = varSortedFeeders.size() - 1;
+                for ( SortedFeeders::reverse_iterator itr = varSortedFeeders.rbegin(),
+                                                      end = varSortedFeeders.rend();
+                      itr != end; ++itr, --index )
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)varSortedFeeders[j];
+                    CtiCCFeederPtr currentFeeder = *itr;
+
                     if( !currentFeeder->getDisableFlag() &&
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getStrategy()->getControlDelayTime() )
@@ -3299,22 +3310,21 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
                             CTILOG_WARN(dout, "Bus Optimized Volt Control requires Feeder Var PointID.  Var PointID not found or NOT NORMAL quality in feeder: " << currentFeeder->getPaoName());
                         }
                     }
-                    if( capBank != NULL )
+                    if( capBank )
                     {
                         currentFeeder->checkMaxDailyOpCountExceeded(pointChanges);
 
                         if (!currentFeeder->getDisableFlag())
                         {
-                            lastFeederControlled = (CtiCCFeeder*)varSortedFeeders[j];
-                            positionLastFeederControlled = j;
+                            lastFeederControlled = currentFeeder;
+                            positionLastFeederControlled = index;
                             double adjustedBankKVARIncrease = -(leadLevel/100.0)*((double)capBank->getBankSize());
                             if( adjustedBankKVARIncrease <= getKVARSolution() )
                             {
-                                string text =  ((CtiCCFeeder*)varSortedFeeders[j])->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open,  getIVControl(), ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue());
+                                string text = currentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open,  getIVControl(), currentFeeder->getCurrentVarLoadPointValue());
 
-                                request = ((CtiCCFeeder*)varSortedFeeders[j])->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue(),
-                                                                                                        ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseAValue(), ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseBValue(),
-                                                                                                    ((CtiCCFeeder*)varSortedFeeders[j])->getPhaseCValue());
+                                request = currentFeeder->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, currentFeeder->getCurrentVarLoadPointValue(),
+                                                                                  currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
                             }
                             else
                             {//cap bank too big
@@ -3325,7 +3335,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(double lagLevel, double l
                     }
                 }
 
-                if( capBank == NULL && request == NULL  )
+                if( ! capBank && request == NULL  )
                 {
                     createCannotControlBankText("Increase Var", "Open", ccEvents);
                 }

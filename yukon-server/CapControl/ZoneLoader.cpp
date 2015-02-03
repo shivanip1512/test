@@ -260,7 +260,7 @@ void ZoneDBLoader::loadRegulatorParameters(const long Id, ZoneManager::ZoneMap &
             try
             {
                 CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
-                RWRecursiveLock<RWMutexLock>::LockGuard  guard( store->getMux() );
+                CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
 
                 VoltageRegulatorManager::SharedPtr  regulator
                     = store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorId );

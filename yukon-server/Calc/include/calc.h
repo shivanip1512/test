@@ -1,18 +1,12 @@
 #pragma once
 
-#include <rw/slistcol.h>
-#include <rw/tvdlist.h>
-//#include <rw/tstack.h>
 #include "ctiqueues.h"
 
 #include "calccomponent.h"
 
-class CtiCalc : public RWCollectable
+class CtiCalc
 {
-    RWDECLARE_COLLECTABLE( CtiCalc );
-
-private:
-    std::list<CtiCalcComponent*>  _components;
+    std::vector<CtiCalcComponent*>  _components;
     CtiStack<double>     _stack;
     PointUpdateType      _updateType;
     ULONG                _nextInterval;
@@ -93,8 +87,4 @@ public:
     bool push( double );
     double pop( void );
 };
-
-// square root of 3 for power factor calculations
-#define SQRT3               1.7320508075688772935274463415059
-
 

@@ -1,11 +1,5 @@
 #include "precompiled.h"
 
-using std::string;
-using std::endl;
-
-#include <rw/thr/thrfunc.h>
-#include <rw/thr/mutex.h>
-
 #include "cparms.h"
 #include "logger.h"
 #include "guard.h"
@@ -19,8 +13,6 @@ using std::endl;
 #include <iostream>
 #include <crtdbg.h>
 #include <conio.h>
-
-using namespace std;
 
 CtiClientConnection FdrVanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispatch );
 
@@ -106,7 +98,7 @@ void CtiFDRService::DeInit( )
 void CtiFDRService::Init( )
 {
     // add FDR stuff here
-    string   interfaces;
+    std::string interfaces;
 
     SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
@@ -131,7 +123,7 @@ void CtiFDRService::Init( )
         Boost_char_tokenizer next(interfaces, sep);
         Boost_char_tokenizer::iterator tok_iter = next.begin();
 
-        string       myInterfaceName;
+        std::string myInterfaceName;
 
         // parse the interfaces
         //while (!(myInterfaceName=*tok_iter++).empty())
@@ -176,12 +168,10 @@ void CtiFDRService::Init( )
         } // end for
 
     }
-    catch( RWxmsg &e )
+    catch ( ... )
     {
-        CTILOG_EXCEPTION_ERROR(dout, e, "FDR Service init() failed");
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "FDR Service init() failed");
     }
-
-
 }
 
 
@@ -261,7 +251,7 @@ void CtiFDRService::Run( )
         // Initialize the connection to VanGogh....
         FdrVanGoghConnection.setName("FDR Service to Dispatch");
         FdrVanGoghConnection.start();
-        FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg("FDR Service", rwThreadId(), true));
+        FdrVanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg("FDR Service", GetCurrentThreadId(), true));
 
         do
         {
@@ -301,9 +291,9 @@ void CtiFDRService::Run( )
 
         FdrVanGoghConnection.close();
     }
-    catch( const RWxmsg &e )
+    catch ( ... )
     {
-        CTILOG_EXCEPTION_ERROR(dout, e, "FDR Run() Service failed")
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "FDR Run() Service failed")
     }
 
 }

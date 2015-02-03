@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>    
 #include "dlldefs.h"
 #include "fdrinterface.h"
@@ -27,7 +23,7 @@ class IM_EX_FDRBASE CtiFDRAsciiImportBase : public CtiFDRInterface
     
     protected:
     
-        RWThreadFunction    iThreadReadFromFile;
+        Cti::WorkerThread   iThreadReadFromFile;
         void threadFunctionReadFromFile( void );
     
         std::string & getFileName();

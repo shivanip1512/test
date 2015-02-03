@@ -5,6 +5,8 @@
 
 #include "cmd_rfn_FocusAlLcdConfiguration.h"
 
+#include "boost_test_helpers.h"
+
 using Cti::Devices::Commands::RfnCommand;
 using Cti::Devices::Commands::RfnCommandResult;
 using Cti::Devices::Commands::RfnFocusAlLcdConfigurationCommand;
@@ -266,15 +268,20 @@ BOOST_AUTO_TEST_CASE(test_read_3_items)
                           "\nDisplay metric 3 [EF] : Delivered kWh (4 digit)";
 
         BOOST_CHECK_EQUAL(rcv.description, exp);
-        BOOST_CHECK_EQUAL(lcdConfiguration.getDisplayItemDurationReceived(), display_item_duration);
+
+        const boost::optional<unsigned char> displayItemDurationRcv = lcdConfiguration.getDisplayItemDurationReceived();
+
+        BOOST_REQUIRE( !! displayItemDurationRcv );
+
+        BOOST_CHECK_EQUAL( *displayItemDurationRcv, display_item_duration);
 
         boost::optional<RfnFocusAlLcdConfigurationCommand::MetricVector> display_items_received = lcdConfiguration.getDisplayItemsReceived();
 
-        BOOST_REQUIRE( display_items_received );
+        BOOST_REQUIRE( !! display_items_received );
 
-        BOOST_CHECK_EQUAL_COLLECTIONS(
-                 display_items_received->begin(), display_items_received->end(),
-                 display_items.begin(),           display_items.end());
+        BOOST_CHECK_EQUAL_RANGES(
+                 *display_items_received,
+                 display_items);
     }
 }
 

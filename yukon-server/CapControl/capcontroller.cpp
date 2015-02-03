@@ -39,8 +39,6 @@
 #include "millisecond_timer.h"
 #include "module_util.h"
 
-#include <rw/thr/thrfunc.h>
-
 extern void refreshGlobalCParms();
 
 extern unsigned long _CC_DEBUG;
@@ -134,21 +132,14 @@ CtiCapController::~CtiCapController()
 ---------------------------------------------------------------------------*/
 void CtiCapController::start()
 {
-    RWThreadFunction threadfunc = rwMakeThreadFunction( *this, &CtiCapController::controlLoop );
-    _substationBusThread = threadfunc;
-    threadfunc.start();
+    CTILOG_DEBUG(dout, "Starting CtiCapController");
 
-    RWThreadFunction threadfunc3 = rwMakeThreadFunction( *this, &CtiCapController::outClientMsgs );
-    _outClientMsgThread = threadfunc3;
-    threadfunc3.start();
+    _substationBusThread            = boost::thread( &CtiCapController::controlLoop, this );
+    _outClientMsgThread             = boost::thread( &CtiCapController::outClientMsgs, this );
+    _messageSenderThread            = boost::thread( &CtiCapController::messageSender, this );
+    _incomingMessageProcessorThread = boost::thread( &CtiCapController::incomingMessageProcessor, this );
 
-    RWThreadFunction threadfunc4 = rwMakeThreadFunction( *this, &CtiCapController::messageSender );
-    _messageSenderThread = threadfunc4;
-    threadfunc4.start();
-
-    RWThreadFunction incomingMessageProcessorThread = rwMakeThreadFunction( *this, &CtiCapController::incomingMessageProcessor );
-    _incomingMessageProcessorThread = incomingMessageProcessorThread;
-    incomingMessageProcessorThread.start();
+    CTILOG_DEBUG(dout, "CtiCapController is running");
 }
 
 /*---------------------------------------------------------------------------
@@ -160,60 +151,48 @@ void CtiCapController::stop()
 {
     try
     {
-        //Shutdown control loop
-        if ( _substationBusThread.isValid() && _substationBusThread.requestCancellation() == RW_THR_ABORTED )
-        {
-            _substationBusThread.terminate();
+        CTILOG_DEBUG(dout, "Stopping CtiCapController");
 
-            CTILOG_WARN(dout, "Substation Bus Thread forced to terminate.");
-        }
-        else
-        {
-            _substationBusThread.requestCancellation();
-            _substationBusThread.join();
-        }
+        _substationBusThread.interrupt();
+        _outClientMsgThread.interrupt();
+        _messageSenderThread.interrupt();
+        _incomingMessageProcessorThread.interrupt();
 
-        //Shutdown outClientMsgThread
-        if ( _outClientMsgThread.isValid() && _outClientMsgThread.requestCancellation() == RW_THR_ABORTED )
+        if ( ! _substationBusThread.timed_join( boost::posix_time::milliseconds( 250 ) ) )
         {
-            CTILOG_WARN(dout, "OutClientMsg Thread forced to terminate.");
+            CTILOG_WARN( dout, "CtiCapController substation bus thread did not shutdown gracefully. "
+                               "Attempting a forced shutdown" );
 
-            _outClientMsgThread.terminate();
-        }
-        else
-        {
-            _outClientMsgThread.requestCancellation();
-            _outClientMsgThread.join();
+            TerminateThread( _substationBusThread.native_handle(), EXIT_SUCCESS );
         }
 
-        //Shutdown messageSenderThread
-        if ( _messageSenderThread.isValid() && _messageSenderThread.requestCancellation() == RW_THR_ABORTED )
+        if ( ! _outClientMsgThread.timed_join( boost::posix_time::milliseconds( 250 ) ) )
         {
-            CTILOG_WARN(dout, "messageSender Thread forced to terminate.");
+            CTILOG_WARN( dout, "CtiCapController OutClientMsg thread did not shutdown gracefully. "
+                               "Attempting a forced shutdown" );
 
-            _messageSenderThread.terminate();
-        }
-        else
-        {
-            _messageSenderThread.requestCancellation();
-            _messageSenderThread.join();
+            TerminateThread( _outClientMsgThread.native_handle(), EXIT_SUCCESS );
         }
 
-        //Shutdown incomingMessageProcessorThread
-        if ( _incomingMessageProcessorThread.isValid() && _incomingMessageProcessorThread.requestCancellation() == RW_THR_ABORTED )
+        if ( ! _messageSenderThread.timed_join( boost::posix_time::milliseconds( 250 ) ) )
         {
-            CTILOG_WARN(dout, "incomingMessageProcessorThread Thread forced to terminate.");
+            CTILOG_WARN( dout, "CtiCapController message sender thread did not shutdown gracefully. "
+                               "Attempting a forced shutdown" );
 
-            _incomingMessageProcessorThread.terminate();
-        }
-        else
-        {
-            _incomingMessageProcessorThread.requestCancellation();
-            _incomingMessageProcessorThread.join();
+            TerminateThread( _messageSenderThread.native_handle(), EXIT_SUCCESS );
         }
 
+        if ( ! _incomingMessageProcessorThread.timed_join( boost::posix_time::milliseconds( 250 ) ) )
+        {
+            CTILOG_WARN( dout, "CtiCapController incoming message thread did not shutdown gracefully. "
+                               "Attempting a forced shutdown" );
+
+            TerminateThread( _incomingMessageProcessorThread.native_handle(), EXIT_SUCCESS );
+        }
+
+        CTILOG_DEBUG(dout, "CtiCapController is stopped");
     }
-    catch(...)
+    catch (...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
@@ -253,176 +232,183 @@ void CtiCapController::stop()
 
 void CtiCapController::messageSender()
 {
+    CTILOG_DEBUG(dout, "CtiCapController message sender thread is starting");
+
     ThreadStatusKeeper threadStatus("CapControl messageSender");
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+        CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
         registerForPoints(*store->getCCSubstationBuses(CtiTime().seconds()));
     }
-    while(true)
+
+    try
     {
-        CtiTime currentDateTime;
-        bool waitToBroadCastEverything = false;
-
+        while(true)
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
-            if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
-            {
-                CTILOG_DEBUG(dout, "Message Sender start");
-            }
+            CtiTime currentDateTime;
+            bool waitToBroadCastEverything = false;
 
-            try
             {
-
-                if( store->getReregisterForPoints() )
+                CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+                if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
                 {
-                    registerForPoints(*store->getCCSubstationBuses(CtiTime().seconds()));
-                    store->setReregisterForPoints(false);
-                    waitToBroadCastEverything = true;
-                }
-            }
-            catch(...)
-            {
-                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-            }
-
-            try
-            {
-                checkPIL();
-
-                store->checkUnsolicitedList();
-                store->checkRejectedList();
-                store->checkUnexpectedUnsolicitedList();
-            }
-            catch(...)
-            {
-                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-            }
-
-            if (store->getLinkStatusPointId() > 0 &&
-                 (store->getLinkStatusFlag() == STATE_CLOSED) &&
-                 store->getLinkDropOutTime().seconds() + (60* _LINK_STATUS_TIMEOUT) < currentDateTime.seconds())
-            {
-                 updateAllPointQualities(NonUpdatedQuality);
-                 store->setLinkDropOutTime(currentDateTime);
-
-                 CTILOG_WARN(dout, "store->getLinkDropOutTime() " << store->getLinkDropOutTime());
-            }
-
-            readClientMsgQueue();
-            CtiCCSubstationBus_vec subStationBusChanges;
-            CtiCCSubstation_set stationChanges;
-            CtiCCArea_set areaChanges;
-
-            PaoIdToSubBusMap::iterator busIter = store->getPAOSubMap()->begin();
-            for ( ; busIter != store->getPAOSubMap()->end() ; busIter++)
-            {
-                CtiCCSubstationBusPtr currentSubstationBus = busIter->second;
-                CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
-                CtiCCAreaPtr currentArea = NULL;
-                if (currentStation != NULL )//&& !currentStation->getDisableFlag())
-                {
-                    currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
+                    CTILOG_DEBUG(dout, "Message Sender start");
                 }
 
-                if (currentArea != NULL )//&& !currentArea->getDisableFlag())
+                try
                 {
-                    if( currentSubstationBus->getBusUpdatedFlag())
+
+                    if( store->getReregisterForPoints() )
                     {
-                        currentStation->checkAndUpdateRecentlyControlledFlag();
-
-                        if (currentStation->getStationUpdatedFlag())
-                        {
-                            store->updateSubstationObjectSet(currentStation->getPaoId(), stationChanges);
-                            currentStation->setStationUpdatedFlag(false);
-                        }
-                        if (currentArea->getAreaUpdatedFlag())
-                        {
-                            store->updateAreaObjectSet(currentArea->getPaoId(), areaChanges);
-                            currentArea->setAreaUpdatedFlag(false);
-                        }
-                        subStationBusChanges.push_back(currentSubstationBus);
-                        currentSubstationBus->setBusUpdatedFlag(false);
+                        registerForPoints(*store->getCCSubstationBuses(CtiTime().seconds()));
+                        store->setReregisterForPoints(false);
+                        waitToBroadCastEverything = true;
                     }
                 }
+                catch(...)
+                {
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                }
+
+                try
+                {
+                    checkPIL();
+
+                    store->checkUnsolicitedList();
+                    store->checkRejectedList();
+                    store->checkUnexpectedUnsolicitedList();
+                }
+                catch(...)
+                {
+                    CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                }
+
+                if (store->getLinkStatusPointId() > 0 &&
+                     (store->getLinkStatusFlag() == STATE_CLOSED) &&
+                     store->getLinkDropOutTime().seconds() + (60* _LINK_STATUS_TIMEOUT) < currentDateTime.seconds())
+                {
+                     updateAllPointQualities(NonUpdatedQuality);
+                     store->setLinkDropOutTime(currentDateTime);
+
+                     CTILOG_WARN(dout, "store->getLinkDropOutTime() " << store->getLinkDropOutTime());
+                }
+
+                readClientMsgQueue();
+                CtiCCSubstationBus_vec subStationBusChanges;
+                CtiCCSubstation_set stationChanges;
+                CtiCCArea_set areaChanges;
+
+                PaoIdToSubBusMap::iterator busIter = store->getPAOSubMap()->begin();
+                for ( ; busIter != store->getPAOSubMap()->end() ; busIter++)
+                {
+                    CtiCCSubstationBusPtr currentSubstationBus = busIter->second;
+                    CtiCCSubstationPtr currentStation = store->findSubstationByPAObjectID(currentSubstationBus->getParentId());
+                    CtiCCAreaPtr currentArea = NULL;
+                    if (currentStation != NULL )//&& !currentStation->getDisableFlag())
+                    {
+                        currentArea = store->findAreaByPAObjectID(currentStation->getParentId());
+                    }
+
+                    if (currentArea != NULL )//&& !currentArea->getDisableFlag())
+                    {
+                        if( currentSubstationBus->getBusUpdatedFlag())
+                        {
+                            currentStation->checkAndUpdateRecentlyControlledFlag();
+
+                            if (currentStation->getStationUpdatedFlag())
+                            {
+                                store->updateSubstationObjectSet(currentStation->getPaoId(), stationChanges);
+                                currentStation->setStationUpdatedFlag(false);
+                            }
+                            if (currentArea->getAreaUpdatedFlag())
+                            {
+                                store->updateAreaObjectSet(currentArea->getPaoId(), areaChanges);
+                                currentArea->setAreaUpdatedFlag(false);
+                            }
+                            subStationBusChanges.push_back(currentSubstationBus);
+                            currentSubstationBus->setBusUpdatedFlag(false);
+                        }
+                    }
+                }
+
+                if (subStationBusChanges.size() > 0)
+                {
+                    getOutClientMsgQueueHandle().write(new CtiCCSubstationBusMsg( subStationBusChanges, CtiCCSubstationBusMsg::SubBusModified ));
+                }
+                if (areaChanges.size() > 0)
+                {
+                    getOutClientMsgQueueHandle().write(new CtiCCGeoAreasMsg( areaChanges, CtiCCGeoAreasMsg::AreaModified ));
+                }
+                if (stationChanges.size() > 0)
+                {
+                    getOutClientMsgQueueHandle().write(new CtiCCSubstationsMsg( stationChanges, CtiCCSubstationsMsg::SubModified ));
+                }
+                if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
+                {
+                    CTILOG_DEBUG(dout, "Message Sender End");
+                }
             }
 
-            if (subStationBusChanges.size() > 0)
-            {
-                getOutClientMsgQueueHandle().write(new CtiCCSubstationBusMsg( subStationBusChanges, CtiCCSubstationBusMsg::SubBusModified ));
-            }
-            if (areaChanges.size() > 0)
-            {
-                getOutClientMsgQueueHandle().write(new CtiCCGeoAreasMsg( areaChanges, CtiCCGeoAreasMsg::AreaModified ));
-            }
-            if (stationChanges.size() > 0)
-            {
-                getOutClientMsgQueueHandle().write(new CtiCCSubstationsMsg( stationChanges, CtiCCSubstationsMsg::SubModified ));
-            }
-            if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
-            {
-                CTILOG_DEBUG(dout, "Message Sender End");
-            }
-        }
+            boost::this_thread::sleep( boost::posix_time::milliseconds( 500 ) );
 
-        try
-        {
-            rwRunnable().serviceCancellation();
-            rwRunnable().sleep( 500 );
+            threadStatus.monitorCheck();
         }
-        catch(RWCancellation& )
-        {
-            throw;
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
-        threadStatus.monitorCheck();
-    };
+    }
+    catch ( boost::thread_interrupted & )
+    {
+    }
+    catch(...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+    }
+
+    CTILOG_DEBUG(dout, "CtiCapController message sender thread is stopping");
 }
 
 void CtiCapController::incomingMessageProcessor()
 {
+    CTILOG_DEBUG(dout, "CtiCapController incoming message thread is starting");
+
     ThreadStatusKeeper threadKeeper("CapControl Incoming Message Thread");
 
-    while(true)
+    try
     {
-        CtiMessage* msg = NULL;
-        bool retVal = _incomingMessageQueue.read(msg,5000);
-
-        if (retVal)
+        while (true) 
         {
-            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
+            CtiMessage* msg = NULL;
+            bool retVal = _incomingMessageQueue.read(msg,5000);
+
+            if (retVal)
             {
-                int msgCount = 1;
-                if (msg->isA() == MSG_MULTI)
+                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
                 {
-                    msgCount = ((CtiMultiMsg*)msg)->getCount();
+                    int msgCount = 1;
+                    if (msg->isA() == MSG_MULTI)
+                    {
+                        msgCount = ((CtiMultiMsg*)msg)->getCount();
+                    }
+                    CTILOG_INFO(dout, "Processing "<< msgCount <<" New Message(s).");
                 }
-                CTILOG_INFO(dout, "Processing "<< msgCount <<" New Message(s).");
+
+                parseMessage(msg);
+                delete msg;
             }
 
-            parseMessage(msg);
-            delete msg;
-        }
+            boost::this_thread::sleep( boost::posix_time::milliseconds( 100 ) );
 
-        try
-        {
-            rwRunnable().serviceCancellation();
+            threadKeeper.monitorCheck();
         }
-        catch(RWCancellation& )
-        {
-            throw;
-        }
-        catch(...)
-        {
-            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-        }
+    }
+    catch ( boost::thread_interrupted & )
+    {
+    }
+    catch(...)
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+    }
 
-        threadKeeper.monitorCheck();
-    };
+    CTILOG_DEBUG(dout, "CtiCapController incoming message thread is stopping");
 }
 
 void CtiCapController::processNewMessage(CtiMessage* message)
@@ -442,11 +428,13 @@ void CtiCapController::processNewMessage(CtiMessage* message)
 --------------------------------------------------------------------------*/
 void CtiCapController::controlLoop()
 {
+    CTILOG_DEBUG(dout, "CtiCapController control loop thread is starting");
+
     try
     {
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
         {
-            RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+            CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
             registerForPoints(*store->getCCSubstationBuses(CtiTime().seconds()));
         }
         store->setReregisterForPoints(false);
@@ -491,7 +479,7 @@ void CtiCapController::controlLoop()
                 try
                 {
 
-                    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+                    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
                     if( Now > fifteenMinCheck && secondsFrom1970 != lastThreadPulse)
                     {//every  fifteen minutes tell the user if the control thread is still alive
@@ -522,11 +510,11 @@ void CtiCapController::controlLoop()
                     getDispatchConnection()->refreshPointRegistration();
                 }
 
+                boost::this_thread::interruption_point();
 
-                rwRunnable().serviceCancellation();
                 try
                 {
-                    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+                    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
                     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1970, true);
                     CtiCCSubstation_vec& ccSubstations = *store->getCCSubstations(secondsFrom1970);
@@ -574,7 +562,7 @@ void CtiCapController::controlLoop()
                     PaoIdToSubBusMap::iterator busIter = store->getPAOSubMap()->begin();
                     for ( ;busIter != store->getPAOSubMap()->end(); busIter++)
                     {
-                        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+                        CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
                         if (store->getStoreRecentlyReset())
                             break;
 
@@ -698,20 +686,10 @@ void CtiCapController::controlLoop()
                             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
                         }
 
-                        try
-                        {
-                            rwRunnable().serviceCancellation();
-                            rwRunnable().sleep( 1 );
-                        }
-                        catch (RWCancellation& )
-                        {
-                            throw;
-                        }
-                        catch(...)
-                        {
-                            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-                        }
+                        boost::this_thread::interruption_point();
+
                         threadStatus.monitorCheck();
+
                         if(pointID!=0)
                         {
                             CtiThreadMonitor::State next;
@@ -731,7 +709,7 @@ void CtiCapController::controlLoop()
                         CTILOG_DEBUG(dout, "Control Loop End");
                     }
                 }
-                catch (RWCancellation& )
+                catch ( boost::thread_interrupted & )
                 {
                     throw;
                 }
@@ -742,7 +720,7 @@ void CtiCapController::controlLoop()
 
                 try
                 {
-                    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+                    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
                     if (areaChanges.size() > 0 &&  !store->getStoreRecentlyReset())
                     {
@@ -829,19 +807,7 @@ void CtiCapController::controlLoop()
                 }
             }
 
-            try
-            {
-                rwRunnable().serviceCancellation();
-                rwRunnable().sleep( 500 );
-            }
-            catch(RWCancellation& )
-            {
-                throw;
-            }
-            catch(...)
-            {
-                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-            }
+            boost::this_thread::sleep( boost::posix_time::milliseconds( 500 ) );
 
             try
             {
@@ -870,7 +836,7 @@ void CtiCapController::controlLoop()
             }
         }
     }
-    catch(RWCancellation& )
+    catch ( boost::thread_interrupted & )
     {
         try
         {
@@ -881,13 +847,13 @@ void CtiCapController::controlLoop()
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
-
-        throw;
     }
     catch(...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Control Loop thread terminated unexpectedly.");
     }
+
+    CTILOG_DEBUG(dout, "CtiCapController control loop thread is stopping");
 }
 
 void CtiCapController::checkBusForNeededControl(CtiCCAreaPtr currentArea,  CtiCCSubstation* currentStation, CtiCCSubstationBusPtr currentSubstationBus, const CtiTime& currentDateTime,
@@ -1183,6 +1149,8 @@ void CtiCapController::analyzeVerificationBus(CtiCCSubstationBusPtr currentSubst
 
 void CtiCapController::outClientMsgs()
 {
+    CTILOG_DEBUG(dout, "CtiCapController outClient message thread is starting");
+
     try
     {
         ThreadStatusKeeper threadStatus("CapControl outClientMsgs");
@@ -1199,31 +1167,20 @@ void CtiCapController::outClientMsgs()
                 delete msg;
             }
 
-            try
-            {
-                rwRunnable().serviceCancellation();
-                rwRunnable().sleep( 50 );
-            }
-            catch(RWCancellation& e)
-            {
-                throw;
-            }
-            catch(...)
-            {
-                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-            }
+            boost::this_thread::sleep( boost::posix_time::milliseconds( 50 ) );
 
             threadStatus.monitorCheck();
         }
     }
-    catch(RWCancellation& )
+    catch ( boost::thread_interrupted & )
     {
-        throw;
     }
     catch(...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Out Client Messages thread terminated unexpectedly.");
     }
+
+    CTILOG_DEBUG(dout, "CtiCapController outClient message thread is stopping");
 }
 
 void CtiCapController::writeEventLogsToDatabase()
@@ -2505,7 +2462,7 @@ void CtiCapController::pointDataMsgByArea( long pointID, double value, unsigned 
 
     CtiCCAreaPtr currentArea = NULL;
     PointIdToAreaMultiMap::iterator areaIter, end;
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
     store->findAreaByPointID(pointID, areaIter, end);
 
     while (areaIter != end)
@@ -2555,7 +2512,7 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
 
     CtiCCSpecialPtr currentSpArea = NULL;
     PointIdToSpecialAreaMultiMap::iterator saIter, end;
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
     store->findSpecialAreaByPointID(pointID, saIter, end);
 
     while (saIter != end)
@@ -2608,7 +2565,7 @@ void CtiCapController::pointDataMsgBySubstation( long pointID, double value, uns
     CtiCCSubstation* currentStation = NULL;
     CtiCCAreaPtr currentArea = NULL;
     PointIdToSubstationMultiMap::iterator stationIter, end;
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
     store->findSubstationByPointID(pointID, stationIter, end);
 
     while (stationIter != end)
@@ -2675,7 +2632,7 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
     CtiCCAreaPtr currentArea = NULL;
 
     PointIdToSubBusMultiMap::iterator subIter, end;
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
     store->findSubBusByPointID(pointID, subIter, end);
     while (subIter != end )
     {
@@ -3003,7 +2960,7 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     CtiCCFeederPtr currentFeeder = NULL;
     PointIdToFeederMultiMap::iterator feedIter, end;
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
     store->findFeederByPointID(pointID, feedIter, end);
 
     while (feedIter != end)
@@ -3231,7 +3188,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
     CtiCCFeederPtr currentFeeder = NULL;
     CtiCCCapBankPtr currentCapBank = NULL;
     PointIdToCapBankMultiMap::iterator capIter, end;
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
     store->findCapBankByPointID(pointID, capIter, end);
 
     while (capIter != end)
@@ -3588,7 +3545,7 @@ void CtiCapController::porterReturnMsg( const CtiReturnMsg &retMsg )
     }
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
     int bankid = store->findCapBankIDbyCbcID(deviceId);
     if ( bankid == NULL )

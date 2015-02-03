@@ -1,29 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   mc_fileint
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_fileint.cpp-arc  $
-* REVISION     :  $Revision: 1.10.10.1 $
-* DATE         :  $Date: 2008/11/21 20:56:59 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
-
-/*-----------------------------------------------------------------------------
-    Filename:  mc_fileint.cpp
-
-    Programmer:  Aaron Lauinger
-
-    Description:    Source file for CtiMCFileInterface.
-
-
-    Initial Date:  6/29/99
-
-    COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 1999
------------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "mc_fileint.h"
@@ -62,7 +36,7 @@ void CtiMCFileInterface::start()
     }
 
     // make sure to let our super start
-    CtiFileInterface::start();
+    Cti::FileInterface::start();
 }
 /*---------------------------------------------------------------------------
     handleFile
@@ -246,9 +220,9 @@ void CtiMCFileInterface::execute(const string& function, const string& name )
                 Cti::FormattedList loglist;
                 loglist.add("Function") << lower_function;
                 loglist.add("Schedule") << name;
-                
+
                 CTILOG_DEBUG(dout, "Placed a command on the main queue: "<<
-                     	loglist);
+                        loglist);
             }
         }
         else

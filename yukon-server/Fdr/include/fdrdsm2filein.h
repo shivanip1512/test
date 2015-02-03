@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 
 #include "dlldefs.h"
@@ -57,7 +53,7 @@ public:
     static const CHAR * KEY_USE_SYSTEM_TIME;
 
 private:
-    RWThreadFunction    _threadReadFromFile;
+    Cti::WorkerThread   _threadReadFromFile;
     bool                _deleteFileAfterImportFlag;
     bool                _useSystemTime;
 };

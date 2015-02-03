@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
 
             const boost::optional<std::vector<unsigned long>> dynMetricsRcv = dut.findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_MidnightMetrics );
 
-            BOOST_REQUIRE( dynMetricsRcv );
+            BOOST_REQUIRE( !! dynMetricsRcv );
             BOOST_CHECK_EQUAL_COLLECTIONS( dynMetricsRcv->begin(), dynMetricsRcv->end(), dynMetricsExp.begin(), dynMetricsExp.end() );
         }
         {
@@ -297,11 +297,17 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnCommercial_putconfig_install_channel_configura
 
             const boost::optional<std::vector<unsigned long>> dynMetricsRcv = dut.findDynamicInfo<unsigned long>( CtiTableDynamicPaoInfoIndexed::Key_RFN_IntervalMetrics );
 
-            BOOST_REQUIRE( dynMetricsRcv );
-            BOOST_CHECK_EQUAL_COLLECTIONS( dynMetricsRcv->begin(), dynMetricsRcv->end(), dynMetricsExp.begin(), dynMetricsExp.end() );
+            BOOST_REQUIRE( !! dynMetricsRcv );
+            BOOST_CHECK_EQUAL_RANGES( *dynMetricsRcv, dynMetricsExp );
 
-            BOOST_CHECK_EQUAL( unsigned(7380),  dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds ));
-            BOOST_CHECK_EQUAL( unsigned(27360), dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds ));
+            const boost::optional<unsigned> recordingIntervalRcv = dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_RecordingIntervalSeconds );
+            const boost::optional<unsigned> reportingIntervalRcv = dut.findDynamicInfo<unsigned>( CtiTableDynamicPaoInfo::Key_RFN_ReportingIntervalSeconds );
+
+            BOOST_REQUIRE( !! recordingIntervalRcv );
+            BOOST_REQUIRE( !! reportingIntervalRcv );
+
+            BOOST_CHECK_EQUAL( unsigned(7380),  *recordingIntervalRcv );
+            BOOST_CHECK_EQUAL( unsigned(27360), *reportingIntervalRcv );
         }
     }
 }

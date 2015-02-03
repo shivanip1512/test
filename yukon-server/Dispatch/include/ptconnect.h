@@ -1,11 +1,8 @@
 #pragma once
 
 #include "ctitime.h"
-#include <rw/thr/recursiv.h>
-#include <rw\thr\mutex.h>
 
 #include "dlldefs.h"
-#include "hashkey.h"
 #include "pt_base.h"
 #include "con_mgr.h"
 #include "msg_pdata.h"
@@ -28,7 +25,6 @@ public:
    virtual ~CtiPointConnection();
    void AddConnectionManager(CtiServer::ptr_type cm);
    void RemoveConnectionManager(CtiServer::ptr_type cm);
-   int PostPointChangeToConnections(const CtiPointDataMsg& Msg);
    bool HasConnection(const CtiServer::ptr_type cm);
    bool CtiPointConnection::IsEmpty();
    CtiPointConnection& operator=(const CtiPointConnection &aRef);

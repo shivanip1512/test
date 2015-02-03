@@ -5,14 +5,12 @@
 #include <direct.h>
 #include <string>
 
-#include <rw/cstring.h>
-
 #include "fileint.h"
 #include "queue.h"
 
 #include "mgr_mcsched.h"
 
-class CtiMCFileInterface : public CtiFileInterface
+class CtiMCFileInterface : public Cti::FileInterface
 {
 public:
 
@@ -21,7 +19,7 @@ public:
                        const std::string& ext = ".txt")
     :   _schedule_manager(mgr),
         _consumed_dir("..\\macsftp\\consumed"),
-        CtiFileInterface(dir, ext)
+        Cti::FileInterface(dir, ext)
     { };
 
     const std::string getConsumedDirectory() const;

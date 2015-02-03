@@ -43,7 +43,7 @@ public:
     typedef boost::shared_ptr<VoltageRegulator> SharedPtr;
     typedef std::map<long, SharedPtr>           VoltageRegulatorMap;
 
-    VoltageRegulatorManager( std::auto_ptr<VoltageRegulatorLoader> loader );
+    VoltageRegulatorManager( std::unique_ptr<VoltageRegulatorLoader> loader );
 
     void reload(const long Id);
     void reloadAll();
@@ -68,7 +68,7 @@ private:
 
     VoltageRegulatorMap     _voltageRegulators;
 
-    std::auto_ptr<VoltageRegulatorLoader>   _loader;
+    std::unique_ptr<VoltageRegulatorLoader>   _loader;
 
     AttributeService            * _service;
     CapControlPointDataHandler  * _handler;

@@ -1,15 +1,15 @@
 #include "precompiled.h"
 
-#include <iostream>
-using namespace std;
-
 #include "dllbase.h"
 #include "thread.h"
 #include "logger.h"
 #include "win_helper.h"
 
+#include <process.h>
+
 using Cti::getSystemErrorMessage;
 
+using namespace std;
 
 CtiThread::CtiThread() :
 _thread_handle(0)

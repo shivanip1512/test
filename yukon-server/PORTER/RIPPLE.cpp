@@ -1,49 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   RIPPLE
-*
-* Date:   7/17/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.44.2.2 $
-* DATE         :  $Date: 2008/11/21 16:14:53 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-
-/*---------------------------------------------------------------------
-    Copyright (c) 1990-1993 Cannon Technologies, Inc. All rights reserved.
-
-    Programmer:
-        William R. Ockert
-
-    FileName:
-        ripple.c
-
-    Purpose:
-        Routines to build and handle messages to ripple injectors
-
-    The following procedures are contained in this module:
-        LCUStage                    LCUShed
-        LCUTime
-
-    Initial Date:
-        Unknown
-
-    Revision History:
-        Unknown prior to 8-93
-        9-7-93   Converted to 32 bit                                WRO
-        7-24-94  Added support for L&G LCU's                        WRO
-
-
-   -------------------------------------------------------------------- */
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
 
 #include <windows.h>
 #include <process.h>
@@ -870,7 +825,7 @@ bool ResetLCUsForControl(CtiDeviceSPtr splcu)
     CtiDeviceManager::coll_type::reader_lock_guard_t dev_guard(DeviceManager.getLock());       // Protect our iteration!
 
     /* Scan through all of them looking for one still transmitting */
-    WasTrx = DeviceManager.find(findWasTrxLCU, (void*)splcu->getPortID());
+    WasTrx = !! DeviceManager.find(findWasTrxLCU, (void*)splcu->getPortID());
     DeviceManager.apply(applyLCUReset, (void*)splcu.get());
 
     return WasTrx;

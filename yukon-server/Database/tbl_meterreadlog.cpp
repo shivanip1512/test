@@ -88,7 +88,7 @@ CtiTableMeterReadLog& CtiTableMeterReadLog::operator=(const CtiTableMeterReadLog
     return *this;
 }
 
-RWBoolean CtiTableMeterReadLog::operator<(const CtiTableMeterReadLog& aRef) const
+bool CtiTableMeterReadLog::operator<(const CtiTableMeterReadLog& aRef) const
 {
     bool retVal;
     if( getTime() < aRef.getTime() )
@@ -160,9 +160,9 @@ CtiTableMeterReadLog&   CtiTableMeterReadLog::setStatusCode(LONG code)
     return *this;
 }
 
-CtiTableMeterReadLog& CtiTableMeterReadLog::setTime(const CtiTime &rwt)
+CtiTableMeterReadLog& CtiTableMeterReadLog::setTime(const CtiTime &newTime)
 {
-    _time = rwt;
+    _time = newTime;
     return *this;
 }
 

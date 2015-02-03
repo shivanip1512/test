@@ -1,19 +1,11 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include "dbmemobject.h"
 #include "row_reader.h"
 #include "loggable.h"
 
 #include <windows.h>
 #include <limits.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 
 //This is the lite version of CtiTblPAO. The only string stored by this object is the name.

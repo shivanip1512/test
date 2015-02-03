@@ -1,15 +1,6 @@
+#include "precompiled.h"
+
 /*****************************************************************************
-*
-*    FILE NAME: decodeTextCmdFile.cpp
-*
-*    DATE: 05/06/2001
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: Operations performed through a batch file
-*
-*    Copyright (C) 2001 Cannon Technologies, Inc.  All rights reserved.
-*
 *
 *    Example input lines:
 
@@ -32,26 +23,19 @@ Function #  Comment in the file, will get moved to the exported file if needed
 *
 ****************************************************************************
 */
-#include "precompiled.h"
-#include <rw/ctoken.h>
+#include "decodeTextCmdFile.h"
+
 #include "ctidate.h"
+#include "dllbase.h"
+
+#include "utility.h"
 
 #include <vector>
-#include "decodeTextCmdFile.h"
-#include "utility.h"
 
 using std::iostream;
 using std::string;
 using std::vector;
 using std::endl;
-
-/***************************
-*
-*  this function reads in the file and
-*  decides which function type we are talking about
-*
-****************************
-*/
 
 // we seem to go back and forth as to whether 0 is valid so this lets me make the change easily
 #define XCOM_ADDRESS_START 0
@@ -378,7 +362,6 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, string* programmin
     boost::char_separator<char> sep(",\r\n");
     Boost_char_tokenizer cmdLine(input, sep);
 
-    //RWCTokenizer cmdLine(input);           // Tokenize the string a
     Boost_char_tokenizer::iterator tok_iter = cmdLine.begin();
 
     if( tok_iter != cmdLine.end() )
@@ -822,7 +805,6 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, string* programmin
                                             haveSomething = true;
                                             string workString;
 
-                                            //RWCTokenizer subCmd(tempString1);
                                             boost::char_separator<char> space_sep(" ");
                                             Boost_char_tokenizer subCmd(tempString1, space_sep);
                                             Boost_char_tokenizer::iterator sub_tok_iter = subCmd.begin();
@@ -1454,8 +1436,6 @@ bool decodeDsm2Lines( string &aFunction,
     Boost_char_tokenizer tSN(aSerialNum, sep);
     Boost_char_tokenizer tCmd(aCmd, sep);
 
-    //RWCTokenizer cmdLine(input);           // Tokenize the string a
-
     if( tFunction.begin() != tFunction.end() )
     {
         function = trim(string(*tFunction.begin()));
@@ -1476,22 +1456,6 @@ bool decodeDsm2Lines( string &aFunction,
         cmd = trim(string(*tCmd.begin()));
     }
 
-/* rprw
-    RWCTokenizer tFunction(aFunction);
-    function = tFunction("\r\n");
-    RWCTokenizer tRoute(aRoute);
-    route = tRoute("\r\n");
-    RWCTokenizer tSN(aSerialNum);
-    serialNum = tSN("\r\n");
-    RWCTokenizer tCmd(aCmd);
-    cmd = tCmd("\r\n");
-
-    route = route.strip(string::both);
-    function = function.strip(string::both);
-    serialNum = serialNum.strip(string::both);
-    cmd = cmd.strip(string::both);
-*/
-    // just a comment, don't do anything
     switch (atoi (function.c_str()))
     {
         case 4:

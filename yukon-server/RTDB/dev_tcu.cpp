@@ -1,16 +1,3 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_tcu
-*
-* Date:   2/15/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tcu.cpp-arc  $
-* REVISION     :  $Revision: 1.17.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:42 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 
 #include "cmdparse.h"
@@ -30,8 +17,6 @@
 #include "msg_multi.h"
 #include "utility.h"
 
-#define DEBUG_PRINT_DECODE 0
-//extern CtiConnection VanGoghConnection;
 
 using std::string;
 using std::endl;

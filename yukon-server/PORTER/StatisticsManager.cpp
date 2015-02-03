@@ -3,6 +3,7 @@
 #include "StatisticsManager.h"
 
 #include "PaoStatistics.h"
+#include "database_reader.h"
 #include "database_writer.h"
 #include "database_transaction.h"
 #include "InvalidReaderException.h"

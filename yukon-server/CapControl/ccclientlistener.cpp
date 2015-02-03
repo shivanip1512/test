@@ -2,18 +2,11 @@
 
 #include "ccclientlistener.h"
 #include "ccmessage.h"
-#include "ccsubstationbusstore.h"
 #include "ctibase.h"
-#include "ccexecutor.h"
 #include "logger.h"
 #include "utility.h"
-#include "thread_monitor.h"
 #include "ThreadStatusKeeper.h"
 #include "amq_constants.h"
-
-#include <rw/thr/thrfunc.h>
-
-using std::endl;
 
 extern unsigned long _CC_DEBUG;
 
@@ -65,16 +58,14 @@ CtiCCClientListener::~CtiCCClientListener()
 ---------------------------------------------------------------------------*/
 void CtiCCClientListener::start()
 {
+    CTILOG_DEBUG(dout, "Starting the Client Listener");
+
     _started = true;
 
-    RWThreadFunction thr_func = rwMakeThreadFunction( *this, &CtiCCClientListener::_listen );
-    RWThreadFunction check_thr_func = rwMakeThreadFunction( *this, &CtiCCClientListener::_check );
+    _listenerThr = boost::thread( &CtiCCClientListener::_listen, this );
+    _checkThr    = boost::thread( &CtiCCClientListener::_check, this );
 
-    _listenerthr = thr_func;
-    _checkthr = check_thr_func;
-
-    thr_func.start();
-    check_thr_func.start();
+    CTILOG_DEBUG(dout, "Client Listener is running");
 }
 
 /*---------------------------------------------------------------------------
@@ -84,34 +75,47 @@ void CtiCCClientListener::start()
 -----------------------------------------------------------------------------*/
 void CtiCCClientListener::stop()
 {
+    CTILOG_DEBUG(dout, "Stopping the Client Listener");
+
+    _doquit = true;
+
+    CTILOG_INFO(dout, "Closing all client connections.");
+
+    // wait for the threads to stop
+
+    if ( ! _listenerThr.timed_join( boost::posix_time::seconds( 60 ) ) )
+    {
+        CTILOG_WARN( dout, "Client Listener listen thread did not shutdown gracefully. "
+                           "Attempting a forced shutdown" );
+
+        TerminateThread( _listenerThr.native_handle(), EXIT_SUCCESS );
+    }
+
+    if ( ! _checkThr.timed_join( boost::posix_time::seconds( 30 ) ) )
+    {
+        CTILOG_WARN( dout, "Client Listener check thread did not shutdown gracefully. "
+                           "Attempting a forced shutdown" );
+
+        TerminateThread( _checkThr.native_handle(), EXIT_SUCCESS );
+    }
+
+    removeAllConnections();
+
     try
+    {
+        _listenerConnection.close();
+    }
+    catch(...)
     {
         if( _CC_DEBUG & CC_DEBUG_CLIENT )
         {
-            CTILOG_DEBUG(dout, "Shutting down client listener thread...");
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
-
-        _doquit = true;
-
-        try{
-            _listenerConnection.close();
-        }
-        catch(...)
-        {
-            if( _CC_DEBUG & CC_DEBUG_CLIENT )
-            {
-                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-            }
-        }
-
-        // wait for the threads to stop
-        _listenerthr.join();
-        _checkthr.join();
     }
-    catch(RWxmsg& msg)
-    {
-        std::cerr << msg.why() << endl;
-    }
+
+    _started = false;
+
+    CTILOG_DEBUG(dout, "Client Listener is stopped");
 }
 
 void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
@@ -124,7 +128,7 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
 
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
+        CtiLockGuard<CtiCriticalSection> guard( _connmutex );
         for( int i = 0; i < _connections.size(); i++ )
         {
             try
@@ -197,10 +201,14 @@ void CtiCCClientListener::BroadcastMessage(CtiMessage* msg)
 ---------------------------------------------------------------------------*/
 void CtiCCClientListener::_listen()
 {
+    CTILOG_DEBUG(dout, "Client Listener listen thread is starting");
+
+    ThreadStatusKeeper threadStatus("CapControl clientListener listen");
+
     try
     {
         // main loop
-        for(;!_doquit;)
+        while ( ! _doquit )
         {
             if( !_listenerConnection.verifyConnection() )
             {
@@ -219,26 +227,22 @@ void CtiCCClientListener::_listen()
                 new_conn->start();
 
                 {
-                    RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
+                    CtiLockGuard<CtiCriticalSection> guard( _connmutex );
                     _connections.push_back( new_conn.release() );
                 }
 
                 CTILOG_INFO(dout, "New connection established.");
             }
+
+            threadStatus.monitorCheck();
         }
-    }
-    catch(RWxmsg& msg)
-    {
-        CTILOG_EXCEPTION_ERROR(dout, msg, "CtiCCClientListener hiccup");
     }
     catch(...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    CTILOG_INFO(dout, "Closing all client connections.");
-
-    removeAllConnections();
+    CTILOG_DEBUG(dout, "Client Listener listen thread is stopping");
 }
 
 /*---------------------------------------------------------------------------
@@ -246,54 +250,51 @@ void CtiCCClientListener::_listen()
 ---------------------------------------------------------------------------*/
 void CtiCCClientListener::_check()
 {
-    ThreadStatusKeeper threadStatus("CapControl _clientCheck");
+    CTILOG_DEBUG(dout, "Client Listener check thread is starting");
 
-    do
+    ThreadStatusKeeper threadStatus("CapControl clientListener check");
+
+    while ( ! _doquit )
     {
         try
         {
+            CtiLockGuard<CtiCriticalSection> guard( _connmutex );
+
+            CtiCCConnectionVec::iterator itr = _connections.begin();
+            while( itr != _connections.end() )
             {
-                RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-
-                CtiCCConnectionVec::iterator itr = _connections.begin();
-                while( itr != _connections.end() )
+                if ( (*itr).isValid() != TRUE )
                 {
-                    if ( (*itr).isValid() != TRUE )
+                    if( _CC_DEBUG & CC_DEBUG_CLIENT )
                     {
-                        if( _CC_DEBUG & CC_DEBUG_CLIENT )
-                        {
-                            CTILOG_DEBUG(dout, "Removing Client Connection: ");
-                        }
+                        CTILOG_DEBUG(dout, "Removing Client Connection: ");
+                    }
 
-                        // return an iterator pointing to the new location of the element that followed the last element erased
-                        itr = _connections.erase(itr);
-                    }
-                    else
-                    {
-                        ++itr;
-                    }
+                    // return an iterator pointing to the new location of the element that followed the last element erased
+                    itr = _connections.erase(itr);
                 }
-            }   //Release mutex
+                else
+                {
+                    ++itr;
+                }
+            }
         }
         catch(...)
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
-        rwSleep(500);
 
         threadStatus.monitorCheck();
 
-    } while ( !_doquit );
+        Sleep( 500 );
+    }
 
-    //Before we exit try to close all the connections
-    removeAllConnections();
+    CTILOG_DEBUG(dout, "Client Listener check thread is stopping");
 }
-
 
 void CtiCCClientListener::removeAllConnections()
 {
-    {
-        RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-        _connections.clear();
-    }
+    CtiLockGuard<CtiCriticalSection> guard( _connmutex );
+    _connections.clear();
 }
+

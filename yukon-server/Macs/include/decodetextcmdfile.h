@@ -1,11 +1,7 @@
 #pragma once
 
-#include <iostream>
-#include <rw/collstr.h>
-#include "logger.h"
-#include "guard.h"
-#include "types.h"
-#include "rwutil.h"
+#include <vector>
+#include <string>
 
 #define TEXT_CMD_FILE_LOG_FAIL   1
 #define TEXT_CMD_FILE_COMMAND_LIST_INVALID 2

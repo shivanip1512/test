@@ -28,7 +28,7 @@ private:
 
     BehaviorCollection<PlcBehavior> _behaviorCollection;
 
-    bool getMct(const words_t &request_words, mct_map_t::ptr_type &mct);
+    mct_map_t::ptr_type getMct(const words_t &request_words);
 
     std::string  _plcTagIn;
     std::string _plcTagOut;

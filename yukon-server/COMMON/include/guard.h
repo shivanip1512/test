@@ -138,6 +138,8 @@ private:
     T& _res;
 };
 
+namespace Cti {
+
 template <class T>
 class TryLockGuard
 {
@@ -161,5 +163,7 @@ public:
         return _acquired;
     }
 };
+
+}
 
 #pragma pack(pop, LockGuardPack)

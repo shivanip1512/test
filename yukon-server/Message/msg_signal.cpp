@@ -1,18 +1,14 @@
 #include "precompiled.h"
 
-#include <iostream>
-#include <iomanip>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
 #include "collectable.h"
 #include "logger.h"
 #include "msg_signal.h"
 #include "msg_pdata.h"
 #include "utility.h"
 
-DEFINE_COLLECTABLE( CtiSignalMsg, MSG_SIGNAL );
+using namespace std;
 
-//REGISTER_MSG_FACTORY( CtiSignalMsg );
+DEFINE_COLLECTABLE( CtiSignalMsg, MSG_SIGNAL );
 
 unsigned int CtiSignalMsg::_instanceCount = 0;
 

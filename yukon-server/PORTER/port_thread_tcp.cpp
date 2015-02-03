@@ -70,7 +70,7 @@ bool TcpPortHandler::setupPort()
        CTILOG_ERROR(dout, "_tcp_port is Null");
     }
 
-    return _tcp_port;
+    return !!_tcp_port;
 }
 
 

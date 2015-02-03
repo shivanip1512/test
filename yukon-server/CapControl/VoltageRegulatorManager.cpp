@@ -24,8 +24,8 @@ const char * NoVoltageRegulator::what( ) const
 
 
 
-VoltageRegulatorManager::VoltageRegulatorManager( std::auto_ptr<VoltageRegulatorLoader> loader )
-    : _loader( loader ),
+VoltageRegulatorManager::VoltageRegulatorManager( std::unique_ptr<VoltageRegulatorLoader> loader )
+    : _loader( std::move(loader) ),
       _handler(0)
 {
 

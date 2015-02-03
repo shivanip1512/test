@@ -5,7 +5,6 @@
 #include <sstream>
 using namespace std;
 
-#include <rw/thr/mutex.h>
 #include "calccomponent.h"
 #include "logger.h"
 #include "calc.h"
@@ -16,7 +15,8 @@ using namespace std;
 extern ULONG _CALC_DEBUG;
 extern bool _ignoreTimeValidTag;
 
-RWDEFINE_NAMED_COLLECTABLE( CtiCalcComponent, "CtiCalcComponent" );
+// square root of 3 for power factor calculations
+#define SQRT3               1.7320508075688772935274463415059
 
 CtiCalcComponent::CtiCalcComponent( const string &componentType, long componentPointId,
                                     const string &operationType,
@@ -108,43 +108,12 @@ CtiCalcComponent &CtiCalcComponent::operator=( const CtiCalcComponent &copyFrom 
     return *this;
 }
 
-/*  FIX_ME:  This class has some wacky persistence issues.  I'm not sure how to fix this, and I
-               don't know if save/restoreGuts will ever be used...
-void CtiCalcComponent::restoreGuts( RWvistream& aStream )
-{
-   aStream >> (int &)_componentType;
-   aStream >> _pointId;
-   aStream >> _componentPointId;
-   aStream >> (int &)_operationType;
-   _pointPtr = NULL;
-   aStream >> _constantValue;
-   aStream >> _functionName;
-   aStream >> _pointUpdated;
-   aStream >> _valid;
-}
-
-
-void CtiCalcComponent::saveGuts(RWvostream &aStream) const
-{
-   aStream << _componentType;
-   aStream << _pointId;
-   aStream << _componentPointId;
-   aStream << _operationType;
-//   aStream << _pointPtr;
-   aStream << _constantValue;
-   aStream << _functionName;
-   aStream << _pointUpdated;
-   aStream << _valid;
-}
-*/
 BOOL CtiCalcComponent::isUpdated( int calcsUpdateType, const CtiTime &calcsLastUpdateTime )
 {
     //  you can only be updated (or non-) if you're a point...
     if( _componentType == operation )
     {
-        CtiHashKey hashKey(_componentPointId);
-        CtiPointStore* pointStore = CtiPointStore::getInstance();
-        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
+        CtiPointStoreElement* componentPointPtr = CtiPointStore::find(_componentPointId);
 
         if( componentPointPtr->getPointQuality() == NonUpdatedQuality ||
             componentPointPtr->getPointQuality() == ConstantQuality  )
@@ -197,11 +166,7 @@ double CtiCalcComponent::calculate( double input, int &component_quality, CtiTim
         // so it may be operated upon.  The quality and time are returned to allow the calculation to be graded based upon ALL such returns.
         // input is passed in by value and returned by the function....
 
-        CtiPointStore* pointStore = CtiPointStore::getInstance();
-        CtiHashKey componentHashKey(_componentPointId);
-        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
-
-        if(componentPointPtr != NULL)
+        if( CtiPointStoreElement* componentPointPtr = CtiPointStore::find(_componentPointId) )
         {
             _lastUseUpdateNum = componentPointPtr->getNumUpdates( );
             component_time = componentPointPtr->getPointTime();
@@ -743,14 +708,10 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
         else if( ciStringEqual(functionName,"lohi accumulator") )
         {
-            CtiPointStore* pointStore = CtiPointStore::getInstance();
-            CtiHashKey componentHashKey(_componentPointId);
-            CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
-
             double val = _calcpoint->pop();
             double inc = 0.0;
 
-            if(componentPointPtr != NULL)
+            if( CtiPointStoreElement* componentPointPtr = CtiPointStore::find(_componentPointId) )
             {
                 int tags = componentPointPtr->getPointTags();
                 if(tags & TAG_POINT_DATA_TIMESTAMP_VALID)
@@ -773,12 +734,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             retVal = 0;
             if(_componentPointId > 0)
             {
-
-                CtiPointStore* pointStore = CtiPointStore::getInstance();
-                CtiHashKey componentHashKey(_componentPointId);
-                CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
-
-                if(componentPointPtr != NULL)
+                if( CtiPointStoreElement* componentPointPtr = CtiPointStore::find(_componentPointId) )
                 {
                     CtiTime now;
                     CtiTime component_time = componentPointPtr->getLastValueChangedTime();
@@ -809,11 +765,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             retVal = 0;
             if(_componentPointId > 0)
             {
-                CtiPointStore* pointStore = CtiPointStore::getInstance();
-                CtiHashKey componentHashKey(_componentPointId);
-                CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
-
-                if(componentPointPtr != NULL)
+                if( CtiPointStoreElement* componentPointPtr = CtiPointStore::find(_componentPointId) )
                 {
                     CtiTime now;
                     componentPointPtr->resize_regession( depth );
@@ -856,10 +808,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             }
             else //If only 1 true and 1 false, keep last value
             {
-                CtiPointStore* pointStore = CtiPointStore::getInstance();
-                CtiHashKey parentHashKey(_calcpoint->getPointId());
-                CtiPointStoreElement* parentPointPtr = (CtiPointStoreElement*)((*pointStore)[&parentHashKey]);
-                retVal = parentPointPtr->getPointValue();
+                retVal = CtiPointStore::find(_calcpoint->getPointId())->getPointValue();
             }
         }
         else if( ciStringEqual(functionName,"Get Interval Minutes") )
@@ -880,9 +829,7 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
             if( _componentPointId > 0 )
             {
-                CtiPointStore* pointStore = CtiPointStore::getInstance();
-                CtiHashKey hashKey(_componentPointId);
-                CtiPointStoreElement* componentPtr = (CtiPointStoreElement*)((*pointStore)[&hashKey]);
+                CtiPointStoreElement* componentPtr = CtiPointStore::find(_componentPointId);
 
                 // Find the limit table we want
                 CtiTablePointLimit *limitPtr = NULL;
@@ -921,16 +868,10 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             retVal = 9999;
             if(_componentPointId > 0)
             {
-                CtiPointStore* pointStore = CtiPointStore::getInstance();
-
-                CtiHashKey calcHashKey(_calcpoint->getPointId());
-                CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&calcHashKey]);
-
-                if(calcPointPtr != NULL)
+                if( CtiPointStoreElement* calcPointPtr = CtiPointStore::find(_calcpoint->getPointId()) )
                 {
-                    CtiHashKey componentHashKey(_componentPointId);
                     CtiTime pointTime;
-                    CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&componentHashKey));
+                    CtiPointStoreElement* componentPointPtr = CtiPointStore::find(_componentPointId);
                     if( _calcpoint->getUpdateType() != periodic && componentPointPtr != NULL )
                     {
                         pointTime = componentPointPtr->getPointTime();
@@ -1008,16 +949,10 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
             retVal = 0;
             if(_componentPointId > 0)
             {
-                CtiPointStore* pointStore = CtiPointStore::getInstance();
-
-                CtiHashKey calcHashKey(_calcpoint->getPointId());
-                CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&calcHashKey]);
-
-                if(calcPointPtr != NULL)
+                if( CtiPointStoreElement* calcPointPtr = CtiPointStore::find(_calcpoint->getPointId()) )
                 {
-                    CtiHashKey componentHashKey(_componentPointId);
                     CtiTime pointTime;
-                    CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&componentHashKey));
+                    CtiPointStoreElement* componentPointPtr = CtiPointStore::find(_componentPointId);
 
                     calcPointPtr->setRegressionMinDepth(mindepth);
                     calcPointPtr->setRegressionDepth(depth);
@@ -1084,72 +1019,75 @@ double CtiCalcComponent::_doFunction( string &functionName, bool &validCalc )
 
 void CtiCalcComponent::primeHistoricalRegression(CtiCalc *calcPoint, CtiTime &pointTime, int number)
 {
-    if( calcPoint != NULL )
+    if( ! calcPoint )
     {
-        typedef pair<long, double> PointValuePair;
-        typedef map<CtiTime, PointValuePair> DynamicTableSinglePointData;
-        typedef map<CtiTime, PointValuePair >::iterator DynamicTableSinglePointDataIter;
+        return;
+    }
 
-        DynamicTableSinglePointData dataMap;
-        long regressionPt = calcPoint->getRegressionComponentId();
+    typedef pair<long, double> PointValuePair;
+    typedef map<CtiTime, PointValuePair> DynamicTableSinglePointData;
+    typedef map<CtiTime, PointValuePair >::iterator DynamicTableSinglePointDataIter;
 
-        CtiPointStore* pointStore = CtiPointStore::getInstance();
-        CtiHashKey pointHashKey(calcPoint->getPointId());
-        CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&pointHashKey));
+    DynamicTableSinglePointData dataMap;
+    long regressionPt = calcPoint->getRegressionComponentId();
 
-        if( calcPointPtr != NULL && regressionPt != 0 )
+    if( ! regressionPt )
+    {
+        return;
+    }
+
+    if( CtiPointStoreElement* calcPointPtr = CtiPointStore::find(calcPoint->getPointId()) )
+    {
+        try
         {
-            try
+            static const string sqlCore = "SELECT RPH.POINTID, RPH.TIMESTAMP, RPH.VALUE "
+                                          "FROM RAWPOINTHISTORY RPH "
+                                          "WHERE RPH.POINTID = ? ORDER BY TIMESTAMP DESC";
+
+            Cti::Database::DatabaseConnection connection;
+            Cti::Database::DatabaseReader rdr(connection);
+
+            rdr.setCommandText(sqlCore);
+
+            rdr << regressionPt;
+
+            rdr.execute();
+
+            int i = 0;
+            long pointid;
+            double value;
+            CtiTime timeStamp;
+            //  iterate through the components
+            while( rdr() && i < number )
             {
-                static const string sqlCore = "SELECT RPH.POINTID, RPH.TIMESTAMP, RPH.VALUE "
-                                              "FROM RAWPOINTHISTORY RPH "
-                                              "WHERE RPH.POINTID = ? ORDER BY TIMESTAMP DESC";
+                //  read 'em in, and append to the data structure
+                rdr["POINTID"] >> pointid;
+                rdr["TIMESTAMP"] >> timeStamp;
+                rdr["VALUE"] >> value;
 
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader rdr(connection);
-
-                rdr.setCommandText(sqlCore);
-
-                rdr << regressionPt;
-
-                rdr.execute();
-
-                int i = 0;
-                long pointid;
-                double value;
-                CtiTime timeStamp;
-                //  iterate through the components
-                while( rdr() && i < number )
+                PointValuePair insertPair(pointid, value);
+                if( timeStamp != pointTime )
                 {
-                    //  read 'em in, and append to the data structure
-                    rdr["POINTID"] >> pointid;
-                    rdr["TIMESTAMP"] >> timeStamp;
-                    rdr["VALUE"] >> value;
-
-                    PointValuePair insertPair(pointid, value);
-                    if( timeStamp != pointTime )
-                    {
-                        dataMap.insert(DynamicTableSinglePointData::value_type(timeStamp, insertPair));
-                        i++;
-                    }
-                    else
-                    {
-                        CTILOG_ERROR(dout, "Timestamp are equal timeStamp != pointTime ("<< timeStamp.asString() <<" = "<< pointTime.asString() <<")");
-                    }
+                    dataMap.insert(DynamicTableSinglePointData::value_type(timeStamp, insertPair));
+                    i++;
                 }
-
-                DynamicTableSinglePointDataIter iter;
-
-                for( iter = dataMap.begin(); iter != dataMap.end(); iter++ )
+                else
                 {
-                    calcPointPtr->addRegressionVal(iter->first,  iter->second.second);
+                    CTILOG_ERROR(dout, "Timestamp are equal timeStamp != pointTime ("<< timeStamp.asString() <<" = "<< pointTime.asString() <<")");
                 }
-
             }
-            catch(...)
+
+            DynamicTableSinglePointDataIter iter;
+
+            for( iter = dataMap.begin(); iter != dataMap.end(); iter++ )
             {
-                CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
+                calcPointPtr->addRegressionVal(iter->first,  iter->second.second);
             }
+
+        }
+        catch(...)
+        {
+            CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
         }
     }
 }

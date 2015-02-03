@@ -1,13 +1,6 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
-
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 #include "yukon.h"
 #include "vcomdefs.h"

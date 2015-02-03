@@ -4,15 +4,11 @@
 #include "logger.h"
 #include "utility.h"
 
-#include <rw/collect.h>
-#include <rw/thr/mutex.h>
 #include "ctitime.h"
 
 extern ULONG _CALC_DEBUG;
 
 using namespace std;
-
-RWDEFINE_NAMED_COLLECTABLE( CtiCalc, "CtiCalc" );
 
 // static const strings
 const CHAR * CtiCalc::UpdateType_Periodic   = "On Timer";
@@ -87,16 +83,13 @@ CtiCalc::CtiCalc( long pointId, const string &updateType, int updateInterval, co
 
 CtiCalc &CtiCalc::operator=( CtiCalc &toCopy )
 {
-    std::list<CtiCalcComponent*>::iterator copyIterator = toCopy._components.begin();
     //  make sure I'm squeaky clean to prevent memory leaks
-    this->cleanup( );
+    cleanup( );
 
     //  must do a deep copy;  components aren't common enough to justify a reference-counted shallow copy
-    for( ; copyIterator != toCopy._components.end(); ++copyIterator)
+    for each( CtiCalcComponent *tmp in toCopy._components )
     {
-        CtiCalcComponent *tmp;
-        tmp = CTIDBG_new  CtiCalcComponent( *(*copyIterator) );
-        this->appendComponent( tmp );
+        appendComponent(new CtiCalcComponent(*tmp));
     }
     _updateInterval = toCopy._updateInterval;
     _pointId = toCopy._pointId;
@@ -121,12 +114,7 @@ void CtiCalc::appendComponent( CtiCalcComponent *componentToAdd )
     }
     else if( !strcmp(componentToAdd->getFunctionName().c_str(), "Regression") )
     {
-        CtiPointStore* pointStore = CtiPointStore::getInstance();
-
-        CtiHashKey hashKey(componentToAdd->getComponentPointId());
-        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&hashKey));
-
-        if( componentPointPtr != rwnil)
+        if( CtiPointStoreElement* componentPointPtr = CtiPointStore::find(componentToAdd->getComponentPointId()) )
         {
             componentPointPtr->setUseRegression();
         }
@@ -147,22 +135,13 @@ void CtiCalc::cleanup( void )
 
 void CtiCalc::clearComponentDependencies( void )
 {
-    std::list<CtiCalcComponent*>::iterator iter = _components.begin();
-    CtiCalcComponent *tmpComponent;
-
-    for( ; iter != _components.end(); ++iter )
+    for each( CtiCalcComponent *tmpComponent in _components )
     {
-        tmpComponent = *iter;
-
-        CtiPointStore* pointStore = CtiPointStore::getInstance();
-        CtiHashKey componentHashKey(tmpComponent->getComponentPointId());
-        CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&componentHashKey));
-
-        if ( componentPointPtr != rwnil )
+        if ( CtiPointStoreElement* componentPointPtr = CtiPointStore::find(tmpComponent->getComponentPointId()) )
         {
             if( componentPointPtr->removeDependent(_pointId) == 0 )
             {//There are no dependents left, no one cares about this guy!
-                pointStore->removePointElement( tmpComponent->getComponentPointId() );
+                CtiPointStore::remove( tmpComponent->getComponentPointId() );
             }
         }
     }
@@ -172,18 +151,12 @@ void CtiCalc::clearComponentDependencies( void )
 double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcValid )
 {
     double retVal = 0.0;
-    std::list<CtiCalcComponent*>::iterator iter = _components.begin();
     try
     {
         //  Iterate through all of the calculations in the collection
         if( _CALC_DEBUG & CALC_DEBUG_PRECALC_VALUE )
         {
-            CtiPointStore* pointStore = CtiPointStore::getInstance();
-
-            CtiHashKey calcPointHashKey(_pointId);
-            CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&calcPointHashKey));
-
-            if( calcPointPtr != rwnil)
+            if( CtiPointStoreElement* calcPointPtr = CtiPointStore::find(_pointId) )
             {
                 CTILOG_INFO(dout, "Calc Point ID:"<< _pointId <<"; Start Value:"<< calcPointPtr->getPointValue());
             }
@@ -204,15 +177,19 @@ double CtiCalc::calculate( int &calc_quality, CtiTime &calc_time, bool &calcVali
         /*
          *  Iterate this calc's components passing in each succesive result (through retVal).
          */
-        for( ; (iter != _components.end()) && _valid; ++iter )
+        for each( CtiCalcComponent *tmpComponent in _components )
         {
-            CtiCalcComponent *tmpComponent = *iter;
-            _valid = _valid & tmpComponent->isValid( );  //  Entire calculation is only valid if each component is valid
+            if( _valid &= tmpComponent->isValid( ) )  //  Entire calculation is only valid if each component is valid
+            {
+                retVal = tmpComponent->calculate( retVal, componentQuality, componentTime, calcValid );  //  Calculate on returned value
 
-            retVal = tmpComponent->calculate( retVal, componentQuality, componentTime, calcValid );  //  Calculate on returned value
-
-            qualityFlag |= (1 << componentQuality);    // Flag each returned quality...
-            solidTime = calcTimeFromComponentTime( componentTime, componentQuality, minTime, maxTime );
+                qualityFlag |= (1 << componentQuality);    // Flag each returned quality...
+                solidTime = calcTimeFromComponentTime( componentTime, componentQuality, minTime, maxTime );
+            }
+            else
+            {
+                break;
+            }
         }
 
         calc_time = calcTimeFromComponentTime( minTime, maxTime );
@@ -269,8 +246,6 @@ PointUpdateType CtiCalc::getUpdateType( void )
 
 BOOL CtiCalc::ready( void )
 {
-
-    std::list<CtiCalcComponent*>::iterator iter = _components.begin();
     BOOL isReady = TRUE;
 
     try
@@ -297,17 +272,19 @@ BOOL CtiCalc::ready( void )
                 }
                 break;
             case allUpdate:
-                for( ; iter != _components.end() ; ++iter )
-                    isReady &= (*iter)->isUpdated( );
+                for each( CtiCalcComponent *c in _components )
+                {
+                    isReady &= c->isUpdated( );
+                }
                 break;
             case historical:
             case constant:
                 isReady = TRUE;
                 break;
             case anyUpdate:
-                for( ; iter != _components.end(); ++iter )
+                for each( CtiCalcComponent *c in _components )
                 {
-                    isReady |= (*iter)->isUpdated( );
+                    isReady |= c->isUpdated( );
                     if( isReady )
                     {
                         break;
@@ -318,8 +295,10 @@ BOOL CtiCalc::ready( void )
                 {
                     if(CtiTime::now().seconds() >= getNextInterval())
                     {
-                        for( ; iter != _components.end(); ++iter)
-                            isReady &= (*iter)->isUpdated( _updateType, CtiTime(getNextInterval()) );
+                        for each( CtiCalcComponent *c in _components )
+                        {
+                            isReady &= c->isUpdated( _updateType, CtiTime(getNextInterval()) );
+                        }
                     }
                     else
                     {
@@ -333,12 +312,9 @@ BOOL CtiCalc::ready( void )
         //We think we can go, but are any of our components disabled?
         if( isReady )
         {
-            CtiPointStore* pointStore = CtiPointStore::getInstance();
-
             //Is the calc point itself disabled?
-            CtiHashKey hashKey(_pointId);
-            CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore).findValue(&hashKey));
-            if( componentPointPtr == rwnil || componentPointPtr->getPointTags() & (TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_POINT_BY_POINT))
+            CtiPointStoreElement* componentPointPtr = CtiPointStore::find(_pointId);
+            if( ! componentPointPtr || componentPointPtr->getPointTags() & (TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_POINT_BY_POINT) )
             {
                 isReady = false;
             }
@@ -393,12 +369,9 @@ long CtiCalc::getRegressionComponentId() const
 long CtiCalc::findDemandAvgComponentPointId()
 {
     long returnPointId = 0;
-    std::list<CtiCalcComponent*>::iterator iter = _components.begin();
     //  Iterate through all of the calculations in the collection
-    for( ; iter != _components.end(); ++iter)
+    for each( CtiCalcComponent* tmpComponent in _components )
     {
-        CtiCalcComponent* tmpComponent = *iter;
-
         // 20050202 CGP // If the push operator was used, the point we choose will be the LAST one on the stack!
         if(tmpComponent->getComponentPointId() > 0)
         {
@@ -504,12 +477,8 @@ double CtiCalc::figureDemandAvg(long secondsInAvg)
 
         if(componentId > 0)
         {
-            CtiPointStore* pointStore = CtiPointStore::getInstance();
-
-            CtiHashKey componentHashKey(componentId);
-            CtiPointStoreElement* componentPointPtr = (CtiPointStoreElement*)((*pointStore)[&componentHashKey]);
-            CtiHashKey parentHashKey(getPointId());
-            CtiPointStoreElement* calcPointPtr = (CtiPointStoreElement*)((*pointStore)[&parentHashKey]);
+            CtiPointStoreElement* componentPointPtr = CtiPointStore::find(componentId);
+            CtiPointStoreElement* calcPointPtr      = CtiPointStore::find(getPointId());
 
             if( calcPointPtr )
             {
@@ -616,14 +585,10 @@ int CtiCalc::getComponentCount()
 set<long> CtiCalc::getComponentIDList()
 {
     set<long> componentIDList;
-    std::list<CtiCalcComponent*>::iterator iter = _components.begin();
-    CtiCalcComponent *tmpComponent;
-    long componentPointID;
 
-    for( ; iter != _components.end(); ++iter )
+    for each( CtiCalcComponent *tmpComponent in _components )
     {
-        tmpComponent = *iter;
-        componentPointID = tmpComponent->getComponentPointId();
+        const long componentPointID = tmpComponent->getComponentPointId();
 
         if( componentPointID > 0 ) //This is a valid point
         {

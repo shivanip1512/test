@@ -1,7 +1,5 @@
 #include "precompiled.h"
 
-#include <rw/thr/thrutil.h>
-
 #include "dbaccess.h"
 //  #include "monitor.h"
 #include "CServiceConfig.h"

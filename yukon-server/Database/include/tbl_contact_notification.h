@@ -3,8 +3,6 @@
 #include "row_reader.h"
 #include "loggable.h"
 
-#include <rw/thr/recursiv.h>
-
 
 class IM_EX_CTIYUKONDB CtiTableContactNotification : public Cti::Loggable
 {

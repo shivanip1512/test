@@ -32,10 +32,9 @@ public:
 
    virtual std::string toString() const override;
 
-   void resetDevicePointer();
-   CtiRouteXCU&  setDevicePointer(CtiDeviceSPtr p);
+   void setDevicePointer(CtiDeviceSPtr p);
 
-   virtual LONG getTrxDeviceID() const;
+   long getTrxDeviceID() const override;
 
    void DecodeDatabaseReader(Cti::RowReader &rdr) override;
    YukonError_t ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, std::list< CtiMessage* > &vgList, std::list< CtiMessage* > &retList, std::list< OUTMESS* > &outList) override;

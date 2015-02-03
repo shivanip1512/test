@@ -1,7 +1,6 @@
 # nmake file YUKON 1.0
 
 include $(COMPILEBASE)\global.inc
-include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(COMMON)\include \
@@ -12,7 +11,6 @@ INCLPATHS+= \
 -I$(MSG)\include \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
--I$(RW) \
 
 
 .PATH.H = \
@@ -29,12 +27,12 @@ INCLPATHS+= \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(BOOST_INCLUDE) \
-;$(RW)
 
 LIBS=\
 $(COMPILEBASE)\lib\cticonfig.lib \
 
 DEVICECONFIG_TEST_OBJS=\
+$(PRECOMPILED_OBJ) \
 test_main.obj \
 test_device_config.obj \
 
@@ -48,18 +46,17 @@ $(DEVICECONFIG_TEST_FULLBUILD) :
 	@touch $@
 	@echo:
 	@echo Compiling cpp to obj
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(DEVICECONFIG_TEST_OBJS)]
+	$(CC) $(CCOPTS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(DEVICECONFIG_TEST_OBJS)]
 
 test_deviceconfig.exe:	$(DEVICECONFIG_TEST_FULLBUILD) $(DEVICECONFIG_TEST_OBJS) Makefile
 	@echo:
 	@echo Creating Executable $(BIN)\$(@B).exe
         @echo:
 	@%cd obj
-	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(@B).exe \
-	$(DEVICECONFIG_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	$(CC) $(CFLAGS) $(INCLPATHS)  /Fe..\$(BIN)\$(@B).exe \
+	$(DEVICECONFIG_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LIBS) $(LINKFLAGS)
 	@%cd ..
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	$(MANIFEST_TOOL) -manifest $(BIN)\$(@B).exe.manifest -outputresource:$(BIN)\$(@B).exe;1
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
 	-@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
 	-if exist $(BIN)\$(@B).lib copy $(BIN)\$(@B).lib $(COMPILEBASE)\lib
@@ -99,7 +96,7 @@ copy:
         @echo Compiling $< to
         @echo           $(OBJ)\$(@B).obj
         @echo:
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
+	$(CC) $(CCOPTS) $(CFLAGS) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
 ######################################################################################
 
@@ -111,9 +108,8 @@ config_device.obj:	precompiled.h config_device.h yukon.h types.h \
 		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h hashkey.h hash_functions.h \
-		DeviceConfigDescription.h devicetypes.h pointtypes.h \
-		PointAttribute.h std_helper.h
+		macro_offset.h DeviceConfigDescription.h devicetypes.h \
+		pointtypes.h PointAttribute.h std_helper.h
 config_strings.obj:	precompiled.h config_data_mct.h yukon.h types.h \
 		ctidbgmem.h dllbase.h dsm2.h streamConnection.h dlldefs.h \
 		netports.h timing_util.h immutable.h atomic.h \
@@ -129,8 +125,7 @@ da_lp_deviceconfig.obj:	precompiled.h da_lp_deviceconfig.h yukon.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		constants.h numstr.h logger.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h hashkey.h \
-		hash_functions.h config_data_mct.h
+		dsm2err.h words.h optional.h macro_offset.h config_data_mct.h
 id_dcdll.obj:	precompiled.h id_dcdll.h module_util.h dlldefs.h \
 		ctitime.h
 mgr_config.obj:	precompiled.h mgr_config.h dllbase.h dsm2.h \
@@ -140,16 +135,15 @@ mgr_config.obj:	precompiled.h mgr_config.h dllbase.h dsm2.h \
 		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h config_device.h hashkey.h hash_functions.h \
-		devicetypes.h readers_writer_lock.h dbaccess.h \
-		database_connection.h database_reader.h row_reader.h \
-		DeviceConfigDescription.h pointtypes.h PointAttribute.h \
-		debug_timer.h std_helper.h
+		macro_offset.h config_device.h devicetypes.h \
+		readers_writer_lock.h dbaccess.h database_connection.h \
+		database_reader.h row_reader.h DeviceConfigDescription.h \
+		pointtypes.h PointAttribute.h debug_timer.h std_helper.h
 test_device_config.obj:	boostutil.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
 		constants.h numstr.h config_device.h dllbase.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
 		atomic.h critical_section.h guard.h logger.h streamBuffer.h \
 		loggable.h string_util.h exception_helper.h mutex.h dsm2err.h \
-		words.h optional.h macro_offset.h hashkey.h hash_functions.h
+		words.h optional.h macro_offset.h
 #ENDUPDATE#

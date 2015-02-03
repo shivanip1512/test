@@ -9,8 +9,6 @@
 #include "loggable.h"
 
 #include <limits.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 #include <boost/shared_ptr.hpp>
 #include <map>
 

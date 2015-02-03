@@ -3,10 +3,6 @@
 #include <iomanip>
 #include <iostream>
 
-#include <rw\thr\thrfunc.h>
-#include <rw\rwerr.h>
-#include <rw\thr\mutex.h>
-
 #include "cparms.h"
 #include "ctivangogh.h"
 #include "dllbase.h"
@@ -30,46 +26,37 @@ static int MyAllocHook(int nAllocType, void *pvData,
 
 int DispatchMainFunction(int argc, char **argv)
 {
-    try
+    CtiVanGogh VanGogh;
+
+    SET_CRT_OUTPUT_MODES;
+    if(gConfigParms.isOpt("DEBUG_MEMORY") && gConfigParms.isTrue("DEBUG_MEMORY") )
+        ENABLE_CRT_SHUTDOWN_CHECK;
+
+    pfnOldCrtAllocHook = _CrtSetAllocHook(MyAllocHook);
+
+    int i = VanGogh.execute();
+
+    while( !bGCtrlC )
     {
-        CtiVanGogh VanGogh;
-
-        SET_CRT_OUTPUT_MODES;
-        if(gConfigParms.isOpt("DEBUG_MEMORY") && gConfigParms.isTrue("DEBUG_MEMORY") )
-            ENABLE_CRT_SHUTDOWN_CHECK;
-
-        pfnOldCrtAllocHook = _CrtSetAllocHook(MyAllocHook);
-
-        int i = VanGogh.execute();
-
-        while( !bGCtrlC )
+        if( Cti::isTimeToReportMemory(CtiTime::now()) )
         {
-            if( Cti::isTimeToReportMemory(CtiTime::now()) )
-            {
-                CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
-            }
-
-            Sleep(3000);
+            CTILOG_INFO(dout, Cti::reportPrivateBytes(CompileInfo));
         }
 
-        if( RW_THR_COMPLETED != VanGogh.join( (gConfigParms.getValueAsInt("SHUTDOWN_TERMINATE_TIME", 300))*1000) )
-        {
-            CreateMiniDump("dispatch");
-
-            CTILOG_ERROR(dout, "Could not Join Dispatch - Terminating");
-            VanGogh.terminate();
-        }
-
-        _CrtSetAllocHook(pfnOldCrtAllocHook);
-
-        return(i);
+        Sleep(3000);
     }
-    catch(const RWxmsg& x)
+
+    if( ! VanGogh.join((gConfigParms.getValueAsInt("SHUTDOWN_TERMINATE_TIME", 300))*1000) )
     {
-        CTILOG_EXCEPTION_ERROR(dout, x);
+        CreateMiniDump("dispatch");
+
+        CTILOG_ERROR(dout, "Could not Join Dispatch - Terminating");
+        VanGogh.terminate();
     }
 
-    return 0;
+    _CrtSetAllocHook(pfnOldCrtAllocHook);
+
+    return i;
 }
 
 

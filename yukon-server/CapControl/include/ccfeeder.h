@@ -31,30 +31,6 @@ typedef codeproject::sorted_vector<CtiCCCapBankPtr,false,CtiCCCapBank_lessClose>
 typedef codeproject::sorted_vector<CtiCCCapBankPtr,false,CtiCCCapBank_lessTrip> CtiCCCapBank_STripVector;
 
 
-template<class T>
-struct FeederVARComparison
-{
-    bool operator()(const T& x, const T& y) const
-    {
-        bool returnBoolean = false;
-
-        // if the feeders are in different var categories,
-        // we don't need the offset to determine which feeder should be first
-        if( x.getBusOptimizedVarCategory() != y.getBusOptimizedVarCategory() )
-        {
-            returnBoolean = x.getBusOptimizedVarCategory() > y.getBusOptimizedVarCategory();
-        }
-        // if the feeders are in the same var categories,
-        // we need to figure out which has the lower var offset
-        else
-        {
-            returnBoolean = x.getBusOptimizedVarOffset() > y.getBusOptimizedVarOffset();
-        }
-
-        return returnBoolean;
-    }
-};
-
 class CtiCCFeeder : public Controllable
 {
 public:
@@ -177,9 +153,8 @@ public:
     CtiCCFeeder& setLastOperationTime(const CtiTime& lastoperation);
     CtiCCFeeder& setVarValueBeforeControl(double oldvarval);
     CtiCCFeeder& setLastCapBankControlledDeviceId(long lastcapbank);
-    //don't think we want public setters for these
-    //CtiCCFeeder& setBusOptimizedVarCategory(long varcategory);
-    //CtiCCFeeder& setBusOptimizedVarOffset(double varoffset);
+    void setBusOptimizedVarCategory(const long varcategory);
+    void setBusOptimizedVarOffset(const double varoffset);
     CtiCCFeeder& setPowerFactorValue(double pfval);
     CtiCCFeeder& setKVARSolution(double solution);
     CtiCCFeeder& setEstimatedPowerFactorValue(double epfval);
@@ -467,3 +442,20 @@ private:
 };
 
 typedef CtiCCFeeder* CtiCCFeederPtr;
+
+struct FeederVARComparison
+{
+    bool operator()(const CtiCCFeederPtr & x, const CtiCCFeederPtr & y) const
+    {
+        // if the feeders are in different var categories,
+        // we don't need the offset to determine which feeder should be first
+        if ( x->getBusOptimizedVarCategory() != y->getBusOptimizedVarCategory() )
+        {
+            return x->getBusOptimizedVarCategory() > y->getBusOptimizedVarCategory();
+        }
+        // if the feeders are in the same var categories,
+        // we need to figure out which has the lower var offset
+        return x->getBusOptimizedVarOffset() > y->getBusOptimizedVarOffset();
+    }
+};
+

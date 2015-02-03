@@ -22,7 +22,7 @@ public:
     typedef boost::shared_ptr<Zone>     SharedPtr;
     typedef std::map<long, SharedPtr>   ZoneMap;
 
-    ZoneManager( std::auto_ptr<ZoneLoader> loader );
+    ZoneManager( std::unique_ptr<ZoneLoader> loader );
 
     void reload(const long Id);
     void reloadAll();
@@ -52,7 +52,7 @@ private:
 
     ZoneMap         _zones;
 
-    std::auto_ptr<ZoneLoader>   _loader;
+    std::unique_ptr<ZoneLoader>   _loader;
 };
 
 }   // namespace Cti

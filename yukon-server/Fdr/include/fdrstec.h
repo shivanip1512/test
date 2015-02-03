@@ -1,30 +1,24 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>    
 
 #include "dlldefs.h"
 #include "fdrftpinterface.h"
 
-class CtiFDRProtectedIdMapList;
-
 class IM_EX_FDRSTEC CtiFDR_STEC : public CtiFDRFtpInterface
-{                                    
+{
     typedef CtiFDRFtpInterface Inherited;
 
     public:
         // constructors and destructors
-        CtiFDR_STEC(); 
+        CtiFDR_STEC();
 
         virtual ~CtiFDR_STEC();
 
         virtual bool sendMessageToForeignSys ( CtiMessage *aMessage );
         virtual int processMessageFromForeignSystem (CHAR *data);
 
-        virtual BOOL    init( void );   
+        virtual BOOL    init( void );
         virtual BOOL    run( void );
         virtual BOOL    stop( void );
 

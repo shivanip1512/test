@@ -3,10 +3,6 @@
 #include "ctidate.h"
 #include "ctitime.h"
 
-#include <rw/rwdate.h>
-#include <rw/rwtime.h>
-#include <rw/zone.h>
-
 using std::string;
 using boost::unit_test_framework::test_suite;
 
@@ -14,73 +10,55 @@ BOOST_AUTO_TEST_SUITE( test_ctidate )
 
 BOOST_AUTO_TEST_CASE(test_ctidate_methods)
 {
-    // check the function match between CtiTime and RWTime
-    for( int i = 1; i < 12; i++ )
-    {
-        {
-            RWDate rw_date = RWDate(1, i, 2007);
-            CtiDate d(rw_date.dayOfMonth(), rw_date.month(), rw_date.year());
-            CtiDate d1 = CtiDate(1, i, 2007);
-            BOOST_CHECK_EQUAL( d.asString(), d1.asString() );
-            BOOST_CHECK_EQUAL( rw_date.dayOfMonth(), d.dayOfMonth() );
-            BOOST_CHECK_EQUAL( rw_date.month(), d.month() );
-            BOOST_CHECK_EQUAL( rw_date.year(), d.year() );
-            BOOST_CHECK_EQUAL( rw_date.weekDayName().data(), d.weekDayName() );
-            BOOST_CHECK_EQUAL( rw_date.weekDay() % 7, d.weekDay() );  //  CtiDate is 0-6 Sun-Sat, RWDate is 1-7 Mon-Sun
-            BOOST_CHECK_EQUAL( rw_date.day(), d.day() );
-
-            // check constructing from CtiDate
-            //std::cout << d.asString() << std::endl;
-            CtiTime ct(d);
-            BOOST_CHECK_EQUAL( d.asString(), CtiDate(ct).asString() );
-            CtiDate cd4(ct);
-            BOOST_CHECK_EQUAL( cd4.asString(), CtiDate(ct).asString() );
-        }
-        {
-            RWDate rw_date = RWDate(RWDate::daysInMonthYear(i, 2007), i, 2007);
-            CtiDate d(rw_date.dayOfMonth(), rw_date.month(), rw_date.year());
-            CtiDate d1 = CtiDate(CtiDate::daysInMonthYear(i, 2007), i, 2007);
-            BOOST_CHECK_EQUAL( d.asString(), d1.asString() );
-            BOOST_CHECK_EQUAL( rw_date.dayOfMonth(), d.dayOfMonth() );
-            BOOST_CHECK_EQUAL( rw_date.month(), d.month() );
-            BOOST_CHECK_EQUAL( rw_date.year(), d.year() );
-            BOOST_CHECK_EQUAL( rw_date.weekDayName().data(), d.weekDayName() );
-            BOOST_CHECK_EQUAL( rw_date.weekDay() % 7, d.weekDay() );  //  CtiDate is 0-6 Sun-Sat, RWDate is 1-7 Mon-Sun
-            BOOST_CHECK_EQUAL( rw_date.day(), d.day() );
-
-            // check constructing from CtiDate
-            //std::cout << d.asString() << std::endl;
-            CtiTime ct(d);
-            BOOST_CHECK_EQUAL( d.asString(), CtiDate(ct).asString() );
-            CtiDate cd4(ct);
-            BOOST_CHECK_EQUAL( cd4.asString(), CtiDate(ct).asString() );
-        }
-    }
-
-
     //static methods
-    BOOST_CHECK_EQUAL( RWDate::now().dayOfMonth(), CtiDate::now().dayOfMonth() );
-    BOOST_CHECK_EQUAL( RWDate::daysInMonthYear(12, 1990), CtiDate::daysInMonthYear(12, 1990) );
-
     BOOST_CHECK_EQUAL( 0, CtiDate::daysInMonthYear(13, 1990) );
     BOOST_CHECK_EQUAL( 0, CtiDate::daysInMonthYear( 0, 1990) );
 
     // check the special time values
-    std::cout << "neg_infin date as string: " << CtiDate(CtiDate::neg_infin).asString() << std::endl;
+    BOOST_CHECK_EQUAL( "-infinity",  CtiDate(CtiDate::neg_infin).asString());
 
-    /*---------- can not call year() day(), etc. on neg_infin
-    std::cout << "neg_infin date year: " << CtiDate(CtiDate::neg_infin).year() << std::endl;
-    std::cout << "neg_infin date day: " << CtiDate(CtiDate::neg_infin).day() << std::endl;
-    */
+    // cannot call year() day(), etc. on neg_infin
+    try
+    {
+        CtiDate(CtiDate::neg_infin).year();
+        BOOST_FAIL("neg_infin year() did not throw");
+    }
+    catch( ... )
+    {
+
+    }
+
+    try
+    {
+        CtiDate(CtiDate::neg_infin).day();
+        BOOST_FAIL("neg_infin day() did not throw");
+    }
+    catch( ... )
+    {
+    }
 
     CtiDate ct1 = CtiDate(CtiDate::not_a_date);
 
-    std::cout << "not a date as string: " << ct1.asString() << std::endl;
+    BOOST_CHECK_EQUAL( "not-a-date-time", ct1.asString());
 
-    /*---------- can not call year() day(), etc. on not_a_date
-    std::cout << "not a date year: " << ct1.year() << std::endl;
-    std::cout << "not a date day: " << ct1.day() << std::endl;
-    */
+    //  cannot call year() day(), etc. on not_a_date
+    try
+    {
+        ct1.year();
+        BOOST_FAIL("not_a_date year() did not throw");
+    }
+    catch( ... )
+    {
+    }
+
+    try
+    {
+        ct1.day();
+        BOOST_FAIL("not_a_date day() did not throw");
+    }
+    catch( ... )
+    {
+    }
 
 
     BOOST_CHECK_EQUAL( CtiDate(CtiDate::neg_infin).isValid(), true );

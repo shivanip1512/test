@@ -498,7 +498,7 @@ CtiCCSubstation& CtiCCSubstation::setSaEnabledId(long saId)
 void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec& capMessages)
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
 
@@ -532,7 +532,7 @@ void CtiCCSubstation::checkForAndStopVerificationOnChildSubBuses(CtiMultiMsg_vec
 CtiCCSubstation& CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     int numberOfSubBusesPending = 0;
@@ -559,7 +559,7 @@ CtiCCSubstation& CtiCCSubstation::checkAndUpdateRecentlyControlledFlag()
 CtiCCSubstation& CtiCCSubstation::checkAndUpdateChildVoltReductionFlags()
 {
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
     CtiCCSubstationBusPtr currentSubstationBus = NULL;
     int numberOfSubBusesVoltReducting = 0;
@@ -590,7 +590,7 @@ void CtiCCSubstation::getPowerFactorData( double & watts, double & vars, double 
     estimatedVars = 0.0;
 
     CtiCCSubstationBusStore * store = CtiCCSubstationBusStore::getInstance();
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard( store->getMux() );
+    CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
 
     for each ( const long busID in getCCSubIds() )
     {

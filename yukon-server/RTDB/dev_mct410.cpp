@@ -1138,7 +1138,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
         long   pulses_forward,
                pulses_reverse;
 
-        shared_ptr<CtiPointNumeric> tmpPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType));
+        boost::shared_ptr<CtiPointNumeric> tmpPoint = boost::static_pointer_cast<CtiPointNumeric>(getDevicePointOffsetTypeEqual(1, PulseAccumulatorPointType));
 
         if( tmpPoint )
         {

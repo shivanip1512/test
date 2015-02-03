@@ -5,14 +5,7 @@
 #include "dllbase.h"
 #include "ctitime.h"
 
-#ifdef _WINDOWS
-
-    #if !defined (NOMINMAX)
-    #define NOMINMAX
-    #endif
-
-    #include <windows.h>
-#endif
+#include <windows.h>
 
 
 class IM_EX_PROT CtiProtocolExpresscom

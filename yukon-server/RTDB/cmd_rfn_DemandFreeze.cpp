@@ -86,7 +86,7 @@ RfnCommandResult RfnDemandFreezeCommand::decodeResponseHeader( const CtiTime now
 
     boost::optional<std::string> additionalStatus = findDescriptionForAscAsq( response[2], response[3] );
 
-    validate( Condition( additionalStatus, ClientErrors::InvalidData )
+    validate( Condition( !! additionalStatus, ClientErrors::InvalidData )
             << "Invalid Additional Status (ASC: " << CtiNumStr(response[2]).xhex(2) << ", ASCQ: " << CtiNumStr(response[3]).xhex(2) << ")" );
 
     result.description += "\nAdditional Status: " + *additionalStatus  + " (ASC: " + CtiNumStr(response[2]).xhex(2) + ", ASCQ: " +  CtiNumStr(response[3]).xhex(2) + ")";

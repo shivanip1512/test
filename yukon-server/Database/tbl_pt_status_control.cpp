@@ -16,9 +16,9 @@ void CtiTablePointStatusControl::DecodeDatabaseReader(Cti::RowReader &rdr)
         CTILOG_DEBUG(dout, "Decoding DB read from PointStatusControl");
     }
 
-    string rwsTemp;
-    rdr["controltype"] >> rwsTemp;
-    _controlType = resolveControlType(rwsTemp);
+    string controlTypeStr;
+    rdr["controltype"] >> controlTypeStr;
+    _controlType = resolveControlType(controlTypeStr);
 
     rdr["closetime1"] >> _closeTime1;
     rdr["closetime2"] >> _closeTime2;

@@ -31,8 +31,6 @@
 #include "module_util.h"
 #include "amq_constants.h"
 
-#include <rw/thr/thrfunc.h>
-
 #include <time.h>
 #include <map>
 #include <set>
@@ -97,9 +95,11 @@ CtiLoadManager::~CtiLoadManager()
   ---------------------------------------------------------------------------*/
 void CtiLoadManager::start()
 {
-    RWThreadFunction threadfunc = rwMakeThreadFunction( *this, &CtiLoadManager::controlLoop );
-    _loadManagerThread = threadfunc;
-    threadfunc.start();
+    CTILOG_DEBUG(dout, "Starting");
+
+    _loadManagerThread = boost::thread( &CtiLoadManager::controlLoop, this );
+
+    CTILOG_DEBUG(dout, "Running");
 }
 
 /*---------------------------------------------------------------------------
@@ -116,22 +116,17 @@ void CtiLoadManager::stop()
 
     try
     {
-        if( _loadManagerThread.isValid() && _loadManagerThread.requestCancellation(20000) == RW_THR_ABORTED )
-        {
-            _loadManagerThread.terminate();
+        _loadManagerThread.interrupt();
 
-            if( _LM_DEBUG & LM_DEBUG_STANDARD )
-            {
-                CTILOG_DEBUG(dout, "Forced to terminate.");
-            }
-        }
-        else
+        if (!_loadManagerThread.timed_join(boost::posix_time::seconds(20))) 
         {
-            _loadManagerThread.requestCancellation(30000);
-            _loadManagerThread.join(20000);
+            CTILOG_WARN( dout, "Load Manager thread did not shutdown gracefully. "
+                               "Attempting a forced shutdown" );
+
+            TerminateThread( _loadManagerThread.native_handle(), EXIT_SUCCESS );
         }
     }
-    catch( ... )
+    catch ( ... )
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
@@ -143,7 +138,7 @@ void CtiLoadManager::stop()
 
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+        CtiLockGuard<CtiCriticalSection>  guard(_mutex);
         if( _dispatchConnection.get() != NULL && _dispatchConnection->valid() )
         {
             _dispatchConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
@@ -157,7 +152,7 @@ void CtiLoadManager::stop()
 
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+        CtiLockGuard<CtiCriticalSection>  guard(_mutex);
         if( _porterConnection.get() != NULL && _porterConnection->valid() )
         {
             _porterConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
@@ -171,7 +166,7 @@ void CtiLoadManager::stop()
 
     try
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+        CtiLockGuard<CtiCriticalSection>  guard(_mutex);
         if( _notificationConnection.get()!=NULL && _notificationConnection->valid() )
         {
             _notificationConnection->WriteConnQue( CTIDBG_new CtiCommandMsg( CtiCommandMsg::ClientAppShutdown, 15) );
@@ -226,7 +221,9 @@ void CtiLoadManager::controlLoop()
         {
             long main_wait = control_loop_delay;
             bool received_message = false;
-            Sleep(250);
+
+            boost::this_thread::sleep( boost::posix_time::milliseconds( 250 ) );
+
             while( CtiMessage *msg = CtiLMClientListener::getInstance().getQueue(main_wait) )
             {
                 CtiLMExecutor* executor = executorFactory.createExecutor(msg);
@@ -262,7 +259,7 @@ void CtiLoadManager::controlLoop()
                     }
                 }
 
-                rwRunnable().serviceCancellation();
+                boost::this_thread::interruption_point();
 
                 vector<CtiLMControlArea*>& controlAreas = *store->getControlAreas(currentDateTime);
 
@@ -610,13 +607,12 @@ void CtiLoadManager::controlLoop()
                 }
             }
 
-            rwRunnable().serviceCancellation();
+            boost::this_thread::interruption_point();
 
         }
     }
-    catch( RWCancellation& )
+    catch ( boost::thread_interrupted & )
     {
-        throw;
     }
     catch( ... )
     {
@@ -1275,7 +1271,7 @@ void CtiLoadManager::signalMsg( long pointID, unsigned tags, string text, string
   ---------------------------------------------------------------------------*/
 void CtiLoadManager::sendMessageToDispatch( CtiMessage* message )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    CtiLockGuard<CtiCriticalSection>  guard(_mutex);
     try
     {
         getDispatchConnection()->WriteConnQue(message);
@@ -1294,7 +1290,7 @@ void CtiLoadManager::sendMessageToDispatch( CtiMessage* message )
   ---------------------------------------------------------------------------*/
 void CtiLoadManager::sendMessageToPIL( CtiMessage* message )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    CtiLockGuard<CtiCriticalSection>  guard(_mutex);
     try
     {
         message->resetTime();                       // CGP 5/21/04 Update its time to current time.
@@ -1313,7 +1309,7 @@ void CtiLoadManager::sendMessageToPIL( CtiMessage* message )
   ---------------------------------------------------------------------------*/
 void CtiLoadManager::sendMessageToNotification( CtiMessage* message )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    CtiLockGuard<CtiCriticalSection>  guard(_mutex);
     try
     {
         message->resetTime();                       // CGP 5/21/04 Update its time to current time.
@@ -1333,7 +1329,7 @@ void CtiLoadManager::sendMessageToNotification( CtiMessage* message )
   ---------------------------------------------------------------------------*/
 void CtiLoadManager::sendMessageToClients( CtiMessage* message )
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard  guard(_mutex);
+    CtiLockGuard<CtiCriticalSection>  guard(_mutex);
     try
     {
         CtiLMClientListener::getInstance().BroadcastMessage(message);

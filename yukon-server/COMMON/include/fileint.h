@@ -1,32 +1,25 @@
 #pragma once
 
-#include <iostream>
-
-#include <rw/thr/mutex.h>
-#include <rw/thr/thread.h>
-#include <rw/thr/thrfunc.h>
-
 #include "dlldefs.h"
 
-class IM_EX_CTIBASE CtiFileInterface
+#include "critical_section.h"
+
+#include "worker_thread.h"
+
+namespace Cti {
+
+class IM_EX_CTIBASE FileInterface
 {
 public:
-    CtiFileInterface(const std::string& dirtowatch, const std::string& extension);
-    virtual ~CtiFileInterface();
+    FileInterface(const std::string& dirtowatch, const std::string& extension);
 
-    const std::string& getDirectory() const;
-    const std::string& getExtension() const;
-    bool getDeleteOnStart() const;
-
-    CtiFileInterface& setDirectory(const std::string& dir);
-    CtiFileInterface& setExtension(const std::string& ext);
-    CtiFileInterface& setDeleteOnStart(bool del);
+    void setDirectory(const std::string& dir);
+    void setExtension(const std::string& ext);
+    void setDeleteOnStart(bool del);
 
     //start and stop don't necessarily need to be implemented in sub-classes
     virtual void start();
     virtual void stop();
-
-    bool isValid() const;
 
 protected:
     virtual void handleFile(const std::string& filename) = 0;
@@ -34,16 +27,16 @@ protected:
 private:
     std::string _dir;
     std::string _extension;
-    bool      _delete_on_start;
+    bool _delete_on_start;
 
-    RWThread _watchthr;
-    RWMutexLock _mutex;
-
-    bool _valid;
+    Cti::WorkerThread _watchthr;
+    CtiCriticalSection _mutex;
 
     void _watch();
 
     //Don't allow these things
-    CtiFileInterface(const CtiFileInterface& other) { };
-    CtiFileInterface& operator=(const CtiFileInterface& right) { return *this; };
+    FileInterface(const FileInterface& other);
+    FileInterface& operator=(const FileInterface& right);
 };
+
+}

@@ -1,13 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>    
-#include <vector>
-#include <map>
-
 //osi header
 #include "piapi.h"
 
@@ -19,8 +11,6 @@
 #include "fdrasciiimportbase.h"
 
 
-
-
 class IM_EX_FDRPIBASEAPI CtiFDRPiBase : public CtiFDRSimple
 {
 public:
@@ -30,9 +20,9 @@ public:
 
   static CtiFDRPiBase* createInstance();
 
-  class PiException : public exception {
+  class PiException : public std::exception {
   public:
-    PiException(int err) : exception("PiException") {}
+    PiException(int err) : std::exception("PiException") {}
   };
 
 protected:
@@ -50,7 +40,7 @@ protected:
 
   } PiPointInfo;
 
-   
+
   typedef struct {
     std::vector<PiPointInfo> pointList;
     std::vector<PiPointId> pointIdList;
@@ -61,9 +51,9 @@ protected:
   }PiEventInfo;
 
   /**
-   * The amount of connection failures that can occur before the 
-   * <code>connect()</code> function attempts to switch and 
-   * connect to a different node in the node list. 
+   * The amount of connection failures that can occur before the
+   * <code>connect()</code> function attempts to switch and
+   * connect to a different node in the node list.
    */
   static const int FailureThreshold = 2;
 

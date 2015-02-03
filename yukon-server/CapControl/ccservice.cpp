@@ -168,6 +168,13 @@ void CtiCCService::Run()
     //connection is legit now rather than later
     bool trouble = false;
 
+    // create the BusStore and manually start his threads...
+    {
+        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+
+        store->startThreads();
+    }
+
     do
     {
         if ( trouble )
@@ -175,7 +182,7 @@ void CtiCCService::Run()
 
         {
             CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-            RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+            CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
             CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds(), true);
             if ( !store->isValid() )

@@ -42,9 +42,9 @@ struct EmetconWord
 
     struct serializer : public std::_Outit
     {
-        byte_appender &output;
+        byte_appender *output;
 
-        serializer(byte_appender &output_) : output(output_) {};
+        serializer(byte_appender &output_) : output(&output_) {};
 
         serializer &operator *()    {  return *this;  };
         serializer &operator++()    {  return *this;  };
@@ -52,14 +52,14 @@ struct EmetconWord
 
         serializer &operator =(const EmetconWord &word)
         {
-            word.serialize(output);
+            word.serialize(*output);
 
             return *this;
         };
 
         serializer &operator =(const word_t &word)
         {
-            word && word->serialize(output);
+            word && word->serialize(*output);
 
             return *this;
         };

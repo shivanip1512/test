@@ -59,8 +59,6 @@ protected:
    enum
    {
         INWAITFOROUT = CtiThread::LAST,
-        SOCKCONNECTED,
-        SOCKFAILED,
         RUNCOMPLETE
    };
 
@@ -84,8 +82,6 @@ public:
 
    Cti::StreamSocketConnection* getReturnNexus() { return &_returnNexus; }
 
-   CtiPortShare& setListenPort(INT prt);
-
    void          setSharedCCUError(unsigned char address, unsigned char error_byte);
    void          clearSharedCCUError(unsigned char address);
    bool          hasSharedCCUError(unsigned char address) const;
@@ -93,4 +89,3 @@ public:
 
 };
 
-inline CtiPortShare& CtiPortShare::setListenPort(INT prt) { _internalPort = prt; return *this; }

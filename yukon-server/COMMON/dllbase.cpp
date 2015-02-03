@@ -6,9 +6,6 @@
 #include <string.h>
 #include <process.h>
 
-#include <rw\thr\mutex.h>
-#include <rw\ctoken.h>
-
 #include "dsm2.h"
 #include "os2_2w32.h"
 #include "cticalls.h"
@@ -30,7 +27,7 @@ extern void freeUCTMemory(void);
 
 // Global Exports....
 IM_EX_CTIBASE Cti::StreamSocketConnection PorterNexus;
-IM_EX_CTIBASE RWMutexLock                 coutMux;
+IM_EX_CTIBASE CtiCriticalSection          coutMux;
 IM_EX_CTIBASE CtiThreadMonitor            ThreadMonitor;
 
 /*

@@ -1,11 +1,11 @@
 #pragma once
 
-#include <rw/thr/thread.h>
-
 #include "lmcontrolarea.h"
 #include "lmcontrolareatrigger.h"
 #include "lmprogrambase.h"
 #include "lmid.h"
+
+#include <boost/thread.hpp>
 
 class CtiLMSavedProjectionQueue
 {//equivalent to an inner class, only used for saving projection queues
@@ -118,7 +118,7 @@ private:
     std::map< long, CtiLMProgramBaseSPtr > _all_program_map;
     std::map< long, CtiLMControlArea*> _all_control_area_map;
 
-    RWThread _resetthr;
+    boost::thread   _resetthr;
 
     bool _isvalid;
     bool _reregisterforpoints;

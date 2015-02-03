@@ -1,7 +1,5 @@
 #include "precompiled.h"
 
-#include <rw/thr/thrutil.h>
-
 #include "lmcontrolareastore.h"
 #include "loadmanager.h"
 #include "dbaccess.h"
@@ -13,8 +11,12 @@
 #include "rtdb.h"
 #include "ctibase.h"
 #include "module_util.h"
-
 #include "connection_base.h"
+#include "logManager.h"
+
+// Shutdown logging when this object is destroyed
+Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
+
 // Close all yukon messaging connections when this object is destroyed
 Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
@@ -45,7 +47,6 @@ int main(int argc, char* argv[] )
         //Process command line
         if( argc > 1 && strcmp(argv[1], "-install") == 0  )
         {
-            RWMutexLock::LockGuard guard(coutMux);
             cout << CtiTime()  << " - Installing as a service..." << endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Install(SERVICE_WIN32_OWN_PROCESS,
@@ -56,7 +57,6 @@ int main(int argc, char* argv[] )
         }
         else if( argc > 1 && strcmp(argv[1], "-auto") == 0  )
         {
-            RWMutexLock::LockGuard guard(coutMux);
             cout << CtiTime()  << " - Installing as a service..." << endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Install(SERVICE_WIN32_OWN_PROCESS,
@@ -67,7 +67,6 @@ int main(int argc, char* argv[] )
         }
         else if( argc > 1 && strcmp(argv[1], "-remove" ) == 0 )
         {
-            RWMutexLock::LockGuard guard(coutMux);
             cout << CtiTime()  << " - Removing service..." << endl;
             CServiceConfig si(szServiceName, szDisplayName);
             si.Remove();

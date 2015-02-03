@@ -75,11 +75,11 @@ Mct410Sim::Mct410Sim(int address) :
 
         unsigned long lastFreezeSeconds = CtiTime(CtiDate() - 365).seconds();  //  last freeze 1 year ago
 
-        const bytes lastFreezeBytes = boost::assign::list_of
-                (lastFreezeSeconds >> 24)
-                (lastFreezeSeconds >> 16)
-                (lastFreezeSeconds >> 8)
-                (lastFreezeSeconds);
+        const bytes lastFreezeBytes = {
+                lastFreezeSeconds >> 24 & 0xff,
+                lastFreezeSeconds >> 16 & 0xff,
+                lastFreezeSeconds >>  8 & 0xff,
+                lastFreezeSeconds       & 0xff};
 
         _memory.writeDataToMemoryMap(MM_LastFreezeTimestamp, lastFreezeBytes);
     }

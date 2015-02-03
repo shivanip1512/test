@@ -67,9 +67,9 @@ public:
     CtiTableDynamicPointAlarming&   setCategoryID(UINT cls);
 
     CtiTime getAlarmTime() const;
-    CtiTableDynamicPointAlarming& setAlarmTime(const CtiTime &rwt);
+    CtiTableDynamicPointAlarming& setAlarmTime(const CtiTime &newTime);
     CtiTime getAlarmDBTime() const;
-    CtiTableDynamicPointAlarming& setAlarmDBTime(const CtiTime &rwt);
+    CtiTableDynamicPointAlarming& setAlarmDBTime(const CtiTime &newTime);
 
     std::string         getAction() const;
     CtiTableDynamicPointAlarming&   setAction(const std::string &str);

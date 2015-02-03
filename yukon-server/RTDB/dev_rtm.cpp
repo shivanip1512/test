@@ -10,7 +10,6 @@
 #include "prot_sa3rdparty.h"
 #include "prot_sa305.h"
 #include "numstr.h"
-#include "ctistring.h"
 
 using std::string;
 using std::endl;
@@ -451,8 +450,8 @@ YukonError_t CtiDeviceRTM::decode(CtiXfer &xfer, YukonError_t status)
 
                 if( tms_result == TMS_CODE )
                 {
-                    CtiString codestr("-");
-                    string cmdStr = CtiProtocolSA3rdParty::asString(sacode);
+                    std::string codestr = "-";
+                    std::string cmdStr = CtiProtocolSA3rdParty::asString(sacode);
                     CtiVerificationBase::Protocol prot_type = CtiVerificationBase::Protocol_Invalid;
                     switch(sacode.type)
                     {
@@ -467,7 +466,10 @@ YukonError_t CtiDeviceRTM::decode(CtiXfer &xfer, YukonError_t status)
                     case SA205:
                         prot_type = CtiVerificationBase::Protocol_SA205;
                         codestr = sacode.code;
-                        codestr.padFront(6, "0");
+                        if( codestr.length() < 6 )
+                        {
+                            codestr.insert(codestr.begin(), 6 - codestr.length(), '0');
+                        }
                         break;
                     }
 

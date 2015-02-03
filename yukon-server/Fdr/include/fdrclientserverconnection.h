@@ -6,7 +6,7 @@
 
 #include <windows.h>
 #include "string.h"
-#include <rw/thr/thrfunc.h>
+#include "worker_thread.h"
 
 class CtiFDRScadaServer;
 class CtiFDRSocketServer;
@@ -71,9 +71,9 @@ class IM_EX_FDRBASE CtiFDRClientServerConnection : public Cti::Fdr::ServerConnec
         int readSocket (CHAR *aBuffer, ULONG length, ULONG &aBytesRead);
 
         // variables
-        RWThreadFunction _sendThread;
-        RWThreadFunction _receiveThread;
-        RWThreadFunction _healthThread;
+        Cti::WorkerThread _sendThread;
+        Cti::WorkerThread _receiveThread;
+        Cti::WorkerThread _healthThread;
 
         SOCKET _socket;
         HCTIQUEUE _outboundQueue;

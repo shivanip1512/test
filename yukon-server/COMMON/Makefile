@@ -1,5 +1,4 @@
 !include $(COMPILEBASE)\global.inc
-!include $(COMPILEBASE)\rwglobal.inc
 
 all:
          @build -nologo -f $(PRECOMPILED)\makepch.mak

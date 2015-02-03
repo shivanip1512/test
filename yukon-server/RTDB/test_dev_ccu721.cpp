@@ -146,13 +146,12 @@ BOOST_AUTO_TEST_CASE(test_ccu721_queue_handler_find_all)
 
     unsigned device_queue_count;
     OUTMESS *om_queued = &om;
-    void *nullptr = 0;
 
     YukonError_t retval = test_ccu721.queueOutMessageToDevice(om_queued, &device_queue_count);
 
     BOOST_CHECK_EQUAL(retval, ClientErrors::QueuedToDevice);
     BOOST_CHECK_EQUAL(device_queue_count, 1);
-    BOOST_CHECK_EQUAL(om_queued, nullptr);
+    BOOST_CHECK( ! om_queued);
 
     //  verify it got in there with the correct requestid
     BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(0), 0);
@@ -200,13 +199,12 @@ BOOST_AUTO_TEST_CASE(test_ccu721_queue_handler_find_requestid)
 
     unsigned device_queue_count;
     OUTMESS *om_queued = &om;
-    void *nullptr = 0;
 
     YukonError_t retval = test_ccu721.queueOutMessageToDevice(om_queued, &device_queue_count);
 
     BOOST_CHECK_EQUAL(retval, ClientErrors::QueuedToDevice);
     BOOST_CHECK_EQUAL(device_queue_count, 1);
-    BOOST_CHECK_EQUAL(om_queued, nullptr);
+    BOOST_CHECK( ! om_queued);
 
     //  verify it got in there with the correct requestid
     BOOST_CHECK_EQUAL(test_ccu721.getRequestCount(0), 0);

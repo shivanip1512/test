@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 
 #include "dlldefs.h"
@@ -77,7 +73,7 @@ public:
     virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList = false);
 
 private:
-    RWThreadFunction    _threadReadFromFile;
+    Cti::WorkerThread   _threadReadFromFile;
     bool                _deleteFileAfterImportFlag;
     bool                _renameSaveFileAfterImportFlag;
 

@@ -6,12 +6,7 @@
 #include "dlldefs.h"
 #include "logger.h"
 
-#include <rw/collect.h>
 
-#include <iostream>
-
-
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 DEFINE_COLLECTABLE( CtiCommandMsg, MSG_COMMAND );
 
@@ -86,12 +81,12 @@ std::vector<int>& CtiCommandMsg::insert(INT i)
    return iOpArgList;
 }
 
-string CtiCommandMsg::getOpString() const
+std::string CtiCommandMsg::getOpString() const
 {
    return iOpString;
 }
 
-CtiCommandMsg&    CtiCommandMsg::setOpString(const string &aRef)
+CtiCommandMsg&    CtiCommandMsg::setOpString(const std::string &aRef)
 {
    iOpString = aRef;
    return *this;

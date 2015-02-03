@@ -90,8 +90,8 @@ class IM_EX_FDRBASE CtiFDRSocketServer : public CtiFDRInterface
         bool loadList(std::string& aDirection,  CtiFDRPointList& aList);
         void threadFunctionSendHeartbeat(void);
 
-        RWThreadFunction _threadHeartbeat;
-        RWThreadFunction _threadSingleConnection;
+        Cti::WorkerThread _threadHeartbeat;
+        boost::thread     _threadSingleConnection;
 
         typedef std::map<int,std::set<int> > PortToPointsMap;
         PortToPointsMap _portToPointsMap;

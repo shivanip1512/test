@@ -15,6 +15,7 @@ namespace DNP {
 
 DatalinkLayer::DatalinkLayer() :
     _io_state(State_IO_Uninitialized),
+    _errorCondition(ClientErrors::None),
     _control_state(State_Control_Ready),
     _src(0),
     _dst(0),
@@ -86,6 +87,7 @@ void DatalinkLayer::setToOutput( unsigned char *buf, unsigned int len )
     {
         _out_data_len   = 0;
         _io_state       = State_IO_Failed;
+        _errorCondition = ClientErrors::Memory;
         _control_state  = State_Control_Ready;
 
         CTILOG_WARN(dout, "len > DatalinkPacket::PayloadLengthMax or buf is NULL");
@@ -93,6 +95,7 @@ void DatalinkLayer::setToOutput( unsigned char *buf, unsigned int len )
     else
     {
         _io_state       = State_IO_Output;
+        _errorCondition = ClientErrors::None;
 
         if( _dl_confirm & !_reset_sent )
         {
@@ -117,6 +120,7 @@ void DatalinkLayer::setToOutput( unsigned char *buf, unsigned int len )
 void DatalinkLayer::setToInput( void )
 {
     _io_state       = State_IO_Input;
+    _errorCondition = ClientErrors::None;
 
     _control_state  = State_Control_Ready;
 
@@ -175,7 +179,7 @@ YukonError_t DatalinkLayer::generate( CtiXfer &xfer )
             }
             case State_IO_Failed:
             {
-                retVal = ClientErrors::Abnormal;
+                _errorCondition = retVal = ClientErrors::Abnormal;
 
                 xfer.setOutBuffer(NULL);
                 xfer.setOutCount(0);
@@ -192,10 +196,6 @@ YukonError_t DatalinkLayer::generate( CtiXfer &xfer )
 
 YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
 {
-    YukonError_t retVal = ClientErrors::None;
-    int toCopy, srcLen, packetSize;
-    unsigned char *dst, *src;
-
     if( status )
     {
         //  we need to be able to handle errors at the datalink control level, too - this is too simplistic
@@ -218,139 +218,126 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
 
         //  add retries
         _io_state = State_IO_Failed;
-        retVal    = status;
+        return _errorCondition = status;
+    }
+
+    YukonError_t retVal = ClientErrors::None;
+
+    if( isControlPending() )
+    {
+        if( !_dl_confirm )
+        {
+            CTILOG_WARN(dout, "datalink control message received, but DL confirm is not enabled for this devicetype");
+        }
+
+        //  Can't return yet - decodeControl could increment _protocol_errors, which is checked at the bottom of this method
+        retVal = decodeControl(xfer, status);
     }
     else
     {
-        if( isControlPending() )
-        {
-            if( !_dl_confirm )
-            {
-                CTILOG_WARN(dout, "datalink control message received, but DL confirm is not enabled for this devicetype");
-            }
+        //  ACH:  unified packet input/output/error checking...  um yeah.
+        //          another layer, perhaps... ?  but a local, internal-ish one.
 
-            //  TODO:  since status should always be NORMAL here, should i remove it as a parameter to this function?
-            retVal = decodeControl(xfer, status);
-        }
-        else
+        switch( _io_state )
         {
-            //  ACH:  unified packet input/output/error checking...  um yeah.
-            //          another layer, perhaps... ?  but a local, internal-ish one.
-
-            switch( _io_state )
+            case State_IO_Input:
             {
-                case State_IO_Input:
+                _in_recv += decodePacket(xfer, _packet, _in_recv);
+
+                //  if we're NOT datalink confirm, we fail immediately on a bad CRC;
+                //    otherwise, we pass the whole packet to processControl and let them fail it
+                if( !_dl_confirm && _in_recv >= DatalinkPacket::HeaderLength && !isHeaderCRCValid(_packet.header) )
                 {
-                    _in_recv += decodePacket(xfer, _packet, _in_recv);
+                    _io_state = State_IO_Failed;
 
-                    //  if we're NOT datalink confirm, we fail immediately on a bad CRC;
-                    //    otherwise, we pass the whole packet to processControl and let them fail it
-                    if( !_dl_confirm && _in_recv >= DatalinkPacket::HeaderLength && !isHeaderCRCValid(_packet.header) )
+                    return _errorCondition = ClientErrors::BadCrc;
+                }
+                //  a possible optimization could be that all control packets are known
+                //    to be DatalinkPacket::HeaderLength long, so we don't need the isEntirePacket()
+                //    check here in addition to processControl()
+                if( isEntirePacket(_packet, _in_recv) )
+                {
+                    //  see above note about CRC checking
+                    if( !_dl_confirm && !arePacketCRCsValid(_packet) )
                     {
                         _io_state = State_IO_Failed;
 
-                        retVal = ClientErrors::BadCrc;
+                        return _errorCondition = ClientErrors::BadCrc;
                     }
-                    //  a possible optimization could be that all control packets are known
-                    //    to be DatalinkPacket::HeaderLength long, so we don't need the isEntirePacket()
-                    //    check here in addition to processControl()
-                    else if( isEntirePacket(_packet, _in_recv) )
+                    //  check to see if the packet is okay
+                    if( processControl(_packet) )
                     {
-                        //  see above note about CRC checking
-                        if( !_dl_confirm && !arePacketCRCsValid(_packet) )
+                        if( _packet.header.fmt.destination != _src ||
+                            _packet.header.fmt.source      != _dst )
                         {
                             _io_state = State_IO_Failed;
 
-                            retVal = ClientErrors::BadCrc;
+                            return _errorCondition = ClientErrors::WrongAddress;
                         }
-                        //  check to see if the packet is okay
-                        else if( processControl(_packet) )
-                        {
-                            if( _packet.header.fmt.destination == _src &&
-                                _packet.header.fmt.source      == _dst )
-                            {
-                                putPacketPayload(_packet, _in_data, &_in_data_len);
 
-                                _io_state = State_IO_Complete;
-                            }
-                            else
-                            {
-                                _io_state = State_IO_Failed;
+                        putPacketPayload(_packet, _in_data, &_in_data_len);
 
-                                retVal = ClientErrors::WrongAddress;
-                            }
-                        }
-                        else
-                        {
-                            //  we'll count this as an error, even though we might've just gotten a data link reset -
-                            //    we don't want to get stuck in a loop
-                            _protocol_errors++;
-
-                            //  then start us listening all over again
-                            _in_recv = 0;
-                        }
-                    }
-
-                    break;
-                }
-
-                case State_IO_Output:
-                {
-                    //  if we sent the whole packet okay
-                    //  !!!  this is pointless, this will always evaluate true !!!
-                    if( !status )
-                    {
-                        if( _dl_confirm )
-                        {
-                            _io_state = State_IO_OutputRecvAck;
-                            _in_recv  = 0;
-                        }
-                        else
-                        {
-                            _io_state = State_IO_Complete;
-                        }
+                        _io_state = State_IO_Complete;
                     }
                     else
                     {
-                        _comm_errors++;
+                        //  we'll count this as an error, even though we might've just gotten a data link reset -
+                        //    we don't want to get stuck in a loop
+                        _protocol_errors++;
+
+                        //  then start us listening all over again
+                        _in_recv = 0;
                     }
-
-                    //  otherwise, we'll regenerate and send again
-
-                    break;
                 }
 
-                case State_IO_OutputRecvAck:
-                {
-                    _in_recv += decodePacket(xfer, _packet, _in_recv);
+                break;
+            }
 
-                    if( isEntirePacket(_packet, _in_recv) )
+            case State_IO_Output:
+            {
+                if( _dl_confirm )
+                {
+                    _io_state = State_IO_OutputRecvAck;
+                    _in_recv  = 0;
+                }
+                else
+                {
+                    _io_state = State_IO_Complete;
+                }
+
+                break;
+            }
+
+            case State_IO_OutputRecvAck:
+            {
+                _in_recv += decodePacket(xfer, _packet, _in_recv);
+
+                if( isEntirePacket(_packet, _in_recv) )
+                {
+                    //  check to see if there's a control message that needs to be worked on
+                    if( processControl(_packet) )
                     {
-                        //  check to see if there's a control message that needs to be worked on
-                        if( processControl(_packet) )
-                        {
-                            _io_state = State_IO_Complete;
-                        }
-                        else
-                        {
-                            //  we'll count this as an error, even though we might've just gotten a data link reset -
-                            //    we don't want to get stuck in a loop
-                            _protocol_errors++;
-
-                            //  then try the send again
-                            _io_state = State_IO_Output;
-                        }
+                        _io_state = State_IO_Complete;
                     }
+                    else
+                    {
+                        //  we'll count this as an error, even though we might've just gotten a data link reset -
+                        //    we don't want to get stuck in a loop
+                        _protocol_errors++;
 
-                    break;
+                        //  then try the send again
+                        _io_state = State_IO_Output;
+                    }
                 }
 
-                default:
-                {
-                    CTILOG_ERROR(dout, "unhandled state "<< _io_state);
+                break;
+            }
 
-                    break;
-                }
+            default:
+            {
+                CTILOG_ERROR(dout, "unhandled state "<< _io_state);
+
+                break;
             }
         }
     }
@@ -358,7 +345,7 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
     if( _protocol_errors > ProtocolRetryCount )
     {
         _io_state = State_IO_Failed;
-        retVal = ClientErrors::Abnormal;
+        _errorCondition = retVal = ClientErrors::Abnormal;
     }
 
     return retVal;
@@ -978,9 +965,9 @@ void DatalinkLayer::setIoStateComplete()
     _io_state = State_IO_Complete;
 }
 
-bool DatalinkLayer::errorCondition( void )
+YukonError_t DatalinkLayer::errorCondition()
 {
-    return _io_state == State_IO_Failed;
+    return _errorCondition;
 }
 
 

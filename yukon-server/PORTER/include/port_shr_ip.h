@@ -1,8 +1,5 @@
 #pragma once
 
-#include <rw/thr/thread.h>
-#include <rw/thr/thrfunc.h>
-
 #include "dlldefs.h"
 #include "streamSocketConnection.h"
 #include "port_shr.h"
@@ -27,8 +24,8 @@ protected:
 
 private:
 
-   RWThreadFunction _outThread;
-   RWThreadFunction _inThread;
+   boost::thread _outThread;
+   boost::thread _inThread;
 
    void shutDown();
 

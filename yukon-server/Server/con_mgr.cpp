@@ -1,8 +1,5 @@
 #include "precompiled.h"
 
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
 #include "dlldefs.h"
 #include "collectable.h"
 #include "con_mgr.h"
@@ -32,26 +29,26 @@ CtiConnectionManager::~CtiConnectionManager()
 int CtiConnectionManager::getClientAppId() const              { return ClientAppId; }
 int CtiConnectionManager::setClientAppId(int id)       { return ClientAppId = id; }
 
-string   CtiConnectionManager::getClientName() const               { return ClientName; }
-void        CtiConnectionManager::setClientName(string str)
+std::string   CtiConnectionManager::getClientName() const               { return ClientName; }
+void          CtiConnectionManager::setClientName(std::string str)
 {
    ClientName = str;
    Inherited::setName( str );
 }
 
-RWBoolean   CtiConnectionManager::getClientUnique() const             { return RWBoolean(ClientUnique);  }
-void        CtiConnectionManager::setClientUnique(RWBoolean b) { ClientUnique = RWBoolean(b);     }
+bool CtiConnectionManager::getClientUnique() const          {  return ClientUnique;  }
+void CtiConnectionManager::setClientUnique(bool b)          {  ClientUnique = b;     }
 
-RWBoolean   CtiConnectionManager::getClientQuestionable() const             { return RWBoolean(ClientQuestionable);  }
-void        CtiConnectionManager::setClientQuestionable(RWBoolean b) { ClientQuestionable = RWBoolean(b);     }
+bool CtiConnectionManager::getClientQuestionable() const    {  return ClientQuestionable;  }
+void CtiConnectionManager::setClientQuestionable(bool b)    {  ClientQuestionable = b;     }
 
-RWBoolean   CtiConnectionManager::getClientRegistered()               { return RWBoolean(ClientRegistered);}
-void        CtiConnectionManager::setClientRegistered(RWBoolean b) { ClientRegistered = RWBoolean(b); }
+bool CtiConnectionManager::getClientRegistered()            {  return ClientRegistered;  }
+void CtiConnectionManager::setClientRegistered(bool b)      {  ClientRegistered = b;     }
 
-int   CtiConnectionManager::getClientExpirationDelay() const    {return _clientExpirationDelay; }
-void  CtiConnectionManager::setClientExpirationDelay(int p)     {_clientExpirationDelay = p; }
+int  CtiConnectionManager::getClientExpirationDelay() const {  return _clientExpirationDelay;  }
+void CtiConnectionManager::setClientExpirationDelay(int p)  {  _clientExpirationDelay = p;     }
 
-RWBoolean CtiConnectionManager::operator==(const CtiConnectionManager& aRef) const
+bool CtiConnectionManager::operator==(const CtiConnectionManager& aRef) const
 {
    return (this == &aRef);
 }
@@ -70,7 +67,7 @@ void CtiConnectionManager::setRequestId(int rid)
     _serverRequestId = rid;
 }
 
-int CtiConnectionManager::WriteConnQue(CtiMessage *pMsg, unsigned millitimeout, int payload_status, string payload_string )
+int CtiConnectionManager::WriteConnQue(CtiMessage *pMsg, unsigned millitimeout, int payload_status, std::string payload_string )
 {
     CtiMessage *pWrite = pMsg;  // Default to sending the original message.
 

@@ -245,7 +245,7 @@ bool CtiTblPAO::Insert()
     }
 
     setDirty(false);
-    
+
     return true; // No error occured!
 }
 
@@ -282,7 +282,7 @@ bool CtiTblPAO::Update()
     }
 
     setDirty(false);
-    
+
     return true; // No error occured!
 }
 
@@ -302,7 +302,7 @@ bool CtiTblPAO::Delete()
 void CtiTblPAO::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
     INT iTemp;
-    string rwsTemp;
+    string disableStr;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -322,9 +322,9 @@ void CtiTblPAO::DecodeDatabaseReader(Cti::RowReader &rdr)
 
     rdr["description"] >> _description;
 
-    rdr["disableflag"] >> rwsTemp;
-    transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
-    _disableFlag = ((rwsTemp == "y") ? true : false);
+    rdr["disableflag"] >> disableStr;
+    transform(disableStr.begin(), disableStr.end(), disableStr.begin(), tolower);
+    _disableFlag = ((disableStr == "y") ? true : false);
 
     rdr["paostatistics"] >> _paostatistics;
 }

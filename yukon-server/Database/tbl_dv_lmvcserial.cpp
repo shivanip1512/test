@@ -150,7 +150,7 @@ CtiTableLMGroupVersacomSerial& CtiTableLMGroupVersacomSerial::setDeviceID( const
 
 void CtiTableLMGroupVersacomSerial::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    string rwsTemp;
+    string usageStr;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -162,8 +162,8 @@ void CtiTableLMGroupVersacomSerial::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["deviceidofgroup"]  >> _groupID;
     rdr["routeid"]          >> _routeID;
 
-    rdr["relayusage"]       >> rwsTemp;
-    _relayMask = resolveRelayUsage(rwsTemp);
+    rdr["relayusage"]       >> usageStr;
+    _relayMask = resolveRelayUsage(usageStr);
 
     _addressUsage = 0;                     // This is a serial number ok!
 

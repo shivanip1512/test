@@ -1,17 +1,10 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-//#include <windows.h>
-
 #include "dlldefs.h"
 #include "fdrtextfilebase.h"
 #include "textfileinterfaceparts.h"
 #include <iostream>
 #include <list>
-#include "ctistring.h"
 #include <boost/tokenizer.hpp>
 
 class IM_EX_FDRTEXTIMPORT CtiFDR_TextImport : public CtiFDRTextFileBase
@@ -48,8 +41,8 @@ public:
     bool validateAndDecodeLine( std::string& input, CtiMessage **aRetMsg);
     std::vector <CtiFDRTextFileInterfaceParts>* getFileInfoList() {return &_fileInfoList;};
 
-    CtiString& getFileImportBaseDrivePath();
-    CtiString& setFileImportBaseDrivePath(CtiString importBase);
+    std::string& getFileImportBaseDrivePath();
+    std::string& setFileImportBaseDrivePath(std::string importBase);
 
     std::list<std::string> parseFiles();
     std::list<std::string> getFileNames();
@@ -84,11 +77,11 @@ public:
 
 private:
 
-    RWThreadFunction    _threadReadFromFile;
+    Cti::WorkerThread   _threadReadFromFile;
     bool                _deleteFileAfterImportFlag;
     bool _renameSaveFileAfterImportFlag;
     bool _legacyDrivePath;
-    CtiString _fileImportBaseDrivePath;
+    std::string _fileImportBaseDrivePath;
 
     std::vector <CtiFDRTextFileInterfaceParts> _fileInfoList;
     std::map<std::string,int> nameToPointId;

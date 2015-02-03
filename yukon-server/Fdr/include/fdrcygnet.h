@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 
 #include "dlldefs.h"
@@ -59,7 +55,7 @@ class IM_EX_FDRCYGNET CtiFDRCygnet : public CtiFDRInterface
         static const CHAR * KEY_DB_RELOAD_RATE;
 
     protected:
-        RWThreadFunction    iThreadGetCygnetData;
+        Cti::WorkerThread   iThreadGetCygnetData;
 
         void    threadFunctionGetDataFromCygnet( void );
 

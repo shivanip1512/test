@@ -37,6 +37,8 @@
 #include "connection_client.h"
 #include "desolvers.h"
 
+#include <sys\timeb.h>
+
 using namespace std;
 
 using Cti::Porter::PorterStatisticsManager;
@@ -3139,13 +3141,11 @@ Cti::Optional<repeater_info> findRepeaterInRouteByAddress( const int routeId, co
     {
         if( route->getType() == RouteTypeMacro )
         {
-            CtiRouteMacroSPtr macroRoute = boost::static_pointer_cast<CtiRouteMacro>(route);
+            Cti::Routes::MacroRouteSPtr macroRoute = boost::static_pointer_cast<Cti::Routes::MacroRoute>(route);
 
-            CtiRouteMacro::CtiRoutePtrList_t routeList = macroRoute->getRoutePtrList();
-
-            if( *macroOffset < routeList.entries() )
+            if( CtiRouteSPtr subroute = macroRoute->getSubroute(*macroOffset) )
             {
-                route = routeList[*macroOffset];
+                route = subroute;
             }
         }
     }
@@ -3154,13 +3154,14 @@ Cti::Optional<repeater_info> findRepeaterInRouteByAddress( const int routeId, co
     {
         CtiRouteCCUSPtr ccuRoute = boost::static_pointer_cast<CtiRouteCCU>(route);
 
-        CtiRouteCCU::CtiRepeaterList_t &repeaterList = ccuRoute->getRepeaterList();
+        const CtiRouteCCU::RepeaterSet &repeaters = ccuRoute->getRepeaters();
 
-        for( int i = 0; i < repeaterList.entries(); ++i )
+        int rte_pos = 0;
+        for each( const CtiTableRepeaterRoute &subroute in repeaters )
         {
-            const CtiTableRepeaterRoute &table = repeaterList[i];
+            ++rte_pos;
 
-            if( CtiDeviceSPtr repeater = DeviceManager.getDeviceByID(table.getDeviceID()) )
+            if( CtiDeviceSPtr repeater = DeviceManager.getDeviceByID(subroute.getDeviceID()) )
             {
                 if( (repeater->getAddress() & 0x1fff) == echo_address )
                 {
@@ -3170,8 +3171,8 @@ Cti::Optional<repeater_info> findRepeaterInRouteByAddress( const int routeId, co
                     strcpy_s(details.route_name, sizeof(details.route_name), ccuRoute->getName().c_str());
                     details.repeater_id = repeater->getID();
                     strcpy_s(details.repeater_name, sizeof(details.repeater_name), repeater->getName().c_str());
-                    details.route_position = i + 1;
-                    details.total_stages = repeaterList.entries();
+                    details.route_position = rte_pos;
+                    details.total_stages = repeaters.size();
 
                     return make_optional(details);
                 }

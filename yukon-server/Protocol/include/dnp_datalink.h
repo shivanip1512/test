@@ -32,6 +32,8 @@ private:
         State_IO_Failed
     } _io_state;
 
+    YukonError_t _errorCondition;
+
     enum ControlState
     {
         State_Control_Ready,
@@ -148,7 +150,7 @@ public:
     YukonError_t decode  ( CtiXfer &xfer, YukonError_t status );
 
     bool isTransactionComplete( void );
-    bool errorCondition( void );
+    YukonError_t errorCondition( void );
 
     std::vector<unsigned char> getInPayload() const;
 

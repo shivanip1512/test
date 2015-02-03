@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 #include <vector>
 
@@ -133,16 +129,16 @@ class IM_EX_FDRINET CtiFDR_Inet : public CtiFDRSocketInterface
 
     protected:
 
-        RWThreadFunction    iThreadSendDebugData;
+        Cti::WorkerThread   iThreadSendDebugData;
         void threadFunctionSendDebugData( void );
 
-        RWThreadFunction    iThreadMonitor;
+        Cti::WorkerThread   iThreadMonitor;
         void threadFunctionMonitor( void );
 
-        RWThreadFunction    iThreadServer;
+        Cti::WorkerThread   iThreadServer;
         void threadFunctionServerConnection( void );
 
-        RWThreadFunction    iThreadClient;
+        Cti::WorkerThread   iThreadClient;
         void threadFunctionClientConnection( void );
 
         virtual bool loadTranslationLists(void);

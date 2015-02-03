@@ -47,99 +47,103 @@ RESOURCE        = $(COMPILEBASE)\resource
 
 CPP_LIBRARIES   = $(DEV_ENVIRONMENT)\libraries
 
-XERCES          = $(CPP_LIBRARIES)\xerces\3.0.1
+XERCES          = $(CPP_LIBRARIES)\apache\xerces-c\3.1.1
+XERCES_LIB      = $(XERCES)\lib\xerces-c_3.lib
+XERCES_DLL      = xerces-c_3_1.dll
 
-TCL             = $(CPP_LIBRARIES)\tcl\8.1.1
+TCL             = $(CPP_LIBRARIES)\tcl\8.6.3
+TCL_INCLUDE     = $(TCL)\include
+TCL_DLL         = tcl86t.dll
 TCL_LIBS = \
-$(TCL)\lib\tcl81.lib
+$(TCL)\lib\tcl86t.lib
 
-BOOST           = $(CPP_LIBRARIES)\boost\1.49.0
-BOOST_INCLUDE   = $(CPP_LIBRARIES)\boost\1.49.0\include\boost-1_49
-
-SQLAPI          = $(CPP_LIBRARIES)\sqlapi\4.0.1
-
-ACTIVEMQ        = $(CPP_LIBRARIES)\apache\activemq-cpp\3.8.2
-ACTIVEMQ_INCLUDE= $(ACTIVEMQ)\include
+BOOST           = $(CPP_LIBRARIES)\boost\1.57.0
+BOOST_INCLUDE   = $(BOOST)\include
 !IFDEF DEBUG
-ACTIVEMQ_LIB    = $(ACTIVEMQ)\lib\activemq-cppd.lib
-ACTIVEMQ_DLL    = activemq-cppd.dll
+BOOST_VERSION = vc120-mt-gd-1_57
 !ELSE
+BOOST_VERSION = vc120-mt-1_57
+!ENDIF
+BOOST_DLL_1 = boost_chrono-$(BOOST_VERSION).dll
+BOOST_DLL_2 = boost_date_time-$(BOOST_VERSION).dll
+BOOST_DLL_3 = boost_thread-$(BOOST_VERSION).dll
+BOOST_DLL_4 = boost_regex-$(BOOST_VERSION).dll
+BOOST_DLL_5 = boost_filesystem-$(BOOST_VERSION).dll
+BOOST_DLL_6 = boost_system-$(BOOST_VERSION).dll
+BOOST_DLL_7 = boost_unit_test_framework-$(BOOST_VERSION).dll
+BOOST_LIBS = \
+$(BOOST)\lib\boost_chrono-$(BOOST_VERSION).lib \
+$(BOOST)\lib\boost_date_time-$(BOOST_VERSION).lib \
+$(BOOST)\lib\boost_thread-$(BOOST_VERSION).lib   \
+$(BOOST)\lib\boost_regex-$(BOOST_VERSION).lib \
+$(BOOST)\lib\boost_filesystem-$(BOOST_VERSION).lib \
+$(BOOST)\lib\boost_system-$(BOOST_VERSION).lib
+BOOST_TEST_LIBS = \
+$(BOOST)\lib\boost_unit_test_framework-$(BOOST_VERSION).lib
+
+SQLAPI          = $(CPP_LIBRARIES)\sqlapi\4.1.4
+SQLAPI_LIB      = $(SQLAPI)\lib\sqlapi.lib
+SQLAPI_DLL      = sqlapi.dll
+
+ACTIVEMQ        = $(CPP_LIBRARIES)\apache\activemq-cpp\3.8.3
+ACTIVEMQ_INCLUDE= $(ACTIVEMQ)\include
 ACTIVEMQ_LIB    = $(ACTIVEMQ)\lib\activemq-cpp.lib
 ACTIVEMQ_DLL    = activemq-cpp.dll
-!ENDIF
 
-APR             = $(CPP_LIBRARIES)\apache\apr\1.4.6
+APR             = $(CPP_LIBRARIES)\apache\apr\1.5.1
 APR_LIB         = $(APR)\lib\libapr-1.lib
+APR_DLL         = libapr-1.dll
 APR_INCLUDE     = $(APR)\include
 
-APR_UTIL        = $(CPP_LIBRARIES)\apache\apr-util\1.5.1
+APR_UTIL        = $(CPP_LIBRARIES)\apache\apr-util\1.5.4
+APR_UTIL_LIB    = $(APR_UTIL)\lib\libaprutil-1.lib
+APR_UTIL_DLL    = libaprutil-1.dll
 # APR_UTIL_INCLUDE= $(APR_UTIL)\include
 
-APR_ICONV       = $(CPP_LIBRARIES)\apache\apr-iconv\1.2.1
+APR_ICONV       = $(CPP_LIBRARIES)\apache\apr-iconv\1.2.1-vc12
+APR_ICONV_LIB   = $(APR_ICONV)\lib\libapriconv-1.lib
+APR_ICONV_DLL   = libapriconv-1.dll
 # APR_ICONV_INCLUDE= $(APR_ICONV)\include
 
-THRIFT          = $(CPP_LIBRARIES)\apache\thrift\0.9.0
+THRIFT          = $(CPP_LIBRARIES)\apache\thrift\0.9.2
 THRIFT_INCLUDE  = $(THRIFT)\include
 THRIFT_LIB      = $(THRIFT)\lib\libthrift.lib
 
 CAJUN           = $(CPP_LIBRARIES)\cajun\2.0.2
 CAJUN_INCLUDE   = $(CAJUN)\include
 
-LOG4CXX         = $(CPP_LIBRARIES)\apache\log4cxx\0.10.0
+LOG4CXX         = $(CPP_LIBRARIES)\apache\log4cxx\0.10.0-vc12
 LOG4CXX_INCLUDE = $(LOG4CXX)\include
-!IFDEF DEBUG
-LOG4CXX_LIB     = $(LOG4CXX)\lib\log4cxxd.lib
-LOG4CXX_DLL     = log4cxxd.dll
-!ELSE
 LOG4CXX_LIB     = $(LOG4CXX)\lib\log4cxx.lib
 LOG4CXX_DLL     = log4cxx.dll
-!ENDIF
 
 MICROSOFT       = $(CPP_LIBRARIES)\microsoft
-MICROSOFT_VC    = $(MICROSOFT)\vc\9.0
-MICROSOFT_SQL   = $(MICROSOFT)\sql-server-client-dll\2000.80.194.0
+!IFDEF DEBUG
+MICROSOFT_VC     = $(MICROSOFT)\vc\12.0\Debug
+MICROSOFT_VC_DLL = msvcp120d.dll
+!ELSE
+MICROSOFT_VC     = $(MICROSOFT)\vc\12.0\Release
+MICROSOFT_VC_DLL = msvcp120.dll
+!ENDIF
 
-DBGHELP         = $(MICROSOFT)\dbghelp\6.12.2.633
+MICROSOFT_SQL     = $(MICROSOFT)\sql-server-client-dll\2000.80.194.0
+MICROSOFT_SQL_DLL = ntwdblib.dll
+
+DBGHELP           = $(MICROSOFT)\dbghelp\6.12.2.633
+DBGHELP_DLL       = dbghelp.dll
 DBGHELP_LIBS =\
 $(DBGHELP)\lib\dbghelp.lib
 
-OPENSSL         = $(CPP_LIBRARIES)\openssl\1.0.1g
+OPENSSL         = $(CPP_LIBRARIES)\openssl\1.0.1k
+OPENSSL_DLL_1   = libeay32.dll
+OPENSSL_DLL_2   = ssleay32.dll
 OPENSSL_LIBS = \
-!IFDEF DEBUG
-$(OPENSSL)\lib\libeay32MDd.lib \
-$(OPENSSL)\lib\ssleay32MDd.lib
-!ELSE
-$(OPENSSL)\lib\libeay32MD.lib \
-$(OPENSSL)\lib\ssleay32MD.lib
-!ENDIF
+$(OPENSSL)\lib\libeay32.lib \
+$(OPENSSL)\lib\ssleay32.lib
 
-LIBCOAP         = $(CPP_LIBRARIES)\libcoap\4.0.1
+LIBCOAP         = $(CPP_LIBRARIES)\libcoap\4.0.1-vc12
 LIBCOAP_INCLUDE = $(LIBCOAP)\include
-!IFDEF DEBUG
-LIBCOAP_LIBS = $(LIBCOAP)\lib\libcoapd.lib
-!ELSE
-LIBCOAP_LIBS = $(LIBCOAP)\lib\libcoap.lib
-!ENDIF
-
-
-BOOST_ALL_DYN_LINK = 1
-
-!IFDEF DEBUG
-BOOST_VERSION = vc90-mt-gd-1_49
-MICROSOFTDLL = d
-!ELSE
-BOOST_VERSION = vc90-mt-1_49
-!ENDIF
-
-BOOST_LIBS = \
-$(BOOST)\lib\libboost_date_time-$(BOOST_VERSION).lib \
-$(BOOST)\lib\libboost_thread-$(BOOST_VERSION).lib   \
-$(BOOST)\lib\libboost_regex-$(BOOST_VERSION).lib \
-$(BOOST)\lib\libboost_filesystem-$(BOOST_VERSION).lib \
-$(BOOST)\lib\libboost_system-$(BOOST_VERSION).lib
-
-BOOST_TEST_LIBS = \
-$(BOOST)\lib\libboost_unit_test_framework-$(BOOST_VERSION).lib
+LIBCOAP_LIBS = $(LIBCOAP)\lib\libcoap.lib Ws2_32.lib
 
 MANIFEST_TOOL = mt.exe
 
@@ -161,26 +165,25 @@ D_BOOST_ENABLE_ASSERT_HANDLER = /DBOOST_ENABLE_ASSERT_HANDLER
 !IFDEF DEBUG
 #note on above:  apparently the "!" is not a NOT -- hence this part is the DEBUG SECTION
 #echo debug build used
-CFLAGS  = /nologo /Zc:wchar_t- /Zi /Od /EHa     /MDd /Zm200 /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
-DLLFLAGS= /nologo /Zc:wchar_t- /Zi /Od /EHa /LD /MDd /Zm200 /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
-XERCES_LIB = xerces-c_3D
-XERCES_DLL = xerces-c_3_0D
-SQLAPI_LIB = sqlapid
-SQLAPI_DLL = sqlapid
+CFLAGS  = /nologo /Zi /Od /EHa     /MDd /Zm200 /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
+DLLFLAGS= /nologo /Zi /Od /EHa /LD /MDd /Zm200 /D_DEBUG  $(D_VERSION) $(D_VERSION_DETAILS) $(D_BOOST_ENABLE_ASSERT_HANDLER)
 !ELSE
 #This part is the non-debug section a/k/a release or retail build
 #echo non-debug build used
-CFLAGS  = /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa     /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
-DLLFLAGS= /nologo /Zc:wchar_t- /Zi /O2 /Oy- /EHa /LD /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
-XERCES_LIB = xerces-c_3
-XERCES_DLL = xerces-c_3_0
-SQLAPI_LIB = sqlapi
-SQLAPI_DLL = sqlapi
+CFLAGS  = /nologo /Zi /O2 /Oy- /EHa     /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
+DLLFLAGS= /nologo /Zi /O2 /Oy- /EHa /LD /MD /Zm200 $(D_VERSION) $(D_VERSION_DETAILS) $(BOOST_ENABLE_ASSERT_HANDLER)
 !ENDIF
 
-XERCES_LIBS = $(XERCES)\lib\$(XERCES_LIB).lib
+
+#Oy - omit frame pointers, can make debugging more difficult
+#Zi - create full debugging information
+#Od - disable optimization
+#Eha - structured (e.g. floating-point) and unstructured (C++ throw) exceptions are caught
+#Zm200 - precompiled header memory limit of 150 MB
+#MDd - defines _DEBUG, _MT, and _DLL
 
 PCHFLAGS = /Yu"precompiled.h" /Fp"$(COMPILEBASE)\precompiled.pch"
+PRECOMPILED_OBJ = $(PRECOMPILED)\precompiled.obj
 
 !IFDEF YUKONPROFILE
 CFLAGS  = /Fm $(CFLAGS)
@@ -197,6 +200,32 @@ PARALLEL = /MP8
 
 INCLPATHS=-I. -I.\include
 
+
+# Command to invoke compiler.
+CC=cl $(COMPILEONLY)
+
+CCOPTS=\
+-D__DLL__ \
+-D_CONSOLE \
+-D_REENTRANT \
+-D_WINDOWS \
+-D_X86_=1 \
+-DWIN32 \
+-DNOMINMAX \
+-DBOOST_ALL_DYN_LINK
+
+#If I am debugging this is the ticket.
+!IFDEF DEBUG
+
+CCOPTS=$(CCOPTS) \
+-D_DEBUG \
+
+!ELSE
+
+CCOPTS=$(CCOPTS) \
+-DNDEBUG \
+
+!ENDIF
 
 # Configuration Builder search paths
 #       This is the real trick to these makefiles.  The path is searched left to right

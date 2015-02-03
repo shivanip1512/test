@@ -1,12 +1,5 @@
 #include "precompiled.h"
 
-#include <crtdbg.h>
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <rw/thr/thrfunc.h>
-#include <rw/thr/mutex.h>
-
 #include "queue.h"
 #include "netports.h"
 #include "logger.h"
@@ -20,6 +13,11 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "connection_client.h"
 #include "pointtypes.h"
 #include "amq_constants.h"
+
+#include <crtdbg.h>
+#include <iostream>
+
+using namespace std;
 
 BOOL           bQuit = FALSE;
 
@@ -84,9 +82,9 @@ void main(int argc, char **argv)
       // start the connection
       Connect.setName( "SignalSourceTest" );
       Connect.start();
-      
+
       // Insert a registration message into the multi
-      Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg( "SignalSource", rwThreadId(), true ));
+      Connect.WriteConnQue( CTIDBG_new CtiRegistrationMsg( "SignalSource", GetCurrentThreadId(), true ));
 
 /*      CtiEmailMsg       *pEmail = CTIDBG_new CtiEmailMsg(1, CtiEmailMsg::CICustomerEmailType);
       Connect.WriteConnQue(pEmail);

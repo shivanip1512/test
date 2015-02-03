@@ -10,8 +10,6 @@
 #include "loggable.h"
 
 #include <limits.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 
 class IM_EX_CTIYUKONDB CtiTablePointAccumulator : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable

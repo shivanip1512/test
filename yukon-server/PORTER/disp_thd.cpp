@@ -26,7 +26,7 @@ extern void applyDeviceQueueReport(const long unusedid, CtiDeviceSPtr RemoteDevi
 extern bool processInputFunction(CHAR Char);
 extern void KickPIL();
 
-void DispatchMsgHandlerThread(void *Arg)
+void DispatchMsgHandlerThread()
 {
     extern CtiPortManager PortManager;
     extern CtiDeviceManager DeviceManager;
@@ -47,7 +47,7 @@ void DispatchMsgHandlerThread(void *Arg)
 
     VanGoghConnection.setName("Porter to Dispatch");
     VanGoghConnection.start();
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PORTER_REGISTRATION_NAME, rwThreadId(), false));
+    VanGoghConnection.WriteConnQue(CTIDBG_new CtiRegistrationMsg(PORTER_REGISTRATION_NAME, GetCurrentThreadId(), false));
 
     LastThreadMonitorTime = LastThreadMonitorTime.now();
 

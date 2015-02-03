@@ -5,6 +5,7 @@
 #include "ccid.h"
 #include "utility.h"
 #include "database_util.h"
+#include "row_reader.h"
 #include "logger.h"
 
 

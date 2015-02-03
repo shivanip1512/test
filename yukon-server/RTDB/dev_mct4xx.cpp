@@ -8,7 +8,6 @@
 #include "dev_mct410.h"  //  for sspec information
 
 #include "devicetypes.h"
-#include "ctistring.h"
 #include "numstr.h"
 #include "config_data_mct.h"
 
@@ -532,7 +531,7 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
             {
                 if( errRet )
                 {
-                    CtiString temp = "Bad channel specification - Acceptable values:  1-4";
+                    std::string temp = "Bad channel specification - Acceptable values:  1-4";
                     errRet->setResultString( temp );
                     errRet->setStatus(ClientErrors::NoMethod);
                     retList.push_back(errRet);
@@ -599,7 +598,7 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                     {
                         if( errRet )
                         {
-                            CtiString temp = "Bad start date \"" + parse.getsValue("lp_date_start") + "\"";
+                            std::string temp = "Bad start date \"" + parse.getsValue("lp_date_start") + "\"";
                             errRet->setResultString( temp );
                             errRet->setStatus(ClientErrors::NoMethod);
                             retList.push_back( errRet );
@@ -622,7 +621,7 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                         {
                             if( requestId )
                             {
-                                CtiString temp = "Long load profile request already in progress - use \"getvalue lp cancel\" to cancel\n";
+                                std::string temp = "Long load profile request already in progress - use \"getvalue lp cancel\" to cancel\n";
                                 temp += "Requested channel: " + CtiNumStr(_llpRequest.channel + 1) + "\n";
                                 temp += "Current interval: " + printTimestamp(_llpRequest.begin) + "\n";
                                 temp += "Ending interval:  " + printTimestamp(_llpRequest.end) + "\n";
@@ -642,7 +641,7 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
 
                                 if( errRet )
                                 {
-                                    CtiString temp = "Long load profile request was cancelled";
+                                    std::string temp = "Long load profile request was cancelled";
                                     errRet->setResultString(temp);
                                     errRet->setStatus(ClientErrors::Abnormal);
                                     retList.push_back(errRet);
@@ -728,7 +727,7 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
 
                                 ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
 
-                                CtiString time_error_string = getName() + " / Invalid date/time for LP request (" + parse.getsValue("lp_date_start");
+                                std::string time_error_string = getName() + " / Invalid date/time for LP request (" + parse.getsValue("lp_date_start");
 
                                 if( parse.isKeyValid("lp_time_start") )
                                 {
@@ -813,10 +812,10 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                                 {
                                     //  we need to set the period of interest, so reuse the request message
 
-                                    CtiString interestStr(pReq->CommandString());
+                                    std::string interestStr(pReq->CommandString());
 
-                                    interestStr.replace("getvalue",   "putconfig emetcon");
-                                    interestStr.replace("lp channel", "llp interest channel");
+                                    replaceString(interestStr, "getvalue",   "putconfig emetcon");
+                                    replaceString(interestStr, "lp channel", "llp interest channel");
 
                                     CtiRequestMsg *interestReq = new CtiRequestMsg(*pReq);
 
@@ -1414,7 +1413,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
                     int offset = 0, time_offset = 0;
                     for( itr = ratechanges.begin(); itr != ratechanges.end(); itr++ )
                     {
-                        ratechange_t &rc = *itr;
+                        const ratechange_t &rc = *itr;
 
                         if( rc.schedule != current_schedule )
                         {
@@ -2090,13 +2089,13 @@ YukonError_t Mct4xxDevice::decodePutConfig(const INMESS &InMessage, const CtiTim
             {
                 if( InMessage.Return.OptionsField == _llpRequest.request_id )
                 {
-                    CtiString lp_read(InMessage.Return.CommandStr);
+                    std::string lp_read(InMessage.Return.CommandStr);
 
-                    if( lp_read.contains("putconfig emetcon") &&
-                        lp_read.contains("llp interest channel") )
+                    if( containsString(lp_read, "putconfig emetcon") &&
+                        containsString(lp_read, "llp interest channel") )
                     {
-                        lp_read.replace("putconfig emetcon",    "getvalue");
-                        lp_read.replace("llp interest channel", "lp channel");
+                        replaceString(lp_read, "putconfig emetcon",    "getvalue");
+                        replaceString(lp_read, "llp interest channel", "lp channel");
 
                         //  now do the actual read
                         CtiRequestMsg *newReq = new CtiRequestMsg(getID(),
@@ -2643,7 +2642,7 @@ YukonError_t Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, co
             CtiTime time_begin(_llpRequest.begin),
                     time_end  (_llpRequest.end);
 
-            CtiString lp_request_str = "getvalue lp ";
+            std::string lp_request_str = "getvalue lp ";
 
             lp_request_str += "channel " + CtiNumStr(_llpRequest.channel + 1) + " " + time_begin.asString() + " " + time_end.asString();
 
@@ -2693,8 +2692,8 @@ YukonError_t Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, co
             resultString += ", retrying";
 
             // new command string must remove "read" or else it is not considered a retry.
-            CtiString newCommandStr = InMessage.Return.CommandStr;
-            newCommandStr.replace(" read","");
+            std::string newCommandStr = InMessage.Return.CommandStr;
+            removeString(newCommandStr, " read");
 
             expectMore = true;
             CtiRequestMsg newReq(getID(),
@@ -3363,8 +3362,8 @@ YukonError_t Mct4xxDevice::SubmitRetry(const INMESS &InMessage, const CtiTime Ti
                 _llpRequest.retry++;
 
                 // new command string must remove "read" or else it is not considered a retry.
-                CtiString newCommandStr = InMessage.Return.CommandStr;
-                newCommandStr.replace(" read","");
+                std::string newCommandStr = InMessage.Return.CommandStr;
+                removeString(newCommandStr, " read");
 
                 CtiRequestMsg newReq(getID(),
                                      newCommandStr,

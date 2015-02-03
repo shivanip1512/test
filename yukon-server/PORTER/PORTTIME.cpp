@@ -1,26 +1,5 @@
 #include "precompiled.h"
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
-#include <process.h>
-#include <iostream>
-
-
-#include <rw\thr\mutex.h>
-
-#include "os2_2w32.h"
-#include "cticalls.h"
-
-
-#include <stdlib.h>
-
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-
 #include "queues.h"
 #include "dsm2.h"
 #include "dsm2err.h"
@@ -54,6 +33,8 @@
 #include "prot_welco.h"
 #include "prot_lmi.h"
 
+#include <sys\timeb.h>
+
 using namespace std;
 using namespace Cti::Config;
 using Cti::ThreadStatusKeeper;
@@ -64,7 +45,7 @@ extern HCTIQUEUE*       QueueHandle(LONG pid);
 
 extern CtiRouteManager RouteManager;
 
-IM_EX_CTIBASE extern RWMutexLock coutMux;
+IM_EX_CTIBASE extern CtiCriticalSection coutMux;
 
 
 ULONG getNextTimeSync()
@@ -730,22 +711,16 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
 }
 
 /* Routine to generate the basic time sync messages... time filled in at port */
-void TimeSyncThread (PVOID Arg)
+void TimeSyncThread()
 {
-    struct timeb TimeB;
-    ULONG EventWait;
-    DWORD dwWait = 0;
-
-    ThreadStatusKeeper threadStatus("Time Sync Thread");
-
-    CtiTime nowTime;
-
     /* See if we should even be running */
     if(TimeSyncRate <= 0)
     {
         /* We are history */
-        _endthread();
+        return;
     }
+
+    ThreadStatusKeeper threadStatus("Time Sync Thread");
 
     CTILOG_INFO(dout, "TimeSyncThread started (Sync every "<< TimeSyncRate <<" seconds)");
 
@@ -764,19 +739,16 @@ void TimeSyncThread (PVOID Arg)
     };
 
     /* loop doing time sync at 150 seconds after the hour */
-    for(; PorterQuit != TRUE ;)
+    while( PorterQuit != TRUE )
     {
         threadStatus.monitorCheck(TimeSyncRate + CtiThreadMonitor::StandardMonitorTime, CtiThreadRegData::None);
-
-        /* Figure out how long to wait */
-        nowTime = nowTime.now();
 
         // CTIResetEventSem (TimeSyncSem, &PostCount);
         ResetEvent(hPorterEvents[P_TIMESYNC_EVENT]);
 
-        EventWait = 1000L * (getNextTimeSync() - nowTime.seconds());
+        const ULONG EventWait = 1000L * (getNextTimeSync() - CtiTime().seconds());
 
-        dwWait = WaitForMultipleObjects(2, hTimeSyncArray, FALSE, EventWait);
+        const DWORD dwWait = WaitForMultipleObjects(2, hTimeSyncArray, FALSE, EventWait);
 
         if(dwWait != WAIT_TIMEOUT)
         {
@@ -785,22 +757,21 @@ void TimeSyncThread (PVOID Arg)
             case WAIT_OBJECT_0: // P_QUIT_EVENT:
                 {
                     PorterQuit = TRUE;
-                    continue;            // the for loop
+                    break;
                 }
             case WAIT_OBJECT_0 + 1:     // P_TIMESYNC_EVENT:
                 {
+                    /* Send time Sync messages */
+                    PortManager.apply(applyPortSendTime, NULL);
                     break;
                 }
             default:
                 {
                     Sleep(1000);
-                    continue;
+                    break;
                 }
             }
         }
-
-        /* Send time Sync messages */
-        PortManager.apply(applyPortSendTime, NULL);
     }
 }
 

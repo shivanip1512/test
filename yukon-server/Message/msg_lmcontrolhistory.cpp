@@ -1,25 +1,10 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_lmcontrolhistory
-*
-* Date:   9/24/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_lmcontrolhistory.cpp-arc  $
-* REVISION     :  $Revision: 1.11.6.1 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-#include <iostream>
-#include <iomanip>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
 
 #include "collectable.h"
 #include "logger.h"
 #include "msg_lmcontrolhistory.h"
+
+using namespace std;
 
 DEFINE_COLLECTABLE( CtiLMControlHistoryMsg, MSG_LMCONTROLHISTORY );
 

@@ -1,6 +1,6 @@
 build_dirs = \
-        common \
         resource \
+        common \
         message \
         server \
         protocol \

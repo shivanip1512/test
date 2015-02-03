@@ -1171,6 +1171,16 @@ CtiCCFeeder& CtiCCFeeder::setLastCapBankControlledDeviceId(long lastcapbank)
     return *this;
 }
 
+// These 2 functions are here just to unit test the sort comparator for bus optimized feeder
+void CtiCCFeeder::setBusOptimizedVarCategory(const long varcategory)
+{
+    _busoptimizedvarcategory = varcategory;
+}
+void CtiCCFeeder::setBusOptimizedVarOffset(const double varoffset)
+{
+    _busoptimizedvaroffset = varoffset;
+}
+
 /*---------------------------------------------------------------------------
     setPowerFactorValue
 

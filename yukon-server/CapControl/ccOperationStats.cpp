@@ -8,6 +8,7 @@
 #include "ccid.h"
 #include "ccutil.h"
 #include "database_util.h"
+#include "row_reader.h"
 
 using namespace capcontrol;
 using std::string;
@@ -16,8 +17,6 @@ using std::endl;
 extern unsigned long _CC_DEBUG;
 
 using Cti::CapControl::setVariableIfDifferent;
-
-//RWDEFINE_COLLECTABLE( CtiCCOperationStats, CtiCCOperationStats_ID )
 
 /*---------------------------------------------------------------------------
     Constructors

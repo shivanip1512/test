@@ -1,7 +1,5 @@
 #include "precompiled.h"
 
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
 #include "cms/ConnectionFactory.h"
 #include "activemq/library/activemqcpp.h"
 #include "activemq/core/ActiveMQConnection.h"
@@ -66,7 +64,7 @@ void ConnectionFactory::initializeLib()
     returns:
     pointer to the new connection that the caller owns
 -----------------------------------------------------------------------------*/
-cms::Connection* ConnectionFactory::createConnection( const string &brokerUri )
+cms::Connection* ConnectionFactory::createConnection( const std::string &brokerUri )
 {
     if( !_isInitialized )
     {
@@ -87,7 +85,7 @@ IM_EX_MSG ConnectionFactory g_connectionFactory;
 /*-----------------------------------------------------------------------------
   Managed connection
 -----------------------------------------------------------------------------*/
-ManagedConnection::ManagedConnection( const string &brokerUri ) :
+ManagedConnection::ManagedConnection( const std::string &brokerUri ) :
     _brokerUri( brokerUri ),
     _closed( false )
 {
@@ -185,7 +183,7 @@ void ManagedConnection::start()
     const unsigned maxReconnectAttempts   = 120;        // 120 attempts (about 1 hour, considering 30 sec/attempt)
     const unsigned loggingFreq            = 10;         // every 10 attempt (about 5 min, considering 30 sec/attempt)
 
-    string prevMessage;
+    std::string prevMessage;
 
     unsigned reconnectMillis = initialReconnectMillis;
 
@@ -227,7 +225,7 @@ void ManagedConnection::start()
         waitCloseEvent( reconnectMillis );
 
         // find the next delay before reconnecting
-        reconnectMillis = min( 2 * reconnectMillis, maxReconnectMillis );
+        reconnectMillis = std::min( 2 * reconnectMillis, maxReconnectMillis );
     }
 }
 
@@ -284,7 +282,7 @@ bool ManagedConnection::verifyConnection() const
     return ( conn && !conn->isClosed() && conn->isStarted() && !conn->isTransportFailed() );
 }
 
-const string& ManagedConnection::getBrokerUri() const
+const std::string& ManagedConnection::getBrokerUri() const
 {
     return _brokerUri;
 }
@@ -296,7 +294,7 @@ ManagedDestination::~ManagedDestination()
 {
 }
 
-string ManagedDestination::getDestPhysicalName() const
+std::string ManagedDestination::getDestPhysicalName() const
 {
     return destPhysicalName( *(this->getDestination()) );
 }
@@ -441,7 +439,7 @@ TopicConsumer::TopicConsumer( cms::Session &session, cms::Topic* dest ) :
 {
 }
 
-TopicConsumer::TopicConsumer( cms::Session &session, cms::Topic* dest, const string &selector ) :
+TopicConsumer::TopicConsumer( cms::Session &session, cms::Topic* dest, const std::string &selector ) :
      DestinationConsumer( session.createConsumer( dest, selector ), dest )
 {
 }

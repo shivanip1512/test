@@ -8,10 +8,6 @@
 #include <exception>
 #include <utility>
 
-#include <rw\thr\thrfunc.h>
-#include <rw\rwerr.h>
-#include <rw\thr\mutex.h>
-
 #include "dllbase.h"
 #include "connection_client.h"
 #include "connection_server.h"
@@ -19,6 +15,9 @@
 #include "msg_cmd.h"
 #include "msg_trace.h"
 #include "logManager.h"
+
+#include <boost/thread.hpp>
+#include <boost/date_time/posix_time/posix_time_duration.hpp>
 
 std::vector<CtiServerConnection*> connections;
 
@@ -66,7 +65,7 @@ void ConnectionHandlerThread( string name )
 {
     bool bQuit = false;
 
-    cout << CtiTime() << " Server Connection Handler Thread starting as TID " << rwThreadId() << " (0x" << hex << rwThreadId() << dec << ")" << endl;
+    cout << CtiTime() << " Server Connection Handler starting as TID " << GetCurrentThreadId() << " (0x" << hex << GetCurrentThreadId() << dec << ")" << endl;
 
     try
     {
@@ -102,17 +101,11 @@ void ConnectionHandlerThread( string name )
 
 void runServer( string name )
 {
-    bool bQuit = false;
-    RWThreadFunction ConnThread_ = rwMakeThreadFunction( &ConnectionHandlerThread, name );
-    ConnThread_.start();
+    boost::thread connThread( &ConnectionHandlerThread, name );
 
-    CtiMessage *msg;
-
-    for(;!bQuit && !bGCtrlC;)
+    while( ! bGCtrlC )
     {
-        msg = MainQueue_.getQueue(1000);
-
-        if( msg != NULL )
+        if( const CtiMessage *msg = MainQueue_.getQueue(1000) )
         {
             CTILOG_INFO(dout, msg);
         }
@@ -120,11 +113,11 @@ void runServer( string name )
 
     listenerConnection.close();
 
-    if(RW_THR_TIMEOUT == ConnThread_.join(2000))
+    if( ! connThread.timed_join(boost::posix_time::seconds(2)) )
     {
         CTILOG_WARN(dout, "Terminating connection thread");
 
-        ConnThread_.terminate();
+        TerminateThread(connThread.native_handle(), ERROR_SUCCESS);
     }
 
     return;

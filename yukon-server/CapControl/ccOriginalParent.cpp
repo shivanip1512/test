@@ -4,6 +4,7 @@
 #include "ccid.h"
 #include "ccutil.h"
 #include "database_util.h"
+#include "row_reader.h"
 
 using std::endl;
 using std::string;

@@ -1,8 +1,6 @@
 #pragma once
 
 #include <limits.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 
 #include "dllbase.h"

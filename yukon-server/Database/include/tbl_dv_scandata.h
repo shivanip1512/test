@@ -4,7 +4,6 @@
 
 #include "dbmemobject.h"
 #include "yukon.h"
-#include "rwutil.h"
 
 #include "database_connection.h"
 

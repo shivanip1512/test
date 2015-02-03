@@ -2,8 +2,6 @@
 
 #include <string>
 
-#include <rw/collect.h>
-
 #include "dlldefs.h"
 #include "message.h"
 

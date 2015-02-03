@@ -1,62 +1,46 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
-
-
-#include "dbaccess.h"
+#include "dlldefs.h"
 #include "dbmemobject.h"
-#include "rwutil.h"
 
-class IM_EX_PNTDB CtiDeviceBaseLite : public CtiMemDBObject
+namespace Cti {
+
+class RowReader;
+
+class IM_EX_PNTDB DeviceBaseLite : public CtiMemDBObject
 {
-protected:
-
-    LONG        _deviceID;
-    LONG        _portID;
-    std::string   _class;
+    long          _deviceID;
+    long          _portID;
+    bool          _isGroup;
     std::string   _name;
-    std::string   _description;
     std::string   _objectType;
-    std::string   _disableFlag;
-    std::string   _controlInhibitFlag;
+    bool          _disableFlag;
+    bool          _controlInhibitFlag;
 
-    private:
+public:
 
-    public:
+    DeviceBaseLite(long id = -1);
+    DeviceBaseLite(const DeviceBaseLite& aRef);
 
-    CtiDeviceBaseLite(LONG id = -1);
-    CtiDeviceBaseLite(const CtiDeviceBaseLite& aRef);
+    virtual ~DeviceBaseLite();
 
-    virtual ~CtiDeviceBaseLite();
+    DeviceBaseLite& operator=(const DeviceBaseLite& aRef);
+    long getID() const;
+    long getPortID() const;
 
-    CtiDeviceBaseLite& operator=(const CtiDeviceBaseLite& aRef);
-    LONG getID() const;
-    LONG getPortID() const;
-    std::string getClass() const;
     std::string getName() const;
-    std::string getDescription() const;
-
-    CtiDeviceBaseLite& setID( LONG id );
-    CtiDeviceBaseLite& setPortID( LONG id );
-    CtiDeviceBaseLite& setClass( const std::string &str );
-    CtiDeviceBaseLite& setName( const std::string &str );
-    CtiDeviceBaseLite& setDescription( const std::string &str );
-    CtiDeviceBaseLite& setDisableFlag( const std::string &str );
-    CtiDeviceBaseLite& setControlInhibitFlag( const std::string &str );
-
     std::string getObjectType() const;
-    std::string getDisableFlag() const;
-    bool isDisabled() const;
-    std::string getControlInhibitFlag() const;
-    bool isControlInhibited() const;
 
-    bool operator<( const CtiDeviceBaseLite &rhs ) const;
-    bool operator==( const CtiDeviceBaseLite &rhs ) const;
-    bool operator()(const CtiDeviceBaseLite& aRef) const;
+    bool isDisabled() const;
+    bool isControlInhibited() const;
+    bool isGroup() const;
+
+    void setDisableFlag( const bool flag );
+    void setControlInhibitFlag( const bool flag );
+
+    bool operator<( const DeviceBaseLite &rhs ) const;
+    bool operator==( const DeviceBaseLite &rhs ) const;
+    bool operator()(const DeviceBaseLite& aRef) const;
 
     virtual std::string getSQLCoreStatement(long paoid);
 
@@ -64,3 +48,6 @@ protected:
     virtual void DecodeDatabaseReader(Cti::RowReader &rdr);
     virtual bool Restore();
 };
+
+}
+

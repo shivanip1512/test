@@ -103,7 +103,7 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
         void startMultiListeners();
         void stopMultiListeners();
 
-        RWThreadFunction _listenerStarterThread;
+        Cti::WorkerThread _listenerStarterThread;
         CtiMutex _listeningThreadManagementMutex;
 
         CtiValueQueue<int>  _listeningPortNumbers;
@@ -125,8 +125,7 @@ class IM_EX_FDRVALMETMULTI CtiFDR_ValmetMulti : public CtiFDRScadaServer
 
         CtiFDRScadaHelper<CtiValmetPortId>* _helper;
 
-        typedef std::map<int,RWThreadFunction> PortNumToListenerThreadMap;
-        PortNumToListenerThreadMap _listenerThreads;
+        boost::thread_group _listenerThreads;
 
         typedef std::map<std::string,int> NameToPointIdMap;
         NameToPointIdMap _receiveNameToPointId;

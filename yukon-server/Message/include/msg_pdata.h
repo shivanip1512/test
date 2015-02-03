@@ -1,17 +1,11 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include "yukon.h"
 #include "dlldefs.h"
 #include "pointdefs.h"
 #include "pointtypes.h"
 #include "message.h"
 
-#include <windows.h>
-#include <rw/rwset.h>
 
 class IM_EX_MSG CtiPointDataMsg : public CtiMessage
 {

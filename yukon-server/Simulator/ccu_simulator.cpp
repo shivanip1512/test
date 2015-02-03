@@ -9,6 +9,7 @@
 #include "cparms.h"
 #include "StreamSocketListener.h"
 #include "module_util.h"
+#include "database_reader.h"
 
 #include <boost/filesystem.hpp>
 #include <boost/thread.hpp>

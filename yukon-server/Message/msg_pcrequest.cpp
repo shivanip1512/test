@@ -1,27 +1,11 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_pcrequest
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pcrequest.cpp-arc  $
-* REVISION     :  $Revision: 1.9.2.1 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <rw/collect.h>
 
 #include "msg_pcrequest.h"
 #include "logger.h"
 #include "collectable.h"
 #include "dllbase.h"
+
+using namespace std;
 
 DEFINE_COLLECTABLE( CtiRequestMsg, MSG_PCREQUEST );
 

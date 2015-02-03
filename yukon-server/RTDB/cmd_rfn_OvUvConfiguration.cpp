@@ -82,7 +82,7 @@ RfnCommandResult RfnOvUvConfigurationCommand::decodeCommand( const CtiTime now,
 
     // invalid status byte -- not found in map
 
-    validate( Condition( status, ClientErrors::InvalidData )
+    validate( Condition( !! status, ClientErrors::InvalidData )
             << "Invalid Status (" << response[1] << ")" );
 
     validate( Condition( response[1] == 0x01, ClientErrors::InvalidData ) // success
@@ -397,7 +397,7 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 
     boost::optional<std::string> meterID = Cti::mapFind( meterIdResolver, response[1] );
 
-    validate( Condition( meterID, ClientErrors::InvalidData )
+    validate( Condition( !! meterID, ClientErrors::InvalidData )
             << "Invalid Meter ID (" << response[1] << ")" );
 
     validate( Condition( response[1] == _meterID, ClientErrors::InvalidData )
@@ -409,7 +409,7 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 
     boost::optional<std::string> eventID = Cti::mapFind( eventIdResolver, eventIDvalue );
 
-    validate( Condition( eventID, ClientErrors::InvalidData )
+    validate( Condition( !! eventID, ClientErrors::InvalidData )
             << "Invalid Event ID (" << eventIDvalue << ")" );
 
     validate( Condition( eventIDvalue == _eventID, ClientErrors::InvalidData )
@@ -419,7 +419,7 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 
     boost::optional<std::string> ovuvState = Cti::mapFind( ovuvStateResolver, response[4] );
 
-    validate( Condition( ovuvState, ClientErrors::InvalidData )
+    validate( Condition( !! ovuvState, ClientErrors::InvalidData )
             << "Invalid OV/UV State (" << response[4] << ")" );
 
     result.description += "\nOV/UV State: " + *ovuvState + " (" + CtiNumStr(response[4]) + ")";
@@ -431,7 +431,7 @@ RfnCommandResult RfnGetOvUvAlarmConfigurationCommand::decodeCommand( const CtiTi
 
     boost::optional<std::string> severity = Cti::mapFind( severityResolver, response[9] );
 
-    validate( Condition( severity, ClientErrors::InvalidData )
+    validate( Condition( !! severity, ClientErrors::InvalidData )
             << "Invalid severity (" << response[9] << ")" );
 
     result.description += "\nSeverity: " + *severity + " (" + CtiNumStr(response[9]) + ")";

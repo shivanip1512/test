@@ -17,62 +17,62 @@ using std::endl;
 using std::string;
 
 
-INT resolveRouteType( const string& _rwsTemp)
+INT resolveRouteType( const string& _routeStr)
 {
     INT Ret = 0;
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
+    string routeStr = _routeStr;
+    CtiToLower(routeStr);
 
-    in_place_trim(rwsTemp);
-    if(rwsTemp == "ccu")
+    in_place_trim(routeStr);
+    if(routeStr == "ccu")
     {
         Ret = RouteTypeCCU;
     }
-    else if(rwsTemp == "tcu")
+    else if(routeStr == "tcu")
     {
         Ret = RouteTypeTCU;
     }
-    else if(rwsTemp == "macro")
+    else if(routeStr == "macro")
     {
         Ret = RouteTypeMacro;
     }
-    else if(rwsTemp == "lcu")
+    else if(routeStr == "lcu")
     {
         Ret = RouteTypeLCU;
     }
-    else if(rwsTemp == "versacom")
+    else if(routeStr == "versacom")
     {
         Ret = RouteTypeVersacom;
     }
-    else if(rwsTemp == "expresscom")
+    else if(routeStr == "expresscom")
     {
         Ret = RouteTypeExpresscom;
     }
-    else if(rwsTemp == "tap paging" || rwsTemp == "tappaging")
+    else if(routeStr == "tap paging" || routeStr == "tappaging")
     {
         Ret = RouteTypeTap;
     }
-    else if(rwsTemp == "rds terminal route")
+    else if(routeStr == "rds terminal route")
     {
         Ret = RouteTypeRDS;
     }
-    else if(rwsTemp == "snpp terminal route")
+    else if(routeStr == "snpp terminal route")
     {
         Ret = RouteTypeSNPP;
     }
-    else if(rwsTemp == "wctp terminal route")
+    else if(routeStr == "wctp terminal route")
     {
         Ret = RouteTypeWCTP;
     }
-    else if(rwsTemp == "tnpp terminal route")
+    else if(routeStr == "tnpp terminal route")
     {
         Ret = RouteTypeTNPP;
     }
-    else if(rwsTemp == "rtc route")
+    else if(routeStr == "rtc route")
     {
         Ret = RouteTypeRTC;
     }
-    else if(rwsTemp == "series 5 lmi")
+    else if(routeStr == "series 5 lmi")
     {
         Ret = RouteTypeSeriesVLMI;
     }
@@ -84,35 +84,35 @@ INT resolveRouteType( const string& _rwsTemp)
     return Ret;
 }
 
-INT resolveAmpUseType(const string& _rwsTemp)
+INT resolveAmpUseType(const string& _ampStr)
 {
     int autype = RouteAmpAlternating;
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
+    string ampStr = _ampStr;
+    CtiToLower(ampStr);
 
-    in_place_trim(rwsTemp);
+    in_place_trim(ampStr);
 
-    if( rwsTemp == "alternating" )
+    if( ampStr == "alternating" )
     {
         autype = RouteAmpAlternating;
     }
-    else if(rwsTemp == "alt w/failover")
+    else if(ampStr == "alt w/failover")
     {
         autype = RouteAmpAltFail;
     }
-    else if(rwsTemp == "default 1 fail 2")
+    else if(ampStr == "default 1 fail 2")
     {
         autype = (RouteAmpDefault1Fail2);
     }
-    else if(rwsTemp == "default 2 fail 1")
+    else if(ampStr == "default 2 fail 1")
     {
         autype = (RouteAmpDefault2Fail1);
     }
-    else if(rwsTemp == "amp 1")
+    else if(ampStr == "amp 1")
     {
         autype = (RouteAmp1);
     }
-    else if(rwsTemp == "amp 2")
+    else if(ampStr == "amp 2")
     {
         autype = (RouteAmp2);
     }
@@ -124,7 +124,7 @@ INT resolveAmpUseType(const string& _rwsTemp)
     return autype;
 }
 
-CtiPointType_t resolvePointType(const string& _rwsTemp)
+CtiPointType_t resolvePointType(const string& _pointStr)
 {
     static const string analog = "analog";
     static const string status = "status";
@@ -141,46 +141,46 @@ CtiPointType_t resolvePointType(const string& _rwsTemp)
     static const string analogoutput = "analogoutput";
 
     CtiPointType_t Ret;
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
-    in_place_trim(rwsTemp);
+    string pointStr = _pointStr;
+    CtiToLower(pointStr);
+    in_place_trim(pointStr);
 
-    if(rwsTemp == analog)
+    if(pointStr == analog)
     {
         Ret = AnalogPointType;
     }
-    else if(rwsTemp == status)
+    else if(pointStr == status)
     {
         Ret = StatusPointType;
     }
-    else if(rwsTemp == pulseaccumulator  ||
-            rwsTemp == pulse_accumulator ||    // This WILL go away over time I hope!
-            rwsTemp == accumulator)            // This WILL go away over time I hope!
+    else if(pointStr == pulseaccumulator  ||
+            pointStr == pulse_accumulator ||    // This WILL go away over time I hope!
+            pointStr == accumulator)            // This WILL go away over time I hope!
     {
         Ret = PulseAccumulatorPointType;
     }
-    else if(rwsTemp == demandaccumulator ||
-            rwsTemp == demand_accumulator)     // This WILL go away over time I hope!
+    else if(pointStr == demandaccumulator ||
+            pointStr == demand_accumulator)     // This WILL go away over time I hope!
     {
         Ret = DemandAccumulatorPointType;
     }
-    else if(rwsTemp == calculated || rwsTemp == calcanalog)
+    else if(pointStr == calculated || pointStr == calcanalog)
     {
         Ret = CalculatedPointType;
     }
-    else if(rwsTemp == calcstatus)
+    else if(pointStr == calcstatus)
     {
         Ret = CalculatedStatusPointType;
     }
-    else if(rwsTemp == system)
+    else if(pointStr == system)
     {
         Ret = SystemPointType;
     }
-    else if(rwsTemp == statusoutput)
+    else if(pointStr == statusoutput)
     {
         Ret = StatusOutputPointType;
     }
-    else if(rwsTemp == analogoutput)
+    else if(pointStr == analogoutput)
     {
         Ret = AnalogOutputPointType;
     }
@@ -192,34 +192,34 @@ CtiPointType_t resolvePointType(const string& _rwsTemp)
     return Ret;
 }
 
-INT resolvePointArchiveType(const string& _rwsTemp)
+INT resolvePointArchiveType(const string& _archiveStr)
 {
     INT Ret = ArchiveTypeNone;
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
-    in_place_trim(rwsTemp);
+    string archiveStr = _archiveStr;
+    CtiToLower(archiveStr);
+    in_place_trim(archiveStr);
 
-    if(rwsTemp == "none")
+    if(archiveStr == "none")
     {
         Ret = ArchiveTypeNone;
     }
-    else if(rwsTemp == "on change")
+    else if(archiveStr == "on change")
     {
         Ret = ArchiveTypeOnChange;
     }
-    else if(rwsTemp == "on timer")
+    else if(archiveStr == "on timer")
     {
         Ret = ArchiveTypeOnTimer;
     }
-    else if(rwsTemp == "on update")
+    else if(archiveStr == "on update")
     {
         Ret = ArchiveTypeOnUpdate;
     }
-    else if(rwsTemp == "time&update")       // This should help catch interval ending reads.
+    else if(archiveStr == "time&update")       // This should help catch interval ending reads.
     {
         Ret = ArchiveTypeOnTimerAndUpdated;
     }
-    else if(rwsTemp == "timer|update")       // Every interval (big interval) or every update (infrequent point).
+    else if(archiveStr == "timer|update")       // Every interval (big interval) or every update (infrequent point).
     {
         Ret = ArchiveTypeOnTimerOrUpdated;
     }
@@ -227,7 +227,7 @@ INT resolvePointArchiveType(const string& _rwsTemp)
     return Ret;
 }
 
-INT resolvePAOType(const string& category, const string& rwsTemp)
+INT resolvePAOType(const string& category, const string& typeStr)
 {
     INT result = 0;
 
@@ -235,23 +235,23 @@ INT resolvePAOType(const string& category, const string& rwsTemp)
 
     if(categoryInt == PAO_CATEGORY_DEVICE)
     {
-        result= resolveDeviceType(rwsTemp);
+        result= resolveDeviceType(typeStr);
     }
     else if(categoryInt == PAO_CATEGORY_PORT)
     {
-        result= resolvePortType(rwsTemp);
+        result= resolvePortType(typeStr);
     }
     else if(categoryInt == PAO_CATEGORY_ROUTE)
     {
-        result= resolveRouteType(rwsTemp);
+        result= resolveRouteType(typeStr);
     }
     else if(categoryInt == PAO_CATEGORY_LOAD_MANAGEMENT)
     {
-        result= resolveLoadManagementType(rwsTemp);
+        result= resolveLoadManagementType(typeStr);
     }
     else if(categoryInt == PAO_CATEGORY_CAP_CONTROL)
     {
-        result= resolveCapControlType(rwsTemp);
+        result= resolveCapControlType(typeStr);
     }
 
     return result;
@@ -482,16 +482,16 @@ static const std::map<std::string, int> device_lookups = boost::assign::map_list
     ("vectron",            TYPE_VECTRON);
 
 
-INT resolveDeviceType(const string& _rwsTemp)
+INT resolveDeviceType(const string& _typeStr)
 {
-    string typestr = boost::trim_copy(boost::to_lower_copy(_rwsTemp));
+    string typestr = boost::trim_copy(boost::to_lower_copy(_typeStr));
 
     if( const boost::optional<int> deviceType = Cti::mapFind(device_lookups, typestr) )
     {
         return *deviceType;
     }
 
-    if( ! isKnownUnsupportedDevice(_rwsTemp) )
+    if( ! isKnownUnsupportedDevice(_typeStr) )
     {
         CTILOG_ERROR(dout, "Unsupported DEVICE type \"" << typestr << "\"");
     }
@@ -517,153 +517,153 @@ static const std::set<string> unsupported_devices = boost::assign::list_of
 /**
  * Check if the device is known and unsupported
  */
-bool isKnownUnsupportedDevice(const string& _rwsTemp)
+bool isKnownUnsupportedDevice(const string& typeStr)
 {
-    return unsupported_devices.count( boost::to_lower_copy(_rwsTemp) );
+    return unsupported_devices.count( boost::to_lower_copy(typeStr) );
 }
 
 
-INT resolveCapControlType(const string& _rwsTemp)
+INT resolveCapControlType(const string& _typeStr)
 {
     INT nRet = 0;
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
-    in_place_trim(rwsTemp);
+    string typeStr = _typeStr;
+    CtiToLower(typeStr);
+    in_place_trim(typeStr);
 
-    if(rwsTemp == "ccarea")
+    if(typeStr == "ccarea")
     {
         nRet = TYPE_CC_AREA;
     }
-    else if(rwsTemp == "ccsubstation")
+    else if(typeStr == "ccsubstation")
     {
         nRet = TYPE_CC_SUBSTATION;
     }
-    else if(rwsTemp == "ccsubbus")
+    else if(typeStr == "ccsubbus")
     {
         nRet = TYPE_CC_SUBSTATION_BUS;
     }
-    else if(rwsTemp == "ccfeeder")
+    else if(typeStr == "ccfeeder")
     {
         nRet = TYPE_CC_FEEDER;
     }
-    else if(rwsTemp == "ccspecialarea")
+    else if(typeStr == "ccspecialarea")
     {
         nRet = TYPE_CC_SPECIALAREA;
     }
-    else if(rwsTemp == "ltc" || rwsTemp == "go_regulator" || rwsTemp == "po_regulator")
+    else if(typeStr == "ltc" || typeStr == "go_regulator" || typeStr == "po_regulator")
     {
         nRet = TYPE_CC_VOLTAGEREGULATOR;
     }
     else
     {
-        CTILOG_ERROR(dout, "Unsupported CAP CONTROL type \"" << rwsTemp << "\"");
+        CTILOG_ERROR(dout, "Unsupported CAP CONTROL type \"" << typeStr << "\"");
     }
 
     return nRet;
 }
 
-INT resolveLoadManagementType(const string& _rwsTemp)
+INT resolveLoadManagementType(const string& _typeStr)
 {
     INT nRet = 0;
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
-    in_place_trim(rwsTemp);
+    string typeStr = _typeStr;
+    CtiToLower(typeStr);
+    in_place_trim(typeStr);
 
-    if(rwsTemp == "lm direct program" ||
-       rwsTemp == "lm sep program" ||
-       rwsTemp == "ecobee program")
+    if(typeStr == "lm direct program" ||
+       typeStr == "lm sep program" ||
+       typeStr == "ecobee program")
     {
         nRet = TYPE_LMPROGRAM_DIRECT;
     }
-    else if(rwsTemp == "lm curtail program")
+    else if(typeStr == "lm curtail program")
     {
         nRet = TYPE_LMPROGRAM_CURTAILMENT;
     }
-    else if(rwsTemp == "lm control area")
+    else if(typeStr == "lm control area")
     {
         nRet = TYPE_LM_CONTROL_AREA;
     }
-    else if(rwsTemp == "ci customer")
+    else if(typeStr == "ci customer")
     {
         nRet = TYPE_CI_CUSTOMER;
     }
-    else if(rwsTemp == "lm energy exchange")
+    else if(typeStr == "lm energy exchange")
     {
         nRet = TYPE_LMPROGRAM_ENERGYEXCHANGE;
     }
     else
     {
-        CTILOG_ERROR(dout, "Unsupported LOAD MANAGEMENT type \"" << rwsTemp << "\"");
+        CTILOG_ERROR(dout, "Unsupported LOAD MANAGEMENT type \"" << typeStr << "\"");
     }
 
     return nRet;
 }
 
 
-INT resolveScanType(const string& _rwsTemp)
+INT resolveScanType(const string& _typeStr)
 {
     INT nRet = 0;
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
-    in_place_trim(rwsTemp);
+    string typeStr = _typeStr;
+    CtiToLower(typeStr);
+    in_place_trim(typeStr);
 
 
-    if(rwsTemp == "general")
+    if(typeStr == "general")
     {
         nRet = ScanRateGeneral;
     }
-    else if(rwsTemp == "accumulator")
+    else if(typeStr == "accumulator")
     {
         nRet = ScanRateAccum;
     }
-    else if(rwsTemp == "integrity")
+    else if(typeStr == "integrity")
     {
         nRet = ScanRateIntegrity;
     }
-    else if(rwsTemp == "status")
+    else if(typeStr == "status")
     {
         nRet = ScanRateGeneral;
     }
-    else if(rwsTemp == "exception")
+    else if(typeStr == "exception")
     {
         nRet = ScanRateGeneral;
     }
-    else if(rwsTemp == "loadprofile")
+    else if(typeStr == "loadprofile")
     {
         nRet = ScanRateLoadProfile;
     }
     else
     {
-        CTILOG_ERROR(dout, "Unsupported scan rate type \"" << rwsTemp << "\"");
+        CTILOG_ERROR(dout, "Unsupported scan rate type \"" << typeStr << "\"");
         nRet = ScanRateInvalid;
     }
 
     return nRet;
 }
 
-LONG resolveDeviceWindowType(const string& _rwsTemp)
+LONG resolveDeviceWindowType(const string& _windowStr)
 {
     INT nRet = 0;
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
-    in_place_trim(rwsTemp);
+    string windowStr = _windowStr;
+    CtiToLower(windowStr);
+    in_place_trim(windowStr);
 
 
-    if(rwsTemp == DEVICE_WINDOW_TYPE_SCAN)
+    if(windowStr == DEVICE_WINDOW_TYPE_SCAN)
     {
         nRet = DeviceWindowScan;
     }
-    else if(rwsTemp == DEVICE_WINDOW_TYPE_PEAK)
+    else if(windowStr == DEVICE_WINDOW_TYPE_PEAK)
     {
         nRet = DeviceWindowPeak;
     }
-    else if(rwsTemp == DEVICE_WINDOW_TYPE_ALTERNATE_RATE)
+    else if(windowStr == DEVICE_WINDOW_TYPE_ALTERNATE_RATE)
     {
         nRet = DeviceWindowAlternateRate;
     }
     else
     {
-        CTILOG_ERROR(dout, "Unsupported device window type \"" << rwsTemp << "\"");
+        CTILOG_ERROR(dout, "Unsupported device window type \"" << windowStr << "\"");
         nRet = DeviceWindowInvalid;
     }
 
@@ -671,77 +671,77 @@ LONG resolveDeviceWindowType(const string& _rwsTemp)
 }
 
 
-INT resolvePAOClass(const string& _rwsTemp)
+INT resolvePAOClass(const string& _classStr)
 {
     INT nRet = 0;
-    string rwsTemp = _rwsTemp;
-    CtiToLower(rwsTemp);
-    in_place_trim(rwsTemp);
+    string classStr = _classStr;
+    CtiToLower(classStr);
+    in_place_trim(classStr);
 
     /* The mantra of a professor I once had... Make the common case fast! */
-    if(rwsTemp == "transmitter")
+    if(classStr == "transmitter")
     {
         nRet = PAOClassTransmitter;
     }
-    else if(rwsTemp == "rtu")
+    else if(classStr == "rtu")
     {
         nRet = PAOClassRTU;
     }
-    else if(rwsTemp == "ied")
+    else if(classStr == "ied")
     {
         nRet = PAOClassIED;
     }
-    else if(rwsTemp == "carrier")
+    else if(classStr == "carrier")
     {
         nRet = PAOClassCarrier;
     }
-    else if(rwsTemp == "meter")
+    else if(classStr == "meter")
     {
         nRet = PAOClassMeter;
     }
-    else if(rwsTemp == "rfmesh")
+    else if(classStr == "rfmesh")
     {
         nRet = PAOClassRFMesh;
     }
-    else if(rwsTemp == "gridadvisor")
+    else if(classStr == "gridadvisor")
     {
         nRet = PAOClassGridAdvisor;
     }
-    else if(rwsTemp == "group")
+    else if(classStr == "group")
     {
         nRet = PAOClassGroup;
     }
-    else if(rwsTemp == "system")
+    else if(classStr == "system")
     {
         nRet = PAOClassSystem;
     }
-    else if(rwsTemp == "capcontrol")
+    else if(classStr == "capcontrol")
     {
         nRet = PAOClassCapControl;
     }
-    else if(rwsTemp == "loadmanagement")
+    else if(classStr == "loadmanagement")
     {
         nRet = PAOClassLoadManagement;
     }
-    else if(rwsTemp == "virtual")
+    else if(classStr == "virtual")
     {
         nRet = PAOClassVirtual;
     }
-    else if(rwsTemp == "port")
+    else if(classStr == "port")
     {
         nRet = PAOClassPort;
     }
-    else if(rwsTemp == "route")
+    else if(classStr == "route")
     {
         nRet = PAOClassRoute;
     }
-    else if(rwsTemp == "schedule")
+    else if(classStr == "schedule")
     {
         nRet = PAOClassMACS;
     }
     else
     {
-        CTILOG_ERROR(dout, "Unsupported device class \"" << rwsTemp << "\"");
+        CTILOG_ERROR(dout, "Unsupported device class \"" << classStr << "\"");
         nRet = PAOClassInvalid;
     }
 

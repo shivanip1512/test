@@ -23,64 +23,6 @@ CtiPointConnection& CtiPointConnection::operator=(const CtiPointConnection &aRef
    return *this;
 }
 
-int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgMsg)
-{
-   CtiReturnMsg* ConnMgrMsg = NULL;
-   Cti::StreamBuffer logData;
-   bool hasLogData = false;
-
-   CollectionType::iterator itr = ConnectionManagerCollection.begin();
-
-   while ( itr != ConnectionManagerCollection.end() )
-   {
-      CtiServer::ptr_type CtiM = *itr;
-      try
-      {
-         CtiLockGuard<CtiMutex> guard(_classMutex);
-
-         // Copy constructor...
-         CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg(ChgMsg);
-
-         if(pData != NULL)
-         {
-            if((ConnMgrMsg = CTIDBG_new CtiReturnMsg()) != NULL)
-            {
-               ConnMgrMsg->PointData().push_back(pData);
-
-               CtiM->WriteConnQue(ConnMgrMsg, 5000); // Default priority of 7 is used here!
-
-               logData <<"\nPosting point "<< ChgMsg.getId() <<" to local connection "<< CtiM->getClientName();
-
-               hasLogData = true;
-            }
-            else
-            {
-               delete pData;
-            }
-         }
-
-         ConnMgrMsg = NULL;
-         pData = NULL;
-
-         //(ConnectionManagerCollection[i])->WriteConnQue(CTIDBG_new CtiReturnMsg(Chg)); // Default priority of 7 is used here!
-
-      }
-      catch(const RWxmsg& x)
-      {
-          CTILOG_EXCEPTION_ERROR(dout, x);
-          break;
-      }
-      ++itr;
-   }
-
-   if( hasLogData )
-   {
-       CTILOG_INFO(dout, logData);
-   }
-
-   return 0;
-}
-
 CtiPointConnection::CtiPointConnection()
 {
 }

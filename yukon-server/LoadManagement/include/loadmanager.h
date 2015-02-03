@@ -17,6 +17,8 @@
 #include "yukon.h"
 #include "queue.h"
 
+#include <boost/thread.hpp>
+
 class CtiLMControlArea;
 class CtiLMExecutor;
 
@@ -55,7 +57,8 @@ private:
     void loadControlLoopCParms();
 
     static CtiLoadManager* _instance;
-    RWThread _loadManagerThread;
+
+    boost::thread   _loadManagerThread;
 
     boost::shared_ptr<CtiClientConnection> _porterConnection;
     boost::shared_ptr<CtiClientConnection> _dispatchConnection;
@@ -65,5 +68,5 @@ private:
     int control_loop_inmsg_delay;
     int control_loop_outmsg_delay;
 
-    mutable RWRecursiveLock<RWMutexLock> _mutex;
+    mutable CtiCriticalSection _mutex;
 };

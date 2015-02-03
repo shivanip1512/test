@@ -1,25 +1,14 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 #include <iostream>
 #include <functional>
 #include <list>
 #include <map>
 
-#include <rw/tphdict.h>
-
-#include <rw/thr/recursiv.h>
-
-#include <rw\thr\mutex.h>
-
 #include <boost/utility.hpp>
 
 #include "dlldefs.h"
-#include "hashkey.h"
 #include "utility.h"
 
 /*
@@ -108,7 +97,7 @@ public:
     *
     *  Function should have the following definition
     *
-    *    RWBoolean yourTester(T*, void* d);
+    *    bool yourTester(T*, void* d);
     */
 
    T* find(bool (*testFun)(T*, void*),void* d)

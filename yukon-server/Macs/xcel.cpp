@@ -1,15 +1,6 @@
 /*****************************************************************************
 *
-*    FILE NAME: xcel.cpp.cpp
-*
-*    DATE: 02/13/2001
-*
-*    AUTHOR: David Sutton
-*
-*    PURPOSE: Import receiver data from Xcel's PMSI system
-*
-*    Copyright (C) 2001 Cannon Technologies, Inc.  All rights reserved.
-*
+*    Import receiver data from Xcel's PMSI system
 *
 *    Example input lines:
 
@@ -23,10 +14,9 @@ I,1416842924,REEDY CLYDE.M,,,5 SWALLOW LN,NORTH OAKS,MN,55127,6514843058,0,57048
 R,2355642216,KUEHN STEVEN.J,,,,,,,0,0,440022,205,01,0,16,,,,,,,,,,,,,0,2,,,,,5,028006226,E,0,,R,236911050
 I,2355642216,KUEHN STEVEN.J,,,3440 BUCKBEE RD,WHITE BEAR LK.,MN,55110,6517772595,0,440022,205,01,0,16,,3569,1401,0,1656,1816,3569,0,7.5,7.5,7.5,7.5,0,2,,,,,5,028006226,E,0,,R,236911050
 
-*
-****************************************************************************
 */
 #include "precompiled.h"
+#include "logger.h"
 #include "xcel.h"
 
 using std::iostream;

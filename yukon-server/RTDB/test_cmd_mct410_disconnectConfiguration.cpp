@@ -74,11 +74,14 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
 
             BOOST_CHECK( ! r.get());
 
-            BOOST_CHECK_EQUAL(disconnectCommand.getDisconnectDemandThreshold(), 0.0f);
+            const boost::optional<float> disconnectDemandThresholdRcv = disconnectCommand.getDisconnectDemandThreshold();
+
+            BOOST_REQUIRE( !! disconnectDemandThresholdRcv );
+            BOOST_CHECK_EQUAL( *disconnectDemandThresholdRcv, 0.0f);
 
             const boost::optional<Mct410DisconnectConfigurationCommand::DisconnectMode> mode = disconnectCommand.getDisconnectMode();
 
-            BOOST_REQUIRE(mode);
+            BOOST_REQUIRE( !! mode );
             BOOST_CHECK_EQUAL(*mode, Mct410DisconnectConfigurationCommand::Cycling);
         }
     }
@@ -144,12 +147,12 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
 
             const boost::optional<float> disconnectDemandThreshold = disconnectCommand.getDisconnectDemandThreshold();
 
-            BOOST_REQUIRE(disconnectDemandThreshold);
+            BOOST_REQUIRE( !! disconnectDemandThreshold);
             BOOST_CHECK_CLOSE(*disconnectDemandThreshold, 400.0f, 0.1);
 
             const boost::optional<Mct410DisconnectConfigurationCommand::DisconnectMode> mode = disconnectCommand.getDisconnectMode();
 
-            BOOST_REQUIRE(mode);
+            BOOST_REQUIRE( !! mode);
             BOOST_CHECK_EQUAL(*mode, Mct410DisconnectConfigurationCommand::DemandThreshold);
         }
     }
@@ -214,12 +217,12 @@ BOOST_AUTO_TEST_CASE(test_command_payload)
 
             const boost::optional<float> disconnectDemandThreshold = disconnectCommand.getDisconnectDemandThreshold();
 
-            BOOST_REQUIRE(disconnectDemandThreshold);
+            BOOST_REQUIRE( !! disconnectDemandThreshold);
             BOOST_CHECK_EQUAL(*disconnectDemandThreshold, 0.0f);
 
             const boost::optional<Mct410DisconnectConfigurationCommand::DisconnectMode> mode = disconnectCommand.getDisconnectMode();
 
-            BOOST_REQUIRE(mode);
+            BOOST_REQUIRE( !! mode);
             BOOST_CHECK_EQUAL(*mode, Mct410DisconnectConfigurationCommand::OnDemand);
         }
     }

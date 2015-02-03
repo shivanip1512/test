@@ -5,8 +5,6 @@ using std::vector;
 
 DEFINE_COLLECTABLE( CtiNotifLMControlMsg, NOTIF_LMCONTROL_MSG_ID );
 
-//REGISTER_MSG_FACTORY( CtiNotifLMControlMsg );
-
 CtiNotifLMControlMsg::CtiNotifLMControlMsg() : _notif_type(0), _program_id(-1)
 { }
 

@@ -1,8 +1,6 @@
 #pragma once
 
 #include <limits.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/monitor.h>
 
 #include "dbmemobject.h"
 #include "dlldefs.h"
@@ -26,9 +24,9 @@ private:
 
 protected:
 
-   LONG           _deviceID;
-   RWMutexLock    DirectCommMux;
-   LONG           PortID;
+   LONG                _deviceID;
+   CtiCriticalSection  DirectCommMux;
+   LONG                PortID;
 
 public:
 

@@ -1,10 +1,5 @@
 #include "precompiled.h"
 
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <rw\thr\mutex.h>
-
 #include "con_mgr_vg.h"
 #include "dlldefs.h"
 #include "logger.h"

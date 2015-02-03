@@ -1,8 +1,5 @@
 #pragma once
 
-#include <rw\thr\threadid.h>
-#include <rw\tvslist.h>
-
 #include "dlldefs.h"
 #include "message.h"       // get the base class
 

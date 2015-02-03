@@ -2,8 +2,6 @@
 
 #include <set>
 
-#include <rw\thr\thrfunc.h>
-
 #include "con_mgr.h"
 #include "con_mgr_vg.h"
 #include "server_b.h"
@@ -46,10 +44,7 @@ class IM_EX_CTIVANGOGH CtiVanGogh : public CtiServer
 {
 public:
 
-    typedef std::set< CtiTableNotificationGroup >  CtiNotificationGroupSet_t;
-    typedef std::set< CtiTableContactNotification >  CtiContactNotificationSet_t;
-    typedef std::set< CtiDeviceBaseLite >          CtiDeviceLiteSet_t;
-    typedef std::set< CtiTableCICustomerBase >     CtiDeviceCICustSet_t;
+    typedef std::set< CtiTableCICustomerBase >       CtiDeviceCICustSet_t;
 
     typedef struct
     {
@@ -64,13 +59,13 @@ private:
 
     CtiPendingOpThread _pendingOpThread;
 
-    RWThreadFunction  _rphThread;       // RawPointHistory....
-    RWThreadFunction  _archiveThread;
-    RWThreadFunction  _timedOpThread;
-    RWThreadFunction  _dbSigThread;
-    RWThreadFunction  _dbSigEmailThread;
-    RWThreadFunction  _appMonitorThread;
-    RWThreadFunction  _cacheHandlerThread1, _cacheHandlerThread2, _cacheHandlerThread3;
+    boost::thread  _rphThread;       // RawPointHistory....
+    boost::thread  _archiveThread;
+    boost::thread  _timedOpThread;
+    boost::thread  _dbSigThread;
+    boost::thread  _dbSigEmailThread;
+    boost::thread  _appMonitorThread;
+    boost::thread  _cacheHandlerThread1, _cacheHandlerThread2, _cacheHandlerThread3;
 
     CtiFIFOQueue< CtiSignalMsg > _signalMsgPostQueue;   // Messages are processed out of this queue for emailing.
 
@@ -85,10 +80,8 @@ private:
 
     // These are the signals which have not been cleared by a client app
     CtiA2DTranslation_t        _alarmToDestInfo[256];  // This holds translations from alarm ID to DestinationID.
-    CtiNotificationGroupSet_t  _notificationGroupSet;  // Notification Groups
-    CtiContactNotificationSet_t _contactNotificationSet; // Email/pager targets
-    CtiDeviceLiteSet_t         _deviceLiteSet;
-    CtiDeviceCICustSet_t       _ciCustSet;             // customer device.
+    std::map< long, CtiTableNotificationGroup >  _notificationGroups;
+    std::map< long, Cti::DeviceBaseLite > _deviceLites;
 
     CtiSignalManager           _signalManager;
     CtiTagManager              _tagManager;
@@ -108,7 +101,7 @@ private:
     void tagSignalAsAlarm(const CtiPointBase &point, CtiSignalMsg *&pSig, int alarm, CtiPointDataMsg *pData = 0);
     void updateDynTagsForSignalMsg( const CtiPointBase &point, CtiSignalMsg *&pSig, int alarm_condition, bool condition_active );
 
-    bool ablementDevice(CtiDeviceLiteSet_t::iterator &dliteit, UINT setmask, UINT tagmask);
+    bool ablementDevice(Cti::DeviceBaseLite &dLite, UINT setmask, UINT tagmask);
     bool ablementPoint(const CtiPointBase &point, bool &devicedifferent, UINT setmask, UINT tagmask, std::string user, CtiMultiMsg &Multi);
 
     void bumpDeviceFromAlternateRate(const CtiPointBase &point);
@@ -167,10 +160,10 @@ public:
     CtiVanGogh();
     virtual ~CtiVanGogh();
 
-    virtual void  clientShutdown(CtiServer::ptr_type CM);
-    virtual int   commandMsgHandler(CtiCommandMsg *Cmd);
+    void  clientShutdown(CtiServer::ptr_type CM) override;
+    void  commandMsgHandler(CtiCommandMsg *Cmd) override;
 
-    virtual void  shutdown();
+    void  shutdown() override;
     void  postDBChange(const CtiDBChangeMsg &Msg);
 
     void  shutdownAllClients();
@@ -182,7 +175,6 @@ public:
     void  VGConnectionHandlerThread();
     void  VGArchiverThread();
     void  VGTimedOperationThread();
-    void  VGDBWriterThread();
     void  VGDBSignalWriterThread();
     void  VGDBSignalEmailThread();
     void  VGRPHWriterThread();
@@ -191,9 +183,6 @@ public:
 
     void  archivePointDataMessage(const CtiPointDataMsg &aPD);
     INT   archiveSignalMessage(const CtiSignalMsg& aSig);
-
-    CtiMessage* messageToConnectionViaGlobalList(const CtiServer::ptr_type &Conn, CtiMessage *pMsg);
-    CtiMessage* messageToConnectionViaPointList(const CtiServer::ptr_type &Conn, CtiMessage *pMsg);
 
     void postMessageToClients(CtiMessage *pMsg);
     void processMessageData(CtiMessage *pMsg);
@@ -246,29 +235,22 @@ public:
     INT   sendMail(const CtiSignalMsg &sig, const CtiTableNotificationGroup &grp);
     std::string getAlarmStateName( INT alarm );
 
-    virtual int clientPurgeQuestionables(PULONG pDeadClients);
-    virtual std::string getMyServerName() const;
+    int clientPurgeQuestionables(PULONG pDeadClients) override;
+    std::string getMyServerName() const override;
     YukonError_t clientRegistration(CtiServer::ptr_type CM) override;
-    virtual int   clientArbitrationWinner(CtiServer::ptr_type CM);
+    int   clientArbitrationWinner(CtiServer::ptr_type CM) override;
     void messageDump(CtiMessage *pMsg);
     void loadRTDB(bool force = false, CtiMessage *pMsg = NULL);     // Loads all relevant RTDB elements
-    void loadDeviceNames();
-    void loadCICustomers(LONG id = 0);
     std::string resolveDeviceNameByPaoId(const LONG PAOId);
     std::string resolveDeviceName(const CtiPointBase &aPoint);
     std::string resolveDeviceObjectType(const LONG devid);
-    std::string resolveDeviceDescription(LONG PAO);
-    bool isDeviceIdValid(const LONG devid);
     bool isDeviceGroupType(const LONG devid);
-    bool isDeviceGroupType(const CtiDeviceBaseLite *device);
-    CtiTableContactNotification* getContactNotification(LONG notifID);
-    CtiTableCICustomerBase* getCustomer( LONG custid );
     void sendSignalToGroup(LONG ngid, const CtiSignalMsg& sig);
     LONG alarmToNotificationGroup(INT signaltrx);
 
     std::string displayConnections();
 
-    CtiDeviceLiteSet_t::iterator deviceLiteFind(const LONG paoId);
+    boost::optional<Cti::DeviceBaseLite &> findDeviceLite(const LONG paoId);
     void reportOnThreads();
     void writeMessageToScanner(const CtiCommandMsg *Cmd);
     void writeMessageToClient(const CtiMessage *pReq, std::string clientName);
@@ -279,11 +261,10 @@ public:
     INT updateDeviceStaticTables(LONG did, UINT setmask, UINT tagmask, std::string user, CtiMultiMsg &sigList);
     INT updatePointStaticTables(LONG pid, UINT setmask, UINT tagmask, std::string user, CtiMultiMsg &sigList);
     void adjustDeviceDisableTags(LONG id = 0, bool dbchange = false, std::string user = std::string("System"));
-    void loadDeviceLites(LONG id = 0);
+    void loadDeviceLites(LONG id);
     void activatePointAlarm(int alarm, CtiMultiWrapper &aWrap, const CtiPointBase &point, CtiDynamicPointDispatch &dpd, bool activate);
 
     int processTagMessage(CtiTagMsg &tagMsg);
-    int loadPendingControls();
     void updateGroupPseduoControlPoint(const CtiPointBase &point, const CtiTime &delaytime);
 
     bool addToPendingSet(CtiPendingPointOperations *&pendingOp, CtiTime &updatetime = CtiTime());

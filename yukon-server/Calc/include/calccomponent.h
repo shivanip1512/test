@@ -2,13 +2,12 @@
 
 #include "ctitime.h"
 #include "ctidate.h"
-#include <rw/collect.h>
 
 #include "pointstore.h"
 
 class CtiCalc;
 
-class CtiCalcComponent : public RWCollectable
+class CtiCalcComponent
 {
 private:
     enum ptType
@@ -52,7 +51,6 @@ protected:
     long                 _componentPointId;
 
 public:
-    RWDECLARE_COLLECTABLE( CtiCalcComponent );
 
     CtiCalcComponent( ) :
     _componentType(constant), _operationType(multiplication), _constantValue(0.0), _functionName(""),
@@ -84,10 +82,4 @@ public:
 
     CtiCalcComponent  &operator=( const CtiCalcComponent &componentToCopy );
     double            calculate( double input, int &component_quality, CtiTime &component_time, bool &calcValid );
- 
-
-//  as soon as the FIXME in calccomponent.cpp is done, these can be uncommented
-//    or, if they're never used, delete the whole shebang...
-//   void              saveGuts( RWvostream &aStream ) const;
-//   void              restoreGuts( RWvistream &aStream );
 };

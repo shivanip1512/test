@@ -4,7 +4,7 @@
 #include <string>
 #include <stdio.h>
 
-#include <tcl.h>
+#include <tcl/tcl.h>
 
 #include "mccmd.h"
 
@@ -33,7 +33,6 @@
 #include "collectable.h"
 #include "pointtypes.h"
 #include "numstr.h"
-#include "ctistring.h"
 #include "mgr_holiday.h"
 #include "dsm2err.h"
 
@@ -44,8 +43,7 @@
 #include "smartmap.h"
 #include "win_helper.h"
 
-#include <rw/thr/thrutil.h>
-#include <rw/thr/thrfunc.h>
+#include "string_util.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/range.hpp>
@@ -83,7 +81,9 @@ CtiClientConnection* PorterConnection = 0;
 CtiClientConnection* VanGoghConnection = 0;
 CtiClientConnection* NotificationConnection = 0;
 
-RWThread MessageThr;
+void _MessageThrFunc();
+
+Cti::WorkerThread MessageThr(Cti::WorkerThread::Function(_MessageThrFunc).name("_MessageThrFunc"));
 
 // Used to distinguish unique requests/responses to/from pil
 unsigned short gUserMessageID = 0;
@@ -131,8 +131,7 @@ static const TclCommandMap tclCommands = boost::assign::map_list_of
 typedef CtiSmartMap<CtiFIFOQueue<CtiMessage>> RequestQueues;
 RequestQueues inboundMessageQueues;
 
-static RWRecursiveLock<RWMutexLock> _queue_mux;
-static RWTValHashDictionary<RWThreadId, boost::shared_ptr< CtiCountedPCPtrQueue<RWCollectable> >, thr_hash, std::equal_to<RWThreadId>  > InQueueStore;
+static CtiCriticalSection _queue_mux;
 
 /* This function runs in it's own thread and simple watches the connection to the
    PIL for incoming messages and places them in the appropriate queue */
@@ -209,14 +208,13 @@ void _MessageThrFunc()
             {
                 last_cancellation_check = ::time(0);
 
-                rwRunnable().serviceCancellation();
+                Cti::WorkerThread::interruptionPoint();
             }
         }
     }
-    catch( RWCancellation& )
+    catch( Cti::WorkerThread::Interrupted & )
     {
-        //anything to do here?
-        throw;
+        CTILOG_INFO(dout, "Thread exiting");
     }
     catch( ... )
     {
@@ -243,18 +241,12 @@ std::string DumpReturnMessage(const CtiReturnMsg& msg)
 
     out << endl <<"result: "<< msg.ResultString();
 
-    CtiMultiMsg_vec rw_set = msg.PointData();
-    CtiMultiMsg_vec::iterator iter = rw_set.begin();
-    CtiPointDataMsg* p_data;
-
-    while( iter != rw_set.end() )
+    for each( const CtiMessage *multiMsg in msg.PointData() )
     {
-        if((*iter)->isA() == MSG_POINTDATA)
+        if( multiMsg->isA() == MSG_POINTDATA )
         {
-            p_data = static_cast<CtiPointDataMsg*>(*iter);
-            out << endl << p_data->getString();
+            out << endl << static_cast<const CtiPointDataMsg *>(multiMsg)->getString();
         }
-        iter++;
     }
 
     return out;
@@ -276,7 +268,7 @@ std::string DumpRequestMessage(const CtiRequestMsg& msg)
 }
 
 /* Connects to the PIL and VanGogh*/
-int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     if( PorterConnection && VanGoghConnection && NotificationConnection )
     {
@@ -376,19 +368,18 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
     NotificationConnection->setName("MCCMD to Notification");
     NotificationConnection->start();
 
-    RWThreadFunction thr_func = rwMakeThreadFunction( _MessageThrFunc );
-    thr_func.start();
-
-    MessageThr = thr_func;
+    MessageThr.start();
 
     return 0;
 }
 
 /* Disconnects from the PIL */
-int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
-    if( MessageThr.isValid() )
-        MessageThr.requestCancellation();
+    if( MessageThr.isRunning() )
+    {
+        MessageThr.interrupt();
+    }
 
     CTILOG_INFO(dout, "Shutting down connection to Porter");
 
@@ -415,7 +406,7 @@ int Mccmd_Disconnect(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 
 }
 
-int Mccmd_Reset(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int Mccmd_Reset(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     return Mccmd_Init(interp);
 }
@@ -511,7 +502,7 @@ int Mccmd_Init(Tcl_Interp* interp)
 
 /*--- Below are the MACS Tcl extensions  ---*/
 
-int Exit(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int Exit(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     //copied from default tcl exit handler
     int value;
@@ -538,77 +529,77 @@ int Exit(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
 }
 
-int Command(ClientData clientdata, Tcl_Interp* interp, int argc, char* argv[])
+int Command(ClientData clientdata, Tcl_Interp* interp, int argc, const char* argv[])
 {
     const string cmd = BuildCommandString(argc, argv);
 
     return DoTwoWayRequest(interp, cmd);
 }
 
-int GetValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int GetValue(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     const string cmd = BuildCommandString(argc, argv);
 
     return DoTwoWayRequest(interp, cmd);
 }
 
-int PutValue(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int PutValue(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     const string cmd = BuildCommandString(argc, argv);
 
     return DoOneWayRequest(interp, cmd);
 }
 
-int GetStatus(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int GetStatus(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     const string cmd = BuildCommandString(argc, argv);
 
     return DoTwoWayRequest(interp, cmd);
 }
 
-int PutStatus(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int PutStatus(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     const string cmd = BuildCommandString(argc, argv);
 
     return DoOneWayRequest(interp, cmd);
 }
 
-int GetConfig(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int GetConfig(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     const string cmd = BuildCommandString(argc, argv);
 
     return DoTwoWayRequest(interp, cmd);
 }
 
-int PutConfig(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int PutConfig(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     const string cmd = BuildCommandString(argc, argv);
 
     return DoOneWayRequest(interp, cmd);
 }
 
-int Loop(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int Loop(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     const string cmd = BuildCommandString(argc, argv);
 
     return DoOneWayRequest(interp, cmd);
 }
 
-int Control(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int Control(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     const string cmd = BuildCommandString(argc, argv);
 
     return DoOneWayRequest(interp, cmd);
 }
 
-int Scan(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int Scan(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     const string cmd = BuildCommandString(argc, argv);
 
     return DoOneWayRequest(interp, cmd);
 }
 
-int Pil(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int Pil(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     if( argc <= 1 )
     {
@@ -623,7 +614,7 @@ int Pil(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
     return DoOneWayRequest(interp, cmd);}
 
-int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     if( argc != 2 )
     {
@@ -654,7 +645,7 @@ int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 
     address := <service area>[,VN<serial #>]
 */
-int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
 
     if( argc != 2 )
@@ -681,7 +672,7 @@ int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]
     return TCL_OK;
 }
 
-int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     int tcl_ret = TCL_OK;
 
@@ -717,7 +708,7 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
     return tcl_ret;
 }
 
-int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     int tcl_ret = TCL_OK;
 
@@ -759,7 +750,7 @@ int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
     return tcl_ret;
 }
 
-int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     int tcl_ret = TCL_OK;
 
@@ -801,7 +792,7 @@ int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
     return tcl_ret;
 }
 
-int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     if( argc != 2 )
     {
@@ -827,7 +818,7 @@ int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     return TCL_OK;
 }
 
-int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     int commandLimit=0;
     int commandsPerTime=0;
@@ -1180,7 +1171,7 @@ bool FileAppendAndDelete(const string &toFileName, const string &fromFileName)
 }
 
 
-int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     time_t t = ::time(NULL);
     int id = 0;
@@ -1194,14 +1185,10 @@ int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     {
         id = atoi(argv[2]);
     }
-    else
+    // This will only get set if running inside MACS
+    else if( const char* h_sched_id = Tcl_GetVar(interp, HolidayScheduleIDVariable, 0 ) )
     {
-        // This will only get set if running inside MACS
-        char* h_sched_id = Tcl_GetVar(interp, HolidayScheduleIDVariable, 0 );
-        if( h_sched_id != NULL )
-        {
-            id = atoi(h_sched_id);
-        }
+        id = atoi(h_sched_id);
     }
 
     CtiHolidayManager& mgr = CtiHolidayManager::getInstance();
@@ -1218,7 +1205,7 @@ int isHoliday(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
 }
 
 
-int LogEvent(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[] )
+int LogEvent(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[] )
 {
     string user = "";
     string message = "";
@@ -1259,7 +1246,7 @@ int LogEvent(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[] )
     return TCL_OK;
 }
 
-int Dout(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int Dout(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     if( argc != 2 )
         return TCL_ERROR;
@@ -1281,7 +1268,7 @@ int Dout(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
   text or body of the email
 ----------------------------------------------------------------------------*/
 
-int SendNotification(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int SendNotification(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     if( argc != 4 )
     {
@@ -1318,7 +1305,7 @@ int SendNotification(ClientData clientData, Tcl_Interp* interp, int argc, char* 
 }
 
 
-int Select(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int Select(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     if( argc == 1 )
     {
@@ -1335,7 +1322,7 @@ int Select(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
     return TCL_OK;
 }
 
-int Wait(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int Wait(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
     if( argc < 2 )
     {
@@ -1355,13 +1342,13 @@ int Wait(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
             return TCL_ERROR;
         }
 
-        rwSleep(1000);
+        Sleep(1000);
     }
 
     return TCL_OK;
 }
 
-int getDeviceName(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int getDeviceName(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
   if(argc < 2)
     {
@@ -1377,7 +1364,7 @@ int getDeviceName(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
   return TCL_OK;
 }
 
-int getDeviceID(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int getDeviceID(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
   if(argc < 2)
     {
@@ -1391,7 +1378,7 @@ int getDeviceID(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
   return TCL_OK;
 }
 
-int formatError(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int formatError(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
   if(argc < 2)
     {
@@ -1406,7 +1393,7 @@ int formatError(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[
   return TCL_OK;
 }
 
-int getYukonBaseDir(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
+int getYukonBaseDir(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
   string base_dir = gConfigParms.getYukonBase();
   Tcl_Obj* tcl_str = Tcl_NewStringObj(base_dir.c_str(), -1);
@@ -1480,8 +1467,7 @@ static int DoRequest(Tcl_Interp* interp, const string &cmd_line, long timeout, b
     //Be sure to remove it before exiting
     unsigned int msgid = GenMsgID();
 
-    char* jobIdStr = Tcl_GetVar(interp, "DeviceReadLogId", 0 );
-    if( jobIdStr != NULL )
+    if( const char* jobIdStr = Tcl_GetVar(interp, "DeviceReadLogId", 0 ) )
     {
         jobId = atoi(jobIdStr);
     }
@@ -1904,9 +1890,10 @@ void HandleReturnMessage(CtiReturnMsg* msg,
 /* put the thread id into the high order and the messageid into the low*/
 unsigned int GenMsgID()
 {
-    RWRecursiveLock<RWMutexLock>::LockGuard guard(_queue_mux);
-    return((unsigned int) rwThreadId() << 16) +
-    (unsigned int) gUserMessageID++;
+    CtiLockGuard<CtiCriticalSection> guard(_queue_mux);
+
+    //  This can break - we need to be using an __int64 here instead
+    return (GetCurrentThreadId() << 16) + gUserMessageID++;
 }
 
 unsigned int GetThreadIDFromMsgID(unsigned int msg_id)
@@ -1981,7 +1968,7 @@ static long GetDeviceID(const string& name)
     return id;
 }
 
-std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, CtiString cmd_line)
+std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, std::string cmd_line)
 {
     std::vector<CtiRequestMsg *> req_set;
 
@@ -1997,12 +1984,10 @@ std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, CtiString cmd_l
 
     }
 
-    size_t index;
-    size_t* end_index = new size_t(0);
+    size_t end_index;
 
     int priority = 7;
-    char* pStr = Tcl_GetVar(interp, PILRequestPriorityVariable, TCL_GLOBAL_ONLY);
-    if( pStr != NULL )
+    if( const char* pStr = Tcl_GetVar(interp, PILRequestPriorityVariable, TCL_GLOBAL_ONLY) )
     {
         priority = atoi(pStr);
         if( priority < 1 || priority > 15 )
@@ -2017,10 +2002,10 @@ std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, CtiString cmd_l
     boost::regex select_deviceid_regex = boost::regex(".*select deviceid");
     boost::regex select_regex = boost::regex(".*select[ ]+[^ ]+[ ]+");
 
-    if( cmd_line.index(select_list_regex, end_index) != string::npos )
+    if( Cti::locateRegex(cmd_line, select_list_regex, &end_index, 0) != string::npos )
     {
         int list_len;
-        Tcl_Obj* sel_str = Tcl_NewStringObj( cmd_line.c_str() + *end_index, -1 );
+        Tcl_Obj* sel_str = Tcl_NewStringObj( cmd_line.c_str() + end_index, -1 );
         Tcl_ListObjLength(interp, sel_str, &list_len );
 
         boost::regex e1 = boost::regex("\n");
@@ -2078,8 +2063,8 @@ std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, CtiString cmd_l
         Tcl_DecrRefCount(sel_str);
     }
     else //dont add quotes if it is an id
-    if( cmd_line.index(select_id_regex, end_index)       != string::npos ||
-        cmd_line.index(select_deviceid_regex, end_index) != string::npos )
+    if( Cti::containsRegex(cmd_line, select_id_regex) ||
+        Cti::containsRegex(cmd_line, select_deviceid_regex) )
     {
         CtiRequestMsg *msg = new CtiRequestMsg();
         msg->setDeviceId(0);
@@ -2088,13 +2073,15 @@ std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, CtiString cmd_l
         req_set.push_back(msg);
     }
     else
-    if( cmd_line.index(select_regex, end_index) != string::npos )
+    if( Cti::locateRegex(cmd_line, select_regex, &end_index, 0) != string::npos )
     {
 
         //PIL likes to see ' around any device, group, etc
-        cmd_line.insert(*end_index, "'");
+        cmd_line.insert(end_index, "'");
         trim(cmd_line);
         cmd_line.append("'");
+
+        size_t index;
 
         //strip out the braces
         while( (index = cmd_line.find("{")) != string::npos )
@@ -2113,7 +2100,6 @@ std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, CtiString cmd_l
         msg->setMessagePriority(priority);
         req_set.push_back(msg);
     }
-    delete end_index;
 
     return req_set;
 }
@@ -2121,7 +2107,7 @@ std::vector<CtiRequestMsg *> BuildRequestSet(Tcl_Interp* interp, CtiString cmd_l
 /*
  *  This function sends a DBCHANGE to dispatch to help keep any clients in sync with the paobjectid.
  */
-int SendDBChange(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[] )
+int SendDBChange(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[] )
 {
     string app = "MACS Server";
     string user = "";
@@ -2152,7 +2138,7 @@ int SendDBChange(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
     return TCL_OK;
 }
 
-int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[] )
+int CTICreateProcess(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[] )
 {
     string cmd;
     for(int i = 1; i < argc; i++)

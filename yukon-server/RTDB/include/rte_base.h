@@ -13,6 +13,7 @@
 #include "tbl_static_paoinfo.h"
 #include "encryption.h"
 #include "loggable.h"
+#include "std_helper.h"
 
 #include <boost/shared_ptr.hpp>
 #include <list>
@@ -95,9 +96,7 @@ public:
 
 protected:
 
-    typedef std::set<CtiTableStaticPaoInfo> StaticPaoInfoSet;
-
-    StaticPaoInfoSet _staticPaoInfo;
+    std::map<CtiTableStaticPaoInfo::PaoInfoKeys, CtiTableStaticPaoInfo> _staticPaoInfo;
 
 public:
 
@@ -108,30 +107,30 @@ public:
 
     bool hasStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const
     {
-        return (_staticPaoInfo.find(CtiTableStaticPaoInfo(getRouteID(), k)) != _staticPaoInfo.end());
+        return _staticPaoInfo.count(k);
     }
 
     bool setStaticInfo(const CtiTableStaticPaoInfo &info)
     {
-        StaticPaoInfoSet::iterator itr = _staticPaoInfo.find(info);
+        auto itr = _staticPaoInfo.find(info.getKey());
 
         if( itr != _staticPaoInfo.end() )
         {
-            *itr = info;
+            itr->second = info;
             return false;       // update existing entry
         }
 
-        _staticPaoInfo.insert(info);
+        _staticPaoInfo.emplace(info.getKey(), info);
         return true;            // insert a new entry
     }
 
     bool getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, std::string &destination) const
     {
-        StaticPaoInfoSet::const_iterator itr;
+        auto itr = _staticPaoInfo.find(k);
 
-        if( (itr = _staticPaoInfo.find(CtiTableStaticPaoInfo(getRouteID(), k))) != _staticPaoInfo.end() )
+        if( itr != _staticPaoInfo.end() )
         {
-            itr->getValue(destination);
+            itr->second.getValue(destination);
             return true;
         }
 
@@ -140,11 +139,11 @@ public:
 
     bool getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k, double &destination) const
     {
-        StaticPaoInfoSet::const_iterator itr;
+        auto itr = _staticPaoInfo.find(k);
 
-        if( (itr = _staticPaoInfo.find(CtiTableStaticPaoInfo(getRouteID(), k))) != _staticPaoInfo.end() )
+        if( itr != _staticPaoInfo.end() )
         {
-            itr->getValue(destination);
+            itr->second.getValue(destination);
             return true;
         }
 
@@ -153,12 +152,12 @@ public:
 
     long getStaticInfo(CtiTableStaticPaoInfo::PaoInfoKeys k) const
     {
-        StaticPaoInfoSet::const_iterator itr;
-
         long value = 0;
-        if( (itr = _staticPaoInfo.find(CtiTableStaticPaoInfo(getRouteID(), k))) != _staticPaoInfo.end() )
+        auto itr = _staticPaoInfo.find(k);
+
+        if( itr != _staticPaoInfo.end() )
         {
-            itr->getValue(value);
+            itr->second.getValue(value);
         }
 
         return value;

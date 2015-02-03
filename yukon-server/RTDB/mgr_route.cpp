@@ -24,56 +24,21 @@ using std::vector;
 using std::ostringstream;
 
 
-CtiRouteManager::CtiRouteManager() {}
-
-CtiRouteManager::~CtiRouteManager()
-{
-    // cleanupDB();  // Deallocate all the DB stuff.
-}
-
-
-inline RWBoolean  isRouteNotUpdated(CtiRouteBase *pRoute, void* d)
-{
-    // Return TRUE if it is NOT SET
-    return(RWBoolean(!pRoute->getUpdatedFlag()));
-}
-
-
 void ApplyRouteResetUpdated(const long key, CtiRouteSPtr pRoute, void* d)
 {
     pRoute->resetUpdatedFlag();
 
     if(pRoute->getType() == RouteTypeMacro)
     {
-        CtiRouteMacro* pMacro = (CtiRouteMacro*)pRoute.get();
-        pMacro->getRouteList().clear();   // We will refill this one as we go!
+        Cti::Routes::MacroRoute* pMacro = (Cti::Routes::MacroRoute*)pRoute.get();
+        pMacro->clearSubroutes();   // We will refill this one as we go!
     }
     if(pRoute->getType() == RouteTypeCCU)
     {
         CtiRouteCCU* pCCU = (CtiRouteCCU*)pRoute.get();
-        pCCU->getRepeaterList().clear();  //  ditto
+        pCCU->clearRepeaters();  //  ditto
     }
 
-    return;
-}
-
-void ApplyRepeaterSort(const long key, CtiRouteSPtr pRoute, void* d)
-{
-    if(pRoute->getType() == RouteTypeCCU)
-    {
-        CtiRouteCCU* pCCU = (CtiRouteCCU*)pRoute.get();
-        pCCU->getRepeaterList().sort();
-    }
-    return;
-}
-
-void ApplyMacroRouteSort(const long key, CtiRouteSPtr pRoute, void* d)
-{
-    if(pRoute->getType() == RouteTypeMacro)
-    {
-        CtiRouteMacro* pMacro = (CtiRouteMacro*)pRoute.get();
-        pMacro->getRouteList().sort();
-    }
     return;
 }
 
@@ -213,7 +178,7 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &))
                     CTILOG_DEBUG(dout, "Looking for Macro Routes");
                 }
 
-                static const string sql = CtiTableMacroRoute::getSQLCoreStatement();
+                static const string sql = Cti::Tables::MacroRouteTable::getSQLCoreStatement();
 
                 Cti::Database::DatabaseConnection connection;
                 Cti::Database::DatabaseReader rdr(connection, sql);
@@ -326,9 +291,6 @@ void CtiRouteManager::RefreshRepeaterRoutes(bool &rowFound, Cti::RowReader& rdr)
             }
         }
     }
-
-    // Sort all the repeater listings based on repeater order
-    apply(ApplyRepeaterSort, NULL);
 }
 
 
@@ -344,31 +306,22 @@ bool CtiRouteManager::isRepeaterRelevantToRoute(long repeater_id, long route_id)
 
 void CtiRouteManager::RefreshMacroRoutes(bool &rowFound, Cti::RowReader& rdr)
 {
-    LONG lTemp = 0;
-    ptr_type pTempCtiRoute;
-
     while( (_smartMap.setErrorCode(rdr.isValid() ? 0 : 1) == 0) && rdr() )
     {
         rowFound = true;
 
-        rdr["routeid"] >> lTemp;            // get the RouteID
+        long rteid;
+        rdr["routeid"] >> rteid;
 
-        if( !_smartMap.empty() && ((pTempCtiRoute = _smartMap.find(lTemp))) )
+        if( ptr_type rte = _smartMap.find(rteid) )
         {
-            if(pTempCtiRoute->getType() == RouteTypeMacro)
+            //  make sure it's a macro route
+            if( rte->getType() == RouteTypeMacro )
             {
-                /*
-                 *  The route just returned from the rdr already was in my list.  We need to
-                 *  add this route to the macro route entry... It had better be a macro route.
-                 */
-
-                CtiRouteMacro *pMacro = (CtiRouteMacro*)pTempCtiRoute.get();
-                pMacro->DecodeMacroReader(rdr);        // Fills himself in from the reader
+                static_cast<Cti::Routes::MacroRoute *>(rte.get())->DecodeSubrouteReader(rdr);
             }
         }
     }
-
-    apply(ApplyMacroRouteSort, NULL);
 }
 
 void CtiRouteManager::RefreshVersacomRoutes(bool &rowFound, Cti::RowReader& rdr)
@@ -512,101 +465,99 @@ CtiRouteManager::spiterator CtiRouteManager::nextPos(CtiRouteManager::spiterator
 bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, list< CtiMessage* > &retList, vector< CtiDeviceRepeaterRole > & roleVector )
 {
     coll_type::reader_lock_guard_t guard(getLock());
-    spiterator itr_rte;
 
     int rolenum = 1;
-    int stagestofollow;
-    bool foundit;
 
-    for(itr_rte = begin(); itr_rte != end(); nextPos(itr_rte))
+    for(spiterator itr_rte = begin(); itr_rte != end(); nextPos(itr_rte))
     {
-        foundit = false;
-        stagestofollow = 0;
-
         CtiRouteSPtr route = itr_rte->second;
 
-        if(route && route->getType() == RouteTypeCCU)
+        if( ! route || route->getType() != RouteTypeCCU )
         {
-            CtiRouteCCU *ccuroute = (CtiRouteCCU*)route.get();
+            continue;
+        }
 
-            if( ccuroute->getRepeaterList().entries() > 0 )
+        CtiRouteCCU *ccuroute = (CtiRouteCCU*)route.get();
+
+        if( ccuroute->getRepeaters().empty() )
+        {
+            continue;
+        }
+
+        // This CCURoute has repeater entries.
+        if(ccuroute->getCCUVarBits() == 7)
+        {
+            string resStr = "*** WARNING *** " + ccuroute->getName() + " Has CCU variable bits set to 7 AND has repeaters.";
+
+            CTILOG_WARN(dout, resStr << " It will be skipped for role generation.");
+
+            retList.push_back(
+                    new CtiReturnMsg(
+                            Req.DeviceId(),
+                            Req.CommandString(),
+                            resStr,
+                            ClientErrors::BadParameter,
+                            Req.RouteId(),
+                            Req.MacroOffset(),
+                            Req.AttemptNum(),
+                            Req.GroupMessageId(),
+                            Req.UserMessageId()) );
+
+            continue;
+        }
+
+        CtiDeviceRepeaterRole role;
+        const CtiTableRepeaterRoute *prev_rte = 0;
+
+        bool foundit = false;
+        int stagestofollow = 0;
+        for each( const CtiTableRepeaterRoute &rte in ccuroute->getRepeaters() )
+        {
+            role.setRouteID( ccuroute->getRouteID() );
+            role.setRoleNumber( rolenum++ );
+
+            if(!foundit)
             {
-                // This CCURoute has repeater entries.
-                if(ccuroute->getCCUVarBits() == 7)
+                if( rte.getDeviceID() == id )   // Is our repeater in there?
                 {
-                    string resStr = "*** WARNING *** " + ccuroute->getName() + " Has CCU variable bits set to 7 AND has repeaters. ";
+                    foundit = true;
 
-                    CTILOG_WARN(dout, resStr <<
-                            endl << "It will be skipped. for role generation."
-                            );
-
-                    retList.push_back( CTIDBG_new CtiReturnMsg( Req.DeviceId(),
-                                                      Req.CommandString(),
-                                                      resStr,
-                                                      ClientErrors::BadParameter,
-                                                      Req.RouteId(),
-                                                      Req.MacroOffset(),
-                                                      Req.AttemptNum(),
-                                                      Req.GroupMessageId(),
-                                                      Req.UserMessageId()) );
-
-                    continue;
-                }
-                else
-                {
-                    int i;
-                    CtiDeviceRepeaterRole role;
-
-                    for(i = 0; i < ccuroute->getRepeaterList().length(); i++)
+                    if( ! prev_rte )
                     {
-
-                        role.setRouteID( ccuroute->getRouteID() );
-                        role.setRoleNumber( rolenum++ );
-
-                        if(!foundit)
-                        {
-                            if( ccuroute->getRepeaterList()[i].getDeviceID() == id )   // Is our repeater in there?
-                            {
-                                foundit = true;
-
-                                if(i == 0)
-                                {
-                                    // Use the route to build up the Role object
-                                    role.setOutBits( ccuroute->getCCUVarBits() );
-                                }
-                                else
-                                {
-                                    // Use the previous repeater to build up the role object.
-                                    role.setOutBits( ccuroute->getRepeaterList()[i-1].getVarBit() );
-                                }
-                                role.setFixBits(ccuroute->getCCUFixBits());
-                                role.setInBits(ccuroute->getRepeaterList()[i].getVarBit());
-
-                                if(ccuroute->getRepeaterList()[i].getVarBit() == 7)
-                                {
-                                    break;      // The for... It is kaput!
-                                }
-                            }
-                        }
-                        else
-                        {
-                            // We have found it in this route.  We need to count the additional stages in the route.
-                            stagestofollow++;
-                            if(ccuroute->getRepeaterList()[i].getVarBit() == 7)
-                            {
-                                break;      // The for... no more routes!
-                            }
-                        }
+                        // Use the route to build up the Role object
+                        role.setOutBits( ccuroute->getCCUVarBits() );
                     }
-
-                    role.setStages(stagestofollow);
-
-                    if(foundit)
+                    else
                     {
-                        roleVector.push_back( role );
+                        // Use the previous repeater to build up the role object.
+                        role.setOutBits( prev_rte->getVarBit() );
+                    }
+                    role.setFixBits(ccuroute->getCCUFixBits());
+                    role.setInBits(rte.getVarBit());
+
+                    if(rte.getVarBit() == 7)
+                    {
+                        break;      // The for... It is kaput!
                     }
                 }
             }
+            else
+            {
+                // We have found it in this route.  We need to count the additional stages in the route.
+                stagestofollow++;
+                if(rte.getVarBit() == 7)
+                {
+                    break;      // The for... no more routes!
+                }
+            }
+            prev_rte = &rte;
+        }
+
+        if( foundit )
+        {
+            role.setStages(stagestofollow);
+
+            roleVector.push_back( role );
         }
     }
 

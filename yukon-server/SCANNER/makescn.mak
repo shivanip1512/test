@@ -1,5 +1,4 @@
 include $(COMPILEBASE)\global.inc
-include $(COMPILEBASE)\rwglobal.inc
 
 SCNDLLOBJS=\
 ctiscannable.obj\
@@ -22,8 +21,8 @@ ALL:            $(CTIPROGS)
 ctiscn.dll:     $(SCNDLLOBJS) Makefile $(OBJ)\ctiscn.res
                 @echo:
                 @echo Compiling $@
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe$@ \
-                $(SCNDLLOBJS) -link $(RWLIBS) $(SCNLIBS) $(OBJ)\ctiscn.res
+                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe$@ \
+                $(SCNDLLOBJS) -link $(SCNLIBS) $(OBJ)\ctiscn.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist $@ copy $@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -44,7 +43,7 @@ clean:
 .cpp.obj:
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) -I..\include $(INCLPATHS) /D_DLL_CTISCN -c $<
+        $(CC) $(CCOPTS) $(DLLFLAGS) $(PCHFLAGS) -I..\include $(INCLPATHS) /D_DLL_CTISCN -c $<
 
 
 ######################################################################################

@@ -2,16 +2,12 @@
  * Every source (.cpp) file should include this file, with the exception of unit tests.
  *
  * This header file exists to precompile large header files that never change,
- *   which are usually third-party library includes such as Boost or Rogue Wave.
+ *   which are usually third-party library includes such as Boost.
  *
  */
 #pragma once
 
 #define _WIN32_WINNT 0x0501  //  Windows XP, Server 2003.  No service packs.
-
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
 
 #define WIN32_LEAN_AND_MEAN
 
@@ -33,17 +29,6 @@
 #include <vector>
 #include <map>
 #include <set>
-
-#include <rw/collect.h>
-#include <rw/tvhdict.h>
-#include <rw/tpslist.h>
-#include <rw/tvslist.h>
-
-#include <rw/thr/monitor.h>
-#include <rw/thr/recursiv.h>
-#include <rw/thr/mutex.h>
-
-
 
 //  for boost/bimap.hpp
 #define BOOST_MULTI_INDEX_DISABLE_SERIALIZATION

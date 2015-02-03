@@ -1,26 +1,6 @@
-/*****************************************************************************
-*
-*    FILE NAME: mgr_fdrpoint.cpp
-*
-*    DATE: 10/26/2000
-*
-*    AUTHOR: Ben Wallace
-*
-*    PURPOSE: class CtiFDRManager manages a collection of FDRPoints
-*
-*    DESCRIPTION: Manages a collection of FDRPoints which are points
-*                 that are sent or received from other systems.  Translation
-*                 information is also included in our for id or renaming.
-*
-*
-*
-*    Copyright (C) 2000 Cannon Technologies, Inc.  All rights reserved.
-****************************************************************************/
 #include "precompiled.h"
 
-
 #include "dbaccess.h"
-#include "hashkey.h"
 #include "resolvers.h"
 
 #include "fdr.h"
@@ -138,22 +118,11 @@ bool CtiFDRManager::loadPointList()
         }
         fdrTempMap.clear();
     }
-    catch(RWExternalErr e )
-    {
-        CTILOG_EXCEPTION_ERROR(dout, e);
-
-        //Make sure the list is cleared
-        CTILOG_INFO(dout, "Attempting to clear FDR Point list...");
-        pointMap.removeAll(NULL, 0);
-
-        RWTHROW(e);
-
-        functionSuccess = false;
-    }
     catch(...)
     {
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
 
+        CTILOG_INFO(dout, "Attempting to clear FDR Point list...");
         pointMap.removeAll(NULL, 0);
 
         functionSuccess = false;
@@ -223,14 +192,6 @@ bool CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
             CTILOG_DEBUG(dout, "DB read for SQL query: "<< ss.str());
         }
     }
-    catch(const RWExternalErr& e)
-    {
-        CTILOG_EXCEPTION_ERROR(dout, e, "Failed to load point - will attempt to clear FDR Point list...");
-        //Make sure the list is cleared
-        pointMap.removeAll(NULL, 0);
-
-        RWTHROW(e);
-    }
     catch (FdrDatabaseException e)
     {
         functionStatus = false;
@@ -241,7 +202,7 @@ bool CtiFDRManager::loadPoint(long pointId, CtiFDRPointSPtr & point)
     {
         functionStatus = false;
 
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load point "<< pointId);
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Failed to load point "<< pointId << " - will attempt to clear FDR Point list...");
 
         pointMap.removeAll(NULL, 0);
     }

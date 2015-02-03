@@ -1,10 +1,8 @@
 include $(COMPILEBASE)\global.inc
-include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(DATABASE)\include \
 -I$(COMMON)\include \
--I$(RW) \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 
@@ -22,11 +20,11 @@ INCLPATHS+= \
 ;$(PROT)\include \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
-;$(RW)
 
 
 
 DLLOBJS=\
+$(PRECOMPILED_OBJ) \
 tbl_rawpthistory.obj \
 tbl_signal.obj \
 
@@ -49,7 +47,7 @@ ctidbres.dll:  $(DLLOBJS) Makefile $(OBJ)\ctidbres.res
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(DLLOBJS) -link $(RWLIBS) $(BOOST_LIBS) \
+                $(CC) $(INCLPATHS) $(DLLFLAGS) -Fe..\$@ $(DLLOBJS) -link $(BOOST_LIBS) \
 $(DBLIBS) ctidbres.res
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
@@ -93,7 +91,7 @@ $(BIN)\*.exe
 .cpp.obj:
         @echo:
         @echo Compiling cpp to obj
-        $(RWCPPINVOKE) $(RWCPPFLAGS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) /D_DLL_SIGNAL -Fo$(OBJ)\ -c $<
+        $(CC) $(CCOPTS) $(DLLFLAGS) $(PCHFLAGS) $(INCLPATHS) /D_DLL_SIGNAL -Fo$(OBJ)\ -c $<
 
 
 ######################################################################################

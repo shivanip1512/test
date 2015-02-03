@@ -395,9 +395,9 @@ void CtiPendingPointOperations::addOffset(int offset, long pid)
     return;
 }
 
-void CtiPendingPointOperations::setLastHistoryPost(CtiTime rwt)
+void CtiPendingPointOperations::setLastHistoryPost(CtiTime lastPostTime)
 {
-    _lastHistoryPost = rwt;
+    _lastHistoryPost = lastPostTime;
 }
 
 CtiTime CtiPendingPointOperations::getLastHistoryPost() const

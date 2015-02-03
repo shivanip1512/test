@@ -1,27 +1,8 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   msg_ptreg
-*
-* Date:   7/19/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_ptreg.cpp-arc  $
-* REVISION     :  $Revision: 1.8.24.1 $
-* DATE         :  $Date: 2008/11/13 17:23:45 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include <rw/collect.h>
 
 #include "collectable.h"
 #include "logger.h"
 #include "msg_ptreg.h"
-#include <rw\thr\mutex.h>
 #include "dlldefs.h"
 
 #include "dllbase.h"

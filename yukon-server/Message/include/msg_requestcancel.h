@@ -1,16 +1,7 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
-#include <windows.h>
-#include <rw/rwset.h>
-
 #include "dlldefs.h"
 #include "message.h"
-
-#include "yukon.h"
 
 class IM_EX_MSG CtiRequestCancelMsg : public CtiMessage
 {

@@ -12,7 +12,7 @@ namespace Porter {
 
 StatisticsManager PorterStatisticsManager;
 
-void StatisticsThread( void * )
+void StatisticsThread()
 {
     ThreadStatusKeeper threadKeeper("Statistics Thread");
 

@@ -1,9 +1,5 @@
 #pragma once
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include <windows.h>
 #include <vector>
 
@@ -109,7 +105,7 @@ class IM_EX_FDRTELEGYRAPI CtiFDRTelegyr : public CtiFDRInterface
 
    protected:
 
-      RWThreadFunction                    _threadGetTelegyrData;
+      Cti::WorkerThread                   _threadGetTelegyrData;
       int                                 _numberOfConnections;
       CtiTelegyrControlCenter             _controlCenter;
       double                              _hiReasonabilityFilter;

@@ -2,7 +2,6 @@
 # nmake file YUKON 1.0
 
 !include $(COMPILEBASE)\global.inc
-!include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(COMMON)\include \
@@ -16,7 +15,6 @@ INCLPATHS+= \
 -I$(SERVICE)\include \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
--I$(RW) \
 
 
 .PATH.H = \
@@ -35,7 +33,6 @@ INCLPATHS+= \
 ;$(MSG)\include \
 ;$(SIGNAL)\include \
 ;$(BOOST_INCLUDE) \
-;$(RW)
 
 
 
@@ -51,6 +48,7 @@ $(COMPILEBASE)\lib\ctivg.lib
 
 
 DISPATCH_TEST_OBJS= \
+$(PRECOMPILED_OBJ) \
 test_main.obj \
 test_signalmanager.obj \
 test_mgr_ptclients.obj \
@@ -66,7 +64,7 @@ $(DISPATCH_TEST_FULLBUILD) :
 	@touch $@
 	@echo:
 	@echo Compiling cpp to obj
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(DISPATCH_TEST_OBJS)]
+	$(CC) $(CCOPTS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(DISPATCH_TEST_OBJS)]
 
 
 test_dispatch.exe:  $(DISPATCH_TEST_FULLBUILD) $(DISPATCH_TEST_OBJS) Makefile
@@ -74,12 +72,11 @@ test_dispatch.exe:  $(DISPATCH_TEST_FULLBUILD) $(DISPATCH_TEST_OBJS) Makefile
 	@echo Creating Executable $(BIN)\$(_TargetF)
         @echo:
 	@%cd $(OBJ)
-	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
-        $(DISPATCH_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	$(CC) $(CFLAGS) $(INCLPATHS)  /Fe..\$(BIN)\$(_TargetF) \
+        $(DISPATCH_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(LIBS) $(LINKFLAGS)
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
         @%cd $(CWD)
         @echo.
@@ -114,7 +111,7 @@ clean:
         @echo Compiling $< to
         @echo           $(OBJ)\$(@B).obj
         @echo:
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
+	$(CC) $(CCOPTS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
 ######################################################################################
 #UPDATE#
@@ -128,14 +125,13 @@ test_mgr_ptclients.obj:	mgr_ptclients.h dlldefs.h mgr_point.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
 		pointdefs.h smartmap.h readers_writer_lock.h msg_pdata.h \
-		message.h collectable.h ptconnect.h hashkey.h \
-		hash_functions.h con_mgr.h connection_server.h connection.h \
-		msg_multi.h msg_ptreg.h msg_reg.h queue.h cparms.h rwutil.h \
-		database_connection.h database_reader.h boost_time.h \
-		configkey.h configval.h connection_base.h worker_thread.h \
-		connection_listener.h ctibase.h streamSocketConnection.h \
-		socket_helper.h win_helper.h server_b.h pt_dyn_dispatch.h \
-		tbl_pt_alarm.h tbl_ptdispatch.h tbl_pt_limit.h rtdb.h \
+		message.h collectable.h ptconnect.h con_mgr.h \
+		connection_server.h connection.h msg_multi.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h configkey.h configval.h \
+		connection_base.h worker_thread.h connection_listener.h \
+		ctibase.h streamSocketConnection.h socket_helper.h \
+		win_helper.h server_b.h pt_dyn_dispatch.h tbl_pt_alarm.h \
+		tbl_ptdispatch.h database_connection.h tbl_pt_limit.h rtdb.h \
 		tbl_rawpthistory.h row_writer.h tbl_pt_property.h pt_status.h \
 		tbl_pt_status.h tbl_pt_status_control.h tbl_pt_control.h \
 		pt_analog.h pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
@@ -154,30 +150,29 @@ test_vangogh.obj:	ctivangogh.h con_mgr.h connection_server.h \
 		connection.h dlldefs.h message.h ctitime.h ctidbgmem.h \
 		collectable.h loggable.h msg_multi.h msg_pdata.h yukon.h \
 		types.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
-		mutex.h queue.h cparms.h rwutil.h database_connection.h \
-		dbaccess.h dllbase.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		mutex.h queue.h cparms.h configkey.h configval.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		logger.h streamBuffer.h string_util.h exception_helper.h \
-		boostutil.h dsm2err.h words.h optional.h macro_offset.h \
-		database_reader.h row_reader.h boost_time.h configkey.h \
-		configval.h readers_writer_lock.h connection_base.h \
-		worker_thread.h connection_listener.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		con_mgr_vg.h vgexe_factory.h executor.h exe_ptchg.h \
-		executorfactory.h exe_cmd.h exe_reg.h msg_cmd.h server_b.h \
-		smartmap.h dev_base_lite.h dbmemobject.h msg_dbchg.h \
-		msg_multiwrap.h msg_pcreturn.h msg_lmcontrolhistory.h \
-		msg_tag.h pendingopthread.h pendable.h pending_info.h \
-		msg_signal.h tbl_lm_controlhist.h pt_numeric.h pt_base.h \
-		tbl_pt_base.h resolvers.h db_entry_defines.h tbl_pt_unit.h \
+		critical_section.h atomic.h readers_writer_lock.h guard.h \
+		connection_base.h worker_thread.h timing_util.h \
+		connection_listener.h ctibase.h streamSocketConnection.h \
+		streamConnection.h netports.h immutable.h socket_helper.h \
+		win_helper.h dllbase.h dsm2.h dsm2err.h words.h optional.h \
+		macro_offset.h con_mgr_vg.h vgexe_factory.h executorfactory.h \
+		exe_cmd.h executor.h msg_cmd.h server_b.h smartmap.h \
+		dev_base_lite.h dbmemobject.h msg_dbchg.h msg_multiwrap.h \
+		msg_pcreturn.h msg_lmcontrolhistory.h msg_tag.h \
+		pendingopthread.h pendable.h pending_info.h msg_signal.h \
+		tbl_lm_controlhist.h row_reader.h dbaccess.h \
+		database_connection.h pt_numeric.h pt_base.h tbl_pt_base.h \
+		resolvers.h db_entry_defines.h tbl_pt_unit.h \
 		tbl_unitmeasure.h thread.h signalmanager.h pt_dyn_dispatch.h \
 		tbl_pt_alarm.h tbl_ptdispatch.h pt_status.h tbl_pt_status.h \
 		tbl_pt_status_control.h tbl_pt_control.h tagmanager.h \
 		tbl_dyn_pttag.h tbl_tag.h tbl_taglog.h tbl_state_grp.h \
 		tbl_state.h tbl_alm_ngroup.h tbl_pt_limit.h \
 		tbl_rawpthistory.h row_writer.h tbl_signal.h tbl_ci_cust.h \
-		tbl_contact_notification.h rtdb.h hashkey.h hash_functions.h \
-		connection_client.h ctidate.h
+		tbl_contact_notification.h rtdb.h connection_client.h \
+		ctidate.h
 #ENDUPDATE#
 

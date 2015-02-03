@@ -1,20 +1,5 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   dev_system
-*
-* Date:   7/23/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2008/10/28 19:21:42 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
 #include "cparms.h"
-
-
 
 #include "dev_system.h"
 #include "logger.h"
@@ -33,8 +18,6 @@
 
 #include "numstr.h"
 #include "dev_mct410.h"
-
-#define DEBUG_PRINT_DECODE 0
 
 using std::string;
 using std::endl;

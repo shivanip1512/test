@@ -1,9 +1,5 @@
 #include "precompiled.h"
 
-#if !defined (NOMINMAX)
-#define NOMINMAX
-#endif
-
 #include "ctitime.h"
 
 #include "CServiceConfig.h"
@@ -14,7 +10,6 @@
 #include "logManager.h"
 
 #include <windows.h>
-#include <rw/toolpro/winsock.h>
 #include <iostream>
 #include <iterator>
 #include <vector>

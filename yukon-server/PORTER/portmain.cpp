@@ -4,7 +4,6 @@
 
 
 #include "ctitime.h"
-#include <rw/thr/thrutil.h>
 
 #include "portsvc.h"
 #include "CServiceConfig.h"

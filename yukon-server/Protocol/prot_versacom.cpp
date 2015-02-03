@@ -1,23 +1,4 @@
-/*-----------------------------------------------------------------------------*
-*
-* File:   prot_versacom
-*
-* Date:   6/28/2001
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.34.6.1 $
-* DATE         :  $Date: 2008/11/13 17:23:43 $
-*
-* Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
-*-----------------------------------------------------------------------------*/
 #include "precompiled.h"
-
-#include <iomanip>
-#include <iostream>
-#include <boost/regex.hpp>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
 
 #include "ctidbgmem.h" // defines CTIDBG_new
 #include "cparms.h"
@@ -30,7 +11,9 @@ using namespace std;  // get the STL into our namespace for use.  Do NOT use ios
 #include "logger.h"
 #include "utility.h"
 
+#include <boost/regex.hpp>
 
+using namespace std;
 
 /* Routine to set a nibble in a message */
 INT CtiProtocolVersacom::setNibble (INT iNibble, INT iValue)

@@ -3,6 +3,7 @@
 #include <boost/cstdint.hpp>
 
 #include <set>
+#include <map>
 
 BOOST_AUTO_TEST_SUITE( test_compiler_behaviors )
 
@@ -136,5 +137,25 @@ BOOST_AUTO_TEST_CASE(test_multiset_insert_order)
         BOOST_CHECK_EQUAL(itr++->second, 8);
     }
 }
+
+BOOST_AUTO_TEST_CASE(test_map_range_for_is_mutable)
+{
+    std::map<int, std::string> numbers = {
+        { 3, "three" },
+        { 5, "five" },
+        { 7, "seven" }
+    };
+
+    for( auto &kv : numbers )
+    {
+        kv.second += " (" + std::to_string(kv.first) + ")";
+    }
+
+    BOOST_CHECK_EQUAL( numbers[3], "three (3)");
+    BOOST_CHECK_EQUAL( numbers[5], "five (5)");
+    BOOST_CHECK_EQUAL( numbers[7], "seven (7)");
+}
+
+
 
 BOOST_AUTO_TEST_SUITE_END()

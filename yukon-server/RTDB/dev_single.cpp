@@ -13,7 +13,6 @@
 #include "ctitime.h"
 #include "scanglob.h"
 #include "pt_numeric.h"
-#include "ctistring.h"
 #include "pt_status.h"
 #include "dllyukon.h"
 #include "exceptions.h"
@@ -1489,7 +1488,7 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(Cti::RowReader &rdr)
 {
     CtiLockGuard<CtiMutex> guard(_classMutex);
 
-    string rwsTemp;
+    string scantypeStr;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -1498,8 +1497,8 @@ void CtiDeviceSingle::DecodeScanRateDatabaseReader(Cti::RowReader &rdr)
 
     if(!rdr["scantype"].isNull())
     {
-        rdr["scantype"] >> rwsTemp;
-        INT i = resolveScanType(rwsTemp);
+        rdr["scantype"] >> scantypeStr;
+        INT i = resolveScanType(scantypeStr);
 
         if(i < ScanRateInvalid)
         {
@@ -2054,7 +2053,7 @@ string CtiDeviceSingle::valueReport(const CtiPointSPtr p, const point_info &pi, 
         }
         else if( p->isStatus() )
         {
-            CtiString state_name = ResolveStateName(boost::static_pointer_cast<CtiPointStatus>(p)->getStateGroupID(), pi.value);
+            std::string state_name = ResolveStateName(boost::static_pointer_cast<CtiPointStatus>(p)->getStateGroupID(), pi.value);
 
             if( state_name != "" )
             {

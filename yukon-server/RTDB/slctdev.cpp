@@ -108,31 +108,30 @@ using std::endl;
 
 DLLEXPORT CtiDeviceBase* DeviceFactory(Cti::RowReader &rdr)
 {
-    string rwsType;
-    string rwsPseudo;
+    string typeStr;
 
     INT      DevType;
 
     CtiDeviceBase *NewDevice = NULL;
 
-    rdr["type"]  >> rwsType;
+    rdr["type"]  >> typeStr;
 
     if(getDebugLevel() & DEBUGLEVEL_FACTORY)
     {
-        CTILOG_DEBUG(dout, "Creating a Device of type "<< rwsType );
+        CTILOG_DEBUG(dout, "Creating a Device of type "<< typeStr );
     }
 
-    NewDevice = createDeviceType(resolveDeviceType(rwsType));
+    NewDevice = createDeviceType(resolveDeviceType(typeStr));
 
     if( ! NewDevice )
     {
-        if( ! isKnownUnsupportedDevice(rwsType) )
+        if( ! isKnownUnsupportedDevice(typeStr) )
         {
-            CTILOG_ERROR(dout, "Device Factory has failed to produce for type "<< rwsType <<"!");
+            CTILOG_ERROR(dout, "Device Factory has failed to produce for type "<< typeStr <<"!");
         }
         else if( getDebugLevel() & DEBUGLEVEL_FACTORY )
         {
-            CTILOG_DEBUG(dout, "Device Factory cannot produce for type "<< rwsType <<"! : the device is known but unsupported");
+            CTILOG_DEBUG(dout, "Device Factory cannot produce for type "<< typeStr <<"! : the device is known but unsupported");
         }
     }
 
@@ -294,7 +293,7 @@ const DeviceLookup deviceFactory = boost::assign::map_list_of
     (TYPEVERSACOMCBC,   MakeDeviceFunc(makeDevice<CtiDeviceCBC>))
     (TYPEEXPRESSCOMCBC, MakeDeviceFunc(makeDevice<CtiDeviceCBC>))
     //  Smart sensors
-    (TYPE_FCI,          MakeDeviceFunc(makeDevice<CtiDeviceGridAdvisor>))
+    (TYPE_FCI,              MakeDeviceFunc(makeDevice<CtiDeviceGridAdvisor>))
     (TYPE_NEUTRAL_MONITOR,  MakeDeviceFunc(makeDevice<CtiDeviceGridAdvisor>))
     //  System devices
     (TYPE_MACRO,        MakeDeviceFunc(makeDevice<CtiDeviceMacro>))
@@ -317,35 +316,28 @@ DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 
 DLLEXPORT CtiRouteBase* RouteFactory(Cti::RowReader &rdr)
 {
-    string rwsType;
+    string type;
     string category;
 
-    INT      RteType;
-
-    CtiRouteBase *Route = NULL;
-
-
     rdr["category"]  >> category;
-    rdr["type"]  >> rwsType;
+    rdr["type"]  >> type;
 
-    std::transform(category.begin(), category.end(), category.begin(), ::tolower);
+    boost::algorithm::to_lower(category);
 
-
-    if(category == string("route"))
+    if( category == "route" )
     {
         if(getDebugLevel() & DEBUGLEVEL_FACTORY)
         {
-            CTILOG_DEBUG(dout, "Creating a Route of type "<< rwsType );
+            CTILOG_DEBUG(dout, "Creating a Route of type "<< type );
         }
 
-        RteType = resolveRouteType(rwsType);
+        const int RteType = resolveRouteType(type);
 
         switch(RteType)
         {
             case RouteTypeCCU:
             {
-                Route = (CtiRouteBase*) CTIDBG_new CtiRouteCCU;
-                break;
+                return new CtiRouteCCU;
             }
             case RouteTypeLCU:
             case RouteTypeTCU:
@@ -357,34 +349,29 @@ DLLEXPORT CtiRouteBase* RouteFactory(Cti::RowReader &rdr)
             case RouteTypeRTC:
             case RouteTypeSeriesVLMI:
             {
-                Route = (CtiRouteBase*) CTIDBG_new CtiRouteXCU;
-                break;
+                return new CtiRouteXCU;
             }
             case RouteTypeMacro:
             {
-                Route = (CtiRouteBase*) CTIDBG_new CtiRouteMacro;
-                break;
+                return new Cti::Routes::MacroRoute;
             }
             case RouteTypeVersacom:
             {
-                Route = (CtiRouteBase*) CTIDBG_new CtiRouteVersacom;
-                break;
+                return new CtiRouteVersacom;
             }
             case RouteTypeExpresscom:
             {
-                Route = (CtiRouteBase*) CTIDBG_new CtiRouteExpresscom;
-                break;
+                return new CtiRouteExpresscom;
             }
             case RouteTypeInvalid:
             default:
             {
-                CTILOG_ERROR(dout, "Route Factory has failed to produce for type "<< rwsType <<"!");
-                break;
+                CTILOG_ERROR(dout, "Route Factory has failed to produce for type "<< type <<"!");
             }
         }
     }
 
-    return Route;
+    return 0;
 }
 
 namespace {

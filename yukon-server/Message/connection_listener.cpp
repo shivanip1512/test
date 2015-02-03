@@ -2,11 +2,13 @@
 
 using namespace std;
 
-#include "activemq/core/ActiveMQConnection.h"
 #include "connection_listener.h"
+#include "dllbase.h"
 #include "amq_constants.h"
 #include "amq_util.h"
 #include "logger.h"
+
+#include <activemq/core/ActiveMQConnection.h>
 
 using namespace Cti::Messaging::ActiveMQ;
 

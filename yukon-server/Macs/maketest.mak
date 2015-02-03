@@ -1,7 +1,6 @@
 # nmake file YUKON 1.0
 
 !include $(COMPILEBASE)\global.inc
-!include $(COMPILEBASE)\rwglobal.inc
 
 INCLPATHS+= \
 -I$(MACS)\include \
@@ -11,7 +10,6 @@ INCLPATHS+= \
 -I$(RTDB)\include \
 -I$(MSG)\include \
 -I$(TCL)\include \
--I$(RW) \
 -I$(BOOST_INCLUDE) \
 -I$(SQLAPI)\include \
 -I$(THRIFT_INCLUDE) \
@@ -31,7 +29,6 @@ INCLPATHS+= \
 ;$(DISPATCH)\include \
 ;$(MSG)\include \
 ;$(DATABASE)\include \
-;$(RW)
 
 LIBS=\
 advapi32.lib \
@@ -53,6 +50,7 @@ test_mccmd.obj \
 test_mc_serialization.obj \
 
 MACSBASEOBJS= \
+$(PRECOMPILED_OBJ) \
 clientconn.obj \
 clistener.obj \
 mc_dbthr.obj \
@@ -84,19 +82,18 @@ $(MACS_TEST_FULLBUILD) :
 	@touch $@
 	@echo:
 	@echo Compiling cpp to obj
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(MACS_TEST_OBJS)]
+	$(CC) $(CCOPTS) $(CFLAGS) $(PARALLEL) /FI precompiled.h $(PCHFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $[StrReplace,.obj,.cpp,$(MACS_TEST_OBJS)]
 
 test_macs.exe:    $(MACS_TEST_FULLBUILD) $(MACS_TEST_OBJS)  Makefile
         @echo:
 	@echo Creating Executable $(BIN)\$(_TargetF)
         @echo:
 	@%cd $(OBJ)
-	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
-        $(MACS_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(MACSBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	$(CC) $(CFLAGS) $(INCLPATHS)  /Fe..\$(BIN)\$(_TargetF) \
+        $(MACS_TEST_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(MACSBASEOBJS) $(LIBS) $(LINKFLAGS)
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
         @%cd $(CWD)
         @echo.
@@ -106,12 +103,11 @@ mc_server_client_serialization_test.exe:    $(MACS_TEST_FULLBUILD) mc_server_cli
 	@echo Creating Executable $(BIN)\$(_TargetF)
         @echo:
 	@%cd $(OBJ)
-	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(_TargetF) \
-        mc_server_client_serialization_test.obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(MACSBASEOBJS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
+	$(CC) $(CFLAGS) $(INCLPATHS)  /Fe..\$(BIN)\$(_TargetF) \
+        mc_server_client_serialization_test.obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOST_LIBS) $(BOOST_TEST_LIBS) $(MACSBASEOBJS) $(LIBS) $(LINKFLAGS)
 	@%cd ..
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
-	$(MANIFEST_TOOL) -manifest $(BIN)\$(_TargetF).manifest -outputresource:$(BIN)\$(_TargetF);1
         -copy $(BIN)\$(_TargetF) $(YUKONOUTPUT)
         @%cd $(CWD)
         @echo.
@@ -134,19 +130,11 @@ deps:
         @echo Compiling $< to
         @echo           $(OBJ)\$(@B).obj
         @echo:
-	$(RWCPPINVOKE) $(RWCPPFLAGS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
+	$(CC) $(CCOPTS) $(CFLAGS) $(INCLPATHS) -Fo$(OBJ)\ -c $<
 
 ######################################################################################
 #UPDATE#
-test_decodetextcmdfile.obj:	decodetextcmdfile.h logger.h dlldefs.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
-		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h guard.h rwutil.h \
-		database_connection.h dbaccess.h dllbase.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
-		mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		database_reader.h row_reader.h boost_time.h
+test_decodetextcmdfile.obj:	decodetextcmdfile.h
 test_interp.obj:	interp.h critical_section.h dlldefs.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h yukon.h types.h \
 		ctidbgmem.h os2_2w32.h constants.h numstr.h logger.h \
@@ -162,7 +150,7 @@ test_mccmd.obj:	mccmd.h msg_pcrequest.h dlldefs.h message.h ctitime.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h ctdpcptrq.h CtiPCPtrQueue.h dllBase.h \
 		tbl_meterreadlog.h row_reader.h database_connection.h \
-		dbaccess.h ctistring.h
+		dbaccess.h
 test_mc_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		collectable.h loggable.h msg_cmd.h msg_dbchg.h yukon.h \
 		types.h msg_lmcontrolhistory.h pointdefs.h msg_multi.h \
@@ -179,10 +167,9 @@ test_mc_serialization.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		row_reader.h mc.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h mc_script.h test_mc_serialization.h \
 		test_serialization.h test_serialization_helper.h \
-		connection_server.h connection.h queue.h cparms.h rwutil.h \
-		database_connection.h dbaccess.h database_reader.h \
-		boost_time.h configkey.h configval.h readers_writer_lock.h \
-		connection_base.h worker_thread.h connection_listener.h
+		connection_server.h connection.h queue.h cparms.h configkey.h \
+		configval.h readers_writer_lock.h connection_base.h \
+		worker_thread.h connection_listener.h
 test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
 		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
@@ -190,9 +177,8 @@ test_scheduletime.obj:	ctitime.h dlldefs.h mc_scheduler.h mc.h \
 		critical_section.h atomic.h mc_sched.h row_reader.h \
 		dbmemobject.h tbl_pao.h tbl_mcsched.h mutex.h guard.h \
 		tbl_mcsimpsched.h message.h collectable.h mgr_mcsched.h \
-		rtdb.h hashkey.h hash_functions.h dllbase.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
-		dsm2err.h words.h optional.h macro_offset.h mgr_holiday.h \
-		ctidate.h
+		rtdb.h dllbase.h dsm2.h streamConnection.h netports.h \
+		timing_util.h immutable.h dsm2err.h words.h optional.h \
+		macro_offset.h mgr_holiday.h ctidate.h
 #ENDUPDATE#
 

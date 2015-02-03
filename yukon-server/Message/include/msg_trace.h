@@ -2,8 +2,6 @@
 
 #include <wincon.h>         // console colors.
 
-#include <rw/collect.h>
-
 #include "dlldefs.h"
 #include "message.h"       // get the base class
 

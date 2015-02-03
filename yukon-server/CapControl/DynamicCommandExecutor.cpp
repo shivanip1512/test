@@ -86,7 +86,7 @@ bool DynamicCommandExecutor::executePointResponseDeltaUpdate()
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+        CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
         if (CtiCCSubstationBusPtr bus = store->findSubBusByCapBankID(bankId))
         {

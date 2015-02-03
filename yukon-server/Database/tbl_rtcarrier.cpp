@@ -132,7 +132,7 @@ string CtiTableCarrierRoute::getTableName()
 
 void CtiTableCarrierRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-    string rwsTemp;
+    string tmpStr;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
     {
@@ -147,17 +147,17 @@ void CtiTableCarrierRoute::DecodeDatabaseReader(Cti::RowReader &rdr)
     rdr["routeid"] >> _routeID;
     rdr["ccufixbits"]       >> CCUFixBits;
     rdr["ccuvariablebits"]  >> CCUVarBits;
-    rdr["userlocked"]  >> rwsTemp;
+    rdr["userlocked"]  >> tmpStr;
 
-    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
-    _userLocked = rwsTemp[(size_t)0] == 'y' ? true : false;
+    std::transform(tmpStr.begin(), tmpStr.end(), tmpStr.begin(), tolower);
+    _userLocked = tmpStr[(size_t)0] == 'y' ? true : false;
 
     CCUFixBits %= 32;
 
-    rdr["resetrptsettings"]  >> rwsTemp;
+    rdr["resetrptsettings"]  >> tmpStr;
 
-    std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
-    _resetRPTSettings = rwsTemp[(size_t)0] == 'y' ? true : false;
+    std::transform(tmpStr.begin(), tmpStr.end(), tmpStr.begin(), tolower);
+    _resetRPTSettings = tmpStr[(size_t)0] == 'y' ? true : false;
 
 
 }

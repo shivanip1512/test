@@ -36,9 +36,9 @@ bool PlcInfrastructure::oneWayCommand(const bytes &request, Logger &logger)
 
     EmetconWord::restoreWords(request, request_words);
 
-    mct_map_t::ptr_type mct;
+    mct_map_t::ptr_type mct = getMct(request_words);
 
-    if( !getMct(request_words, mct) || !mct )
+    if( ! mct )
     {
         return false;
     }
@@ -57,9 +57,9 @@ bool PlcInfrastructure::twoWayCommand(const bytes &request, bytes &reply, Logger
 
     EmetconWord::restoreWords(request, request_words);
 
-    mct_map_t::ptr_type mct;
+    mct_map_t::ptr_type mct = getMct(request_words);
 
-    if( !getMct(request_words, mct) || !mct )
+    if( ! mct )
     {
         return false;
     }
@@ -92,30 +92,32 @@ bool PlcInfrastructure::processMessage(bytes &buf, Logger &logger)
     return _behaviorCollection.processMessage(buf, logger);
 }
 
-bool PlcInfrastructure::getMct(const words_t &request_words, mct_map_t::ptr_type &mct)
+PlcInfrastructure::mct_map_t::ptr_type PlcInfrastructure::getMct(const words_t &request_words)
 {
     if( request_words.empty() )
     {
-        return false;
+        return nullptr;
     }
 
     //  will need to add support for G words here
     if( !request_words[0] || request_words[0]->type != EmetconWord::WordType_B )
     {
-        return false;
+        return nullptr;
     }
 
     unsigned dlc_address = (static_cast<const EmetconWordB *>(request_words[0].get()))->dlc_address;
 
+    mct_map_t::ptr_type mct = _mcts.find(dlc_address);
+
     //  if we can't find it, insert a new one
-    if( !(mct = _mcts.find(dlc_address)) )
+    if( ! mct )
     {
         _mcts.insert(dlc_address, new Mct410Sim(dlc_address));
 
         mct = _mcts.find(dlc_address);
     }
 
-    return mct;  //  conversion to bool
+    return mct;
 }
 
 

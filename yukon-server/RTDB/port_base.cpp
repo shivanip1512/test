@@ -18,6 +18,8 @@
 
 #define DEBUG_INPUT_FROM_SCADA 0x00000010
 
+#define DEFAULT_QUEUE_GRIPE_POINT 50
+
 using namespace std;
 
 YukonError_t CtiPort::traceIn(CtiXfer& Xfer, list< CtiMessage* > &traceList, CtiDeviceSPtr  Dev, YukonError_t ErrorCode) const
@@ -308,7 +310,6 @@ INT CtiPort::queueDeInit()
 {
     INT status = ClientErrors::None;
 
-    // RWMutexLock::LockGuard( getMux() );      // 072503 CGP - What the !@$$@#??
     CtiLockGuard<CtiMutex> guard(_classMutex);
 
     /* create the queue for this port */
@@ -322,30 +323,29 @@ INT CtiPort::queueDeInit()
 
 INT CtiPort::verifyPortIsRunnable( HANDLE hQuit )
 {
-    INT status = ClientErrors::None;
-
     try
     {
         if( _tblPAO.isInhibited() )
         {
-            status = ClientErrors::PortInhibited;
+            return ClientErrors::PortInhibited;
         }
-        else if( (status = queueInit(hQuit)) == ClientErrors::None )
-        {
-            if(!_portThread.isValid() || _portThread.getCompletionState() != RW_THR_PENDING)
-            {
-                if(_portFunc != 0)
-                {
-                    _portThread = rwMakeThreadFunction( _portFunc, (void*)getPortID() );
-                    _portThread.start();
-                }
-                else
-                {
-                    CTILOG_ERROR(dout, "No port thread function defined");
 
-                    status = ClientErrors::Abnormal;
-                }
+        if( const int queueStatus = queueInit(hQuit) )
+        {
+            return queueStatus;
+        }
+
+        if( _portThread.timed_join(boost::posix_time::milliseconds(0)) )
+        {
+            //  thread wasn't running
+            if( ! _portFunc )
+            {
+                CTILOG_ERROR(dout, "No port thread function defined");
+
+                return ClientErrors::Abnormal;
             }
+
+            _portThread = boost::thread(_portFunc, (void*)getPortID());
         }
     }
     catch(...)
@@ -353,7 +353,7 @@ INT CtiPort::verifyPortIsRunnable( HANDLE hQuit )
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
-    return status;
+    return ClientErrors::None;
 }
 
 void CtiPort::DecodeDialableDatabaseReader(Cti::RowReader &rdr)
@@ -673,12 +673,6 @@ HCTIQUEUE&  CtiPort::getPortQueueHandle()
 {
     return _portQueue;
 }
-
-RWThreadFunction& CtiPort::getPortThread()
-{
-    return _portThread;
-}
-
 
 INT CtiPort::traceBytes(const BYTE *Message, ULONG Length, CtiTraceMsg &trace, list< CtiMessage* > &traceList)
 {

@@ -1,39 +1,3 @@
-/*---------------------------------------------------------------------------------*
-*
-* File:   ansi_kv2_mtable_070.cpp
-*
-* Class:
-* Date:   2/20/2003
-*
-* Author: Eric Schmit
-*
-* PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_kv2_mtable_070.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/10/21 16:30:30 $
-*    History:
-      $Log: ansi_kv2_mtable_seventy.cpp,v $
-      Revision 1.6  2008/10/21 16:30:30  mfisher
-      YUK-6615 ANSI table class names and filenames are difficult to read
-      Renamed classes and filenames
-
-      Revision 1.5  2008/10/07 18:16:45  mfisher
-      YUK-6504 Server-side point management is naive
-      cleaned up a few dsm2.h dependencies
-
-      Revision 1.4  2005/12/20 17:19:53  tspar
-      Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
-
-      Revision 1.3  2005/02/10 23:23:56  alauinger
-      Build with precompiled headers for speed.  Added #include yukon.h to the top of every source file, added makefiles to generate precompiled headers, modified makefiles to make pch happen, and tweaked a few cpp files so they would still build
-
-      Revision 1.2  2004/09/30 21:37:16  jrichter
-      Ansi protocol checkpoint.  Good point to check in as a base point.
-
-      Revision 1.1  2003/04/25 14:54:54  dsutton
-      Ansi protocol tables specific to the implementation of the KV2
-
-*----------------------------------------------------------------------------------*/
 #include "precompiled.h"
 #include "dsm2.h"
 #include "logger.h"

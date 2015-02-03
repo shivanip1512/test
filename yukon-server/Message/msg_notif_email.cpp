@@ -1,14 +1,11 @@
 #include "precompiled.h"
 
-#include <iostream>
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
-
-#include "utility.h"
 #include "msg_notif_email.h"
+#include "utility.h"
+
+using namespace std;
 
 DEFINE_COLLECTABLE( CtiNotifEmailMsg, NOTIF_EMAIL_MSG_ID );
-
-//REGISTER_MSG_FACTORY( CtiNotifEmailMsg );
 
 //=====================================================================================================================
 //=====================================================================================================================
