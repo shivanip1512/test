@@ -125,6 +125,14 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
         
         //Get energyCompany for the user
         YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
+        return addDeviceToAccount(dto, user, yec);
+        
+    }
+    
+    @Override
+    @Transactional
+    public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user, YukonEnergyCompany yec) {
+
         LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(yec);
         
         // Get Inventory, if exists on account
@@ -307,10 +315,16 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Override
     public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser user) {
 
-        LiteInventoryBase lib = null;
-        
         //Get energyCompany for the user
         YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
+        return updateDeviceOnAccount(dto, user, yec);
+        
+    }
+    
+    @Override
+    public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser user, YukonEnergyCompany yec) {
+        LiteInventoryBase lib = null;
+        
         LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(yec);
         
         // Get Inventory if exists on account
@@ -330,17 +344,24 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             lib = internalAddDeviceToAccount(dto, lsec, user);
         }
         return lib;
-    }
+    };
 
     @Override
     public void removeDeviceFromAccount(LmDeviceDto dto, LiteYukonUser user) {
-
-        LiteInventoryBase liteInv = null;
         
         //Get energyCompany for the user
         YukonEnergyCompany yec = ecDao.getEnergyCompanyByOperator(user);
+        removeDeviceFromAccount(dto, user, yec);
+        
+    }
+    
+    @Override
+    public void removeDeviceFromAccount(LmDeviceDto dto, LiteYukonUser user, YukonEnergyCompany yec) {
+        
+        LiteInventoryBase liteInv = null;
+        
         LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(yec);
-
+        
         // Get Inventory if exists on account
         liteInv = getInventoryOnAccount(dto, lsec);
         // Error, if Inventory not found on the account

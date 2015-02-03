@@ -120,14 +120,22 @@ public class AccountServiceImpl implements AccountService {
     @Autowired private UserGroupDao userGroupDao;
     @Autowired private YukonUserContextService userContextService;
     @Autowired private YukonUserDao userDao;
-
+    
     @Override
     @Transactional
     public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator)
             throws AccountNumberUnavailableException, UserNameUnavailableException {
+        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(operator);
+        return addAccount(updatableAccount, operator, ec);
+    }
+    
+    @Override
+    @Transactional
+    public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator, YukonEnergyCompany operatorEnergyCompany)
+            throws AccountNumberUnavailableException, UserNameUnavailableException {
         // Add the account to the user's energy company, we do not have a mechanism to allow
         // an operator user of a parent energy company to add accounts to member energy companies.
-        EnergyCompany ec = ecDao.getEnergyCompanyByOperator(operator);
+        EnergyCompany ec = (EnergyCompany) operatorEnergyCompany;
         AccountDto accountDto = updatableAccount.getAccountDto();
         String accountNumber = updatableAccount.getAccountNumber();
 
@@ -388,6 +396,20 @@ public class AccountServiceImpl implements AccountService {
             throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
         }
     }
+    
+    @Override
+    @Transactional
+    public void deleteAccount(String accountNumber, LiteYukonUser user,YukonEnergyCompany energyCompany){
+        try {
+            CustomerAccount account =
+                customerAccountDao.getByAccountNumber(accountNumber, energyCompany.getEnergyCompanyId());
+            deleteAccount(account, user);
+        } catch (NotFoundException e) {
+            log.error("Account " + accountNumber + " could not be deleted: Unable to find account for account#: "
+                + accountNumber);
+            throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
+        }
+    }
 
     private void deleteAccount(CustomerAccount account, LiteYukonUser user) {
         log.info("Deleting account id# " + account.getAccountId());
@@ -480,11 +502,18 @@ public class AccountServiceImpl implements AccountService {
 
         accountEventLogService.accountDeleted(user, account.getAccountNumber());
     }
+    
+    @Override
+    @Transactional
+    public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user)
+            throws InvalidAccountNumberException {
+        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
+        updateAccount(updatableAccount, user, energyCompany);
+    }
 
     @Override
     @Transactional
-    public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user) {
-        YukonEnergyCompany energyCompany = ecDao.getEnergyCompanyByOperator(user);
+    public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user, YukonEnergyCompany energyCompany) {
 
         int energyCompanyId = energyCompany.getEnergyCompanyId();
         String accountNumber = updatableAccount.getAccountNumber();

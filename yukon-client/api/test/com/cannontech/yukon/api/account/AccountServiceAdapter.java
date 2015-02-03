@@ -8,6 +8,7 @@ import com.cannontech.stars.dr.account.exception.InvalidAccountNumberException;
 import com.cannontech.stars.dr.account.model.AccountDto;
 import com.cannontech.stars.dr.account.model.UpdatableAccount;
 import com.cannontech.stars.dr.account.service.AccountService;
+import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 
 public class AccountServiceAdapter implements AccountService {
@@ -18,6 +19,12 @@ public class AccountServiceAdapter implements AccountService {
 			UserNameUnavailableException {
 		throw new UnsupportedOperationException("Not Implemented");
 	}
+	
+	@Override
+    public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator, YukonEnergyCompany energyCompany)
+            throws AccountNumberUnavailableException, UserNameUnavailableException {
+	    throw new UnsupportedOperationException("Not Implemented");
+    }
 
 	@Override
 	public void deleteAccount(String accountNumber, LiteYukonUser user) {
@@ -29,6 +36,11 @@ public class AccountServiceAdapter implements AccountService {
         throw new UnsupportedOperationException("Not Implemented");
     }
 
+    @Override
+    public void deleteAccount(String accountNumber, LiteYukonUser user, YukonEnergyCompany energyCompany) {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+    
 	@Override
 	public AccountDto getAccountDto(String accountNumber,
 			LiteYukonUser yukonUser) {
@@ -57,4 +69,11 @@ public class AccountServiceAdapter implements AccountService {
             throws InvalidAccountNumberException {
         throw new UnsupportedOperationException("Not Implemented");
     }
+
+    @Override
+    public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user, YukonEnergyCompany energyCompany)
+            throws InvalidAccountNumberException {
+        throw new UnsupportedOperationException("Not Implemented");
+    }
+    
 }
