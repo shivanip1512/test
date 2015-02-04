@@ -138,7 +138,6 @@
         <copy todir="${client.bag}" preservelastmodified="yes">
             <fileset dir="${basedir}/yukon-client/build/lib" excludes="*.jar"/>
             <fileset dir="${basedir}/yukon-client/sensus-jms/lib"/>
-        	<fileset dir="${basedir}/yukon-client/multispeak/lib" excludes="*source*.jar,fart.exe"/>
          </copy>
 
         <copy todir="${client.bag}" preservelastmodified="yes">

@@ -2,6 +2,7 @@ package com.cannontech.web.multispeak;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,14 +26,13 @@ import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.msp.beans.v3.ErrorObject;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
-import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
@@ -155,7 +155,7 @@ public class MultispeakController {
                     map.addAttribute( MultispeakDefines.MSP_RESULT_MSG, "* " + mspService + " pingURL Successful");
                     map.addAttribute(RESULT_COLOR_ATT, "blue");
                 }
-            }catch (MultispeakWebServiceClientException re) {
+            }catch (RemoteException re) {
                 map.addAttribute( MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
                 map.addAttribute(RESULT_COLOR_ATT, "red");
             }
@@ -187,7 +187,7 @@ public class MultispeakController {
                     map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, resultStr);
                     map.addAttribute(RESULT_COLOR_ATT, "blue");
                 }
-            }catch (MultispeakWebServiceClientException re) {
+            }catch (RemoteException re) {
                 map.addAttribute( MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
                 map.addAttribute(RESULT_COLOR_ATT, "red");
             }

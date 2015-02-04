@@ -1,6 +1,6 @@
 package com.cannontech.multispeak.dao;
 
-import com.cannontech.msp.beans.v3.MeterRead;
+import com.cannontech.multispeak.deploy.service.MeterRead;
 
 /**
  * Utility callback that allows the implementer to encapsulate some manipulation

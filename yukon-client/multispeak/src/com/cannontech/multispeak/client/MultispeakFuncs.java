@@ -1,31 +1,23 @@
 package com.cannontech.multispeak.client;
 
 import java.math.BigInteger;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import java.rmi.RemoteException;
 import java.util.Iterator;
-import java.util.List;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.namespace.QName;
+import javax.xml.soap.SOAPException;
 
+import org.apache.axis.AxisFault;
+import org.apache.axis.MessageContext;
+import org.apache.axis.message.PrefixedQName;
+import org.apache.axis.message.SOAPEnvelope;
+import org.apache.axis.message.SOAPHeader;
+import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import org.springframework.ws.WebServiceMessage;
-import org.springframework.ws.context.MessageContext;
-import org.springframework.ws.soap.AbstractSoapMessage;
-import org.springframework.ws.soap.SoapEnvelope;
-import org.springframework.ws.soap.SoapHeader;
-import org.springframework.ws.soap.SoapHeaderElement;
-import org.springframework.ws.soap.saaj.SaajSoapMessage;
 
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -50,25 +42,21 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.Disconnect410State;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
-import com.cannontech.msp.beans.v3.ArrayOfErrorObject;
-import com.cannontech.msp.beans.v3.ArrayOfString;
-import com.cannontech.msp.beans.v3.Customer;
-import com.cannontech.msp.beans.v3.ErrorObject;
-import com.cannontech.msp.beans.v3.LoadActionCode;
-import com.cannontech.msp.beans.v3.MultiSpeakMsgHeader;
-import com.cannontech.msp.beans.v3.ObjectFactory;
-import com.cannontech.msp.beans.v3.ServiceLocation;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.data.MspLoadActionCode;
 import com.cannontech.multispeak.data.MspReturnList;
 import com.cannontech.multispeak.db.MultispeakInterface;
-import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
+import com.cannontech.multispeak.deploy.service.Customer;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.LoadActionCode;
+import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.cannontech.user.SimpleYukonUserContext;
+import com.cannontech.user.SystemUserContext;
 
 public class MultispeakFuncs {
-    private final static Logger log = YukonLogManager.getLogger(MultispeakFuncs.class);
+    private final Logger log = YukonLogManager.getLogger(MultispeakFuncs.class);
+
 
     @Autowired public AuthenticationService authenticationService;
     @Autowired public DeviceGroupService deviceGroupService;
@@ -77,8 +65,6 @@ public class MultispeakFuncs {
     @Autowired public PaoDefinitionDao paoDefinitionDao;
     @Autowired public PointFormattingService pointFormattingService;
     @Autowired public RolePropertyDao rolePropertyDao;
-    @Autowired public Jaxb2Marshaller unmarshaller;
-    @Autowired private ObjectFactory objectFactory;
 
     public void logStrings(String intfaceName, String methodName, String[] strings) {
         if (ArrayUtils.isNotEmpty(strings)) {
@@ -91,168 +77,134 @@ public class MultispeakFuncs {
     public void logErrorObjects(String intfaceName, String methodName, ErrorObject[] objects) {
         if (ArrayUtils.isNotEmpty(objects)) {
             for (ErrorObject errorObject : objects) {
-                log.info("Error Return from " + intfaceName + "(" + methodName + "): "
-                    + (errorObject == null ? "Null" : errorObject.getObjectID() + " - " + errorObject.getErrorString()));
+                log.info("Error Return from " + intfaceName + "(" + methodName + "): " + 
+                            (errorObject == null ? "Null" : errorObject.getObjectID() + " - " + errorObject.getErrorString()));
             }
         }
     }
 
-    /** A method that loads the response header. */
-    public void loadResponseHeader() throws MultispeakWebServiceException {
-        SoapEnvelope env = getResponseMessageSOAPEnvelope();
+    public void loadResponseHeader() throws RemoteException {
+        SOAPEnvelope env = getResponseMessageSOAPEnvelope();
         try {
-            MultispeakVendor mspVendor =
-                multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
-                    MultispeakDefines.MSP_APPNAME_YUKON);
-            SoapHeader header = env.getHeader();
-            mspVendor.getHeader(header);
+            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakVendor.CANNON_MSP_COMPANYNAME, "");
+            // Set Header
+            env.addHeader(mspVendor.getHeader());
         } catch (NotFoundException e) {
-            throw new MultispeakWebServiceException(e.getMessage());
+            throw new RemoteException(e.getMessage());
         }
     }
 
-    public MultiSpeakMsgHeader getResponseHeader() {
-        SoapEnvelope env = getResponseMessageSOAPEnvelope();
-        SoapHeader header = env.getHeader();
-        Iterator<SoapHeaderElement> it =
-            header.examineHeaderElements(new QName("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader"));
-        JAXBElement<?> poElement = (JAXBElement<?>) unmarshaller.unmarshal(it.next().getSource());
-        return (MultiSpeakMsgHeader) poElement.getValue();
+    public YukonMultispeakMsgHeader getResponseHeader() throws RemoteException {
+        SOAPEnvelope env = getResponseMessageSOAPEnvelope();
+        return (YukonMultispeakMsgHeader) env.getHeaderByName("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader").getObjectValue();
     }
 
-    private SoapEnvelope getResponseMessageSOAPEnvelope() {
-        MessageContext ctx = MessageContextHolder.getMessageContext();
-        WebServiceMessage responseMessage = ctx.getResponse();
-        AbstractSoapMessage abstractSoapMessage = (AbstractSoapMessage) responseMessage;
-        SaajSoapMessage saajSoapMessage = (SaajSoapMessage) abstractSoapMessage;
-        SoapEnvelope soapEnvelop = saajSoapMessage.getEnvelope();
-        return soapEnvelop;
+    private SOAPEnvelope getResponseMessageSOAPEnvelope() throws RemoteException {
+        // Get current message context
+        MessageContext ctx = MessageContext.getCurrentContext();
+        // Get SOAP envelope of response
+        SOAPEnvelope env = ctx.getResponseMessage().getSOAPEnvelope();
+        return env;
     }
 
     /**
      * This method should be called by every multispeak function!!!
      */
-    public void init() throws MultispeakWebServiceException {
+    public void init() throws RemoteException {
+        try {
+            log.info("MSP MESSAGE RECEIVED: " + MessageContext.getCurrentContext().getCurrentMessage().getSOAPPartAsString().toString());
+        } catch (AxisFault e) {
+            log.error(e);
+        }
         loadResponseHeader();
     }
 
     /**
      * A common declaration of the getMethods method for all services to use.
-     * 
      * @param interfaceName
      * @param methods
      * @return
+     * @throws java.rmi.RemoteException
      */
     public String[] getMethods(String interfaceName, String[] methods) {
         logStrings(interfaceName, "getMethods", methods);
         return methods;
     }
 
-    /**
-     * This method returns an attribute value from the request header.
-     * 
-     * @param soapHeader - request header.
-     * @param attributeName - Name of attribute whose value we need.
-     * @return String - attribute value.
-     **/
-    private String getAtributeFromSOAPHeader(SoapHeader soapHeader, String attributeName) {
+    private String getAtributeFromSOAPHeader(String attributeName) throws java.rmi.RemoteException {
         String attributeValue = null;
-
-        Iterator<SoapHeaderElement> iterator = soapHeader.examineAllHeaderElements();
-        while (iterator.hasNext()) {
-            SoapHeaderElement element = iterator.next();
-            attributeValue = element.getAttributeValue(new QName(attributeName));
+        try {
+            // Gets the SOAPHeader for the Request Message
+            SOAPHeader soapHead = (SOAPHeader) MessageContext.getCurrentContext().getRequestMessage().getSOAPEnvelope().getHeader();
+            // Gets all the SOAPHeaderElements into an Iterator
+            Iterator<?> itrElements = soapHead.getChildElements();
+            while (itrElements.hasNext()) {
+                SOAPHeaderElement ele = (SOAPHeaderElement) itrElements.next();
+                Iterator<?> iterAllAttr = ele.getAllAttributes();
+                while (iterAllAttr.hasNext()) {
+                    PrefixedQName pQName = (PrefixedQName) iterAllAttr.next();
+                    if (pQName.getQualifiedName().equalsIgnoreCase(attributeName)) {
+                        attributeValue = ele.getAttribute(pQName.getQualifiedName());
+                        break;
+                    }
+                }
+            }
+        } catch (SOAPException e) {
+            log.error(e);
         }
-
         return attributeValue;
     }
 
-    /**
-     * This method returns an Company name from the request header.
-     * 
-     * @param soapHeader - request header.
-     * @param multispeakVersion - Multispeak version.
-     * @return String - attribute value.
-     **/
-    public String getCompanyNameFromSOAPHeader(SoapHeader header, MultiSpeakVersion multispeakVersion) {
-        return getAtributeFromSOAPHeader(header, MultispeakDefines.COMPANY);
+    public String getCompanyNameFromSOAPHeader() throws java.rmi.RemoteException {
+        return getAtributeFromSOAPHeader("company");
     }
 
-    /**
-     * This method returns an App name from the request header.
-     * 
-     * @param soapHeader - request header.
-     * @param multispeakVersion - Multispeak version.
-     * @return String - attribute value.
-     **/
-    public String getAppNameFromSOAPHeader(SoapHeader header, MultiSpeakVersion multispeakVersion) {
-        return getAtributeFromSOAPHeader(header, MultispeakDefines.APPNAME);
+    public String getAppNameFromSOAPHeader() throws java.rmi.RemoteException {
+        return getAtributeFromSOAPHeader("appname");
     }
 
-    /**
-     * This method authenticate message header based on the userid/password.
-     **/
-    public LiteYukonUser authenticateMsgHeader() throws MultispeakWebServiceException {
+    public LiteYukonUser authenticateMsgHeader() throws java.rmi.RemoteException {
         try {
-            SoapEnvelope env = getRequestMessageSOAPEnvelope();
-            SoapHeader soapHeader = env.getHeader();
-            String username = getAtributeFromSOAPHeader(soapHeader, "UserID");
-            String password = getAtributeFromSOAPHeader(soapHeader, "Pwd");
+            String username = getAtributeFromSOAPHeader("userID");
+            String password = getAtributeFromSOAPHeader("pwd");
+            // TEMPORARY FOR TESTING
+            // username = "yukon";
+            // password = "yukon";
             LiteYukonUser user = authenticationService.login(username, password);
-            return user;
 
+            return user;
         } catch (PasswordExpiredException e) {
-            throw new MultispeakWebServiceException("Password expired.", e);
+            throw new RemoteException("Password expired.", e);
         } catch (BadAuthenticationException e) {
-            throw new MultispeakWebServiceException("User authentication failed.", e);
+            throw new RemoteException("User authentication failed.", e);
         }
     }
 
-    /**
-     * This method returns an multispeak vendor.
-     * 
-     * @param version - multispeak version.
-     * @return MultispeakVendor - Multispeak vendor information.
-     **/
-    public MultispeakVendor getMultispeakVendorFromHeader(MultiSpeakVersion version)
-            throws MultispeakWebServiceException {
+    public MultispeakVendor getMultispeakVendorFromHeader() throws RemoteException {
+        String companyName = getCompanyNameFromSOAPHeader();
+        String appName = getAppNameFromSOAPHeader();
+
         try {
-            SoapEnvelope env = getRequestMessageSOAPEnvelope();
-            SoapHeader soapHeader = env.getHeader();
-            String companyName = getCompanyNameFromSOAPHeader(soapHeader, version);
-            String appName = getAppNameFromSOAPHeader(soapHeader, version);
             return multispeakDao.getMultispeakVendorFromCache(companyName, appName);
         } catch (NotFoundException e) {
-            throw new MultispeakWebServiceException(e.getMessage());
+            throw new RemoteException(e.getMessage());
         }
-    }
-
-    private SoapEnvelope getRequestMessageSOAPEnvelope() {
-        MessageContext ctx = MessageContextHolder.getMessageContext();
-        WebServiceMessage requestMessage = ctx.getRequest();
-        AbstractSoapMessage abstractSoapMessage = (AbstractSoapMessage) requestMessage;
-        SaajSoapMessage saajSoapMessage = (SaajSoapMessage) abstractSoapMessage;
-        SoapEnvelope soapEnvelop = saajSoapMessage.getEnvelope();
-        return soapEnvelop;
     }
 
     public String customerToString(Customer customer) {
         String returnStr = "";
 
-        returnStr +=
-            (StringUtils.isNotBlank(customer.getObjectID()) ? "Customer: " + customer.getObjectID() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(customer.getObjectID()) ? "Customer: " + customer.getObjectID() + "/r/n" : "");
 
-        String tempString =
-            (StringUtils.isNotBlank(customer.getLastName()) ? customer.getLastName() + ", " : "")
-                + (StringUtils.isNotBlank(customer.getFirstName()) ? customer.getFirstName() + " " : "")
-                + (StringUtils.isNotBlank(customer.getMName()) ? customer.getMName() : "");
-
+        String tempString = (StringUtils.isNotBlank(customer.getLastName()) ? customer.getLastName() + ", " : "") + 
+                (StringUtils.isNotBlank(customer.getFirstName()) ? customer.getFirstName() + " " : "") + 
+                (StringUtils.isNotBlank(customer.getMName()) ? customer.getMName() : "");
+        
         if (StringUtils.isNotBlank(tempString)) {
             returnStr += "Name: " + tempString + "/r/n";
         }
 
-        returnStr +=
-            (StringUtils.isNotBlank(customer.getDBAName()) ? "DBA Name: " + customer.getDBAName() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(customer.getDBAName()) ? "DBA Name: " + customer.getDBAName() + "/r/n" : "");
 
         tempString = (StringUtils.isNotBlank(customer.getHomeAc()) ? "(" + customer.getHomeAc() + ") " : "");
         tempString += (StringUtils.isNotBlank(customer.getHomePhone()) ? customer.getHomePhone() : "");
@@ -266,10 +218,8 @@ public class MultispeakFuncs {
             returnStr += "Home Phone: " + tempString + "/r/n";
         }
 
-        returnStr +=
-            (StringUtils.isNotBlank(customer.getBillAddr1()) ? "Bill Addr1: " + customer.getBillAddr1() + "/r/n" : "");
-        returnStr +=
-            (StringUtils.isNotBlank(customer.getBillAddr2()) ? "Bill Addr2: " + customer.getBillAddr2() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(customer.getBillAddr1()) ? "Bill Addr1: " + customer.getBillAddr1() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(customer.getBillAddr2()) ? "Bill Addr2: " + customer.getBillAddr2() + "/r/n" : "");
 
         tempString = (StringUtils.isNotBlank(customer.getBillCity()) ? customer.getBillCity() + ", " : "");
         tempString += (StringUtils.isNotBlank(customer.getBillState()) ? customer.getBillState() + " " : "");
@@ -284,50 +234,35 @@ public class MultispeakFuncs {
     public String serviceLocationToString(ServiceLocation serviceLocation) {
         String returnStr = "";
 
-        /*
-         * NISC fields availalbe toDate 20070101 private
-         * com.cannontech.multispeak.deploy.service.Network network;
-         * network.getBoardDist(); network.getDistrict();
-         * network.getEaLoc().getName(); network.getFeeder();
-         * network.getLinkedTransformer().getBankID();
-         * network.getPhaseCd().getValue(); network.getSubstationCode();
-         * revenueClass; billingCycle; route; specialNeeds; connectDate;
-         */
+        /* NISC fields availalbe toDate 20070101
+        private com.cannontech.multispeak.deploy.service.Network network;
+        network.getBoardDist();
+        network.getDistrict();
+        network.getEaLoc().getName();
+        network.getFeeder();
+        network.getLinkedTransformer().getBankID();
+        network.getPhaseCd().getValue();
+        network.getSubstationCode();
+        revenueClass;
+        billingCycle;
+        route;
+        specialNeeds;
+        connectDate;*/
 
-        returnStr +=
-            (StringUtils.isNotBlank(serviceLocation.getObjectID()) ? "Service Location: "
-                + serviceLocation.getObjectID() + "/r/n" : "");
-        returnStr +=
-            (StringUtils.isNotBlank(serviceLocation.getCustID()) ? "Customer ID: " + serviceLocation.getCustID()
-                + "/r/n" : "");
-        returnStr +=
-            (StringUtils.isNotBlank(serviceLocation.getAccountNumber()) ? "Account #: "
-                + serviceLocation.getAccountNumber() + "/r/n" : "");
-        returnStr +=
-            (StringUtils.isNotBlank(serviceLocation.getGridLocation()) ? "Grid Location: "
-                + serviceLocation.getGridLocation() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getObjectID()) ? "Service Location: " + serviceLocation.getObjectID() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getCustID()) ? "Customer ID: " + serviceLocation.getCustID() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getAccountNumber()) ? "Account #: " + serviceLocation.getAccountNumber() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getGridLocation()) ? "Grid Location: " + serviceLocation.getGridLocation() + "/r/n" : "");
 
-        returnStr +=
-            (StringUtils.isNotBlank(serviceLocation.getBillingCycle()) ? "Billing Cycle: "
-                + serviceLocation.getBillingCycle() + "/r/n" : "");
-        returnStr +=
-            (StringUtils.isNotBlank(serviceLocation.getServType()) ? "Service Type: " + serviceLocation.getServType()
-                + "/r/n" : "");
-        returnStr +=
-            (StringUtils.isNotBlank(serviceLocation.getServStatus()) ? "Service Status: "
-                + serviceLocation.getServStatus() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getBillingCycle()) ? "Billing Cycle: " + serviceLocation.getBillingCycle() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getServType()) ? "Service Type: " + serviceLocation.getServType() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getServStatus()) ? "Service Status: " + serviceLocation.getServStatus() + "/r/n" : "");
 
-        returnStr +=
-            (StringUtils.isNotBlank(serviceLocation.getServAddr1()) ? "Service Addr1: "
-                + serviceLocation.getServAddr1() + "/r/n" : "");
-        returnStr +=
-            (StringUtils.isNotBlank(serviceLocation.getServAddr2()) ? "Service Addr2: "
-                + serviceLocation.getServAddr2() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getServAddr1()) ? "Service Addr1: " + serviceLocation.getServAddr1() + "/r/n" : "");
+        returnStr += (StringUtils.isNotBlank(serviceLocation.getServAddr2()) ? "Service Addr2: " + serviceLocation.getServAddr2() + "/r/n" : "");
 
-        String tempString =
-            (StringUtils.isNotBlank(serviceLocation.getServCity()) ? serviceLocation.getServCity() + ", " : "");
-        tempString +=
-            (StringUtils.isNotBlank(serviceLocation.getServState()) ? serviceLocation.getServState() + " " : "");
+        String tempString = (StringUtils.isNotBlank(serviceLocation.getServCity()) ? serviceLocation.getServCity() + ", " : "");
+        tempString += (StringUtils.isNotBlank(serviceLocation.getServState()) ? serviceLocation.getServState() + " " : "");
         tempString += (StringUtils.isNotBlank(serviceLocation.getServZip()) ? serviceLocation.getServZip() : "");
         if (StringUtils.isNotBlank(tempString)) {
             returnStr += "City/State/Zip: " + tempString + "/r/n";
@@ -350,8 +285,7 @@ public class MultispeakFuncs {
     }
 
     public MspPaoNameAliasEnum getPaoNameAlias() {
-        MspPaoNameAliasEnum paoNameAlias =
-            globalSettingDao.getEnum(GlobalSettingType.MSP_PAONAME_ALIAS, MspPaoNameAliasEnum.class);
+        MspPaoNameAliasEnum paoNameAlias = globalSettingDao.getEnum(GlobalSettingType.MSP_PAONAME_ALIAS, MspPaoNameAliasEnum.class);
         return paoNameAlias;
     }
 
@@ -365,7 +299,6 @@ public class MultispeakFuncs {
     /**
      * Return true if mspVendor is the primaryCIS Vendor, else return false;
      * Also returns false if mspVendor or it's vendorId are null.
-     * 
      * @param mspVendor
      * @return boolean
      */
@@ -381,8 +314,7 @@ public class MultispeakFuncs {
      * @return Returns the billingCycle parent Device Group
      */
     public DeviceGroup getBillingCycleDeviceGroup() throws NotFoundException {
-        // WE MAY HAVE SOME PROBLEMS HERE WITH THE EXPLICIT CAST TO
-        // STOREDDEVICEGROUP....
+        // WE MAY HAVE SOME PROBLEMS HERE WITH THE EXPLICIT CAST TO STOREDDEVICEGROUP....
         String value = globalSettingDao.getString(GlobalSettingType.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP);
         DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(value);
         return deviceGroup;
@@ -399,13 +331,11 @@ public class MultispeakFuncs {
     }
 
     /**
-     * Helper method to construct a deviceName alias value value containing an
-     * additional quantifier. Format is "value [quantifer]" NOTE: For
-     * mspVendor.CompanyName = NISC -> Only add the quantifier for quantifier !=
-     * 1.
-     * 
+     * Helper method to construct a deviceName alias value value containing an additional quantifier.
+     * Format is "value [quantifer]"
+     * NOTE:  For mspVendor.CompanyName = NISC -> Only add the quantifier for quantifier != 1.
      * @param value
-     * @param quantifier
+     * @param quantifier 
      * @return
      */
     public String buildAliasWithQuantifier(String value, String quantifier, MultispeakVendor mspVendor) {
@@ -413,9 +343,7 @@ public class MultispeakFuncs {
         String valueWithQuantifier = value;
 
         if (StringUtils.isNotBlank(quantifier)) {
-            if (isNISC && StringUtils.equals(quantifier, "1")) { // NISC vendor
-                                                                 // specific
-                                                                 // handling
+            if (isNISC && StringUtils.equals(quantifier, "1")) { // NISC vendor specific handling
                 return valueWithQuantifier;
             }
             valueWithQuantifier += " [" + quantifier + "]";
@@ -424,11 +352,9 @@ public class MultispeakFuncs {
     }
 
     /**
-     * Helper method to parse the main alias value from a string containing a
-     * quantifier too. Format of value is expected to be "value [quantifier]".
-     * After parse, returned value will be "value" (the [quantifier] part will
-     * be removed).
-     * 
+     * Helper method to parse the main alias value from a string containing a quantifier too.
+     * Format of value is expected to be "value [quantifier]".
+     * After parse, returned value will be "value" (the [quantifier] part will be removed).
      * @param value
      * @return
      */
@@ -437,26 +363,22 @@ public class MultispeakFuncs {
 
         int bracketIndex = parsedValue.lastIndexOf("[");
         if (bracketIndex > 0) { // found an instance of [
-            // truncate to the underscore index, not inclusive of. This should
-            // remove things like 12345 [3] and make 12345 must trim to remove
-            // end of string whitespace
+            // truncate to the underscore index, not inclusive of. This should remove things like 12345 [3] and make 12345 must trim to remove end of string whitespace
             parsedValue = parsedValue.substring(0, bracketIndex).trim();
         }
         return parsedValue;
     }
 
     /**
-     * This method returns the cisInfoWidgetName for the user. If it is NONE, it
-     * will use the venderId and proceed as if they actually had the MULTISPEAK
-     * value set.
+     * This method returns the cisInfoWidgetName for the user.  If it is NONE, it will use the venderId
+     * and proceed as if they actually had the MULTISPEAK value set.
      */
     public String getCisDetailWidget(LiteYukonUser liteYukonUser) {
-        boolean cisDetailWidgetEnabled =
-            rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED, liteYukonUser);
+        boolean cisDetailWidgetEnabled = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.CIS_DETAIL_WIDGET_ENABLED, liteYukonUser);
         if (cisDetailWidgetEnabled) {
-            CisDetailRolePropertyEnum cisDetailRoleProperty =
-                rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.CIS_DETAIL_TYPE,
-                    CisDetailRolePropertyEnum.class, liteYukonUser);
+            CisDetailRolePropertyEnum cisDetailRoleProperty = rolePropertyDao.getPropertyEnumValue(YukonRoleProperty.CIS_DETAIL_TYPE,
+                                                                                                   CisDetailRolePropertyEnum.class,
+                                                                                                   liteYukonUser);
             String cisInfoWidgetName = cisDetailRoleProperty.getWidgetName();
             if (cisInfoWidgetName == null) {
                 int vendorId = getPrimaryCIS();
@@ -470,26 +392,22 @@ public class MultispeakFuncs {
     }
 
     /**
-     * Helper method to update responseHeader.objectsRemaining and
-     * responseHeader.lastSent
-     * 
+     * Helper method to update responseHeader.objectsRemaining and responseHeader.lastSent
      * @param returnResultsSize
      * @param vendor
      * @return
      */
-    public void updateResponseHeader(MspReturnList returnList) {
+    public void updateResponseHeader(MspReturnList returnList) throws RemoteException {
         getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(returnList.getObjectsRemaining())));
-        log.debug("Updated MspMessageHeader.ObjectsRemaining " + returnList.getObjectsRemaining());
+        LogHelper.debug(log, "Updated MspMessageHeader.ObjectsRemaining %s", returnList.getObjectsRemaining());
 
         getResponseHeader().setLastSent(returnList.getLastSent());
-        log.debug("Updated MspMessageHeader.LastSent " + returnList.getLastSent());
+        LogHelper.debug(log, "Updated MspMessageHeader.LastSent %s", returnList.getLastSent());
     }
 
     /**
-     * Translates the rawState into a loadActionCode based on the type of meter
-     * and expected state group for that type. Returns loadActionCode.Unknown
-     * when cannot be determined.
-     * 
+     * Translates the rawState into a loadActionCode based on the type of meter and expected state group for that type. 
+     * Returns loadActionCode.Unknown when cannot be determined.
      * @param meter
      * @return
      */
@@ -498,27 +416,23 @@ public class MultispeakFuncs {
         MspLoadActionCode mspLoadActionCode;
         try {
 
-            log.debug("Returning disconnect status from cache: "
-                + pointFormattingService.getCachedInstance().getValueString(pointValueHolder, Format.FULL,
-                    new SimpleYukonUserContext()));
+            LogHelper.debug(log, "Returning disconnect status from cache: %s", pointFormattingService.getCachedInstance().getValueString(pointValueHolder,
+                                                                                      Format.FULL, new SystemUserContext()));
 
-            boolean isRfnDisconnect =
-                paoDefinitionDao.isTagSupported(yukonDevice.getPaoIdentifier().getPaoType(), PaoTag.DISCONNECT_RFN);
+            boolean isRfnDisconnect = paoDefinitionDao.isTagSupported(yukonDevice.getPaoIdentifier().getPaoType(), PaoTag.DISCONNECT_RFN);
             if (isRfnDisconnect) {
-                RfnDisconnectStatusState pointState =
-                    PointStateHelper.decodeRawState(RfnDisconnectStatusState.class, pointValueHolder.getValue());
+                RfnDisconnectStatusState pointState = PointStateHelper.decodeRawState(RfnDisconnectStatusState.class, pointValueHolder.getValue());
                 mspLoadActionCode = MspLoadActionCode.getForRfnState(pointState);
                 log.debug("returning loadActionCode for RFN: " + mspLoadActionCode);
             } else { // assume everything else is PLC
-                Disconnect410State pointState =
-                    PointStateHelper.decodeRawState(Disconnect410State.class, pointValueHolder.getValue());
+                Disconnect410State pointState = PointStateHelper.decodeRawState(Disconnect410State.class, pointValueHolder.getValue());
                 mspLoadActionCode = MspLoadActionCode.getForPlcState(pointState);
                 log.debug("returning loadActionCode for PLC: " + mspLoadActionCode);
             }
         } catch (IllegalArgumentException e) {
             // we were unable to decode the rawState
             log.warn("Unable to decode rawState. value:" + pointValueHolder.getValue());
-            return LoadActionCode.UNKNOWN;
+            return LoadActionCode.Unknown;
         }
         return mspLoadActionCode.getLoadActionCode();
     }
@@ -530,7 +444,6 @@ public class MultispeakFuncs {
      * pushes notificationXxx _to_ responseUrl. If responseURL is not blank,
      * return responseURL. Otherwise, loop through services and try to build the
      * responseURL from the mspVendor's URL and service endpoint
-     * 
      * @param mspVendor
      * @param responseURL
      * @param services
@@ -548,73 +461,17 @@ public class MultispeakFuncs {
             }
         }
 
-        // return empty response URL...may need to do some more here? We don't
-        // expect to ever be in this situation!!
+        // return empty response URL...may need to do some more here? We don't expect to ever be in this situation!!
         return "";
     }
 
     /**
-     * Return the endpointUrl to send method/request _to_. Used for synchronous
-     * calls, where Yukon is the Client. (Get_fromVendor > Return_toYukon)
-     * 
+     * Return the endpointUrl to send method/request _to_.
+     * Used for synchronous calls, where Yukon is the Client. (Get_fromVendor > Return_toYukon)
      * @param mspVendor
      * @param services
      */
     public String getEndpointUrl(MultispeakVendor mspVendor, String services) {
         return getResponseUrl(mspVendor, null, services);
     }
-
-    /**
-     * This method will return XMLGregorianCalendar type for given date/Calendar/null in case of current date
-     * 
-     * @param Object - Input date/Calendar/null
-     * @return eventime
-     */
-    public static XMLGregorianCalendar toXMLGregorianCalendar(Object inputDate) {
-        XMLGregorianCalendar eventTime = null;
-
-        try {
-            GregorianCalendar gc = (GregorianCalendar) GregorianCalendar.getInstance();
-            if (inputDate instanceof Date) {
-                Date date = (Date) inputDate;
-                gc.setTime(date);
-            } else if (inputDate instanceof Calendar) {
-                Calendar cal = (Calendar) inputDate;
-                gc.setTimeInMillis(cal.getTimeInMillis());
-            } else {
-                Date date = new Date();
-                gc.setTime(date);
-            }
-            eventTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
-        } catch (DatatypeConfigurationException e) {
-            log.warn("caught exception in parsing event time", e);
-        }
-        return eventTime;
-    }
-
-    public ArrayOfErrorObject toArrayOfErrorObject(ErrorObject[] errorObjectArr) {
-        ArrayOfErrorObject arrayOfErrorObject = null;
-        if (errorObjectArr != null) {
-            arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
-            List<ErrorObject> errorObjects = arrayOfErrorObject.getErrorObject();
-            for (ErrorObject errorObject : errorObjectArr) {
-                errorObjects.add(errorObject);
-            }
-        }
-
-        return arrayOfErrorObject;
-    }
-
-    public ArrayOfString toArrayOfString(String[] stringArr) {
-        ArrayOfString arrayOfString = null;
-        if (stringArr != null) {
-            arrayOfString = objectFactory.createArrayOfString();
-            List<String> stringList = arrayOfString.getString();
-            for (String stringValue : stringArr) {
-                stringList.add(stringValue);
-            }
-        }
-        return arrayOfString;
-    }
-
 }

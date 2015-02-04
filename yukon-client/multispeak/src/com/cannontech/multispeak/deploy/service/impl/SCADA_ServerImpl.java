@@ -1,39 +1,36 @@
 package com.cannontech.multispeak.deploy.service.impl;
 
+import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.msp.beans.v3.AccumulatedValue;
-import com.cannontech.msp.beans.v3.DomainMember;
-import com.cannontech.msp.beans.v3.DomainNameChange;
-import com.cannontech.msp.beans.v3.ErrorObject;
-import com.cannontech.msp.beans.v3.FormattedBlock;
-import com.cannontech.msp.beans.v3.ListItem;
-import com.cannontech.msp.beans.v3.OutageEvent;
-import com.cannontech.msp.beans.v3.RegistrationInfo;
-import com.cannontech.msp.beans.v3.ScadaAnalog;
-import com.cannontech.msp.beans.v3.ScadaControl;
-import com.cannontech.msp.beans.v3.ScadaPoint;
-import com.cannontech.msp.beans.v3.ScadaStatus;
-import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.MspScadaAnalogReturnList;
-import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
+import com.cannontech.multispeak.deploy.service.AccumulatedValue;
+import com.cannontech.multispeak.deploy.service.DomainMember;
+import com.cannontech.multispeak.deploy.service.DomainNameChange;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.FormattedBlock;
+import com.cannontech.multispeak.deploy.service.ListItem;
+import com.cannontech.multispeak.deploy.service.OutageEvent;
+import com.cannontech.multispeak.deploy.service.RegistrationInfo;
+import com.cannontech.multispeak.deploy.service.SCADA_ServerSoap_PortType;
+import com.cannontech.multispeak.deploy.service.ScadaAnalog;
+import com.cannontech.multispeak.deploy.service.ScadaControl;
+import com.cannontech.multispeak.deploy.service.ScadaPoint;
+import com.cannontech.multispeak.deploy.service.ScadaStatus;
 import com.cannontech.multispeak.service.MultispeakLMService;
-import com.cannontech.multispeak.service.SCADA_Server;
 
-@Service
-public class SCADA_ServerImpl implements SCADA_Server {
+public class SCADA_ServerImpl implements SCADA_ServerSoap_PortType {
 
     @Autowired private MspRawPointHistoryDao mspRawPointHistoryDao;
     @Autowired private MultispeakEventLogService multispeakEventLogService;
@@ -41,294 +38,286 @@ public class SCADA_ServerImpl implements SCADA_Server {
     @Autowired private MultispeakLMService multispeakLMService;
 
     private final Logger log = YukonLogManager.getLogger(SCADA_ServerImpl.class);
-    private final static String[] methods = new String[] { "pingURL", "getMethods", "getAllSCADAAnalogs", };
+    private final static String[] methods = new String[] {
+        "pingURL",
+        "getMethods",
+        "getAllSCADAAnalogs",
+    };
 
-    private LiteYukonUser init() throws MultispeakWebServiceException {
+    private LiteYukonUser init() throws RemoteException {
         multispeakFuncs.init();
         return multispeakFuncs.authenticateMsgHeader();
     }
 
     @Override
-    public ErrorObject[] pingURL() throws MultispeakWebServiceException {
+    public ErrorObject[] pingURL() throws RemoteException {
         init();
         return new ErrorObject[0];
     }
 
     @Override
-    public String[] getMethods() throws MultispeakWebServiceException {
+    public String[] getMethods() throws RemoteException {
         init();
-        return multispeakFuncs.getMethods(MultispeakDefines.SCADA_Server_STR, methods);
+        return multispeakFuncs.getMethods(MultispeakDefines.SCADA_Server_STR , methods);
     }
 
     @Override
-    public ScadaAnalog[] getAllSCADAAnalogs(String lastReceived) throws MultispeakWebServiceException {
+    public String[] getDomainNames() throws RemoteException {
+        init();
+        throw new RemoteException("Method is NOT supported.");
+    }
+
+    @Override
+    public DomainMember[] getDomainMembers(String domainName) throws RemoteException {
+        init();
+        throw new RemoteException("Method is NOT supported.");
+    }
+
+    @Override
+    public String requestRegistrationID() throws RemoteException {
+        init();
+        throw new RemoteException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] registerForService(RegistrationInfo registrationDetails) throws RemoteException {
+        init();
+        throw new RemoteException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] unregisterForService(String registrationID) throws RemoteException {
+        init();
+        throw new RemoteException("Method is NOT supported.");
+    }
+
+    @Override
+    public RegistrationInfo getRegistrationInfoByID(String registrationID) throws RemoteException {
+        init();
+        throw new RemoteException("Method is NOT supported.");
+    }
+
+    @Override
+    public String[] getPublishMethods() throws RemoteException {
+        init();
+        throw new RemoteException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] domainMembersChangedNotification(DomainMember[] changedDomainMembers) throws RemoteException {
+        init();
+        throw new RemoteException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] domainNamesChangedNotification(DomainNameChange[] changedDomainNames) throws RemoteException {
+        init();
+        throw new RemoteException("Method is NOT supported.");
+    }
+
+    @Override
+    public ScadaAnalog[] getAllSCADAAnalogs(String lastReceived) throws RemoteException {
         LiteYukonUser user = init();
-        MultispeakVendor mspVendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
+        MultispeakVendor mspVendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("getAllSCADAAnalogs", mspVendor.getCompanyName());
 
         Date timerStart = new Date();
 
         MspScadaAnalogReturnList scadaAnalogList = mspRawPointHistoryDao.retrieveLatestScadaAnalogs(user);
-
+        
         multispeakFuncs.updateResponseHeader(scadaAnalogList);
         ScadaAnalog[] scadaAnalogs = new ScadaAnalog[scadaAnalogList.getScadaAnalogs().size()];
         scadaAnalogList.getScadaAnalogs().toArray(scadaAnalogs);
-        log.info("Returning All Scada Analog data (" + scadaAnalogs.length + " points). ("
-            + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
-        multispeakEventLogService.returnObjects(scadaAnalogs.length, scadaAnalogList.getObjectsRemaining(),
-            "ScadaAnalog", scadaAnalogList.getLastSent(), "getAllSCADAAnalogs", mspVendor.getCompanyName());
+        log.info("Returning All Scada Analog data (" + scadaAnalogs.length + " points). (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
+        multispeakEventLogService.returnObjects(scadaAnalogs.length, scadaAnalogList.getObjectsRemaining(), "ScadaAnalog", scadaAnalogList.getLastSent(),
+                                                "getAllSCADAAnalogs", mspVendor.getCompanyName());
         return scadaAnalogs;
     }
 
     @Override
-    public String[] getDomainNames() throws MultispeakWebServiceException {
+    public ScadaAnalog getSCADAAnalogBySCADAPointID(String scadaPointID) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public DomainMember[] getDomainMembers(String domainName) throws MultispeakWebServiceException {
+    public ScadaStatus[] getAllSCADAStatus(String lastReceived) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public String requestRegistrationID() throws MultispeakWebServiceException {
+    public ScadaStatus getSCADAStatusBySCADAPointID(String scadaPointID) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException {
+    public ScadaPoint[] getAllSCADAPoints(String lastReceived) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] unregisterForService(String registrationID) throws MultispeakWebServiceException {
+    public ScadaPoint[] getModifiedSCADAPoints(String previousSessionID, String lastReceived) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public RegistrationInfo getRegistrationInfoByID(String registrationID) throws MultispeakWebServiceException {
-        init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public String[] getPublishMethods() throws MultispeakWebServiceException {
-        init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public ErrorObject[] domainMembersChangedNotification(DomainMember[] changedDomainMembers)
-            throws MultispeakWebServiceException {
-        init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public ErrorObject[] domainNamesChangedNotification(DomainNameChange[] changedDomainNames)
-            throws MultispeakWebServiceException {
-        init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public ScadaAnalog getSCADAAnalogBySCADAPointID(String scadaPointID) throws MultispeakWebServiceException {
-        init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public ScadaStatus[] getAllSCADAStatus(String lastReceived) throws MultispeakWebServiceException {
-        init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public ScadaStatus getSCADAStatusBySCADAPointID(String scadaPointID) throws MultispeakWebServiceException {
-        init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public ScadaPoint[] getAllSCADAPoints(String lastReceived) throws MultispeakWebServiceException {
-        init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @Override
-    public ScadaPoint[] getModifiedSCADAPoints(String previousSessionID, String lastReceived)
-            throws MultispeakWebServiceException {
-        init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
     public ScadaAnalog[] getSCADAAnalogsByDateRangeAndPointID(String scadaPointID, Calendar startTime,
-            Calendar endTime, float sampleRate, String lastReceived) throws MultispeakWebServiceException {
+            Calendar endTime, float sampleRate, String lastReceived) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
     public ScadaStatus[] getSCADAStatusesByDateRangeAndPointID(String scadaPointID, Calendar startTime,
-            Calendar endTime, float sampleRate, String lastReceived) throws MultispeakWebServiceException {
+            Calendar endTime, float sampleRate, String lastReceived) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
     public ScadaStatus[] getSCADAStatusesByDateRange(Calendar startTime, Calendar endTime, float sampleRate,
-            String lastReceived) throws MultispeakWebServiceException {
+            String lastReceived) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
     public FormattedBlock[] getSCADAAnalogsByDateRangeAndPointIDFormattedBlock(String scadaPointID, Calendar startTime,
-            Calendar endTime, float sampleRate, String lastReceived) throws MultispeakWebServiceException {
+            Calendar endTime, float sampleRate, String lastReceived) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
     public FormattedBlock[] getSCADAStatusesByDateRangeAndPointIDFormattedBlock(String scadaPointID,
-            Calendar startTime, Calendar endTime, float sampleRate, String lastReceived)
-            throws MultispeakWebServiceException {
+            Calendar startTime, Calendar endTime, float sampleRate, String lastReceived) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
     public FormattedBlock[] getSCADAStatusesByDateRangeFormattedBlock(Calendar startTime, Calendar endTime,
-            float sampleRate, String lastReceived) throws MultispeakWebServiceException {
+            float sampleRate, String lastReceived) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
     public ErrorObject[] initiateStatusReadByPointID(String[] pointIDs, String responseURL, String transactionID)
-            throws MultispeakWebServiceException {
+            throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
     public ErrorObject[] initiateAnalogReadByPointID(String[] pointIDs, String responseURL, String transactionID)
-            throws MultispeakWebServiceException {
+            throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
     public ErrorObject initiateControl(ScadaControl controlAction, String responseURL, String transactionID)
-            throws MultispeakWebServiceException {
+            throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] outageEventChangedNotification(OutageEvent[] oEvents) throws MultispeakWebServiceException {
+    public ErrorObject[] outageEventChangedNotification(OutageEvent[] oEvents) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
     public ErrorObject[] pointSubscriptionListNotification(ListItem[] pointList, String responseURL, String errorString)
-            throws MultispeakWebServiceException {
+            throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
     public ErrorObject[] analogChangedNotificationByPointID(ScadaAnalog[] scadaAnalogs, String transactionID)
-            throws MultispeakWebServiceException {
+            throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
     public ErrorObject[] statusChangedNotificationByPointID(ScadaStatus[] scadaStatuses, String transactionID)
-            throws MultispeakWebServiceException {
+            throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] SCADAAnalogChangedNotification(ScadaAnalog[] scadaAnalogs)
-            throws MultispeakWebServiceException {
+    public ErrorObject[] SCADAAnalogChangedNotification(ScadaAnalog[] scadaAnalogs) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] SCADAStatusChangedNotification(ScadaStatus[] scadaStatuses)
-            throws MultispeakWebServiceException {
+    public ErrorObject[] SCADAStatusChangedNotification(ScadaStatus[] scadaStatuses) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] accumulatedValueChangedNotification(AccumulatedValue[] accumulators)
-            throws MultispeakWebServiceException {
+    public ErrorObject[] accumulatedValueChangedNotification(AccumulatedValue[] accumulators) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] SCADAPointChangedNotification(ScadaPoint[] scadaPoints) throws MultispeakWebServiceException {
+    public ErrorObject[] SCADAPointChangedNotification(ScadaPoint[] scadaPoints) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] SCADAPointChangedNotificationForAnalog(ScadaPoint[] scadaPoints)
-            throws MultispeakWebServiceException {
+    public ErrorObject[] SCADAPointChangedNotificationForAnalog(ScadaPoint[] scadaPoints) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] SCADAPointChangedNotificationForStatus(ScadaPoint[] scadaPoints)
-            throws MultispeakWebServiceException {
+    public ErrorObject[] SCADAPointChangedNotificationForStatus(ScadaPoint[] scadaPoints) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public void SCADAAnalogChangedNotificationByPointID(ScadaAnalog scadaAnalog) throws MultispeakWebServiceException {
+    public void SCADAAnalogChangedNotificationByPointID(ScadaAnalog scadaAnalog) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] SCADAAnalogChangedNotificationForPower(ScadaAnalog[] scadaAnalogs)
-            throws MultispeakWebServiceException {
+    public ErrorObject[] SCADAAnalogChangedNotificationForPower(ScadaAnalog[] scadaAnalogs) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public ErrorObject[] SCADAAnalogChangedNotificationForVoltage(ScadaAnalog[] scadaAnalogs)
-            throws MultispeakWebServiceException {
+    public ErrorObject[] SCADAAnalogChangedNotificationForVoltage(ScadaAnalog[] scadaAnalogs) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
-    public void SCADAStatusChangedNotificationByPointID(ScadaStatus scadaStatus) throws MultispeakWebServiceException {
+    public void SCADAStatusChangedNotificationByPointID(ScadaStatus scadaStatus) throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 
     @Override
     public ErrorObject[] controlActionCompleted(ScadaControl[] controlActions, String transactionID)
-            throws MultispeakWebServiceException {
+            throws RemoteException {
         init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
+        throw new RemoteException("Method is NOT supported.");
     }
 }

@@ -12,13 +12,13 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
-import com.cannontech.msp.beans.v3.ErrorObject;
-import com.cannontech.msp.beans.v3.LoadManagementEvent;
-import com.cannontech.msp.beans.v3.QualityDescription;
-import com.cannontech.msp.beans.v3.ScadaAnalog;
-import com.cannontech.msp.beans.v3.SubstationLoadControlStatus;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.db.MspLoadControl;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
+import com.cannontech.multispeak.deploy.service.QualityDescription;
+import com.cannontech.multispeak.deploy.service.ScadaAnalog;
+import com.cannontech.multispeak.deploy.service.SubstationLoadControlStatus;
 
 public interface MultispeakLMService {
 
@@ -26,17 +26,15 @@ public interface MultispeakLMService {
      * Build a Yukon MspLoadControl object from the loadManagementEvent.
      * If a startDate is not supplied, now will be used.
      * If a duration is not supplied, no stop time will be calculated (null will be used).
-     * The substation name and strategy name values are used to lookup and return the
-     * corresponding MspLMInterfaceMapping values. If combination not found, ErrorObject is returned for each
-     * occurrence.
+     * The substation name and strategy name values are used to lookup and return the 
+     *  corresponding MspLMInterfaceMapping values.  If combination not found, ErrorObject is returned for each occurrence.
      */
-    public ErrorObject[] buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl,
-            MultispeakVendor vendor);
+    public ErrorObject[] buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl, MultispeakVendor vendor);
 
     /**
      * Start (ControlEventType.INITIATE) or Stop (ControlEventType.RESTORE) control for the "controllable"
-     * paobjectId for the MspLoadControl object.
-     * Returns an ErrorObject for control operations that failed.
+     *  paobjectId for the MspLoadControl object.
+     *  Returns an ErrorObject for control operations that failed.
      */
     public ErrorObject control(MspLoadControl mspLoadControl, LiteYukonUser liteYukonUser);
 
@@ -44,20 +42,17 @@ public interface MultispeakLMService {
      * Start control for the programName and date range provided.
      * If the startTime is null or less than "now", Start Now will be used.
      * If the stopTime is null, then Never Stop will be used.
-     * 
      * @throws NotAuthorizedException when the liteYukonUser does not have access to the program
      * @throws NotFoundException when the programName is not found in Yukon
      * @throws TimeoutException when the control operation times out.
      * @throws BadServerResponseException
      */
-    public ProgramStatus startControlByProgramName(String programName, Date startTime, Date stopTime,
-            LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException,
-            BadServerResponseException;
+    public ProgramStatus startControlByProgramName(String programName, Date startTime, Date stopTime, LiteYukonUser liteYukonUser) 
+            throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException;
 
     /**
      * Stop control for the programName and date range provided.
      * If the stopTime is null, then Stop Now will be used
-     * 
      * @throws NotAuthorizedException when the liteYukonUser does not have access to the program
      * @throws NotFoundException when the programName is not found in Yukon
      * @throws TimeoutException when the control operation times out.
@@ -70,21 +65,16 @@ public interface MultispeakLMService {
      * Start control for the scenarioName and date range provided.
      * If the startTime is null or less than "now", Start Now will be used.
      * If the stopTime is null, then Never Stop will be used.
-     * 
-     * @throws NotAuthorizedException when the liteYukonUser does not have access to one of the programs for
-     *         the scenario
+     * @throws NotAuthorizedException when the liteYukonUser does not have access to one of the programs for the scenario
      * @throws NotFoundException when the scenarioName is not found in Yukon
      * @throws TimeoutException when the control operation times out.
      * @throws BadServerResponseException
      */
-    public ScenarioStatus startControlByControlScenario(String scenarioName, Date startTime, Date stopTime,
-            LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException,
-            BadServerResponseException;
+    public ScenarioStatus startControlByControlScenario(String scenarioName, Date startTime, Date stopTime, LiteYukonUser liteYukonUser)
+            throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException;
 
     /**
-     * Stop control for the scenarioName and date range provided. If the stopTime is null, then Stop Now will
-     * be used.
-     * 
+     * Stop control for the scenarioName and date range provided. If the stopTime is null, then Stop Now will be used.
      * @throws NotAuthorizedException when the liteYukonUser does not have access to the program
      * @throws NotFoundException when the programName is not found in Yukon
      * @throws TimeoutException when the control operation times out.
@@ -100,7 +90,7 @@ public interface MultispeakLMService {
 
     /**
      * Return the Yukon Point Quality value that maps to the MultiSpeak QualityDescription value.
-     * PointQuality.NORMAL is the default value returned when no other value is found.
+     *  PointQuality.NORMAL is the default value returned when no other value is found.
      */
     public PointQuality getPointQuality(QualityDescription qualityDescription);
 
@@ -117,14 +107,13 @@ public interface MultispeakLMService {
     /**
      * Returns an array of SubstationLoadControlStatus values.
      * For each defined MspLMInterfaceMappings, a SubstationLoadControlStatus object is created.
-     * The values are grouped by SubstationName, and contain a list of
-     * SubstationLoadControlStatusControlledItemsControlItems for each Strategy on that Substation.
+     * The values are grouped by SubstationName, and contain a list of 
+     *  SubstationLoadControlStatusControlledItemsControlItems for each Strategy on that Substation.
      * The count for all devices in program/scenario that maps to the Substation/Strategy is included.
-     * The controlled count for all devices in program/scenario that maps to the Substation/Strategy is
-     * included.
-     * * NOTE: The controlled count is only the number of devices that were active, not opted out, for the
-     * date range supplied. We currently do not have a way to get an accurate control count without
-     * 2way load control switches.
+     * The controlled count for all devices in program/scenario that maps to the Substation/Strategy is included.
+     *  * NOTE:  The controlled count is only the number of devices that were active, not opted out, for the 
+     *           date range supplied.  We currently do not have a way to get an accurate control count without
+     *           2way load control switches.
      */
     public SubstationLoadControlStatus[] getActiveLoadControlStatus() throws ConnectionException, NotFoundException;
 

@@ -1,96 +1,51 @@
 package com.cannontech.multispeak.dao.impl;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.xml.namespace.QName;
+import javax.xml.soap.Name;
 
+import org.apache.axis.client.Stub;
+import org.apache.axis.message.SOAPHeaderElement;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ws.WebServiceMessage;
-import org.springframework.ws.context.MessageContext;
-import org.springframework.ws.soap.AbstractSoapMessage;
-import org.springframework.ws.soap.SoapEnvelope;
-import org.springframework.ws.soap.SoapHeader;
-import org.springframework.ws.soap.SoapHeaderElement;
-import org.springframework.ws.soap.saaj.SaajSoapMessage;
 
 import com.cannontech.amr.meter.model.SimpleMeter;
+import com.cannontech.clientutils.LogHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.message.dispatch.message.SystemLogHelper;
-import com.cannontech.msp.beans.v3.ArrayOfDomainMember;
-import com.cannontech.msp.beans.v3.ArrayOfMeter;
-import com.cannontech.msp.beans.v3.Customer;
-import com.cannontech.msp.beans.v3.DomainMember;
-import com.cannontech.msp.beans.v3.ErrorObject;
-import com.cannontech.msp.beans.v3.GetAllServiceLocations;
-import com.cannontech.msp.beans.v3.GetAllServiceLocationsResponse;
-import com.cannontech.msp.beans.v3.GetCustomerByMeterNo;
-import com.cannontech.msp.beans.v3.GetCustomerByMeterNoResponse;
-import com.cannontech.msp.beans.v3.GetDomainMembers;
-import com.cannontech.msp.beans.v3.GetDomainMembersResponse;
-import com.cannontech.msp.beans.v3.GetMeterByAccountNumber;
-import com.cannontech.msp.beans.v3.GetMeterByAccountNumberResponse;
-import com.cannontech.msp.beans.v3.GetMeterByCustID;
-import com.cannontech.msp.beans.v3.GetMeterByCustIDResponse;
-import com.cannontech.msp.beans.v3.GetMeterByMeterNo;
-import com.cannontech.msp.beans.v3.GetMeterByMeterNoResponse;
-import com.cannontech.msp.beans.v3.GetMeterByServLoc;
-import com.cannontech.msp.beans.v3.GetMeterByServLocResponse;
-import com.cannontech.msp.beans.v3.GetMetersByEALocation;
-import com.cannontech.msp.beans.v3.GetMetersByEALocationResponse;
-import com.cannontech.msp.beans.v3.GetMetersByFacilityID;
-import com.cannontech.msp.beans.v3.GetMetersByFacilityIDResponse;
-import com.cannontech.msp.beans.v3.GetMetersBySearchString;
-import com.cannontech.msp.beans.v3.GetMetersBySearchStringResponse;
-import com.cannontech.msp.beans.v3.GetMethods;
-import com.cannontech.msp.beans.v3.GetMethodsResponse;
-import com.cannontech.msp.beans.v3.GetServiceLocationByMeterNo;
-import com.cannontech.msp.beans.v3.GetServiceLocationByMeterNoResponse;
-import com.cannontech.msp.beans.v3.Meter;
-import com.cannontech.msp.beans.v3.ObjectFactory;
-import com.cannontech.msp.beans.v3.PingURL;
-import com.cannontech.msp.beans.v3.PingURLResponse;
-import com.cannontech.msp.beans.v3.ServiceLocation;
-import com.cannontech.multispeak.client.MessageContextHolder;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.client.core.CBClient;
-import com.cannontech.multispeak.client.core.CDClient;
-import com.cannontech.multispeak.client.core.EAClient;
-import com.cannontech.multispeak.client.core.LMClient;
-import com.cannontech.multispeak.client.core.MDMClient;
-import com.cannontech.multispeak.client.core.MRClient;
-import com.cannontech.multispeak.client.core.OAClient;
-import com.cannontech.multispeak.client.core.ODClient;
-import com.cannontech.multispeak.client.core.SCADAClient;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakGetAllServiceLocationsCallback;
-import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
+import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.CD_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.Customer;
+import com.cannontech.multispeak.deploy.service.DomainMember;
+import com.cannontech.multispeak.deploy.service.EA_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.LM_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.MDM_ServerSoap_PortType;
+import com.cannontech.multispeak.deploy.service.MR_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.Meter;
+import com.cannontech.multispeak.deploy.service.OA_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.OD_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.SCADA_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.ServiceLocation;
+import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 
 public class MspObjectDaoImpl implements MspObjectDao {
     private static final Logger log = YukonLogManager.getLogger(MspObjectDaoImpl.class);
-
-    @Autowired private ObjectFactory objectFactory;
     @Autowired private MultispeakFuncs multispeakFuncs;
-
-    @Autowired private CBClient cbClient;
-    @Autowired private CDClient cdClient;
-    @Autowired private EAClient eaClient;
-    @Autowired private MDMClient mdmClient;
-    @Autowired private OAClient oaClient;
-    @Autowired private ODClient odClient;
-    @Autowired private MRClient mrClient;
-    @Autowired private LMClient lmClient;
-    @Autowired private SCADAClient scadaClient;
 
     private SystemLogHelper _systemLogHelper = null;
 
@@ -110,17 +65,21 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public Customer getMspCustomer(String meterNumber, MultispeakVendor mspVendor) {
 
         Customer mspCustomer = new Customer();
-        GetCustomerByMeterNo getCustomerByMeterNo = objectFactory.createGetCustomerByMeterNo();
-        getCustomerByMeterNo.setMeterNo(meterNumber);
+
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+
         try {
-            GetCustomerByMeterNoResponse getCustomerByMeterNoResponse =
-                cbClient.getCustomerByMeterNo(mspVendor, endpointUrl, getCustomerByMeterNo);
-            mspCustomer = getCustomerByMeterNoResponse.getGetCustomerByMeterNoResult();
-        } catch (MultispeakWebServiceClientException e) {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            if (port != null) {
+                mspCustomer = port.getCustomerByMeterNo(meterNumber);
+            } else {
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for MeterNo: "
+                    + meterNumber);
+            }
+        } catch (RemoteException e) {
             log.error("TargetService: " + endpointUrl + " - getCustomerByMeterNo(" + mspVendor.getCompanyName()
                 + ") for MeterNo: " + meterNumber);
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.error("RemoteExceptionDetail: " + e.getMessage());
             log.info("A default(empty) is being used for Customer");
         }
         return mspCustomer;
@@ -134,20 +93,22 @@ public class MspObjectDaoImpl implements MspObjectDao {
     @Override
     public ServiceLocation getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor) {
         ServiceLocation mspServiceLocation = new ServiceLocation();
+
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
 
         try {
-            GetServiceLocationByMeterNo getServiceLocationByMeterNo = objectFactory.createGetServiceLocationByMeterNo();
-            getServiceLocationByMeterNo.setMeterNo(meterNumber);
-            log.debug("Calling " + mspVendor.getCompanyName()
-                + " CB_Server.getServiceLocationByMeterNo for meterNumber: " + meterNumber);
-            GetServiceLocationByMeterNoResponse getServiceLocationByMeterNoResponse =
-                cbClient.getServiceLocationByMeterNo(mspVendor, endpointUrl, getServiceLocationByMeterNo);
-            mspServiceLocation = getServiceLocationByMeterNoResponse.getGetServiceLocationByMeterNoResult();
-        } catch (MultispeakWebServiceClientException e) {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            if (port != null) {
+                LogHelper.debug(log, "Calling %s CB_Server.getServiceLocationByMeterNo for meterNumber: %s",
+                    mspVendor.getCompanyName(), meterNumber);
+                mspServiceLocation = port.getServiceLocationByMeterNo(meterNumber);
+            } else {
+                log.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
+            }
+        } catch (RemoteException e) {
             log.error("TargetService: " + endpointUrl + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName()
                 + ") for MeterNo: " + meterNumber);
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.error("RemoteExceptionDetail: " + e.getMessage());
             log.info("A default(empty) is being used for ServiceLocation");
         }
         return mspServiceLocation;
@@ -161,17 +122,20 @@ public class MspObjectDaoImpl implements MspObjectDao {
     @Override
     public Meter getMspMeter(String meterNumber, MultispeakVendor mspVendor) {
         Meter mspMeter = new Meter();
+
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+
         try {
-            GetMeterByMeterNo getMeterByMeterNo = objectFactory.createGetMeterByMeterNo();
-            getMeterByMeterNo.setMeterNo(meterNumber);
-            GetMeterByMeterNoResponse getMeterByMeterNoResponse =
-                cbClient.getMeterByMeterNo(mspVendor, endpointUrl, getMeterByMeterNo);
-            mspMeter = getMeterByMeterNoResponse.getGetMeterByMeterNoResult();
-        } catch (MultispeakWebServiceClientException e) {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            if (port != null) {
+                mspMeter = port.getMeterByMeterNo(meterNumber);
+            } else {
+                log.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
+            }
+        } catch (RemoteException e) {
             log.error("TargetService: " + endpointUrl + " - getMeterByMeterNo (" + mspVendor.getCompanyName()
                 + ") for MeterNo: " + meterNumber);
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.error("RemoteExceptionDetail: " + e.getMessage());
             log.info("A default(empty) is being used for Meter");
         }
         return mspMeter;
@@ -180,7 +144,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     // GET ALL MSP SERVICE LOCATIONS
     @Override
     public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback)
-            throws MultispeakWebServiceClientException {
+            throws RemoteException {
 
         boolean firstGet = true;
         String lastReceived = null;
@@ -189,8 +153,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
             // kill before gathering more substations if callback is canceled
             if (callback.isCanceled()) {
-                log.info("MultispeakGetAllServiceLocationsCallback in canceled state, "
-                    + "aborting next call to getMoreServiceLocations");
+                log.info("MultispeakGetAllServiceLocationsCallback in canceled state, aborting next call to getMoreServiceLocations");
                 return;
             }
 
@@ -203,55 +166,61 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     private String getMoreServiceLocations(MultispeakVendor mspVendor, String lastReceived,
-            MultispeakGetAllServiceLocationsCallback callback) throws MultispeakWebServiceClientException {
+            MultispeakGetAllServiceLocationsCallback callback) throws RemoteException {
 
         String lastSent = null;
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
-            GetAllServiceLocations getAllServiceLocations = objectFactory.createGetAllServiceLocations();
-            getAllServiceLocations.setLastReceived(lastReceived);
-            // get service locations
-            GetAllServiceLocationsResponse getAllServiceLocationsResponse =
-                cbClient.getAllServiceLocations(mspVendor, endpointUrl, getAllServiceLocations);
-            ServiceLocation[] serviceLocations =
-                (ServiceLocation[]) getAllServiceLocationsResponse.getGetAllServiceLocationsResult().getServiceLocation().toArray();
-            int serviceLocationCount = 0;
-            if (serviceLocations != null) {
-                serviceLocationCount = serviceLocations.length;
-            }
 
-            // objectsRemaining
-            int objectsRemaining = 0;
-            String objectsRemainingStr = getAttributeValue("objectsRemaining");
-            if (!StringUtils.isBlank(objectsRemainingStr)) {
-                try {
-                    objectsRemaining = Integer.valueOf(objectsRemainingStr);
-                } catch (NumberFormatException e) {
-                    log.error("Non-integer value in header for objectsRemaining: " + objectsRemainingStr, e);
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            if (port != null) {
+
+                // get service locations
+                ServiceLocation[] serviceLocations = port.getAllServiceLocations(lastReceived);
+
+                int serviceLocationCount = 0;
+                if (serviceLocations != null) {
+                    serviceLocationCount = serviceLocations.length;
                 }
-            }
 
-            if (objectsRemaining != 0) {
-                lastSent = getAttributeValue("lastSent");
-                log.info("getMoreServiceLocations responded, received " + serviceLocationCount
-                    + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = "
-                    + objectsRemaining + ", lastSent = " + lastSent);
+                // objectsRemaining
+                int objectsRemaining = 0;
+                String objectsRemainingStr = getAttributeValue(port, "objectsRemaining");
+                if (!StringUtils.isBlank(objectsRemainingStr)) {
+                    try {
+                        objectsRemaining = Integer.valueOf(objectsRemainingStr);
+                    } catch (NumberFormatException e) {
+                        log.error("Non-integer value in header for objectsRemaining: " + objectsRemainingStr, e);
+                    }
+                }
+
+                if (objectsRemaining != 0) {
+                    lastSent = getAttributeValue(port, "lastSent");
+                    log.info("getMoreServiceLocations responded, received " + serviceLocationCount
+                        + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = "
+                        + objectsRemaining + ", lastSent = " + lastSent);
+                } else {
+                    log.info("getMoreServiceLocations responded, received " + serviceLocationCount
+                        + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = "
+                        + objectsRemaining);
+                }
+
+                // process service locations
+                if (serviceLocationCount > 0) {
+                    List<ServiceLocation> mspServiceLocations = Arrays.asList(serviceLocations);
+                    callback.processServiceLocations(mspServiceLocations);
+                }
+
             } else {
-                log.info("getMoreServiceLocations responded, received " + serviceLocationCount
-                    + " ServiceLocations using lastReceived = " + lastReceived + ". Response: objectsRemaining = "
-                    + objectsRemaining);
+                log.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for LastReceived: "
+                    + lastReceived);
             }
 
-            // process service locations
-            if (serviceLocationCount > 0) {
-                List<ServiceLocation> mspServiceLocations = Arrays.asList(serviceLocations);
-                callback.processServiceLocations(mspServiceLocations);
-            }
-        } catch (MultispeakWebServiceClientException e) {
+        } catch (RemoteException e) {
 
             log.error("TargetService: " + endpointUrl + " - getAllServiceLocations (" + mspVendor.getCompanyName()
                 + ") for LastReceived: " + lastReceived);
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.error("RemoteExceptionDetail: " + e.getMessage());
             log.info("A default(empty) is being used for ServiceLocation");
 
             throw e;
@@ -260,26 +229,24 @@ public class MspObjectDaoImpl implements MspObjectDao {
         return lastSent;
     }
 
-    /**
-     * This method returns an Attribute value of response header.
-     * 
-     * @param name - attribute name.
-     * @return String - Attribute value.
-     **/
-    public String getAttributeValue(String name) {
-        String attributeValue = null;
-        MessageContext message = MessageContextHolder.getMessageContext();
-        WebServiceMessage responseMessage = message.getResponse();
-        AbstractSoapMessage abstractSoapMessage = (AbstractSoapMessage) responseMessage;
-        SaajSoapMessage saajSoapMessage = (SaajSoapMessage) abstractSoapMessage;
-        SoapEnvelope soapEnvelop = saajSoapMessage.getEnvelope();
-        SoapHeader soapHeader = soapEnvelop.getHeader();
-        Iterator<SoapHeaderElement> iterator = soapHeader.examineAllHeaderElements();
-        while (iterator.hasNext()) {
-            SoapHeaderElement element = iterator.next();
-            attributeValue = element.getAttributeValue(new QName(name));
+    @SuppressWarnings("unchecked")
+    private String getAttributeValue(Stub port, String name) {
+
+        String value = null;
+        SOAPHeaderElement[] responseHeaders = port.getResponseHeaders();
+        for (SOAPHeaderElement headerElement : responseHeaders) {
+            Iterator<Name> attributeNamesItr = headerElement.getAllAttributes();
+            while (attributeNamesItr.hasNext()) {
+                Name attributeName = attributeNamesItr.next();
+                if (attributeName.getLocalName().equalsIgnoreCase(name)) {
+                    value = headerElement.getAttributeValue(attributeName);
+                    if (!StringUtils.isBlank(value)) {
+                        break;
+                    }
+                }
+            }
         }
-        return attributeValue;
+        return value;
     }
 
     @Override
@@ -294,21 +261,24 @@ public class MspObjectDaoImpl implements MspObjectDao {
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
 
         try {
-            long start = System.currentTimeMillis();
-            log.debug("Begin call to getMeterByServLoc for ServLoc: " + serviceLocation);
-            GetMeterByServLoc getMeterByServLoc = objectFactory.createGetMeterByServLoc();
-            getMeterByServLoc.setServLoc(serviceLocation);
-            GetMeterByServLocResponse getMeterByMeterNoResponse =
-                cbClient.getMeterByServLoc(mspVendor, endpointUrl, getMeterByServLoc);
-            ArrayOfMeter arrayOfMeter = getMeterByMeterNoResponse.getGetMeterByServLocResult();
-            meters = arrayOfMeter.getMeter();
-            log.debug("End call to getMeterByServLoc for ServLoc:" + serviceLocation + "  (took "
-                + (System.currentTimeMillis() - start) + " millis)");
-
-        } catch (MultispeakWebServiceClientException e) {
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            if (port != null) {
+                long start = System.currentTimeMillis();
+                LogHelper.debug(log, "Begin call to getMeterByServLoc for ServLoc: %s", serviceLocation);
+                Meter[] mspMeters = port.getMeterByServLoc(serviceLocation);
+                LogHelper.debug(log, "End call to getMeterByServLoc for ServLoc:" + serviceLocation + "  (took "
+                    + (System.currentTimeMillis() - start) + " millis)");
+                if (mspMeters != null) {
+                    meters = Arrays.asList(mspMeters);
+                }
+            } else {
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for ServLoc: "
+                    + serviceLocation);
+            }
+        } catch (RemoteException e) {
             log.error("TargetService: " + endpointUrl + " - getMeterByServLoc (" + mspVendor.getCompanyName()
                 + ") for ServLoc: " + serviceLocation);
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.error("RemoteExceptionDetail: " + e.getMessage());
         }
         return meters;
     }
@@ -320,19 +290,24 @@ public class MspObjectDaoImpl implements MspObjectDao {
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
 
         try {
-        	 GetMetersBySearchString getMetersBySearchString = objectFactory.createGetMetersBySearchString();
-        	 getMetersBySearchString.setSearchString(searchString);      
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            if (port != null) {
                 long start = System.currentTimeMillis();
                 log.debug( "Begin call to getMetersBySearchString for SearchString: %s"+searchString);
-                GetMetersBySearchStringResponse mspMeters = cbClient.getMetersBySearchString(mspVendor, endpointUrl, getMetersBySearchString);
-                ArrayOfMeter arrayOfMeter = mspMeters.getGetMetersBySearchStringResult();
-                meters = arrayOfMeter.getMeter();
+                Meter[] mspMeters = port.getMetersBySearchString(searchString);
                 log.debug("End call to getMetersBySearchString for SearchString:" + searchString + "  (took "
-                    + (System.currentTimeMillis() - start) + " millis)");     
-        } catch (MultispeakWebServiceClientException e) {
+                    + (System.currentTimeMillis() - start) + " millis)");
+                if (mspMeters != null) {
+                    meters = Arrays.asList(mspMeters);
+                }
+            } else {
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for SearchString: "
+                    + searchString);
+            }
+        } catch (RemoteException e) {
             log.error("TargetService: " + endpointUrl + " - getMetersBySearchString (" + mspVendor.getCompanyName()
                 + ") for SearchString: " + searchString);
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.error("RemoteExceptionDetail: " + e.getMessage());
         }
         return meters;
     }
@@ -342,9 +317,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType, String method,
             String userName) {
         ErrorObject errorObject = new ErrorObject();
-
-        errorObject.setEventTime(MultispeakFuncs.toXMLGregorianCalendar(new Date()));
-
+        errorObject.setEventTime(new GregorianCalendar());
         errorObject.setObjectID(objectID);
         errorObject.setErrorString(errorMessage);
         errorObject.setNounType(nounType);
@@ -353,7 +326,6 @@ public class MspObjectDaoImpl implements MspObjectDao {
             "ErrorObject: (ObjId:" + errorObject.getObjectID() + " Noun:" + errorObject.getNounType() + " Message:"
                 + errorObject.getErrorString() + ")";
         logMSPActivity(method, description, userName);
-
         return errorObject;
     }
 
@@ -381,7 +353,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public void logMSPActivity(String method, String description, String userName) {
         getSystemLogHelper().log(PointTypes.SYS_PID_MULTISPEAK, method, description, userName,
             SystemLog.TYPE_MULTISPEAK);
-        log.debug("MSP Activity (Method: " + method + "-" + description + " )");
+        LogHelper.debug(log, "MSP Activity (Method: %s - %s)", method, description);
     }
 
     @Override
@@ -390,26 +362,22 @@ public class MspObjectDaoImpl implements MspObjectDao {
         List<String> substationNames = new ArrayList<>();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
-            GetDomainMembers domainMembersRequest = objectFactory.createGetDomainMembers();
-            domainMembersRequest.setDomainName("substationCode");
-            GetDomainMembersResponse domainMembersResponse =
-                cbClient.getDomainMembers(mspVendor, endpointUrl, domainMembersRequest);
-            ArrayOfDomainMember arrayOfDomainMember = domainMembersResponse.getGetDomainMembersResult();
-            List<DomainMember> domainMemberList = arrayOfDomainMember.getDomainMember();
-            if (!domainMemberList.isEmpty()) {
-                DomainMember[] domainMembers = new DomainMember[domainMemberList.size()];
-                domainMemberList.toArray(domainMembers);
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            if (port != null) {
+                DomainMember[] domainMembers = port.getDomainMembers("substationCode");
                 if (domainMembers != null) {
                     for (DomainMember domainMember : domainMembers) {
                         substationNames.add(domainMember.getDescription());
                     }
                 }
+            } else {
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName()
+                    + ") for DomainMember 'substationCode'");
             }
-
-        } catch (MultispeakWebServiceClientException e) {
+        } catch (RemoteException e) {
             log.error("TargetService: " + endpointUrl + " - getDomainMembers(" + mspVendor.getCompanyName()
                 + ") for DomainMember 'substationCode'");
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.error("RemoteExceptionDetail: " + e.getMessage());
         }
         return substationNames;
     }
@@ -421,18 +389,20 @@ public class MspObjectDaoImpl implements MspObjectDao {
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
 
         try {
-            GetMetersByEALocation getMetersByEALocation = objectFactory.createGetMetersByEALocation();
-            getMetersByEALocation.setEaLoc(eaLocation);
-            GetMetersByEALocationResponse getMetersByEALocationResponse =
-                cbClient.getMetersByEALocation(mspVendor, endpointUrl, getMetersByEALocation);
-            ArrayOfMeter arrayOfMeter = getMetersByEALocationResponse.getGetMetersByEALocationResult();
-            if (null != arrayOfMeter) {
-                meters = arrayOfMeter.getMeter();
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            if (port != null) {
+                Meter[] mspMeters = port.getMetersByEALocation(eaLocation);
+                if (mspMeters != null) {
+                    meters = Arrays.asList(mspMeters);
+                }
+            } else {
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for EALocation: "
+                    + eaLocation);
             }
-        } catch (MultispeakWebServiceClientException e) {
+        } catch (RemoteException e) {
             log.error("TargetService: " + endpointUrl + " - getMetersByEALocation (" + mspVendor.getCompanyName()
                 + ") for EALocation: " + eaLocation);
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.error("RemoteExceptionDetail: " + e.getMessage());
         }
         return meters;
     }
@@ -444,19 +414,20 @@ public class MspObjectDaoImpl implements MspObjectDao {
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
 
         try {
-            GetMetersByFacilityID facility = objectFactory.createGetMetersByFacilityID();
-            facility.setFacilityID(facilityId);
-
-            GetMetersByFacilityIDResponse response = cbClient.getMetersByFacilityID(mspVendor, endpointUrl, facility);
-            if (response != null) {
-                meters = response.getGetMetersByFacilityIDResult().getMeter();
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            if (port != null) {
+                Meter[] mspMeters = port.getMetersByFacilityID(facilityId);
+                if (mspMeters != null) {
+                    meters = Arrays.asList(mspMeters);
+                }
             } else {
-                log.error("Response not recieved for (" + mspVendor.getCompanyName() + ")");
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for FacilityId: "
+                    + facilityId);
             }
-        } catch (MultispeakWebServiceClientException e) {
-            log.error("TargetService: " + endpointUrl + " - getMspMetersByFacilityId (" + mspVendor.getCompanyName()
-                + ") for facilityId: " + facilityId);
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+        } catch (RemoteException e) {
+            log.error("TargetService: " + endpointUrl + " - getMetersByFacilityID (" + mspVendor.getCompanyName()
+                + ") for FacilityId: " + facilityId);
+            log.error("RemoteExceptionDetail: " + e.getMessage());
         }
         return meters;
     }
@@ -468,20 +439,20 @@ public class MspObjectDaoImpl implements MspObjectDao {
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
 
         try {
-            GetMeterByAccountNumber getMeterByAccountNumber = objectFactory.createGetMeterByAccountNumber();
-            getMeterByAccountNumber.setAccountNumber(accountNumber);
-
-            GetMeterByAccountNumberResponse response =
-                cbClient.getMeterByAccountNumber(mspVendor, endpointUrl, getMeterByAccountNumber);
-            if (response != null) {
-                meters = response.getGetMeterByAccountNumberResult().getMeter();
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            if (port != null) {
+                Meter[] mspMeters = port.getMeterByAccountNumber(accountNumber);
+                if (mspMeters != null) {
+                    meters = Arrays.asList(mspMeters);
+                }
             } else {
-                log.error("Response not recieved for (" + mspVendor.getCompanyName() + ")");
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for Account Number: "
+                    + accountNumber);
             }
-        } catch (MultispeakWebServiceClientException e) {
-            log.error("TargetService: " + endpointUrl + " - getMspMetersByAccountNumber (" + mspVendor.getCompanyName()
-                + ") for accountNumber: " + accountNumber);
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+        } catch (RemoteException e) {
+            log.error("TargetService: " + endpointUrl + " - getMeterByAccountNumber (" + mspVendor.getCompanyName()
+                + ") for Account Number: " + accountNumber);
+            log.error("RemoteExceptionDetail: " + e.getMessage());
         }
         return meters;
     }
@@ -492,79 +463,63 @@ public class MspObjectDaoImpl implements MspObjectDao {
         List<Meter> meters = new ArrayList<>();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
-            GetMeterByCustID getMeterByAccountNumber = objectFactory.createGetMeterByCustID();
-            getMeterByAccountNumber.setCustID(custId);
-
-            GetMeterByCustIDResponse response =
-                cbClient.getMeterByCustID(mspVendor, endpointUrl, getMeterByAccountNumber);
-            if (response != null) {
-                meters = response.getGetMeterByCustIDResult().getMeter();
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            if (port != null) {
+                Meter[] mspMeters = port.getMeterByCustID(custId);
+                if (mspMeters != null) {
+                    meters = Arrays.asList(mspMeters);
+                }
             } else {
-                log.error("Response not recieved for (" + mspVendor.getCompanyName() + ")");
+                log.error("Port not found for CB_Server (" + mspVendor.getCompanyName() + ") for CustId: " + custId);
             }
-        } catch (MultispeakWebServiceClientException e) {
-            log.error("TargetService: " + endpointUrl + " - getMspMetersByCustId (" + mspVendor.getCompanyName()
-                + ") for custId: " + custId);
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+        } catch (RemoteException e) {
+            log.error("TargetService: " + endpointUrl + " - getMeterByCustID (" + mspVendor.getCompanyName()
+                + ") for CustId: " + custId);
+            log.error("RemoteExceptionDetail: " + e.getMessage());
         }
         return meters;
     }
 
     @Override
-    public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service) throws MultispeakWebServiceClientException {
+    public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service) throws RemoteException {
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, service);
 
         ErrorObject[] objects = new ErrorObject[] {};
-        List<ErrorObject> errorObjects = new ArrayList<>();
+
         if (service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = odClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            OD_ServerSoap_BindingStub port = MultispeakPortFactory.getOD_ServerPort(mspVendor, endpointUrl);
+            objects = port.pingURL();
         } else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = oaClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor, endpointUrl);
+            objects = port.pingURL();
         } else if (service.equalsIgnoreCase(MultispeakDefines.MDM_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = mdmClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            MDM_ServerSoap_PortType port = MultispeakPortFactory.getMDM_ServerPort(mspVendor, endpointUrl);
+            objects = port.pingURL();
         } else if (service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = mrClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor, endpointUrl);
+            objects = port.pingURL();
         } else if (service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = eaClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            EA_ServerSoap_BindingStub port = MultispeakPortFactory.getEA_ServerPort(mspVendor, endpointUrl);
+            objects = port.pingURL();
         } else if (service.equalsIgnoreCase(MultispeakDefines.LM_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = lmClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            LM_ServerSoap_BindingStub port = MultispeakPortFactory.getLM_ServerPort(mspVendor, endpointUrl);
+            objects = port.pingURL();
         } else if (service.equalsIgnoreCase(MultispeakDefines.CD_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = cdClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            CD_ServerSoap_BindingStub port = MultispeakPortFactory.getCD_ServerPort(mspVendor, endpointUrl);
+            objects = port.pingURL();
         } else if (service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = cbClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            objects = port.pingURL();
         } else if (service.equalsIgnoreCase(MultispeakDefines.SCADA_Server_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = scadaClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            SCADA_ServerSoap_BindingStub port = MultispeakPortFactory.getSCADA_ServerPort(mspVendor, endpointUrl);
+            objects = port.pingURL();
         } else if (service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
-            PingURL pingURL = objectFactory.createPingURL();
-            PingURLResponse response = cbClient.pingURL(mspVendor, endpointUrl, pingURL);
-            errorObjects = response.getPingURLResult().getErrorObject();
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(mspVendor, endpointUrl);
+            objects = port.pingURL();
         } else {
-            ErrorObject obj = new ErrorObject();
-            obj.setObjectID("-100");
-            obj.setErrorString("No server for " + service);
-            obj.setNounType(null);
-            obj.setEventTime(null);
+            ErrorObject obj = new ErrorObject("-100", "No server for " + service, null, null);
             return new ErrorObject[] { obj };
         }
-        objects = toErrorObject(errorObjects);
         return objects;
     }
 
@@ -573,61 +528,54 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
         try {
             return getMethods(mspVendor, mspServer);
-        } catch (MultispeakWebServiceClientException e) {
+        } catch (RemoteException e) {
             log.error("Exception processing getMethods (" + mspVendor.getCompanyName() + ") for Server: " + mspServer);
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            log.error("RemoteExceptionDetail: " + e.getMessage());
         }
         return Collections.emptyList();
     }
 
     @Override
-    public List<String> getMethods(MultispeakVendor mspVendor, String service)
-            throws MultispeakWebServiceClientException {
-
+    public List<String> getMethods(MultispeakVendor mspVendor, String service) throws RemoteException {
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, service);
-        List<String> methods = new ArrayList<>();
+
+        String[] objects = new String[] {};
         if (service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = odClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            OD_ServerSoap_BindingStub port = MultispeakPortFactory.getOD_ServerPort(mspVendor, endpointUrl);
+            objects = port.getMethods();
         } else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = oaClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor, endpointUrl);
+            objects = port.getMethods();
         } else if (service.equalsIgnoreCase(MultispeakDefines.MDM_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = mdmClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            MDM_ServerSoap_PortType port = MultispeakPortFactory.getMDM_ServerPort(mspVendor, endpointUrl);
+            objects = port.getMethods();
         } else if (service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = mrClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            MR_ServerSoap_BindingStub port = MultispeakPortFactory.getMR_ServerPort(mspVendor, endpointUrl);
+            objects = port.getMethods();
         } else if (service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = eaClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            EA_ServerSoap_BindingStub port = MultispeakPortFactory.getEA_ServerPort(mspVendor, endpointUrl);
+            objects = port.getMethods();
         } else if (service.equalsIgnoreCase(MultispeakDefines.LM_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = lmClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            LM_ServerSoap_BindingStub port = MultispeakPortFactory.getLM_ServerPort(mspVendor, endpointUrl);
+            objects = port.getMethods();
         } else if (service.equalsIgnoreCase(MultispeakDefines.CD_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = cdClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            CD_ServerSoap_BindingStub port = MultispeakPortFactory.getCD_ServerPort(mspVendor, endpointUrl);
+            objects = port.getMethods();
         } else if (service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
-            GetMethods pingURL = objectFactory.createGetMethods();
-            GetMethodsResponse response = cbClient.getMethods(mspVendor, endpointUrl, pingURL);
-            methods = response.getGetMethodsResult().getString();
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(mspVendor, endpointUrl);
+            objects = port.getMethods();
         } else if (service.equalsIgnoreCase(MultispeakDefines.SCADA_Server_STR)) {
-            GetMethods getMethods = objectFactory.createGetMethods();
-            GetMethodsResponse response = scadaClient.getMethods(mspVendor, endpointUrl, getMethods);
-            methods = response.getGetMethodsResult().getString();
+            SCADA_ServerSoap_BindingStub port = MultispeakPortFactory.getSCADA_ServerPort(mspVendor, endpointUrl);
+            objects = port.getMethods();
         } else if (service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
-            GetMethods pingURL = objectFactory.createGetMethods();
-            GetMethodsResponse response = cbClient.getMethods(mspVendor, endpointUrl, pingURL);
-            methods = response.getGetMethodsResult().getString();
+            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(mspVendor, endpointUrl);
+            objects = port.getMethods();
         }
 
-        return methods;
+        if (objects == null) {
+            return Collections.emptyList();
+        }
+
+        return Arrays.asList(objects);
     }
 }

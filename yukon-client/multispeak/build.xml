@@ -8,7 +8,6 @@
    
 
 	<target name="build">
-		<property name="multispeak" value="${basedir}/yukon-client/multispeak" />
        <mkdir dir="build"/>
        
        <javac srcdir="src"
@@ -21,9 +20,6 @@
              <fileset dir="${yukon.lib}">
                 <include name="**/*.jar"/>
              </fileset>
-          	<fileset dir="${multispeak}/lib">
-          	       <include name="*.jar"/>
-          	</fileset>
 	      </classpath> 
      	</javac>
 

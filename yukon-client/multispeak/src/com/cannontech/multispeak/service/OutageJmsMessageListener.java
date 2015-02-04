@@ -1,6 +1,8 @@
 package com.cannontech.multispeak.service;
 
 import java.io.Serializable;
+import java.rmi.RemoteException;
+import java.util.Arrays;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -22,28 +24,20 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.msp.beans.v3.ArrayOfErrorObject;
-import com.cannontech.msp.beans.v3.ArrayOfOutageDetectionEvent;
-import com.cannontech.msp.beans.v3.ArrayOfString;
-import com.cannontech.msp.beans.v3.ErrorObject;
-import com.cannontech.msp.beans.v3.GetMethods;
-import com.cannontech.msp.beans.v3.GetMethodsResponse;
-import com.cannontech.msp.beans.v3.ODEventNotification;
-import com.cannontech.msp.beans.v3.ODEventNotificationResponse;
-import com.cannontech.msp.beans.v3.ObjectFactory;
-import com.cannontech.msp.beans.v3.OutageDetectDeviceType;
-import com.cannontech.msp.beans.v3.OutageDetectionEvent;
-import com.cannontech.msp.beans.v3.OutageEventType;
-import com.cannontech.msp.beans.v3.OutageLocation;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.client.core.OAClient;
-import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.OA_ServerSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.OutageDetectDeviceType;
+import com.cannontech.multispeak.deploy.service.OutageDetectionEvent;
+import com.cannontech.multispeak.deploy.service.OutageEventType;
+import com.cannontech.multispeak.deploy.service.OutageLocation;
+import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 public class OutageJmsMessageListener implements MessageListener {
 
@@ -56,39 +50,45 @@ public class OutageJmsMessageListener implements MessageListener {
     private MspIdentifiablePaoService mspIdentifiablePaoService;
     private PaoDefinitionDao paoDefinitionDao;
     private AtomicLong atomicLong = new AtomicLong();
-    @Autowired private ObjectFactory objectFactory;
-    @Autowired private OAClient oaClient;
-    @Autowired private MspObjectDao mspObjectDao;
-
+    
     @PostConstruct
     public void initialize() {
         ImmutableMap.Builder<OutageActionType, OutageEventType> mapBuilder = ImmutableMap.builder();
-        mapBuilder.put(OutageActionType.NoResponse, OutageEventType.NO_RESPONSE);
-        mapBuilder.put(OutageActionType.Outage, OutageEventType.OUTAGE);
-        mapBuilder.put(OutageActionType.Restoration, OutageEventType.RESTORATION);
+        mapBuilder.put(OutageActionType.NoResponse, OutageEventType.NoResponse);
+        mapBuilder.put(OutageActionType.Outage, OutageEventType.Outage);
+        mapBuilder.put(OutageActionType.Restoration, OutageEventType.Restoration);
         outageMap = mapBuilder.build();
-
+        
         List<MultispeakVendor> allVendors = multispeakDao.getMultispeakVendors();
         ImmutableList.Builder<MultispeakVendor> supportsOutage = ImmutableList.builder();
         for (MultispeakVendor mspVendor : allVendors) {
+
             if (mspVendor.getMspInterfaceMap().get(MultispeakDefines.OA_Server_STR) != null) {
-                String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.OA_Server_STR);
-                try {
-                    GetMethods GetMethods = objectFactory.createGetMethods();
-                    GetMethodsResponse getMethodsResponse = oaClient.getMethods(mspVendor, endpointUrl, GetMethods);
-                    ArrayOfString arrayOfMethods = getMethodsResponse.getGetMethodsResult();
-                    List<String> mspMethodNames = arrayOfMethods.getString();
-                    // not sure where a static variable containing this method
-                    // exists.. doing this for now
-                    if (mspMethodNames.contains("ODEventNotification")) {
-                        supportsOutage.add(mspVendor);
+                String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.OA_Server_STR); 
+                                                                    
+                OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor, endpointUrl);
+                
+                if (port != null) {
+                    try {
+                        String[] methods = new String[]{};
+                        methods = port.getMethods();
+                        
+                        List<String>  mspMethodNames = Lists.newArrayList();
+                        if (methods != null) {
+                            mspMethodNames = Arrays.asList(methods);
+                        }
+                        
+                        //not sure where a static variable containing this method exists.. doing this for now
+                        if (mspMethodNames.contains("ODEventNotification")) {
+                            supportsOutage.add(mspVendor);
+                        }
+                    } catch (RemoteException e) {
+                        log.warn("caught exception in initialize");
                     }
-                } catch (MultispeakWebServiceClientException e) {
-                    log.warn("caught exception in initialize");
                 }
             }
         }
-
+        
         vendorsToSendOutageMsg = supportsOutage.build();
     }
 
@@ -99,7 +99,7 @@ public class OutageJmsMessageListener implements MessageListener {
             try {
                 Serializable object = objMessage.getObject();
                 if (object instanceof OutageJmsMessage) {
-                    OutageJmsMessage outageJmsMessage = (OutageJmsMessage) object;
+                    OutageJmsMessage outageJmsMessage = (OutageJmsMessage)object;
                     handleMessage(outageJmsMessage);
                 }
             } catch (JMSException e) {
@@ -107,123 +107,116 @@ public class OutageJmsMessageListener implements MessageListener {
             }
         }
     }
-
+    
     private void handleMessage(OutageJmsMessage outageJmsMessage) {
-
+        
         if (vendorsToSendOutageMsg.isEmpty()) {
             log.debug("Recieved outage message from jms queue: not generating message because no vendors are configured");
             return;
         }
         log.debug("Recieved outage message from jms queue: " + outageJmsMessage);
-
+        
         OutageDetectionEvent outageDetectionEvent = getOutageDetectionEvent(outageJmsMessage);
-
+        
         for (MultispeakVendor mspVendor : vendorsToSendOutageMsg) {
             String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.OA_Server_STR);
-
-            log.info("Sending ODEventNotification (" + endpointUrl + "): ObjectID: "
-                + outageDetectionEvent.getObjectID() + " Type: " + outageDetectionEvent.getOutageEventType());
-
+            
+            log.info("Sending ODEventNotification ("+ endpointUrl + "): ObjectID: " + outageDetectionEvent.getObjectID() + " Type: " + outageDetectionEvent.getOutageEventType());
+            
             try {
-                String transactionId = String.valueOf(atomicLong.getAndIncrement());
-                ODEventNotification odEventNotification = objectFactory.createODEventNotification();
-                ArrayOfOutageDetectionEvent odEvents = objectFactory.createArrayOfOutageDetectionEvent();
-                List<OutageDetectionEvent> listOfODEvents = odEvents.getOutageDetectionEvent();
-                listOfODEvents.add(outageDetectionEvent);
-                odEventNotification.setTransactionID(transactionId);
-                odEventNotification.setODEvents(odEvents);
-                ODEventNotificationResponse odEventNotificationResponse =
-                    oaClient.odEventNotification(mspVendor, endpointUrl, odEventNotification);
-                ErrorObject[] errObjects = null;
-                if (odEventNotificationResponse != null) {
-                    ArrayOfErrorObject arrOfErrorObject = odEventNotificationResponse.getODEventNotificationResult();
-                    List<ErrorObject> errorObjects = arrOfErrorObject.getErrorObject();
-                    if (errorObjects != null) {
-                        errObjects = mspObjectDao.toErrorObject(errorObjects);
+                OutageDetectionEvent[] odEvents = new OutageDetectionEvent[1];
+                odEvents [0] = outageDetectionEvent;
+                
+                OA_ServerSoap_BindingStub port = MultispeakPortFactory.getOA_ServerPort(mspVendor, endpointUrl);
+                if (port != null) {
+                    String transactionId = String.valueOf(atomicLong.getAndIncrement());
+                    ErrorObject[] errObjects = port.ODEventNotification(odEvents, transactionId);
+                    if( errObjects != null && errObjects.length > 0) {
+                        multispeakFuncs.logErrorObjects(endpointUrl, "ODEventNotification", errObjects);
+                    } else {
+                        outageEventLogService.mspMessageSentToVendor(outageJmsMessage.getSource(), 
+                                                                     outageDetectionEvent.getOutageEventType().toString(), 
+                                                                     outageDetectionEvent.getObjectID(), 
+                                                                     outageDetectionEvent.getOutageDetectDeviceType().toString(),
+                                                                     mspVendor.getCompanyName());
                     }
-                }
-                if (errObjects != null && errObjects.length > 0) {
-                    multispeakFuncs.logErrorObjects(endpointUrl, "ODEventNotification", errObjects);
                 } else {
-                    outageEventLogService.mspMessageSentToVendor(outageJmsMessage.getSource(),
-                        outageDetectionEvent.getOutageEventType().toString(), outageDetectionEvent.getObjectID(),
-                        outageDetectionEvent.getOutageDetectDeviceType().toString(), mspVendor.getCompanyName());
+                    log.error("Port not found for OA_Server (" + mspVendor.getCompanyName() + ")");
+                    return;
                 }
-
-            } catch (MultispeakWebServiceClientException e) {
-                log.error("TargetService: " + endpointUrl + " - initiateOutageDetection (" + mspVendor.getCompanyName()
-                    + ")");
-                log.error("MultispeakWebServiceClientException: " + e.getMessage());
+            } catch (RemoteException e) {
+                log.error("TargetService: " + endpointUrl + " - initiateOutageDetection (" + mspVendor.getCompanyName() + ")");
+                log.error("RemoteExceptionDetail: " + e.getMessage());
             }
         }
     }
-
+    
     private OutageDetectionEvent getOutageDetectionEvent(OutageJmsMessage outageJmsMessage) {
         PaoIdentifier paoIdentifier = outageJmsMessage.getPaoIdentifier();
-
+        
         OutageDetectionEvent outageDetectionEvent = new OutageDetectionEvent();
         outageDetectionEvent.setOutageEventType(outageMap.get(outageJmsMessage.getActionType()));
-
+        
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(outageJmsMessage.getPointValueQualityHolder().getPointDataTimeStamp());
-        outageDetectionEvent.setEventTime(MultispeakFuncs.toXMLGregorianCalendar(cal));
+        outageDetectionEvent.setEventTime(cal);
+        
         String objectId = mspIdentifiablePaoService.getObjectId(paoIdentifier);
         outageDetectionEvent.setOutageDetectDeviceType(getOutageDetectDeviceType(paoIdentifier));
         outageDetectionEvent.setObjectID(objectId);
-
+        
         if (paoIdentifier.getPaoType().isMeter()) {
-            // This is kind of cheating, we're assuming that if we have a "meter" paoType, then objectId is a
-            // MeterNumber.
+            //This is kind of cheating, we're assuming that if we have a "meter" paoType, then objectId is a MeterNumber.
             OutageLocation outageLocation = new OutageLocation();
             outageLocation.setObjectID(objectId);
-            outageLocation.setMeterNo(objectId); // MeterNumber
+            outageLocation.setMeterNo(objectId);    //MeterNumber
             outageDetectionEvent.setOutageLocation(outageLocation);
-
-            outageDetectionEvent.setOutageDetectDeviceID(objectId); // MeterNumber
+            
+            outageDetectionEvent.setOutageDetectDeviceID(objectId); //MeterNumber
         }
 
-        outageEventLogService.outageEventGenerated(outageDetectionEvent.getOutageEventType().value(),
-            outageDetectionEvent.getEventTime().toGregorianCalendar().getTime(),
-            outageDetectionEvent.getOutageDetectDeviceType().value(), outageDetectionEvent.getObjectID());
-
+        outageEventLogService.outageEventGenerated(outageDetectionEvent.getOutageEventType().getValue(), 
+                                                   outageDetectionEvent.getEventTime().getTime(), 
+                                                   outageDetectionEvent.getOutageDetectDeviceType().getValue(), 
+                                                   outageDetectionEvent.getObjectID());
+        
         return outageDetectionEvent;
     }
-
+    
     private OutageDetectDeviceType getOutageDetectDeviceType(YukonPao paoIdentifier) {
         if (isMeter(paoIdentifier)) {
-            return OutageDetectDeviceType.METER;
+            return OutageDetectDeviceType.Meter;
         }
-        return OutageDetectDeviceType.OTHER;
+        return OutageDetectDeviceType.Other;
     }
-
+    
     private boolean isMeter(YukonPao paoIdentifier) {
-        if (paoDefinitionDao.isTagSupported(paoIdentifier.getPaoIdentifier().getPaoType(),
-            PaoTag.USES_METER_NUMBER_FOR_MSP)) {
+        if (paoDefinitionDao.isTagSupported(paoIdentifier.getPaoIdentifier().getPaoType(), PaoTag.USES_METER_NUMBER_FOR_MSP)) {
             return true;
         }
         return false;
     }
-
+    
     @Autowired
     public void setMultispeakDao(MultispeakDao multispeakDao) {
         this.multispeakDao = multispeakDao;
     }
-
+    
     @Autowired
     public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
         this.multispeakFuncs = multispeakFuncs;
     }
-
+    
     @Autowired
     public void setOutageEventLogService(OutageEventLogService outageEventLogService) {
         this.outageEventLogService = outageEventLogService;
     }
-
+    
     @Autowired
     public void setMspIdentifiablePaoService(MspIdentifiablePaoService mspIdentifiablePaoService) {
         this.mspIdentifiablePaoService = mspIdentifiablePaoService;
     }
-
+    
     @Autowired
     public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
         this.paoDefinitionDao = paoDefinitionDao;

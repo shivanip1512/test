@@ -12,6 +12,6 @@ public enum MspLmMappingColumn implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return baseKey + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, name());
+        return baseKey + CaseFormat.UPPER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, name()) ;
     }
 }

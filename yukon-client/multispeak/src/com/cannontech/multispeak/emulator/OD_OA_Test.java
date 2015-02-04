@@ -1,47 +1,38 @@
 /*
- * Created on Jun 13, 2005 To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code
+ * Created on Jun 13, 2005 To change the template for this generated file go to Window&gt;Preferences&gt;Java&gt;Code
  * Generation&gt;Code and Comments
  */
 package com.cannontech.multispeak.emulator;
 
+import java.rmi.RemoteException;
 import java.util.GregorianCalendar;
-import java.util.List;
 
-import com.cannontech.msp.beans.v3.ArrayOfString;
-import com.cannontech.msp.beans.v3.ErrorObject;
-import com.cannontech.msp.beans.v3.GetMethods;
-import com.cannontech.msp.beans.v3.GetMethodsResponse;
-import com.cannontech.msp.beans.v3.InitiateOutageDetectionEventRequest;
-import com.cannontech.msp.beans.v3.InitiateOutageDetectionEventRequestResponse;
-import com.cannontech.msp.beans.v3.ObjectFactory;
-import com.cannontech.msp.beans.v3.PingURL;
-import com.cannontech.msp.beans.v3.PingURLResponse;
-import com.cannontech.multispeak.client.MultispeakFuncs;
-import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.client.core.ODClient;
-import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
-import com.cannontech.spring.YukonSpringHook;
+import org.apache.axis.message.SOAPHeaderElement;
+
+import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.OD_OA;
+import com.cannontech.multispeak.deploy.service.OD_OALocator;
+import com.cannontech.multispeak.deploy.service.OD_OASoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.OD_OASoap_PortType;
 
 /**
- * @author stacey To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code
+ * @author stacey To change the template for this generated type comment go to Window&gt;Preferences&gt;Java&gt;Code
  *         Generation&gt;Code and Comments
  */
 public class OD_OA_Test {
-    private static String endpointURL = "http://127.0.0.1:8088/mockOD_ServerSoap";
-    // private String endpointURL = "http://pspl-sw-demo62.eatoneaseng.net:8080/soap/OD_ServerSoap";
-    static {
-        YukonSpringHook.setDefaultContext("com.cannontech.context.multispeak");
-    }
-    static ODClient port = YukonSpringHook.getBean(ODClient.class);
-    static ObjectFactory objectFactory = YukonSpringHook.getBean(ObjectFactory.class);
 
-    static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100,
-        120, 12, null, endpointURL);
+    private OD_OASoap_PortType port = null;
+    private String endpointURL = "http://127.0.0.1:8080/yukon/soap/OD_ServerSoap";
+//    private String endpointURL = "http://pspl-sw-demo62.eatoneaseng.net:8080/soap/OD_ServerSoap";
+    private SOAPHeaderElement header;
 
     public static void main(String[] args) {
         OD_OA_Test test = new OD_OA_Test();
+        YukonMultispeakMsgHeader testHeader = new YukonMultispeakMsgHeader();
+        testHeader.setCompany("Cannon MSP1");
+//        testHeader.setCompany("MSP1");
+        test.header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", testHeader);
         try {
 
             String[] mn = new String[4];
@@ -49,70 +40,58 @@ public class OD_OA_Test {
             mn[1] = "1010073";
             mn[2] = "1010074";
             mn[3] = "109129453";
+            
+//            mn[0] = "101001";
+//            mn[1] = "101002";
+//            mn[2] = "101003";
+//            mn[3] = "101004";
 
-            // mn[0] = "101001";
-            // mn[1] = "101002";
-            // mn[2] = "101003";
-            // mn[3] = "101004";
+            OD_OA service = new OD_OALocator();
+            ((OD_OALocator) service).setOD_OASoapEndpointAddress(test.endpointURL);
+
+            test.port = service.getOD_OASoap();
+            ((OD_OASoap_BindingStub) test.port).setHeader(test.header);
 
             test.initiateOutageDetectionTest(mn);
-           // test.getMethodsTest();
-           // test.pingURLTest();
+
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getMessage());
         }
     }
 
-    public void getMethodsTest() throws MultispeakWebServiceClientException {
-        GetMethods getMethods = objectFactory.createGetMethods();
-        GetMethodsResponse response = port.getMethods(mspVendor, endpointURL, getMethods);
-        if (response.getGetMethodsResult() != null) {
-            print_String(response.getGetMethodsResult().getString());
-        }
+    public void getMethodsTest() throws RemoteException {
+        String[] strings = port.getMethods();
+        print_String(strings);
     }
 
-    public void pingURLTest() throws MultispeakWebServiceClientException {
-        PingURL pingURL = objectFactory.createPingURL();
-        PingURLResponse response = port.pingURL(mspVendor, endpointURL, pingURL);
-        if (response.getPingURLResult() != null) {
-            print_ErrorObjects(response.getPingURLResult().getErrorObject());
-        }
+    public void pingURLTest() throws RemoteException {
+        ErrorObject[] objects = port.pingURL();
+        print_ErrorObjects(objects);
     }
 
-    public void initiateOutageDetectionTest(String[] meters) throws MultispeakWebServiceClientException {
-        InitiateOutageDetectionEventRequest initiateOutageDetectionEventRequest =
-                objectFactory.createInitiateOutageDetectionEventRequest();
-        initiateOutageDetectionEventRequest.setExpirationTime(null);
-        ArrayOfString arrayOfMeters = objectFactory.createArrayOfString();
-        for (String meterNum : meters) {
-            arrayOfMeters.getString().add(meterNum);
-        }
-
-        initiateOutageDetectionEventRequest.setMeterNos(arrayOfMeters);
-        initiateOutageDetectionEventRequest.setRequestDate(MultispeakFuncs.toXMLGregorianCalendar(new GregorianCalendar()));
-        initiateOutageDetectionEventRequest.setTransactionID("1");
-        initiateOutageDetectionEventRequest.setResponseURL("http://msp1.cannontech.com:8002/OA_ODSoap");
-        InitiateOutageDetectionEventRequestResponse response =
-            port.initiateOutageDetectionEventRequest(mspVendor, endpointURL, initiateOutageDetectionEventRequest);
-
-        print_ErrorObjects(response.getInitiateOutageDetectionEventRequestResult().getErrorObject());
+    public void initiateOutageDetectionTest(String[] meters) throws RemoteException {
+        ErrorObject[] objects = port.initiateOutageDetectionEventRequest(meters,
+                                                                         new GregorianCalendar(),
+                                                                         "http://msp1.cannontech.com:8002/OA_ODSoap",
+                                                                         "1");
+        print_ErrorObjects(objects);
 
     }
 
-    public void print_String(List<String> list) {
-        if (list != null && list != null) {
-            int i = 0;
-            for (String obj : list) {
-                System.out.println("Method" + i++ + ": " + obj);
+    public void print_String(String[] strings) {
+        if (strings != null && strings != null) {
+            for (int i = 0; i < strings.length; i++) {
+                String obj = strings[i];
+                System.out.println("Method" + i + ": " + obj);
             }
         }
     }
 
-    public void print_ErrorObjects(List<ErrorObject> list) {
-        if (list != null && list != null) {
-            int i = 0;
-            for (ErrorObject obj : list) {
-                System.out.println("ErrorString" + i++ + ": " + obj.getErrorString());
+    public void print_ErrorObjects(ErrorObject[] objects) {
+        if (objects != null && objects != null) {
+            for (int i = 0; i < objects.length; i++) {
+                ErrorObject obj = objects[i];
+                System.out.println(i + ": " + obj == null ? "Null" : obj.getErrorString());
             }
         }
     }

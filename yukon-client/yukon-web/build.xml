@@ -43,7 +43,7 @@
     </target>
 
 	<target name="build_src">
-		<property name="multispeak" value="${basedir}/yukon-client/multispeak" />
+
 		<mkdir dir="${yukon.web.src_build}" />
 
 		<javac srcdir="src"
@@ -62,9 +62,6 @@
                 <fileset dir="${yukon-web}/WebContent/WEB-INF/lib">
                     <include name="*.jar"/>
                 </fileset>
-				<fileset dir="${multispeak}/lib">
-				    <include name="*.jar"/>
-				</fileset>
 			</classpath>
 		</javac>
 

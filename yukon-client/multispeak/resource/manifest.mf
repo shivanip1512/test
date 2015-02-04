@@ -2,12 +2,20 @@ Manifest-Version: 1.0
 Main-Class: com.cannontech.multispeak.emulator.OD_OA_Test
 Class-Path:  
  ./ 
+ jradius-client.jar 
  common.jar 
  yukonappserver.jar 
  tools.jar 
- spring-ws-core-2.1.4.RELEASE.jar
- org.springframework.oxm-3.1.3.RELEASE.jar
- msp-beans-v3.jar
+ batik.jar 
+ junit.jar 
+ SqlServer.jar 
+ ojdbc6.jar 
+ axis.jar 
+ activation.jar 
+ jaxrpc.jar 
+ wsdl4j-1.6.3.jar 
+ jaxm-api.jar 
+ saaj.jar 
  ../log/ 
  ../export/ 
 

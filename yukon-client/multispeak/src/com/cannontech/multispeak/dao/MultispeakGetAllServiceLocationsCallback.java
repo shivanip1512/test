@@ -2,27 +2,11 @@ package com.cannontech.multispeak.dao;
 
 import java.util.List;
 
-import com.cannontech.msp.beans.v3.ServiceLocation;
+import com.cannontech.multispeak.deploy.service.ServiceLocation;
 
 public interface MultispeakGetAllServiceLocationsCallback {
 
-    /**
-     * processServiceLocations
-     * 
-     * @param mspServiceLocations
-     */
-    public void processServiceLocations(List<ServiceLocation> mspServiceLocations);
-
-    /**
-     * Check if Canceled
-     * 
-     * @return
-     */
-    public boolean isCanceled();
-
-    /**
-     * finish
-     * 
-     */
-    public void finish();
+	public void processServiceLocations(List<ServiceLocation> mspServiceLocations);
+	public boolean isCanceled();
+	public void finish();
 }

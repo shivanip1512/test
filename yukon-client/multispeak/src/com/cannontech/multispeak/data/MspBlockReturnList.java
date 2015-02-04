@@ -11,7 +11,6 @@ public class MspBlockReturnList extends MspReturnList {
     public List<Block> getBlocks() {
         return blocks;
     }
-
     public void setBlocks(List<Block> blocks) {
         this.blocks = blocks;
     }

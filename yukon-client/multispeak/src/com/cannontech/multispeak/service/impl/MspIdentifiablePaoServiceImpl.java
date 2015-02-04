@@ -15,35 +15,34 @@ public class MspIdentifiablePaoServiceImpl implements MspIdentifiablePaoService 
     private MeterDao meterDao;
     private PaoDefinitionDao paoDefinitionDao;
     private PaoDao paoDao;
-
+    
     @Override
     public String getObjectId(YukonPao paoIdentifier) {
-
+        
         String returnString;
-
+        
         if (paoIdentifier == null) {
             returnString = null;
-        } else if (paoDefinitionDao.isTagSupported(paoIdentifier.getPaoIdentifier().getPaoType(),
-            PaoTag.USES_METER_NUMBER_FOR_MSP)) {
+        } else if (paoDefinitionDao.isTagSupported(paoIdentifier.getPaoIdentifier().getPaoType(), PaoTag.USES_METER_NUMBER_FOR_MSP)) {
             SimpleMeter meter = meterDao.getSimpleMeterForId(paoIdentifier.getPaoIdentifier().getPaoId());
             returnString = meter.getMeterNumber();
         } else {
             returnString = paoDao.getYukonPAOName(paoIdentifier.getPaoIdentifier().getPaoId());
         }
-
+        
         return returnString;
     }
-
+    
     @Autowired
     public void setMeterDao(MeterDao meterDao) {
         this.meterDao = meterDao;
     }
-
+    
     @Autowired
     public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
         this.paoDefinitionDao = paoDefinitionDao;
     }
-
+    
     @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;

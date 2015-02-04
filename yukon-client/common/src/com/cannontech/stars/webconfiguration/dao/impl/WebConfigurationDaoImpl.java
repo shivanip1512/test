@@ -3,7 +3,6 @@ package com.cannontech.stars.webconfiguration.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -22,7 +21,6 @@ import com.google.common.collect.Maps;
 
 public class WebConfigurationDaoImpl implements WebConfigurationDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
-    private Map<Integer, WebConfiguration> cachedvalue = new ConcurrentHashMap<>();
 
     private RowMapperWithBaseQuery<WebConfiguration> rowMapper =
         new AbstractRowMapperWithBaseQuery<WebConfiguration>() {
@@ -63,21 +61,15 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
 
     @Override
     public WebConfiguration getForApplianceCateogry(int applianceCategoryId) {
-        if (cachedvalue.containsKey(applianceCategoryId)) {
-            return cachedvalue.get(applianceCategoryId);
-        } else {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(rowMapper.getBaseQuery());
-            sql.append("WHERE configurationId IN (SELECT webConfigurationId");
-            sql.append("FROM applianceCategory");
-            sql.append("WHERE applianceCategoryId").eq(applianceCategoryId).append(")");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(rowMapper.getBaseQuery());
+        sql.append("WHERE configurationId IN (SELECT webConfigurationId");
+        sql.append("FROM applianceCategory");
+        sql.append("WHERE applianceCategoryId").eq(applianceCategoryId).append(")");
 
-            WebConfiguration webConfiguration = yukonJdbcTemplate.queryForObject(sql, rowMapper);
-
-            cachedvalue.put(applianceCategoryId, webConfiguration);
-            return webConfiguration;
-        }
-
+        WebConfiguration webConfiguration = 
+            yukonJdbcTemplate.queryForObject(sql, rowMapper);
+        return webConfiguration;
     }
 
     @Override
@@ -100,7 +92,6 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
             new ChunkingSqlTemplate(yukonJdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
-            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
                 SqlStatementBuilder sql = new SqlStatementBuilder();
                 sql.append(rowMapper.getBaseQuery());
