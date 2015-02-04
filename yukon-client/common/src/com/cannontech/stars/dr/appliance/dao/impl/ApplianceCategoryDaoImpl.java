@@ -166,7 +166,6 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
         if (cachedApplianceCategory != null) {
             return cachedApplianceCategory;
         } else {
-            System.out.println("in getId "+applianceCategoryId);
             ApplianceCategoryRowMapper rowMapper = new ApplianceCategoryRowMapper();
             final SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append(rowMapper.getBaseQuery());

@@ -76,7 +76,6 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
         if (cachedWebConfiguration != null) {
             return cachedWebConfiguration;
         } else {
-            System.out.println("in getforapplication"+applianceCategoryId);
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append(rowMapper.getBaseQuery());
             sql.append("WHERE configurationId IN (SELECT webConfigurationId");
