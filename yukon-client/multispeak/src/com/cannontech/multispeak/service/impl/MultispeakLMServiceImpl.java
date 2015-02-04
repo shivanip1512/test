@@ -44,6 +44,15 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
+import com.cannontech.msp.beans.v3.ControlEventType;
+import com.cannontech.msp.beans.v3.ControlItem;
+import com.cannontech.msp.beans.v3.ControlledItems;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.LoadManagementEvent;
+import com.cannontech.msp.beans.v3.ObjectRef;
+import com.cannontech.msp.beans.v3.QualityDescription;
+import com.cannontech.msp.beans.v3.ScadaAnalog;
+import com.cannontech.msp.beans.v3.SubstationLoadControlStatus;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspLMGroupDao;
 import com.cannontech.multispeak.dao.MspLmInterfaceMappingDao;
@@ -55,14 +64,6 @@ import com.cannontech.multispeak.db.MspLmMapping;
 import com.cannontech.multispeak.db.MspLmMappingColumn;
 import com.cannontech.multispeak.db.MspLmMappingComparator;
 import com.cannontech.multispeak.db.MspLoadControl;
-import com.cannontech.multispeak.deploy.service.ControlEventType;
-import com.cannontech.multispeak.deploy.service.ControlItem;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
-import com.cannontech.multispeak.deploy.service.ObjectRef;
-import com.cannontech.multispeak.deploy.service.QualityDescription;
-import com.cannontech.multispeak.deploy.service.ScadaAnalog;
-import com.cannontech.multispeak.deploy.service.SubstationLoadControlStatus;
 import com.cannontech.multispeak.service.MultispeakLMService;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 
@@ -85,10 +86,11 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     private static Logger log = YukonLogManager.getLogger(MultispeakLMServiceImpl.class);
 
     @Override
-    public ErrorObject[] buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl, MultispeakVendor vendor) {
+    public ErrorObject[] buildMspLoadControl(LoadManagementEvent loadManagementEvent, MspLoadControl mspLoadControl,
+            MultispeakVendor vendor) {
 
         // Set the start date
-        Calendar scheduleDateTime = loadManagementEvent.getScheduleDateTime();
+        Calendar scheduleDateTime = loadManagementEvent.getScheduleDateTime().toGregorianCalendar();
         Date startTime = new Date(); // default to now.
         if (scheduleDateTime != null) {
             startTime.setTime(scheduleDateTime.getTimeInMillis());
@@ -112,7 +114,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         // build the mspLMInterfaceMapping from strategy and substation names
         String strategyName = loadManagementEvent.getStrategy().getStrategyName();
         List<MspLmMapping> lmInterfaces = new ArrayList<MspLmMapping>();
-        ObjectRef[] substations = loadManagementEvent.getStrategy().getApplicationPointList();
+        List<ObjectRef> substations = loadManagementEvent.getStrategy().getApplicationPointList().getApplicationPoint();
 
         Vector<ErrorObject> errorObjects = new Vector<ErrorObject>();
         for (ObjectRef substationRef : substations) {
@@ -123,7 +125,9 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
                 lmInterfaces.add(lmInterface);
             } catch (NotFoundException e) {
                 mspObjectDao.logMSPActivity("buildMspLoadControl", e.getMessage(), vendor.getCompanyName());
-                ErrorObject err = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(), e.getMessage(), "loadManagementEvent", "buildMspLoadControl", vendor.getCompanyName());
+                ErrorObject err =
+                    mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(), e.getMessage(),
+                        "loadManagementEvent", "buildMspLoadControl", vendor.getCompanyName());
                 errorObjects.add(err);
             }
         }
@@ -141,35 +145,44 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
                 if (paoDefinitionDao.isTagSupported(liteYukonPAObject.getPaoType(), PaoTag.LM_PROGRAM)) {
                     String programName = liteYukonPAObject.getPaoName();
                     ProgramStatus programStatus = null;
-                    if (mspLoadControl.getControlEventType() == ControlEventType.Initiate) {
-                        programStatus = startControlByProgramName(programName, mspLoadControl.getStartTime(), mspLoadControl.getStopTime(), liteYukonUser);
-                    } else if (mspLoadControl.getControlEventType() == ControlEventType.Restore) {
-                        programStatus = stopControlByProgramName(programName, mspLoadControl.getStopTime(), liteYukonUser);
+                    if (mspLoadControl.getControlEventType() == ControlEventType.INITIATE) {
+                        programStatus =
+                            startControlByProgramName(programName, mspLoadControl.getStartTime(),
+                                mspLoadControl.getStopTime(), liteYukonUser);
+                    } else if (mspLoadControl.getControlEventType() == ControlEventType.RESTORE) {
+                        programStatus =
+                            stopControlByProgramName(programName, mspLoadControl.getStopTime(), liteYukonUser);
                     }
                     CTILogger.info("Control Status: " + programStatus.toString());
                 } else if (liteYukonPAObject.getPaoType() == PaoType.LM_SCENARIO) {
                     String scenarioName = liteYukonPAObject.getPaoName();
                     ScenarioStatus scenarioStatus = null;
-                    if (mspLoadControl.getControlEventType() == ControlEventType.Initiate) {
-                        scenarioStatus = startControlByControlScenario(scenarioName, mspLoadControl.getStartTime(), mspLoadControl.getStopTime(), liteYukonUser);
-                    } else if (mspLoadControl.getControlEventType() == ControlEventType.Restore) {
-                        scenarioStatus = stopControlByControlScenario(scenarioName, mspLoadControl.getStopTime(), liteYukonUser);
+                    if (mspLoadControl.getControlEventType() == ControlEventType.INITIATE) {
+                        scenarioStatus =
+                            startControlByControlScenario(scenarioName, mspLoadControl.getStartTime(),
+                                mspLoadControl.getStopTime(), liteYukonUser);
+                    } else if (mspLoadControl.getControlEventType() == ControlEventType.RESTORE) {
+                        scenarioStatus =
+                            stopControlByControlScenario(scenarioName, mspLoadControl.getStopTime(), liteYukonUser);
                     }
                     CTILogger.info("Control Status: " + scenarioStatus.toString());
                 }
             } catch (TimeoutException e) {
-                errorObject = mspObjectDao.getErrorObject(null,
-                                                          mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage() +
-                                                          ". TimeoutException. Verify the scheduedStartTime (" + mspLoadControl.getStartTime() + ") is not in the past.",
-                                                          "LoadManagementEvent", "control", liteYukonUser.getUsername());
+                errorObject =
+                    mspObjectDao.getErrorObject(null, mspLMInterfaceMapping.getSubstationName() + "/"
+                        + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage()
+                        + ". TimeoutException. Verify the scheduedStartTime (" + mspLoadControl.getStartTime()
+                        + ") is not in the past.", "LoadManagementEvent", "control", liteYukonUser.getUsername());
             } catch (NotAuthorizedException | NotFoundException | BadServerResponseException | ConnectionException e) {
-                errorObject = mspObjectDao.getErrorObject(null,
-                                                          mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
-                                                          "LoadManagementEvent", "control", liteYukonUser.getUsername());
+                errorObject =
+                    mspObjectDao.getErrorObject(null, mspLMInterfaceMapping.getSubstationName() + "/"
+                        + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(), "LoadManagementEvent",
+                        "control", liteYukonUser.getUsername());
             } catch (Exception e) {
-                errorObject = mspObjectDao.getErrorObject(null,
-                                                          mspLMInterfaceMapping.getSubstationName() + "/" + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(),
-                                                          "LoadManagementEvent", "control", liteYukonUser.getUsername());
+                errorObject =
+                    mspObjectDao.getErrorObject(null, mspLMInterfaceMapping.getSubstationName() + "/"
+                        + mspLMInterfaceMapping.getStrategyName() + " - " + e.getMessage(), "LoadManagementEvent",
+                        "control", liteYukonUser.getUsername());
                 log.error(e.getMessage(), e);
             }
         }
@@ -178,7 +191,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 
     @Override
     public ProgramStatus startControlByProgramName(String programName, Date startTime, Date stopTime,
-            LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException {
+            LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException,
+            BadServerResponseException {
         int programId;
         try {
             programId = loadControlProgramDao.getProgramIdByProgramName(programName);
@@ -202,9 +216,11 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 
     @Override
     public ScenarioStatus startControlByControlScenario(String scenarioName, Date startTime, Date stopTime,
-            LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException {
+            LiteYukonUser liteYukonUser) throws NotAuthorizedException, NotFoundException, TimeoutException,
+            BadServerResponseException {
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
-        List<ProgramStatus> programStatuses = programService.startScenarioBlocking(scenarioId, startTime, stopTime, false, true, liteYukonUser);
+        List<ProgramStatus> programStatuses =
+            programService.startScenarioBlocking(scenarioId, startTime, stopTime, false, true, liteYukonUser);
         ScenarioStatus scenarioStatus = new ScenarioStatus(scenarioName, programStatuses);
 
         return scenarioStatus;
@@ -214,7 +230,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     public ScenarioStatus stopControlByControlScenario(String scenarioName, Date stopTime, LiteYukonUser liteYukonUser)
             throws NotAuthorizedException, NotFoundException, TimeoutException, BadServerResponseException {
         int scenarioId = loadControlProgramDao.getScenarioIdForScenarioName(scenarioName);
-        List<ProgramStatus> programStatuses = programService.stopScenarioBlocking(scenarioId, stopTime, false, true, liteYukonUser);
+        List<ProgramStatus> programStatuses =
+            programService.stopScenarioBlocking(scenarioId, stopTime, false, true, liteYukonUser);
         ScenarioStatus scenarioStatus = new ScenarioStatus(scenarioName, programStatuses);
 
         return scenarioStatus;
@@ -231,17 +248,17 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     @Override
     public PointQuality getPointQuality(QualityDescription qualityDescription) {
 
-        if (qualityDescription == QualityDescription.Measured) {
+        if (qualityDescription == QualityDescription.MEASURED) {
             return PointQuality.Normal;
-        } else if (qualityDescription == QualityDescription.Estimated) {
+        } else if (qualityDescription == QualityDescription.ESTIMATED) {
             return PointQuality.Manual;
-        } else if (qualityDescription == QualityDescription.Failed) {
+        } else if (qualityDescription == QualityDescription.FAILED) {
             return PointQuality.NonUpdated; // Failed from SCADA means could not object the current reading
-        } else if (qualityDescription == QualityDescription.Initial) {
+        } else if (qualityDescription == QualityDescription.INITIAL) {
             return PointQuality.InitDefault;
-        } else if (qualityDescription == QualityDescription.Calculated) {
+        } else if (qualityDescription == QualityDescription.CALCULATED) {
             return PointQuality.Estimated;
-        } else if (qualityDescription == QualityDescription.Last) {
+        } else if (qualityDescription == QualityDescription.LAST) {
             return PointQuality.InitLastKnown;
         } else {// if (qualityDescription == QualityDescription.Default)
             return PointQuality.Normal;
@@ -258,7 +275,7 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         pointData.setStr("MultiSpeak ScadaAnalog Analog point update.");
         pointData.setUserName(userName);
         if (scadaAnalog.getTimeStamp() != null) {
-            pointData.setTime(scadaAnalog.getTimeStamp().getTime());
+            pointData.setTime(scadaAnalog.getTimeStamp().toGregorianCalendar().getTime());
         }
         return pointData;
     }
@@ -267,29 +284,32 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     public ErrorObject writeAnalogPointData(ScadaAnalog scadaAnalog, LiteYukonUser liteYukonUser) {
         String objectId = scadaAnalog.getObjectID().trim();
         String translationStr = buildFdrMultispeakLMTranslation(objectId);
-        List<FdrTranslation> fdrTranslations = fdrTranslationDao.getByInterfaceTypeAndTranslation(FdrInterfaceType.MULTISPEAK_LM, translationStr);
+        List<FdrTranslation> fdrTranslations =
+            fdrTranslationDao.getByInterfaceTypeAndTranslation(FdrInterfaceType.MULTISPEAK_LM, translationStr);
         if (!fdrTranslations.isEmpty()) {
             for (FdrTranslation fdrTranslation : fdrTranslations) {
                 if (fdrTranslation.getDirection() == FdrDirection.RECEIVE) {
-                    PointData pointData = buildPointData(fdrTranslation.getPointId(), scadaAnalog, liteYukonUser.getUsername());
+                    PointData pointData =
+                        buildPointData(fdrTranslation.getPointId(), scadaAnalog, liteYukonUser.getUsername());
                     simplePointAccessDao.writePointData(pointData);
                     CTILogger.debug("PointData update sent to Dispatch (" + pointData.toString() + ")");
                 }
             }
         } else {
-            return mspObjectDao.getErrorObject(objectId,
-                                               "No point mapping found in Yukon for objectId:" + objectId,
-                                               "ScadaAnalog", "writeAnalogPointData", liteYukonUser.getUsername());
+            return mspObjectDao.getErrorObject(objectId, "No point mapping found in Yukon for objectId:" + objectId,
+                "ScadaAnalog", "writeAnalogPointData", liteYukonUser.getUsername());
         }
         return null;
     }
 
     @Override
     public SubstationLoadControlStatus[] getActiveLoadControlStatus() throws ConnectionException, NotFoundException {
-        List<SubstationLoadControlStatus> substationLoadControlStatusList = new ArrayList<SubstationLoadControlStatus>();
+        List<SubstationLoadControlStatus> substationLoadControlStatusList =
+            new ArrayList<SubstationLoadControlStatus>();
         List<ControlItem> controlledItemsList = new ArrayList<ControlItem>();
 
-        Map<Integer, Integer> programCounts = enrollmentDao.getActiveEnrollmentExcludeOptOutCount(new Date(), new Date());
+        Map<Integer, Integer> programCounts =
+            enrollmentDao.getActiveEnrollmentExcludeOptOutCount(new Date(), new Date());
         List<MspLmMapping> mspLmInterfaceMappingList = mspLMInterfaceMappingDao.getAllMappings();
         Collections.sort(mspLmInterfaceMappingList, new MspLmMappingComparator(MspLmMappingColumn.SUBSTATION, true));
 
@@ -310,7 +330,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
                 // not the first iteration and substation name has changed
                 if (prevSubstationName != null && !substationName.equals(prevSubstationName)) {
                     // Add the previous object
-                    SubstationLoadControlStatus substationLoadControlStatus = buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList);
+                    SubstationLoadControlStatus substationLoadControlStatus =
+                        buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList);
 
                     // Get unique/master status
                     substationLoadControlStatus.setStatus(mspLMGroupDao.getMasterStatus(allStatus).toString());
@@ -337,7 +358,9 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
                     lmProgramBases = loadControlClientConnection.getProgramsForProgramIds(programIds);
                 }
 
-                ControlItem controlledItem = buildSubstationLoadControlStatusControlledItemsControlItem(mspLMInterfaceMapping.getStrategyName(), lmProgramBases, programCounts);
+                ControlItem controlledItem =
+                    buildSubstationLoadControlStatusControlledItemsControlItem(mspLMInterfaceMapping.getStrategyName(),
+                        lmProgramBases, programCounts);
                 controlledItemsList.add(controlledItem);
 
                 // Loop through all programs and load the status and mode values.
@@ -345,7 +368,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
                     // Loop through all groups within the program
                     List<LMGroupBase> loadGroups = programBase.getLoadControlGroupVector();
                     for (LMGroupBase groupBase : loadGroups) {
-                        List<MspLMGroupCommunications> mspLMGroupCommunications = mspLMGroupDao.getLMGroupCommunications(groupBase);
+                        List<MspLMGroupCommunications> mspLMGroupCommunications =
+                            mspLMGroupDao.getLMGroupCommunications(groupBase);
                         allStatus.add(mspLMGroupDao.getStatus(mspLMGroupCommunications));
                     }
                     allModes.add(mspLMGroupDao.getMode(programBase));
@@ -358,7 +382,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
         // add the last object
         if (!controlledItemsList.isEmpty()) {
             if (prevSubstationName != null) {
-                SubstationLoadControlStatus substationLoadControlStatus = buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList);
+                SubstationLoadControlStatus substationLoadControlStatus =
+                    buildSubstationLoadControlStatus(prevSubstationName, controlledItemsList);
                 // Get unique/master status
                 substationLoadControlStatus.setStatus(mspLMGroupDao.getMasterStatus(allStatus).toString());
                 // Get unique/master mode
@@ -369,7 +394,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 
         // Convert to array for return
         if (!substationLoadControlStatusList.isEmpty()) {
-            SubstationLoadControlStatus[] substationLoadControlStatus = new SubstationLoadControlStatus[substationLoadControlStatusList.size()];
+            SubstationLoadControlStatus[] substationLoadControlStatus =
+                new SubstationLoadControlStatus[substationLoadControlStatusList.size()];
             substationLoadControlStatusList.toArray(substationLoadControlStatus);
             return substationLoadControlStatus;
         }
@@ -380,19 +406,19 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     public QualityDescription getQualityDescription(PointQuality pointQuality) {
 
         if (PointQuality.Normal.equals(pointQuality)) {
-            return QualityDescription.Measured;
+            return QualityDescription.MEASURED;
         } else if (PointQuality.Manual.equals(pointQuality)) {
-            return QualityDescription.Estimated;
+            return QualityDescription.ESTIMATED;
         } else if (PointQuality.NonUpdated.equals(pointQuality)) {
-            return QualityDescription.Failed;
+            return QualityDescription.FAILED;
         } else if (PointQuality.InitDefault.equals(pointQuality)) {
-            return QualityDescription.Initial;
+            return QualityDescription.INITIAL;
         } else if (PointQuality.Estimated.equals(pointQuality)) {
-            return QualityDescription.Calculated;
+            return QualityDescription.CALCULATED;
         } else if (PointQuality.InitLastKnown.equals(pointQuality)) {
-            return QualityDescription.Last;
+            return QualityDescription.LAST;
         } else {
-            return QualityDescription.Default;
+            return QualityDescription.DEFAULT;
         }
     }
 
@@ -408,8 +434,10 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
     }
 
     /**
-     * Builds a SubstationLaodControlStatusControlledItemsControlItem for the strategyName and program information provided.
+     * Builds a SubstationLaodControlStatusControlledItemsControlItem for the strategyName and program
+     * information provided.
      * Includes loading of the itemCount and controlledItemCounts.
+     * 
      * @param strategyName
      * @param lmProgramBases
      * @param programCounts
@@ -433,26 +461,31 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 
     /**
      * Helper method to build a SubstationLaodControlStatus for the substation and controlItems provided.
+     * 
      * @param substationName
      * @param controlledItemsList
      * @return
      */
-    private SubstationLoadControlStatus buildSubstationLoadControlStatus(String substationName, List<ControlItem> controlledItemsList) {
+    private SubstationLoadControlStatus buildSubstationLoadControlStatus(String substationName,
+            List<ControlItem> controlledItemsList) {
 
         SubstationLoadControlStatus substationLoadControlStatus = new SubstationLoadControlStatus();
         substationLoadControlStatus.setObjectID(substationName);
         substationLoadControlStatus.setSubstationName(substationName);
-
         ControlItem[] controlledItemsArray = new ControlItem[controlledItemsList.size()];
         controlledItemsArray = controlledItemsList.toArray(controlledItemsArray);
-        substationLoadControlStatus.setControlledItems(controlledItemsArray);
+        ControlledItems controlledItems = new ControlledItems();
+        List<ControlItem> controlItems = controlledItems.getControlItem();
+        controlItems.addAll(controlledItemsList);
+        substationLoadControlStatus.setControlledItems(controlledItems);
         return substationLoadControlStatus;
     }
 
     /**
      * Helper method to return the total count of devices in lmProgramBases
-     *  that are active (enrolled on an account) but are not currently opted out.
+     * that are active (enrolled on an account) but are not currently opted out.
      * If a program is null, a count of 0 is used
+     * 
      * @param lmProgramBases
      * @param programCounts
      * @return
@@ -471,9 +504,10 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
 
     /**
      * Helper method to return the total count of devices in lmProgramBases
-     *  that are active (enrolled on an account) but are not currently opted out.
+     * that are active (enrolled on an account) but are not currently opted out.
      * Additionally, the lmProgramBase must be active for the count to be included.
      * If a program is null, a count of 0 is used
+     * 
      * @param lmProgramBases
      * @param programCounts
      * @return
@@ -484,7 +518,8 @@ public class MultispeakLMServiceImpl implements MultispeakLMService {
             if (program != null) {
                 // Combine counts for all programs in the scenario
                 Integer programCount = programCounts.get(program.getYukonID());
-                controlledCount += (program.isActive() && programCount != null ? programCount : 0); // controlled items is 0 if not active program
+                controlledCount += (program.isActive() && programCount != null ? programCount : 0);
+                // controlled items is 0 if not active program
             }
         }
         return controlledCount;
