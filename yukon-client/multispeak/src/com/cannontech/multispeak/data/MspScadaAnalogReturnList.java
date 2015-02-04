@@ -2,7 +2,7 @@ package com.cannontech.multispeak.data;
 
 import java.util.List;
 
-import com.cannontech.multispeak.deploy.service.ScadaAnalog;
+import com.cannontech.msp.beans.v3.ScadaAnalog;
 
 public class MspScadaAnalogReturnList extends MspReturnList {
 
@@ -11,6 +11,7 @@ public class MspScadaAnalogReturnList extends MspReturnList {
     public List<ScadaAnalog> getScadaAnalogs() {
         return scadaAnalogs;
     }
+
     public void setScadaAnalogs(List<ScadaAnalog> scadaAnalogs) {
         this.scadaAnalogs = scadaAnalogs;
     }

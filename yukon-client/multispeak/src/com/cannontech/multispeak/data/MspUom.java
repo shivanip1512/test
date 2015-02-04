@@ -1,6 +1,6 @@
 package com.cannontech.multispeak.data;
 
-import com.cannontech.multispeak.deploy.service.Uom;
+import com.cannontech.msp.beans.v3.Uom;
 
 public class MspUom {
     public static final Uom kWh = Uom.fromValue("kWh");
