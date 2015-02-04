@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -35,6 +34,9 @@ import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -45,7 +47,15 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private WebConfigurationDao webConfigurationDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    private Map<Integer, ApplianceCategory> cachedvalue = new ConcurrentHashMap<>();
+    private LoadingCache<Integer, ApplianceCategory> computingCache=CacheBuilder.newBuilder().build(new CacheLoader<Integer, ApplianceCategory>() {
+
+        @Override
+        public ApplianceCategory load(Integer arg0) throws Exception {
+            return null;
+        }
+        
+    });
+
 
     private static class ApplianceCategoryRowMapper extends AbstractRowMapperWithBaseQuery<ApplianceCategory> {
         private final Map<Integer, WebConfiguration> webConfigurations;
@@ -152,9 +162,11 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
     public ApplianceCategory getById(int applianceCategoryId) {
-        if (cachedvalue.containsKey(applianceCategoryId)) {
-            return cachedvalue.get(applianceCategoryId);
+        ApplianceCategory cachedApplianceCategory = computingCache.getIfPresent(applianceCategoryId);
+        if (cachedApplianceCategory != null) {
+            return cachedApplianceCategory;
         } else {
+            System.out.println("in getId "+applianceCategoryId);
             ApplianceCategoryRowMapper rowMapper = new ApplianceCategoryRowMapper();
             final SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append(rowMapper.getBaseQuery());
@@ -164,7 +176,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
             WebConfiguration webConfiguration = webConfigurationDao.getForApplianceCateogry(applianceCategoryId);
             applianceCategory.setWebConfiguration(webConfiguration);
 
-            cachedvalue.put(applianceCategoryId, applianceCategory);
+            computingCache.put(applianceCategoryId, applianceCategory);
 
             return applianceCategory;
         }

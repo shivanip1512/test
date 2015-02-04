@@ -18,11 +18,8 @@ public interface AccountService {
      * account number is already used for that energy company. The energy
      * company is for the user is retrieved, then addAccount(UpdatableAccount
      * updatableAccount, LiteStarsEnergyCompany ec) is called.
-     * @param updatableAccount
-     * @param operator
      * @throws AccountNumberUnavailableException
      * @throws UserNameUnavailableException
-     * @return accountId
      */
     public int addAccount(UpdatableAccount updatableAccount, LiteYukonUser operator)
             throws AccountNumberUnavailableException, UserNameUnavailableException;
@@ -38,8 +35,6 @@ public interface AccountService {
      * account to update is looked up using the account number in the user's
      * energy company. Account numbers can be reused between different energy
      * companies.
-     * @param updatableAccount
-     * @param user
      * @throws NotFoundException
      */
     public void updateAccount(UpdatableAccount updatableAccount, LiteYukonUser user)
@@ -55,9 +50,6 @@ public interface AccountService {
      * companies. Use this method when you already have Energy Company
      * information Or in case of Large Loops This reduces the number of Database
      * hits considerably
-     * @param updatableAccount
-     * @param user
-     * @param energyCompany
      * @throws InvalidAccountNumberException
      */
 
@@ -69,8 +61,6 @@ public interface AccountService {
      * can update accounts on member energy companies since the account is
      * lookup by the accountid, not the account number on the user's energy
      * company.
-     * @param updatableAccount
-     * @param accountId
      * @param user user that initiated the action, only used for logging
      * @throws InvalidAccountNumberException
      */
@@ -81,8 +71,6 @@ public interface AccountService {
      * Method to delete an account The energy company is for the user is
      * retrieved, then deleteAccount(String accountNumber,
      * LiteStarsEnergyCompany ec) is called.
-     * @param accountNumber
-     * @param user
      */
     public void deleteAccount(String accountNumber, LiteYukonUser user);
 
@@ -94,9 +82,6 @@ public interface AccountService {
      * LiteStarsEnergyCompany ec) is called. Use this method when you already
      * have the EnergyCompany Information.Or in Large Loops This reduces the
      * number of Database hits considerably
-     * @param accountNumber
-     * @param user
-     * @param energyCompany
      */
 
     public void deleteAccount(String accountNumber, LiteYukonUser user, YukonEnergyCompany energyCompany);
@@ -105,9 +90,6 @@ public interface AccountService {
      * Method to return an account dto for an account number and energy company.
      * The energy company is for the user is retrieved, then
      * getAccountDto(String accountNumber, LiteStarsEnergyCompany ec) is called.
-     * @param accountNumber
-     * @param yukonUser
-     * @return
      */
     public AccountDto getAccountDto(String accountNumber, LiteYukonUser yukonUser);
 

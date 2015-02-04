@@ -386,15 +386,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public void deleteAccount(String accountNumber, LiteYukonUser user) {
         YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(user);
-        try {
-            CustomerAccount account =
-                customerAccountDao.getByAccountNumber(accountNumber, yukonEnergyCompany.getEnergyCompanyId());
-            deleteAccount(account, user);
-        } catch (NotFoundException e) {
-            log.error("Account " + accountNumber + " could not be deleted: Unable to find account for account#: "
-                + accountNumber);
-            throw new InvalidAccountNumberException("Unable to find account for account#: " + accountNumber, e);
-        }
+        deleteAccount(accountNumber, user, yukonEnergyCompany);
     }
     
     @Override

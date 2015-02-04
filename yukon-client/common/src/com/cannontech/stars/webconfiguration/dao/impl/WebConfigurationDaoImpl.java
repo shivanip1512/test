@@ -3,7 +3,6 @@ package com.cannontech.stars.webconfiguration.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -18,11 +17,21 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.stars.webconfiguration.dao.WebConfigurationDao;
 import com.cannontech.stars.webconfiguration.model.WebConfiguration;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Maps;
 
 public class WebConfigurationDaoImpl implements WebConfigurationDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
-    private Map<Integer, WebConfiguration> cachedvalue = new ConcurrentHashMap<>();
+    private LoadingCache<Integer, WebConfiguration> computingCache=CacheBuilder.newBuilder().build(new CacheLoader<Integer, WebConfiguration>() {
+
+        @Override
+        public WebConfiguration load(Integer arg0) throws Exception {
+            return null;
+        }
+        
+    });
 
     private RowMapperWithBaseQuery<WebConfiguration> rowMapper =
         new AbstractRowMapperWithBaseQuery<WebConfiguration>() {
@@ -63,9 +72,11 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
 
     @Override
     public WebConfiguration getForApplianceCateogry(int applianceCategoryId) {
-        if (cachedvalue.containsKey(applianceCategoryId)) {
-            return cachedvalue.get(applianceCategoryId);
+        WebConfiguration cachedWebConfiguration = computingCache.getIfPresent(applianceCategoryId);
+        if (cachedWebConfiguration != null) {
+            return cachedWebConfiguration;
         } else {
+            System.out.println("in getforapplication"+applianceCategoryId);
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append(rowMapper.getBaseQuery());
             sql.append("WHERE configurationId IN (SELECT webConfigurationId");
@@ -73,8 +84,8 @@ public class WebConfigurationDaoImpl implements WebConfigurationDao {
             sql.append("WHERE applianceCategoryId").eq(applianceCategoryId).append(")");
 
             WebConfiguration webConfiguration = yukonJdbcTemplate.queryForObject(sql, rowMapper);
-            
-            cachedvalue.put(applianceCategoryId, webConfiguration);
+
+            computingCache.put(applianceCategoryId, webConfiguration);
             return webConfiguration;
         }
     }

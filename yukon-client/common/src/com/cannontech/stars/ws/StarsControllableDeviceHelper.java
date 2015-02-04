@@ -10,9 +10,6 @@ public interface StarsControllableDeviceHelper {
      * For Import - Populates the Model object and calls Service to add a
      * hardware device to the customer account. Handles only LMHardware devices
      * for now, will need to support other device types later.
-     * @param dto
-     * @param user
-     * @return LiteInventoryBase
      */
     public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user);
 
@@ -21,10 +18,6 @@ public interface StarsControllableDeviceHelper {
      * hardware device to the customer account. Use this method only when you
      * already have energy company or in large loops. This method reduces the
      * number of Database hits considerably
-     * @param dto
-     * @param user
-     * @param energyCompany
-     * @return LiteInventoryBase
      */
     public LiteInventoryBase addDeviceToAccount(LmDeviceDto dto, LiteYukonUser user, YukonEnergyCompany energyCompany);
 
@@ -33,9 +26,6 @@ public interface StarsControllableDeviceHelper {
      * hardware device info on the customer account. Ex., Field install date,
      * Service Company etc. Handles only LMHardware devices for now, will need
      * to support other device types later.
-     * @param dto
-     * @param user
-     * @return LiteInventoryBase
      */
     public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser user);
 
@@ -45,10 +35,6 @@ public interface StarsControllableDeviceHelper {
      * Service Company etc. Use this method only when you already have energy
      * company or in large loops. This method reduces the number of Database
      * hits considerably
-     * @param dto
-     * @param user
-     * @param energyCompany
-     * @return LiteInventoryBase
      */
 
     public LiteInventoryBase updateDeviceOnAccount(LmDeviceDto dto, LiteYukonUser user, YukonEnergyCompany energyCompany);
@@ -57,8 +43,6 @@ public interface StarsControllableDeviceHelper {
      * For Import - Populates the Model object and calls Service to Remove a
      * hardware device from the customer account. Handles only LMHardware
      * devices for now, will need to support other device types later.
-     * @param dto
-     * @param user
      */
     public void removeDeviceFromAccount(LmDeviceDto dto, LiteYukonUser user);
 
@@ -67,9 +51,6 @@ public interface StarsControllableDeviceHelper {
      * hardware device from the customer account. Use this method only when you
      * already have energy company or in large loops. This method reduces the
      * number of Database hits considerably
-     * @param dto
-     * @param user
-     * @param energyCompany
      */
 
     public void removeDeviceFromAccount(LmDeviceDto dto, LiteYukonUser user, YukonEnergyCompany energyCompany);
