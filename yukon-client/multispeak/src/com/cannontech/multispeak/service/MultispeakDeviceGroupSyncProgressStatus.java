@@ -8,11 +8,11 @@ public enum MultispeakDeviceGroupSyncProgressStatus implements DisplayableEnum {
 	FAILED,
 	CANCELED,
 	FINISHED;
-	
-	private String keyPrefix = "yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.";
-	
-	@Override
-	public String getFormatKey() {
-		return keyPrefix + this;
-	}
+
+    private String keyPrefix = "yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncProgressStatus.";
+
+    @Override
+    public String getFormatKey() {
+        return keyPrefix + this;
+    }
 }
