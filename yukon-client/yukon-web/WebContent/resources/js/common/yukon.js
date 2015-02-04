@@ -777,7 +777,7 @@ yukon.ui = (function () {
                         var title = popup.find('.js-popup-title');
                         if (title[0]) options.title = title[0].value;
                     }
-                    if (loadEvent) popup.trigger(popup.data('loadEvent'));
+                    if (loadEvent) popup.trigger(loadEvent);
                     
                     if (tabbed) {
                         popup.tabbedDialog(options);
@@ -787,7 +787,7 @@ yukon.ui = (function () {
                 });
             } else {
                 
-                if (loadEvent) popup.trigger(popup.data('loadEvent'));
+                if (loadEvent) popup.trigger(loadEvent);
                 if (tabbed) {
                     popup.tabbedDialog(options);
                 } else {
