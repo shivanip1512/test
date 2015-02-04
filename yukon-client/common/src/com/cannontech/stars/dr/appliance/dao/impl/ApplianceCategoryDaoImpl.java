@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -44,6 +45,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private WebConfigurationDao webConfigurationDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    private Map<Integer, ApplianceCategory> cachedvalue = new ConcurrentHashMap<>();
 
     private static class ApplianceCategoryRowMapper extends AbstractRowMapperWithBaseQuery<ApplianceCategory> {
         private final Map<Integer, WebConfiguration> webConfigurations;
@@ -150,17 +152,22 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Override
     @Transactional(propagation = Propagation.SUPPORTS)
     public ApplianceCategory getById(int applianceCategoryId) {
-        ApplianceCategoryRowMapper rowMapper = new ApplianceCategoryRowMapper();
-        final SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(rowMapper.getBaseQuery());
-        sql.append("WHERE ac.applianceCategoryId").eq(applianceCategoryId);
+        if (cachedvalue.containsKey(applianceCategoryId)) {
+            return cachedvalue.get(applianceCategoryId);
+        } else {
+            ApplianceCategoryRowMapper rowMapper = new ApplianceCategoryRowMapper();
+            final SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append(rowMapper.getBaseQuery());
+            sql.append("WHERE ac.applianceCategoryId").eq(applianceCategoryId);
 
-        ApplianceCategory applianceCategory = jdbcTemplate.queryForObject(sql, rowMapper);
-        WebConfiguration webConfiguration =
-            webConfigurationDao.getForApplianceCateogry(applianceCategoryId);
-        applianceCategory.setWebConfiguration(webConfiguration);
+            ApplianceCategory applianceCategory = jdbcTemplate.queryForObject(sql, rowMapper);
+            WebConfiguration webConfiguration = webConfigurationDao.getForApplianceCateogry(applianceCategoryId);
+            applianceCategory.setWebConfiguration(webConfiguration);
 
-        return applianceCategory;
+            cachedvalue.put(applianceCategoryId, applianceCategory);
+
+            return applianceCategory;
+        }
     }
 
     @Override
