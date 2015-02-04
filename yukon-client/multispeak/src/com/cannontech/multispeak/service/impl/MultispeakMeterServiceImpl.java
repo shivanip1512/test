@@ -103,9 +103,35 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.msp.beans.v3.ArrayOfErrorObject;
+import com.cannontech.msp.beans.v3.ArrayOfMeterRead;
+import com.cannontech.msp.beans.v3.ArrayOfOutageDetectionEvent;
+import com.cannontech.msp.beans.v3.CDStateChangedNotification;
+import com.cannontech.msp.beans.v3.ConnectDisconnectEvent;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.ExtensionsItem;
+import com.cannontech.msp.beans.v3.FormattedBlock;
+import com.cannontech.msp.beans.v3.FormattedBlockNotification;
+import com.cannontech.msp.beans.v3.FormattedBlockNotificationResponse;
+import com.cannontech.msp.beans.v3.LoadActionCode;
+import com.cannontech.msp.beans.v3.Meter;
+import com.cannontech.msp.beans.v3.MeterGroup;
+import com.cannontech.msp.beans.v3.MeterRead;
+import com.cannontech.msp.beans.v3.ODEventNotification;
+import com.cannontech.msp.beans.v3.ODEventNotificationResponse;
+import com.cannontech.msp.beans.v3.ObjectFactory;
+import com.cannontech.msp.beans.v3.OutageDetectDeviceType;
+import com.cannontech.msp.beans.v3.OutageDetectionEvent;
+import com.cannontech.msp.beans.v3.OutageEventType;
+import com.cannontech.msp.beans.v3.OutageLocation;
+import com.cannontech.msp.beans.v3.ReadingChangedNotification;
+import com.cannontech.msp.beans.v3.ReadingChangedNotificationResponse;
+import com.cannontech.msp.beans.v3.ServiceLocation;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.core.CBClient;
+import com.cannontech.multispeak.client.core.OAClient;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.FormattedBlockUpdater;
 import com.cannontech.multispeak.dao.FormattedBlockUpdaterChain;
@@ -116,28 +142,10 @@ import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.data.MspErrorObjectException;
 import com.cannontech.multispeak.data.MspLoadActionCode;
-import com.cannontech.multispeak.deploy.service.CDStateChangedNotification;
-import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.ExtensionsItem;
-import com.cannontech.multispeak.deploy.service.FormattedBlock;
-import com.cannontech.multispeak.deploy.service.FormattedBlockNotification;
-import com.cannontech.multispeak.deploy.service.FormattedBlockNotificationResponse;
-import com.cannontech.multispeak.deploy.service.LoadActionCode;
-import com.cannontech.multispeak.deploy.service.Meter;
-import com.cannontech.multispeak.deploy.service.MeterGroup;
-import com.cannontech.multispeak.deploy.service.MeterRead;
-import com.cannontech.multispeak.deploy.service.ODEventNotification;
-import com.cannontech.multispeak.deploy.service.ODEventNotificationResponse;
-import com.cannontech.multispeak.deploy.service.OutageDetectDeviceType;
-import com.cannontech.multispeak.deploy.service.OutageDetectionEvent;
-import com.cannontech.multispeak.deploy.service.OutageEventType;
-import com.cannontech.multispeak.deploy.service.OutageLocation;
-import com.cannontech.multispeak.deploy.service.ReadingChangedNotification;
-import com.cannontech.multispeak.deploy.service.ReadingChangedNotificationResponse;
-import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.event.MeterReadEvent;
 import com.cannontech.multispeak.event.MultispeakEvent;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.MultispeakMeterService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -340,13 +348,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 }
 
                 @Override
-                public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+                public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
                     // do we need to send something to the foreign system here?
                     log.warn("received error for " + pao + ": " + error);
                 }
 
                 @Override
-                public void receivedException(DeviceAttributeReadError error) {
+                public void receivedException(SpecificDeviceErrorDescription error) {
                     log.warn("received exception in meterReadEvent callback: " + error);
                 }
 
@@ -625,21 +633,21 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 }
 
                 @Override
-                public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) { // failure
+                public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) { // failure
                     log.warn("deviceAttributeReadCallback.receivedError for odEvent: " + pao + ": " + error);
 
                     YukonMeter yukonMeter = meterDao.getForId(pao.getPaoId()); // can we get this from meters?
                     meters.remove(yukonMeter);
                     Date now = new Date(); // may need to get this from the callback, but for now "now" will
                                            // do.
-                    OutageEventType outageEventType = getForStatusCode(error.getType().getErrorCode());
+                    OutageEventType outageEventType = getForStatusCode(error.getErrorCode());
                     OutageDetectionEvent outageDetectionEvent =
                         buildOutageDetectionEvent(yukonMeter, outageEventType, now, error.toString());
                     sendODEventNotification(yukonMeter, mspVendor, transactionId, responseUrl, outageDetectionEvent);
                 }
 
                 @Override
-                public void receivedException(DeviceAttributeReadError error) {
+                public void receivedException(SpecificDeviceErrorDescription error) {
                     log.warn("deviceAttributeReadCallback.receivedException in odEvent callback: " + error);
                 }
 
@@ -906,13 +914,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
 
             @Override
-            public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+            public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
                 // do we need to send something to the foreign system here?
                 log.warn("received error for " + pao + ": " + error);
             }
 
             @Override
-            public void receivedException(DeviceAttributeReadError error) {
+            public void receivedException(SpecificDeviceErrorDescription error) {
                 log.warn("received exception in meterReadEvent callback: " + error);
             }
         };
@@ -1054,13 +1062,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
 
             @Override
-            public void receivedError(PaoIdentifier pao, DeviceAttributeReadError error) {
+            public void receivedError(PaoIdentifier pao, SpecificDeviceErrorDescription error) {
                 // do we need to send something to the foreign system here?
                 log.warn("received error for " + pao + ": " + error);
             }
 
             @Override
-            public void receivedException(DeviceAttributeReadError error) {
+            public void receivedException(SpecificDeviceErrorDescription error) {
                 log.warn("received exception in FormattedBlockEvent callback: " + error);
             }
         };
