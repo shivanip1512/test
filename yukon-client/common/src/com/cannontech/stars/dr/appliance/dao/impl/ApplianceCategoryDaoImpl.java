@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
@@ -47,7 +48,7 @@ public class ApplianceCategoryDaoImpl implements ApplianceCategoryDao {
     @Autowired private StarsDatabaseCache starsDatabaseCache;
     @Autowired private WebConfigurationDao webConfigurationDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    private LoadingCache<Integer, ApplianceCategory> computingCache=CacheBuilder.newBuilder().build(new CacheLoader<Integer, ApplianceCategory>() {
+    private LoadingCache<Integer, ApplianceCategory> computingCache=CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<Integer, ApplianceCategory>() {
 
         @Override
         public ApplianceCategory load(Integer arg0) throws Exception {

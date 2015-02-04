@@ -3,6 +3,7 @@ package com.cannontech.stars.webconfiguration.dao.impl;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,7 +25,7 @@ import com.google.common.collect.Maps;
 
 public class WebConfigurationDaoImpl implements WebConfigurationDao {
     private YukonJdbcTemplate yukonJdbcTemplate;
-    private LoadingCache<Integer, WebConfiguration> computingCache=CacheBuilder.newBuilder().build(new CacheLoader<Integer, WebConfiguration>() {
+    private LoadingCache<Integer, WebConfiguration> computingCache=CacheBuilder.newBuilder().expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<Integer, WebConfiguration>() {
 
         @Override
         public WebConfiguration load(Integer arg0) throws Exception {
