@@ -1,167 +1,181 @@
 /*
  * Created on Jun 13, 2005
- *
  * To change the template for this generated file go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 package com.cannontech.multispeak.emulator;
 
-import java.net.URL;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.axis.client.Service;
-import org.apache.axis.message.SOAPHeaderElement;
-
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
-import com.cannontech.multispeak.dao.MspMeterDao;
-import com.cannontech.multispeak.deploy.service.EaLoc;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.MR_CBSoap_BindingStub;
-import com.cannontech.multispeak.deploy.service.Meter;
-import com.cannontech.multispeak.deploy.service.MeterGroup;
-import com.cannontech.multispeak.deploy.service.MeterRead;
-import com.cannontech.multispeak.deploy.service.Nameplate;
-import com.cannontech.multispeak.deploy.service.UtilityInfo;
+import com.cannontech.msp.beans.v3.DeleteMeterGroup;
+import com.cannontech.msp.beans.v3.DeleteMeterGroupResponse;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.EstablishMeterGroup;
+import com.cannontech.msp.beans.v3.EstablishMeterGroupResponse;
+import com.cannontech.msp.beans.v3.InsertMeterInMeterGroup;
+import com.cannontech.msp.beans.v3.InsertMeterInMeterGroupResponse;
+import com.cannontech.msp.beans.v3.MRArrayOfString2;
+import com.cannontech.msp.beans.v3.MeterGroup;
+import com.cannontech.msp.beans.v3.MeterList;
+import com.cannontech.msp.beans.v3.ObjectFactory;
+import com.cannontech.msp.beans.v3.RemoveMetersFromMeterGroup;
+import com.cannontech.msp.beans.v3.RemoveMetersFromMeterGroupResponse;
+import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.core.MRClient;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author stacey
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * 
+ *         To change the template for this generated type comment go to
+ *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class MR_Groups_Test {
+    //static String endpointURL = "http://10.106.33.25:8080/soap/mockMR_CBSoap";
+    private static String endpointURL = "http://localhost:8088/mockMR_ServerSoap";
+    static {
+        YukonSpringHook.setDefaultContext("com.cannontech.context.multispeak");
+    }
+    static MRClient instance = YukonSpringHook.getBean(MRClient.class);
+    static ObjectFactory objectFactory = YukonSpringHook.getBean(ObjectFactory.class);
 
-	public static void main(String [] args)
-	{
-		ErrorObject[] objects = null;
-		try {
-			String endpointURL = "http://10.106.33.25:8080/soap/MR_CBSoap";
-		  	MR_CBSoap_BindingStub instance = new MR_CBSoap_BindingStub(new URL(endpointURL), new Service());
-			
-            YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
-            SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
-			instance.setHeader(header);
+    static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100,
+        120, 12, null, endpointURL);
 
-			String METER_NO_1 = "10523687";
-			String METER_NO_2 = "10153216";
-			String METER_NO_3 = "1010156610";
-			String METER_NO_4 = "10523145";
-			String METER_NO_5 = "1015321";
-			String METER_NO_6 = "10531225";
-			String METER_NO_7 = "1015321";
-			String METER_NO_8 = "10532165";
-			String METER_NO_INVALID = "4833124";
+    public static void main(String[] args) {
+        List<ErrorObject> objects = new ArrayList<ErrorObject>();
+        try {
+            String METER_NO_1 = "10523687";
+            String METER_NO_2 = "10153216";
+            String METER_NO_3 = "1010156610";
+            String METER_NO_4 = "10523145";
+            // String METER_NO_5 = "1015321";
+            // String METER_NO_6 = "10531225";
+            // String METER_NO_7 = "1015321";
+            // String METER_NO_8 = "10532165";
+            // String METER_NO_INVALID = "4833124";
 
-			MeterGroup meterGroup = new MeterGroup();
-			String[] meterList = new String[4];
-			int todo = 1;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=meterAddNotification
+            MeterGroup meterGroup = new MeterGroup();
+            MeterList meterList = null;
+            int todo = 1; // 0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo,
+                          // 4=meterAddNotification
 
-			if (todo == 1 ) {
-				//establish meter group, no meter numbers
-				meterGroup.setMeterList(meterList);
-				String groupName = "/Meters/MultiSpeak/Establish3";
-				meterGroup.setGroupName(groupName);
+            if (todo == 1) {
+                // establish meter group, no meter numbers
+                meterList = objectFactory.createMeterList();
+                meterGroup.setMeterList(meterList);
+                String groupName = "/Meters/MultiSpeak/Establish3";
+                meterGroup.setGroupName(groupName);
 
-				objects = instance.establishMeterGroup(meterGroup);
-			} else if (todo == 2) {
-				//establish meter group, with 4 meters
-				meterGroup.setMeterList(meterList);
-				String groupName = "/Meters/MultiSpeak/Establish2/";
-				meterGroup.setGroupName(groupName);
+                EstablishMeterGroup establishMeterGroup = objectFactory.createEstablishMeterGroup();
+                establishMeterGroup.setMeterGroup(meterGroup);
+                EstablishMeterGroupResponse response  =instance.establishMeterGroup(mspVendor, endpointURL, establishMeterGroup);
+                objects = response.getEstablishMeterGroupResult().getErrorObject();
+            } else if (todo == 2) {
+                // establish meter group, with 4 meters
+                meterList = objectFactory.createMeterList();
+                meterGroup.setMeterList(meterList);
+                String groupName = "/Meters/MultiSpeak/Establish2/";
+                meterGroup.setGroupName(groupName);
+                meterList.getMeterID().add(METER_NO_1);
+                meterList.getMeterID().add(METER_NO_2);
+                meterList.getMeterID().add(METER_NO_3);
+                meterList.getMeterID().add(METER_NO_4);
+                meterGroup.setMeterList(meterList);
+                EstablishMeterGroup establishMeterGroup = objectFactory.createEstablishMeterGroup();
+                establishMeterGroup.setMeterGroup(meterGroup);
+                EstablishMeterGroupResponse response =
+                    instance.establishMeterGroup(mspVendor, endpointURL, establishMeterGroup);
+                objects = response.getEstablishMeterGroupResult().getErrorObject();
+            } else if (todo == 3) {
+                // insert 4 meters into existing group
+                String groupName = "/Meters/MultiSpeak/Establish/";
+                meterGroup.setGroupName(groupName);
+                InsertMeterInMeterGroup insertMeterInMeterGroup = objectFactory.createInsertMeterInMeterGroup();
+                insertMeterInMeterGroup.setMeterGroupID(groupName);
+                MRArrayOfString2 arrayOfMeters = objectFactory.createMRArrayOfString2();
+                arrayOfMeters.getString().add(METER_NO_1);
+                arrayOfMeters.getString().add(METER_NO_2);
+                arrayOfMeters.getString().add(METER_NO_3);
+                arrayOfMeters.getString().add(METER_NO_4);
+                insertMeterInMeterGroup.setMeterNumbers(arrayOfMeters);
+                insertMeterInMeterGroup.setMeterGroupID(groupName);
+                InsertMeterInMeterGroupResponse response =
+                    instance.insertMeterInMeterGroup(mspVendor, endpointURL, insertMeterInMeterGroup);
+                objects = response.getInsertMeterInMeterGroupResult().getErrorObject();
+            } else if (todo == 4) {
+                String groupName = "/Meters/MultiSpeak/Insert/";
+                InsertMeterInMeterGroup insertMeterInMeterGroup = objectFactory.createInsertMeterInMeterGroup();
+                insertMeterInMeterGroup.setMeterGroupID(groupName);
+                MRArrayOfString2 arrayOfMeters = objectFactory.createMRArrayOfString2();
+                arrayOfMeters.getString().add(METER_NO_1);
+                arrayOfMeters.getString().add(METER_NO_2);
+                arrayOfMeters.getString().add(METER_NO_3);
+                arrayOfMeters.getString().add(METER_NO_4);
+                insertMeterInMeterGroup.setMeterNumbers(arrayOfMeters);
+                InsertMeterInMeterGroupResponse response =
+                    instance.insertMeterInMeterGroup(mspVendor, endpointURL, insertMeterInMeterGroup);
+                objects = response.getInsertMeterInMeterGroupResult().getErrorObject();
+            } else if (todo == 5) {
+                // remove 4 meters from non-existing group
+                String groupName = "/Meters/MultiSpeak/Remove/";
+                MRArrayOfString2 arrayOfMeters = objectFactory.createMRArrayOfString2();
+                arrayOfMeters.getString().add(METER_NO_1);
+                arrayOfMeters.getString().add(METER_NO_2);
+                arrayOfMeters.getString().add(METER_NO_3);
+                arrayOfMeters.getString().add(METER_NO_4);
+                RemoveMetersFromMeterGroup removeMetersFromMeterGroup =
+                    objectFactory.createRemoveMetersFromMeterGroup();
+                removeMetersFromMeterGroup.setMeterGroupID(groupName);
+                removeMetersFromMeterGroup.setMeterNumbers(arrayOfMeters);
+                RemoveMetersFromMeterGroupResponse response =
+                    instance.removeMetersFromMeterGroup(mspVendor, endpointURL, removeMetersFromMeterGroup);
+                objects = response.getRemoveMetersFromMeterGroupResult().getErrorObject();
+            } else if (todo == 6) {
+                // remove 4 meters from existing group
+                String groupName = "/Meters/MultiSpeak/Establish/";
+                MRArrayOfString2 arrayOfMeters = objectFactory.createMRArrayOfString2();
+                arrayOfMeters.getString().add(METER_NO_1);
+                arrayOfMeters.getString().add(METER_NO_2);
+                arrayOfMeters.getString().add(METER_NO_3);
+                arrayOfMeters.getString().add(METER_NO_4);
+                RemoveMetersFromMeterGroup removeMetersFromMeterGroup =
+                    objectFactory.createRemoveMetersFromMeterGroup();
+                removeMetersFromMeterGroup.setMeterGroupID(groupName);
+                removeMetersFromMeterGroup.setMeterNumbers(arrayOfMeters);
+                RemoveMetersFromMeterGroupResponse response =
+                    instance.removeMetersFromMeterGroup(mspVendor, endpointURL, removeMetersFromMeterGroup);
+                objects = response.getRemoveMetersFromMeterGroupResult().getErrorObject();
+            } else if (todo == 7) {
+                // delete group non-exists
+                String groupName = "/Meters/MultiSpeak/Remove2/";
+                DeleteMeterGroup deleteMeterGroup = objectFactory.createDeleteMeterGroup();
+                deleteMeterGroup.setMeterGroupID(groupName);
+                DeleteMeterGroupResponse response = instance.deleteMeterGroup(mspVendor, endpointURL, deleteMeterGroup);
+                objects.add(response.getDeleteMeterGroupResult());
+            } else if (todo == 8) {
+                // delete group exists
+                String groupName = "/Meters/MultiSpeak/";
+                DeleteMeterGroup deleteMeterGroup = objectFactory.createDeleteMeterGroup();
+                deleteMeterGroup.setMeterGroupID(groupName);
+                DeleteMeterGroupResponse response = instance.deleteMeterGroup(mspVendor, endpointURL, deleteMeterGroup);
+                objects.add(response.getDeleteMeterGroupResult());
+            }
 
-				meterList = new String[4];
-				meterList[0] = METER_NO_1;
-				meterList[1] = METER_NO_2;
-				meterList[2] = METER_NO_3;
-				meterList[3] = METER_NO_4;
-				meterGroup.setMeterList(meterList);
-				
-				objects = instance.establishMeterGroup(meterGroup);
-			} else if (todo == 3) {
-				//insert 4 meters into existing group
-				meterGroup.setMeterList(meterList);
-				String groupName = "/Meters/MultiSpeak/Establish/";
-				meterGroup.setGroupName(groupName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
-				meterList = new String[4];
-				meterList[0] = METER_NO_1;
-				meterList[1] = METER_NO_2;
-				meterList[2] = METER_NO_3;
-				meterList[3] = METER_NO_4;
-				meterGroup.setMeterList(meterList);
-				objects = instance.insertMeterInMeterGroup(meterList, groupName);
-			} else if (todo == 4) {
-				//insert 4 meters into non-existing group
-				meterGroup.setMeterList(meterList);
-				String groupName = "/Meters/MultiSpeak/Insert/";
-				meterGroup.setGroupName(groupName);
-
-				meterList = new String[4];
-				meterList[0] = METER_NO_1;
-				meterList[1] = METER_NO_2;
-				meterList[2] = METER_NO_3;
-				meterList[3] = METER_NO_4;
-				meterGroup.setMeterList(meterList);
-				
-				objects = instance.insertMeterInMeterGroup(meterList, groupName);
-			} else if (todo == 5) {
-				//remove 4 meters from non-existing group
-				meterGroup.setMeterList(meterList);
-				String groupName = "/Meters/MultiSpeak/Remove/";
-				meterGroup.setGroupName(groupName);
-
-				meterList = new String[4];
-				meterList[0] = METER_NO_1;
-				meterList[1] = METER_NO_2;
-				meterList[2] = METER_NO_3;
-				meterList[3] = METER_NO_4;
-				meterGroup.setMeterList(meterList);
-				
-				objects = instance.removeMetersFromMeterGroup(meterList, groupName);
-			} else if (todo == 6) {
-				//remove 4 meters from existing group
-				meterGroup.setMeterList(meterList);
-				String groupName = "/Meters/MultiSpeak/Establish/";
-				meterGroup.setGroupName(groupName);
-	
-				meterList = new String[4];
-				meterList[0] = METER_NO_1;
-				meterList[1] = METER_NO_2;
-				meterList[2] = METER_NO_3;
-				meterList[3] = METER_NO_4;
-				meterGroup.setMeterList(meterList);
-				
-				objects = instance.removeMetersFromMeterGroup(meterList, groupName);
-			} else if (todo == 7) {
-				//delete group non-exists
-				String groupName = "/Meters/MultiSpeak/Remove2/";
-				objects = new ErrorObject[1];
-				objects[0] = instance.deleteMeterGroup(groupName);
-			} else if (todo == 8) {
-				//delete group exists
-				String groupName = "/Meters/MultiSpeak/";
-				objects = new ErrorObject[1];
-				objects[0] = instance.deleteMeterGroup(groupName);
-			}
-
-			
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-        if (objects != null && objects != null) {
-            for (int i = 0; i < objects.length; i++) {
-                ErrorObject obj = objects[i];
-                CTILogger.info("Error-" + i + ": " + obj.getErrorString());
+        if (objects != null) {
+            int i = 0;
+            for (ErrorObject obj : objects) {
+                CTILogger.info("Error-" + i++ + ": " + obj.getErrorString());
             }
         } else {
             CTILogger.info("Successful");
         }
 
-	}
+    }
 }

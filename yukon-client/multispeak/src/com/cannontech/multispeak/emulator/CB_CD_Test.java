@@ -1,103 +1,98 @@
 package com.cannontech.multispeak.emulator;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.rmi.RemoteException;
-
-import org.apache.axis.client.Service;
-import org.apache.axis.message.SOAPHeaderElement;
-
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
-import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
-import com.cannontech.multispeak.deploy.service.Customer;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.Meter;
+import com.cannontech.msp.beans.v3.Customer;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.GetCustomerByMeterNo;
+import com.cannontech.msp.beans.v3.GetCustomerByMeterNoResponse;
+import com.cannontech.msp.beans.v3.GetMeterByServLoc;
+import com.cannontech.msp.beans.v3.GetMeterByServLocResponse;
+import com.cannontech.msp.beans.v3.GetMethods;
+import com.cannontech.msp.beans.v3.GetMethodsResponse;
+import com.cannontech.msp.beans.v3.Meter;
+import com.cannontech.msp.beans.v3.ObjectFactory;
+import com.cannontech.msp.beans.v3.PingURL;
+import com.cannontech.msp.beans.v3.PingURLResponse;
+import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.core.CBClient;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
- * This class is used for 'interactive testing'. 
+ * This class is used for 'interactive testing'.
  * Un/comment methods as needed for testing purposes.
- * This is the "poor man's MultiSpeak testing harness" 
+ * This is the "poor man's MultiSpeak testing harness"
  */
 public class CB_CD_Test {
 
-	public static void main(String [] args)
-	{
-		try {
-			String endpointURL = "http://localhost:8002/soap/CB_ServerSoap";
-//			endpointURL = "http://209.101.158.56/mspamrintegration/CB_Server.asmx";  //SEDC Test Server
-//			endpointURL = "http://209.101.158.56:8080/mspamrintegration/CB_Server.asmx";  //SEDC Test Server and TCPTrace
-//		  	endpointURL = "http://10.106.36.146:8081";
-			CB_ServerSoap_BindingStub instance = new CB_ServerSoap_BindingStub(new URL(endpointURL), new Service());
-			
-            YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
-            msgHeader.setPwd("cannon");
-            msgHeader.setUserID("cannon");
-			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
-			instance.setHeader(header);
+    public static void main(String[] args) {
+        String endpointURL = "http://127.0.0.1:8088/mockCB_ServerSoap";
+        // endpointURL = "http://209.101.158.56/mspamrintegration/CB_Server.asmx"; //SEDC Test Server
+        // endpointURL = "http://209.101.158.56:8080/mspamrintegration/CB_Server.asmx"; //SEDC Test Server
+        // and TCPTrace
+        // endpointURL = "http://10.106.36.146:8081";
+        YukonSpringHook.setDefaultContext("com.cannontech.context.multispeak");
+        CBClient instance = YukonSpringHook.getBean(CBClient.class);
+        MultispeakVendor mspVendor =
+            new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12, null, endpointURL);
+        ObjectFactory objectFactory = new ObjectFactory();
+        int todo = 2; // 0=meterByServLoc, 1=getMethods, 2=pingURL
 
-			int todo = 2;	//0=meterByServLoc, 1=getMethods, 2=pingURL
-			
-			if (todo==0)
-			{
-			    //inactive location 901003000
-			    //non existent location 1223
-			    Meter[] meters = instance.getMeterByServLoc("1233");	//1068048 whe, 1010156108 sn_head/amr_demo
-			    
-				if( meters!= null)
-				{
-				    for (Meter meter : meters) {
-    				    CTILogger.info("Meter received: " + ( meter.getMeterNo() != null?meter.getMeterNo():"NULL"));
-    				    CTILogger.info("Meter Error String: " + meter.getErrorString());
-				    }
-				}
-				else
-				{
-				    CTILogger.info("******   NULL METER  **********");
-				}
-			}
-			else if (todo == 1)
-            {
-                String[] objects = instance.getMethods();
-                if (objects != null && objects != null)
-                {
-                    for (int i = 0; i < objects.length; i++)
-                    {
-                        String obj = objects[i];
-                        System.out.println("Method " + i + ": " + obj);
+        try {
+            if (todo == 3) {
+
+                GetMeterByServLoc getMeterByServLoc = objectFactory.createGetMeterByServLoc();
+                getMeterByServLoc.setServLoc("1233"); // inactive location 901003000
+                // non existent location 1223
+                GetMeterByServLocResponse response =
+                    instance.getMeterByServLoc(mspVendor, endpointURL, getMeterByServLoc); // 1068048 whe,
+                                                                                           // 1010156108
+                                                                                           // sn_head/amr_demo
+                if (response.getGetMeterByServLocResult() != null
+                    && response.getGetMeterByServLocResult().getMeter() != null) {
+                    for (Meter meter : response.getGetMeterByServLocResult().getMeter()) {
+                        CTILogger.info("Meter received: " + (meter.getMeterNo() != null ? meter.getMeterNo() : "NULL"));
+                        CTILogger.info("Meter Error String: " + meter.getErrorString());
+                    }
+                } else {
+                    CTILogger.info("******   NULL METER  **********");
+                }
+            } else if (todo == 1) {
+                GetMethods getMethods = objectFactory.createGetMethods();
+                GetMethodsResponse response = instance.getMethods(mspVendor, endpointURL, getMethods);
+                if (response.getGetMethodsResult() != null && response.getGetMethodsResult().getString() != null) {
+                    int index = 0;
+                    for (String obj : response.getGetMethodsResult().getString()) {
+                        System.out.println("Method " + index++ + ": " + obj);
                     }
                 }
-            }
-			else if (todo == 2)
-			{
-			    ErrorObject[] objects = instance.pingURL();
-				if (objects != null && objects != null)
-				{
-					for (int i = 0; i < objects.length; i++)
-					{
-						ErrorObject obj = objects[i];
-						System.out.println("Ping" + i + ": " + obj.getErrorString());
-					}
-				}
-			}
-			else if( todo == 3)
-			{
-                Customer customer = instance.getCustomerByMeterNo("123");    //1068048 whe, 1010156108 sn_head/amr_demo
-                
-                if( customer != null)
-                {
-                        CTILogger.info("Customer received: " +  customer.getFirstName() + " " + customer.getLastName());
-                        CTILogger.info("Customer Error String: " + customer.getErrorString());
+            } else if (todo == 2) {
+                PingURL pingUrl = objectFactory.createPingURL();
+                PingURLResponse response = instance.pingURL(mspVendor, endpointURL, pingUrl);
+                if (response.getPingURLResult() != null && response.getPingURLResult().getErrorObject() != null) {
+                    int index = 0;
+                    for (ErrorObject obj : response.getPingURLResult().getErrorObject()) {
+                        System.out.println("Ping" + index++ + ": " + obj.getErrorString());
+                    }
                 }
-                else
-                {
+            } else if (todo == 3) {
+                GetCustomerByMeterNo getCustomerByMeterNo = objectFactory.createGetCustomerByMeterNo();
+                getCustomerByMeterNo.setMeterNo("123");
+                GetCustomerByMeterNoResponse response =
+                    instance.getCustomerByMeterNo(mspVendor, endpointURL, getCustomerByMeterNo); // 1068048
+                                                                                                 // whe,
+                                                                                                 // 1010156108
+                                                                                                 // sn_head/amr_demo
+                if (response.getGetCustomerByMeterNoResult() != null) {
+                    Customer customer = response.getGetCustomerByMeterNoResult();
+                    CTILogger.info("Customer received: " + customer.getFirstName() + " " + customer.getLastName());
+                    CTILogger.info("Customer Error String: " + customer.getErrorString());
+                } else {
                     CTILogger.info("******   NULL CUSTOMER  **********");
                 }
-			}
-		} catch (RemoteException e) {
-			e.printStackTrace();
-		} catch (MalformedURLException e) {
-		    e.printStackTrace();
-		}
-	}
+            }
+        } catch (MultispeakWebServiceClientException e) {
+            e.printStackTrace();
+        }
+    }
 }
