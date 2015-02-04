@@ -37,17 +37,20 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void createDevice(Hardware hardware) {
+        createDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
+    }
+    
+    public void createDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
         try {
-            ecobeeCommunicationService.registerDevice(hardware.getSerialNumber());
+            ecobeeCommunicationService.registerDevice(serialNumber);
 
             CompleteDevice ecobeePao = new CompleteDevice();
-            ecobeePao.setPaoName(hardware.getSerialNumber());
-            paoPersistenceService.createPaoWithDefaultPoints(ecobeePao, hardwareTypeToPaoType.get(hardware.getHardwareType()));
+            ecobeePao.setPaoName(serialNumber);
+            paoPersistenceService.createPaoWithDefaultPoints(ecobeePao, hardwareTypeToPaoType.get(hardwareType));
 
             // Update the Stars table with the device id
-            inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), ecobeePao.getPaObjectId());
-            ecobeeCommunicationService.moveDeviceToSet(hardware.getSerialNumber(),
-                EcobeeCommunicationService.UNENROLLED_SET);
+            inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, ecobeePao.getPaObjectId());
+            ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.UNENROLLED_SET);
         } catch (EcobeeCommunicationException | EcobeeDeviceDoesNotExistException | EcobeeSetDoesNotExistException e) {
             log.error("Unable to create device.", e);
             throw new DeviceCreationException(e.getMessage(), e);

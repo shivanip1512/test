@@ -13,6 +13,7 @@ import com.cannontech.common.config.MasterConfigStringKeysEnum;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
+import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.pao.YukonDevice;
@@ -36,6 +37,7 @@ import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.ecobee.EcobeeBuilder;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceNotFoundOnAccountException;
@@ -44,6 +46,7 @@ import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
+import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -61,6 +64,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private SelectionListService selectionListService;
+    @Autowired private EcobeeBuilder ecobeeBuilder;
 
     private String getAccountNumber(LmDeviceDto dto) {
         String acctNum = dto.getAccountNumber();
@@ -269,6 +273,12 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                     DBChangeMsg.CAT_INVENTORY_DB, DbChangeType.UPDATE);
                 } catch (BadTemplateDeviceCreationException e) {
                     throw new StarsInvalidArgumentException(e.getMessage(), e);
+                }
+            } else if (ht.isEcobee()) {
+                try {
+                    ecobeeBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht);
+                } catch (DeviceCreationException e) {
+                    throw new StarsClientRequestException("Failed to register ecobee device with ecobee server.", e);
                 }
             }
         }
