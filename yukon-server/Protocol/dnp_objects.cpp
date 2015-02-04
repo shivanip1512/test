@@ -491,11 +491,7 @@ unsigned ObjectBlock::serialize( unsigned char *buf ) const
 
 int ObjectBlock::restore( const unsigned char *buf, int len )
 {
-    int pos, bitpos, objlen, objbitlen, qty = 0;
-    unsigned short tmp;
-
-    pos     = bitpos    = 0;
-    objlen  = objbitlen = 0;
+    int pos = 0, bitpos = 0, qty = 0;
 
     if( len > ObjectBlockMinSize )
     {
@@ -523,13 +519,12 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
 
             case NoIndex_ByteStartStop:
             {
-                _start = buf[pos++];
+                _start    = buf[pos++];
 
-                //  the stop index
-                tmp    = buf[pos++];
+                auto stop = buf[pos++];
 
-                qty   = tmp - _start;
-                qty  += 1;
+                qty  = stop - _start;
+                qty += 1;
 
                 break;
             }
@@ -539,12 +534,12 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
                 _start  = buf[pos++];
                 _start |= buf[pos++] << 8;
 
-                //  the stop index
-                tmp     = buf[pos++];
-                tmp    |= buf[pos++] << 8;
+                unsigned short stop;
+                stop    = buf[pos++];
+                stop   |= buf[pos++] << 8;
 
-                qty   = tmp - _start;
-                qty  += 1;
+                qty  = stop - _start;
+                qty += 1;
 
                 break;
             }

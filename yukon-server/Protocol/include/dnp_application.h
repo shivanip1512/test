@@ -20,7 +20,7 @@ public:
         BufferSize = 4096
     };
 
-    using object_block_queue = std::queue<std::unique_ptr<const ObjectBlock>>;
+    using object_block_queue = std::queue<ObjectBlockPtr>;
 
 private:
 
