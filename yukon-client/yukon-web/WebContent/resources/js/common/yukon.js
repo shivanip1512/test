@@ -679,9 +679,9 @@ yukon.ui = (function () {
              * called passing the popup element.
              */
             $(document).on('click', '[data-popup]', function (ev) {
+                
                 var trigger = $(this),
-                    popup = $(trigger.data('popup')),
-                    focus;
+                    popup = $(trigger.data('popup'));
                 
                 try { /* Close popup if the trigger is a toggle and the popup is open */
                     if (trigger.is('[data-popup-toggle]') && popup.dialog('isOpen')) {
@@ -695,7 +695,7 @@ yukon.ui = (function () {
                 mod.dialog(popup);
                 
                 // check for focus
-                focus = popup.find('js-focus');
+                var focus = popup.find('js-focus');
                 if (focus.length) focus.focus();
             });
         },
@@ -713,6 +713,7 @@ yukon.ui = (function () {
          * 
          * data-dialog -       If present the popup will have 'ok', 'cancel' buttons. See yukon.ui.buttons
          *                     function for button behaviors.
+         * data-dialog-tabbed  If present, the title bar will be tabs. Correct JQuery tabs markup is expected.
          * data-width  -       Width of the popup. Default is 'auto'.
          * data-height -       Height of the popup. Default is 'auto'.
          * data-title  -       The title of the popup.
@@ -737,6 +738,8 @@ yukon.ui = (function () {
             
             popup = $(popup);
             var dialog = popup.is('[data-dialog]'),
+                tabbed = popup.is('[data-dialog-tabbed]'),
+                loadEvent = popup.data('loadEvent'),
                 options = {
                     minWidth: popup.is('[data-min-width]') ? popup.data('minWidth') : '150',
                     width: popup.is('[data-width]') ? popup.data('width') : 'auto',
@@ -765,7 +768,7 @@ yukon.ui = (function () {
             if (popup.is('[data-position-at]')) positionOptions.at = popup.data('positionAt');
             if (popup.is('[data-position-of]')) positionOptions.of = popup.data('positionOf');
             options.position = positionOptions;
-
+            
             if (popup.is('[data-url]') || url) {
                 url = url || popup.data('url');
                 popup.load(url, function () {
@@ -774,19 +777,25 @@ yukon.ui = (function () {
                         var title = popup.find('.js-popup-title');
                         if (title[0]) options.title = title[0].value;
                     }
-                    if (popup.is('[data-load-event]')) {
-                        popup.trigger(popup.data('loadEvent'));
+                    if (loadEvent) popup.trigger(popup.data('loadEvent'));
+                    
+                    if (tabbed) {
+                        popup.tabbedDialog(options);
+                    } else {
+                        popup.dialog(options);
                     }
-                    popup.dialog(options);
                 });
             } else {
-                if (popup.is('[data-load-event]')) {
-                    popup.trigger(popup.data('loadEvent'));
+                
+                if (loadEvent) popup.trigger(popup.data('loadEvent'));
+                if (tabbed) {
+                    popup.tabbedDialog(options);
+                } else {
+                    popup.dialog(options);
                 }
-                popup.dialog(options);
             }
         },
-
+        
         /**
          * Turn dialogs buttons into confirm
          * @param {jQuery} options.dialog -        jQuery element that has had .dialog called on it
@@ -1336,6 +1345,9 @@ yukon.ui = (function () {
      */
     $.fn.tabbedDialog = function (dialogOptions, tabOptions) {
         
+        var initialized = this.hasClass('ui-dialog-content');
+        var dynamic = this.is('[data-url]');
+        
         dialogOptions = dialogOptions || { dialogClass: 'ui-dialog-tabbed' };
         tabOptions = tabOptions || {};
         
@@ -1345,13 +1357,17 @@ yukon.ui = (function () {
             dialogOptions.dialogClass = dialogOptions.dialogClass + ' ui.dialog-tabbed'; 
         }
         
-        var initialized = this.hasClass('ui-dialog-content');
+        if (initialized && dynamic) {
+            // Tab markup is included in the ajaxed content, nuke our old tabbed title bar.
+            this.tabs('destroy');
+            this.parent().find('.ui-dialog-titlebar-tabbed').remove();
+        }
         
         this.tabs(tabOptions);
         this.dialog(dialogOptions);
         
-        // Bail out here when recalling on an existing dialog
-        if (initialized) return;
+        // Bail out here when calling on an existing dialog that does not have dynamic content
+        if (initialized && !dynamic) return;
         
         // Create the Tabbed Dialogue
         var tabul = this.find('ul:first');
@@ -1361,9 +1377,12 @@ yukon.ui = (function () {
             .addClass('ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close js-close')
             .append($('<span>').addClass('ui-button-icon-primary ui-icon ui-icon-closethick'))
             .append($('<span>').addClass('ui-button-text').text(yg.text.close))
-        );
-        this.prev().remove();
-        tabul.addClass('ui-dialog-titlebar-tabbed');
+        )
+        .addClass('ui-dialog-titlebar-tabbed');
+        
+        // Remove the dialog titlebar when creating for the first time, it won't be there later.
+        if (!initialized) this.prev().remove();
+        
         this.attr('tabIndex', -1).attr('role', 'dialog');
         
         // Add a title if needed

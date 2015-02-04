@@ -35,7 +35,6 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.Validator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.dev.model.Person;
@@ -69,12 +68,12 @@ public class StyleGuideController {
     }
     
     @RequestMapping("/styleguide/containers")
-    public String containers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    public String containers() {
         return "styleguide/containers.jsp";
     }
     
     @RequestMapping("/styleguide/icons")
-    public String icons(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    public String icons(ModelMap model, HttpServletRequest request) {
         try {
             setupSprites(model, request);
         } catch (IOException e) {
@@ -84,25 +83,22 @@ public class StyleGuideController {
     }
     
     @RequestMapping("/styleguide/labels-badges")
-    public String labelsAndBadges(ModelMap model) {
+    public String labelsAndBadges() {
         return "styleguide/labels.and.badges.jsp";
     }
     
     @RequestMapping("/styleguide/progressbars")
-    public String progressbars(ModelMap model) {
-        
-        
-        
+    public String progressbars() {
         return "styleguide/progressbars.jsp";
     }
     
     @RequestMapping("/styleguide/buttons")
-    public String buttons(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    public String buttons() {
         return "styleguide/buttons.jsp";
     }
     
     @RequestMapping("/styleguide/switches")
-    public String switches(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    public String switches(ModelMap model) {
         
         Thing thing = new Thing();
         thing.setEnabled(true);
@@ -112,7 +108,7 @@ public class StyleGuideController {
     }
     
     @RequestMapping("/styleguide/alerts")
-    public String alerts(ModelMap model, YukonUserContext userContext) {
+    public String alerts(ModelMap model) {
         
         model.addAttribute("errorMsg", "Something went wrong.");
         model.addAttribute("person", new Person());
@@ -123,8 +119,7 @@ public class StyleGuideController {
     private static final String keyBase = "yukon.web.modules.dev.alerts.";
     
     @RequestMapping(value="/styleguide/alerts/flash-scope-test", method=RequestMethod.POST)
-    public String alerts(ModelMap model, YukonUserContext userContext, FlashScope flash,
-            @ModelAttribute("person") Person person, BindingResult result) {
+    public String alerts(FlashScope flash, @ModelAttribute("person") Person person, BindingResult result) {
         
         if (StringUtils.isBlank(person.getName())) {
             flash.setError(new YukonMessageSourceResolvable(keyBase + "error"));
@@ -138,23 +133,28 @@ public class StyleGuideController {
     }
     
     @RequestMapping("/styleguide/fun-with-inputs")
-    public String inputs(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    public String inputs() {
         return "styleguide/inputs.jsp";
     }
     
     @RequestMapping("/styleguide/blocking")
-    public String blocking(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    public String blocking() {
         return "styleguide/blocking.jsp";
     }
     
     @RequestMapping("/styleguide/dialogs")
-    public String dialogs(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    public String dialogs(ModelMap model) {
         model.addAttribute("people", people.values());
         return "styleguide/dialogs.jsp";
     }
     
+    @RequestMapping("/styleguide/dialogs/ajax-tabbed-dialog")
+    public String ajaxTabbedDialog() {
+        return "styleguide/ajax.tabbed.dialog.jsp";
+    }
+    
     @RequestMapping("/styleguide/pickers")
-    public String pickers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    public String pickers() {
         return "styleguide/pickers.jsp";
     }
     
@@ -172,7 +172,7 @@ public class StyleGuideController {
     }
     
     @RequestMapping("/styleguide/group-pickers")
-    public String groupPickers(ModelMap model, HttpServletRequest request, YukonUserContext userContext) {
+    public String groupPickers(ModelMap model) {
         
         List<String> groups = Lists.newArrayList("/Meters/Billing", "/Meters/Alternate", 
                 "/Meters/Collection");

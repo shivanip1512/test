@@ -580,51 +580,75 @@ public String updatePerson(ModelMap model, HttpServletResponse resp,
 }
 </pre>
 
-
-<h2 id="simple-popup-example">Tabbed Dialog</h2>
+<h2 id="tabbed-dialog-example">Tabbed Dialog</h2>
 
 <p class="description">
-    <span class="error">DON'T USE</span>, this is still under construction.
+    A dialog with tabs for the title bar, also has an optional title which will appear in front of the tabs.
+    Note: the proper JQuery tabs markup is required for this to work.
 </p>
 <div class="column-4-20 clearfix style-guide-example">
     <div class="column one"><h4 class="subtle">Example:</h4></div>
     <div class="column two nogutter">
-        <div id="td-test" class="dn">
+        <div id="tabbed-dialog" class="dn" data-dialog data-dialog-tabbed data-title="Pets:">
             <ul>
-                <li><a href="#fragment-1">One</a></li>
-                <li><a href="#fragment-2">Two</a></li>
-                <li><a href="#fragment-3">Three</a></li>
+                <li><a href="#cats-tab">Cats</a></li>
+                <li><a href="#dogs-tab">Dogs</a></li>
+                <li><a href="#goldfish-tab">Goldfish</a></li>
             </ul>
-            <div id="fragment-1">This is the cats content.<input type="text"> It's so cool you don't even know.</div>
-            <div id="fragment-2">This is the dogs content. It's so cool you don't even know.</div>
-            <div id="fragment-3">This is the goldfish content. It's so cool you don't even know.</div>
+            <div id="cats-tab">This is the cats content.<input type="text"> It's so cool you don't even know.</div>
+            <div id="dogs-tab">This is the dogs content. It's so cool you don't even know.</div>
+            <div id="goldfish-tab">This is the goldfish content. It's so cool you don't even know.</div>
         </div>
-        <cti:button label="Open Popup" classes="js-tabbed-dlg-btn"/>
-        <script>
-        $('.js-tabbed-dlg-btn').click(function () {
-            $('#td-test').tabbedDialog({ width: 400, buttons: yukon.ui.buttons(), title: 'This is a Title:' });
-        });
-        </script>
+        <cti:button label="Open Popup" data-popup="#tabbed-dialog"/>
     </div>
 </div>
 <h4 class="subtle">Code:</h4>
 <pre class="code prettyprint">
-&lt;div id=&quot;td-test&quot; class=&quot;dn&quot;&gt;
+&lt;div id=&quot;tabbed-dialog&quot; class=&quot;dn&quot; data-dialog data-dialog-tabbed data-title=&quot;Pets:&quot;&gt;
     &lt;ul&gt;
-        &lt;li&gt;&lt;a href=&quot;#fragment-1&quot;&gt;One&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href=&quot;#fragment-2&quot;&gt;Two&lt;/a&gt;&lt;/li&gt;
-        &lt;li&gt;&lt;a href=&quot;#fragment-3&quot;&gt;Three&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#cats-tab&quot;&gt;Cats&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#dogs-tab&quot;&gt;Dogs&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#goldfish-tab&quot;&gt;Goldfish&lt;/a&gt;&lt;/li&gt;
     &lt;/ul&gt;
-    &lt;div id=&quot;fragment-1&quot;&gt;This is the cats content.&lt;input type=&quot;text&quot;&gt; It's so cool you don't even know.&lt;/div&gt;
-    &lt;div id=&quot;fragment-2&quot;&gt;This is the dogs content. It's so cool you don't even know.&lt;/div&gt;
-    &lt;div id=&quot;fragment-3&quot;&gt;This is the goldfish content. It's so cool you don't even know.&lt;/div&gt;
+    &lt;div id=&quot;cats-tab&quot;&gt;This is the cats content.&lt;input type=&quot;text&quot;&gt; It's so cool you don't even know.&lt;/div&gt;
+    &lt;div id=&quot;dogs-tab&quot;&gt;This is the dogs content. It's so cool you don't even know.&lt;/div&gt;
+    &lt;div id=&quot;goldfish-tab&quot;&gt;This is the goldfish content. It's so cool you don't even know.&lt;/div&gt;
 &lt;/div&gt;
-&lt;cti:button label=&quot;Open Popup&quot; classes=&quot;js-tabbed-dlg-btn&quot;/&gt;
-&lt;script&gt;
-$('.js-tabbed-dlg-btn').click(function () {
-    $('#td-test').tabbedDialog({ width: 400, buttons: yukon.ui.buttons(), title: 'This is a Title:' });
-});
-&lt;/script&gt;
+&lt;cti:button label=&quot;Open Popup&quot; data-popup=&quot;#tabbed-dialog&quot;/&gt;
+</pre>
+
+<h2>Ajaxed Tabbed Dialog</h2>
+
+<p class="description">
+    A dialog with tabs for the title bar, also has an optional title which will appear in front of the tabs.  The dialog
+    content is ajaxed in before shown.  Note: the proper JQuery tabs markup is required for this to work.
+</p>
+<div class="column-4-20 clearfix style-guide-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div id="ajax-tabbed-dialog" class="dn" data-dialog data-dialog-tabbed data-title="Vehicles:" 
+            data-width="500" data-height="500"
+            data-url="dialogs/ajax-tabbed-dialog"></div>
+        <cti:button label="Open Popup" data-popup="#ajax-tabbed-dialog"/>
+    </div>
+</div>
+<h4 class="subtle">Page JSP Code:</h4>
+<pre class="code prettyprint">
+&lt;div id=&quot;ajax-tabbed-dialog&quot; class=&quot;dn&quot; data-dialog data-dialog-tabbed data-title=&quot;Vehicles:&quot; 
+    data-width=&quot;500&quot; data-height=&quot;500&quot; data-url=&quot;dialogs/ajax-tabbed-dialog&quot;&gt;&lt;/div&gt;
+&lt;cti:button label=&quot;Open Popup&quot; data-popup=&quot;#ajax-tabbed-dialog&quot;/&gt;
+</pre>
+
+<h4 class="subtle">Popup JSP Code:</h4>
+<pre class="code prettyprint">
+&lt;ul&gt;
+    &lt;li&gt;&lt;a href=&quot;#cars-tab&quot;&gt;Cars&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;#trucks-tab&quot;&gt;Trucks&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href=&quot;#airplane-tab&quot;&gt;Airplanes&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div id=&quot;cars-tab&quot;&gt;...&lt;/div&gt;
+&lt;div id=&quot;trucks-tab&quot;&gt;...&lt;/div&gt;
+&lt;div id=&quot;airplane-tab&quot;&gt;...&lt;/div&gt;
 </pre>
 
 </tags:styleguide>
