@@ -54,56 +54,56 @@ YukonError_t DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
             case Command_Class1230Read:
             case Command_Class123Read:
             {
-                boost::ptr_map<unsigned, AnalogInput> analogs;
-                boost::ptr_map<unsigned, BinaryInput> digitals;
-                boost::ptr_map<unsigned, Counter>     counters;
+                std::map<unsigned, std::unique_ptr<const AnalogInput>> analogs;
+                std::map<unsigned, std::unique_ptr<const BinaryInput>> digitals;
+                std::map<unsigned, std::unique_ptr<const Counter>>     counters;
 
-                for each( const input_point &ip in _input_point_list )
+                for( const auto &ip : _input_point_list )
                 {
                     switch( ip.type )
                     {
                         case AnalogInputType:
                         {
-                            std::auto_ptr<AnalogInput> ain(new AnalogInput(AnalogInput::AI_32Bit));
+                            auto ain = std::make_unique<AnalogInput>(AnalogInput::AI_32Bit);
                             ain->setValue(ip.ain.value);
                             ain->setOnlineFlag(ip.online);
 
-                            analogs.insert(ip.control_offset, ain);
+                            analogs.emplace(ip.control_offset, std::move(ain));
 
                             break;
                         }
                         case DigitalInput:
                         {
-                            std::auto_ptr<BinaryInput> bin(new BinaryInput(BinaryInput::BI_WithStatus));
+                            auto bin = std::make_unique<BinaryInput>(BinaryInput::BI_WithStatus);
                             bin->setStateValue(ip.din.trip_close);
                             bin->setOnlineFlag(ip.online);
 
-                            digitals.insert(ip.control_offset, bin);
+                            digitals.emplace(ip.control_offset, std::move(bin));
 
                             break;
                         }
                         case Counters:
                         {
-                            std::auto_ptr<Counter> counterin(new Counter(Counter::C_Binary32Bit));
+                            auto counterin = std::make_unique<Counter>(Counter::C_Binary32Bit);
                             counterin->setValue(ip.counterin.value);
                             counterin->setOnlineFlag(ip.online);
 
-                            counters.insert(ip.control_offset, counterin);
+                            counters.emplace(ip.control_offset, std::move(counterin));
 
                             break;
                         }
                     }
                 }
 
-                boost::ptr_deque<ObjectBlock> dobs;
+                std::vector<ObjectBlockPtr> dobs;
 
-                if( ! analogs.empty() )     dobs.push_back(ObjectBlock::makeLongIndexedBlock(analogs));
-                if( ! digitals.empty() )    dobs.push_back(ObjectBlock::makeLongIndexedBlock(digitals));
-                if( ! counters.empty() )    dobs.push_back(ObjectBlock::makeLongIndexedBlock(counters));
+                if( ! analogs.empty() )     dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(analogs)));
+                if( ! digitals.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(digitals)));
+                if( ! counters.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(counters)));
 
                 _app_layer.setCommand(
                         ApplicationLayer::ResponseResponse,
-                        dobs);
+                        std::move(dobs));
 
                 break;
             }
@@ -114,7 +114,7 @@ YukonError_t DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
                 {
                     input_point &p = _input_point_list[0];
 
-                    std::auto_ptr<BinaryOutputControl> boc(new BinaryOutputControl(BinaryOutputControl::BOC_ControlRelayOutputBlock));
+                    auto boc = std::make_unique<BinaryOutputControl>(BinaryOutputControl::BOC_ControlRelayOutputBlock);
 
                     boc->setControlBlock(
                             p.din.on_time,
@@ -130,7 +130,7 @@ YukonError_t DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
                     _app_layer.setCommand(
                             ApplicationLayer::ResponseResponse,
                             ObjectBlock::makeIndexedBlock(
-                                    std::auto_ptr<Object>(boc),
+                                    std::move(boc),
                                     p.control_offset));
 
                     break;

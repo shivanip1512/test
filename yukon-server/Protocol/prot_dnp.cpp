@@ -104,7 +104,7 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
         {
             case Command_WriteTime:
             {
-                std::auto_ptr<DNP::Time> time_now(new DNP::Time(Time::T_TimeAndDate));
+                auto time_now = std::make_unique<DNP::Time>(Time::T_TimeAndDate);
                 const CtiTime now = CtiTime::now();
 
                 if( _config->useLocalTime )
@@ -118,15 +118,13 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
                     time_now->setSeconds(now.seconds());
                 }
 
-                _app_layer.setCommand(ApplicationLayer::RequestWrite, ObjectBlock::makeQuantityBlock(std::auto_ptr<Object>(time_now)));
+                _app_layer.setCommand(ApplicationLayer::RequestWrite, ObjectBlock::makeQuantityBlock(std::move(time_now)));
 
                 break;
             }
             case Command_ReadTime:
             {
-                std::auto_ptr<ObjectBlock> dob(ObjectBlock::makeNoIndexNoRange(Time::Group, Time::T_TimeAndDate));
-
-                _app_layer.setCommand(ApplicationLayer::RequestRead, dob);
+                _app_layer.setCommand(ApplicationLayer::RequestRead, ObjectBlock::makeNoIndexNoRange(Time::Group, Time::T_TimeAndDate));
 
                 break;
             }
@@ -144,7 +142,7 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
             }
             case Command_UnsolicitedEnable:
             {
-                boost::ptr_deque<ObjectBlock> dobs;
+                std::vector<ObjectBlockPtr> dobs;
 
                 if ( _config->enableUnsolicitedClass1 )
                 {
@@ -159,13 +157,13 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
                     dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class3));
                 }
 
-                _app_layer.setCommand(ApplicationLayer::RequestEnableUnsolicited, dobs);
+                _app_layer.setCommand(ApplicationLayer::RequestEnableUnsolicited, std::move(dobs));
 
                 break;
             }
             case Command_UnsolicitedDisable:
             {
-                boost::ptr_deque<ObjectBlock> dobs;
+                std::vector<ObjectBlockPtr> dobs;
 
                 if ( _config->enableUnsolicitedClass1 )
                 {
@@ -180,22 +178,22 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
                     dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class3));
                 }
 
-                _app_layer.setCommand(ApplicationLayer::RequestDisableUnsolicited, dobs);
+                _app_layer.setCommand(ApplicationLayer::RequestDisableUnsolicited, std::move(dobs));
 
                 break;
             }
             case Command_ResetDeviceRestartBit:
             {
-                std::auto_ptr<InternalIndications> restart(new InternalIndications(InternalIndications::II_InternalIndications));
+                auto restart = std::make_unique<InternalIndications>(InternalIndications::II_InternalIndications);
                 restart->setValue(false);
 
-                _app_layer.setCommand(ApplicationLayer::RequestWrite, ObjectBlock::makeRangedBlock(std::auto_ptr<Object>(restart), 7));
+                _app_layer.setCommand(ApplicationLayer::RequestWrite, ObjectBlock::makeRangedBlock(std::move(restart), 7));
 
                 break;
             }
             case Command_Class1230Read_WithTime:
             {
-                boost::ptr_deque<ObjectBlock> dobs;
+                std::vector<ObjectBlockPtr> dobs;
 
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Time::Group, Time::T_TimeAndDate));
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class1));
@@ -203,45 +201,45 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class3));
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class0));
 
-                _app_layer.setCommand(ApplicationLayer::RequestRead, dobs);
+                _app_layer.setCommand(ApplicationLayer::RequestRead, std::move(dobs));
 
                 break;
             }
             case Command_Class1230Read:
             {
-                boost::ptr_deque<ObjectBlock> dobs;
+                std::vector<ObjectBlockPtr> dobs;
 
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class1));
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class2));
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class3));
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class0));
 
-                _app_layer.setCommand(ApplicationLayer::RequestRead, dobs);
+                _app_layer.setCommand(ApplicationLayer::RequestRead, std::move(dobs));
 
                 break;
             }
             case Command_Class123Read_WithTime:
             {
-                boost::ptr_deque<ObjectBlock> dobs;
+                std::vector<ObjectBlockPtr> dobs;
 
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Time::Group, Time::T_TimeAndDate));
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class1));
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class2));
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class3));
 
-                _app_layer.setCommand(ApplicationLayer::RequestRead, dobs);
+                _app_layer.setCommand(ApplicationLayer::RequestRead, std::move(dobs));
 
                 break;
             }
             case Command_Class123Read:
             {
-                boost::ptr_deque<ObjectBlock> dobs;
+                std::vector<ObjectBlockPtr> dobs;
 
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class1));
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class2));
                 dobs.push_back(ObjectBlock::makeNoIndexNoRange(Class::Group, Class::Class3));
 
-                _app_layer.setCommand(ApplicationLayer::RequestRead, dobs);
+                _app_layer.setCommand(ApplicationLayer::RequestRead, std::move(dobs));
 
                 break;
             }
@@ -250,17 +248,17 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
                 if( _command_parameters.size() == 1 &&
                    (_command_parameters[0].type == AnalogOutputPointType || _command_parameters[0].type == AnalogOutputFloatPointType ))
                 {
-                    std::auto_ptr<AnalogOutput> aout(
-                        new AnalogOutput(
-                                _command_parameters[0].type == AnalogOutputPointType
-                                ? AnalogOutput::AO_16Bit
-                                : AnalogOutput::AO_SingleFloat));
+                    auto aout =
+                            std::make_unique<AnalogOutput>(
+                                    _command_parameters[0].type == AnalogOutputPointType
+                                        ? AnalogOutput::AO_16Bit
+                                        : AnalogOutput::AO_SingleFloat);
 
                     aout->setControl(_command_parameters[0].aout.value);
 
                     _app_layer.setCommand(
                             ApplicationLayer::RequestDirectOp,
-                            ObjectBlock::makeLongIndexedBlock(std::auto_ptr<Object>(aout), _command_parameters[0].control_offset));
+                            ObjectBlock::makeLongIndexedBlock(std::move(aout), _command_parameters[0].control_offset));
                 }
                 else
                 {
@@ -280,8 +278,7 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
                 {
                     output_point &op = _command_parameters[0];
 
-                    std::auto_ptr<BinaryOutputControl> bout(
-                            new BinaryOutputControl(BinaryOutputControl::BOC_ControlRelayOutputBlock));
+                    auto bout = std::make_unique<BinaryOutputControl>(BinaryOutputControl::BOC_ControlRelayOutputBlock);
 
                     bout->setControlBlock(op.dout.on_time,
                                           op.dout.off_time,
@@ -291,24 +288,24 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
                                           op.dout.clear,
                                           op.dout.trip_close);
 
-                    std::auto_ptr<ObjectBlock> dob = ObjectBlock::makeIndexedBlock(std::auto_ptr<Object>(bout), op.control_offset);
+                    ObjectBlockPtr dob = ObjectBlock::makeIndexedBlock(std::move(bout), op.control_offset);
 
                     switch( _command )
                     {
                         case Command_SetDigitalOut_Direct:
                         {
-                            _app_layer.setCommand(ApplicationLayer::RequestDirectOp, dob);
+                            _app_layer.setCommand(ApplicationLayer::RequestDirectOp, std::move(dob));
                             break;
                         }
                         case Command_SetDigitalOut_SBO_SelectOnly:
                         case Command_SetDigitalOut_SBO_Select:
                         {
-                            _app_layer.setCommand(ApplicationLayer::RequestSelect, dob);
+                            _app_layer.setCommand(ApplicationLayer::RequestSelect, std::move(dob));
                             break;
                         }
                         case Command_SetDigitalOut_SBO_Operate:
                         {
-                            _app_layer.setCommand(ApplicationLayer::RequestOperate, dob);
+                            _app_layer.setCommand(ApplicationLayer::RequestOperate, std::move(dob));
                             break;
                         }
                     }
@@ -407,7 +404,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
         {
             if( ! _object_blocks.empty() )
             {
-                if( const ObjectBlock *ob = _object_blocks.front() )
+                if( const auto &ob = _object_blocks.front() )
                 {
                     if( ! ob->empty() && ob->getGroup() == AnalogOutput::Group )
                     {
@@ -455,66 +452,65 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
         case Command_SetDigitalOut_SBO_SelectOnly:
         case Command_SetDigitalOut_SBO_Operate:
         {
-            const ObjectBlock *ob;
+            ObjectBlock::object_descriptor od = { nullptr, 0 };
 
-            if( !_object_blocks.empty() &&
-                (ob = _object_blocks.front()) &&
-                !ob->empty() &&
-                ob->getGroup()     == BinaryOutputControl::Group &&
-                ob->getVariation() == BinaryOutputControl::BOC_ControlRelayOutputBlock )
+            if( !_object_blocks.empty() )
             {
-                ObjectBlock::object_descriptor od = ob->at(0);
-
-                if( od.object )
+                if( const auto &ob = _object_blocks.front() )
                 {
-                    const BinaryOutputControl *boc = reinterpret_cast<const BinaryOutputControl *>(od.object);
-
-                    //  if the select went successfully, transition to operate
-                    if( _command == Command_SetDigitalOut_SBO_Select && boc->getStatus() == BinaryOutputControl::Status_Success )
+                    if( ! ob->empty()
+                        && ob->getGroup()     == BinaryOutputControl::Group
+                        && ob->getVariation() == BinaryOutputControl::BOC_ControlRelayOutputBlock )
                     {
-                        if( !_command_parameters.empty() )
+                        od = ob->at(0);
+                    }
+                }
+            }
+
+            if( od.object )
+            {
+                const BinaryOutputControl *boc = reinterpret_cast<const BinaryOutputControl *>(od.object);
+
+                //  if the select went successfully, transition to operate
+                if( _command == Command_SetDigitalOut_SBO_Select && boc->getStatus() == BinaryOutputControl::Status_Success )
+                {
+                    if( !_command_parameters.empty() )
+                    {
+                        //  make a copy because _command_parameters will be cleared out when setCommand is called...  freaky deaky
+                        output_point op = _command_parameters.at(0);
+
+                        if( od.index == op.control_offset )
                         {
-                            //  make a copy because _command_parameters will be cleared out when setCommand is called...  freaky deaky
-                            output_point op = _command_parameters.at(0);
+                            //  transition to the operate phase
+                            setCommand(Command_SetDigitalOut_SBO_Operate, op);
+                            final = false;
 
-                            if( od.index == op.control_offset )
-                            {
-                                //  transition to the operate phase
-                                setCommand(Command_SetDigitalOut_SBO_Operate, op);
-                                final = false;
-
-                                _string_results.push_back(CTIDBG_new string("Select successful, sending operate"));
-                            }
-                            else
-                            {
-                                string str;
-
-                                str += "Select returned mismatched control offset (";
-                                str += CtiNumStr(od.index);
-                                str += " != ";
-                                str += CtiNumStr(op.control_offset);
-                                str += ")";
-
-                                _string_results.push_back(CTIDBG_new string(str));
-                                retVal = ClientErrors::Abnormal;
-                            }
+                            _string_results.push_back(CTIDBG_new string("Select successful, sending operate"));
                         }
                         else
                         {
-                            CTILOG_ERROR(dout, "empty command parameters for SBO operate");
+                            string str;
 
-                            _string_results.push_back(CTIDBG_new string("Empty command parameter list for operate"));
+                            str += "Select returned mismatched control offset (";
+                            str += CtiNumStr(od.index);
+                            str += " != ";
+                            str += CtiNumStr(op.control_offset);
+                            str += ")";
+
+                            _string_results.push_back(CTIDBG_new string(str));
                             retVal = ClientErrors::Abnormal;
                         }
                     }
+                    else
+                    {
+                        CTILOG_ERROR(dout, "empty command parameters for SBO operate");
 
-                    _string_results.push_back(CTIDBG_new string(getControlResultString(boc->getStatus())));
+                        _string_results.push_back(CTIDBG_new string("Empty command parameter list for operate"));
+                        retVal = ClientErrors::Abnormal;
+                    }
                 }
-                else
-                {
-                    _string_results.push_back(CTIDBG_new string("Device did not return a control result"));
-                    retVal = ClientErrors::Abnormal;
-                }
+
+                _string_results.push_back(CTIDBG_new string(getControlResultString(boc->getStatus())));
             }
             else
             {
@@ -579,12 +575,10 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
     scoped_ptr<TimeCTO> cto;
     scoped_ptr<Time>    time_sent;
 
-    scoped_ptr<const ObjectBlock> ob;
-
     //  and this is where the pointdata gets harvested
     while( !_object_blocks.empty() )
     {
-        ob.reset(_object_blocks.front());
+        const auto &ob = _object_blocks.front();
 
         if( ob && !ob->empty() )
         {

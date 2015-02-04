@@ -59,11 +59,13 @@ public:
 };
 
 
+class ObjectBlock;
+
+using ObjectPtr      = std::unique_ptr<const Object>;
+using ObjectBlockPtr = std::unique_ptr<const ObjectBlock>;
+
 class ObjectBlock
 {
-    enum QualifierType;
-
-private:
     bool _unsolicited;
 
     int  _group,
@@ -72,19 +74,16 @@ private:
 
     unsigned short _start;
 
-    typedef std::vector< const Object * > object_vector;
-    typedef std::vector< int >            index_vector;
+    using object_vector = std::vector<ObjectPtr>;
+    using index_vector  = std::vector<int>;
     object_vector _objectList;
     index_vector  _objectIndices;
 
-    void init( QualifierType type, int group, int variation );
-
-    int restoreObject( const unsigned char *buf, int len, Object *&obj );
-    int restoreBitObject( const unsigned char *buf, int bitpos, int len, Object *&obj );
+    using RestoredObject = std::pair<std::unique_ptr<Object>, unsigned>;
+    RestoredObject restoreObject   ( const unsigned char *buf, int len );
+    RestoredObject restoreBitObject( const unsigned char *buf, int len, int bitpos );
 
     void erase( void );
-
-    ObjectBlock( QualifierType type, int group, int variation );
 
     enum QualifierType
     {
@@ -105,21 +104,25 @@ private:
         ShortIndex_ShortQty    = 0x28
     };
 
+    static std::unique_ptr<ObjectBlock> makeObjectBlock( QualifierType type, int group, int variation );
+
+    ObjectBlock( QualifierType type, int group, int variation );
+
 public:
 
     ObjectBlock();  //  for restoring a serialized object
     ~ObjectBlock();
 
-    static std::auto_ptr<ObjectBlock> makeRangedBlock     (std::auto_ptr<Object> obj, const unsigned rangeStart);  //  can add boost::ptr_vector overload when necessary
+    static ObjectBlockPtr makeRangedBlock     (ObjectPtr obj, const unsigned rangeStart);  //  can add vector overload when necessary
 
-    static std::auto_ptr<ObjectBlock> makeNoIndexNoRange  (int group, int variation);
+    static ObjectBlockPtr makeNoIndexNoRange  (int group, int variation);
 
-    static std::auto_ptr<ObjectBlock> makeIndexedBlock    (std::auto_ptr<Object> obj, unsigned index);
-    static std::auto_ptr<ObjectBlock> makeLongIndexedBlock(std::auto_ptr<Object> obj, unsigned index);
+    static ObjectBlockPtr makeIndexedBlock    (ObjectPtr obj, unsigned index);
+    static ObjectBlockPtr makeLongIndexedBlock(ObjectPtr obj, unsigned index);
     template<class T>
-    static std::auto_ptr<ObjectBlock> makeLongIndexedBlock(boost::ptr_map<unsigned, T> &objects);
+    static ObjectBlockPtr makeLongIndexedBlock(std::map<unsigned, std::unique_ptr<const T>> objects);
 
-    static std::auto_ptr<ObjectBlock> makeQuantityBlock   (std::auto_ptr<Object> obj);
+    static ObjectBlockPtr makeQuantityBlock   (ObjectPtr obj);
 
     enum
     {

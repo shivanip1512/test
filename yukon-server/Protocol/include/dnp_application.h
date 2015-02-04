@@ -20,7 +20,7 @@ public:
         BufferSize = 4096
     };
 
-    typedef std::queue< const ObjectBlock * > object_block_queue;
+    using object_block_queue = std::queue<std::unique_ptr<const ObjectBlock>>;
 
 private:
 
@@ -146,8 +146,8 @@ public:
     void setConfigData( const config_data* config );
 
     void setCommand( FunctionCode fc );
-    void setCommand( FunctionCode fc, std::auto_ptr<ObjectBlock> obj );
-    void setCommand( FunctionCode fc, boost::ptr_deque<ObjectBlock> &objs );
+    void setCommand( FunctionCode fc, ObjectBlockPtr obj );
+    void setCommand( FunctionCode fc, std::vector<ObjectBlockPtr> objs );
     void initForOutput( void );
     void initForSlaveOutput( void );
     void setSequenceNumber(int seqNbr);

@@ -68,21 +68,21 @@ void ApplicationLayer::setCommand( FunctionCode fc )
 }
 
 
-void ApplicationLayer::setCommand( FunctionCode fc, std::auto_ptr<ObjectBlock> dob )
+void ApplicationLayer::setCommand( FunctionCode fc, ObjectBlockPtr dob )
 {
     setCommand(fc);
 
-    _out_object_blocks.push(dob.release());
+    _out_object_blocks.push(std::move(dob));
 }
 
 
-void ApplicationLayer::setCommand( FunctionCode fc, boost::ptr_deque<ObjectBlock> &dobs )
+void ApplicationLayer::setCommand( FunctionCode fc, std::vector<ObjectBlockPtr> dobs )
 {
     setCommand(fc);
 
-    while( ! dobs.empty() )
+    for( auto &dob : dobs )
     {
-        _out_object_blocks.push(dobs.pop_front().release());
+        _out_object_blocks.push(std::move(dob));
     }
 }
 
@@ -162,7 +162,7 @@ void ApplicationLayer::processResponse( void )
 
     while( processed < _response.buf_len )
     {
-        ObjectBlock *tmpOB = new ObjectBlock;
+        auto tmpOB = std::make_unique<ObjectBlock>();
 
         processed += tmpOB->restore(&(_response.buf[processed]), _response.buf_len - processed);
 
@@ -171,7 +171,7 @@ void ApplicationLayer::processResponse( void )
             tmpOB->setUnsolicited();
         }
 
-        _in_object_blocks.push(tmpOB);
+        _in_object_blocks.push(std::move(tmpOB));
     }
 }
 
@@ -194,13 +194,12 @@ void ApplicationLayer::initForOutput( void )
 
     while( !_out_object_blocks.empty() )
     {
-        const ObjectBlock *ob = _out_object_blocks.front();
-        _out_object_blocks.pop();
+        const auto &ob = _out_object_blocks.front();
 
         ob->serialize(_request.buf + pos);
         pos += ob->getSerializedLen();
 
-        delete ob;
+        _out_object_blocks.pop();
     }
 
     _request.buf_len = pos;
@@ -236,13 +235,12 @@ void ApplicationLayer::initForSlaveOutput( void )
 
     while( !_out_object_blocks.empty() )
     {
-        const ObjectBlock *ob = _out_object_blocks.front();
-        _out_object_blocks.pop();
+        const auto &ob = _out_object_blocks.front();
 
         ob->serialize(_response.buf + pos);
         pos += ob->getSerializedLen();
 
-        delete ob;
+        _out_object_blocks.pop();
     }
 
     _response.buf_len = pos;
@@ -256,32 +254,21 @@ void ApplicationLayer::completeSlave( void )
 
 void ApplicationLayer::eraseInboundObjectBlocks( void )
 {
-    while( !_in_object_blocks.empty() )
-    {
-        delete _in_object_blocks.front();  //  safe to delete null
-
-        _in_object_blocks.pop();
-    }
+    std::swap(_in_object_blocks, decltype(_in_object_blocks)());
 }
 
 
 void ApplicationLayer::eraseOutboundObjectBlocks( void )
 {
-    while( !_out_object_blocks.empty() )
-    {
-        delete _out_object_blocks.front();
-
-        _out_object_blocks.pop();
-    }
+    std::swap(_out_object_blocks, decltype(_out_object_blocks)());
 }
 
 
 void ApplicationLayer::getObjects( object_block_queue &ob_queue )
 {
-    while( !_in_object_blocks.empty() )
+    while( ! _in_object_blocks.empty() )
     {
-        ob_queue.push(_in_object_blocks.front());
-
+        ob_queue.push(std::move(_in_object_blocks.front()));
         _in_object_blocks.pop();
     }
 }

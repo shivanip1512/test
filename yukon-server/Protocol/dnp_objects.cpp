@@ -14,6 +14,8 @@
 #include "dnp_object_counter.h"
 #include "dnp_object_time.h"
 
+#include "std_helper.h"
+
 using namespace std;
 
 namespace Cti {
@@ -148,41 +150,46 @@ void ObjectBlock::setUnsolicited()
 }
 
 
-std::auto_ptr<ObjectBlock> ObjectBlock::makeRangedBlock(std::auto_ptr<Object> object, const unsigned rangeStart)
+std::unique_ptr<ObjectBlock> ObjectBlock::makeObjectBlock( QualifierType type, int group, int variation )
 {
-    std::auto_ptr<ObjectBlock> objBlock(
-            new ObjectBlock(
+    return std::unique_ptr<ObjectBlock>(new ObjectBlock(type, group, variation));
+}
+
+
+ObjectBlockPtr ObjectBlock::makeRangedBlock(ObjectPtr object, const unsigned rangeStart)
+{
+    auto objBlock =
+            makeObjectBlock(
                     NoIndex_ByteStartStop,
                     object->getGroup(),
-                    object->getVariation()));
+                    object->getVariation());
 
     objBlock->_start = rangeStart;
 
-    objBlock->_objectList.push_back(object.release());
+    objBlock->_objectList.push_back(std::move(object));
 
-    return objBlock;
+    return std::move(objBlock);
 }
 
 
-std::auto_ptr<ObjectBlock> ObjectBlock::makeNoIndexNoRange( int group, int variation )
+ObjectBlockPtr ObjectBlock::makeNoIndexNoRange( int group, int variation )
 {
-    return std::auto_ptr<ObjectBlock>(
-                new ObjectBlock(
-                        NoIndex_NoRange,
-                        group,
-                        variation));
+    return makeObjectBlock(
+                    NoIndex_NoRange,
+                    group,
+                    variation);
 }
 
 
-std::auto_ptr<ObjectBlock> ObjectBlock::makeIndexedBlock( std::auto_ptr<Object> object, unsigned index )
+ObjectBlockPtr ObjectBlock::makeIndexedBlock( ObjectPtr object, unsigned index )
 {
-    std::auto_ptr<ObjectBlock> objBlock(
-            new ObjectBlock(
+    auto objBlock =
+            makeObjectBlock(
                     index < 256
                         ? ByteIndex_ByteQty
                         : ShortIndex_ShortQty,
                     object->getGroup(),
-                    object->getVariation()));
+                    object->getVariation());
 
     if( index > 0 )
     {
@@ -194,20 +201,20 @@ std::auto_ptr<ObjectBlock> ObjectBlock::makeIndexedBlock( std::auto_ptr<Object> 
         CTILOG_ERROR(dout, "invalid index (0)");
     }
 
-    objBlock->_objectList.push_back(object.release());
+    objBlock->_objectList.emplace_back(std::move(object));
     objBlock->_objectIndices.push_back(index);
 
-    return objBlock;
+    return std::move(objBlock);
 }
 
 
-std::auto_ptr<ObjectBlock> ObjectBlock::makeLongIndexedBlock( std::auto_ptr<Object> object, unsigned index )
+ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( ObjectPtr object, unsigned index )
 {
-    std::auto_ptr<ObjectBlock> objBlock(
-            new ObjectBlock(
+    auto objBlock =
+            makeObjectBlock(
                     ShortIndex_ShortQty,
                     object->getGroup(),
-                    object->getVariation()));
+                    object->getVariation());
 
     if( index > 0 )
     {
@@ -219,70 +226,68 @@ std::auto_ptr<ObjectBlock> ObjectBlock::makeLongIndexedBlock( std::auto_ptr<Obje
         CTILOG_ERROR(dout, "invalid index (0)");
     }
 
-    objBlock->_objectList.push_back(object.release());
+    objBlock->_objectList.emplace_back(std::move(object));
     objBlock->_objectIndices.push_back(index);
 
-    return objBlock;
+    return std::move(objBlock);
 }
 
 
 template <class T>
-std::auto_ptr<ObjectBlock> ObjectBlock::makeLongIndexedBlock( boost::ptr_map<unsigned, T> &objects )
+ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const T>> objects )
 {
-    std::auto_ptr<ObjectBlock> objBlock;
-
-    if( ! objects.empty() )
+    if( objects.empty() )
     {
-        T &object = *(objects.begin()->second);
-
-        objBlock.reset(
-                new ObjectBlock(
-                        ShortIndex_ShortQty,
-                        object.getGroup(),
-                        object.getVariation()));
-
-        while( ! objects.empty() )
-        {
-            boost::ptr_map<unsigned, T>::iterator itr = objects.begin();
-
-            unsigned index = itr->first;
-
-            if( index > 0 )
-            {
-                //  MAGIC NUMBER WARNING:  turning 1-based offset into a 0-based offset
-                index--;
-            }
-            else
-            {
-                CTILOG_ERROR(dout, "invalid index (0)");
-            }
-
-            objBlock->_objectList.push_back(objects.release(itr).release());
-            objBlock->_objectIndices.push_back(index);
-        }
+        return ObjectBlockPtr();
     }
 
-    return objBlock;
+    const T &object = *(objects.begin()->second);
+
+    auto objBlock =
+            makeObjectBlock(
+                    ShortIndex_ShortQty,
+                    object.getGroup(),
+                    object.getVariation());
+
+    for( auto &kv : objects )
+    {
+        unsigned index = kv.first;
+
+        if( index > 0 )
+        {
+            //  MAGIC NUMBER WARNING:  turning 1-based offset into a 0-based offset
+            index--;
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "invalid index (0)");
+        }
+
+        objBlock->_objectList.emplace_back(std::move(kv.second));
+        objBlock->_objectIndices.push_back(index);
+    }
+
+    return std::move(objBlock);
 }
 
 
 //  explicit instantiations for DNP Slave (since it is used internally in ctiprot.dll, no need to export with IM_EX_PROT)
-template std::auto_ptr<ObjectBlock> ObjectBlock::makeLongIndexedBlock( boost::ptr_map<unsigned, AnalogInput> &objects );
-template std::auto_ptr<ObjectBlock> ObjectBlock::makeLongIndexedBlock( boost::ptr_map<unsigned, BinaryInput> &objects );
-template std::auto_ptr<ObjectBlock> ObjectBlock::makeLongIndexedBlock( boost::ptr_map<unsigned, Counter> &objects );
+template ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const AnalogInput>> objects );
+template ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const BinaryInput>> objects );
+template ObjectBlockPtr ObjectBlock::makeLongIndexedBlock( std::map<unsigned, std::unique_ptr<const Counter>> objects );
 
 
-std::auto_ptr<ObjectBlock> ObjectBlock::makeQuantityBlock( std::auto_ptr<Object> object )
+ObjectBlockPtr ObjectBlock::makeQuantityBlock( ObjectPtr object )
 {
-    std::auto_ptr<ObjectBlock> objBlock(
-            new ObjectBlock(
+    auto objBlock =
+            makeObjectBlock(
                     NoIndex_ByteQty,
                     object->getGroup(),
-                    object->getVariation()));
+                    object->getVariation());
 
-    objBlock->_objectList.push_back(object.release());
+    objBlock->_objectList.emplace_back(std::move(object));
 
-    return objBlock;
+    return std::move(objBlock);
 }
 
 
@@ -309,7 +314,7 @@ ObjectBlock::object_descriptor ObjectBlock::at( unsigned offset ) const
 
     if( _objectList.size() > offset )
     {
-        retval.object = _objectList.at(offset);
+        retval.object = _objectList.at(offset).get();
     }
 
     if( _objectIndices.size() > offset )
@@ -324,12 +329,7 @@ ObjectBlock::object_descriptor ObjectBlock::at( unsigned offset ) const
 
 void ObjectBlock::erase( void )
 {
-    while( !_objectList.empty() )
-    {
-        delete _objectList.back();
-
-        _objectList.pop_back();
-    }
+    _objectList.clear();
 }
 
 
@@ -374,7 +374,7 @@ unsigned ObjectBlock::getSerializedLen( void ) const
         }
     }
 
-    for( unsigned i = 0; i < _objectList.size(); i++ )
+    for( const auto &obj : _objectList )
     {
         //  add on the index size
         if( _qualifier == ByteIndex_ByteQty || _qualifier == ByteIndex_ShortQty )
@@ -386,7 +386,7 @@ unsigned ObjectBlock::getSerializedLen( void ) const
             blockSize += 2;
         }
 
-        blockSize += _objectList[i]->getSerializedLen();
+        blockSize += obj->getSerializedLen();
     }
 
     return blockSize;
@@ -461,25 +461,28 @@ unsigned ObjectBlock::serialize( unsigned char *buf ) const
         }
     }
 
-    for( unsigned i = 0; i < _objectList.size(); i++ )
+    unsigned idx = 0;
+    for( const auto &obj : _objectList )
     {
         //  add on the index size
         //  ACH: maybe a switch/case someday when there are more than two indexing options...
         if( _qualifier == ByteIndex_ByteQty || _qualifier == ByteIndex_ShortQty )
         {
-            buf[pos++] = _objectIndices[i] & 0xff;
+            buf[pos++] = _objectIndices[idx] & 0xff;
         }
         else if( _qualifier == ShortIndex_ShortQty )
         {
-            buf[pos++] = _objectIndices[i] & 0xff;
-            buf[pos++] = (_objectIndices[i] >> 8) & 0xff;
+            buf[pos++] = _objectIndices[idx] & 0xff;
+            buf[pos++] = (_objectIndices[idx] >> 8) & 0xff;
         }
 
         //  ACH: should add support for single-bit objects
 
-        _objectList[i]->serialize(&buf[pos]);
+        obj->serialize(&buf[pos]);
 
-        pos += _objectList[i]->getSerializedLen();
+        pos += obj->getSerializedLen();
+
+        idx++;
     }
 
     return pos;
@@ -489,7 +492,6 @@ unsigned ObjectBlock::serialize( unsigned char *buf ) const
 int ObjectBlock::restore( const unsigned char *buf, int len )
 {
     int pos, bitpos, objlen, objbitlen, qty = 0;
-    Object *tmpObj;
     unsigned short tmp;
 
     pos     = bitpos    = 0;
@@ -609,6 +611,9 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
                 }
             }
 
+            std::unique_ptr<Object> tmpObject;
+            unsigned objbitlen = 0;
+            unsigned objlen    = 0;
 
             //  special case for single-bit objects...
             if( (_group == BinaryInput::Group  && _variation == BinaryInput::BI_SingleBitPacked) ||
@@ -616,16 +621,16 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
                 (_group == BinaryOutputControl::Group && _variation == BinaryOutputControl::BOC_PatternMask) ||
                 (_group == InternalIndications::Group && _variation == InternalIndications::II_InternalIndications) )
             {
-                objbitlen = restoreBitObject(buf + pos, bitpos, len - pos, tmpObj);
+                std::tie(tmpObject, objbitlen) = restoreBitObject(buf + pos, bitpos, len - pos);
             }
             else
             {
-                objlen = restoreObject(buf + pos, len - pos, tmpObj);
+                std::tie(tmpObject, objlen)    = restoreObject(buf + pos, len - pos);
             }
 
-            if( tmpObj != NULL )
+            if( tmpObject )
             {
-                _objectList.push_back(tmpObj);
+                _objectList.push_back(std::move(tmpObject));
 
                 _objectIndices.push_back(idx);
 
@@ -659,97 +664,90 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
 }
 
 
-int ObjectBlock::restoreObject( const unsigned char *buf, int len, Object *&obj )
+template<class T>
+std::unique_ptr<Object> make_object(unsigned char variation)
 {
-    int lenUsed = 0;
-
-    switch( _group )
-    {
-        case AnalogInput::Group:            obj = CTIDBG_new AnalogInput(_variation);               break;
-        case AnalogInputChange::Group:      obj = CTIDBG_new AnalogInputChange(_variation);         break;
-        case AnalogInputFrozen::Group:      obj = CTIDBG_new AnalogInputFrozen(_variation);         break;
-        case AnalogInputFrozenEvent::Group: obj = CTIDBG_new AnalogInputFrozenEvent(_variation);    break;
-        case AnalogOutputStatus::Group:           obj = CTIDBG_new AnalogOutputStatus(_variation);              break;
-        case AnalogOutput::Group:      obj = CTIDBG_new AnalogOutput(_variation);         break;
-        case BinaryInput::Group:            obj = CTIDBG_new BinaryInput(_variation);               break;
-        case BinaryInputChange::Group:      obj = CTIDBG_new BinaryInputChange(_variation);         break;
-        case BinaryOutput::Group:           obj = CTIDBG_new BinaryOutput(_variation);              break;
-        case BinaryOutputControl::Group:    obj = CTIDBG_new BinaryOutputControl(_variation);       break;
-        case Counter::Group:                obj = CTIDBG_new Counter(_variation);                   break;
-        case CounterEvent::Group:           obj = CTIDBG_new CounterEvent(_variation);              break;
-        case CounterFrozen::Group:          obj = CTIDBG_new CounterFrozen(_variation);             break;
-        case CounterFrozenEvent::Group:     obj = CTIDBG_new CounterFrozenEvent(_variation);        break;
-        case Time::Group:                   obj = CTIDBG_new Time(_variation);                      break;
-        case TimeCTO::Group:                obj = CTIDBG_new TimeCTO(_variation);                   break;
-
-        default:
-            obj = NULL;
-            break;
-    }
-
-    if( obj )
-    {
-        lenUsed = obj->restore(buf, len);
-
-        if( !obj->isValid() )
-        {
-            delete obj;
-            obj = 0;
-        }
-    }
-
-    if( !obj )
-    {
-        CTILOG_ERROR(dout, "unhandled object type ("<< _group <<"), variation ("<< _variation <<"), aborting processing");
-
-        lenUsed = len;
-    }
-
-    return lenUsed;
+    return std::make_unique<T>(variation);
 }
 
 
-int ObjectBlock::restoreBitObject( const unsigned char *buf, int bitoffset, int len, Object *&obj )
+const std::map<int, std::function<unique_ptr<Object>(unsigned char)>> GroupLookup {
+        { AnalogInput::Group,            &make_object<AnalogInput>             },
+        { AnalogInputChange::Group,      &make_object<AnalogInputChange>       },
+        { AnalogInputFrozen::Group,      &make_object<AnalogInputFrozen>       },
+        { AnalogInputFrozenEvent::Group, &make_object<AnalogInputFrozenEvent>  },
+        { AnalogOutputStatus::Group,     &make_object<AnalogOutputStatus>      },
+        { AnalogOutput::Group,           &make_object<AnalogOutput>            },
+        { BinaryInput::Group,            &make_object<BinaryInput>             },
+        { BinaryInputChange::Group,      &make_object<BinaryInputChange>       },
+        { BinaryOutput::Group,           &make_object<BinaryOutput>            },
+        { BinaryOutputControl::Group,    &make_object<BinaryOutputControl>     },
+        { Counter::Group,                &make_object<Counter>                 },
+        { CounterEvent::Group,           &make_object<CounterEvent>            },
+        { CounterFrozen::Group,          &make_object<CounterFrozen>           },
+        { CounterFrozenEvent::Group,     &make_object<CounterFrozenEvent>      },
+        { Time::Group,                   &make_object<Time>                    },
+        { TimeCTO::Group,                &make_object<TimeCTO>                 }};
+
+ObjectBlock::RestoredObject ObjectBlock::restoreObject( const unsigned char *buf, int len )
 {
-    int bitpos;
+    RestoredObject result;
 
-    bitpos = bitoffset;
-
-    switch( _group )
+    if( auto factoryMethod = mapFind(GroupLookup, _group) )
     {
-        case BinaryInput::Group:
-            obj = CTIDBG_new BinaryInput(_variation);
-            break;
+        result.first = (*factoryMethod)(_variation);
 
-        case BinaryOutput::Group:
-            obj = CTIDBG_new BinaryOutput(_variation);
-            break;
+        if( result.first )
+        {
+            result.second = result.first->restore(buf, len);
 
-        case BinaryOutputControl::Group:
-            obj = CTIDBG_new BinaryOutputControl(_variation);
-            break;
-
-        case InternalIndications::Group:
-            obj = CTIDBG_new InternalIndications(_variation);
-            break;
-
-        default:
-            obj = NULL;
-            break;
+            if( result.first->isValid() )
+            {
+                return result;
+            }
+        }
     }
 
-    if( obj )
-    {
-        bitpos += obj->restoreBits(buf, bitpos, len);
-    }
-    else
-    {
-        CTILOG_ERROR(dout, "unhandled object type ("<< _group <<"), variation ("<< _variation <<"), aborting processing");
+    CTILOG_ERROR(dout, "unhandled object type ("<< _group <<"), variation ("<< _variation <<"), aborting processing");
 
-        bitpos = len * 8;
+    result.first.reset();
+    result.second = len;
+
+    return result;
+}
+
+
+const std::map<int, std::function<unique_ptr<Object>(unsigned char)>> BitGroupLookup {
+        { BinaryInput::Group,            make_object<BinaryInput>         },
+        { BinaryOutput::Group,           make_object<BinaryOutput>        },
+        { BinaryOutputControl::Group,    make_object<BinaryOutputControl> },
+        { InternalIndications::Group,    make_object<InternalIndications> }};
+
+ObjectBlock::RestoredObject ObjectBlock::restoreBitObject( const unsigned char *buf, int len, int bitoffset )
+{
+    RestoredObject result;
+
+    if( auto factoryMethod = mapFind(BitGroupLookup, _group) )
+    {
+        result.first = (*factoryMethod)(_variation);
+
+        if( result.first )
+        {
+            result.second = result.first->restoreBits(buf, bitoffset, len) + bitoffset;
+
+            if( result.first->isValid() )
+            {
+                return result;
+            }
+        }
     }
 
-    return bitpos - bitoffset;
+    CTILOG_ERROR(dout, "unhandled object type ("<< _group <<"), variation ("<< _variation <<"), aborting processing");
+
+    result.first.reset();
+    result.second = len * 8;
+
+    return result;
 }
 
 void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto, const Time *arrival ) const
