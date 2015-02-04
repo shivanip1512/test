@@ -15,6 +15,7 @@
     </bean>
     
     <bean class="org.springframework.ws.client.core.WebServiceTemplate">
+        <qualifier value="devWebServiceTemplate" />
         <constructor-arg>
             <bean class="org.springframework.ws.soap.saaj.SaajSoapMessageFactory"/>
         </constructor-arg>

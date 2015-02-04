@@ -23,6 +23,7 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.io.Resource;
@@ -49,7 +50,7 @@ import com.google.common.collect.Maps;
 @AuthorizeByCparm(MasterConfigBooleanKeysEnum.ENABLE_WEB_DEBUG_PAGES)
 public class EimTestController implements ApplicationContextAware {
     
-    @Autowired private WebServiceTemplate webServiceTemplate;
+    @Autowired @Qualifier("devWebServiceTemplate") private WebServiceTemplate webServiceTemplate;
 
     private ApplicationContext applicationContext;
 

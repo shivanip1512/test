@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.amr.meter.search.model.MspSearchField;
+import com.cannontech.msp.beans.v3.Meter;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.deploy.service.Meter;
+
 
 public class CustIdMspMeterSearchMethodResultProvider extends MspMeterSearchMethodResultProviderBase {
 

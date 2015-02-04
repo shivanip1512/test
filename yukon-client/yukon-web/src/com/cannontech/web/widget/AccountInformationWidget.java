@@ -4,10 +4,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBElement;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,18 +21,21 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.model.Address;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.msp.beans.v3.CoordType;
+import com.cannontech.msp.beans.v3.Customer;
+import com.cannontech.msp.beans.v3.LinkedTransformer;
+import com.cannontech.msp.beans.v3.Meter;
+import com.cannontech.msp.beans.v3.Nameplate;
+import com.cannontech.msp.beans.v3.Network;
+import com.cannontech.msp.beans.v3.NodeIdentifier;
+import com.cannontech.msp.beans.v3.ObjectRef;
+import com.cannontech.msp.beans.v3.PointType;
+import com.cannontech.msp.beans.v3.ServiceLocation;
+import com.cannontech.msp.beans.v3.UtilityInfo;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.deploy.service.CoordType;
-import com.cannontech.multispeak.deploy.service.LinkedTransformer;
-import com.cannontech.multispeak.deploy.service.Nameplate;
-import com.cannontech.multispeak.deploy.service.Network;
-import com.cannontech.multispeak.deploy.service.NodeIdentifier;
-import com.cannontech.multispeak.deploy.service.ObjectRef;
-import com.cannontech.multispeak.deploy.service.PointType;
-import com.cannontech.multispeak.deploy.service.UtilityInfo;
 import com.cannontech.multispeak.service.MultispeakCustomerInfoService;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
@@ -68,9 +74,9 @@ public class AccountInformationWidget extends WidgetControllerBase{
         YukonMeter meter = meterDao.getForId(deviceId);
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
         
-        com.cannontech.multispeak.deploy.service.Customer mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
-        com.cannontech.multispeak.deploy.service.ServiceLocation mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor);
-        com.cannontech.multispeak.deploy.service.Meter mspMeter = mspObjectDao.getMspMeter(meter, mspVendor);
+        Customer mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
+        ServiceLocation mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor);
+        Meter mspMeter = mspObjectDao.getMspMeter(meter, mspVendor);
         
         mav.addObject("mspCustomer", mspCustomer);
         mav.addObject("mspServLoc", mspServLoc);
@@ -108,7 +114,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
     }
     
     // CUST INFO
-    private List<Info> getCustomerBasicsInfo(com.cannontech.multispeak.deploy.service.Customer mspCustomer, YukonUserContext userContext) {
+    private List<Info> getCustomerBasicsInfo(Customer mspCustomer, YukonUserContext userContext) {
         
         List<Info> infoList = new ArrayList<Info>();
         add("Last Name", mspCustomer.getLastName(), false, infoList, userContext);
@@ -123,7 +129,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         return infoList;
     }
     
-    private List<Info> getCustomerContactInfo(com.cannontech.multispeak.deploy.service.Customer mspCustomer, YukonUserContext userContext) {
+    private List<Info> getCustomerContactInfo(Customer mspCustomer, YukonUserContext userContext) {
         
         
         List<String> phoneNumbers = multispeakCustomerInfoService.getPhoneNumbers(mspCustomer, userContext);
@@ -142,7 +148,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         return infoList;
     }
     
-    private Address getCustomerAddressInfo(com.cannontech.multispeak.deploy.service.Customer mspCustomer) {
+    private Address getCustomerAddressInfo(Customer mspCustomer) {
         
         Address address = new Address();
         address.setLocationAddress1(mspCustomer.getBillAddr1());
@@ -155,9 +161,10 @@ public class AccountInformationWidget extends WidgetControllerBase{
     }
     
     // SERV LOC INFO
-    private List<Info> getServLocBasicsInfo(com.cannontech.multispeak.deploy.service.ServiceLocation mspServLoc, YukonUserContext userContext) {
+    private List<Info> getServLocBasicsInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
         
         List<Info> infoList = new ArrayList<Info>();
+        Map<String, Object> serviceLocationIDs = getServiceLocationIDs(mspServLoc);
         add("Service Location", mspServLoc.getObjectID(), false, infoList, userContext);
         add("Customer ID", mspServLoc.getCustID(), false, infoList, userContext);
         add("Account Number", mspServLoc.getAccountNumber(), false, infoList, userContext);
@@ -188,24 +195,34 @@ public class AccountInformationWidget extends WidgetControllerBase{
         add("Connect Date", mspServLoc.getConnectDate(), true, infoList, userContext);
         add("Disconnect Date", mspServLoc.getDisconnectDate(), true, infoList, userContext);
         add("SIC", mspServLoc.getSIC(), true, infoList, userContext);
-        add("Is Cogeneration Site", mspServLoc.getIsCogenerationSite(), true, infoList, userContext);
+        add("Is Cogeneration Site", mspServLoc.isIsCogenerationSite(), true, infoList, userContext);
         add("Work order number", mspServLoc.getWoNumber(), true, infoList, userContext);
         add("Service order number", mspServLoc.getSoNumber(), true, infoList, userContext);
         add("Phasing code", mspServLoc.getPhaseCode(), true, infoList, userContext);
         add("Map Location", mspServLoc.getMapLocation(), false, infoList, userContext);
         add("Grid Location", mspServLoc.getGridLocation(), false, infoList, userContext);
         add("Rotation", mspServLoc.getRotation(), true, infoList, userContext);
-        add("From Node ID", mspServLoc.getFromNodeID(), true, infoList, userContext);
-        add("To Node ID", mspServLoc.getToNodeID(), true, infoList, userContext);
-        add("Section ID", mspServLoc.getSectionID(), true, infoList, userContext);
-        add("Parent Section ID", mspServLoc.getParentSectionID(), true, infoList, userContext);
+        add("From Node ID", serviceLocationIDs.get("fromNodeID"), true, infoList, userContext);
+        add("To Node ID", serviceLocationIDs.get("toNodeID"), true, infoList, userContext);       
+        add("Section ID", serviceLocationIDs.get("sectionID"), true, infoList, userContext);
+        add("Parent Section ID", serviceLocationIDs.get("parentSectionID"), true, infoList, userContext);
         add("Comments", mspServLoc.getComments(), true, infoList, userContext);
         add("Error String", mspServLoc.getErrorString(), true, infoList, userContext);
         
         return infoList;
     }
+       
+    private Map<String, Object> getServiceLocationIDs(ServiceLocation mspServLoc) {
+        Map<String, Object> serviceLocationIDs = new HashMap<>();
+        List<JAXBElement<?>> jaxbElements = mspServLoc.getFromNodeIDOrSectionIDOrToNodeID();
+        
+        for(JAXBElement<?> jaxbElement : jaxbElements) {            
+            serviceLocationIDs.put(jaxbElement.getName().getLocalPart(), jaxbElement.getValue());                     
+        }        
+        return serviceLocationIDs;
+    }
     
-    private Address getServLocAddressInfo(com.cannontech.multispeak.deploy.service.ServiceLocation mspServLoc) {
+    private Address getServLocAddressInfo(ServiceLocation mspServLoc) {
         
         Address address = new Address();
         address.setLocationAddress1(mspServLoc.getServAddr1());
@@ -217,7 +234,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         return address;
     }   
     
-    private List<Info> getServLocNetworkInfo(com.cannontech.multispeak.deploy.service.ServiceLocation mspServLoc, YukonUserContext userContext) {
+    private List<Info> getServLocNetworkInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
         
         List<Info> infoList = new ArrayList<Info>();
         Network n = mspServLoc.getNetwork();
@@ -247,7 +264,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
     }   
     
     // METER INFO
-    private List<Info> getMeterBasicsInfo(com.cannontech.multispeak.deploy.service.Meter mspMeter, YukonUserContext userContext) {
+    private List<Info> getMeterBasicsInfo(Meter mspMeter, YukonUserContext userContext) {
         
         List<Info> infoList = new ArrayList<Info>();
         add("Meter Number", mspMeter.getMeterNo(), false, infoList, userContext);
@@ -268,7 +285,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         return infoList;
     }
     
-    private List<Info> getMeterNameplateInfo(com.cannontech.multispeak.deploy.service.Meter mspMeter, YukonUserContext userContext) {
+    private List<Info> getMeterNameplateInfo(Meter mspMeter, YukonUserContext userContext) {
         
         List<Info> infoList = new ArrayList<Info>();
         Nameplate np = mspMeter.getNameplate();
@@ -296,7 +313,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         return infoList;
     }
     
-    private List<Info> getMeterUtilInfo(com.cannontech.multispeak.deploy.service.Meter mspMeter, YukonUserContext userContext) {
+    private List<Info> getMeterUtilInfo(Meter mspMeter, YukonUserContext userContext) {
         
         List<Info> infoList = new ArrayList<Info>();
         UtilityInfo u = mspMeter.getUtilityInfo();
@@ -380,7 +397,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
                     if (linkedTransformer.getBankID() != null) {
                         linkedTransformerStr += "Bank ID: " + linkedTransformer.getBankID();
                     }
-                    if (linkedTransformer.getUnitList() != null && linkedTransformer.getUnitList().length > 0) {
+                    if (linkedTransformer.getUnitList() != null) {
                         linkedTransformerStr += "Unit List: " + StringUtils.join(linkedTransformer.getUnitList(), ", ");
                     }
                     this.value = linkedTransformerStr;
@@ -419,7 +436,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         }
 
         public Boolean isBlank() {
-            return StringUtils.isBlank(this.value);
+            return StringUtils.isBlank(value);
         }
     }
 
