@@ -48,6 +48,8 @@ import com.cannontech.msp.beans.v3.GetMetersByEALocation;
 import com.cannontech.msp.beans.v3.GetMetersByEALocationResponse;
 import com.cannontech.msp.beans.v3.GetMetersByFacilityID;
 import com.cannontech.msp.beans.v3.GetMetersByFacilityIDResponse;
+import com.cannontech.msp.beans.v3.GetMetersBySearchString;
+import com.cannontech.msp.beans.v3.GetMetersBySearchStringResponse;
 import com.cannontech.msp.beans.v3.GetMethods;
 import com.cannontech.msp.beans.v3.GetMethodsResponse;
 import com.cannontech.msp.beans.v3.GetServiceLocationByMeterNo;
@@ -310,6 +312,31 @@ public class MspObjectDaoImpl implements MspObjectDao {
         }
         return meters;
     }
+    
+    @Override
+    public List<Meter> getMetersBySearchString(String searchString, MultispeakVendor mspVendor) {
+
+        List<Meter> meters = new ArrayList<>();
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
+
+        try {
+        	 GetMetersBySearchString getMetersBySearchString = objectFactory.createGetMetersBySearchString();
+        	 getMetersBySearchString.setSearchString(searchString);      
+                long start = System.currentTimeMillis();
+                log.debug( "Begin call to getMetersBySearchString for SearchString: %s"+searchString);
+                GetMetersBySearchStringResponse mspMeters = cbClient.getMetersBySearchString(mspVendor, endpointUrl, getMetersBySearchString);
+                ArrayOfMeter arrayOfMeter = mspMeters.getGetMetersBySearchStringResult();
+                meters = arrayOfMeter.getMeter();
+                log.debug("End call to getMetersBySearchString for SearchString:" + searchString + "  (took "
+                    + (System.currentTimeMillis() - start) + " millis)");     
+        } catch (MultispeakWebServiceClientException e) {
+            log.error("TargetService: " + endpointUrl + " - getMetersBySearchString (" + mspVendor.getCompanyName()
+                + ") for SearchString: " + searchString);
+            log.error("MultispeakWebServiceClientException: " + e.getMessage());
+        }
+        return meters;
+    }
+
 
     @Override
     public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType, String method,
