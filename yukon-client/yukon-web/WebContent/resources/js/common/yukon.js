@@ -601,7 +601,8 @@ yukon.ui = (function () {
     
             /** Close dialogs when clicking .js-close elements or the yukon.dialog.ok event fires. */
             $(document).on('click', '.js-close', function (ev) {
-                $(ev.target).closest('.ui-dialog-content').dialog('close');
+                var dialog = $(ev.target).closest('.ui-dialog');
+                if (dialog.length) dialog.find('.ui-dialog-content').dialog('close');
             });
             $(document).on('yukon.dialog.ok', function (ev) {
                 $(ev.target).closest('.ui-dialog-content').dialog('close');
@@ -1327,6 +1328,74 @@ yukon.ui = (function () {
 
 /** JQUERY PLUGINS */
 (function ($) {
+    
+    /**
+     * jQueryUI Tabbed Dialog Based on
+     * http://forum.jquery.com/topic/combining-ui-dialog-and-tabs Modified
+     * to work by Joseph T. Parsons For jQueryUI 1.10 and jQuery 2.0
+     */
+    $.fn.tabbedDialog = function (dialogOptions, tabOptions) {
+        
+        dialogOptions = dialogOptions || { dialogClass: 'ui-dialog-tabbed' };
+        tabOptions = tabOptions || {};
+        
+        if (!dialogOptions.dialogClass) {
+            dialogOptions.dialogClass = 'ui-dialog-tabbed';
+        } else {
+            dialogOptions.dialogClass = dialogOptions.dialogClass + ' ui.dialog-tabbed'; 
+        }
+        
+        var initialized = this.hasClass('ui-dialog-content');
+        
+        this.tabs(tabOptions);
+        this.dialog(dialogOptions);
+        
+        // Bail out here when recalling on an existing dialog
+        if (initialized) return;
+        
+        // Create the Tabbed Dialogue
+        var tabul = this.find('ul:first');
+        this.parent().addClass('ui-tabs').prepend(tabul).draggable('option', 'handle', tabul);
+        tabul.append(
+            $('<button>').attr('type', 'button').attr('role', 'button').attr('title', yg.text.close)
+            .addClass('ui-button ui-widget ui-state-default ui-corner-all ui-button-icon-only ui-dialog-titlebar-close js-close')
+            .append($('<span>').addClass('ui-button-icon-primary ui-icon ui-icon-closethick'))
+            .append($('<span>').addClass('ui-button-text').text(yg.text.close))
+        );
+        this.prev().remove();
+        tabul.addClass('ui-dialog-titlebar-tabbed');
+        this.attr('tabIndex', -1).attr('role', 'dialog');
+        
+        // Add a title if needed
+        var title = this.dialog('option', 'title');
+        if (title != null && title) {
+            tabul.prepend($('<li>').addClass('ui-dialog-tabbed-title').text(title));
+        }
+        
+        // Make Only The Content of the Tab Tabbable
+        this.bind('keydown.ui-dialog', function (ev) {
+            
+            if (ev.keyCode !== $.ui.keyCode.TAB) {
+                return;
+            }
+            
+            var tabbables = $(':tabbable', this).add('ul.ui-tabs-nav.ui-dialog-titlebar-tabbed > li > a'), 
+                first = tabbables.filter(':first'), 
+                last = tabbables.filter(':last');
+            
+            if (ev.target === last[0] && !ev.shiftKey) {
+                first.focus(1);
+                return false;
+            } else if (ev.target === first[0] && ev.shiftKey) {
+                last.focus(1);
+                return false;
+            }
+        });
+        
+        // Give the First Element in the Dialog Focus
+        var hasFocus = this.find('.ui-tabs-panel:visible :tabbable');
+        if (hasFocus.length) hasFocus.eq(0).focus();
+    };
     
     /** Selects all text inside an element. Useful for copy action. */
     $.fn.selectText = function () {

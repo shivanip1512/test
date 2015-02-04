@@ -395,6 +395,53 @@ span.dynatree-folder a {
 }
 .link-tabbed-container .ui-tabs-nav { border-bottom: 1px solid #ccc; }
 
+/* This is a custom plugin that combines jquery tab and dialog to make a tabbed dialog widget. */
+.ui-dialog.ui-dialog-tabbed {
+    
+    border: 1px solid #ccc;
+    
+    .ui-dialog-titlebar-tabbed {
+        background-color: whitesmoke;
+        border-bottom: 1px solid #ccc;
+        &:hover { cursor: move; }
+         
+        > li {
+            margin-top: 3px;
+        }
+        
+        .ui-tabs-anchor {
+            padding: 8px 8px !important; 
+        }
+    }
+    
+    .ui-dialog-content {
+        border-top: none;
+    }
+    .ui-tabs-panel {
+        border-top: none;
+        padding: 0;
+    }
+    .ui-dialog-tabbed-title {
+        border: none;
+        padding: 8px;
+        padding-left: 5px;
+        &:hover { background-color: whitesmoke !important; }
+    }
+    .ui-dialog-titlebar-close {
+        border: none;
+        height: 16px !important;
+        width: 16px !important;
+        background-image: url(../Icons/icons.png);
+        background-position: -352px -400px;
+        background-repeat: no-repeat;
+        top: 22px;
+        right: 10px;
+        
+        .ui-icon { display: none; }
+        .ui-button-text { display: none; }
+    }
+}
+
 .ui-tooltip { border-radius: 2px; }
 .ui-menu .ui-menu-item a.ui-state-focus,
 .ui-menu .ui-menu-item a.ui-state-active { background-color: #eee; }

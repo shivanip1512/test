@@ -580,5 +580,52 @@ public String updatePerson(ModelMap model, HttpServletResponse resp,
 }
 </pre>
 
+
+<h2 id="simple-popup-example">Tabbed Dialog</h2>
+
+<p class="description">
+    <span class="error">DON'T USE</span>, this is still under construction.
+</p>
+<div class="column-4-20 clearfix style-guide-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <div id="td-test" class="dn">
+            <ul>
+                <li><a href="#fragment-1">One</a></li>
+                <li><a href="#fragment-2">Two</a></li>
+                <li><a href="#fragment-3">Three</a></li>
+            </ul>
+            <div id="fragment-1">This is the cats content.<input type="text"> It's so cool you don't even know.</div>
+            <div id="fragment-2">This is the dogs content. It's so cool you don't even know.</div>
+            <div id="fragment-3">This is the goldfish content. It's so cool you don't even know.</div>
+        </div>
+        <cti:button label="Open Popup" classes="js-tabbed-dlg-btn"/>
+        <script>
+        $('.js-tabbed-dlg-btn').click(function () {
+            $('#td-test').tabbedDialog({ width: 400, buttons: yukon.ui.buttons(), title: 'This is a Title:' });
+        });
+        </script>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;div id=&quot;td-test&quot; class=&quot;dn&quot;&gt;
+    &lt;ul&gt;
+        &lt;li&gt;&lt;a href=&quot;#fragment-1&quot;&gt;One&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#fragment-2&quot;&gt;Two&lt;/a&gt;&lt;/li&gt;
+        &lt;li&gt;&lt;a href=&quot;#fragment-3&quot;&gt;Three&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;div id=&quot;fragment-1&quot;&gt;This is the cats content.&lt;input type=&quot;text&quot;&gt; It's so cool you don't even know.&lt;/div&gt;
+    &lt;div id=&quot;fragment-2&quot;&gt;This is the dogs content. It's so cool you don't even know.&lt;/div&gt;
+    &lt;div id=&quot;fragment-3&quot;&gt;This is the goldfish content. It's so cool you don't even know.&lt;/div&gt;
+&lt;/div&gt;
+&lt;cti:button label=&quot;Open Popup&quot; classes=&quot;js-tabbed-dlg-btn&quot;/&gt;
+&lt;script&gt;
+$('.js-tabbed-dlg-btn').click(function () {
+    $('#td-test').tabbedDialog({ width: 400, buttons: yukon.ui.buttons(), title: 'This is a Title:' });
+});
+&lt;/script&gt;
+</pre>
+
 </tags:styleguide>
 </cti:standardPage>
