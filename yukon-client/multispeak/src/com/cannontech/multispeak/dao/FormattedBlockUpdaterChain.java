@@ -6,27 +6,24 @@ import com.cannontech.multispeak.block.Block;
 import com.google.common.collect.ImmutableList;
 
 /**
- * This is basically a copy of MeterReadUpdaterChain. 
+ * This is basically a copy of MeterReadUpdaterChain.
  * At some point, there may be some commonalities that could be pulled from these
- */
-
-/**
  * Represents a chain of other FormattedBlockUpdater objects and abstracts them
  * as a single FormattedBlockUpdater instance. Is designed to efficiently
- * combine itself with other FormattedBlockUpdaterChain by directly copying 
+ * combine itself with other FormattedBlockUpdaterChain by directly copying
  * other instances private data.
  */
 public class FormattedBlockUpdaterChain<T extends Block> implements FormattedBlockUpdater<T> {
-    
+
     private final List<FormattedBlockUpdater<T>> chain;
-    
+
     public FormattedBlockUpdaterChain() {
         chain = ImmutableList.of();
     }
-    
+
     /**
      * Creates a single entry chain for a single FormattedBlockUpdater. This isn't useful
-     * because the returned object is immutable and acts identically to the 
+     * because the returned object is immutable and acts identically to the
      * passed in object.
      * 
      * May be called with null which will create a no-op FormattedBlockUpdater.
@@ -41,7 +38,7 @@ public class FormattedBlockUpdaterChain<T extends Block> implements FormattedBlo
      * Creates a FormattedBlockUpdater chain that will first invoke the left's update
      * method and then invoke the right's update method. Either instance may be null in
      * which case it is simply ignored and a chain is created for the other element (or
-     * an empty chain). If either instance happens to already be a chain, its elements 
+     * an empty chain). If either instance happens to already be a chain, its elements
      * will be copied into a single new chain.
      * 
      * @param left a FormattedBlockUpdater instance, may be null
@@ -65,7 +62,7 @@ public class FormattedBlockUpdaterChain<T extends Block> implements FormattedBlo
         }
         this.chain = chainBuilder.build();
     }
-    
+
     @Override
     public void update(T block) {
         for (FormattedBlockUpdater<T> updater : chain) {

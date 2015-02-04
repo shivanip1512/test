@@ -3,8 +3,12 @@ package com.cannontech.multispeak.dao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.cannontech.msp.beans.v3.MeterRead;
 
+
+/**
+ * Meter Read Processing Service
+ */
 public interface MeterReadProcessingService {
     /**
      * Return an immutable object that can be used at the callers discretion

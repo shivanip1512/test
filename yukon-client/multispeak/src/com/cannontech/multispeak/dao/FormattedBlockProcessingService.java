@@ -6,15 +6,15 @@ import java.util.List;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.msp.beans.v3.FormattedBlock;
 import com.cannontech.multispeak.block.Block;
-import com.cannontech.multispeak.deploy.service.FormattedBlock;
 
 /**
- * This is basically a copy of MeterReadProcessingService. 
+ * This is basically a copy of MeterReadProcessingService.
  * At some point, there may be some commonalities that could be pulled from these
  */
 
-public interface FormattedBlockProcessingService <T extends Block> {
+public interface FormattedBlockProcessingService<T extends Block> {
 
     /**
      * Return an immutable object that can be used at the callers discretion
@@ -24,7 +24,7 @@ public interface FormattedBlockProcessingService <T extends Block> {
      * aggregated or chained) and then processed later in a synchronous manner.
      */
     public FormattedBlockUpdater<T> buildFormattedBlockUpdater(BuiltInAttribute attribute,
-                                           PointValueHolder pointValueHolder);
+            PointValueHolder pointValueHolder);
 
     /**
      * Simple helper to create a blank Block for a given Meter.
@@ -37,15 +37,15 @@ public interface FormattedBlockProcessingService <T extends Block> {
      * is not appropriate in a multi-threaded environment when the FormattedBlock may
      * be shared across threads.
      */
-    public void updateFormattedBlock(T reading, BuiltInAttribute attribute,
-                         PointValueHolder pointValueHolder);
-    
+    public void updateFormattedBlock(T reading, BuiltInAttribute attribute, PointValueHolder pointValueHolder);
+
     /**
      * Returns a copy of the set of BuiltInAttributes from attributesToLoad
+     * 
      * @return
      */
     public EnumSet<BuiltInAttribute> getAttributeSet();
-    
+
     /**
      * Returns a FormattedBlock for blocks that already exist.
      * Use this method if you already have the block data loaded.
