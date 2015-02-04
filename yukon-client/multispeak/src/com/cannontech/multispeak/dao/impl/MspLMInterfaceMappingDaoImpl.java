@@ -21,130 +21,127 @@ import com.cannontech.multispeak.db.MspLmMapping;
 
 public class MspLMInterfaceMappingDaoImpl implements MspLmInterfaceMappingDao {
 
-	private final String TABLENAME = "MspLMInterfaceMapping";
-	@Autowired private YukonJdbcTemplate jdbcTemplate;
-	@Autowired private NextValueHelper nextValueHelper;
+    private final String TABLENAME = "MspLMInterfaceMapping";
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private NextValueHelper nextValueHelper;
     @Autowired private PaoDao paoDao;
 
-    private final ParameterizedRowMapper<MspLmMapping> mspLMInterfaceMappingRowMapper = new ParameterizedRowMapper<MspLmMapping>() {
-        @Override
-        public MspLmMapping mapRow(ResultSet rs, int rowNum) throws SQLException {
-            return createMspLMInterfaceMapping(rs);
+    private final ParameterizedRowMapper<MspLmMapping> mspLMInterfaceMappingRowMapper =
+        new ParameterizedRowMapper<MspLmMapping>() {
+            @Override
+            public MspLmMapping mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return createMspLMInterfaceMapping(rs);
+            };
         };
-    };
 
-	@Override
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(String strategyName, String substationName, int paobjectId) {
-       String insertSql = "INSERT INTO " + TABLENAME + " (" + 
-       					  " MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId)" + 
-       					  " VALUES(?,?,?,?)";
+        String insertSql =
+            "INSERT INTO " + TABLENAME + " (" + " MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId)"
+                + " VALUES(?,?,?,?)";
 
-        int result = jdbcTemplate.update(insertSql.toString(),  
-        		getNextMspLMInterfaceMappingId(), 
-        		strategyName, substationName, paobjectId);
+        int result =
+            jdbcTemplate.update(insertSql.toString(), getNextMspLMInterfaceMappingId(), strategyName, substationName,
+                paobjectId);
         return (result == 1);
     }
-	
-	@Override
+
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean updatePaoIdForStrategyAndSubstation(String strategyName, String substationName, int paobjectId) {
-		
-		SqlStatementBuilder sql = new SqlStatementBuilder();
+    public boolean updatePaoIdForStrategyAndSubstation(String strategyName, String substationName, int paobjectId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE " + TABLENAME + " SET");
         sql.append("PaobjectId = ").appendArgument(paobjectId);
         sql.append("WHERE StrategyName = ").appendArgument(strategyName);
         sql.append("AND SubstationName = ").appendArgument(substationName);
 
-        int result = jdbcTemplate.update(sql.getSql(), sql.getArguments()); 
-		return (result == 1);
-	}
-	
-	@Override
-	public MspLmMapping getForId(int mspLMInterfaceMappingId) throws NotFoundException {
-		try {
-            String sql = "SELECT MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId " +
-                         " FROM " + TABLENAME +
-                         " WHERE MspLMInterfaceMappingId = ? ";
-			
-            return jdbcTemplate.queryForObject(sql, mspLMInterfaceMappingRowMapper, new Object[] { new Integer(mspLMInterfaceMappingId)});
+        int result = jdbcTemplate.update(sql.getSql(), sql.getArguments());
+        return (result == 1);
+    }
 
-		} catch (IncorrectResultSizeDataAccessException e) {
-			throw new NotFoundException("A MSP LM Interace with MspLmInterfaceMappingId " + mspLMInterfaceMappingId + " cannot be found.");
-		}
-	}
+    @Override
+    public MspLmMapping getForId(int mspLMInterfaceMappingId) throws NotFoundException {
+        try {
+            String sql =
+                "SELECT MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId " + " FROM " + TABLENAME
+                    + " WHERE MspLMInterfaceMappingId = ? ";
 
-	@Override
-	public MspLmMapping getForStrategyAndSubstation(
-			String strategyName, String substationName) throws NotFoundException {
-		try {
-            String sql = "SELECT MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId " +
-                         " FROM " + TABLENAME +
-                         " WHERE StrategyName = ? " + 
-                         " AND SubstationName = ? ";
-			
-            return jdbcTemplate.queryForObject(sql, mspLMInterfaceMappingRowMapper, new Object[] { strategyName, substationName});            
-		} catch (IncorrectResultSizeDataAccessException e) {
-			throw new NotFoundException("A MSP LM Interace with StrategyName = " + strategyName + " and SubstationName = " + substationName + " cannot be found.");
-		}
-	}
-	
-	@Override
-	public Integer findIdForStrategyAndSubstation(String strategyName, String substationName) {
-		try {
-            String sql = "SELECT MspLmInterfaceMappingId " +
-                         " FROM " + TABLENAME +
-                         " WHERE StrategyName = ? " + 
-                         " AND SubstationName = ? ";
-			
-            return jdbcTemplate.queryForInt(sql, new Object[] { strategyName, substationName});            
-		} catch (IncorrectResultSizeDataAccessException e) {
-			return null;
-		}
-	}
+            return jdbcTemplate.queryForObject(sql, mspLMInterfaceMappingRowMapper, new Object[] { new Integer(
+                mspLMInterfaceMappingId) });
 
-	@Override
-	public List<MspLmMapping> getAllMappings() {
-        String sql = "SELECT MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId " +
-                     " FROM " + TABLENAME;
-		
-        return jdbcTemplate.query(sql, mspLMInterfaceMappingRowMapper);         
-	}
-	
-	@Override
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("A MSP LM Interace with MspLmInterfaceMappingId " + mspLMInterfaceMappingId
+                + " cannot be found.");
+        }
+    }
+
+    @Override
+    public MspLmMapping getForStrategyAndSubstation(String strategyName, String substationName)
+            throws NotFoundException {
+        try {
+            String sql =
+                "SELECT MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId " + " FROM " + TABLENAME
+                    + " WHERE StrategyName = ? " + " AND SubstationName = ? ";
+
+            return jdbcTemplate.queryForObject(sql, mspLMInterfaceMappingRowMapper, new Object[] { strategyName,
+                substationName });
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("A MSP LM Interace with StrategyName = " + strategyName
+                + " and SubstationName = " + substationName + " cannot be found.");
+        }
+    }
+
+    @Override
+    public Integer findIdForStrategyAndSubstation(String strategyName, String substationName) {
+        try {
+            String sql =
+                "SELECT MspLmInterfaceMappingId " + " FROM " + TABLENAME + " WHERE StrategyName = ? "
+                    + " AND SubstationName = ? ";
+
+            return jdbcTemplate.queryForInt(sql, new Object[] { strategyName, substationName });
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public List<MspLmMapping> getAllMappings() {
+        String sql = "SELECT MspLmInterfaceMappingId, StrategyName, SubstationName, PaobjectId " + " FROM " + TABLENAME;
+
+        return jdbcTemplate.query(sql, mspLMInterfaceMappingRowMapper);
+    }
+
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean remove(int mspLMInterfaceMappingId) {
-		String sql = "DELETE FROM " + TABLENAME + 
-					 " WHERE MspLmInterfaceMappingId = ?";
+    public boolean remove(int mspLMInterfaceMappingId) {
+        String sql = "DELETE FROM " + TABLENAME + " WHERE MspLmInterfaceMappingId = ?";
         int result = jdbcTemplate.update(sql, mspLMInterfaceMappingId);
         return (result == 1);
-	}
+    }
 
-	@Override
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
-	public boolean removeAllByStrategyName(String strategyName) {
-		String sql = "DELETE FROM " + TABLENAME + 
-					 " WHERE StrategyName = ?";
-		int result = jdbcTemplate.update(sql, strategyName);
-		return (result == 1);
-	}
+    public boolean removeAllByStrategyName(String strategyName) {
+        String sql = "DELETE FROM " + TABLENAME + " WHERE StrategyName = ?";
+        int result = jdbcTemplate.update(sql, strategyName);
+        return (result == 1);
+    }
 
-    private MspLmMapping createMspLMInterfaceMapping( ResultSet rset) throws SQLException {
+    private MspLmMapping createMspLMInterfaceMapping(ResultSet rset) throws SQLException {
 
         int mspLMInterfaceMappingID = rset.getInt(1);
         String strategyName = SqlUtils.convertDbValueToString(rset.getString(2).trim());
         String substationName = SqlUtils.convertDbValueToString(rset.getString(3).trim());
         int paobjectId = rset.getInt(4);
         String paoName = paoDao.getYukonPAOName(paobjectId);
-        
-        MspLmMapping mspLMInterfaceMapping = new MspLmMapping(mspLMInterfaceMappingID,
-        																		strategyName,
-        																		substationName,
-        																		paobjectId,
-        																		paoName);
+
+        MspLmMapping mspLMInterfaceMapping =
+            new MspLmMapping(mspLMInterfaceMappingID, strategyName, substationName, paobjectId, paoName);
         return mspLMInterfaceMapping;
     }
-    
+
     private int getNextMspLMInterfaceMappingId() {
         return nextValueHelper.getNextValue("MSPLMINTERFACEMAPPING");
     }
