@@ -24,54 +24,50 @@ import com.cannontech.user.UserUtils;
 
 public class EnrollmentMigrationTask extends TimeConsumingTask {
 
-	LiteStarsEnergyCompany energyCompany = null;
+    LiteStarsEnergyCompany energyCompany = null;
     int userID = UserUtils.USER_NONE_ID;
-    
     int numEnrolled = 0;
 
-	public EnrollmentMigrationTask() {
-		
-	}
-	
-	public EnrollmentMigrationTask (LiteStarsEnergyCompany energyCompany) {
-		this.energyCompany = energyCompany;
-	}
+    public EnrollmentMigrationTask() {
+    }
 
-	@Override
+    public EnrollmentMigrationTask(LiteStarsEnergyCompany energyCompany) {
+        this.energyCompany = energyCompany;
+    }
+
+    @Override
     public String getProgressMsg() {
-		if (status != STATUS_NOT_INIT) {
-		    return getImportProgress();
-		}
-		
-		return null;
-	}
-	
-	@Override
+        if (status != STATUS_NOT_INIT) {
+            return getImportProgress();
+        }
+        return null;
+    }
+
+    @Override
     public void run() {
 
-		status = STATUS_RUNNING;
-		
+        status = STATUS_RUNNING;
+
         try {
-            LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
-            LMHardwareConfigurationDao lmHardwareConfigurationDao = (LMHardwareConfigurationDao) YukonSpringHook.getBean("lmHardwareConfigurationDao");
+            LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean(LMHardwareControlGroupDao.class);
+            LMHardwareConfigurationDao lmHardwareConfigurationDao = (LMHardwareConfigurationDao) YukonSpringHook.getBean(LMHardwareConfigurationDao.class);
             /*
-             * only for the current energy company, this will save resources at a place like Xcel where
-             * we don't want to load ALL accounts all at once
-			 */
-            //TODO: Should pull the db transactions out of the loops.  Will speed things up and is much cleaner.
-            StarsCustAccountInformationDao starsCustAccountInformationDao = 
-                YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
-            InventoryBaseDao inventoryBaseDao = 
-            	YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
+             * only for the current energy company, this will save resources at
+             * a place like Xcel where we don't want to load ALL accounts all at once
+             */
+            // TODO: Should pull the db transactions out of the loops. Will speed things up and is much cleaner.
+            StarsCustAccountInformationDao starsCustAccountInformationDao = YukonSpringHook.getBean(StarsCustAccountInformationDao.class);
+            InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean(InventoryBaseDao.class);
             EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
-            boolean useHardwareAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, energyCompany.getEnergyCompanyId());
-            
+            boolean useHardwareAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING,
+                                                                               energyCompany.getEnergyCompanyId());
+
             List<LiteAccountInfo> custAcctInfoList = starsCustAccountInformationDao.getAll(energyCompany.getEnergyCompanyId());
-            for(LiteAccountInfo liteAcctInformation : custAcctInfoList) {
+            for (LiteAccountInfo liteAcctInformation : custAcctInfoList) {
                 LiteAccountInfo extendedAcctInformation = energyCompany.limitedExtendCustAccountInfo(liteAcctInformation);
                 List<LiteStarsAppliance> appList = extendedAcctInformation.getAppliances();
-                for(LiteStarsAppliance app : appList) {
-                    if(app.getProgramID() > 0 && app.getInventoryID() > 0 && app.getAccountID() > 0) {
+                for (LiteStarsAppliance app : appList) {
+                    if (app.getProgramID() > 0 && app.getInventoryID() > 0 && app.getAccountID() > 0) {
                         LiteLmHardwareBase liteHw = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(app.getInventoryID());
 
                         LMHardwareControlGroup controlGroup = new LMHardwareControlGroup();
@@ -79,13 +75,13 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
                         int groupId = app.getAddressingGroupID();
                         if (useHardwareAddressing) {
                             if (liteHw != null && liteHw.getLMConfiguration() != null) {
-                                int[] grpIDs = LMControlHistoryUtil.getControllableGroupIDs( liteHw.getLMConfiguration(), app.getLoadNumber());
-                                if (grpIDs != null && grpIDs.length >= 1){
+                                int[] grpIDs = LMControlHistoryUtil.getControllableGroupIDs(liteHw.getLMConfiguration(), app.getLoadNumber());
+                                if (grpIDs != null && grpIDs.length >= 1) {
                                     groupId = grpIDs[0];
                                 }
                             }
                         } else if (groupId == 0) {
-                            ProgramDao programDao = YukonSpringHook.getBean("starsProgramDao", ProgramDao.class);
+                            ProgramDao programDao = YukonSpringHook.getBean(ProgramDao.class);
                             groupId = programDao.getLoadGroupIdForProgramId(app.getProgramID());
                         }
                         controlGroup.setLmGroupId(groupId);
@@ -95,16 +91,17 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
                         controlGroup.setGroupEnrollStart(new Instant(liteHw.getInstallDate()));
                         controlGroup.setType(LMHardwareControlGroup.ENROLLMENT_ENTRY);
                         controlGroup.setUserIdFirstAction(energyCompany.getUser().getUserID());
-                        LMHardwareControlGroup existingEnrollment = 
-                            lmHardwareControlGroupDao.findCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(app.getInventoryID(), app.getProgramID(), app.getAccountID());
-                        if(existingEnrollment == null) {
+                        LMHardwareControlGroup existingEnrollment = lmHardwareControlGroupDao.findCurrentEnrollmentByInventoryIdAndProgramIdAndAccountId(app.getInventoryID(),
+                                                                                                                                                         app.getProgramID(),
+                                                                                                                                                         app.getAccountID());
+                        if (existingEnrollment == null) {
                             lmHardwareControlGroupDao.add(controlGroup);
                             numEnrolled++;
                         }
-                        
+
                         // update appliance/config, if groupId is different
-                        if ( app.getAddressingGroupID() != groupId ) {
-                            app.setAddressingGroupID( groupId );
+                        if (app.getAddressingGroupID() != groupId) {
+                            app.setAddressingGroupID(groupId);
                             LMHardwareConfiguration config = new LMHardwareConfiguration(app.getInventoryID(),
                                                                                          app.getApplianceID(),
                                                                                          groupId,
@@ -114,24 +111,19 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
                     }
                 }
             }
-            
-			status = STATUS_FINISHED;
-		}
-		catch (Exception e) 
-        {
-			if (status == STATUS_CANCELED) {
-				errorMsg = "Operation was canceled by user";
-			}
-			else {
-				CTILogger.error( e.getMessage(), e );
-				status = STATUS_ERROR;
+            status = STATUS_FINISHED;
+        } catch (Exception e) {
+            if (status == STATUS_CANCELED) {
+                errorMsg = "Operation was canceled by user";
+            } else {
+                CTILogger.error(e.getMessage(), e);
+                status = STATUS_ERROR;
+                errorMsg = e.getMessage();
+            }
+        }
+    }
 
-				errorMsg = e.getMessage();
-			}
-		}
-	}
-	
-	private String getImportProgress() {
+    private String getImportProgress() {
         return numEnrolled + " enrollments migrated successfully.";
-	}
+    }
 }
