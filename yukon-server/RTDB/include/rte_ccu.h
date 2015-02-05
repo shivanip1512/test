@@ -9,14 +9,6 @@ class IM_EX_DEVDB CtiRouteCCU : public CtiRouteXCU
 public:
     typedef std::set< CtiTableRepeaterRoute > RepeaterSet;
 
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiRouteCCU(const CtiRouteCCU&);
-    CtiRouteCCU& operator=(const CtiRouteCCU&);
-
 protected:
 
    CtiTableCarrierRoute    Carrier;

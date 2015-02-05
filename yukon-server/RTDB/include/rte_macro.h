@@ -13,13 +13,6 @@ namespace Routes {
 
 class IM_EX_DEVDB MacroRoute : public CtiRouteBase
 {
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    MacroRoute(const MacroRoute&);
-    MacroRoute& operator=(const MacroRoute&);
-
     typedef CtiRouteBase Inherited;
 
 protected:

@@ -12,16 +12,6 @@
 
 class IM_EX_CTIYUKONDB CtiTableDeviceCBC : public CtiMemDBObject, private boost::noncopyable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTableDeviceCBC(const CtiTableDeviceCBC&);
-    CtiTableDeviceCBC& operator=(const CtiTableDeviceCBC&);
-
-protected:
-
    LONG     _deviceID;
    INT      _serial;             // Versacom Serial number
    LONG     _routeID;            // the route (macro) which defines this device.

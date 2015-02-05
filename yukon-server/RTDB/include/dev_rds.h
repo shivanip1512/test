@@ -11,14 +11,6 @@ namespace Devices    {
 
 class IM_EX_DEVDB RDSTransmitter : public CtiDeviceRemote, protected OneWayMsgEncryption
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    RDSTransmitter(const RDSTransmitter&);
-    RDSTransmitter& operator=(const RDSTransmitter&);
-
 public:
 
     RDSTransmitter();

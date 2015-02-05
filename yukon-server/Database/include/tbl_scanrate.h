@@ -19,16 +19,6 @@
 
 class IM_EX_CTIYUKONDB CtiTableDeviceScanRate : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTableDeviceScanRate(const CtiTableDeviceScanRate&);
-    CtiTableDeviceScanRate& operator=(const CtiTableDeviceScanRate&);
-
-protected:
-
    LONG        _deviceID;
    LONG        _scanType;      // iScanRate, Accumulator, Integrity.
    INT         _scanGroup;

@@ -16,13 +16,6 @@ class StreamSocketListener;
 //-----------------------------------------------------------------------------
 class IM_EX_CTIBASE StreamSocketConnection : public StreamConnection
 {
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    StreamSocketConnection(const StreamSocketConnection&);
-    StreamSocketConnection& operator=(const StreamSocketConnection&);
-
 public:
 
     // These are ONLY set when the connection is opened, and remain unchanged for the life of the connection.

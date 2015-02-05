@@ -10,14 +10,6 @@ namespace Devices {
 
 class IM_EX_DEVDB Ccu721Device : public CtiDeviceRemote, public DeviceQueueInterface
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    Ccu721Device(const Ccu721Device&);
-    Ccu721Device& operator=(const Ccu721Device&);
-
     typedef CtiDeviceRemote Inherited;
 
     CtiTableDeviceAddress _address;

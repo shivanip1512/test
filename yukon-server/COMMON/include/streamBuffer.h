@@ -25,13 +25,6 @@ class StreamBuffer;
 template<class StreamBufferT>
 class IM_EX_CTIBASE StreamBufferBase : private boost::noncopyable
 {
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    StreamBufferBase(const StreamBufferBase&);
-    StreamBufferBase& operator=(const StreamBufferBase&);
-
     std::string _text;
     boost::scoped_ptr<std::ostringstream> _osstream;
 
@@ -131,13 +124,6 @@ public:
 
 class IM_EX_CTIBASE StreamBuffer : public StreamBufferBase<StreamBuffer>
 {
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    StreamBuffer(const StreamBuffer&);
-    StreamBuffer& operator=(const StreamBuffer&);
-
 public:
     StreamBuffer()
     {}
@@ -152,13 +138,6 @@ public:
 
 class IM_EX_CTIBASE StreamBufferSink : public StreamBufferBase<StreamBufferSink>
 {
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    StreamBufferSink(const StreamBufferSink&);
-    StreamBufferSink& operator=(const StreamBufferSink&);
-
 public:
     StreamBufferSink()
     {}

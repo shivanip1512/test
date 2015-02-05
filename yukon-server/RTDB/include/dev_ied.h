@@ -16,14 +16,6 @@ static const std::string TAP_HANDSHAKE_CPARM = "TAP_HANDSHAKE_FAIL_COUNT";
 
 class CtiDeviceIED : public CtiDeviceRemote
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiDeviceIED(const CtiDeviceIED&);
-    CtiDeviceIED& operator=(const CtiDeviceIED&);
-
 public:
       // possible states in our big list of state machines
     enum CtiMeterMachineStates_t

@@ -16,14 +16,6 @@
  */
 class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfoBase : private boost::noncopyable, public Cti::Loggable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTableDynamicPaoInfoBase(const CtiTableDynamicPaoInfoBase&);
-    CtiTableDynamicPaoInfoBase& operator=(const CtiTableDynamicPaoInfoBase&);
-
 protected:
 
     long _pao_id;
@@ -66,14 +58,6 @@ public:
  */
 class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfo : public CtiTableDynamicPaoInfoBase
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTableDynamicPaoInfo(const CtiTableDynamicPaoInfo&);
-    CtiTableDynamicPaoInfo& operator=(const CtiTableDynamicPaoInfo&);
-
 public:
 
     enum PaoInfoKeys
@@ -436,14 +420,6 @@ public:
  */
 class IM_EX_CTIYUKONDB CtiTableDynamicPaoInfoIndexed : public CtiTableDynamicPaoInfoBase
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTableDynamicPaoInfoIndexed(const CtiTableDynamicPaoInfoIndexed&);
-    CtiTableDynamicPaoInfoIndexed& operator=(const CtiTableDynamicPaoInfoIndexed&);
-
 public:
 
     enum PaoInfoKeysIndexed

@@ -75,12 +75,6 @@ class CtiDR87PorterSide;  // contained in this file at bottome
 class IM_EX_DEVDB CtiDeviceDR87 : public CtiDeviceMeter
 {
 private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiDeviceDR87(const CtiDeviceDR87&);
-    CtiDeviceDR87& operator=(const CtiDeviceDR87&);
 
     typedef CtiDeviceMeter Inherited;
 

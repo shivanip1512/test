@@ -11,14 +11,6 @@
 //This is the lite version of CtiTblPAO. The only string stored by this object is the name.
 class IM_EX_CTIYUKONDB CtiTblPAOLite : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTblPAOLite(const CtiTblPAOLite&);
-    CtiTblPAOLite& operator=(const CtiTblPAOLite&);
-
 protected:
 
     LONG           _paObjectID;

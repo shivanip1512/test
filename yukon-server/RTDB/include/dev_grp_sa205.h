@@ -2,20 +2,11 @@
 
 #include "dev_base.h"
 #include "dev_grp.h"
-#include "prot_sa205.h"
 #include "tbl_lmg_sa205105.h"
 
 
 class IM_EX_DEVDB CtiDeviceGroupSA205 : public CtiDeviceGroupBase
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiDeviceGroupSA205(const CtiDeviceGroupSA205&);
-    CtiDeviceGroupSA205& operator=(const CtiDeviceGroupSA205&);
-
     typedef CtiDeviceGroupBase Inherited;
 
     int _lastSTime;     // Holds the last sent message for the restore graceful command.

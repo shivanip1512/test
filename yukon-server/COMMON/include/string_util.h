@@ -97,13 +97,6 @@ public:
 
 class IM_EX_CTIBASE FormattedTable : public Loggable, private boost::noncopyable
 {
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    FormattedTable(const FormattedTable&);
-    FormattedTable& operator=(const FormattedTable&);
-
     class Input;
 
 public:
@@ -253,13 +246,6 @@ private:
 
 class IM_EX_CTIBASE FormattedList : public Loggable, private boost::noncopyable
 {
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    FormattedList(const FormattedList&);
-    FormattedList& operator=(const FormattedList&);
-
     struct Item
     {
         boost::optional<std::string> _name;

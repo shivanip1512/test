@@ -27,13 +27,6 @@
 
 class CtiMCServer : public CtiThread
 {
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiMCServer(const CtiMCServer&);
-    CtiMCServer& operator=(const CtiMCServer&);
-
 public:
 
     CtiMCServer();
@@ -79,7 +72,7 @@ private:
     // dispatch connection
     CtiClientConnection _dispatchConnection;
     Cti::WorkerThread   _dispatchThread;
-    
+
     void dispatchThreadFunc();
 
     bool init();

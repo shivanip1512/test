@@ -16,16 +16,6 @@
 
 class IM_EX_CTIYUKONDB CtiTableDynamicPointAlarming : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTableDynamicPointAlarming(const CtiTableDynamicPointAlarming&);
-    CtiTableDynamicPointAlarming& operator=(const CtiTableDynamicPointAlarming&);
-
-protected:
-
     LONG        _pointID;
     UINT        _alarmCondition;       // 0-31     Telling us which alarm this represents  Directly tied to point type & found in class CtiTablePointAlarming
     UINT        _categoryID;           // 0-255    Indicates AlarmCategory.AlarmCategoryID and ties over to Notification Group!

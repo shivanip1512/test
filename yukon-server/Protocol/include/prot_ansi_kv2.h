@@ -9,14 +9,6 @@
 
 class IM_EX_PROT CtiProtocolANSI_kv2 : public Cti::Protocols::Ansi::CtiProtocolANSI
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiProtocolANSI_kv2(const CtiProtocolANSI_kv2&);
-    CtiProtocolANSI_kv2& operator=(const CtiProtocolANSI_kv2&);
-
     typedef Cti::Protocols::Ansi::CtiProtocolANSI Inherited;
 
    public:

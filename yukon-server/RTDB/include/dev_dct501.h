@@ -7,16 +7,6 @@ namespace Devices {
 
 class IM_EX_DEVDB Dct501Device : public Mct24xDevice
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    Dct501Device(const Dct501Device&);
-    Dct501Device& operator=(const Dct501Device&);
-
-protected:
-
     enum
     {
         DCT_AnalogsPos = 0x67,
@@ -24,8 +14,6 @@ protected:
 
         DCT_LPChannels =    4
     };
-
-private:
 
     typedef Mct24xDevice Inherited;
 

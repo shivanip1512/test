@@ -327,14 +327,6 @@ typedef struct _AlphaPPlusLoadProfile_t
 
 class IM_EX_DEVDB CtiDeviceAlphaPPlus : public CtiDeviceAlpha
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiDeviceAlphaPPlus(const CtiDeviceAlphaPPlus&);
-    CtiDeviceAlphaPPlus& operator=(const CtiDeviceAlphaPPlus&);
-
     typedef CtiDeviceAlpha Inherited;
 
 public:

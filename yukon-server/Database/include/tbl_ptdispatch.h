@@ -15,16 +15,6 @@
 
 class IM_EX_CTIYUKONDB CtiTablePointDispatch : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTablePointDispatch(const CtiTablePointDispatch&);
-    CtiTablePointDispatch& operator=(const CtiTablePointDispatch&);
-
-protected:
-
     LONG           _pointID;
 
     CtiTime        _timeStamp;
@@ -34,8 +24,6 @@ protected:
 
     CtiTime        _nextArchiveTime;
     UINT           _tags;
-
-private:
 
     bool _pointIdInvalid;
 

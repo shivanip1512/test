@@ -6,30 +6,18 @@
 
 class IM_EX_PRTDB CtiPortDirect : public CtiPortSerial
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiPortDirect(const CtiPortDirect&);
-    CtiPortDirect& operator=(const CtiPortDirect&);
-
-protected:
-
    HANDLE                     _portHandle;
    CtiTablePortLocalSerial    _localSerial;
 
    CtiPortDialable            *_dialable;
 
-private:
+   DCB _dcb;
+   COMMTIMEOUTS _cto;
 
-    DCB _dcb;
-    COMMTIMEOUTS _cto;
-
-    int initPrivateStores();
-    int getPortInQueueCount();
-    int getPortOutQueueCount();
-    void clearPortCommError();
+   int initPrivateStores();
+   int getPortInQueueCount();
+   int getPortOutQueueCount();
+   void clearPortCommError();
 
 public:
 

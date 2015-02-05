@@ -6,14 +6,6 @@
 
 class IM_EX_DEVDB CtiDeviceGroupEmetcon : public CtiDeviceGroupBase
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiDeviceGroupEmetcon(const CtiDeviceGroupEmetcon&);
-    CtiDeviceGroupEmetcon& operator=(const CtiDeviceGroupEmetcon&);
-
     typedef CtiDeviceGroupBase Inherited;
 
 protected:

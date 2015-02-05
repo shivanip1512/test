@@ -16,16 +16,6 @@
 
 class IM_EX_CTIYUKONDB CtiTableCarrierRoute : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTableCarrierRoute(const CtiTableCarrierRoute&);
-    CtiTableCarrierRoute& operator=(const CtiTableCarrierRoute&);
-
-protected:
-
    LONG        _routeID;
    INT         Bus;                 // This is zero based in all code, 1 based in the DB!
    INT         CCUFixBits;

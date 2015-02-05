@@ -10,16 +10,6 @@
 
 class IM_EX_PROT CtiProtocolSA305 : private boost::noncopyable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiProtocolSA305(const CtiProtocolSA305&);
-    CtiProtocolSA305& operator=(const CtiProtocolSA305&);
-
-protected:
-
     enum {
         AddressTypeGroupFlag = 0x20,
         GroupFlag = 0x10,
@@ -35,9 +25,6 @@ protected:
         SA305StartBits = 0x04,
         CV326StartBits = 0x05,
     };
-
-
-private:
 
     int _padBits;            // For RTC trx this is 00b.
     int _startBits;         // May be 100 = "4" for SA305 or 101 = "5" for SA326 adaptive algorithm.

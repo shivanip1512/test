@@ -14,13 +14,6 @@ namespace Cti {
 template <class Outbound, class Inbound>
 class IM_EX_CTIBASE StreamLocalConnection : public StreamConnection
 {
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    StreamLocalConnection(const StreamLocalConnection&);
-    StreamLocalConnection& operator=(const StreamLocalConnection&);
-
     typedef boost::ptr_multiset<Outbound, priority_sort<Outbound> > queue_t;
     queue_t _outQueue;
 

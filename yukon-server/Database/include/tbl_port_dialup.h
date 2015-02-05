@@ -14,24 +14,12 @@
 
 class IM_EX_CTIYUKONDB CtiTablePortDialup : public CtiMemDBObject, private boost::noncopyable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTablePortDialup(const CtiTablePortDialup&);
-    CtiTablePortDialup& operator=(const CtiTablePortDialup&);
-
-protected:
-
    // PortDialupModem
    LONG             _portID;
    std::string      _modemType;
    std::string      _modemInitString;           // in struct [MODEMINITLENGTH];
    std::string      _prefixString;              // Pre Dial        - FIX FIX FIX
    std::string      _suffixString;              // Post Dial       - FIX FIX FIX
-
-private:
 
 public:
 

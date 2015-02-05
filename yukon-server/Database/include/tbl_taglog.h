@@ -20,16 +20,6 @@
 
 class IM_EX_CTIYUKONDB CtiTableTagLog : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTableTagLog(const CtiTableTagLog&);
-    CtiTableTagLog& operator=(const CtiTableTagLog&);
-
-protected:
-
     int             _logId;             // no two tags share the same one
     int             _instanceId;        // Matches the dynamictag entry.  Follows the life cycle of the tag.
     int             _pointId;           //

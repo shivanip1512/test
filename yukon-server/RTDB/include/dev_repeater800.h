@@ -7,14 +7,6 @@ namespace Devices {
 
 class IM_EX_DEVDB Repeater800Device : public Repeater900Device
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    Repeater800Device(const Repeater800Device&);
-    Repeater800Device& operator=(const Repeater800Device&);
-
    typedef Repeater900Device Inherited;
 
    static const CommandSet _commandStore;

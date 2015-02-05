@@ -17,16 +17,6 @@
 
 class IM_EX_PROT CtiProtocolSA3rdParty : public Cti::Protocols::Interface
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiProtocolSA3rdParty(const CtiProtocolSA3rdParty&);
-    CtiProtocolSA3rdParty& operator=(const CtiProtocolSA3rdParty&);
-
-protected:
-
     enum
     {
         sac_unspec = 16,
@@ -56,8 +46,6 @@ protected:
      * The produced value will be equal or larger than the requested parse.  If the parse is unsuccessful, the result will be -1.
      */
     int solveStrategy(CtiCommandParser &parse);
-
-private:
 
     // The data below is used to identify the strategy in a Versacomesque fashion.  This data is converted to the closest equal or higher control values.
     int _period;          // Cycle Time. 7.5*60, 15*60, 20*60, 30*60, & 60*60 are valid values.

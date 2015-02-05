@@ -9,16 +9,6 @@
 
 class IM_EX_CTIYUKONDB CtiTblDeviceReadJobLog : private boost::noncopyable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTblDeviceReadJobLog(const CtiTblDeviceReadJobLog&);
-    CtiTblDeviceReadJobLog& operator=(const CtiTblDeviceReadJobLog&);
-
-protected:
-
     long _jobLogId;
     long _scheduleId;
     CtiTime _startTime;

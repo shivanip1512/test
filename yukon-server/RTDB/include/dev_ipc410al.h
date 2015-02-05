@@ -8,14 +8,6 @@ namespace Devices {
 
 class IM_EX_DEVDB Ipc410ALDevice : public CtiDeviceFocus
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    Ipc410ALDevice(const Ipc410ALDevice&);
-    Ipc410ALDevice& operator=(const Ipc410ALDevice&);
-
 public:
 
    typedef CtiDeviceFocus Inherited;

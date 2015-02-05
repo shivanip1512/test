@@ -10,30 +10,13 @@
 
 class IM_EX_CTIYUKONDB CtiTablePortBase : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTablePortBase(const CtiTablePortBase&);
-    CtiTablePortBase& operator=(const CtiTablePortBase&);
-
-protected:
-
-    // Original CommPort Table
-    //LONG          PortID;
-    //string     Description;                   // This is no longer used as the name in porter anywhere!!!
-    //INT           Type;
-
     UINT _protocol;              // 32 protocols.
     bool _alarmInhibit;
 
     std::string _sharedPortType;
     INT _sharedSocketNumber;
 
-private:
-
-    public:
+public:
 
     typedef CtiMemDBObject Inherited;
 

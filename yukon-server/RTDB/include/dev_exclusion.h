@@ -17,14 +17,6 @@ typedef boost::shared_ptr< CtiDeviceExclusion > CtiExclusionSPtr;
 
 class IM_EX_DEVDB CtiDeviceExclusion : private boost::noncopyable, public Cti::Loggable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiDeviceExclusion(const CtiDeviceExclusion&);
-    CtiDeviceExclusion& operator=(const CtiDeviceExclusion&);
-
 public:
 
     typedef std::vector< CtiTablePaoExclusion > exclusions;

@@ -329,14 +329,6 @@ typedef struct
 
 class IM_EX_DEVDB CtiDeviceLandisGyrS4 : public CtiDeviceMeter
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiDeviceLandisGyrS4(const CtiDeviceLandisGyrS4&);
-    CtiDeviceLandisGyrS4& operator=(const CtiDeviceLandisGyrS4&);
-
     typedef CtiDeviceMeter Inherited;
 
     INT            iCommandPacket;

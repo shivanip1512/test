@@ -17,14 +17,6 @@ class IM_EX_DEVDB Mct4xxDevice :
     public MctDevice,
     protected Commands::Mct4xxCommand::ResultHandler
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    Mct4xxDevice(const Mct4xxDevice&);
-    Mct4xxDevice& operator=(const Mct4xxDevice&);
-
 protected:
 
     typedef std::vector<const char *> ConfigPartsList;

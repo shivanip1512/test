@@ -15,16 +15,6 @@
 
 class IM_EX_CTIYUKONDB CtiTableEmetconLoadGroup : public CtiMemDBObject, private boost::noncopyable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiTableEmetconLoadGroup(const CtiTableEmetconLoadGroup&);
-    CtiTableEmetconLoadGroup& operator=(const CtiTableEmetconLoadGroup&);
-
-protected:
-
    LONG  _deviceID;
    INT   _silver;             // Zero based once in here!
    INT   _gold;               // Zero based once in here!

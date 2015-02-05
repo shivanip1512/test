@@ -11,16 +11,6 @@
 
 class IM_EX_PROT CtiProtocolFisherPierceCBC : private boost::noncopyable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiProtocolFisherPierceCBC(const CtiProtocolFisherPierceCBC&);
-    CtiProtocolFisherPierceCBC& operator=(const CtiProtocolFisherPierceCBC&);
-
-protected:
-
    INT      _last;
 
    std::list< FPSTRUCT* >  _fst;

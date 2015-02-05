@@ -46,14 +46,6 @@ typedef enum
 
 class IM_EX_PROT  CtiProtocolANSI_focus: public Cti::Protocols::Ansi::CtiProtocolANSI
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiProtocolANSI_focus(const CtiProtocolANSI_focus&);
-    CtiProtocolANSI_focus& operator=(const CtiProtocolANSI_focus&);
-
     typedef Cti::Protocols::Ansi::CtiProtocolANSI Inherited;
 
    public:
@@ -75,8 +67,8 @@ private:
    private:
 
         CtiAnsiFocusMfgTable04  *_table04;
-        CtiAnsiFocusMfgTable13  *_table13; 
-        CtiAnsiFocusMfgTable24  *_table24; 
+        CtiAnsiFocusMfgTable13  *_table13;
+        CtiAnsiFocusMfgTable24  *_table24;
 
 
 };

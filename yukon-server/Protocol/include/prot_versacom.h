@@ -109,23 +109,11 @@ class CtiRequestMsg;
 
 class IM_EX_PROT CtiProtocolVersacom : private boost::noncopyable
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiProtocolVersacom(const CtiProtocolVersacom&);
-    CtiProtocolVersacom& operator=(const CtiProtocolVersacom&);
-
-protected:
-
    INT      _transmitterType;
    INT      _addressMode;           // Bookkeeping info used to build a full message
    INT      _last;
 
    std::list< VSTRUCT* >  _vst;
-
-private:
 
    UINT VersacomControlDuration(UINT type, UINT controltime);
    UINT VersacomControlDurationEx(UINT type, UINT controltime);
@@ -140,10 +128,6 @@ private:
     *-------------------------------------------------------------------------*/
    INT adjustVersacomAddress(VSTRUCT &vTemp, ULONG Serial, UINT Uid, UINT Section, UINT Class, UINT Division);
    void removeLastVStruct();
-
-
-
-
 
    INT setNibble (INT iNibble, INT iValue);
 

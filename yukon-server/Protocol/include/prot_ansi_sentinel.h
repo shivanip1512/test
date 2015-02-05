@@ -13,14 +13,6 @@
 
 class IM_EX_PROT CtiProtocolANSI_sentinel: public Cti::Protocols::Ansi::CtiProtocolANSI
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiProtocolANSI_sentinel(const CtiProtocolANSI_sentinel&);
-    CtiProtocolANSI_sentinel& operator=(const CtiProtocolANSI_sentinel&);
-
     typedef Cti::Protocols::Ansi::CtiProtocolANSI Inherited;
 
    public:

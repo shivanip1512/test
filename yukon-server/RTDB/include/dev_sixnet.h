@@ -18,8 +18,6 @@ struct CtiSixnetLPData
 
 class CtiSxlRecord
 {
-protected:
-
     CtiTime        _ptTime;        // When this all went and happened.
     CtiPointType_t _ptType;        // Corresponds to the types in pointtypes.h
     int            _ptOffset;      // 1 based offset on this device for this point type.
@@ -92,14 +90,6 @@ public:
 
 class IM_EX_DEVDB CtiDeviceSixnet : public CtiDeviceIED
 {
-private:
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    CtiDeviceSixnet(const CtiDeviceSixnet&);
-    CtiDeviceSixnet& operator=(const CtiDeviceSixnet&);
-
     typedef CtiDeviceIED Inherited;
 
 public:

@@ -17,13 +17,6 @@ namespace Porter {
 
 class SystemMsgThread : public CtiThread
 {
-    // WORKAROUND:
-    // Declare copy ctor and assignment operator private with no implementation
-    // MSVC2008 and 2010 do not prevent copying if a class is DLLEXPORT
-    // http://stackoverflow.com/questions/7482891/inheriting-noncopyable-has-no-effect-in-dllexport-classes
-    SystemMsgThread(const SystemMsgThread&);
-    SystemMsgThread& operator=(const SystemMsgThread&);
-
     CtiDeviceManager     &_devManager;
     CtiPortManager       &_portManager;
     StreamLocalConnection<OUTMESS, INMESS> &_pilToPorter;
