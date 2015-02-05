@@ -69,10 +69,6 @@ struct RSP_DATA_RCD
 
 class IM_EX_PROT CtiAnsiTable08 : public CtiAnsiTableBase
 {
-protected:
-
-
-private:
     struct TBL_IDB_BFLD
     {
        unsigned short   tbl_proc_nbr:11;

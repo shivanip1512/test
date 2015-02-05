@@ -109,11 +109,8 @@
 
 class IM_EX_PROT CtiAnsiTable15 : public CtiAnsiTableBase
 {
-protected:
-
    CONSTANTS_SELECT        *_constants_table;
 
-private:
     int _RawConstantsSelector;
     int _NumberConstantsEntries;
     bool _NoOffsetFlag;

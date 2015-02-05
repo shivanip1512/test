@@ -13,8 +13,6 @@
 
 class IM_EX_SIGNAL CtiTableSignal : public CtiMemDBObject
 {
-protected:
-
     LONG     _logID;
     LONG     _pointID;
     CtiTime  _time;

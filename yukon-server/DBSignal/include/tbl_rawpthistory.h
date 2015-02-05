@@ -5,8 +5,6 @@
 
 class IM_EX_SIGNAL CtiTableRawPointHistory
 {
-protected:
-
    long    _pointId;
    CtiTime _time;
    int     _millis;

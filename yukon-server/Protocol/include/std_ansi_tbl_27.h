@@ -7,14 +7,11 @@
 
 #define UINT16             __int16
 #define UINT8               __int8
+
 class IM_EX_PROT CtiAnsiTable27 : public CtiAnsiTableBase
 {
-protected:
-
   unsigned char *_presentDemandSelect;
   unsigned char *_presentValueSelect;
-
-private:
 
     UINT8 _nbrPresentDemands;
     UINT8 _nbrPresentValues;

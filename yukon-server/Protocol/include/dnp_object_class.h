@@ -8,8 +8,6 @@ namespace DNP {
 
 class Class : public Object
 {
-protected:
-
 public:
     Class(int variation);
 

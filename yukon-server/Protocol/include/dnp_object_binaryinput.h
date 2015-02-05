@@ -59,7 +59,6 @@ public:
 
 class BinaryInputChange : public BinaryInput
 {
-protected:
     Time      _time;
     TimeDelay _timeRelative;
 

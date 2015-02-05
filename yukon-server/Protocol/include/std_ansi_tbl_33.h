@@ -38,13 +38,7 @@ struct PRI_DISP_LIST_RCD
 
 class IM_EX_PROT CtiAnsiTable33 : public CtiAnsiTableBase
 {
-protected:
-
-
     PRI_DISP_LIST_RCD  _priDispListTable;
-
-
-private:
 
     UINT16 _nbrPriDispListItems;
     UINT8 _nbrPriDispLists;

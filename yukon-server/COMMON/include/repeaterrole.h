@@ -4,8 +4,6 @@
 
 class IM_EX_CTIBASE CtiDeviceRepeaterRole
 {
-protected:
-
     LONG _routeID;           // What route did this info come from.. Used only as info.
     int _roleNumber;         // What role number has been assigned to this route id.. Used only as info.
 

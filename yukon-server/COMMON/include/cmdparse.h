@@ -19,7 +19,6 @@ enum CtiClientRequest_t;  //  forward declaration, defined at end of file
 
 class IM_EX_CTIBASE CtiCommandParser
 {
-protected:
    std::string                              _cmdString;
    std::list< std::string >                 _actionItems;
 
@@ -28,8 +27,6 @@ protected:
    UINT _flags;
    CtiClientRequest_t _command;
    bool _wasExternallyModified; // Set if someone other than parse() sets cmd flags.
-
-private:
 
     void    doParse(const std::string &Cmd);
     void    doParseGetValue (const std::string &CmdStr);

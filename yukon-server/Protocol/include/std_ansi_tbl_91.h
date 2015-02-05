@@ -44,12 +44,7 @@ struct TELEPHONE_RCD
 
 class IM_EX_PROT CtiAnsiTable91 : public CtiAnsiTableBase
 {
-protected:
-
    TELEPHONE_RCD      _telephoneTbl;
-
-private:
-
 
 public:
 

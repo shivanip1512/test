@@ -15,7 +15,6 @@ using boost::shared_ptr;
 
 class IM_EX_PNTDB CtiPointNumeric : public CtiPointBase
 {
-protected:
    CtiTablePointUnit    _pointUnits;
 
 public:

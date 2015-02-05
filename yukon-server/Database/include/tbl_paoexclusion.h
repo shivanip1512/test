@@ -6,8 +6,6 @@
 
 class IM_EX_CTIYUKONDB CtiTablePaoExclusion : public Cti::Loggable
 {
-protected:
-
     long        _exclusionId;       // This is an index column.  Not used by exclusion logic.
     long        _paoId;             // This is the pao which "owns" this exclusion information.  It may apply to this pao too.
     long        _excludedPaoId;     // This is the pao which is excluded if the logic reports a "yes".  It may be the pao.
@@ -23,8 +21,6 @@ protected:
     int         _cycleOffset;
     int         _transmitTime;
     int         _maxTransmitTime;
-
-private:
 
 public:
 

@@ -52,11 +52,7 @@
 
 class IM_EX_PROT CtiAnsiBillingTable : public CtiAnsiTableBase
 {
-protected:
-
    BILLING_TABLE    _billingTable;
-
-private:
 
 public:
 

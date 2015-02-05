@@ -9,8 +9,6 @@
 
 class IM_EX_CTIYUKONDB CtiTableDeviceScanData : public CtiMemDBObject
 {
-protected:
-
    LONG                 _deviceID;
 
    CtiTime         lastFreezeTime;
@@ -23,9 +21,8 @@ protected:
    CtiTime         _nextScan[ScanRateInvalid];
    CtiTime               _lastCommunicationTime[ScanRateInvalid];
 
-private:
+public:
 
-   public:
    CtiTableDeviceScanData(LONG did = 0);
    CtiTableDeviceScanData(const CtiTableDeviceScanData& aRef);
    virtual ~CtiTableDeviceScanData();

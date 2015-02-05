@@ -11,16 +11,11 @@
 
 class IM_EX_PROT CtiAnsiTable22 : public CtiAnsiTableBase
 {
-protected:
-
    unsigned char        *_summation_select;
    unsigned char        *_demand_select;
    unsigned char        *_set;
    unsigned char        *_coincident_select;
    unsigned char        *_coin_demand_assoc;
-
-
-private:
 
    int   _demandSelectSize;
    int   _totalTableSize;

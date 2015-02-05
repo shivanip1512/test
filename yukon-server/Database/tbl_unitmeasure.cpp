@@ -15,10 +15,7 @@ CtiTableUnitMeasure::~CtiTableUnitMeasure() {}
 
 void CtiTableUnitMeasure::DecodeDatabaseReader(Cti::RowReader &rdr)
 {
-   //rdr  >> _uomName;
    rdr  >> _calcType;
-   //rdr  >> _longName;
-   //rdr  >> _formula;
 }
 
 std::string CtiTableUnitMeasure::toString() const
@@ -31,24 +28,8 @@ std::string CtiTableUnitMeasure::toString() const
     return itemList.toString();
 }
 
-/*string CtiTableUnitMeasure::getUOMName() const
-{
-   return _uomName;
-}*/
-
 int CtiTableUnitMeasure::getCalcType() const
 {
    return _calcType;
 }
-
-/*string CtiTableUnitMeasure::getLongName() const
-{
-   return _longName;
-}*/
-
-/*string CtiTableUnitMeasure::getFormula() const
-{
-   return _formula;
-}*/
-
 

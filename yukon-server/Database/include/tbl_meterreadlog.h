@@ -16,15 +16,11 @@ using boost::shared_ptr;
 
 class IM_EX_CTIYUKONDB CtiTableMeterReadLog
 {
-protected:
-
     long _logID;
     long _deviceID;
     long _requestID;
     long _statusCode;
     CtiTime _time;
-
-private:
 
 public:
 

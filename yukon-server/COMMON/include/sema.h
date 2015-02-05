@@ -6,10 +6,6 @@
 
 class IM_EX_CTIBASE CtiSemaphore
 {
-protected:
-
-    private:
-
     HANDLE hSema;
 #ifdef DEBUG
     DWORD  _threadID;

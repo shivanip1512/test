@@ -20,8 +20,6 @@
 
 class IM_EX_CTIYUKONDB CtiTableDynamicTag : public CtiMemDBObject, public Cti::Loggable
 {
-protected:
-
     int             _instanceId;        // no two tags share the same one
     int             _pointId;           //
     int             _tagid;             // refers to id in tag table

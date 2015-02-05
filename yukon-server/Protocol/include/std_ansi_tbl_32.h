@@ -14,22 +14,11 @@ struct DISP_SOURCE_DESC_RCD
     UINT8 *displaySource;
 };
 
-/*struct DISPLAY_SOURCE_RCD
-{
-    DISP_SOURCE_DESC_RCD  *displaySources;
-}; */
-
 #pragma pack( pop )
 
 class IM_EX_PROT CtiAnsiTable32 : public CtiAnsiTableBase
 {
-protected:
-
-  //DISPLAY_SOURCE_RCD *_displaySourceTable;
     DISP_SOURCE_DESC_RCD  *_displaySources;
-
-
-private:
 
     UINT16 _nbrDispSources;
     UINT8 _widthDispSources;

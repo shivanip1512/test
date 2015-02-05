@@ -13,11 +13,6 @@
 
 class IM_EX_PROT CtiAnsiTable25 : public CtiAnsiTableBase
 {
-protected:
-
-
-private:
-
     BOOL _dateTimeFieldFlag;
     BOOL _seasonInfoFieldFlag;
 
@@ -28,8 +23,6 @@ private:
 
 public:
 
-   //CtiAnsiTable25( BOOL dateTimeFieldFlag, BOOL seasonInfoFieldFlag );
-   //CtiAnsiTable25( BYTE *dataBlob, BOOL dateTimeFieldFlag, BOOL seasonInfoFieldFlag );
    CtiAnsiTable25( int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,
                          int f1, int f2, int timeformat, bool season );
    CtiAnsiTable25( BYTE *dataBlob, int oc, int sum, int demnd, int coin, int tier, bool reset, bool time, bool cumd, bool cumcont,

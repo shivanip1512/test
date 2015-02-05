@@ -43,13 +43,9 @@ struct LP_STATUS_RCD
 
 class IM_EX_PROT CtiAnsiTable63 : public CtiAnsiTableBase
 {
-protected:
-
    LP_STATUS_RCD      _lp_status_tbl;
 
-private:
-
-    bool _lpCtrlDataSetUsed[4];
+   bool _lpCtrlDataSetUsed[4];
 
 public:
 

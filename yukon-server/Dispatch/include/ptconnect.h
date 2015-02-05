@@ -11,8 +11,6 @@
 
 class IM_EX_CTIVANGOGH CtiPointConnection
 {
-protected:
-
    // Vector of managers who care about this point.
    typedef std::set< CtiServer::ptr_type > CollectionType;
    CollectionType ConnectionManagerCollection;

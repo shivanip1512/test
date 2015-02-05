@@ -27,8 +27,6 @@
 
 class IM_EX_CTIYUKONDB CtiTableLMControlHistory: public CtiMemDBObject, public Cti::Loggable
 {
-protected:
-
     LONG        _lmControlHistID;
     LONG        _paoID;
     CtiTime     _startDateTime;          // represents the time at which control was begun
@@ -50,8 +48,6 @@ protected:
     CtiTime      _prevLogTime;            // Not stored, but used to determine relative positions of controls
     CtiTime      _prevStopReportTime;
     int          _reductionRatio;         // Needed to compute the contribution of cycles
-
-private:
 
     bool _isNewControl;
     static CtiMutex    _soeMux;
@@ -163,7 +159,7 @@ public:
 
     static bool deleteOutstandingControls();
     static bool updateCompletedOutstandingControls();
- 
+
     static std::string getSQLCoreStatement();
     static std::string getSQLCoreStatementIncomplete();
     static std::string getSQLCoreStatementOutstanding();

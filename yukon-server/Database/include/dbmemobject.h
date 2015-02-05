@@ -19,9 +19,6 @@ protected:
         };
     };
 
-
-private:
-
 public:
     CtiMemDBObject() :
     Flag(0)

@@ -32,8 +32,6 @@ struct REG_FUNC2_BFLD
 
 class IM_EX_PROT CtiAnsiTable21 : public CtiAnsiTableBase
 {
-protected:
-
    REG_FUNC1_BFLD       _reg_func1_flags;
    REG_FUNC2_BFLD       _reg_func2_flags;
    unsigned char        _nbr_self_reads;
@@ -44,8 +42,6 @@ protected:
    unsigned char        _tiers;
    unsigned char        _nbr_present_demands;
    unsigned char        _nbr_present_values;
-
-private:
 
    int                  _tier;
 

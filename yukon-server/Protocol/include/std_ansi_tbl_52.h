@@ -67,17 +67,13 @@
 
 class IM_EX_PROT CtiAnsiTable52 : public CtiAnsiTableBase
 {
-protected:
-
    CLOCK_STATE_RCD      clock_table;
 
-private:
+   int _timefmt;
 
-    int _timefmt;
+   ULONG _meterServerTimeDifference;
 
-    ULONG _meterServerTimeDifference;
-
-    bool meterTimeIsGMT() const;
+   bool meterTimeIsGMT() const;
 
 public:
 

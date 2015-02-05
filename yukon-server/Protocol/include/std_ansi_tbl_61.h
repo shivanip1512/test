@@ -62,14 +62,8 @@ struct LP_SET_RCD
 
 class IM_EX_PROT CtiAnsiTable61 : public CtiAnsiTableBase
 {
-protected:
-
    LP_SET_RCD      _lp_tbl;
    bool _lpDataSetUsed[4];
-
-
-
-private:
 
 public:
 

@@ -32,11 +32,7 @@ struct DISP_RCD
 
 class IM_EX_PROT CtiAnsiTable31 : public CtiAnsiTableBase
 {
-protected:
-
   DISP_RCD _displayTable;
-
-private:
 
 public:
 

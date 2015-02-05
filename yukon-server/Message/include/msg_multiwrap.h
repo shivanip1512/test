@@ -5,11 +5,7 @@
 
 class IM_EX_MSG CtiMultiWrapper
 {
-protected:
-
    CtiMultiMsg *_pMulti;
-
-private:
 
 public:
    CtiMultiWrapper(CtiMultiMsg *pMsg = NULL);

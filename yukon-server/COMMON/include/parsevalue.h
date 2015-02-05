@@ -5,8 +5,6 @@
 
 class CtiParseValue
 {
-protected:
-
    std::string      _str;
    INT            _int;
    double         _dbl;
@@ -20,8 +18,6 @@ protected:
          UINT     _dValid : 1;
       };
    };
-
-private:
 
 public:
 

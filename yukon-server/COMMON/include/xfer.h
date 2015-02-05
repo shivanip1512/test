@@ -7,8 +7,6 @@ class CtiDeviceBase;
 
 class IM_EX_CTIBASE CtiXfer
 {
-protected:
-
    BYTE     *_outBuffer;
    ULONG    _outCount;
 
@@ -35,8 +33,6 @@ protected:
    };
 
    ULONG    _remoteToTrace;
-
-private:
 
 public:
 

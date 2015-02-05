@@ -6,19 +6,13 @@
 class CtiServer;
 
 
-class IM_EX_CTIVANGOGH CtiSignalExecutor : public CtiExecutor
+struct IM_EX_CTIVANGOGH CtiSignalExecutor : public CtiExecutor
 {
-protected:
-
-private:
-
-public:
    CtiSignalExecutor(CtiMessage *p = NULL) :
       CtiExecutor(p);
 
    CtiSignalExecutor(const CtiSignalExecutor& aRef);
    virtual ~CtiSignalExecutor();
-
 
    YukonError_t ServerExecute(CtiServer *Svr);
 };

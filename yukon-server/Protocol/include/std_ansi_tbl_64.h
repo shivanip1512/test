@@ -89,11 +89,8 @@ struct LP_DATA_SET1_RCD
 
 class IM_EX_PROT CtiAnsiTable64 : public CtiAnsiTableBase
 {
-protected:
-
    LP_DATA_SET1_RCD      _lp_data_set1_tbl;
 
-private:
     int   _nbrBlksSet1;
     int   _nbrChnsSet1;
     bool  _closureStatusFlag;
@@ -113,7 +110,6 @@ private:
     DataOrder  _dataOrder;
     bool  _descBlockOrder;
     bool  _descIntervalOrder;
-
 
 public:
 

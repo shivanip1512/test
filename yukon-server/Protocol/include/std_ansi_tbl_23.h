@@ -35,13 +35,9 @@ struct DATA_BLK_RCD
 
 class IM_EX_PROT CtiAnsiTable23 : public CtiAnsiTableBase
 {
-protected:
-
    unsigned char        _nbr_demand_resets;
    DATA_BLK_RCD         _tot_data_block;
    DATA_BLK_RCD         *_tier_data_block;
-
-private:
 
    int                  _totSize;
    int                  _ocNums;
@@ -59,7 +55,6 @@ private:
    DataOrder                 _dataOrder;
 
    int                  _tablePrintNumber;
-
 
 public:
 

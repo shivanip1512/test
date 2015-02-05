@@ -68,8 +68,6 @@ public:
 
 class CounterFrozen : public Counter
 {
-protected:
-
 public:
     CounterFrozen(int variation);
 
@@ -110,8 +108,6 @@ public:
 
 class CounterEvent : public Counter
 {
-protected:
-
     Time _toc;
 
 public:
@@ -147,8 +143,6 @@ public:
 
 class CounterFrozenEvent : public Object
 {
-protected:
-
 public:
     CounterFrozenEvent(int variation);
 

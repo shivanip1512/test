@@ -32,8 +32,6 @@ struct FORMAT_CONTROL_3
 
 class IM_EX_PROT CtiAnsiTable00 : public CtiAnsiTableBase
 {
-protected:
-
    FORMAT_CONTROL_1  _control_1;
    FORMAT_CONTROL_2  _control_2;
    FORMAT_CONTROL_3  _control_3;
@@ -56,8 +54,6 @@ protected:
    unsigned char     *_mfg_proc_used;
    unsigned char     *_std_tbls_write;
    unsigned char     *_mfg_tbls_write;
-
-private:
 
 public:
 
@@ -105,9 +101,9 @@ public:
     void printResult( const std::string& deviceName );
 
     CtiAnsiTable00( BYTE *dataBlob );
-   
+
     virtual ~CtiAnsiTable00();
-   
+
     CtiAnsiTable00& operator=(const CtiAnsiTable00& aRef);
 
 };

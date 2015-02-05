@@ -163,14 +163,8 @@ struct TIME_DATE_QUAL_BFLD
    unsigned char        filler               :1;
 };
 
-class IM_EX_PROT CtiAnsiTableBase
+struct IM_EX_PROT CtiAnsiTableBase
 {
-protected:
-
-private:
-
-public:
-
    void reverseOrder(  BYTE *source, int length );
    int toDoubleParser( BYTE *source, double &result, int format, DataOrder dataOrder = LSB );
    int toAnsiIntParser( BYTE *source, void *result, size_t length,  DataOrder dataOrder = LSB );

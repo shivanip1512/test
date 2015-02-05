@@ -4,14 +4,10 @@
 
 class CtiDispatchService : public CService
 {
-protected:
-
    virtual void OnStop();
    virtual void Init();
    virtual void DeInit();
    virtual void ParseArgs(DWORD argc, LPTSTR* argv);
-
-private:
 
    BOOL _quit;
 

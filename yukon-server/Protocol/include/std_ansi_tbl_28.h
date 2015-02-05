@@ -20,20 +20,16 @@ struct PRESENT_DEMAND_RCD
 
 class IM_EX_PROT CtiAnsiTable28 : public CtiAnsiTableBase
 {
-protected:
-
   PRESENT_DEMAND_RCD *_presentDemand;
   double *_presentValue;
 
-private:
-
-    UINT8 _nbrPresentDemands;
-    UINT8 _nbrPresentValues;
-    bool _timeRemainingFlag;
-    int _format1;
-    int _format2;
-    int _timefmt;
-    DataOrder _dataOrder;
+  UINT8 _nbrPresentDemands;
+  UINT8 _nbrPresentValues;
+  bool _timeRemainingFlag;
+  int _format1;
+  int _format2;
+  int _timefmt;
+  DataOrder _dataOrder;
 
 public:
 

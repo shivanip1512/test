@@ -8,9 +8,7 @@ namespace Commands {
 
 class Mct420Command : public Mct410Command
 {
-protected:
-
-    virtual request_ptr error(const CtiTime now, const YukonError_t error_code, std::string &description);
+    request_ptr error(const CtiTime now, const YukonError_t error_code, std::string &description) override;
 };
 
 }

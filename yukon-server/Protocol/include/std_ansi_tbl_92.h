@@ -27,12 +27,7 @@ struct GLOBAL_PARMS_RCD
 
 class IM_EX_PROT CtiAnsiTable92 : public CtiAnsiTableBase
 {
-protected:
-
    GLOBAL_PARMS_RCD      _globalParmsTbl;
-
-private:
-
 
 public:
 

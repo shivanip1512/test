@@ -46,8 +46,6 @@ public:
 
 class TimeCTO : public Time
 {
-protected:
-
 public:
     TimeCTO(int variation);
 
@@ -72,10 +70,7 @@ public:
 
 class TimeDelay : public Object
 {
-private:
     unsigned long _delay;
-
-protected:
 
 public:
     TimeDelay(int variation);

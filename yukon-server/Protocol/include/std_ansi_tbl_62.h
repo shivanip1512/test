@@ -39,22 +39,18 @@ struct LP_DATA_SELECTION_RCD
 
 class IM_EX_PROT CtiAnsiTable62 : public CtiAnsiTableBase
 {
-protected:
-
    LP_DATA_SELECTION_RCD      _lp_ctrl_tbl;
    bool _lpCtrlDataSetUsed[4];
    bool _scalarDivisorFlagSet[4];
    UINT8 _numChansSet[4];
    int _stdVerNumber;
 
-private:
-
 public:
 
     CtiAnsiTable62( BYTE *dataBlob, bool *dataSetUsedFlag, LP_DATA_SET *lp_data_set_info, bool scalarDivisorFlag1,
                      bool scalarDivisorFlag2, bool scalarDivisorFlag3, bool scalarDivisorFlag4,
                      int stdVersionNumber, DataOrder dataOrder = LSB );
-    
+
     virtual ~CtiAnsiTable62();
 
     CtiAnsiTable62& operator=(const CtiAnsiTable62& aRef);

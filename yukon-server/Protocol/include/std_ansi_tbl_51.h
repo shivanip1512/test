@@ -49,11 +49,7 @@ struct TIME_TOU_RCD
 
 class IM_EX_PROT CtiAnsiTable51 : public CtiAnsiTableBase
 {
-protected:
-
    TIME_TOU_RCD      _time_tou;
-
-private:
 
 public:
 

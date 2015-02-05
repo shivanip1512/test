@@ -11,8 +11,6 @@ class CtiIONStructArrayTemplate;
 
 class CtiIONLogRecord : public CtiIONStruct
 {
-protected:
-
     friend class CtiIONStructArrayTemplate<CtiIONLogRecord>;
     CtiIONLogRecord();
 
@@ -37,8 +35,6 @@ public:
 
 class CtiIONAlarm : public CtiIONStruct
 {
-protected:
-
     friend class CtiIONStructArrayTemplate<CtiIONAlarm>;
     CtiIONAlarm();
 
@@ -59,8 +55,6 @@ public:
 
 class CtiIONEvent : public CtiIONStruct
 {
-protected:
-
     friend class CtiIONStructArrayTemplate<CtiIONEvent>;
     CtiIONEvent();
 
@@ -94,8 +88,6 @@ public:
 
 class CtiIONRange : public CtiIONStruct
 {
-protected:
-
     friend class CtiIONStructArrayTemplate<CtiIONRange>;
     CtiIONRange();
 
@@ -114,8 +106,6 @@ public:
 
 class CtiIONList : public CtiIONStruct
 {
-protected:
-
     friend class CtiIONStructArrayTemplate<CtiIONList>;
     CtiIONList();
 
@@ -128,8 +118,6 @@ public:
 
 class CtiIONException : public CtiIONStruct
 {
-protected:
-
     friend class CtiIONStructArrayTemplate<CtiIONException>;
     CtiIONException();
 
@@ -152,8 +140,6 @@ public:
 
 class CtiIONWaveform : public CtiIONStruct
 {
-protected:
-
     friend class CtiIONStructArrayTemplate<CtiIONWaveform>;
     CtiIONWaveform();
 
@@ -176,8 +162,6 @@ public:
 
 class CtiIONDate : public CtiIONStruct
 {
-protected:
-
     friend class CtiIONStructArrayTemplate<CtiIONDate>;
     CtiIONDate();
 
@@ -198,8 +182,6 @@ public:
 
 class CtiIONCalendar : public CtiIONStruct
 {
-protected:
-
     friend class CtiIONStructArrayTemplate<CtiIONCalendar>;
     CtiIONCalendar();
 
@@ -218,8 +200,6 @@ public:
 
 class CtiIONProfile : public CtiIONStruct
 {
-protected:
-
     friend class CtiIONStructArrayTemplate<CtiIONProfile>;
     CtiIONProfile();
 
@@ -238,8 +218,6 @@ public:
 
 class CtiIONStringArray : public CtiIONStruct
 {
-protected:
-
     friend class CtiIONStructArrayTemplate<CtiIONStringArray>;
     CtiIONStringArray();
 

@@ -8,16 +8,12 @@
 
 class IM_EX_CTIYUKONDB CtiTableTag : public CtiMemDBObject
 {
-protected:
-
     int             _tagId;
     std::string       _tagName;
     int             _tagLevel;
     bool            _inhibit;
     int             _colorId;
     int             _imageId;
-
-private:
 
 public:
 

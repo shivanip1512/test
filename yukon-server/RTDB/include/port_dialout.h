@@ -9,10 +9,6 @@
 
 class CtiPortDialout : public CtiPortDialable
 {
-protected:
-
-private:
-
     YukonError_t modemReset(USHORT Trace, BOOL dcdTest = TRUE);
     INT modemSetup(USHORT Trace, BOOL dcdTest = TRUE);
     INT modemHangup(USHORT Trace, BOOL dcdTest = TRUE);

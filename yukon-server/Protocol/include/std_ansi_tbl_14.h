@@ -10,8 +10,6 @@
 
 class IM_EX_PROT CtiAnsiTable14 : public CtiAnsiTableBase
 {
-protected:
-
    struct DATA_RCD
    {
       unsigned char     *source_id;
@@ -23,9 +21,6 @@ protected:
    };
 
    DATA_CONTROL_RCD  _data_control_record;
-
-
-private:
 
    int         _controlLength;
    int         _controlEntries;

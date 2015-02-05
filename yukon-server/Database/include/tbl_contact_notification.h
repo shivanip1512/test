@@ -6,8 +6,6 @@
 
 class IM_EX_CTIYUKONDB CtiTableContactNotification : public Cti::Loggable
 {
-protected:
-
   LONG _contactNotifID;
   LONG _contactID;
   LONG _notificationCategoryID;
@@ -15,8 +13,8 @@ protected:
   std::string _notification; // email address would appear hear
   bool _dirty;
 
-private:
-    mutable CtiMutex _classMutex;
+  mutable CtiMutex _classMutex;
+
 public:
 
   CtiTableContactNotification(LONG id=0);

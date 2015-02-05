@@ -7,19 +7,15 @@
 
 class CtiPortDialable : private boost::noncopyable
 {
-protected:
-
-    CtiPort             *_superPort;           // This is how we know who owns us...
-
     BOOL                _shouldDisconnect;
-    std::string           _dialedUpNumber;
-
-    CtiHayesModem       _modem;
+    std::string         _dialedUpNumber;
 
     CtiTablePortDialup  _tblPortDialup;
 
+protected:
 
-private:
+    CtiPort             *_superPort;           // This is how we know who owns us...
+    CtiHayesModem       _modem;
 
 public:
 
