@@ -24,11 +24,11 @@ struct test_ActiveMQConnectionManager : Cti::Messaging::ActiveMQConnectionManage
     {
     }
 
-    void enqueueOutgoingMessage(const Cti::Messaging::ActiveMQ::Queues::OutboundQueue &queueId, std::auto_ptr<Cti::Messaging::StreamableMessage> message)
+    void enqueueOutgoingMessage(const Cti::Messaging::ActiveMQ::Queues::OutboundQueue &queueId, Cti::Messaging::StreamableMessage::auto_type message, boost::optional<SerializedMessageCallback> callback) override
     {
         //  delete message
     }
-    void enqueueOutgoingMessage(const Cti::Messaging::ActiveMQ::Queues::OutboundQueue &queueId, Cti::Messaging::ActiveMQConnectionManager::SerializedMessage &message)
+    void enqueueOutgoingMessage(const Cti::Messaging::ActiveMQ::Queues::OutboundQueue &queueId, const Cti::Messaging::ActiveMQConnectionManager::SerializedMessage &message, boost::optional<SerializedMessageCallback> callback) override
     {
         //  delete message
     }
