@@ -49,9 +49,9 @@ void DnpProtocol::setAddresses( unsigned short slaveAddress, unsigned short mast
 }
 
 
-void DnpProtocol::setOptions( int options )
+void DnpProtocol::setDatalinkConfirm()
 {
-    _datalink.setOptions(options);
+    _datalink.setDatalinkConfirm();
 }
 
 

@@ -141,7 +141,8 @@ public:
     DatalinkLayer &operator=(const DatalinkLayer &aRef);
 
     void setAddresses( unsigned short dst, unsigned short src);
-    void setOptions  ( int options );
+    void setDatalinkConfirm();
+    void setSlaveResponse();
 
     void setToOutput( unsigned char *buf, unsigned int len );
     void setToInput ( void );

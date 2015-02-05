@@ -17,7 +17,8 @@ DnpSlaveProtocol::DnpSlaveProtocol()
    _transport.setIoStateComplete();
    _datalink .setIoStateComplete();
 
-   setOptions(DnpSlaveProtocol::Options_SlaveResponse);
+   _datalink .setSlaveResponse();
+   _app_layer.setSequenceNumber(0);
 }
 
 YukonError_t DnpSlaveProtocol::slaveDecode( CtiXfer &xfer )
@@ -218,9 +219,8 @@ void DnpSlaveProtocol::setSlaveCommand( Command command )
     }
 }
 
-void DnpSlaveProtocol::setOptions( int options, int seqNumber )
+void DnpSlaveProtocol::setSequence( int seqNumber )
 {
-    Inherited::setOptions(options);
     _app_layer.setSequenceNumber(seqNumber);
 }
 

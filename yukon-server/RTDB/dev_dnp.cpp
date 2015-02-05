@@ -1111,11 +1111,7 @@ void DnpDevice::DecodeDatabaseReader(Cti::RowReader &rdr)
 
    if( getType() == TYPE_DARTRTU )
    {
-       _dnp.setOptions(Protocols::DnpProtocol::Options_DatalinkConfirm);
-   }
-   else
-   {
-       _dnp.setOptions(Protocols::DnpProtocol::Options_None);
+       _dnp.setDatalinkConfirm();
    }
 }
 

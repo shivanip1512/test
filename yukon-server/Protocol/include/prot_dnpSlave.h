@@ -17,7 +17,7 @@ public:
     DnpSlaveProtocol();
 
     void setSlaveCommand( Command command );
-    void setOptions( int options, int seqNumber=0 );
+    void setSequence( int seqNumber );
 
     YukonError_t slaveDecode( CtiXfer &xfer );
     YukonError_t slaveGenerate( CtiXfer &xfer );

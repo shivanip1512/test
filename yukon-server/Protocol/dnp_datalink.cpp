@@ -67,16 +67,14 @@ void DatalinkLayer::setAddresses( unsigned short dst, unsigned short src)
 }
 
 
-void DatalinkLayer::setOptions(int options)
+void DatalinkLayer::setDatalinkConfirm()
 {
-    if( options & DnpProtocol::Options_DatalinkConfirm )
-    {
-        _dl_confirm = true;
-    }
-    if( options & DnpProtocol::Options_SlaveResponse )
-    {
-        _slave_response = true;
-    }
+    _dl_confirm = true;
+}
+
+void DatalinkLayer::setSlaveResponse()
+{
+    _slave_response = true;
 }
 
 
@@ -367,7 +365,7 @@ void DatalinkLayer::constructDataPacket( DatalinkLayer::packet_t &packet, unsign
     packet.header.fmt.destination = _dst;
     packet.header.fmt.source      = _src;
 
-    packet.header.fmt.control.p.direction = (_slave_response)?(0):(1);
+    packet.header.fmt.control.p.direction = ! _slave_response;
 
     packet.header.fmt.control.p.primary   = 1;  //  we're primary
 

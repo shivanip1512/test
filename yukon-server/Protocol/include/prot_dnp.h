@@ -93,7 +93,7 @@ public:
     virtual ~DnpProtocol();
 
     void setAddresses( unsigned short slaveAddress, unsigned short masterAddress );
-    void setOptions( int options );
+    void setDatalinkConfirm();
 
     bool setCommand( Command command );
     bool setCommand( Command command, output_point &point );
@@ -174,14 +174,6 @@ public:
         Command_UnsolicitedInbound,  //  special case - just greases the wheels for the inbound message
 
         Command_Complete
-    };
-
-    enum Options
-    {
-        //  to be logically OR'd together - keep bit patterns unique
-        Options_None            = 0x00,
-        Options_DatalinkConfirm = 0x01,
-        Options_SlaveResponse   = 0x40
     };
 
     enum
