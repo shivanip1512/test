@@ -215,14 +215,14 @@ ctivangogh.obj:	precompiled.h collectable.h counter.h guard.h \
 		tbl_pt_analog.h dev_base.h cmdparse.h ctitokenizer.h \
 		parsevalue.h dev_exclusion.h tbl_paoexclusion.h rte_base.h \
 		tbl_pao_lite.h tbl_rtcomm.h tbl_static_paoinfo.h encryption.h \
-		tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
+		std_helper.h tbl_base.h tbl_scanrate.h tbl_dyn_paoinfo.h \
 		tbl_dyn_ptalarming.h thread_monitor.h thread_register_data.h \
 		boost_time.h ThreadStatusKeeper.h mgr_ptclients.h mgr_point.h \
 		ptconnect.h tbl_pt_property.h database_reader.h \
 		database_transaction.h database_writer.h database_util.h \
 		database_exceptions.h dllvg.h dllyukon.h ctidate.h \
-		debug_timer.h millisecond_timer.h std_helper.h \
-		amq_constants.h module_util.h
+		debug_timer.h millisecond_timer.h amq_constants.h \
+		module_util.h
 dispmain.obj:	precompiled.h ctitime.h dlldefs.h dispsvc.h cservice.h \
 		dllvg.h CServiceConfig.h dllbase.h dsm2.h streamConnection.h \
 		yukon.h types.h ctidbgmem.h netports.h timing_util.h \

@@ -547,12 +547,6 @@ thread_register_data.obj:	precompiled.h thread_register_data.h \
 		boost_time.h cticalls.h yukon.h types.h ctidbgmem.h \
 		os2_2w32.h dlldefs.h boostutil.h utility.h ctitime.h queues.h \
 		constants.h numstr.h
-thread_timer.obj:	precompiled.h thread_timer.h thread.h mutex.h \
-		dlldefs.h guard.h utility.h ctitime.h queues.h cticalls.h \
-		yukon.h types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		logger.h streamBuffer.h loggable.h string_util.h \
-		exception_helper.h boostutil.h critical_section.h atomic.h \
-		thread_register_data.h boost_time.h
 timeperiod.obj:	precompiled.h ctitime.h dlldefs.h timeperiod.h
 timing_util.obj:	precompiled.h numstr.h dlldefs.h timing_util.h
 truncatingconsoleappender.obj:	precompiled.h \

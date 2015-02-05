@@ -112,9 +112,9 @@ test_gen_reply.obj:	trx_711.h trx_info.h logger.h dlldefs.h \
 		dllbase.h message.h collectable.h tbl_pao_lite.h row_reader.h \
 		tbl_rtcomm.h dbaccess.h resolvers.h pointtypes.h \
 		db_entry_defines.h msg_signal.h tbl_static_paoinfo.h \
-		encryption.h port_base.h logManager.h module_util.h \
-		tbl_port_base.h tbl_paoexclusion.h xfer.h dev_base.h \
-		dev_exclusion.h tbl_base.h tbl_scanrate.h \
+		encryption.h std_helper.h port_base.h logManager.h \
+		module_util.h tbl_port_base.h tbl_paoexclusion.h xfer.h \
+		dev_base.h dev_exclusion.h tbl_base.h tbl_scanrate.h \
 		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
 		tbl_pt_base.h pointdefs.h cparms.h configkey.h configval.h
 test_lantronixencryption.obj:	encryption_lantronix.h EncodingFilter.h

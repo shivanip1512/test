@@ -361,7 +361,7 @@ dnp_objects.obj:	precompiled.h dllbase.h dsm2.h streamConnection.h \
 		prot_base.h xfer.h dnp_object_analoginput.h dnp_object_time.h \
 		dnp_object_analogoutput.h dnp_object_binaryinput.h \
 		dnp_object_binaryoutput.h dnp_object_internalindications.h \
-		dnp_object_class.h dnp_object_counter.h
+		dnp_object_class.h dnp_object_counter.h std_helper.h
 dnp_object_analoginput.obj:	precompiled.h dnp_object_analoginput.h \
 		dnp_objects.h dllbase.h dsm2.h streamConnection.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h timing_util.h \
@@ -841,24 +841,6 @@ prot_modbus.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
 		xfer.h dsm2.h streamConnection.h netports.h timing_util.h \
 		immutable.h guard.h mutex.h dsm2err.h words.h optional.h \
 		macro_offset.h
-prot_sa105.obj:	precompiled.h prot_sa105.h cmdparse.h ctitokenizer.h \
-		dlldefs.h parsevalue.h dsm2.h streamConnection.h yukon.h \
-		types.h ctidbgmem.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h pointtypes.h prot_base.h msg_pdata.h \
-		pointdefs.h message.h collectable.h xfer.h
-prot_sa205.obj:	precompiled.h prot_sa205.h cmdparse.h ctitokenizer.h \
-		dlldefs.h parsevalue.h dsm2.h streamConnection.h yukon.h \
-		types.h ctidbgmem.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h pointtypes.h prot_base.h msg_pdata.h \
-		pointdefs.h message.h collectable.h xfer.h
 prot_sa305.obj:	precompiled.h cparms.h dlldefs.h configkey.h \
 		configval.h devicetypes.h logger.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h utility.h \
@@ -878,7 +860,6 @@ prot_sa3rdparty.obj:	precompiled.h cparms.h dlldefs.h configkey.h \
 		guard.h mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		pointtypes.h prot_base.h msg_pdata.h pointdefs.h message.h \
 		collectable.h xfer.h protocol_sa.h
-prot_sasimple.obj:	precompiled.h
 prot_seriesv.obj:	precompiled.h prot_seriesv.h dlldefs.h prot_base.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h pointdefs.h \
 		pointtypes.h message.h ctitime.h collectable.h loggable.h \

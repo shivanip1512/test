@@ -110,9 +110,9 @@ test_pilserver.obj:	pilserver.h dsm2.h streamConnection.h yukon.h \
 		tbl_paoexclusion.h row_reader.h config_device.h rte_base.h \
 		dbmemobject.h tbl_pao_lite.h tbl_rtcomm.h dbaccess.h \
 		resolvers.h db_entry_defines.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h tbl_base.h tbl_scanrate.h \
-		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h slctdev.h mgr_point.h mgr_route.h \
+		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
+		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
+		pt_base.h tbl_pt_base.h slctdev.h mgr_point.h mgr_route.h \
 		repeaterrole.h mgr_config.h devicetypes.h amq_constants.h \
 		mgr_rfn_request.h dev_rfn.h rfn_identifier.h cmd_rfn.h \
 		cmd_device.h dev_single.h msg_pcreturn.h tbl_dv_scandata.h \

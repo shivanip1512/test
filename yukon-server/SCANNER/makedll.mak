@@ -109,9 +109,9 @@ mgr_device_scannable.obj:	precompiled.h mgr_device_scannable.h \
 		socket_helper.h win_helper.h message.h collectable.h \
 		tbl_pao_lite.h tbl_rtcomm.h dbaccess.h resolvers.h \
 		pointtypes.h db_entry_defines.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h tbl_base.h tbl_scanrate.h \
-		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h pointdefs.h slctdev.h smartmap.h \
+		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
+		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
+		pt_base.h tbl_pt_base.h pointdefs.h slctdev.h smartmap.h \
 		readers_writer_lock.h dev_single.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h msg_ptreg.h msg_reg.h queue.h \
@@ -155,9 +155,9 @@ scanner.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamSocketConnection.h socket_helper.h win_helper.h \
 		message.h collectable.h tbl_pao_lite.h tbl_rtcomm.h \
 		resolvers.h pointtypes.h db_entry_defines.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h tbl_base.h tbl_scanrate.h \
-		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h pointdefs.h slctdev.h smartmap.h \
+		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
+		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
+		pt_base.h tbl_pt_base.h pointdefs.h slctdev.h smartmap.h \
 		readers_writer_lock.h mgr_point.h mgr_config.h \
 		mgr_dyn_paoinfo.h dev_single.h msg_pcrequest.h msg_pcreturn.h \
 		msg_multi.h msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h \

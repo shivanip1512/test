@@ -121,9 +121,9 @@ exe_pcreq.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
 		tbl_paoexclusion.h row_reader.h config_device.h rte_base.h \
 		dbmemobject.h tbl_pao_lite.h tbl_rtcomm.h dbaccess.h \
 		resolvers.h db_entry_defines.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h tbl_base.h tbl_scanrate.h \
-		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h slctdev.h mgr_point.h mgr_route.h \
+		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
+		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
+		pt_base.h tbl_pt_base.h slctdev.h mgr_point.h mgr_route.h \
 		repeaterrole.h mgr_config.h devicetypes.h amq_constants.h \
 		mgr_rfn_request.h prot_e2eDataTransfer.h dev_rfn.h \
 		rfn_identifier.h cmd_rfn.h cmd_device.h dev_single.h \
@@ -146,17 +146,17 @@ mgr_rfn_request.obj:	precompiled.h mgr_rfn_request.h dlldefs.h \
 		socket_helper.h win_helper.h message.h collectable.h \
 		tbl_pao_lite.h tbl_rtcomm.h dbaccess.h resolvers.h \
 		pointtypes.h db_entry_defines.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h tbl_base.h tbl_scanrate.h \
-		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h pointdefs.h msg_pcrequest.h msg_pcreturn.h \
-		msg_multi.h msg_pdata.h tbl_dv_scandata.h tbl_dv_wnd.h \
-		connection.h msg_ptreg.h msg_reg.h queue.h cparms.h \
-		configkey.h configval.h readers_writer_lock.h \
+		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
+		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
+		pt_base.h tbl_pt_base.h pointdefs.h msg_pcrequest.h \
+		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
+		tbl_dv_wnd.h connection.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h readers_writer_lock.h \
 		connection_base.h worker_thread.h xfer.h exceptions.h \
 		rfn_asid.h rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h \
 		RfnE2eMsg.h RfnE2eDataConfirmMsg.h RfnE2eDataRequestMsg.h \
 		amq_connection.h thread.h StreamableMessage.h \
-		RfnBroadcastReplyMessage.h rfn_statistics.h std_helper.h
+		RfnBroadcastReplyMessage.h rfn_statistics.h
 pilglob.obj:	precompiled.h os2_2w32.h dlldefs.h types.h
 pilserver.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		yukon.h ctidbgmem.h dev_grp_versacom.h dev_base.h dsm2.h \
@@ -171,20 +171,20 @@ pilserver.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		socket_helper.h win_helper.h message.h collectable.h \
 		tbl_pao_lite.h tbl_rtcomm.h dbaccess.h resolvers.h \
 		pointtypes.h db_entry_defines.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h tbl_base.h tbl_scanrate.h \
-		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h pointdefs.h dev_grp.h cparms.h configkey.h \
-		configval.h msg_lmcontrolhistory.h msg_pcrequest.h \
-		msg_pdata.h msg_multi.h pt_status.h tbl_pt_status.h \
-		tbl_pt_status_control.h tbl_pt_control.h pt_analog.h \
-		pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
-		tbl_dv_versacom.h vcomdefs.h dev_grp_point.h tbl_lmg_point.h \
-		dev_mct.h dev_carrier.h dev_dlcbase.h dev_single.h \
-		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h connection.h \
-		msg_ptreg.h msg_reg.h queue.h readers_writer_lock.h \
-		connection_base.h worker_thread.h xfer.h exceptions.h \
-		tbl_route.h tbl_carrier.h prot_emetcon.h cmd_dlc.h \
-		cmd_device.h tbl_metergrp.h tbl_loadprofile.h \
+		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
+		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
+		pt_base.h tbl_pt_base.h pointdefs.h dev_grp.h cparms.h \
+		configkey.h configval.h msg_lmcontrolhistory.h \
+		msg_pcrequest.h msg_pdata.h msg_multi.h pt_status.h \
+		tbl_pt_status.h tbl_pt_status_control.h tbl_pt_control.h \
+		pt_analog.h pt_numeric.h tbl_pt_unit.h tbl_unitmeasure.h \
+		tbl_pt_analog.h tbl_dv_versacom.h vcomdefs.h dev_grp_point.h \
+		tbl_lmg_point.h dev_mct.h dev_carrier.h dev_dlcbase.h \
+		dev_single.h msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h \
+		connection.h msg_ptreg.h msg_reg.h queue.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		xfer.h exceptions.h tbl_route.h tbl_carrier.h prot_emetcon.h \
+		cmd_dlc.h cmd_device.h tbl_metergrp.h tbl_loadprofile.h \
 		da_load_profile.h tbl_dv_mctiedport.h dev_rfn.h \
 		rfn_identifier.h cmd_rfn.h rfn_asid.h streamLocalConnection.h \
 		porter.h devicetypes.h pil_exefct.h executorfactory.h \
@@ -223,9 +223,9 @@ test_pilserver.obj:	pilserver.h dsm2.h streamConnection.h yukon.h \
 		tbl_paoexclusion.h row_reader.h config_device.h rte_base.h \
 		dbmemobject.h tbl_pao_lite.h tbl_rtcomm.h dbaccess.h \
 		resolvers.h db_entry_defines.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h tbl_base.h tbl_scanrate.h \
-		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h slctdev.h mgr_point.h mgr_route.h \
+		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
+		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
+		pt_base.h tbl_pt_base.h slctdev.h mgr_point.h mgr_route.h \
 		repeaterrole.h mgr_config.h devicetypes.h amq_constants.h \
 		mgr_rfn_request.h prot_e2eDataTransfer.h dev_rfn.h \
 		rfn_identifier.h cmd_rfn.h cmd_device.h dev_single.h \
