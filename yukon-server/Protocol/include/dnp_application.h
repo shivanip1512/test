@@ -135,12 +135,8 @@ private:
 
 public:
     ApplicationLayer();
-
-    ApplicationLayer(const ApplicationLayer &aRef);
-
-    virtual ~ApplicationLayer();
-
-    ApplicationLayer &operator=(const ApplicationLayer &aRef);
+    ApplicationLayer(const ApplicationLayer &) = delete;
+    ApplicationLayer &operator=(const ApplicationLayer &) = delete;
 
     //  initialization functions
     void setConfigData( const config_data* config );

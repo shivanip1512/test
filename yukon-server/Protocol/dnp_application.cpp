@@ -27,26 +27,6 @@ ApplicationLayer::ApplicationLayer() :
     _iin.raw = 0;
 }
 
-ApplicationLayer::ApplicationLayer(const ApplicationLayer &aRef)
-{
-    *this = aRef;
-}
-
-ApplicationLayer::~ApplicationLayer()
-{
-    eraseOutboundObjectBlocks();
-    eraseInboundObjectBlocks();
-}
-
-ApplicationLayer &ApplicationLayer::operator=(const ApplicationLayer &aRef)
-{
-    //TODO: Remove this log or make this class non-copyable
-    CTILOG_TRACE(dout, "inside "<<__FUNCTION__);
-
-    return *this;
-}
-
-
 void ApplicationLayer::setConfigData( const config_data* config )
 {
     _config = config;
