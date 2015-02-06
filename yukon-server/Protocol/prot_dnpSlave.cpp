@@ -21,6 +21,11 @@ DnpSlaveProtocol::DnpSlaveProtocol()
    _app_layer.setSequenceNumber(0);
 }
 
+void DnpSlaveProtocol::setAddresses( unsigned short dstAddr, unsigned short srcAddr )
+{
+    _datalink.setAddresses(dstAddr, srcAddr);
+}
+
 YukonError_t DnpSlaveProtocol::slaveDecode( CtiXfer &xfer )
 {
     if( xfer.getOutBuffer()[10] & 0x80 )
@@ -50,10 +55,9 @@ YukonError_t DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
 {
     if( _app_layer.isTransactionComplete() )
     {
-        switch( getCommand() )
+        switch( _command )
         {
-            case Command_Class1230Read:
-            case Command_Class123Read:
+            case Commands::Class1230Read:
             {
                 std::map<unsigned, std::unique_ptr<const AnalogInput>> analogs;
                 std::map<unsigned, std::unique_ptr<const BinaryInput>> digitals;
@@ -108,7 +112,7 @@ YukonError_t DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
 
                 break;
             }
-            case Command_SetDigitalOut_Direct:
+            case Commands::SetDigitalOut_Direct:
             {
                 if( ! _input_point_list.empty()
                     && _input_point_list[0].type == DigitalInput )
@@ -139,24 +143,14 @@ YukonError_t DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
                 else
                 {
                     CTILOG_ERROR(dout, "Input point invalid for control");
-                    setSlaveCommand(Command_Invalid);
+                    setSlaveCommand(Commands::Invalid);
                 }
             }
-            case Command_UnsolicitedInbound:
-            case Command_WriteTime:
-            case Command_ReadTime:
-            case Command_Loopback:
-            case Command_UnsolicitedEnable:
-            case Command_UnsolicitedDisable:
-            case Command_SetAnalogOut:
-            case Command_SetDigitalOut_SBO_SelectOnly:
-            case Command_SetDigitalOut_SBO_Select:
-            case Command_SetDigitalOut_SBO_Operate:
             default:
             {
-                CTILOG_ERROR(dout, "invalid command "<< getCommand());
+                CTILOG_ERROR(dout, "invalid command "<< static_cast<int>(_command));
 
-                setSlaveCommand(Command_Invalid);
+                setSlaveCommand(Commands::Invalid);
             }
         }
 
@@ -194,11 +188,12 @@ YukonError_t DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
 
 void DnpSlaveProtocol::slaveTransactionComplete()
 {
-    if( _app_layer.errorCondition() )
-    {
-        addStringResults(new std::string("Operation failed"));
-    }
-    setSlaveCommand(Command_Complete);
+    setSlaveCommand(Commands::Complete);
+}
+
+bool DnpSlaveProtocol::isTransactionComplete( void ) const
+{
+    return _command == Commands::Complete || _command == Commands::Invalid;
 }
 
 void DnpSlaveProtocol::addInputPoint(const input_point &ip)
@@ -206,11 +201,11 @@ void DnpSlaveProtocol::addInputPoint(const input_point &ip)
     _input_point_list.push_back(ip);
 }
 
-void DnpSlaveProtocol::setSlaveCommand( Command command )
+void DnpSlaveProtocol::setSlaveCommand( Commands command )
 {
-    setCommand(command);
+    _command = command;
 
-    if( getCommand() == Command_Complete)
+    if( _command == Commands::Complete)
     {
         _input_point_list.clear();
         _app_layer.completeSlave();

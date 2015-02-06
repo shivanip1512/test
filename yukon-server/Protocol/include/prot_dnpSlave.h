@@ -5,25 +5,30 @@
 namespace Cti {
 namespace Protocols {
 
-class IM_EX_PROT DnpSlaveProtocol : public DnpProtocol
+class IM_EX_PROT DnpSlaveProtocol
 {
-    struct input_point;
-
-    typedef DnpProtocol Inherited;
-    std::vector<input_point> _input_point_list;
-
 public:
 
     DnpSlaveProtocol();
 
-    void setSlaveCommand( Command command );
+    void setAddresses(unsigned short dstAddr, unsigned short srcAddr);
+
+    enum class Commands
+    {
+        Class1230Read,
+        SetDigitalOut_Direct,
+        Complete,
+        Invalid
+    };
+
+    void setSlaveCommand( Commands command );
     void setSequence( int seqNumber );
 
     YukonError_t slaveDecode( CtiXfer &xfer );
     YukonError_t slaveGenerate( CtiXfer &xfer );
     void slaveTransactionComplete();
 
-    void addInputPoint(const input_point &ip);
+    bool isTransactionComplete() const;
 
     enum InputPointType
     {
@@ -63,6 +68,18 @@ public:
         InputPointType type;
         bool online;
     };
+
+    void addInputPoint(const input_point &ip);
+
+private:
+
+    std::vector<input_point> _input_point_list;
+
+    DNP::ApplicationLayer _app_layer;
+    DNP::TransportLayer   _transport;
+    DNP::DatalinkLayer    _datalink;
+
+    Commands _command;
 };
 
 }
