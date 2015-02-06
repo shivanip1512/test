@@ -294,25 +294,14 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
         }
         
         if (xcomAddressField != 0) {
-            Boolean foundRelay = false;
             for(int i = 1; i < 10; i++) {
                 if (config.getRelay().contains(Integer.toString(i))) {
-                    foundRelay = true;
-                    
                     addressing.put((byte) 0x10); // Denotes a Config message.
                     addressing.put((byte) 0x07); // Load level addressing config message.
                     addressing.put((byte) (loadBuffer.position() + xcomAddressFieldSize));
                     addressing.put((byte) (xcomAddressField | i));
                     addressing.put(loadBuffer.array(),0,loadBuffer.position());
                 }
-            }
-            
-            if (!foundRelay) {
-                addressing.put((byte) 0x10); // Denotes a Config message.
-                addressing.put((byte) 0x07); // Load level addressing config message.
-                addressing.put((byte) (loadBuffer.position() + xcomAddressFieldSize));
-                addressing.put(xcomAddressField);
-                addressing.put(loadBuffer.array(),0,loadBuffer.position());   
             }
         }
         ByteBuffer addressingResized = ByteBuffer.allocate(addressing.position());
