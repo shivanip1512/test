@@ -1,14 +1,13 @@
-
 package com.cannontech.common.pao;
 
-
-import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.*;
 
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.CapControlType;
@@ -19,7 +18,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSet.Builder;
 import com.google.common.collect.Sets;
 
-public enum PaoType implements DatabaseRepresentationSource {
+public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     CCU710A(DeviceTypes.CCU710A, "CCU-710A", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
     CCU711(DeviceTypes.CCU711, "CCU-711", PaoCategory.DEVICE, PaoClass.TRANSMITTER),
@@ -209,7 +208,7 @@ public enum PaoType implements DatabaseRepresentationSource {
     ROUTE_MACRO(2003, "Macro", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_VERSACOM(2004, "Versacom", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_TAP_PAGING(2005, "Tap Paging", PaoCategory.ROUTE, PaoClass.ROUTE),
-	ROUTE_WCTP_TERMINAL(2006, "WCTP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
+    ROUTE_WCTP_TERMINAL(2006, "WCTP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_SERIES_5_LMI(2007, "Series 5 LMI", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_RTC(2008, "RTC Route", PaoCategory.ROUTE, PaoClass.ROUTE),
     ROUTE_SNPP_TERMINAL(2009, "SNPP Terminal Route", PaoCategory.ROUTE, PaoClass.ROUTE),
@@ -842,5 +841,10 @@ public enum PaoType implements DatabaseRepresentationSource {
     public static String getPaoTypeString(int typeId) {
         PaoType paoTypeObject = getForId(typeId);
         return paoTypeObject.getDbString();
+    }
+
+    @Override
+    public String getFormatKey() {
+        return "yukon.common.pao." + name();
     }
 }
