@@ -133,16 +133,16 @@ private:
 
 public:
 
+    struct Slave {};
+
     DatalinkLayer();
-    DatalinkLayer(const DatalinkLayer &aRef);
+    DatalinkLayer(const Slave);
 
-    virtual ~DatalinkLayer();
-
-    DatalinkLayer &operator=(const DatalinkLayer &aRef);
+    DatalinkLayer(const DatalinkLayer &) = delete;
+    DatalinkLayer &operator=(const DatalinkLayer &) = delete;
 
     void setAddresses( unsigned short dst, unsigned short src);
     void setDatalinkConfirm();
-    void setSlaveResponse();
 
     void setToOutput( unsigned char *buf, unsigned int len );
     void setToInput ( void );

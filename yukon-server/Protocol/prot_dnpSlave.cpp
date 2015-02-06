@@ -11,12 +11,6 @@ namespace Protocols {
 
 using namespace Cti::Protocols::DNP;
 
-DnpSlaveProtocol::DnpSlaveProtocol()
-{
-   _datalink .setSlaveResponse();
-   _app_layer.setSequenceNumber(0);
-}
-
 void DnpSlaveProtocol::setAddresses( unsigned short dstAddr, unsigned short srcAddr )
 {
     _datalink.setAddresses(dstAddr, srcAddr);

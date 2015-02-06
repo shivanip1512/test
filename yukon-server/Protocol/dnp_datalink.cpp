@@ -41,24 +41,11 @@ DatalinkLayer::DatalinkLayer() :
     memset( &_control_packet, 0, sizeof(packet_t) );
 }
 
-DatalinkLayer::DatalinkLayer(const DatalinkLayer &aRef)
+DatalinkLayer::DatalinkLayer(Slave) :
+    DatalinkLayer()
 {
-    *this = aRef;
+    _slave_response = true;
 }
-
-DatalinkLayer::~DatalinkLayer()   {}
-
-DatalinkLayer &DatalinkLayer::operator=(const DatalinkLayer &aRef)
-{
-    if( this != &aRef )
-    {
-        //TODO: Remove this log or make this class non-copyable
-        CTILOG_TRACE(dout, "inside "<<__FUNCTION__);
-    }
-
-    return *this;
-}
-
 
 void DatalinkLayer::setAddresses( unsigned short dst, unsigned short src)
 {
@@ -70,11 +57,6 @@ void DatalinkLayer::setAddresses( unsigned short dst, unsigned short src)
 void DatalinkLayer::setDatalinkConfirm()
 {
     _dl_confirm = true;
-}
-
-void DatalinkLayer::setSlaveResponse()
-{
-    _slave_response = true;
 }
 
 

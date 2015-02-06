@@ -1,6 +1,7 @@
 #pragma once
 
-#include "prot_dnp.h"
+#include "dnp_application.h"
+#include "dnp_object_binaryoutput.h"
 
 namespace Cti {
 namespace Protocols {
@@ -8,8 +9,6 @@ namespace Protocols {
 class IM_EX_PROT DnpSlaveProtocol
 {
 public:
-
-    DnpSlaveProtocol();
 
     void setAddresses(unsigned short dstAddr, unsigned short srcAddr);
 
@@ -72,7 +71,7 @@ private:
 
     DNP::ApplicationLayer _app_layer;
     DNP::TransportLayer   _transport;
-    DNP::DatalinkLayer    _datalink;
+    DNP::DatalinkLayer    _datalink { DNP::DatalinkLayer::Slave() };
 
     Commands _command;
 };
