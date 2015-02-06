@@ -357,6 +357,8 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
 
     const CtiTime Now;
 
+    std::vector<DnpSlaveProtocol::input_point> inputPoints;
+
     for( const auto &kv : _sendMap )
     {
         const DnpId &dnpId = kv.second;
@@ -399,13 +401,12 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
                 }
             }
 
-            _dnpSlave.addInputPoint(iPoint);
+            inputPoints.emplace_back(iPoint);
         }
     }
 
     _dnpSlave.setAddresses(src.sh, dest.sh);
-    _dnpSlave.setSequence(seqnumber);
-    _dnpSlave.setSlaveCommand(DnpSlaveProtocol::Commands::Class1230Read);
+    _dnpSlave.setSlaveCommand(DnpSlaveProtocol::Commands::Class1230Read, seqnumber, std::move(inputPoints));
 
      while( !_dnpSlave.isTransactionComplete() )
      {
@@ -666,11 +667,8 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
         }
     }
 
-    _dnpSlave.addInputPoint(iPoint);
-
     _dnpSlave.setAddresses(src, dest);
-    _dnpSlave.setSequence(appSequence);
-    _dnpSlave.setSlaveCommand(DnpSlaveProtocol::Commands::SetDigitalOut_Direct);
+    _dnpSlave.setSlaveCommand(DnpSlaveProtocol::Commands::SetDigitalOut_Direct, appSequence, { iPoint });
 
     //  reply with success
     while( !_dnpSlave.isTransactionComplete() )

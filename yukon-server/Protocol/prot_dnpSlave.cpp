@@ -47,19 +47,11 @@ YukonError_t DnpSlaveProtocol::slaveDecode( CtiXfer &xfer )
     return _app_layer.decode(_transport);
 }
 
-void DnpSlaveProtocol::setSlaveCommand( Commands command )
+void DnpSlaveProtocol::setSlaveCommand( Commands command, int seqNumber, std::vector<input_point> inputPoints )
 {
+    _app_layer.setSequenceNumber(seqNumber);
+
     _command = command;
-
-    if( _command == Commands::Complete)
-    {
-        _input_point_list.clear();
-        _app_layer.completeSlave();
-        _transport.setIoStateComplete();
-        _datalink .setIoStateComplete();
-
-        return;
-    }
 
     switch( _command )
     {
@@ -69,7 +61,7 @@ void DnpSlaveProtocol::setSlaveCommand( Commands command )
             std::map<unsigned, std::unique_ptr<const BinaryInput>> digitals;
             std::map<unsigned, std::unique_ptr<const Counter>>     counters;
 
-            for( const auto &ip : _input_point_list )
+            for( const auto &ip : inputPoints )
             {
                 switch( ip.type )
                 {
@@ -120,10 +112,10 @@ void DnpSlaveProtocol::setSlaveCommand( Commands command )
         }
         case Commands::SetDigitalOut_Direct:
         {
-            if( ! _input_point_list.empty()
-                && _input_point_list[0].type == DigitalInput )
+            if( ! inputPoints.empty()
+                && inputPoints[0].type == DigitalInput )
             {
-                input_point &p = _input_point_list[0];
+                const input_point &p = inputPoints[0];
 
                 auto boc = std::make_unique<BinaryOutputControl>(BinaryOutputControl::BOC_ControlRelayOutputBlock);
 
@@ -197,22 +189,16 @@ YukonError_t DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
 
 void DnpSlaveProtocol::slaveTransactionComplete()
 {
-    setSlaveCommand(Commands::Complete);
+    _command = Commands::Complete;
+
+    _app_layer.completeSlave();
+    _transport.setIoStateComplete();
+    _datalink .setIoStateComplete();
 }
 
 bool DnpSlaveProtocol::isTransactionComplete( void ) const
 {
     return _command == Commands::Complete || _command == Commands::Invalid;
-}
-
-void DnpSlaveProtocol::addInputPoint(const input_point &ip)
-{
-    _input_point_list.push_back(ip);
-}
-
-void DnpSlaveProtocol::setSequence( int seqNumber )
-{
-    _app_layer.setSequenceNumber(seqNumber);
 }
 
 }

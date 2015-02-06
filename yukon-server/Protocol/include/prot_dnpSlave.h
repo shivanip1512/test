@@ -21,15 +21,6 @@ public:
         Invalid
     };
 
-    void setSlaveCommand( Commands command );
-    void setSequence( int seqNumber );
-
-    YukonError_t slaveDecode( CtiXfer &xfer );
-    YukonError_t slaveGenerate( CtiXfer &xfer );
-    void slaveTransactionComplete();
-
-    bool isTransactionComplete() const;
-
     enum InputPointType
     {
         AnalogInputType,
@@ -69,11 +60,15 @@ public:
         bool online;
     };
 
-    void addInputPoint(const input_point &ip);
+    void setSlaveCommand( Commands command, int seqNumber, std::vector<input_point> inputPoints );
+
+    YukonError_t slaveDecode( CtiXfer &xfer );
+    YukonError_t slaveGenerate( CtiXfer &xfer );
+    void slaveTransactionComplete();
+
+    bool isTransactionComplete() const;
 
 private:
-
-    std::vector<input_point> _input_point_list;
 
     DNP::ApplicationLayer _app_layer;
     DNP::TransportLayer   _transport;
