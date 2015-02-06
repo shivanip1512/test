@@ -406,11 +406,11 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
     }
 
     _dnpSlave.setAddresses(src.sh, dest.sh);
-    _dnpSlave.setSlaveCommand(DnpSlaveProtocol::Commands::Class1230Read, seqnumber, std::move(inputPoints));
+    _dnpSlave.setCommand(DnpSlaveProtocol::Commands::Class1230Read, seqnumber, std::move(inputPoints));
 
      while( !_dnpSlave.isTransactionComplete() )
      {
-         if( _dnpSlave.slaveGenerate(xfer) == ClientErrors::None )
+         if( _dnpSlave.generate(xfer) == ClientErrors::None )
          {
              if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
              {
@@ -425,7 +425,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
                  connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
              }
 
-             _dnpSlave.slaveDecode(xfer);
+             _dnpSlave.decode(xfer);
          }
          else
          {
@@ -668,12 +668,12 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
     }
 
     _dnpSlave.setAddresses(src, dest);
-    _dnpSlave.setSlaveCommand(DnpSlaveProtocol::Commands::SetDigitalOut_Direct, appSequence, { iPoint });
+    _dnpSlave.setCommand(DnpSlaveProtocol::Commands::SetDigitalOut_Direct, appSequence, { iPoint });
 
     //  reply with success
     while( !_dnpSlave.isTransactionComplete() )
     {
-        if( _dnpSlave.slaveGenerate(xfer) == ClientErrors::None )
+        if( _dnpSlave.generate(xfer) == ClientErrors::None )
         {
             if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
             {
@@ -688,7 +688,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
                 connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
             }
 
-            _dnpSlave.slaveDecode(xfer);
+            _dnpSlave.decode(xfer);
         }
         else if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
         {

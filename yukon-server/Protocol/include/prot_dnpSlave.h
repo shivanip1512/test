@@ -59,11 +59,11 @@ public:
         bool online;
     };
 
-    void setSlaveCommand( Commands command, int seqNumber, std::vector<input_point> inputPoints );
+    void setCommand( Commands command, int seqNumber, std::vector<input_point> inputPoints );
 
-    YukonError_t slaveDecode( CtiXfer &xfer );
-    YukonError_t slaveGenerate( CtiXfer &xfer );
-    void slaveTransactionComplete();
+    YukonError_t decode( CtiXfer &xfer );
+    YukonError_t generate( CtiXfer &xfer );
+    void setTransactionComplete();
 
     bool isTransactionComplete() const;
 

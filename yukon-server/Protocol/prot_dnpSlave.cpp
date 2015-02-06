@@ -16,11 +16,11 @@ void DnpSlaveProtocol::setAddresses( unsigned short dstAddr, unsigned short srcA
     _datalink.setAddresses(dstAddr, srcAddr);
 }
 
-YukonError_t DnpSlaveProtocol::slaveDecode( CtiXfer &xfer )
+YukonError_t DnpSlaveProtocol::decode( CtiXfer &xfer )
 {
     if( xfer.getOutBuffer()[10] & 0x80 )
     {
-        slaveTransactionComplete();
+        setTransactionComplete();
         return ClientErrors::None;
     }
 
@@ -41,7 +41,7 @@ YukonError_t DnpSlaveProtocol::slaveDecode( CtiXfer &xfer )
     return _app_layer.decode(_transport);
 }
 
-void DnpSlaveProtocol::setSlaveCommand( Commands command, int seqNumber, std::vector<input_point> inputPoints )
+void DnpSlaveProtocol::setCommand( Commands command, int seqNumber, std::vector<input_point> inputPoints )
 {
     _app_layer.setSequenceNumber(seqNumber);
 
@@ -151,7 +151,7 @@ void DnpSlaveProtocol::setSlaveCommand( Commands command, int seqNumber, std::ve
 }
 
 
-YukonError_t DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
+YukonError_t DnpSlaveProtocol::generate( CtiXfer &xfer )
 {
     YukonError_t retVal = ClientErrors::None;
 
@@ -161,7 +161,7 @@ YukonError_t DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
 
         if( retVal )
         {
-            slaveTransactionComplete();
+            setTransactionComplete();
         }
     }
 
@@ -181,7 +181,7 @@ YukonError_t DnpSlaveProtocol::slaveGenerate( CtiXfer &xfer )
     return retVal;
 }
 
-void DnpSlaveProtocol::slaveTransactionComplete()
+void DnpSlaveProtocol::setTransactionComplete()
 {
     _command = Commands::Complete;
 
