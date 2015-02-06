@@ -404,8 +404,8 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection, const char*
     }
 
     _dnpSlave.setAddresses(src.sh, dest.sh);
-    _dnpSlave.setSlaveCommand(DnpSlaveProtocol::Commands::Class1230Read);
     _dnpSlave.setSequence(seqnumber);
+    _dnpSlave.setSlaveCommand(DnpSlaveProtocol::Commands::Class1230Read);
 
      while( !_dnpSlave.isTransactionComplete() )
      {
@@ -669,8 +669,8 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const char* d
     _dnpSlave.addInputPoint(iPoint);
 
     _dnpSlave.setAddresses(src, dest);
-    _dnpSlave.setSlaveCommand(DnpSlaveProtocol::Commands::SetDigitalOut_Direct);
     _dnpSlave.setSequence(appSequence);
+    _dnpSlave.setSlaveCommand(DnpSlaveProtocol::Commands::SetDigitalOut_Direct);
 
     //  reply with success
     while( !_dnpSlave.isTransactionComplete() )
