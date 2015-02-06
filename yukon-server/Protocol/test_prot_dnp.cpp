@@ -1899,14 +1899,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_unsolicited)
     }
 }
 
-struct test_DNPInterface : public DnpProtocol
-{
-    using DnpProtocol::getCommand;
-};
-
 BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
 {
-    test_DNPInterface dnp;
+    DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
 
@@ -2062,8 +2057,6 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
     }
 
     {
-        BOOST_CHECK_EQUAL(DnpProtocol::Command_WriteTime, dnp.getCommand());
-
         // Override the current time to Tue, 27 May 2014 16:22:59 GMT
         Cti::Test::Override_CtiTime_Now override_ctiTime_now(1401207779);
 

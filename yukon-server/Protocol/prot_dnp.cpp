@@ -34,6 +34,9 @@ using namespace DNP;
 DnpProtocol::DnpProtocol() :
     _command(Command_Invalid)
 {
+    const int DefaultMasterAddress = 5;
+    const int DefaultSlaveAddress  = 1;
+
     setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
 }
 
@@ -623,6 +626,9 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                     s.append(".");
                     s.append(CtiNumStr((int)time_sent->getMilliseconds()).zpad(3));
 
+                    const int TimeDifferential  =   60;
+                    const int ComplaintInterval = 3600;
+
                     if( _nextTimeComplaint <= now
                         && ((t - TimeDifferential) > now || (t + TimeDifferential) < now) )
                     {
@@ -688,7 +694,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
         if( _app_layer.needsTime() && _command != Command_WriteTime )
         {
-            Command_deq::iterator itr = boost::range::find(_additional_commands, Command_WriteTime);
+            auto itr = boost::range::find(_additional_commands, Command_WriteTime);
 
             if( itr == _additional_commands.end() )
             {
@@ -711,7 +717,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
             if( _config->isAnyUnsolicitedEnabled() )
             {
-                Command_deq::iterator itr = boost::range::find(_additional_commands, Command_UnsolicitedEnable);
+                auto itr = boost::range::find(_additional_commands, Command_UnsolicitedEnable);
 
                 if( itr == _additional_commands.end() )
                 {
@@ -732,6 +738,8 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
                 setCommand(Command_Complete);
             }
         }
+
+        const int IINStatusPointOffset_RestartBit = 2001;
 
         // Add the point message for the restart bit.
         CtiPointDataMsg* pt_msg =
@@ -947,22 +955,6 @@ const char *DnpProtocol::getControlResultString( int result_status ) const
     return *controlResultString;
 }
 
-
-DNP::ApplicationLayer& DnpProtocol::getApplicationLayer()
-{
-    return _app_layer;
-}
-
-DnpProtocol::Command DnpProtocol::getCommand()
-{
-    return _command;
-}
-
-void DnpProtocol::addStringResults(string *s)
-{
-    _string_results.push_back(s);
-    return;
-}
 
 unsigned DnpProtocol::convertLocalSecondsToUtcSeconds( const unsigned seconds )
 {

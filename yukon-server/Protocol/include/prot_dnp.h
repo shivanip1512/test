@@ -23,20 +23,14 @@ class IM_EX_PROT DnpProtocol : public Interface
     enum   Command;
     struct output_point;
 
-protected:
-
-    //  temporary direct access for DNP Slave
     DNP::ApplicationLayer _app_layer;
     DNP::TransportLayer   _transport;
     DNP::DatalinkLayer    _datalink;
 
-private:
     CtiTime _nextTimeComplaint;
 
-    typedef std::deque<Command>  Command_deq;
-
-    Command     _command;
-    Command_deq _additional_commands;
+    Command _command;
+    std::deque<Command> _additional_commands;
 
     std::vector<output_point> _command_parameters;
     boost::scoped_ptr<DNP::config_data> _config;
@@ -57,24 +51,7 @@ private:
     std::string pointSummary(unsigned points);
     std::string pointDataReport(const std::map<unsigned, double> &pointdata, unsigned points);
 
-    enum
-    {
-        TimeDifferential  =   60,
-        ComplaintInterval = 3600,
-    };
-
-    enum IINStatusPointOffset
-    {
-        IINStatusPointOffset_RestartBit = 2001
-    };
-
     const char *getControlResultString( int result_status ) const;
-
-protected:
-
-    DNP::ApplicationLayer& getApplicationLayer();
-    Command getCommand();
-    void addStringResults(std::string *s);
 
     unsigned convertLocalSecondsToUtcSeconds( const unsigned seconds );
     unsigned convertUtcSecondsToLocalSeconds( const unsigned seconds );
@@ -82,7 +59,7 @@ protected:
 public:
 
     DnpProtocol();
-    virtual ~DnpProtocol();
+    ~DnpProtocol();
 
     void setAddresses( unsigned short slaveAddress, unsigned short masterAddress );
     void setDatalinkConfirm();
@@ -96,13 +73,13 @@ public:
 
     void setInternalRetries( unsigned retries ) const;
 
-    YukonError_t generate( CtiXfer &xfer );
-    YukonError_t decode  ( CtiXfer &xfer, YukonError_t status );
+    YukonError_t generate( CtiXfer &xfer ) override;
+    YukonError_t decode  ( CtiXfer &xfer, YukonError_t status ) override;
 
-    bool isTransactionComplete( void ) const;
+    bool isTransactionComplete( void ) const override;
 
-    virtual void getInboundPoints ( pointlist_t  &point_list );
-    virtual void getInboundStrings( stringlist_t &string_list );
+    void getInboundPoints ( pointlist_t  &point_list ) override;
+    void getInboundStrings( stringlist_t &string_list ) override;
 
     enum OutputPointType
     {
@@ -166,12 +143,6 @@ public:
         Command_UnsolicitedInbound,  //  special case - just greases the wheels for the inbound message
 
         Command_Complete
-    };
-
-    enum
-    {
-        DefaultMasterAddress =    5,
-        DefaultSlaveAddress  =    1
     };
 };
 
