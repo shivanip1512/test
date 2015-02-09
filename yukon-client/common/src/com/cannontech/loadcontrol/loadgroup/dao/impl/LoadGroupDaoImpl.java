@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -31,12 +32,23 @@ import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
 import com.google.common.base.Function;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 
 public class LoadGroupDaoImpl implements LoadGroupDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    private LoadingCache<String, LoadGroup> cachedValue=CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<String, LoadGroup>(){
+
+        @Override
+        public LoadGroup load(String arg0) throws Exception {
+            return null;
+        }
+        
+    });
 
     @Override
     @Transactional(readOnly = true)
@@ -80,26 +92,35 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
 
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public LoadGroup getByLoadGroupName(String loadGroupName){
-        // Gets all the load group information for the supplied load group name except for the program ids.
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT PAO.paobjectId AS loadGroupId, PAO.paoName AS loadGroupName, PAO.type");
-        sql.append("FROM YukonPAObject PAO");
-        sql.append("WHERE PAO.paoClass").eq(PaoClass.GROUP);
-        sql.append("AND PAO.category").eq(PaoCategory.DEVICE);
-        sql.append("AND PAO.paoName").eq(loadGroupName);
+    public LoadGroup getByLoadGroupName(String loadGroupName) {
+        LoadGroup cachedLoadGroup = cachedValue.getIfPresent(loadGroupName);
 
-        LoadGroup loadGroup = null;
-        try {
-            loadGroup = jdbcTemplate.queryForObject(sql, loadGroupRowMapper);
-        } catch (EmptyResultDataAccessException ex) {
-            throw new NotFoundException("The load group name supplied does not exist.");
-        } catch(IncorrectResultSizeDataAccessException ex){
-            throw new IllegalArgumentException("The load group name supplied returned too many results");
+        if (cachedLoadGroup != null) {
+            return cachedLoadGroup;
+        } else {
+            // Gets all the load group information for the supplied load group
+            // name except for the program ids.
+            System.out.println("getbyLoadgroup name" + loadGroupName);
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT PAO.paobjectId AS loadGroupId, PAO.paoName AS loadGroupName, PAO.type");
+            sql.append("FROM YukonPAObject PAO");
+            sql.append("WHERE PAO.paoClass").eq(PaoClass.GROUP);
+            sql.append("AND PAO.category").eq(PaoCategory.DEVICE);
+            sql.append("AND PAO.paoName").eq(loadGroupName);
+
+            LoadGroup loadGroup = null;
+            try {
+                loadGroup = jdbcTemplate.queryForObject(sql, loadGroupRowMapper);
+            } catch (EmptyResultDataAccessException ex) {
+                throw new NotFoundException("The load group name supplied does not exist.");
+            } catch (IncorrectResultSizeDataAccessException ex) {
+                throw new IllegalArgumentException("The load group name supplied returned too many results");
+            }
+
+            loadGroup.setProgramIds(getLoadGroupProgramIds(loadGroup));
+            cachedValue.put(loadGroupName, loadGroup);
+            return loadGroup;
         }
-
-        loadGroup.setProgramIds(getLoadGroupProgramIds(loadGroup));
-        return loadGroup;
     }
     
     /**
