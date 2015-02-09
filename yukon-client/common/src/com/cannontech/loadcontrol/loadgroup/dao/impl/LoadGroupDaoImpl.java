@@ -100,7 +100,6 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         } else {
             // Gets all the load group information for the supplied load group
             // name except for the program ids.
-            System.out.println("getbyLoadgroup name" + loadGroupName);
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT PAO.paobjectId AS loadGroupId, PAO.paoName AS loadGroupName, PAO.type");
             sql.append("FROM YukonPAObject PAO");
