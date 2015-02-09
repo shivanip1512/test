@@ -605,21 +605,18 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
 {
     CtiTime   closeTime(YUKONEOT);
 
-    {
-        coll_type::reader_lock_guard_t guard(getLock());
-        vector<long> points;
-        getPointsWithProperty(CtiTablePointProperty::ARCHIVE_ON_TIMER, points);
+    vector<long> points;
+    getPointsWithProperty(CtiTablePointProperty::ARCHIVE_ON_TIMER, points);
 
-        for each( long ptid in points )
+    for each( long ptid in points )
+    {
+        if( CtiPointSPtr pPt = getPoint(ptid) )
         {
-            if( CtiPointSPtr pPt = getPoint(ptid) )
+            if( const CtiDynamicPointDispatchSPtr pDyn = getDynamic(*pPt) )
             {
-                if( const CtiDynamicPointDispatchSPtr pDyn = getDynamic(*pPt) )
+                if( pDyn->getNextArchiveTime() < closeTime )
                 {
-                    if(pDyn->getNextArchiveTime() < closeTime)
-                    {
-                        closeTime = pDyn->getNextArchiveTime();
-                    }
+                    closeTime = pDyn->getNextArchiveTime();
                 }
             }
         }
