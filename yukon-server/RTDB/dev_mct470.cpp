@@ -4930,7 +4930,7 @@ YukonError_t Mct470Device::decodeGetStatusLoadProfile( const INMESS &InMessage, 
              DSt->Message[2] <<  8 |
              DSt->Message[3];
 
-    resultString += "Current Interval Time: " + printTimestamp(lpTime) + "\n";
+    resultString += "Long Load Profile Interval Time: " + (lpTime ? printTimestamp(lpTime) : "(none)") + "\n";
     resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[4]) + string("\n");
 
     resultString += "\n";
@@ -4942,10 +4942,8 @@ YukonError_t Mct470Device::decodeGetStatusLoadProfile( const INMESS &InMessage, 
              DSt->Message[7] <<  8 |
              DSt->Message[8];
 
-    resultString += "Current Interval Time: " + printTimestamp(lpTime) + "\n";
+    resultString += "Long Load Profile Interval Time: " + (lpTime ? printTimestamp(lpTime) : "(none)") + "\n";
     resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[9]) + string("\n");
-
-    resultString += "\n";
 
     ReturnMsg->setResultString(resultString);
 

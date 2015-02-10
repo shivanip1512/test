@@ -3039,13 +3039,12 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
 
             const std::string expected =
                 "Jimmy / Load Profile Channel 1 Status:"
-                "\nCurrent Interval Time: 02/10/2015 13:39:23"
+                "\nLong Load Profile Interval Time: 02/10/2015 13:39:23"
                 "\nCurrent Interval Pointer: 5"
                 "\n"
                 "\nJimmy / Load Profile Channel 2 Status:"
-                "\nCurrent Interval Time: [invalid time (00000000)]"
+                "\nLong Load Profile Interval Time: (none)"
                 "\nCurrent Interval Pointer: 11"
-                "\n"
                 "\n";
 
             BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
