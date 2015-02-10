@@ -35,8 +35,10 @@ char fromAscii(char c)
 struct byte_str
 {
     typedef std::vector<unsigned char> uchar_vector;
+    typedef std::vector<unsigned>  printable_vector;
 
     uchar_vector bytes;
+    printable_vector printable;
 
     byte_str(const char *str)
     {
@@ -73,10 +75,12 @@ struct byte_str
                 }
             }
         }
+
+        printable.assign(bytes.begin(), bytes.end());
     }
 
-    uchar_vector::const_iterator begin() const {  return bytes.begin();  }
-    uchar_vector::const_iterator end()   const {  return bytes.end();  }
+    printable_vector::const_iterator begin() const {  return printable.begin();  }
+    printable_vector::const_iterator end()   const {  return printable.end();  }
 
     const size_t size() const   {  return bytes.size();  }
 
