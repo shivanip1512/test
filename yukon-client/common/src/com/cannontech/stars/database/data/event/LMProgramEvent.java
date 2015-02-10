@@ -3,14 +3,6 @@ package com.cannontech.stars.database.data.event;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 
-/**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: </p>
- * @author unascribed
- * @version 1.0
- */
 
 public class LMProgramEvent extends LMCustomerEventBase {
 

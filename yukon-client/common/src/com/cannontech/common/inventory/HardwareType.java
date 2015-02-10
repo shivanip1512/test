@@ -74,6 +74,12 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     /* Gateways*/
     DIGI_GATEWAY(YUK_DEF_ID_DEV_TYPE_DIGI_GATEWAY, TWO_WAY_RECEIVER, GATEWAY, EXPRESSCOM, false, false, false);
     
+    /* 
+     * If you are creating a new type of two way hardware, you'll need to create and link an inventory object and device
+     * object for each piece of hardware. This needs to be handled for creation through the UI (probably via a 
+     * HardwareTypeExtensionProvider) and also through the EIM API 
+     * (in StarsControllableDeviceHelperImpl.buildLiteInventoryBase()).
+     */
     
     private final static ImmutableSet<HardwareType> rfTypes;
     private final static ImmutableSet<HardwareType> twoWayPlcLcrTypes = ImmutableSet.of(LCR_3102);

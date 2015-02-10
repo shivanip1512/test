@@ -104,8 +104,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     }
     
     @Override
-    public void sendConfigCommand(final LmHardwareCommand command) 
-    throws CommandCompletionException {
+    public void sendConfigCommand(final LmHardwareCommand command) throws CommandCompletionException {
         
         LiteLmHardwareBase device = command.getDevice();
         HardwareType type = HardwareType.valueOf(yukonListDao.getYukonListEntry(device.getLmHardwareTypeID()).getYukonDefID());
