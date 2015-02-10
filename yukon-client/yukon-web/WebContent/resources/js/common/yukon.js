@@ -695,7 +695,7 @@ yukon.ui = (function () {
                 mod.dialog(popup);
                 
                 // check for focus
-                var focus = popup.find('js-focus');
+                var focus = popup.find('.js-focus');
                 if (focus.length) focus.focus();
             });
         },
