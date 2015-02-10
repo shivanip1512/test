@@ -17,14 +17,11 @@ import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.IvvcAnalysisFormatType;
 import com.cannontech.capcontrol.service.IvvcAnalysisScenarioMsgFormatter;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.DisplayablePao;
-import com.cannontech.common.pao.YukonPao;
-import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.service.PaoLoadingService;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Iterables;
@@ -32,10 +29,9 @@ import com.google.common.collect.Maps;
 
 public class IvvcAnalysisScenarioProcessor {
     
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
-    private PaoDao paoDao;
-    private PaoLoadingService paoLoadingService;
-    private ZoneDao zoneDao;
+    @Autowired private IDatabaseCache dbCache;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private ZoneDao zoneDao;
 
     private ImmutableMap<IvvcAnalysisFormatType, IvvcAnalysisScenarioMsgFormatter> formattersMap;
     
@@ -200,16 +196,6 @@ public class IvvcAnalysisScenarioProcessor {
         return "yukon.web.modules.capcontrol.ivvc.busView.analysisScenario" + scenarioId;
     }
     
-    private String getPaoNameWithId(int paoId, YukonUserContext userContext) {
-        try {
-            YukonPao yukonPao = paoDao.getYukonPao(paoId);
-            DisplayablePao displayablePao = paoLoadingService.getDisplayablePao(yukonPao);
-            return displayablePao.getName();
-        } catch (NotFoundException e) {
-            return getUnknownMessage(userContext);
-        }
-    }
-    
     private String getUnknownMessage(YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String msg = accessor.getMessage("yukon.web.modules.capcontrol.ivvc.busView.analysisScenario.unknown");
@@ -226,9 +212,24 @@ public class IvvcAnalysisScenarioProcessor {
     }
     
     private String getCapControlFacesEditorLinkHtml(int ccId, YukonUserContext userContext) {
-        String name = getPaoNameWithId(ccId, userContext);
-        String html = getLinkHtml("/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL
-                                + "&amp;itemid=" + ccId, name, new HashMap<String, String>());
+
+        String name;
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(ccId);
+
+        if (pao == null) {
+            name = getUnknownMessage(userContext);
+        } else {
+            name = pao.getPaoName();
+        }
+
+        String url;
+        if (pao != null && pao.getPaoType().isRegulator()) {
+            url = "/capcontrol/regulator/" + ccId;
+        } else {
+            url = "/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL + "&amp;itemid=" + ccId;
+        }
+
+        String html = getLinkHtml(url, name, new HashMap<String, String>());
         return html;
     }
     
@@ -239,25 +240,5 @@ public class IvvcAnalysisScenarioProcessor {
         }
         html += "\">" + value + "</a>";
         return html;
-    }
-    
-    @Autowired
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
-    }
-    
-    @Autowired
-    public void setPaoLoadingService(PaoLoadingService paoLoadingService) {
-        this.paoLoadingService = paoLoadingService;
-    }
-    
-    @Autowired
-    public void setZoneDao(ZoneDao zoneDao) {
-        this.zoneDao = zoneDao;
     }
 }

@@ -1,59 +1,61 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
-import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
-import com.cannontech.core.dao.ExtraPaoPointMapping;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.point.PointType;
-import com.cannontech.capcontrol.RegulatorPointMapping;
 
 public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDao {
     
     @Autowired private PointDao pointDao;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     
+    /**
+     * Class to bundle the point id mapped to the regulator point mapping (previously these were mapped attributes)
+     */
+    private class ExtraPaoPointMapping {
+
+        private final RegulatorPointMapping regulatorPointMapping;
+        private final int pointId;
+
+        public ExtraPaoPointMapping(RegulatorPointMapping regulatorPointMapping, int pointId) {
+            this.regulatorPointMapping = regulatorPointMapping;
+            this.pointId = pointId;
+        }
+
+        public RegulatorPointMapping getRegulatorPointMapping() {
+            return regulatorPointMapping;
+        }
+
+        public int getPointId() {
+            return pointId;
+        }
+    }
+
     private YukonRowMapper<ExtraPaoPointMapping> extraPaoPointMappingRowMapper = new YukonRowMapper<ExtraPaoPointMapping>() {
         @Override
         public ExtraPaoPointMapping mapRow(YukonResultSet rs)  throws SQLException {
-            ExtraPaoPointMapping mapping = new ExtraPaoPointMapping();
-            mapping.setPointId(rs.getInt("PointId"));
-            mapping.setRegulatorPointMapping(rs.getEnum("Attribute", RegulatorPointMapping.class));
+            int pointId = rs.getInt("PointId");
+            RegulatorPointMapping attribute = rs.getEnum("Attribute", RegulatorPointMapping.class);
+            ExtraPaoPointMapping mapping = new ExtraPaoPointMapping(attribute, pointId);
             return mapping;
         }
-    };
-    
-    private ParameterizedRowMapper<PaoPointIdentifier> paoPointIdentifierRowMapper = new ParameterizedRowMapper<PaoPointIdentifier>() {
-
-        @Override
-        public PaoPointIdentifier mapRow(ResultSet rs, int rowNum) throws SQLException {
-            int paoId = rs.getInt("paobjectId");
-            String paoType = rs.getString("paoType");
-            String pointType = rs.getString("pointType");
-            int offset = rs.getInt("pointOffset");
-            PaoIdentifier paoIdentifier = new PaoIdentifier(paoId, PaoType.getForDbString(paoType));
-            PointType type = PointType.getForString(pointType);
-            PointIdentifier pointIdentifier = new PointIdentifier(type, offset);
-            return new PaoPointIdentifier(paoIdentifier, pointIdentifier);
-        }
-        
     };
 
     @Override
@@ -72,13 +74,15 @@ public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDa
     }
 
     @Override
-    public void saveAssignments(YukonPao pao, List<ExtraPaoPointMapping> pointMappings) {
+    public void saveAssignments(YukonPao pao, Map<RegulatorPointMapping, Integer> pointMappings) {
+
         removeAssignments(pao);
-        for( ExtraPaoPointMapping mapping : pointMappings ) {
-            if(mapping.getPointId() > 0) {
+
+        for (Entry<RegulatorPointMapping, Integer> mapping : pointMappings.entrySet()) {
+            if (mapping.getValue() > 0) {
                 SqlStatementBuilder sql = new SqlStatementBuilder("insert into ExtraPaoPointAssignment");
-                sql.append("values (").appendArgument(pao.getPaoIdentifier().getPaoId()).append(", ").appendArgument(mapping.getPointId());
-                sql.append(", ").appendArgument(mapping.getRegulatorPointMapping()).append(")");
+                sql.append("values (").appendArgument(pao.getPaoIdentifier().getPaoId()).append(", ").appendArgument(mapping.getValue());
+                sql.append(", ").appendArgument(mapping.getKey()).append(")");
                 yukonJdbcTemplate.update(sql);
             }
         }
@@ -103,42 +107,35 @@ public class ExtraPaoPointAssignmentDaoImpl implements ExtraPaoPointAssignmentDa
     }
     
     @Override
-    public List<ExtraPaoPointMapping> getAssignments(PaoIdentifier paoIdentifier) {
+    public Map<RegulatorPointMapping, Integer> getAssignments(PaoIdentifier paoIdentifier) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PointId, Attribute");
         sql.append("FROM ExtraPaoPointAssignment");
         sql.append("WHERE PAObjectId").eq(paoIdentifier.getPaoId());
         
+        Map<RegulatorPointMapping, Integer> assignments = new HashMap<>();
         List<ExtraPaoPointMapping> mappings = yukonJdbcTemplate.query(sql, extraPaoPointMappingRowMapper);
-        return mappings;
+        for (ExtraPaoPointMapping mapping : mappings) {
+            assignments.put(mapping.getRegulatorPointMapping(), mapping.getPointId());
+        }
+
+        return assignments;
     }
     
     @Override
     public void addAssignment(YukonPao pao, int pointId, RegulatorPointMapping regulatorMapping, boolean overwriteExistingPoint) {
         //get existing mappings for this device
-        List<ExtraPaoPointMapping> eppMappings = getAssignments(pao.getPaoIdentifier());
-        
-        //check for existing point on this mapping
-        ExtraPaoPointMapping existingMapping = null;
-        for(ExtraPaoPointMapping mapping : eppMappings) {
-            if(mapping.getRegulatorPointMapping() == regulatorMapping) {
-                existingMapping = mapping;
-                break;
-            }
-        }
-        if(!overwriteExistingPoint && existingMapping != null) {
+        Map<RegulatorPointMapping, Integer> eppMappings = getAssignments(pao.getPaoIdentifier());
+
+        if (!overwriteExistingPoint && eppMappings.containsKey(regulatorMapping)) {
             String message = "Illegal overwrite of existing mapping. Pao: " + pao.getPaoIdentifier().getPaoId() 
-                             + ", Existing Point: " + existingMapping.getPointId() 
+                             + ", Existing Point: " + eppMappings.get(regulatorMapping)
                              + ", New Point: " + pointId;
             throw new IllegalStateException(message);
         }
         
         //add new mapping
-        eppMappings.remove(existingMapping);
-        ExtraPaoPointMapping eppMapping = new ExtraPaoPointMapping();
-        eppMapping.setRegulatorPointMapping(regulatorMapping);
-        eppMapping.setPointId(pointId);
-        eppMappings.add(eppMapping);
+        eppMappings.put(regulatorMapping, pointId);
         
         //save
         saveAssignments(pao, eppMappings);

@@ -7,16 +7,17 @@ import javax.faces.context.FacesContext;
 import javax.faces.event.ActionEvent;
 import javax.servlet.http.HttpSession;
 
-
 import com.cannontech.cbc.model.EditorDataModel;
 import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFUtil;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class EditorDataModelImpl implements EditorDataModel {
   
@@ -60,8 +61,19 @@ public class EditorDataModelImpl implements EditorDataModel {
         HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
         CBCNavigationUtil.bookmarkThisLocation(session);
         String type = JSFParamUtil.getJSFReqParam("type");
-        String itemid = JSFParamUtil.getJSFReqParam("itemid");
-        JSFUtil.redirect("/editor/cbcBase.jsf?type=" + type + "&itemid=" + itemid);
+        int itemId = Integer.valueOf(JSFParamUtil.getJSFReqParam("itemid"));
+
+        IDatabaseCache dbCache = YukonSpringHook.getBean(IDatabaseCache.class);
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(itemId);
+
+        String url;
+        if (pao != null && pao.getPaoType().isRegulator()) {
+            url = "/capcontrol/regulators/" + itemId;
+        } else {
+            url = "/editor/cbcBase.jsf?type=" + type + "&itemid=" + itemId;
+        }
+
+        JSFUtil.redirect(url);
     }
     
 }

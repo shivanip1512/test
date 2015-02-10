@@ -79,7 +79,6 @@ import com.cannontech.database.data.capcontrol.CapControlSpecialArea;
 import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.data.capcontrol.ICapBankController;
-import com.cannontech.database.data.capcontrol.VoltageRegulator;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.TwoWayDevice;
@@ -123,6 +122,7 @@ import com.cannontech.web.util.CBCSelectionLists;
 import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFUtil;
 import com.cannontech.web.wizard.CBCWizardModel;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 public class CapControlForm extends DBEditorForm implements ICapControlModel {
@@ -654,7 +654,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
 		getVisibleTabs().put("GeneralSchedule", Boolean.FALSE);
         getVisibleTabs().put("CBAddInfo", Boolean.FALSE);
         getVisibleTabs().put("CBCStrategy", Boolean.FALSE);
-        getVisibleTabs().put("Regulator", Boolean.FALSE);
 
         switch (paoType) {
 
@@ -729,15 +728,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
                 getVisibleTabs().put("GeneralPAO", Boolean.FALSE);
                 getVisibleTabs().put("CBCStrategy", Boolean.TRUE);
                 break;
-            
-            case CapControlTypes.CAP_CONTROL_LTC:
-            case CapControlTypes.GANG_OPERATED_REGULATOR:
-            case CapControlTypes.PHASE_OPERATED_REGULATOR:
-                setEditorTitle("Regulator");
-                setPaoDescLabel("Description");
-                getVisibleTabs().put("Regulator", Boolean.TRUE);
-                break;
-    
+
     		case PointTypes.ANALOG_POINT:
     			break;
     
@@ -753,10 +744,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
     public DBPersistent getPAOBase() {
         return getDbPersistent();
      }
-	
-	public VoltageRegulator getRegulatorBase(){
-	    return (VoltageRegulator) getDbPersistent();
-	}
 
     @Override
     public void clearfaces() {
@@ -1873,11 +1860,18 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel {
         FacesMessage fm = new FacesMessage();
         try {
             //go to the next page
-            String path = "/editor/cbcBase.jsf";
-            String itemId = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("paoID");
-            String type = "" + DBEditorTypes.EDITOR_CAPCONTROL;
-            String query = "?type=" + type + "&" + "itemid=" + itemId;
-            String location = path + query;                                       
+            int itemId = Integer.valueOf((String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
+                .get("paoID"));
+            IDatabaseCache dbCache = YukonSpringHook.getBean(IDatabaseCache.class);
+            LiteYukonPAObject pao = dbCache.getAllPaosMap().get(itemId);
+
+            String location;
+            if (pao != null && pao.getPaoType().isRegulator()) {
+                location = "/capcontrol/regulators/" + itemId;
+            } else {
+                location = "/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL + "&itemid=" + itemId;
+            }
+
             //bookmark the current page
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
             CBCNavigationUtil.bookmarkLocationAndRedirect(location,session);

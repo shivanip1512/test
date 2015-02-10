@@ -16,7 +16,7 @@
         <div class="column two nogutter">
             <div class="stacked"><a href="<cti:url value="/editor/cbcWizBase.jsf?type=1050"/>"><i:inline key=".type.CAPBANK"/></a></div>
             <div class="stacked"><a href="<cti:url value="/editor/cbcWizBase.jsf?type=1051"/>"><i:inline key=".type.CBC"/></a></div>
-            <div class="stacked"><a href="<cti:url value="/editor/cbcWizBase.jsf?type=4007"/>"><i:inline key=".regulator"/></a></div>
+            <div class="stacked"><a href="<cti:url value="/capcontrol/regulators/create"/>"><i:inline key=".regulator"/></a></div>
             <div class="stacked"><a href="<cti:url value="/editor/cbcWizBase.jsf?type=4006"/>"><i:inline key=".type.STRATEGY"/></a></div>
         </div>
     </div>

@@ -76,9 +76,10 @@ public class CapControlPaoTypeHandler implements PaoTypeHandler {
             builder.path("/vv/cbc/" + paoId);
             builder.pageArgs(paoName);
 
-        // TODO Link to page for regs
-        //else if (&& paoType == PaoType.LOAD_TAP_CHANGER) {
-        //}
+        } else if (paoType.isRegulator()) {
+            builder.pageName("regulator.VIEW");
+            builder.path("/capcontrol/regulators/" + paoId);
+            builder.pageArgs(paoName);
         } else {
             buildEditorPage(builder, paoType, paoId, paoName);
         }

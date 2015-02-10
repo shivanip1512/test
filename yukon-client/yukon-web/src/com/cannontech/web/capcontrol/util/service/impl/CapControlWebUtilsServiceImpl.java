@@ -12,7 +12,6 @@ import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.message.capcontrol.streamable.Area;
@@ -39,7 +38,6 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
     private static final ImmutableSet<ControlAlgorithm> showToolTipAlgorithms = ImmutableSet.of(ControlAlgorithm.PFACTOR_KW_KVAR);
 
     @Autowired private CapControlCache capControlCache;
-    @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private IDatabaseCache dbCache;
 
     @Override
@@ -190,16 +188,19 @@ public class CapControlWebUtilsServiceImpl implements CapControlWebUtilsService 
     
     @Override
     public String getCapControlFacesEditorLinkHtml(HttpServletRequest request, int ccId) {
-        String name = getPaoNameForId(ccId);
-        String url = request.getContextPath() + "/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL
-                + "&amp;itemid=" + ccId;
+
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(ccId);
+        String name = pao.getPaoName();
+
+        String url;
+        if (pao.getPaoType().isRegulator()) {
+            url = request.getContextPath() + "/capcontrol/regulators/" + ccId;
+        } else {
+            url= request.getContextPath() + "/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL
+                    + "&amp;itemid=" + ccId;
+        }
         String html = getLinkHtml(url, name);
         return html;
-    }
-    
-    private String getPaoNameForId(int paoId) throws NotFoundException {
-        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(paoId);
-        return pao.getPaoName();
     }
     
     private String getLinkHtml(String url, String value) {

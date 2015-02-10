@@ -33,6 +33,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.CalcStatusPoint;
@@ -688,12 +689,18 @@ public class PointForm extends DBEditorForm {
         FacesMessage fm = new FacesMessage();
         try {
             //go to the next page
-            String path = "/editor/cbcBase.jsf";
-            String itemId = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
-            .get("paoID");
-            String type = "" + DBEditorTypes.EDITOR_CAPCONTROL;
-            String query = "?type=" + type + "&" + "itemid=" + itemId;
-            String location = path + query;                                       
+            int itemId = Integer.valueOf((String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap()
+            .get("paoID"));
+
+            IDatabaseCache dbCache = YukonSpringHook.getBean(IDatabaseCache.class);
+            LiteYukonPAObject pao = dbCache.getAllPaosMap().get(itemId);
+
+            String location;
+            if (pao != null && pao.getPaoType().isRegulator()) {
+                location = "/capcontrol/regulators/" + itemId;
+            } else {
+                location = "/editor/cbcBase.jsf?type=" + DBEditorTypes.EDITOR_CAPCONTROL + "&itemid=" + itemId;
+            }
             //bookmark the current page
             HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
             CBCNavigationUtil.bookmarkLocationAndRedirect(location,session);

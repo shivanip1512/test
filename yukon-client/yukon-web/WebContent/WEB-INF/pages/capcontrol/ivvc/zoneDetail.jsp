@@ -72,10 +72,7 @@
                             </span>
                         </td>
                         <td>
-                            <cti:url var="editorUrl" value="/editor/cbcBase.jsf">
-                               <cti:param name="type" value="2"/>
-                               <cti:param name="itemid" value="${regulatorIdMap[phaseKey]}"/>
-                            </cti:url>
+                            <cti:url var="editorUrl" value="/capcontrol/regulators/${regulatorIdMap[phaseKey]}" />
 
                             <c:if test="${hasEditingRole}">
                                 <a href="${editorUrl}">
@@ -95,7 +92,7 @@
         </tags:boxContainer2>
         
         <tags:boxContainer2 nameKey="actions" hideEnabled="true" showInitially="true" styleClass="regulatorActions">
-            <table id="ivvc-recent-events" class="compact-results-table">
+            <table class="compact-results-table">
                 <thead>
                 <tr>
                     <c:if test="${zoneDto.zoneType != gangOperated}">
@@ -155,13 +152,13 @@
                             </thead>
                             <tfoot></tfoot>
                             <tbody>
-                            <c:forEach var="point" items="${regulatorPointMappingsMap[phaseA]}" varStatus="status">
+                            <c:forEach var="point" items="${regulatorPointMappingsMap[phaseA]}">
                                 <tr>
-                                    <td><i:inline key="${point.regulatorPointMapping}"/></td>
+                                    <td><i:inline key="${point.key}"/></td>
                                     <c:forEach items="${zoneDto.regulators}" var="regulator">
                                         <c:set var="phaseKey" value="${regulator.key}"/>
                                         <td>
-                                            <c:set var="pointId" value="${regulatorPointMappingsMap[phaseKey][status.index].pointId}"/>
+                                            <c:set var="pointId" value="${regulatorPointMappingsMap[phaseKey][point.key]}"/>
                                             <c:choose>
                                                 <c:when test="${pointId > 0}">
                                                     <span class="redBullet_${pointId}">
@@ -205,14 +202,14 @@
                                 <tbody>
                                 <c:forEach var="point" items="${regulatorPointMappingsMap[phaseKey]}">
                                     <tr>
-                                        <td><i:inline key="${point.regulatorPointMapping}"/></td>
+                                        <td><i:inline key="${point.key}"/></td>
                                         <td>
                                             <c:choose>
-                                                <c:when test="${point.pointId > 0}">
-                                                    <span class="redBullet_${point.pointId}">
+                                                <c:when test="${point.value > 0}">
+                                                    <span class="redBullet_${point.value}">
                                                         <cti:icon icon="icon-bullet-red" classes="thin fn M0" nameKey="questionable"/>
                                                     </span>
-                                                    <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
+                                                    <cti:pointValue pointId="${point.value}" format="VALUE"/>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <i:inline key="yukon.web.defaults.dashes"/>
@@ -221,8 +218,8 @@
                                         </td>
                                         <td>
                                             <c:choose>
-                                                <c:when test="${point.pointId > 0}">
-                                                    <cti:pointValue pointId="${point.pointId}" 
+                                                <c:when test="${point.value > 0}">
+                                                    <cti:pointValue pointId="${point.value}" 
                                                         format="DATE"/>
                                                 </c:when>
                                                 <c:otherwise>
@@ -261,13 +258,13 @@
                                    <td><i:inline key="${point.regulatorPointMapping}"/></td>
                                    <td>
                                        <c:choose>
-                                           <c:when test="${point.pointId > 0}">
-                                                <span class="redBullet_${point.pointId}">
+                                           <c:when test="${point.value > 0}">
+                                                <span class="redBullet_${point.value}">
                                                     <cti:icon icon="icon-bullet-red" classes="thin fn M0"/>
                                                 </span>
-                                                <cti:pointValue pointId="${point.pointId}" format="VALUE"/>
-                                                <cti:dataUpdaterCallback function="yukon.da.ivvc.setRedBulletForPoint(${point.pointId})" 
-                                                    initialize="true" quality="POINT/${point.pointId}/QUALITY"/>
+                                                <cti:pointValue pointId="${point.value}" format="VALUE"/>
+                                                <cti:dataUpdaterCallback function="yukon.da.ivvc.setRedBulletForPoint(${point.value})" 
+                                                    initialize="true" quality="POINT/${point.value}/QUALITY"/>
                                            </c:when>
                                            <c:otherwise>
                                                <i:inline key="yukon.web.defaults.dashes"/>
@@ -276,8 +273,8 @@
                                    </td>
                                    <td>
                                        <c:choose>
-                                           <c:when test="${point.pointId > 0}">
-                                               <cti:pointValue pointId="${point.pointId}" format="DATE"/>
+                                           <c:when test="${point.value > 0}">
+                                               <cti:pointValue pointId="${point.value}" format="DATE"/>
                                            </c:when>
                                            <c:otherwise>
                                                <i:inline key="yukon.web.defaults.dashes"/>
@@ -339,7 +336,7 @@
                         <span class="notes"></span>
                     </div>
                 </div>
-                <table id="recent-events" class="compact-results-table ${tableClass}" data-timeout="${updaterDelay}" data-control-role="${hasControlRole}" data-bus-id="${subBusId}" data-zone-id="${zoneId}" >
+                <table id="ivvc-recent-events" class="compact-results-table ${tableClass}" data-timeout="${updaterDelay}" data-control-role="${hasControlRole}" data-bus-id="${subBusId}" data-zone-id="${zoneId}" >
                     <thead>
                         <tr id="recentEventsHeaderRow">
                             <th><i:inline key=".ivvcEvents.deviceName"/></th>

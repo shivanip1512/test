@@ -1,11 +1,12 @@
 package com.cannontech.database.data.capcontrol;
 
 import java.sql.SQLException;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import org.apache.commons.lang3.StringUtils;
-
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.dao.CcMonitorBankListDao;
 import com.cannontech.capcontrol.dao.VoltageRegulatorDao;
 import com.cannontech.capcontrol.dao.ZoneDao;
@@ -14,6 +15,7 @@ import com.cannontech.capcontrol.model.AbstractZone;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
+import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
@@ -21,16 +23,12 @@ import com.cannontech.common.pao.model.CompleteRegulator;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ExtraPaoPointAssignmentDao;
-import com.cannontech.core.dao.ExtraPaoPointMapping;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.common.model.Phase;
-import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.spring.YukonSpringHook;
-import com.google.common.collect.Lists;
 
 public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDevice{
-    private List<VoltageRegulatorPointMapping> pointMappings;
+    private Map<RegulatorPointMapping, Integer> pointMappings;
     private int keepAliveTimer;
     private int keepAliveConfig;
     private double voltChangePerTap;
@@ -41,6 +39,10 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
      */
     public VoltageRegulator(PaoType paoType) {
         super(paoType);
+
+        if (!paoType.isRegulator()) {
+            throw new IllegalArgumentException("Invalid PaoType for regulator: " + paoType);
+        }
     }
 
     @Override
@@ -54,69 +56,25 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
     }
 
     @Override
-    public void delete() throws SQLException {
-        delete("ExtraPaoPointAssignment", "PaobjectId", getCapControlPAOID() );
-        super.delete();
-    }
-
-    @Override
-    public void retrieve() throws SQLException {
-        super.retrieve();
-    }
-
-    @Override
-    public void setCapControlPAOID(Integer feedID) {
-        super.setPAObjectID( feedID );
-    }
-    
-    @Override
-    public void setDbConnection(java.sql.Connection conn) {
-        super.setDbConnection( conn );
-    }
-    
-    private void validateBeforeUpdate(int voltageYPointId) {
-        List<String> errors = Lists.newArrayList();
-        if (this.keepAliveConfig < 0) {
-            errors.add("Keep Alive Config must be greater than or equal to zero");
-        }
-        if (this.keepAliveTimer < 0) {
-            errors.add("Keep Alive Timer must be greater than or equal to zero");
-        }
-        if (this.voltChangePerTap <= 0) {
-            errors.add("Volt Change Per Tap must be greater than zero");
-        }
-        
-        ZoneDao zoneDao = YukonSpringHook.getBean(ZoneDao.class);
-        Zone zone = null;
-        try {
-            zone = zoneDao.getZoneByRegulatorId(this.getCapControlPAOID());
-        } catch(OrphanedRegulatorException e) {}
-        // If this regulator is assigned to a Zone and the user just selected "No Point"
-        if(voltageYPointId == -1 && zone != null) {
-            errors.add("The "
-                       + RegulatorPointMapping.VOLTAGE_Y.name()
-                       + " point cannot be unassigned while the regulator is attached to a zone ("
-                       + zone.getName() + "). Please select a "
-                       + RegulatorPointMapping.VOLTAGE_Y.name()
-                       + " point or Return.");
-        }
-        if (!errors.isEmpty()) throw new IllegalArgumentException(StringUtils.join(errors, ", "));
+    public void setCapControlPAOID(Integer paoId) {
+        super.setPAObjectID(paoId);
     }
 
     @Override
     public void update() throws java.sql.SQLException {
         //Point Mappings
-        List<ExtraPaoPointMapping> eppMappings = Lists.newArrayList();
+        Map<RegulatorPointMapping, Integer> eppMappings = new HashMap<>();
         int voltageYPointId = 0;
-        for (VoltageRegulatorPointMapping mapping : pointMappings) {
-            eppMappings.add(mapping.getExtraPaoPointMapping());
-            //check to see if a voltage Y point is still attached
-            if (mapping.getRegulatorPointMapping() == RegulatorPointMapping.VOLTAGE_Y) {
-                voltageYPointId = mapping.getPointId();
+        for (Entry<RegulatorPointMapping, Integer> mapping : pointMappings.entrySet()) {
+            if (mapping.getValue() != null) {
+                eppMappings.put(mapping.getKey(), mapping.getValue());
+                //check to see if a voltage Y point is still attached
+                if (mapping.getKey() == RegulatorPointMapping.VOLTAGE_Y) {
+                    voltageYPointId = mapping.getValue();
+                }
             }
         }
-        
-        validateBeforeUpdate(voltageYPointId);
+
         super.update();
         
         PaoPersistenceService paoPersistenceService = YukonSpringHook.getBean(PaoPersistenceService.class);
@@ -148,7 +106,7 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         }
         
         ExtraPaoPointAssignmentDao extraPaoPointAssignmentDao = YukonSpringHook.getBean(ExtraPaoPointAssignmentDao.class);
-        extraPaoPointAssignmentDao.saveAssignments(new PaoIdentifier(getPAObjectID(), getPaoType()) , eppMappings);
+        extraPaoPointAssignmentDao.saveAssignments(getPaoIdentifier() , eppMappings);
         pointMappings = null;
         
         //add voltage_y CcMonitorBankList entry, if a point is assigned
@@ -171,7 +129,7 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
     }
 
     public final static String usedVoltageRegulator(Integer regID) {
-        ZoneDao zoneDao = YukonSpringHook.getBean("zoneDao", ZoneDao.class);
+        ZoneDao zoneDao = YukonSpringHook.getBean(ZoneDao.class);
         try {
             return zoneDao.getZoneByRegulatorId(regID).getName();
         } catch (OrphanedRegulatorException e) {
@@ -179,36 +137,34 @@ public class VoltageRegulator extends CapControlYukonPAOBase implements YukonDev
         }
     }
 
-    public List<VoltageRegulatorPointMapping> getPointMappings(){
+    public Map<RegulatorPointMapping, Integer> getPointMappings(){
         if(pointMappings == null){
-            VoltageRegulatorService voltageRegulatorService = YukonSpringHook.getBean("voltageRegulatorService", VoltageRegulatorService.class);
-            pointMappings = voltageRegulatorService.getPointMappings(getCapControlPAOID());
-            Collections.sort(pointMappings);
-            int index = 0;
-            for(VoltageRegulatorPointMapping mapping : pointMappings) {
-                mapping.setIndex(index);
-                index++;
-            }
+            VoltageRegulatorService voltageRegulatorService = YukonSpringHook.getBean(VoltageRegulatorService.class);
+            pointMappings = voltageRegulatorService.getPointIdByAttributeForRegulator(getCapControlPAOID());
         }
         return pointMappings;
     }
 
+    public void setPointMappings(Map<RegulatorPointMapping, Integer> pointMappings) {
+        this.pointMappings = pointMappings;
+    }
+
     public int getKeepAliveTimer() {
-        VoltageRegulatorDao voltageRegulatorDao = YukonSpringHook.getBean("voltageRegulatorDao", VoltageRegulatorDao.class);
+        VoltageRegulatorDao voltageRegulatorDao = YukonSpringHook.getBean(VoltageRegulatorDao.class);
         Integer paoId = getCapControlPAOID();
         keepAliveTimer = voltageRegulatorDao.getKeepAliveTimerForRegulator(paoId);
         return keepAliveTimer;
     }
 
     public int getKeepAliveConfig() {
-        VoltageRegulatorDao voltageRegulatorDao = YukonSpringHook.getBean("voltageRegulatorDao", VoltageRegulatorDao.class);
+        VoltageRegulatorDao voltageRegulatorDao = YukonSpringHook.getBean(VoltageRegulatorDao.class);
         Integer paoId = getCapControlPAOID();
         keepAliveConfig = voltageRegulatorDao.getKeepAliveConfigForRegulator(paoId);
         return keepAliveConfig;
     }
 
     public double getVoltChangePerTap() {
-        VoltageRegulatorDao voltageRegulatorDao = YukonSpringHook.getBean("voltageRegulatorDao", VoltageRegulatorDao.class);
+        VoltageRegulatorDao voltageRegulatorDao = YukonSpringHook.getBean(VoltageRegulatorDao.class);
         Integer paoId = getCapControlPAOID();
         voltChangePerTap = voltageRegulatorDao.getVoltChangePerTapForRegulator(paoId);
         return voltChangePerTap;

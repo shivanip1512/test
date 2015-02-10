@@ -12,6 +12,7 @@ import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.capcontrol.service.CbcHelperService;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
@@ -20,7 +21,6 @@ import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.database.data.pao.DBEditorTypes;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.AnalogControlType;
@@ -28,7 +28,6 @@ import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.StatusControlType;
 import com.cannontech.database.db.point.PointAlarming;
-import com.cannontech.common.model.Phase;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
@@ -102,12 +101,6 @@ public class CBCSelectionLists {
     
     private static final SelectItem[] typeListDNP = {
         new SelectItem(PaoType.CBC_DNP.getDeviceTypeId(), PaoType.CBC_DNP.getDbString() )
-    };
-    
-    private static final SelectItem[] wizardVoltageRegulatorTypes = {
-        new SelectItem(PaoType.LOAD_TAP_CHANGER.getDeviceTypeId(), CapControlType.LTC.getDisplayValue() ),
-        new SelectItem(PaoType.GANG_OPERATED.getDeviceTypeId(), CapControlType.GO_REGULATOR.getDisplayValue() ),
-        new SelectItem(PaoType.PHASE_OPERATED.getDeviceTypeId(), CapControlType.PO_REGULATOR.getDisplayValue() ), 
     };
     
 	private static final SelectItem[] wizardCBCTypes =  {
@@ -375,10 +368,6 @@ public class CBCSelectionLists {
 	 */
 	public SelectItem[] getCBCTypes() {
 		return wizardCBCTypes;
-	}
-	
-	public SelectItem[] getVoltageRegulatorTypes() {
-	    return wizardVoltageRegulatorTypes;
 	}
 
 	/**

@@ -22,7 +22,6 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
     private com.cannontech.database.db.capcontrol.CapControlArea capControlArea;
     private ArrayList<CCSubAreaAssignment> areaSubs;
 
-    @SuppressWarnings("static-access")
     public CapControlArea() {
         super(PaoType.CAP_CONTROL_AREA);
     }
@@ -133,7 +132,6 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
         connection.close();
     }
 
-    @SuppressWarnings("unchecked")
     public static List<Integer> getAllAreaIDs() {
         SqlStatementBuilder builder = new SqlStatementBuilder();
         builder.append("select areaid from capcontrolarea");

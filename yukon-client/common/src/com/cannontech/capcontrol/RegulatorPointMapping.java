@@ -2,6 +2,7 @@ package com.cannontech.capcontrol;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.search.FilterType;
 import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -40,9 +41,9 @@ public enum RegulatorPointMapping implements DisplayableEnum {
         b.add(KEEP_ALIVE_TIMER);
         phaseAndGangRegulatorMappings = b.build();
         
-        regulatorPointMappings = ImmutableMap.of(PaoType.LOAD_TAP_CHANGER, ltcRegulatorMappings, 
-                                                                  PaoType.PHASE_OPERATED, phaseAndGangRegulatorMappings, 
-                                                                  PaoType.GANG_OPERATED, phaseAndGangRegulatorMappings);
+        regulatorPointMappings = ImmutableMap.of(PaoType.LOAD_TAP_CHANGER, ltcRegulatorMappings,
+                                                 PaoType.PHASE_OPERATED, phaseAndGangRegulatorMappings,
+                                                 PaoType.GANG_OPERATED, phaseAndGangRegulatorMappings);
     }
     
     private PointType[] pointTypes;
@@ -57,8 +58,8 @@ public enum RegulatorPointMapping implements DisplayableEnum {
         return pointTypes;
     }
     
-    public PointType getFilterPointType() {
-        return pointTypes[0];
+    public FilterType getFilterType() {
+        return FilterType.getForPointType(pointTypes[0]);
     }
     
     /**
@@ -78,4 +79,8 @@ public enum RegulatorPointMapping implements DisplayableEnum {
         return regulatorPointMappings.get(paoType);
     }
     
+    public static ImmutableMap<PaoType, ImmutableSet<RegulatorPointMapping>> getMappingsByPaoType() {
+        return regulatorPointMappings;
+    }
+
 }

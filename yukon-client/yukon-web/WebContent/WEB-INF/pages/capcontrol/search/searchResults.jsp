@@ -33,7 +33,7 @@
 
     <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedCbcs.tab.title"
                  initiallySelected='${pageName == "orphanedCbcs"}'>
-        <c:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__"/>
+        <cti:url value="/capcontrol/search/searchResults?cbc_lastSearch=__cti_oCBCs__"/>
     </cti:linkTab>
 
     <cti:linkTab selectorKey="yukon.web.modules.capcontrol.search.orphanedRegulators.tab.title"
@@ -76,15 +76,25 @@
                                 <td>
                                     <c:choose>
                                         <c:when test="${row.paobject}">
-                                            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-                                                <cti:url var="resultUrl" value="/editor/cbcBase.jsf">
-                                                    <cti:param name="type" value="2"/>
-                                                    <cti:param name="itemid" value="${row.itemId}"/>
-                                                </cti:url>
-                                                <a href="${resultUrl}" class="tierIconLink">
-                                                    ${fn:escapeXml(row.name)}
-                                                </a>
-                                            </cti:checkRolesAndProperties>
+                                            <c:choose>
+                                                <c:when test="${row.itemType == 'PO_REGULATOR' ||
+                                                                row.itemType == 'GO_REGULATOR' ||
+                                                                row.itemType == 'LTC'}">
+                                                    <cti:url var="viewUrl" value="/capcontrol/regulators/${row.itemId}" />
+                                                    <a href="${viewUrl}">${fn:escapeXml(row.name)}</a>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                                                        <cti:url var="resultUrl" value="/editor/cbcBase.jsf">
+                                                            <cti:param name="type" value="2"/>
+                                                            <cti:param name="itemid" value="${row.itemId}"/>
+                                                        </cti:url>
+                                                        <a href="${resultUrl}" class="tierIconLink">
+                                                            ${fn:escapeXml(row.name)}
+                                                        </a>
+                                                    </cti:checkRolesAndProperties>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </c:when>
                                         <c:otherwise>
                                             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">

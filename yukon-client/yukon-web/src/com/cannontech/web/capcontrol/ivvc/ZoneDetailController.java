@@ -55,7 +55,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.database.data.capcontrol.VoltageRegulatorPointMapping;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
@@ -313,7 +312,7 @@ public class ZoneDetailController {
         setupZoneDetails(model, cache, zoneDto);
         setupIvvcEvents(model, zoneDto.getZoneId(), zoneDto.getSubstationBusId());
         setupBreadCrumbs(model, cache, zoneDto);
-        setupRegulatorPointMappings(model, zoneDto);
+        setupRegulatorPointMappings(model, zoneDto, userContext);
         setupRegulatorCommands(model, zoneDto);
         
         setupChart(model, userContext, zoneId);
@@ -431,16 +430,18 @@ public class ZoneDetailController {
         return result;
     }
 
-    private void setupRegulatorPointMappings(ModelMap model, AbstractZone abstractZone) {
+    private void setupRegulatorPointMappings(ModelMap model, AbstractZone abstractZone, YukonUserContext userContext) {
         
         Map<Phase, RegulatorToZoneMapping> regulators = abstractZone.getRegulators();
-        Map<Phase, List<VoltageRegulatorPointMapping>> pointMappingsMap = Maps.newHashMapWithExpectedSize(3);
+        Map<Phase, Map<RegulatorPointMapping, Integer>> pointMappingsMap = Maps.newHashMapWithExpectedSize(3);
         for (Entry<Phase, RegulatorToZoneMapping> entry: regulators.entrySet()) {
             int regId = entry.getValue().getRegulatorId();
-            List<VoltageRegulatorPointMapping> pointMappings = voltageRegulatorService.getPointMappings(regId);
-            Collections.sort(pointMappings);
+            Map<RegulatorPointMapping, Integer> pointMappings = voltageRegulatorService.getPointIdByAttributeForRegulator(regId);
+            pointMappings = voltageRegulatorService.sortMappings(pointMappings, userContext);
+
             pointMappingsMap.put(entry.getKey(), pointMappings);
         }
+
         model.addAttribute("regulatorPointMappingsMap", pointMappingsMap);
     }
     

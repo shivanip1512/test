@@ -188,10 +188,6 @@
     	                <x:panelTab id="tabStrategyEditor" label="Control Strategy Editor" rendered="#{capControlForm.visibleTabs['CBCStrategy']}">
     						<jsp:include page="/WEB-INF/pages/capcontrol/strategyEditor.jsp"/>
                         </x:panelTab>
-                        
-                        <x:panelTab id="tabRegulator" label="Setup" rendered="#{capControlForm.visibleTabs['Regulator']}">
-                            <jsp:include page="/WEB-INF/pages/capcontrol/voltageRegulatorSetup.jsp"/>
-                        </x:panelTab>
                     </x:panelTabbedPane>
     
                     <f:facet name="footer">

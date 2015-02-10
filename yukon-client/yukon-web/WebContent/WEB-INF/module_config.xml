@@ -641,6 +641,20 @@
           <page name="search.orphanedBanks" type="BASIC"/>
           <page name="search.orphanedCbcs" type="BASIC"/>
           <page name="search.orphanedRegulators" type="BASIC"/>
+          <page name="regulator" type="BASIC">
+            <pages>
+              <page name="regulator.CREATE" type="BASIC" />
+              <page name="regulator.VIEW" type="BASIC">
+                <link>/capcontrol/regulators/${regulator.id}</link>
+                <labelArgument>${regulator.name}</labelArgument>
+                <pages>
+                  <page name="regulator.EDIT" type="BASIC" hideFavorite="true">
+                    <labelArgument>${regulator.name}</labelArgument>
+                  </page>
+                </pages>
+              </page>
+            </pages>
+          </page>
           <page name="recentEvents" type="DETAIL_CHILD"/>
         </pages>
       </page>

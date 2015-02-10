@@ -626,5 +626,25 @@
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.VOLTAGE_Y">Voltage Y</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.KEEP_ALIVE">Keep Alive</entry>
     <entry key="yukon.web.modules.capcontrol.regulatorPointMapping.KEEP_ALIVE_TIMER">Keep Alive Timer</entry>
+
+    <entry key="yukon.web.modules.capcontrol.regulator.pageName">Regulators</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.VIEW.pageTitle">Regulator: {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.VIEW.pageHeading">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.EDIT.pageTitle">Regulator: {0} Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.EDIT.pageHeading">Edit {0}</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.CREATE.pageTitle">Create Regulator</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.CREATE.pageHeading">Create Regulator</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.CREATE.crumbTitle">Create</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.name">Name</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.description">Description</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.voltChangePerTap">Volt Change Per Tap</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.keepAliveConfig">Keep Alive Config</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.keepAliveTimer">Keep Alive Timer</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.type">Type</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.zone">Parent Zone</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.error.invalidType">Unable to change device type</entry>
+    <entry key="yukon.web.modules.capcontrol.regulator.error.noVoltageY">Voltage Y is required when attached to a zone</entry>
     
 </properties>

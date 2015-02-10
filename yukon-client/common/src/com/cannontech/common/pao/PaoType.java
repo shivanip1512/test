@@ -254,6 +254,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> rfTypes;
     private final static ImmutableSet<PaoType> rfMeterTypes;
     private final static ImmutableSet<PaoType> cbcTypes;
+    private final static ImmutableSet<PaoType> regulatorTypes;
     private final static ImmutableSet<PaoType> mctTypes;
     private final static ImmutableSet<PaoType> iedTypes;
     private final static ImmutableSet<PaoType> rtuTypes;
@@ -317,6 +318,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             CBC_FP_2800,
             DNP_CBC_6510);
         
+        regulatorTypes = ImmutableSet.of(
+            GANG_OPERATED,
+            PHASE_OPERATED,
+            LOAD_TAP_CHANGER);
+
         ccuTypes = ImmutableSet.of(
             CCU710A,
             CCU711,
@@ -618,6 +624,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public boolean isCbc() {
         return cbcTypes.contains(this);
     }
+
+    public boolean isRegulator() {
+        return regulatorTypes.contains(this);
+    }
     
     public boolean isCcu() {
         return ccuTypes.contains(this);
@@ -764,6 +774,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
 
     public static ImmutableSet<PaoType> getCbcTypes() {
         return cbcTypes;
+    }
+
+    public static ImmutableSet<PaoType> getRegulatorTypes() {
+        return regulatorTypes;
     }
 
     public static ImmutableSet<PaoType> getCcuTypes() {

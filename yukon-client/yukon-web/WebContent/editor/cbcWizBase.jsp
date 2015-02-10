@@ -53,21 +53,6 @@
 							</x:htmlTag>
 						</x:panelGroup>
 
-						<x:panelGroup rendered="#{capControlForm.visibleTabs['Regulator']}">
-							<x:htmlTag value="fieldset" styleClass="fieldSet">
-                                <x:htmlTag value="legend"><x:outputText value="Item Type"/></x:htmlTag>
-                                
-                                <x:panelGrid columns="2">
-									<x:outputLabel for="VoltageRegulator_Type" value="Regulator Type: " title="Type of Voltage Regulator this object will be" />
-									<x:selectOneMenu id="VoltageRegulator_Type" value="#{capControlForm.wizData.secondaryType}" required="true"
-										onchange="submit();">
-										<f:selectItems value="#{selLists.voltageRegulatorTypes}" />
-									</x:selectOneMenu>
-								</x:panelGrid>
-								
-							</x:htmlTag>
-						</x:panelGroup>
-
 						<x:panelGroup rendered="#{capControlForm.visibleTabs['CBCType']}">
 							<x:htmlTag value="fieldset" styleClass="fieldSet">
                                 <x:htmlTag value="legend"><x:outputText value="Item Type"/></x:htmlTag>
