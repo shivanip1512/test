@@ -7,9 +7,16 @@
 <%@ taglib prefix="t" tagdir="/WEB-INF/tags/jsTree" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ attribute name="text" description="Link text and dialog title. Defaults to 'Select Devices'" %>
-<%@ attribute name="submitOnCompletion" type="java.lang.Boolean" 
-              description="When true, will submit the closest parent form after successfully selecting devices" %>
+<%@ attribute name="key" description="i18n object to use for the alert message. Note: key can be an i18n key String, 
+                                      MessageSourceResolvable, Displayable, DisplayableEnum, or ResolvableTemplate." %>
+<%@ attribute name="title" description="i18n object to use for the alert message. Note: title can be an i18n key String, 
+                                      MessageSourceResolvable, Displayable, DisplayableEnum, or ResolvableTemplate.
+                                      Default: 'yukon.common.device.selection.title' - 'Select By:'" %>
+                                      
+<%@ attribute name="event" description="Name of event to fire after successfully selecting devices." %>
+<%@ attribute name="submit" type="java.lang.Boolean" 
+              description="If 'true', the closest parent form is submitted after successfully selecting devices. 
+                           Default: 'false'." %>
 
 <%--Device group attributes --%>
 <%@ attribute name="multi" type="java.lang.Boolean" 
@@ -21,8 +28,12 @@
               description="Set of callbacks to be preformed on each node in the device group tree. Can be used to disable 
                            selecting certain nodes." %>
               
+<cti:msgScope paths=", yukon.common.device.bulk.deviceSelection, yukon.web.defaults, yukon.common.device.selection">
+
+<cti:default var="submit" value="${false}"/>
 <cti:default var="multi" value="${false}"/>
 <cti:default var="predicates" value="NON_HIDDEN"/>
+<cti:default var="title" value=".select.title"/>
 
 <cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
 <cti:includeCss link="/resources/js/lib/dynatree/skin/device.group.css"/>
@@ -36,35 +47,34 @@
 
 <cti:deviceGroupHierarchyJson var="groups" predicates="${predicates}" callbacks="${callbacks}"/>
 
-<cti:msgScope paths="yukon.common.device.bulk.deviceSelection">
 <cti:uniqueIdentifier var="id" prefix="collection"/>
 
-<cti:msg2 var="defaultText" key=".selectDevices"/>
-<c:set var="text" value="${(empty text) ? defaultText : text}" />
-
-<c:set var="dataFormAttr" value="${submitOnCompletion ? 'data-submit-on-completion' : ''}" />
-
-<span class="js-device-collection" ${dataFormAttr}>
-    <a data-popup="#${id}" href="javascript:void(0);" data-device-collection>${text}</a>
-</span>
+<a data-popup="#${id}" href="javascript:void(0);" data-device-collection
+    <c:if test="${submit}"> data-submit</c:if>
+    <c:if test="${not empty pageScope.event}"> data-event="${event}"</c:if>>
+    <c:choose>
+        <c:when test="${not empty pageScope.key}"><cti:msg2 key="${key}"/></c:when>
+        <c:otherwise><jsp:doBody/></c:otherwise>
+    </c:choose>
+</a>
 
 <div id="${id}" class="dn js-device-collection-picker-dialog" data-dialog data-dialog-tabbed 
-    data-width="700" data-height="675" data-title="${text}"
+    data-width="700" data-height="675" data-title="<cti:msg2 key="${title}"/>"
     data-class="js-device-collection-picker"
     data-load-event="yukon:device:selection:load" 
     data-event="yukon:device:selection:made"
     data-id-picker="${id}IdPicker">
     
     <ul>
-        <li><a href="#${id}-device-picker">By Device</a></li>
-        <li><a class="js-group-tab" href="#${id}-group">By Group</a></li>
-        <li><a href="#${id}-address">By Address</a></li>
-        <li><a href="#${id}-file">By File</a></li>
+        <li><a href="#${id}-device-picker"><i:inline key=".device"/></a></li>
+        <li><a class="js-group-tab" href="#${id}-group"><i:inline key=".group"/></a></li>
+        <li><a href="#${id}-address"><i:inline key=".address"/></a></li>
+        <li><a href="#${id}-file"><i:inline key=".file"/></a></li>
     </ul>
     
     <div id="${id}-device-picker" data-select-by="device">
-        <input type="hidden" class="js-device-inputs" name="collectionType" value="idList">
-        <input type="hidden" class="js-device-inputs" data-ids name="idList.ids">
+        <input type="hidden" class="js-device-collection-inputs" name="collectionType" value="idList">
+        <input type="hidden" class="js-device-collection-inputs" data-ids name="idList.ids">
         
         <div id="${id}-id-container"></div>
         <tags:pickerDialog id="${id}IdPicker" type="devicePicker" multiSelectMode="true" linkType="none"
@@ -74,7 +84,7 @@
     <div id="${id}-group" class="inline-tree pr full-height" <c:if test="${multi}">data-multi</c:if>
         data-select-by="group" data-groups="${fn:escapeXml(groups)}">
         
-        <input type="hidden" class="js-device-inputs" name="collectionType" value="groups" data-group-names>
+        <input type="hidden" class="js-device-collection-inputs" name="collectionType" value="groups" data-group-names>
         <div class="tree-controls clearfix">
             <cti:msg2 var="expand" key="yukon.common.expandAll"/>
             <cti:msg2 var="collapse" key="yukon.common.collapseAll"/>
@@ -88,16 +98,16 @@
     </div>
     
     <div id="${id}-address" data-select-by="address">
-        <input type="hidden" class="js-device-inputs" name="collectionType" value="addressRange">
+        <input type="hidden" class="js-device-collection-inputs" name="collectionType" value="addressRange">
         
         <cti:msg2 var="startOfRange" key=".startOfRangeLabel"/>
         <cti:msg2 var="endOfRange" key=".endOfRangeLabel"/>
         <tags:nameValueContainer>
             <tags:nameValue name="${startOfRange}">
-                <input type="number" class="js-device-inputs" name="addressRange.start">
+                <input type="number" class="js-device-collection-inputs" name="addressRange.start">
             </tags:nameValue>
             <tags:nameValue name="${endOfRange}">
-                <input type="number" class="js-device-inputs" name="addressRange.end">
+                <input type="number" class="js-device-collection-inputs" name="addressRange.end">
             </tags:nameValue>
         </tags:nameValueContainer>
         <ul class="error simple-list range-errors">
@@ -115,30 +125,17 @@
             <input type="hidden" name="collectionType" value="fileUpload">
             <input type="hidden" name="isFileUpload" value="true">
             
-            <cti:msg2 var="typeLabel" key=".selectDataFileType"/>
-            <cti:msg2 var="dataFileLabel" key=".selectDataFile"/>
-            
-            <tags:nameValueContainer tableClass="stacked natural-width">
-                <tags:nameValue name="${typeLabel}">
+            <tags:nameValueContainer2 tableClass="stacked natural-width">
+                <tags:nameValue2 nameKey=".selectDataFileType">
                     <select name="fileUpload.uploadType">
-                        <option value="ADDRESS">
-                            <cti:msg2 key=".dataFileAddress"/>
-                        </option>
-                        <option value="PAONAME">
-                            <cti:msg2 key=".dataFileName"/>
-                        </option>
-                        <option value="METERNUMBER">
-                            <cti:msg2 key=".dataFileMeterNumber"/>
-                        </option>
-                        <option value="DEVICEID">
-                            <cti:msg2 key=".dataFileDeviceId"/>
-                        </option>
-                        <option value="BULK">
-                            <cti:msg2 key=".dataFileBulk"/>
-                        </option>
+                        <option value="ADDRESS"><cti:msg2 key=".dataFileAddress"/></option>
+                        <option value="PAONAME"><cti:msg2 key=".dataFileName"/></option>
+                        <option value="METERNUMBER"><cti:msg2 key=".dataFileMeterNumber"/></option>
+                        <option value="DEVICEID"><cti:msg2 key=".dataFileDeviceId"/></option>
+                        <option value="BULK"><cti:msg2 key=".dataFileBulk"/></option>
                     </select>
-                </tags:nameValue>
-                <tags:nameValue name="${dataFileLabel}">
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".selectDataFile">
                     <span class="file-upload">
                         <div class="button M0">
                             <cti:icon icon="icon-upload"/>
@@ -148,18 +145,17 @@
                         <span class="file-name form-control">Choose File</span>
                     </span>
                     <div class="progress dib dn" style="width: 120px;">
-                        <div class="progress-bar" style="width: 0%">
-                        </div>
+                        <div class="progress-bar" style="width: 0%"></div>
                     </div>
-                </tags:nameValue>
-                <tags:nameValue name="Devices" nameClass="js-upload-results dn" valueClass="js-upload-results dn">
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".devices" nameClass="js-upload-results dn" valueClass="js-upload-results dn">
                     <span class="device-count"></span>
-                </tags:nameValue>
-            </tags:nameValueContainer>
+                </tags:nameValue2>
+            </tags:nameValueContainer2>
         </div>
         <div class="js-upload-results dn">
-            <input type="hidden" class="js-device-inputs" name="group.name">
-            <input type="hidden" class="js-device-inputs" name="collectionType" value="group">
+            <input type="hidden" class="js-device-collection-inputs" name="group.name">
+            <input type="hidden" class="js-device-collection-inputs" name="collectionType" value="group">
         </div>
         <span class="error js-upload-errors"></span>
     </div>

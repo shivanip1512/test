@@ -22,10 +22,6 @@
 <!-- ================================================================================================================================================= -->
 <!-- ================================================================================================================================================= -->
 <entry key="yukon.web.modules.tools.deviceGroups.pageName">Device Groups</entry>
-<entry key="yukon.web.modules.tools.deviceGroups.addDevices.pageName">Add Devices</entry>
-<entry key="yukon.web.modules.tools.deviceGroups.addDevices.pageDescription">{0}</entry>
-<entry key="yukon.web.modules.tools.deviceGroups.addDevices.pageHeading">Add Devices: {0}</entry>
-
 <entry key="yukon.web.modules.tools.deviceGroups.addDevices">Add Devices</entry>
 
 <entry key="yukon.web.deviceGroups.editor.pageName">Groups Home</entry>

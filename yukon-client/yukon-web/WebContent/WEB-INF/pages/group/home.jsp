@@ -282,8 +282,10 @@ function confirmRemoveAllDevices(confirmText) {
                                         <c:when test="${groupModifiable}">
                                             <cti:url value="/group/editor/addDevicesByCollection" var="selectionUrl"/>
                                             <form action="${selectionUrl}" class="dib">
-                                                <cti:msg2 var="addText" key=".addDevices"/>
-                                                <tags:deviceCollectionPicker text="${addText}" multi="true" submitOnCompletion="true"/>
+                                                <tags:deviceCollectionPicker multi="true" submit="true" 
+                                                    title=".add.title">
+                                                    <cti:msg2 key=".addDevices"/>
+                                                </tags:deviceCollectionPicker>
                                                 <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}"/>
                                             </form>
                                         </c:when>

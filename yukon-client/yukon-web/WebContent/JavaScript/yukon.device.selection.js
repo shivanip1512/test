@@ -224,31 +224,38 @@ yukon.device.selection = (function () {
             
             $(document).on('yukon:device:selection:made', function (ev) {
                 
-                var container = $(ev.target),
-                    destination = container.data('collectionInputs'),
-                    source = container.find('[data-select-by]:visible');
+                var dialog = $(ev.target),
+                    destination = dialog.data('trigger'),
+                    source = dialog.find('[data-select-by]:visible');
                 
-                if (!_validate(container)) {
+                if (!_validate(dialog)) {
                     return;
                 }
                 
-                destination.find('.js-device-inputs').remove();
+                destination.find('.js-device-collection-inputs').remove();
                 
-                source.find('.js-device-inputs').each(function (index, elem) {
+                source.find('.js-device-collection-inputs').each(function (index, elem) {
                     $(elem).clone().hide().appendTo(destination);
                 });
                 
                 if (source.is('[data-select-by="group"]')) {
                     var groups = source.find('[data-group-names]').data('groupNames');
                     groups.forEach(function (group) {
-                        destination.append($('<input type="hidden" name="groups.name" class="js-device-inputs">').val(group));
+                        $('<input type="hidden" name="groups.name">')
+                        .addClass('js-device-collection-inputs')
+                        .val(group)
+                        .appendTo(destination);
                     });
                 }
                 
-                container.dialog('close');
-                if (destination.is('[data-submit-on-completion]')) {
-                    destination.closest('form').submit();
+                dialog.dialog('close');
+                
+                if (destination.is('[data-event]')) {
+                    destination.trigger(destination.data('event'));
                 }
+                if (destination.is('[data-submit]')) {
+                    destination.closest('form').submit();
+                } 
             });
             
             /** Adjust the tree max height when dialog is resized to avoid double scrollbars. */
@@ -264,11 +271,10 @@ yukon.device.selection = (function () {
             });
             
             $(document).on('click', '[data-device-collection]', function (ev) {
-                var link = $(this),
-                    linkContainer = link.closest('.js-device-collection'),
-                    popup = $(link.data('popup'));
+                var trigger = $(this),
+                    dialog = $(trigger.data('popup'));
                 
-                popup.data('collectionInputs', linkContainer);
+                dialog.data('trigger', trigger);
             });
         }
         

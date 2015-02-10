@@ -1,21 +1,28 @@
 <%@ tag trimDirectiveWhitespaces="true" %>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
+<%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ attribute name="argument" type="java.lang.Object" %>
+
 <%@ attribute name="excludeColon" %>
+
 <%@ attribute name="label" type="java.lang.Object" %>
 <%@ attribute name="labelForId" %>
-<%@ attribute name="nameKey" description="The key to use for the label.
-    This key with .title appended will be used for the title of the key column.
-    NOTE:  This nameKey does NOT work like nameKey attributes of other tags." %>
+
+<%@ attribute name="nameKey" 
+              description="The key to use for the label.
+                           This key with .title appended will be used for the title of the key column.
+                           NOTE:  This nameKey does NOT work like nameKey attributes of other tags." %>
+                           
 <%@ attribute name="nameClass" %>
 <%@ attribute name="nameColumnWidth" %>
+
 <%@ attribute name="rowClass" %>
 <%@ attribute name="rowId" %>
+
 <%@ attribute name="valueClass" %>
 
     <c:choose>

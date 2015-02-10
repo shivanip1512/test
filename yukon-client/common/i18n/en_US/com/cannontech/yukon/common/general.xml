@@ -51,6 +51,12 @@
 <entry key="yukon.common.csv">CSV</entry>
 <entry key="yukon.common.decimalSeparator">.</entry>
 <entry key="yukon.common.device">Device</entry>
+<entry key="yukon.common.device.selection.add.title">Add By:</entry>
+<entry key="yukon.common.device.selection.select.title">Select By:</entry>
+<entry key="yukon.common.device.selection.device">Device</entry>
+<entry key="yukon.common.device.selection.group">Group</entry>
+<entry key="yukon.common.device.selection.address">Address</entry>
+<entry key="yukon.common.device.selection.file">File</entry>
 <entry key="yukon.common.deviceName">Device Name</entry>
 <entry key="yukon.common.deviceType">Device Type</entry>
 <entry key="yukon.common.device.errorSummary">{0} ({1})</entry>

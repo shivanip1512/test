@@ -140,9 +140,6 @@ input[type=text],
 input[type=url], 
 select, 
 textarea {
-    -webkit-appearance: none;
-       -moz-appearance: none;
-            appearance: none;
     background: #fff;
     border: 1px solid #d9d9d9;
     border-top: 1px solid #c0c0c0;
@@ -198,27 +195,20 @@ input[type=radio] {
     margin: 3px;
 }
 
-/* hack to achieve webkit only css */
-@media screen and (-webkit-min-device-pixel-ratio:0) {
+@supports (-webkit-appearance: none) or
+          (-moz-appearance: none) or
+          (appearance: none) {
     select:not([multiple]):not([size]), 
     select[size="1"] {
+        -webkit-appearance: none;
+           -moz-appearance: none;
+                appearance: none;
         background-image: url('../Icons/bullet_arrow_down.png');
         background-position: right;
         background-repeat: no-repeat;
         padding-right: 16px;
     }
 }
-/* hack to achieve firefix only css */
-@-moz-document url-prefix() {
-    select:not([multiple]):not([size]), 
-    select[size="1"] {
-        background-image: url('../Icons/bullet_arrow_down.png');
-        background-position: right;
-        background-repeat: no-repeat;
-        padding-right: 16px;
-    }
-}
-
 
 .placeholder { color: #aaa; }
 
