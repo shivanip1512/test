@@ -5,12 +5,16 @@
 #include "utility.h"
 #include "prot_klondike.h"
 
+#include "std_helper.h"
+
 using namespace std;
 
 namespace Cti {
 namespace Protocols {
 
 const KlondikeProtocol::command_state_map_t KlondikeProtocol::_command_states;
+
+__int64 KlondikeProtocol::queue_entry_t::global_id;
 
 
 KlondikeProtocol::KlondikeProtocol() :
@@ -21,7 +25,8 @@ KlondikeProtocol::KlondikeProtocol() :
     _reading_device_queue(false),
     _device_queue_sequence(numeric_limits<unsigned int>::max()),
     _device_queue_entries_available(numeric_limits<unsigned int>::max()),
-    _read_toggle(0x00)
+    _read_toggle(0x00),
+    _dtran_queue_entry(byte_buffer_t(), 0, 0, 0, 0)
 {
     _device_status.as_ushort = 0;
     _current_command.command = Command_Invalid;
@@ -220,10 +225,7 @@ YukonError_t KlondikeProtocol::setCommand( int command, byte_buffer_t payload, u
 
         case Command_DirectTransmission:
         {
-            _dtran_queue_entry.outbound.assign(payload.begin(), payload.end());
-            _dtran_queue_entry.dlc_parms = dlc_parms;
-            _dtran_queue_entry.stages    = stages;
-            _dtran_queue_entry.priority  = priority;
+            _dtran_queue_entry = queue_entry_t(payload, priority, dlc_parms, stages, 0);
             _dtran_in_expected = in_expected;
 
             break;
@@ -384,7 +386,7 @@ void KlondikeProtocol::doOutput(CommandCode command_code)
                         outbound.insert(outbound.end(), waiting_itr->second.outbound.begin(),
                                                         waiting_itr->second.outbound.end());
 
-                        _pending_requests.insert(make_pair(_device_queue_sequence + processed, waiting_itr));
+                        _pending_requests.insert(make_pair(_device_queue_sequence + processed, waiting_itr->first));
 
                         processed++;
                     }
@@ -805,38 +807,47 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
                             }
                             else
                             {
-                                queue_entry_t &rejected_entry = pending_itr->second->second;
+                                local_work_t::iterator itr = _waiting_requests.find(pending_itr->second);
 
-                                if( rejected_entry.resubmissions++ > QueueEntryResubmissionsMaximum
-                                    || (rejected_nak_code != NAK_LoadBuffer_QueueFull &&
-                                        rejected_nak_code != NAK_LoadBuffer_InvalidSequence) )
+                                if( itr != _waiting_requests.end() )
                                 {
-                                    if( rejected_entry.requester )
-                                    {
-                                        KlondikeErrors error = Error_Unknown;
+                                    queue_entry_t &rejected_entry = itr->second;
 
-                                        switch( rejected_nak_code )
+                                    if( rejected_entry.resubmissions++ > QueueEntryResubmissionsMaximum
+                                        || (rejected_nak_code != NAK_LoadBuffer_QueueFull &&
+                                            rejected_nak_code != NAK_LoadBuffer_InvalidSequence) )
+                                    {
+                                        if( rejected_entry.requester )
                                         {
-                                            case NAK_LoadBuffer_BusDisabled:            error = Error_BusDisabled;               break;
-                                            case NAK_LoadBuffer_InvalidBus:             error = Error_InvalidBus;                break;
-                                            case NAK_LoadBuffer_InvalidDLCType:         error = Error_InvalidDLCType;            break;
-                                            case NAK_LoadBuffer_InvalidMessageLength:   error = Error_InvalidMessageLength;      break;
-                                            case NAK_LoadBuffer_NoRoutes:               error = Error_NoRoutes;                  break;
-                                            default:
+                                            KlondikeErrors error = Error_Unknown;
+
+                                            switch( rejected_nak_code )
                                             {
-                                                CTILOG_ERROR(dout, "CommandCode_WaitingQueueWrite : unhandled NAK code ("<< rejected_nak_code <<")");
+                                                case NAK_LoadBuffer_BusDisabled:            error = Error_BusDisabled;               break;
+                                                case NAK_LoadBuffer_InvalidBus:             error = Error_InvalidBus;                break;
+                                                case NAK_LoadBuffer_InvalidDLCType:         error = Error_InvalidDLCType;            break;
+                                                case NAK_LoadBuffer_InvalidMessageLength:   error = Error_InvalidMessageLength;      break;
+                                                case NAK_LoadBuffer_NoRoutes:               error = Error_NoRoutes;                  break;
+                                                default:
+                                                {
+                                                    CTILOG_ERROR(dout, "CommandCode_WaitingQueueWrite : unhandled NAK code ("<< rejected_nak_code <<")");
+                                                }
                                             }
+
+                                            _plc_results.push_back(
+                                                queue_result_t(
+                                                    rejected_entry.requester,
+                                                    error,
+                                                    ::time(0),
+                                                    byte_buffer_t()));
                                         }
 
-                                        _plc_results.push_back(
-                                            queue_result_t(
-                                                rejected_entry.requester,
-                                                error,
-                                                ::time(0),
-                                                byte_buffer_t()));
+                                        _waiting_requests.erase(itr);
                                     }
-
-                                    _waiting_requests.erase(pending_itr->second);
+                                }
+                                else
+                                {
+                                    CTILOG_WARN(dout, "pending request not found in _waiting_requests, id " << pending_itr->second.id);
                                 }
 
                                 _pending_requests.erase(pending_itr);
@@ -869,12 +880,29 @@ void KlondikeProtocol::processResponse(const byte_buffer_t &inbound)
 
                 while( (pending_itr != pending_end) && accepted )
                 {
-                    if( pending_itr->second->second.requester )
+                    local_work_t::iterator itr = _waiting_requests.find(pending_itr->second);
+
+                    if( itr != _waiting_requests.end() )
                     {
-                        _remote_requests.insert(make_pair(pending_itr->first, pending_itr->second->second));
+                        if( itr->second.requester )
+                        {
+                            _remote_requests.insert(make_pair(pending_itr->first, itr->second));
+                        }
+
+                        try
+                        {
+                            _waiting_requests.erase(itr);
+                        }
+                        catch( std::out_of_range &ex )
+                        {
+                            CTILOG_ERROR(dout,  "CommandCode_WaitingQueueWrite, caught out_of_range while deleting id " << pending_itr->second.id);
+                        }
+                    }
+                    else
+                    {
+                        CTILOG_ERROR(dout, "pending queue entry not found in _waiting_requests, id " << pending_itr->second.id);
                     }
 
-                    _waiting_requests.erase(pending_itr->second);
                     _device_queue_sequence++;
                     accepted--;
                     pending_itr++;
@@ -1059,7 +1087,10 @@ bool KlondikeProtocol::addQueuedWork(void *requester, const byte_buffer_t &paylo
 {
     sync_guard_t guard(_sync);
 
-    _waiting_requests.insert(make_pair(priority, queue_entry_t(payload, priority, dlc_parms, stages, requester)));
+    queue_entry_t new_entry(payload, priority, dlc_parms, stages, requester);
+    id_priority key = { new_entry.id, new_entry.priority };
+
+    _waiting_requests.insert(make_pair(key, new_entry));
 
     return true;
 }
@@ -1141,11 +1172,14 @@ void KlondikeProtocol::getRequestStatus(request_statuses &waiting, request_statu
 
     for each(const pending_work_t::value_type &pending_request in _pending_requests)
     {
-        s.requester = pending_request.second->second.requester;
-        s.priority  = pending_request.second->second.priority;
-        s.queue_id  = pending_request.first;
+        if( const boost::optional<queue_entry_t> waiting_entry = mapFind(_waiting_requests, pending_request.second) )
+        {
+            s.requester = waiting_entry->requester;
+            s.priority  = waiting_entry->priority;
+            s.queue_id  = pending_request.first;
 
-        pending.push_back(s);
+            pending.push_back(s);
+        }
     }
 
     for each(const remote_work_t::value_type &remote_request in _remote_requests)

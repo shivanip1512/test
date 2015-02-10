@@ -80,8 +80,25 @@ private:
     int _wrap_errors;
     int _read_toggle;
 
+    struct id_priority
+    {
+        __int64 id;
+        unsigned priority;
+
+        bool operator<(const id_priority &rhs) const
+        {
+            if( priority == rhs.priority )
+            {
+                 return id < rhs.id;  //  preserve FIFO ordering on equal priority
+            }
+            return priority > rhs.priority;  //  higher priority is sorted first
+        }
+    };
+
     struct queue_entry_t
     {
+        static __int64 global_id;
+        __int64 id;
         unsigned priority;
         PLCProtocols protocol;
         unsigned char dlc_parms;
@@ -90,16 +107,8 @@ private:
         unsigned resubmissions;
         void *requester;
 
-        queue_entry_t() :
-            protocol(PLCProtocol_Invalid),
-            priority(0),
-            dlc_parms(0),
-            stages(0),
-            resubmissions(0),
-            requester(0)
-        { }
-
         queue_entry_t(const byte_buffer_t &outbound_, unsigned priority_, unsigned char dlc_parms_, unsigned char stages_, void *requester_) :
+            id(++global_id),
             protocol (PLCProtocol_Emetcon),
             outbound (outbound_),
             priority (priority_),
@@ -108,13 +117,11 @@ private:
             resubmissions(0),
             requester(requester_)
         { }
-
-        bool operator>(const queue_entry_t &rhs) const   {  return priority > rhs.priority;  };
     };
 
-    typedef std::multimap<unsigned, queue_entry_t, std::greater<unsigned>> local_work_t;
-    typedef std::map<unsigned, local_work_t::iterator>                 pending_work_t;
-    typedef std::map<unsigned, queue_entry_t>                          remote_work_t;
+    typedef std::map<id_priority, queue_entry_t> local_work_t;
+    typedef std::map<unsigned, id_priority>      pending_work_t;
+    typedef std::map<unsigned, queue_entry_t>    remote_work_t;
 
     mutable CtiCriticalSection _sync;
     typedef CtiLockGuard<CtiCriticalSection> sync_guard_t;
