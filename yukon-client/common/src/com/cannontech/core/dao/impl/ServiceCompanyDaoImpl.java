@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
@@ -26,12 +27,32 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private DesignationCodeDao designationCodeDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    private LoadingCache< Set<Integer>, List<ServiceCompanyDto>> computingcache= CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<Set<Integer>, List<ServiceCompanyDto>>(){
+
+        @Override
+        public List<ServiceCompanyDto> load(Set<Integer> arg0) throws Exception {
+            return null;
+        }
+        
+    });
+    
+    private LoadingCache<Integer, ServiceCompanyDto> cachedvalues= CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<Integer, ServiceCompanyDto>(){
+
+        @Override
+        public ServiceCompanyDto load(Integer arg0) throws Exception {
+            return null;
+        }
+        
+    });
 
     private SimpleTableAccessTemplate<ServiceCompanyDto> serviceCompanyTemplate;
 
@@ -123,14 +144,20 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
     // CRUD
     @Override
     public ServiceCompanyDto getCompanyById(int serviceCompanyId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.appendFragment(selectBase);
-        sql.append("WHERE CompanyId").eq(serviceCompanyId);
+        ServiceCompanyDto cachedServiceCompany = cachedvalues.getIfPresent(serviceCompanyId);
+        if (cachedServiceCompany != null) {
+            return cachedServiceCompany;
+        } else {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.appendFragment(selectBase);
+            sql.append("WHERE CompanyId").eq(serviceCompanyId);
 
-        ServiceCompanyDto serviceCompany = jdbcTemplate.queryForObject(sql, new ServiceCompanyDtoRowMapper());
-        populateServiceCompany(serviceCompany);
+            ServiceCompanyDto serviceCompany = jdbcTemplate.queryForObject(sql, new ServiceCompanyDtoRowMapper());
+            populateServiceCompany(serviceCompany);
 
-        return serviceCompany;
+            cachedvalues.put(serviceCompanyId, serviceCompany);
+            return serviceCompany;
+        }
     }
 
     @Override
@@ -149,18 +176,24 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
 
     @Override
     public List<ServiceCompanyDto> getAllServiceCompaniesForEnergyCompanies(Set<Integer> energyCompanyIds) {
+        List<ServiceCompanyDto> cachedserviceCompanyDto = (List<ServiceCompanyDto>) computingcache.getAllPresent(energyCompanyIds);
+        if (!cachedserviceCompanyDto.isEmpty()) {
+            return cachedserviceCompanyDto;
+        } else {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.appendFragment(selectBase);
+            sql.append("WHERE ec.energycompanyid").in(energyCompanyIds);
 
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.appendFragment(selectBase);
-        sql.append("WHERE ec.energycompanyid").in(energyCompanyIds);
+            List<ServiceCompanyDto> serviceCompanies = jdbcTemplate.query(sql, new ServiceCompanyDtoRowMapper());
 
-        List<ServiceCompanyDto> serviceCompanies = jdbcTemplate.query(sql, new ServiceCompanyDtoRowMapper());
+            for (ServiceCompanyDto serviceCompany : serviceCompanies) {
+                populateServiceCompany(serviceCompany);
+            }
 
-        for (ServiceCompanyDto serviceCompany : serviceCompanies) {
-            populateServiceCompany(serviceCompany);
+            computingcache.put(energyCompanyIds, serviceCompanies);
+            return serviceCompanies;
         }
 
-        return serviceCompanies;
     }
 
     @Override
