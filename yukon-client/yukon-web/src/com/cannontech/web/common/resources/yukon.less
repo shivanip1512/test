@@ -208,6 +208,17 @@ input[type=radio] {
         padding-right: 16px;
     }
 }
+/* hack to achieve firefix only css */
+@-moz-document url-prefix() {
+    select:not([multiple]):not([size]), 
+    select[size="1"] {
+        background-image: url('../Icons/bullet_arrow_down.png');
+        background-position: right;
+        background-repeat: no-repeat;
+        padding-right: 16px;
+    }
+}
+
 
 .placeholder { color: #aaa; }
 
@@ -867,6 +878,7 @@ select.error {
     border-radius: 3px;
 }
 
+.full-height { height: 100%; }
 .full-width { width: 100%; }
 .half-width { width: 50%; }
 .short-width { max-width: 200px; }

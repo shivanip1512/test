@@ -5,7 +5,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
 import com.cannontech.common.bulk.service.ArchiveDataAnalysisService;
 import com.cannontech.common.device.model.SimpleDevice;

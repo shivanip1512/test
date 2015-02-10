@@ -11,8 +11,8 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.web.group.DeviceCollectionDeviceGroupHelper;
 import com.cannontech.web.security.annotation.CheckRoleProperty;

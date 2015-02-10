@@ -1,4 +1,4 @@
-package com.cannontech.common.bulk.collection.device;
+package com.cannontech.common.bulk.collection.device.model;
 
 /**
  * Enum representing the different types of device collection.
@@ -9,6 +9,7 @@ package com.cannontech.common.bulk.collection.device;
 public enum DeviceCollectionType {
     idList, 
     group, 
+    groups, 
     deviceFilter, 
     fileUpload, 
     addressRange,

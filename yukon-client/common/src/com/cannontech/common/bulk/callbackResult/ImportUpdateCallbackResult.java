@@ -2,8 +2,8 @@ package com.cannontech.common.bulk.callbackResult;
 
 import java.util.List;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
 import com.cannontech.common.bulk.service.BulkFileInfo;

@@ -3,7 +3,7 @@ package com.cannontech.common.scheduledFileExport;
 import java.util.Set;
 
 import com.cannontech.amr.archivedValueExporter.model.dataRange.DataRange;
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.pao.attribute.model.Attribute;
 
 public class ArchivedDataExportFileGenerationParameters implements ExportFileGenerationParameters {

@@ -4,7 +4,7 @@
 <%@ tag trimDirectiveWhitespaces="true"%>
 <%@ tag body-content="empty" %>
 
-<%@ attribute name="deviceCollection" required="true" type="com.cannontech.common.bulk.collection.device.DeviceCollection" %>
+<%@ attribute name="deviceCollection" required="true" type="com.cannontech.common.bulk.collection.device.model.DeviceCollection" %>
 <%@ attribute name="menuBeanId" %>
 <%@ attribute name="key" %>
 <%@ attribute name="menuClasses" %>

@@ -10,7 +10,7 @@ import org.joda.time.Instant;
 
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;

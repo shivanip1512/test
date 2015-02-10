@@ -30,7 +30,7 @@ yukon.dynatree = (function () {
         match = search.val().toLowerCase();
         
         $('.found', tree).removeClass('found');
-
+        
         if (match.length > 0) {
             tree.dynatree('getRoot').visit(function (node) {
                 if (node.data.title.toLowerCase().match(match)) {
@@ -47,9 +47,9 @@ yukon.dynatree = (function () {
         } else {
             if (search_term != '') search.addClass('error');
         }
-    },
+    };
     
-    _mod = {
+    return {
         
         /** Initialize the module registering the event handlers for the Expand/Collapse buttons and search inputs. */
         init: function () {
@@ -83,7 +83,6 @@ yukon.dynatree = (function () {
             _initialized = true;
         },
         
-
         /** 
          * Set the href value of selected node.
          * @param {Object} node - dyna tree node element.
@@ -92,11 +91,99 @@ yukon.dynatree = (function () {
             if (node.data && node.data.href) {
                 window.location = node.data.href;
             }
+        },
+        
+        /** 
+         * Build the tree in the container using dynatree.
+         * 
+         * @param {object} options          - Object containing the options listed below.
+         * @param {JQuery object} container - The container element.
+         *                                    Expected to contain a child element with a class name of 'tree-canvas'.
+         * @param {object} groups           - The JSON object of groups for the dynatree plugin.
+         * @param {Array} [selected]        - Optional array of selected node id's. Default: [].
+         * @param {Array} [nodeId]          - The name of the metadata property to use when preselecting nodes. 
+         *                                    Default: 'groupName'. i.e. 'groupName' would indicate each node has a 
+         *                                    'node.data.metadata.groupName' property.
+         * @param {boolean} [multi]         - If 'true' tree selection mode will be multi-selection, 
+         *                                    otherwise single-selection. Default: 'false'.
+         */
+        build: function(options, dynatreeArgs) {
+            
+            options = $.extend({
+                selected: [],
+                nodeId: 'groupName',
+                multi: false
+            }, options);
+            
+            options.container.find('.tree-canvas').dynatree($.extend({
+                
+                children: options.groups,
+                
+                // Prevent the top level elements (visually - dynatree has 1 hidden root by default) 
+                // from expanding/collapsing.
+                minExpandLevel: 2,
+                
+                selectMode: options.multi ? 2 : 1,
+                checkbox: false,
+                onClick: function (node, event) {
+                    if (node.getEventTargetType(event) != 'expander') {
+                        if (!node.data.isFolder) {
+                            node.toggleSelect();
+                        }
+                    }
+                },
+                onSelect: function(selected, node) {
+                    if (selected) {
+                        var nodes = node.tree.getSelectedNodes(false);
+                        nodes.forEach(function (selectedNode) {
+                            debug.log('Node \'' + selectedNode.data.metadata[options.nodeId] + '\' selected.');
+                        });
+                    } else {
+                        debug.log('Node \'' + node.data.metadata[options.nodeId] + '\' unselected.');
+                    }
+                },
+                onDblClick: function (node, event) {
+                    node.toggleExpand();
+                },
+                clickFolderMode: 2,
+                activeVisible: false
+            }, dynatreeArgs || {}));
+            
+            var tree = options.container.find('.tree-canvas').dynatree('getTree');
+            
+            if (options.selected.length) {
+                // Show the initially selected item(s)
+                tree.visit(function (node) {
+                    if (options.selected.indexOf(node.data.metadata[options.nodeId]) != -1) {
+                        node.makeVisible();
+                        node.select();
+                    }
+                });
+            } else {
+                // Open all of the first level children.
+                var root = tree.getRoot();
+                for (var i = 0; i < root.childList.length; i++) {
+                    root.childList[i].expand(true);
+                }
+            }
+            
+            // Store the array of selected groups so we can revert to it if they 'cancel'.
+            options.container.data('selected', options.selected);
+            
+        },
+        
+        /** Adjust the tree max height avoid double scrollbars. */
+        adjustMaxHeight: function (container) {
+            container = $(container);
+            var
+            canvas = container.find('.tree-canvas'),
+            controls = container.find('.tree-controls'),
+            maxHeight = container.height() - controls.outerHeight(true);
+            canvas.css('max-height', maxHeight + 'px');
         }
-
+        
     };
     
-    return _mod;
 })();
 
 $(function() { yukon.dynatree.init(); });

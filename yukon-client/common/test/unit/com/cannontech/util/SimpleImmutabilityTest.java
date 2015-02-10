@@ -68,7 +68,7 @@ import com.cannontech.clientutils.ClientApplicationRememberMe;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.alert.model.AlertType;
-import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionByField;
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionById;
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionDbType;

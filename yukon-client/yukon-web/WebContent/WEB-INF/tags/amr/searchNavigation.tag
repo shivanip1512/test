@@ -1,7 +1,7 @@
 <%@ attribute name="orderBy" required="true" type="com.cannontech.amr.meter.search.model.OrderBy"%>
 <%@ attribute name="results" required="true" type="com.cannontech.common.search.result.SearchResults"%>
 <%@ attribute name="filterByList" required="false" type="java.util.List"%>
-<%@ attribute name="deviceCollection" required="false" type="com.cannontech.common.bulk.collection.device.DeviceCollection"%>
+<%@ attribute name="deviceCollection" required="false" type="com.cannontech.common.bulk.collection.device.model.DeviceCollection"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>

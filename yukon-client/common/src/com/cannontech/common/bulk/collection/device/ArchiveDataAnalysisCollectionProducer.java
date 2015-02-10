@@ -3,6 +3,7 @@ package com.cannontech.common.bulk.collection.device;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -11,6 +12,9 @@ import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollectionField;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionBase;
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionByField;
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionDbType;
@@ -19,13 +23,16 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.core.dao.ArchiveDataAnalysisDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.google.common.collect.Maps;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Implementation of DeviceCollectionProducer for devices in an Archive Data Analysis
  */
 public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionProducer {
+    
     @Autowired private ArchiveDataAnalysisDao archiveDataAnalysisDao;
+    
+    private static final String key = "yukon.common.device.bulk.bulkAction.collection.archiveDataAnalysis";
     private static final String analysisIdParamName = "analysisId";
     
     @Override
@@ -36,18 +43,21 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
     @Override
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
             throws ServletRequestBindingException, DeviceCollectionCreationException {
-
+        
         final int analysisId = ServletRequestUtils.getIntParameter(request, getSupportedType().getParameterName(analysisIdParamName));
         
         return buildDeviceCollection(analysisId);
     }
     
     public DeviceCollection buildDeviceCollection(final int analysisId) {
+        
         return new ListBasedDeviceCollection() {
+            
             @Override
             public DeviceCollectionType getCollectionType() {
                 return getSupportedType();
             }
+            
             @Override
             public Map<String, String> getCollectionParameters() {
                 Map<String, String> paramMap = new HashMap<String, String>();
@@ -66,36 +76,45 @@ public class ArchiveDataAnalysisCollectionProducer implements DeviceCollectionPr
             
             @Override
             public MessageSourceResolvable getDescription() {
-                return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.archiveDataAnalysis");
+                return new YukonMessageSourceResolvable(key);
             }
         };
     }
     
     @Override
-    public DeviceCollection getCollectionFromBase(DeviceCollectionBase collectionBase) {
-        DeviceCollectionType collectionType = collectionBase.getCollectionType();
-        DeviceCollectionDbType collectionDbType = collectionBase.getCollectionDbType();
-        if(collectionType != DeviceCollectionType.archiveDataAnalysis || collectionDbType != DeviceCollectionDbType.FIELD) {
-            throw new IllegalArgumentException("Unable to parse device collection base. Collection type: " 
-                + collectionType + ", Persistence type: " + collectionDbType);
-        }
-        DeviceCollectionByField collectionByField = (DeviceCollectionByField) collectionBase;
-        int analysisId = Integer.parseInt(collectionByField.getValueMap().get(analysisIdParamName));
+    public DeviceCollection getCollectionFromBase(DeviceCollectionBase base) {
         
-        return buildDeviceCollection(analysisId);
+        DeviceCollectionType type = base.getCollectionType();
+        DeviceCollectionDbType dbType = base.getCollectionDbType();
+        if (type != DeviceCollectionType.archiveDataAnalysis || dbType != DeviceCollectionDbType.FIELD) {
+            throw new IllegalArgumentException("Unable to parse device collection base. Collection type: " 
+                + type + ", Persistence type: " + dbType);
+        }
+        
+        Set<DeviceCollectionField> fields = ((DeviceCollectionByField) base).getFields();
+        String analysisId = null;
+        
+        for (DeviceCollectionField field : fields) {
+            if (field.getName().equalsIgnoreCase(analysisIdParamName)) {
+                analysisId = field.getValue();
+            }
+        }
+        
+        return buildDeviceCollection(Integer.parseInt(analysisId));
     }
     
     @Override
     public DeviceCollectionBase getBaseFromCollection(DeviceCollection deviceCollection) {
+        
         DeviceCollectionType type = deviceCollection.getCollectionType();
-        if(type != DeviceCollectionType.archiveDataAnalysis) {
+        if (type != DeviceCollectionType.archiveDataAnalysis) {
             throw new IllegalArgumentException("Unable to parse device collection of type " + type);
         }
         String analysisIdParameterName = getSupportedType().getParameterName(analysisIdParamName);
         String analysisId = deviceCollection.getCollectionParameters().get(analysisIdParameterName);
-        Map<String, String> valueMap = Maps.newHashMap();
-        valueMap.put(analysisIdParamName, analysisId);
+        DeviceCollectionField field = DeviceCollectionField.of(analysisIdParamName, analysisId);
         
-        return new DeviceCollectionByField(DeviceCollectionType.archiveDataAnalysis, valueMap);
+        return new DeviceCollectionByField(DeviceCollectionType.archiveDataAnalysis, ImmutableSet.of(field));
     }
+    
 }

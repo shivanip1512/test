@@ -3,7 +3,7 @@ package com.cannontech.amr.demandreset.service;
 import java.util.Set;
 
 import com.cannontech.amr.demandreset.model.DemandResetResult;
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;

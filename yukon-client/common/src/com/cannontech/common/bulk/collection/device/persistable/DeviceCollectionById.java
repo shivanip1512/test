@@ -1,15 +1,15 @@
 package com.cannontech.common.bulk.collection.device.persistable;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
+import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
-import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
 
 /**
  * A DeviceCollectionBase that stores a list of device ids.
  */
 public final class DeviceCollectionById implements DeviceCollectionBase {
+    
     private final ImmutableList<Integer> deviceIds;
     private final DeviceCollectionType collectionType;
     
@@ -25,14 +25,8 @@ public final class DeviceCollectionById implements DeviceCollectionBase {
     /**
      * Create a new object with the specified pao ids.
      */
-    public static DeviceCollectionById create(DeviceCollectionType collectionType, Iterable<? extends YukonPao> devices) {
-        Iterable<Integer> deviceIds = Iterables.transform(devices, new Function<YukonPao, Integer>() {
-            @Override
-            public Integer apply(YukonPao pao) {
-                return pao.getPaoIdentifier().getPaoId();
-            }
-        });
-        return new DeviceCollectionById(collectionType, deviceIds);
+    public static DeviceCollectionById create(DeviceCollectionType type, Iterable<? extends YukonPao> devices) {
+        return new DeviceCollectionById(type, PaoUtils.asPaoIdList(devices));
     }
     
     @Override
@@ -48,4 +42,5 @@ public final class DeviceCollectionById implements DeviceCollectionBase {
     public ImmutableList<Integer> getDeviceIds() {
         return deviceIds;
     }
+    
 }

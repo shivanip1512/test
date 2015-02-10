@@ -1,4 +1,4 @@
-package com.cannontech.common.bulk.collection.device;
+package com.cannontech.common.bulk.collection.device.model;
 
 import java.util.Iterator;
 import java.util.List;

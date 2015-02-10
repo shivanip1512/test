@@ -2,7 +2,7 @@ package com.cannontech.web.common.pao;
 
 import org.springframework.ui.ModelMap;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.user.YukonUserContext;
 
 public interface PaoPopupHelper {

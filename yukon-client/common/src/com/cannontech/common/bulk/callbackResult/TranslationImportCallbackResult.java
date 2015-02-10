@@ -2,7 +2,7 @@ package com.cannontech.common.bulk.callbackResult;
 
 import java.util.List;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.google.common.collect.Lists;

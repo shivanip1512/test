@@ -3,8 +3,8 @@ package com.cannontech.common.bulk.model;
 import java.util.List;
 import java.util.Set;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.commands.CommandCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;

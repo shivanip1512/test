@@ -4,7 +4,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.util.ServletUtil;

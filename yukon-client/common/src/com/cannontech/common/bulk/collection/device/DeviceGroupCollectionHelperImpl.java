@@ -3,6 +3,7 @@ package com.cannontech.common.bulk.collection.device;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -10,9 +11,14 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.bulk.collection.DeviceMemoryCollectionProducer;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollectionField;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
 import com.cannontech.common.bulk.collection.device.persistable.DeviceCollectionByField;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -22,12 +28,15 @@ import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.google.common.collect.Maps;
 
 public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHelper {
+    
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired @Qualifier("memory") private DeviceMemoryCollectionProducer memoryProducer;
+    
+    private final String key = "yukon.common.device.bulk.bulkAction.collection.group";
 
     public String getSupportedType() {
         return DeviceCollectionType.group.name();
@@ -43,29 +52,31 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
     }
     
     @Override
-    public DeviceCollectionByField buildDeviceCollectionBase(DeviceCollection deviceCollection) {
-        DeviceCollectionType type = deviceCollection.getCollectionType();
-        if(type != DeviceCollectionType.group) {
+    public DeviceCollectionByField buildDeviceCollectionBase(DeviceCollection collection) {
+        
+        DeviceCollectionType type = collection.getCollectionType();
+        if (type != DeviceCollectionType.group) {
             throw new IllegalArgumentException("Unable to parse device collection of type " + type);
         }
         
-        Map<String, String> parameters = deviceCollection.getCollectionParameters();
+        Map<String, String> parameters = collection.getCollectionParameters();
         String name = parameters.get(getParameterName(NAME_PARAM_NAME));
         String description = parameters.get(getParameterName(DESCRIPTION_PARAM_NAME));
-        if(description == null) {
-            description = "";
-        }
-        Map<String, String> valueMap = Maps.newHashMap();
-        valueMap.put(NAME_PARAM_NAME, name);
-        valueMap.put(DESCRIPTION_PARAM_NAME, description);
         
-        return new DeviceCollectionByField(DeviceCollectionType.group, valueMap);
+        if (description == null) description = "";
+        
+        Set<DeviceCollectionField> fields = new HashSet<>();
+        fields.add(DeviceCollectionField.of(NAME_PARAM_NAME, name));
+        fields.add(DeviceCollectionField.of(DESCRIPTION_PARAM_NAME, description));
+        
+        return new DeviceCollectionByField(DeviceCollectionType.group, fields);
     }
     
     @Override
     public DeviceCollection buildDeviceCollection(final DeviceGroup group, final String descriptionHint) {
         
         return new ListBasedDeviceCollection() {
+            
             @Override
             public DeviceCollectionType getCollectionType() {
                 return DeviceCollectionType.group;
@@ -73,31 +84,32 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
             
             @Override
             public Map<String, String> getCollectionParameters() {
-
-                Map<String, String> paramMap = new HashMap<String, String>();
-
-                paramMap.put("collectionType", getSupportedType());
-                paramMap.put(getParameterName(NAME_PARAM_NAME), group.getFullName());
+                
+                Map<String, String> params = new HashMap<String, String>();
+                
+                params.put("collectionType", getSupportedType());
+                params.put(getParameterName(NAME_PARAM_NAME), group.getFullName());
                 if (StringUtils.isNotBlank(descriptionHint)) {
-                    paramMap.put(getParameterName(DESCRIPTION_PARAM_NAME), descriptionHint);
+                    params.put(getParameterName(DESCRIPTION_PARAM_NAME), descriptionHint);
                 }
-
-                return paramMap;
+                
+                return params;
             }
-
+            
             @Override
             public List<SimpleDevice> getDeviceList() {
+                
                 List<SimpleDevice> deviceList = new ArrayList<SimpleDevice>();
-
+                
                 Set<SimpleDevice> devices = deviceGroupService.getDevices(Collections.singletonList(group));
                 deviceList.addAll(devices);
-
+                
                 return deviceList;
             }
             
             @Override
             public List<SimpleDevice> getDevices(int start, int size) {
-
+                
                 // more than we need so we can skip past start devices and retrieve size devices
                 int retrieveCount = start + size;
                 
@@ -115,15 +127,17 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
             
             @Override
             public MessageSourceResolvable getDescription() {
+                
                 if (group.isHidden()) {
                     if (descriptionHint != null) {
-                        return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.group.temporaryWithHint", descriptionHint);
+                        return new YukonMessageSourceResolvable(key + ".temporaryWithHint", descriptionHint);
                     }
-                    return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.group.temporary");
+                    return new YukonMessageSourceResolvable(key + ".temporary");
                 }
-                return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.group", group.getFullName());
+                
+                return new YukonMessageSourceResolvable(key, group.getFullName());
             }
-
+            
         };
     }
     
@@ -141,4 +155,10 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
         
         return deviceCollection;
     }
+
+    @Override
+    public DeviceCollection buildDeviceCollection(Set<DeviceGroup> groups) {
+        return memoryProducer.createDeviceCollection(groups);
+    }
+    
 }

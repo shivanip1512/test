@@ -1,6 +1,6 @@
 package com.cannontech.web.bulk.ada.model;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.model.Analysis;
 import com.cannontech.common.search.result.SearchResults;
 

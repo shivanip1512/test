@@ -13,7 +13,7 @@ import org.joda.time.Instant;
 import org.joda.time.LocalDate;
 
 import com.cannontech.amr.meter.service.impl.MeterEventStatusTypeGroupings;
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.Range;

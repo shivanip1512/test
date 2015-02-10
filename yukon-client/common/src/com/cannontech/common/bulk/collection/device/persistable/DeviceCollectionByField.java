@@ -1,23 +1,25 @@
 package com.cannontech.common.bulk.collection.device.persistable;
 
-import java.util.Map;
+import java.util.Set;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollectionType;
-import com.google.common.collect.ImmutableMap;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollectionField;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * A DeviceCollectionBase that contains one or more field name/value pairs.
  */
 public final class DeviceCollectionByField implements DeviceCollectionBase {
-    private final ImmutableMap<String, String> valueMap;
+    
+    private final ImmutableSet<DeviceCollectionField> fields;
     private final DeviceCollectionType collectionType;
     
     /**
      * Create a new object with the specified map of field names and values.
      */
-    public DeviceCollectionByField(DeviceCollectionType collectionType, Map<String, String> valueMap) {
+    public DeviceCollectionByField(DeviceCollectionType collectionType, Set<DeviceCollectionField> fields) {
         this.collectionType = collectionType;
-        this.valueMap = ImmutableMap.copyOf(valueMap);
+        this.fields = ImmutableSet.copyOf(fields);
     }
     
     @Override
@@ -30,7 +32,8 @@ public final class DeviceCollectionByField implements DeviceCollectionBase {
         return DeviceCollectionDbType.FIELD;
     }
     
-    public ImmutableMap<String, String> getValueMap() {
-        return valueMap;
+    public ImmutableSet<DeviceCollectionField> getFields() {
+        return fields;
     }
+    
 }

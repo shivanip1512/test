@@ -77,16 +77,6 @@ yukon.tags.deviceGroupPicker = (function () {
         picker.removeAttr('data-groups');
     },
     
-    /** Adjust the tree max height avoid double scrollbars. */
-    _adjustMaxHeight = function (dialog) {
-        dialog = $(dialog);
-        var
-        container = dialog.find('.tree-canvas'),
-        controls = dialog.find('.tree-controls'),
-        maxHeight = dialog.height() - controls.outerHeight(true);
-        container.css('max-height', maxHeight + 'px');
-    },
-    
     mod = {
         
         /** Initialize this module. */
@@ -106,7 +96,7 @@ yukon.tags.deviceGroupPicker = (function () {
                     
                     dialog = picker.data('dialog');
                     dialog.dialog('open');
-                    _adjustMaxHeight(dialog);
+                    yukon.dynatree.adjustMaxHeight(dialog);
                     
                 } else {
                     
@@ -118,7 +108,7 @@ yukon.tags.deviceGroupPicker = (function () {
                     _buildTree(dialog, groups);
                     
                     yukon.ui.dialog(dialog);
-                    _adjustMaxHeight(dialog);
+                    yukon.dynatree.adjustMaxHeight(dialog);
                     
                     picker.addClass('js-initialized');
                     
@@ -168,7 +158,7 @@ yukon.tags.deviceGroupPicker = (function () {
             
             /** Adjust the tree max height when dialog is resized to avoid double scrollbars. */
             $(document).on('dialogresize', '.js-device-group-picker-dialog', function (ev, ui) {
-                _adjustMaxHeight($(this));
+                yukon.dynatree.adjustMaxHeight($(this));
             });
             
             /** The dialog was closed. If they didn't click the 'OK' button, undo any selctions they made. */

@@ -6,7 +6,7 @@
 
 <%@ attribute name="columnCount" required="true" type="java.lang.Integer"%>
 <%@ attribute name="deviceType" type="com.cannontech.common.pao.PaoType"%>
-<%@ attribute name="deviceTypeDeviceCollection" type="com.cannontech.common.bulk.collection.device.DeviceCollection"%>
+<%@ attribute name="deviceTypeDeviceCollection" type="com.cannontech.common.bulk.collection.device.model.DeviceCollection"%>
 <%@ attribute name="paoTypeMasks" required="true" type="com.cannontech.web.bulk.model.PaoTypeMasks"%>
 
 <cti:uniqueIdentifier prefix="section-container-" var="thisId"/>

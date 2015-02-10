@@ -6,7 +6,7 @@ import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.Period;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 public class ArchiveDataAnalysisBackingBean {

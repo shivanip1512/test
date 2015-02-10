@@ -1,6 +1,6 @@
 package com.cannontech.common.bulk.collection.device.service;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 
 /**
  * Service to save and load DeviceCollections.

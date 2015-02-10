@@ -6,7 +6,7 @@
 
 <%@ attribute name="key" required="true" %>
 <%@ attribute name="noteTextArguments" %>
-<%@ attribute name="deviceCollection" type="com.cannontech.common.bulk.collection.device.DeviceCollection" %>
+<%@ attribute name="deviceCollection" type="com.cannontech.common.bulk.collection.device.model.DeviceCollection" %>
 
 <cti:msg2 var="headerTitle" key="${key}.header"/>
 <tags:sectionContainer title="${headerTitle}" id="collectionActionsContainer">

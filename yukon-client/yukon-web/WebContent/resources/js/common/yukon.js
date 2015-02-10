@@ -744,7 +744,8 @@ yukon.ui = (function () {
                     minWidth: popup.is('[data-min-width]') ? popup.data('minWidth') : '150',
                     width: popup.is('[data-width]') ? popup.data('width') : 'auto',
                     height: popup.is('[data-height]') ? popup.data('height') : 'auto',
-                    minHeight: popup.is('[data-min-height]') ? popup.data('minHeight') : '150'
+                    minHeight: popup.is('[data-min-height]') ? popup.data('minHeight') : '150',
+                    dialogClass: popup.is('[data-class]') ? 'yukon-dialog ' + popup.data('class') : 'yukon-dialog'
                 },
                 buttonOptions = {},
                 positionOptions = {};
@@ -1348,13 +1349,13 @@ yukon.ui = (function () {
         var initialized = this.hasClass('ui-dialog-content');
         var dynamic = this.is('[data-url]');
         
-        dialogOptions = dialogOptions || { dialogClass: 'ui-dialog-tabbed' };
+        dialogOptions = dialogOptions || {};
         tabOptions = tabOptions || {};
         
         if (!dialogOptions.dialogClass) {
             dialogOptions.dialogClass = 'ui-dialog-tabbed';
         } else {
-            dialogOptions.dialogClass = dialogOptions.dialogClass + ' ui.dialog-tabbed'; 
+            dialogOptions.dialogClass = dialogOptions.dialogClass + ' ui-dialog-tabbed'; 
         }
         
         if (initialized && dynamic) {

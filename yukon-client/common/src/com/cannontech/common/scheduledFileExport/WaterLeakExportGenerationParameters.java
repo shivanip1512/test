@@ -1,6 +1,6 @@
 package com.cannontech.common.scheduledFileExport;
 
-import com.cannontech.common.bulk.collection.device.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 
 public class WaterLeakExportGenerationParameters implements ExportFileGenerationParameters {
 	private final DeviceCollection deviceCollection;
