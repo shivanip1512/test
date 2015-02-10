@@ -36,7 +36,7 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
     @Autowired private DesignationCodeDao designationCodeDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    private LoadingCache< Set<Integer>, List<ServiceCompanyDto>> computingcache= CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<Set<Integer>, List<ServiceCompanyDto>>(){
+    private LoadingCache< Set<Integer>, List<ServiceCompanyDto>> serviceCompanyListCache= CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<Set<Integer>, List<ServiceCompanyDto>>(){
 
         @Override
         public List<ServiceCompanyDto> load(Set<Integer> arg0) throws Exception {
@@ -45,7 +45,7 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         
     });
     
-    private LoadingCache<Integer, ServiceCompanyDto> cachedvalues= CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<Integer, ServiceCompanyDto>(){
+    private LoadingCache<Integer, ServiceCompanyDto> serviceCompanyCache= CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<Integer, ServiceCompanyDto>(){
 
         @Override
         public ServiceCompanyDto load(Integer arg0) throws Exception {
@@ -144,7 +144,7 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
     // CRUD
     @Override
     public ServiceCompanyDto getCompanyById(int serviceCompanyId) {
-        ServiceCompanyDto cachedServiceCompany = cachedvalues.getIfPresent(serviceCompanyId);
+        ServiceCompanyDto cachedServiceCompany = serviceCompanyCache.getIfPresent(serviceCompanyId);
         if (cachedServiceCompany != null) {
             return cachedServiceCompany;
         } else {
@@ -155,7 +155,7 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
             ServiceCompanyDto serviceCompany = jdbcTemplate.queryForObject(sql, new ServiceCompanyDtoRowMapper());
             populateServiceCompany(serviceCompany);
 
-            cachedvalues.put(serviceCompanyId, serviceCompany);
+            serviceCompanyCache.put(serviceCompanyId, serviceCompany);
             return serviceCompany;
         }
     }
@@ -176,7 +176,7 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
 
     @Override
     public List<ServiceCompanyDto> getAllServiceCompaniesForEnergyCompanies(Set<Integer> energyCompanyIds) {
-        List<ServiceCompanyDto> cachedserviceCompanyDto = (List<ServiceCompanyDto>) computingcache.getAllPresent(energyCompanyIds);
+        List<ServiceCompanyDto> cachedserviceCompanyDto = (List<ServiceCompanyDto>) serviceCompanyListCache.getAllPresent(energyCompanyIds);
         if (!cachedserviceCompanyDto.isEmpty()) {
             return cachedserviceCompanyDto;
         } else {
@@ -190,7 +190,7 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
                 populateServiceCompany(serviceCompany);
             }
 
-            computingcache.put(energyCompanyIds, serviceCompanies);
+            serviceCompanyListCache.put(energyCompanyIds, serviceCompanies);
             return serviceCompanies;
         }
 
