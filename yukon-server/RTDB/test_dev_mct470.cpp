@@ -47,6 +47,7 @@ struct test_Mct470Device : Cti::Devices::Mct470Device
     typedef Mct470Device::point_info point_info;
 
     using CtiTblPAOLite::_type;
+    using CtiTblPAOLite::_name;
 
     using MctDevice::getOperation;
     using MctDevice::ReadDescriptor;
@@ -2992,6 +2993,64 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
         BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Read );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 246 );
         BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   4 );
+    }
+
+    BOOST_AUTO_TEST_CASE(test_getstatus_lp)
+    {
+        mct._type = TYPEMCT470;
+        mct._name = "Jimmy";
+
+        CtiCommandParser parse("getstatus lp");
+
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct.beginExecuteRequest(&request, parse, vgList, retList, outList) );
+
+        BOOST_REQUIRE_EQUAL( outList.size(), 1 );
+
+        const OUTMESS *om = outList.front();
+
+        BOOST_REQUIRE(om);
+
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 151 );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   11 );
+
+        INMESS  InMessage;
+
+        OutEchoToIN(*om, InMessage);
+
+        delete_container(outList);
+        outList.clear();
+
+        unsigned char test_data[] = { 0x54, 0xDA, 0x5E, 0x6B, 5, 0, 0, 0, 0, 11, 60 };
+
+        memcpy(InMessage.Buffer.DSt.Message, test_data, sizeof(test_data));
+        InMessage.Buffer.DSt.Length = sizeof(test_data);
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, mct.ResultDecode(InMessage, CtiTime(), vgList, retList, outList));
+
+        BOOST_REQUIRE_EQUAL(retList.size(), 1);
+        BOOST_CHECK(outList.empty());
+        BOOST_CHECK(vgList.empty());
+
+        {
+            const CtiReturnMsg *retMsg = dynamic_cast<const CtiReturnMsg *>(retList.front());
+
+            BOOST_REQUIRE(retMsg);
+
+            const std::string expected =
+                "Jimmy / Load Profile Channel 1 Status:"
+                "\nCurrent Interval Time: 02/10/2015 13:39:23"
+                "\nCurrent Interval Pointer: 5"
+                "\n"
+                "\nJimmy / Load Profile Channel 2 Status:"
+                "\nCurrent Interval Time: [invalid time (00000000)]"
+                "\nCurrent Interval Pointer: 11"
+                "\n"
+                "\n";
+
+            BOOST_CHECK_EQUAL( retMsg->Status(), ClientErrors::None );
+            BOOST_CHECK_EQUAL( retMsg->ResultString(), expected );
+        }
     }
 
 //}  Brace matching for BOOST_FIXTURE_TEST_SUITE
