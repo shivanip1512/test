@@ -41,7 +41,7 @@ import com.google.common.collect.SetMultimap;
 
 public class LoadGroupDaoImpl implements LoadGroupDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    private LoadingCache<String, LoadGroup> cachedValue=CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<String, LoadGroup>(){
+    private LoadingCache<String, LoadGroup> loadGroupCache=CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<String, LoadGroup>(){
 
         @Override
         public LoadGroup load(String arg0) throws Exception {
@@ -93,7 +93,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public LoadGroup getByLoadGroupName(String loadGroupName) {
-        LoadGroup cachedLoadGroup = cachedValue.getIfPresent(loadGroupName);
+        LoadGroup cachedLoadGroup = loadGroupCache.getIfPresent(loadGroupName);
 
         if (cachedLoadGroup != null) {
             return cachedLoadGroup;
@@ -117,7 +117,7 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
             }
 
             loadGroup.setProgramIds(getLoadGroupProgramIds(loadGroup));
-            cachedValue.put(loadGroupName, loadGroup);
+            loadGroupCache.put(loadGroupName, loadGroup);
             return loadGroup;
         }
     }
