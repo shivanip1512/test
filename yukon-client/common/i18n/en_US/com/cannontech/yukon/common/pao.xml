@@ -14,7 +14,7 @@
     <entry key="yukon.common.pao.SNPP_TERMINAL">SNPP Terminal</entry>
     <entry key="yukon.common.pao.TAPTERMINAL">TAP Terminal</entry>
     <entry key="yukon.common.pao.TNPP_TERMINAL">TNPP Terminal</entry>
-    <entry key="yukon.common.pao.WCTP_TERMINAL">WCTP_Terminal</entry>
+    <entry key="yukon.common.pao.WCTP_TERMINAL">WCTP Terminal</entry>
     <entry key="yukon.common.pao.SERIES_5_LMI">Series 5 LMI</entry>
     <entry key="yukon.common.pao.RTC">RTC</entry>
     <entry key="yukon.common.pao.DIGIGATEWAY">Digi Gateway</entry>
@@ -132,7 +132,7 @@
     <entry key="yukon.common.pao.RTUWELCO">RTU-Welco</entry>
 
     <entry key="yukon.common.pao.LM_GROUP_DIGI_SEP">Digi SEP Group</entry>
-    <entry key="yukon.common.pao.LM_GROUP_ECOBEE">Ecobee Group</entry>
+    <entry key="yukon.common.pao.LM_GROUP_ECOBEE">ecobee Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_EMETCON">Emetcon Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_EXPRESSCOMM">Expresscom Group</entry>
     <entry key="yukon.common.pao.LM_GROUP_RFN_EXPRESSCOMM">RFN Expresscom Group</entry>
@@ -149,7 +149,7 @@
     <entry key="yukon.common.pao.LM_DIRECT_PROGRAM">LM Direct Program</entry>
     <entry key="yukon.common.pao.LM_ENERGY_EXCHANGE_PROGRAM">LM Energy Exchange Program</entry>
     <entry key="yukon.common.pao.LM_SEP_PROGRAM">LM SEP Program</entry>
-    <entry key="yukon.common.pao.LM_ECOBEE_PROGRAM">LM Ecobee Program</entry>
+    <entry key="yukon.common.pao.LM_ECOBEE_PROGRAM">LM ecobee Program</entry>
     <entry key="yukon.common.pao.LM_CONTROL_AREA">LM Control Area</entry>
     <entry key="yukon.common.pao.LM_SCENARIO">LM Scenario</entry>
 
@@ -192,7 +192,7 @@
     <entry key="yukon.common.pao.ROUTE_SERIES_5_LMI">Series 5 LMI</entry>
     <entry key="yukon.common.pao.ROUTE_RTC">RTC Route</entry>
     <entry key="yukon.common.pao.ROUTE_SNPP_TERMINAL">SNPP Terminal Route</entry>
-    <entry key="yukon.common.pao.ROUTE_TNPP_TERMINAL">ROUTE_TNPP_Terminal Route</entry>
+    <entry key="yukon.common.pao.ROUTE_TNPP_TERMINAL">TNPP Terminal Route</entry>
     <entry key="yukon.common.pao.ROUTE_RDS_TERMINAL">RDS Terminal Route</entry>
 
     <entry key="yukon.common.pao.LOCAL_DIRECT">Local Direct</entry>
@@ -209,7 +209,7 @@
     <entry key="yukon.common.pao.DIALOUT_POOL">Dialout Pool</entry>
 
     <entry key="yukon.common.pao.SCRIPT">Script</entry>
-    <entry key="yukon.common.pao.SIMPLE_SCHEDULE">Simple</entry>
+    <entry key="yukon.common.pao.SIMPLE_SCHEDULE">Simple Schedule</entry>
     <entry key="yukon.common.pao.SYSTEM">System</entry>
     <entry key="yukon.common.pao.VIRTUAL_SYSTEM">Virtual System</entry>
 
