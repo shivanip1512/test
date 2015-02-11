@@ -9,8 +9,8 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.msp.beans.v3.MeterRead;
 import com.cannontech.multispeak.client.MultispeakDefines;
-import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -23,8 +23,9 @@ public abstract class MeterReadBase implements ReadableDevice{
 
     @Override
     public MeterRead getMeterRead(){
-        if( meterRead == null)
+        if( meterRead == null) {
             meterRead = new MeterRead();
+        }
         return meterRead;
     }
     
@@ -58,8 +59,9 @@ public abstract class MeterReadBase implements ReadableDevice{
         
         for (LitePoint litePoint : litePoints) {
             PointValueQualityHolder pointData = dds.getPointValue(litePoint.getPointID());
-            if( pointData != null && pointData.getPointQuality() != PointQuality.Uninitialized)
+            if( pointData != null && pointData.getPointQuality() != PointQuality.Uninitialized) {
                 populate(PointIdentifier.createPointIdentifier(litePoint), pointData.getPointDataTimeStamp(), pointData.getValue());
+            }
         }
     }
 }

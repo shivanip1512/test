@@ -5,21 +5,21 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.db.point.stategroup.Disconnect410State;
 import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
-import com.cannontech.multispeak.deploy.service.LoadActionCode;
+import com.cannontech.msp.beans.v3.LoadActionCode;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
 public enum MspLoadActionCode {
 
-    CONNECT(LoadActionCode.Connect, RfnDisconnectStatusState.CONNECTED, Disconnect410State.CONNECTED, "control connect"),
-    DISCONNECT(LoadActionCode.Disconnect, RfnDisconnectStatusState.DISCONNECTED, Disconnect410State.CONFIRMED_DISCONNECTED, "control disconnect"),
+    CONNECT(LoadActionCode.CONNECT, RfnDisconnectStatusState.CONNECTED, Disconnect410State.CONNECTED, "control connect"),
+    DISCONNECT(LoadActionCode.DISCONNECT, RfnDisconnectStatusState.DISCONNECTED, Disconnect410State.CONFIRMED_DISCONNECTED, "control disconnect"),
     //TODO DISCONNECT_CONFIRMED is a fake enum to support the possible unconfirmed disconnected PLC lookup
 //    DISCONNECT_CONFIRMED(LoadActionCode.Disconnect, RFNDisconnectStatusState.DISCONNECTED, Disconnect410State.UNCONFIRMED_DISCONNECTED, "control disconnect"),
 //    INITATE_POWER_LIMITATION(LoadActionCode.InitiatePowerLimitation),   //not supported
 //    OPEN(LoadActionCode.Open),                                          //not suupported
 //    CLOSED(LoadActionCode.Closed),                                      //not supported
-    ARMED(LoadActionCode.Armed, RfnDisconnectStatusState.ARMED, Disconnect410State.CONNECT_ARMED),
-    UNKNOWN(LoadActionCode.Unknown, RfnDisconnectStatusState.UNKNOWN, Disconnect410State.UNCONFIRMED_DISCONNECTED), // Old CDEvent code mapped PLC unconfirmedDisconnect to LoadActionCode.Disconnect....
+    ARMED(LoadActionCode.ARMED, RfnDisconnectStatusState.ARMED, Disconnect410State.CONNECT_ARMED),
+    UNKNOWN(LoadActionCode.UNKNOWN, RfnDisconnectStatusState.UNKNOWN, Disconnect410State.UNCONFIRMED_DISCONNECTED), // Old CDEvent code mapped PLC unconfirmedDisconnect to LoadActionCode.Disconnect....
     ;
 
     private final LoadActionCode loadActionCode;    

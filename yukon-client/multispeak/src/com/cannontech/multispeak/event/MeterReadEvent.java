@@ -5,7 +5,8 @@
  */
 package com.cannontech.multispeak.event;
 
-import java.rmi.RemoteException;
+
+import java.util.List;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.SimpleMeter;
@@ -16,15 +17,21 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.porter.message.Return;
+import com.cannontech.msp.beans.v3.ArrayOfMeterRead;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.MeterRead;
+import com.cannontech.msp.beans.v3.ObjectFactory;
+import com.cannontech.msp.beans.v3.ReadingChangedNotification;
+import com.cannontech.msp.beans.v3.ReadingChangedNotificationResponse;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.core.CBClient;
+import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.data.MeterReadFactory;
 import com.cannontech.multispeak.data.ReadableDevice;
-import com.cannontech.multispeak.deploy.service.CB_ServerSoap_BindingStub;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.MeterRead;
-import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.spring.YukonSpringHook;
+
 
 /**
  * @author stacey
@@ -35,9 +42,12 @@ import com.cannontech.spring.YukonSpringHook;
 public class MeterReadEvent extends MultispeakEvent {
 
     private final MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
-
+    private final MspObjectDao mspObjectDao = YukonSpringHook.getBean("mspObjectDao", MspObjectDao.class);
+    private final ObjectFactory objectFactory = YukonSpringHook.getBean("objectFactory", ObjectFactory.class);
+    private final CBClient cbClient = YukonSpringHook.getBean("cbClient", CBClient.class);
+    
     private ReadableDevice device = null;
-
+    
     /**
      * @param mspVendor_
      * @param pilMessageID_
@@ -82,21 +92,27 @@ public class MeterReadEvent extends MultispeakEvent {
         CTILogger.info("Sending ReadingChangedNotification (" + getResponseUrl() + "): Meter Number "
             + getDevice().getMeterRead().getObjectID());
 
-        try {
-            MeterRead[] meterReads = new MeterRead[1];
-            meterReads[0] = getDevice().getMeterRead();
-
-            CB_ServerSoap_BindingStub port = MultispeakPortFactory.getCB_ServerPort(getMspVendor(), getResponseUrl());
-            if (port != null) {
-                ErrorObject[] errObjects = port.readingChangedNotification(meterReads, getTransactionID());
-                if (errObjects != null) {
-                    YukonSpringHook.getBean(MultispeakFuncs.class).logErrorObjects(getResponseUrl(),
-                        "ReadingChangedNotification", errObjects);
-                }
-            } else {
-                CTILogger.error("Port not found for CB_MR (" + getMspVendor().getCompanyName() + ")");
-            }
-        } catch (RemoteException e) {
+      try {
+          ErrorObject[] errObjects;
+          ReadingChangedNotification readChangeNotification = objectFactory.createReadingChangedNotification();
+          ArrayOfMeterRead arrayOfMeterRead = objectFactory.createArrayOfMeterRead();
+          List<MeterRead> meterReadList = arrayOfMeterRead.getMeterRead();
+          meterReadList.add(getDevice().getMeterRead());
+          readChangeNotification.setTransactionID(getTransactionID());
+          readChangeNotification.setChangedMeterReads(arrayOfMeterRead);
+          ReadingChangedNotificationResponse response = cbClient.readingChangedNotification(getMspVendor(), getResponseUrl(), readChangeNotification);
+          if (response != null) {
+              List<ErrorObject> errorObjList = response.getReadingChangedNotificationResult().getErrorObject();
+              errObjects = mspObjectDao.toErrorObject(errorObjList);
+              if (errObjects != null) {
+                  YukonSpringHook.getBean(MultispeakFuncs.class).logErrorObjects(getResponseUrl(), "ReadingChangedNotification",
+                                                                                 errObjects);
+              }
+          } else {
+              CTILogger.info("Response not recieved for (" + getResponseUrl() + "): Meter Number " + getDevice().getMeterRead()
+                             .getObjectID());
+          }
+        } catch (MultispeakWebServiceClientException e) {
             CTILogger.error("TargetService: " + getResponseUrl() + " - ReadingChangedNotification ("
                 + getMspVendor().getCompanyName() + ")");
             CTILogger.error("RemoteExceptionDetail: " + e.getMessage());

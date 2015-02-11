@@ -1,20 +1,19 @@
 package com.cannontech.multispeak.service;
 
-import java.rmi.RemoteException;
-
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.msp.beans.v3.ConnectDisconnectEvent;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.LoadActionCode;
+import com.cannontech.msp.beans.v3.Meter;
+import com.cannontech.msp.beans.v3.MeterGroup;
+import com.cannontech.msp.beans.v3.MeterRead;
+import com.cannontech.msp.beans.v3.OutageEventType;
+import com.cannontech.msp.beans.v3.ServiceLocation;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
-import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.LoadActionCode;
-import com.cannontech.multispeak.deploy.service.Meter;
-import com.cannontech.multispeak.deploy.service.MeterGroup;
-import com.cannontech.multispeak.deploy.service.MeterRead;
-import com.cannontech.multispeak.deploy.service.OutageEventType;
-import com.cannontech.multispeak.deploy.service.ServiceLocation;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableSetMultimap;
 
@@ -24,25 +23,26 @@ public interface MultispeakMeterService {
      * Returns the LoadActionCode (or connected status) for meter
      * Performs a read of DISCONNECT_STATUS attribute. 
      * Waits for response, times out after mspVendor.maxRequestTimeout 
-     * @throws RemoteException
+     * @throws MultispeakWebServiceException
      */
     public LoadActionCode CDMeterState(MultispeakVendor mspVendor, 
-            YukonMeter meter) throws RemoteException;
+            YukonMeter meter) throws MultispeakWebServiceException;
 
     /**
      * This is a workaround method for SEDC.  This method is used to perform an actual meter interrogation and then return
      * the collected reading if message received within 2 minutes.
-     * @throws RemoteException
+     * @throws MultispeakWebServiceException
      */
     public MeterRead getLatestReadingInterrogate(MultispeakVendor mspVendor, YukonMeter meter, String responseUrl);
 
 	/**
 	 * Send a ping command to pil connection for each meter in meterNumbers.
 	 * @return ErrorObject [] Array of errorObjects for meters that cannot be found, etc.
+	 * @throws MultispeakWebServiceException 
 	 */
 	public ErrorObject[] odEvent(MultispeakVendor mspVendor, 
 	        String[] meterNumbers,
-	        String transactionID, String responseUrl) throws RemoteException;
+	        String transactionID, String responseUrl) throws MultispeakWebServiceException;
 	
     /**
      * Initiate reads for all meterNumber and fire ReadingChangedNotification on callback.
@@ -69,7 +69,7 @@ public interface MultispeakMeterService {
      */
     public ErrorObject[] cdEvent(MultispeakVendor mspVendor, 
             ConnectDisconnectEvent [] cdEvents,
-            String transactionID, String responseURL) throws RemoteException;
+            String transactionID, String responseURL) throws MultispeakWebServiceException;
 
     /**
      * Add MeterNos to SystemGroupEnum.DISCONNECTSTATUS Device Group. 
@@ -98,9 +98,9 @@ public interface MultispeakMeterService {
      *  Else, an ErrorObject will be returned.
      * If the meter does not already exist in Yukon (looked up by MeterNumber, then Address, then DeviceName),
      *  then a new Meter object will be added to Yukon.
-     * @throws RemoteException
+     * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] meterAdd(final MultispeakVendor mspVendor, Meter[] addMeters) throws RemoteException;
+    public ErrorObject[] meterAdd(final MultispeakVendor mspVendor, Meter[] addMeters) throws MultispeakWebServiceException;
 
     /**
      * Removes (disables) a list of meters in Yukon.
@@ -114,9 +114,9 @@ public interface MultispeakMeterService {
 
     /**
      * Changes the meter information.  Meter is looked up by the Physical Address (TransponderId). 
-     * @throws RemoteException
+     * @throws MultispeakWebServiceException
      */
-    public ErrorObject[] meterChanged(final MultispeakVendor mspVendor, Meter[] changedMeters) throws RemoteException;
+    public ErrorObject[] meterChanged(final MultispeakVendor mspVendor, Meter[] changedMeters) throws MultispeakWebServiceException;
 
     /**
      * Adds meters to a group.  If the group doesn't exist, a new group will be created

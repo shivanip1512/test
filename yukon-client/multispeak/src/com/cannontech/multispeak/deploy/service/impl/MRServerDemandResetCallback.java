@@ -1,6 +1,5 @@
 package com.cannontech.multispeak.deploy.service.impl;
 
-import java.rmi.RemoteException;
 import java.util.List;
 import java.util.Map;
 
@@ -14,25 +13,35 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.msp.beans.v3.Action;
+import com.cannontech.msp.beans.v3.ArrayOfErrorObject;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.EventInstance;
+import com.cannontech.msp.beans.v3.EventInstances;
+import com.cannontech.msp.beans.v3.ExtensionsItem;
+import com.cannontech.msp.beans.v3.ExtensionsItem.ExtensionsItemExtType;
+import com.cannontech.msp.beans.v3.ExtensionsList;
+import com.cannontech.msp.beans.v3.MeterEvent;
+import com.cannontech.msp.beans.v3.MeterEventList;
+import com.cannontech.msp.beans.v3.MeterEventNotification;
+import com.cannontech.msp.beans.v3.MeterEventNotificationResponse;
+import com.cannontech.msp.beans.v3.ObjectFactory;
+import com.cannontech.msp.beans.v3.ServiceType;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.core.CBClient;
 import com.cannontech.multispeak.constants.iec61689_9.EndDeviceEventDomain;
 import com.cannontech.multispeak.constants.iec61689_9.EndDeviceEventDomainPart;
 import com.cannontech.multispeak.constants.iec61689_9.EndDeviceEventIndex;
 import com.cannontech.multispeak.constants.iec61689_9.EndDeviceEventType;
 import com.cannontech.multispeak.dao.MspObjectDao;
-import com.cannontech.multispeak.deploy.service.Action;
-import com.cannontech.multispeak.deploy.service.CB_ServerSoap_PortType;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.EventInstance;
-import com.cannontech.multispeak.deploy.service.ExtensionsItem;
-import com.cannontech.multispeak.deploy.service.ExtensionsItemExtType;
-import com.cannontech.multispeak.deploy.service.MeterEvent;
-import com.cannontech.multispeak.deploy.service.MeterEventList;
-import com.cannontech.multispeak.deploy.service.ServiceType;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
+import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.Lists;
 
 public class MRServerDemandResetCallback extends DemandResetVerificationCallback {
     private final static Logger log = YukonLogManager.getLogger(MRServerDemandResetCallback.class);
+    private final ObjectFactory objectFactory = YukonSpringHook.getBean("objectFactory", ObjectFactory.class);
+    private final CBClient cbClient = YukonSpringHook.getBean("cbClient", CBClient.class);
 
     private final MspObjectDao mspObjectDao;
 
@@ -40,7 +49,6 @@ public class MRServerDemandResetCallback extends DemandResetVerificationCallback
     private final MultispeakEventLogService multispeakEventLogService;
     private final MultispeakVendor vendor;
     private final Map<PaoIdentifier, String> meterNumbersByPaoId;
-    private final CB_ServerSoap_PortType port;
     private final String responseUrl;
     private final String transactionId;
 
@@ -51,16 +59,6 @@ public class MRServerDemandResetCallback extends DemandResetVerificationCallback
         this.mspObjectDao = mspObjectDao;
         this.vendor = vendor;
         this.meterNumbersByPaoId = meterNumbersByPaoId;
-
-        // Using CB objects even though the responseURL could be for CB or MDM.  Per Stacey, CB
-        // objects should also work either way.  (The API is identical.)
-        port = MultispeakPortFactory.getCB_ServerPort(vendor, responseURL);
-        if (port == null) {
-            log.error("Port not found for (" + vendor.getCompanyName() + ") with URL " + responseURL);
-            errors.add(mspObjectDao.getErrorObject(transactionId, "could not get responseURL port",
-                                                   "Meter", "initiateDemandResponse", null));
-        }
-
         this.responseUrl = responseURL;
         this.transactionId = transactionId;
     }
@@ -88,28 +86,56 @@ public class MRServerDemandResetCallback extends DemandResetVerificationCallback
     @Override
     public void verified(SimpleDevice device, Instant pointDataTimeStamp) {
         log.debug("device " + device + " passed verification");
-        if (port == null) {
-            return;
-        }
         String meterNumber = meterNumbersByPaoId.get(device.getPaoIdentifier());
-        MeterEvent meterEvent = new MeterEvent();
+        MeterEvent meterEvent = objectFactory.createMeterEvent();
         meterEvent.setDomain(EndDeviceEventDomain.ELECTRICT_METER.code);
         meterEvent.setDomainPart(EndDeviceEventDomainPart.DEMAND.code);
         meterEvent.setType(EndDeviceEventType.COMMAND.code);
         meterEvent.setIndex(EndDeviceEventIndex.RESET.code);
-        EventInstance eventInstance = new EventInstance(null, meterNumber,
-                                                        ServiceType.Electric,
-                                                        null, meterEvent);
-        ExtensionsItem extensionItem = new ExtensionsItem("transactionId", transactionId,
-            ExtensionsItemExtType.value40);
-        MeterEventList events = new MeterEventList(meterNumber, Action.Change, null, null,
-            null, null, null, new ExtensionsItem[] { extensionItem },
-            new EventInstance[] { eventInstance });
+        EventInstances eventInstances = objectFactory.createEventInstances();
+        List<EventInstance> listEventInstance = eventInstances.getEventInstance();
+        EventInstance eventInstance = objectFactory.createEventInstance();
+        eventInstance.setServiceType(ServiceType.ELECTRIC);
+        eventInstance.setMeterNo(meterNumber);
+        eventInstance.setMeterEvent(meterEvent);
+        listEventInstance.add(eventInstance);
+
+        ExtensionsItem extensionItem = objectFactory.createExtensionsItem();
+        extensionItem.setExtName("transactionId");
+        extensionItem.setExtValue(transactionId);
+        extensionItem.setExtType(ExtensionsItemExtType.STRING);
+
+        ExtensionsList extensionsList = objectFactory.createExtensionsList();
+        List<ExtensionsItem> extensionItems = extensionsList.getExtensionsItem();
+        extensionItems.add(extensionItem);
+        MeterEventList events = objectFactory.createMeterEventList();
+        events.setObjectID(meterNumber);
+        events.setVerb(Action.CHANGE);
+        events.setExtensionsList(extensionsList);
+        events.setEventinstances(eventInstances);
+
         try {
-            ErrorObject [] errObject = port.meterEventNotification(events);
-            multispeakEventLogService.notificationResponse("initiateDemandReset", transactionId, meterNumber, 
-                                                           "Reset and Verified", errObject.length, responseUrl);
-        } catch (RemoteException re) {
+            MeterEventNotification meterEventNotification = objectFactory.createMeterEventNotification();
+            meterEventNotification.setEvents(events);
+            MeterEventNotificationResponse meterEventNotificationResponse = cbClient.meterEventNotification(vendor,
+                                                                                                            responseUrl,
+                                                                                                            meterEventNotification);
+
+            ErrorObject[] errObjects = null;
+            if (meterEventNotificationResponse != null) {
+                ArrayOfErrorObject arrayOfErrorObject = meterEventNotificationResponse.getMeterEventNotificationResult();
+                List<ErrorObject> errorObjects = arrayOfErrorObject.getErrorObject();
+                if (errorObjects != null) {
+                    errObjects = mspObjectDao.toErrorObject(errorObjects);
+                }
+            }
+            multispeakEventLogService.notificationResponse("initiateDemandReset",
+                                                           transactionId,
+                                                           meterNumber,
+                                                           "Reset and Verified",
+                                                           errObjects.length,
+                                                           responseUrl);
+        } catch (MultispeakWebServiceClientException re) {
             log.error("error pushing verification notice", re);
         }
     }

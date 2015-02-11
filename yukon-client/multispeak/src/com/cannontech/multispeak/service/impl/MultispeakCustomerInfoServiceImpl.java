@@ -4,10 +4,10 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.cannontech.multispeak.deploy.service.ContactInfo;
-import com.cannontech.multispeak.deploy.service.Customer;
-import com.cannontech.multispeak.deploy.service.EMailAddress;
-import com.cannontech.multispeak.deploy.service.PhoneNumber;
+import com.cannontech.msp.beans.v3.ContactInfo;
+import com.cannontech.msp.beans.v3.Customer;
+import com.cannontech.msp.beans.v3.EMailAddress;
+import com.cannontech.msp.beans.v3.PhoneNumber;
 import com.cannontech.multispeak.service.MultispeakCustomerInfoService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
@@ -20,13 +20,13 @@ public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfo
         List<String> phoneNumbers = Lists.newArrayList();
         ContactInfo contactInfo = mspCustomer.getContactInfo();
         if (contactInfo == null || contactInfo.getPhoneList() == null) return phoneNumbers;
-        for (PhoneNumber p : contactInfo.getPhoneList()) {
+        for (PhoneNumber p : contactInfo.getPhoneList().getPhoneNumber()) {
             String fullPhone = "";
             if (p.getPhone() != null) {
                 fullPhone += p.getPhone();
             }
-            if (p.getPhoneType() != null && p.getPhoneType().getValue() != null) {
-                fullPhone += " " + p.getPhoneType().getValue();
+            if (p.getPhoneType() != null && p.getPhoneType() != null) {
+                fullPhone += " " + p.getPhoneType();
             }
             if (!StringUtils.isBlank(fullPhone)) {
                 phoneNumbers.add(fullPhone);
@@ -42,7 +42,7 @@ public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfo
         ContactInfo contactInfo = mspCustomer.getContactInfo();
         if (contactInfo == null || contactInfo.getEMailList() == null) return emails;
         if (contactInfo.getEMailList() != null) {
-            for (EMailAddress e : contactInfo.getEMailList()) {
+            for (EMailAddress e : contactInfo.getEMailList().getEMailAddress()) {
                 String fullEmail = "";
                 if (e.getEMail() != null) {
                     fullEmail += e.getEMail();

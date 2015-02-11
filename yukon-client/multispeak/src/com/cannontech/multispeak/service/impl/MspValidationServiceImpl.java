@@ -1,6 +1,6 @@
 package com.cannontech.multispeak.service.impl;
 
-import java.rmi.RemoteException;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -10,16 +10,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.msp.beans.v3.ControlEventType;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.LoadManagementEvent;
+import com.cannontech.msp.beans.v3.ObjectRef;
+import com.cannontech.msp.beans.v3.ScadaAnalog;
+import com.cannontech.msp.beans.v3.Strategy;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.MspObjectDao;
-import com.cannontech.multispeak.deploy.service.ControlEventType;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
-import com.cannontech.multispeak.deploy.service.ObjectRef;
-import com.cannontech.multispeak.deploy.service.ScadaAnalog;
-import com.cannontech.multispeak.deploy.service.Strategy;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.MspValidationService;
 
 public class MspValidationServiceImpl implements MspValidationService {
@@ -30,23 +31,23 @@ public class MspValidationServiceImpl implements MspValidationService {
 
     @Override
     public FormattedBlockProcessingService<Block> getProcessingServiceByReadingType(Map<String, FormattedBlockProcessingService<Block>> readingTypesMap,
-            String readingType) throws RemoteException {
+            String readingType) throws MultispeakWebServiceException {
         FormattedBlockProcessingService<Block> formattedBlock = readingTypesMap.get(readingType);
         if( formattedBlock == null) {
             String message = readingType + " is NOT a supported ReadingType.";
             log.error(message);
-            throw new RemoteException(message);
+            throw new MultispeakWebServiceException(message);
         }
         return formattedBlock;
     }
 
     @Override
-    public YukonMeter isYukonMeterNumber(String meterNumber) throws RemoteException {
+    public YukonMeter isYukonMeterNumber(String meterNumber) throws MultispeakWebServiceException {
         YukonMeter yukonMeter;
         if( StringUtils.isBlank(meterNumber)) {
             String errorMessage = "Meter Number is invalid.  Meter number is blank or null";
             log.error(errorMessage);
-            throw new RemoteException(errorMessage);
+            throw new MultispeakWebServiceException(errorMessage);
         }
         
         try {
@@ -54,7 +55,7 @@ public class MspValidationServiceImpl implements MspValidationService {
         }catch (NotFoundException e){
             String errorMessage = "Meter Number: (" + meterNumber + ") - Was NOT found in Yukon.";
             log.error(errorMessage);
-            throw new RemoteException(errorMessage);
+            throw new MultispeakWebServiceException(errorMessage);
         }
         return yukonMeter;
     }
@@ -88,7 +89,7 @@ public class MspValidationServiceImpl implements MspValidationService {
     	
 	    ControlEventType controlEventType = loadManagementEvent.getControlEventType();
 	    //is control type is defined?
-		if( controlEventType == null || StringUtils.isBlank(controlEventType.getValue())) {
+		if( controlEventType == null || StringUtils.isBlank(controlEventType.value())) {
 			errorObject = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(), 
 					"ControlEventType not specified, event not processed.",
 					"LoadManagementEvent", "isValidLoadManagementEvent", null);
@@ -101,7 +102,7 @@ public class MspValidationServiceImpl implements MspValidationService {
 						"LoadManagementEvent", "isValidLoadManagementEvent", null);
 			} else {
 				//are substation values for the strategy defined?
-			    ObjectRef[] substations = strategy.getApplicationPointList();
+                List<ObjectRef> substations = strategy.getApplicationPointList().getApplicationPoint();
 			    if (substations == null) {
 			    	errorObject = mspObjectDao.getErrorObject(loadManagementEvent.getObjectID(), 
 							"ApplicationPointList is null (invalid Substation value), event not processed.",

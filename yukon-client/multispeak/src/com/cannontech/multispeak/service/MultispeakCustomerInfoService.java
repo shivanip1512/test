@@ -2,7 +2,7 @@ package com.cannontech.multispeak.service;
 
 import java.util.List;
 
-import com.cannontech.multispeak.deploy.service.Customer;
+import com.cannontech.msp.beans.v3.Customer;
 import com.cannontech.user.YukonUserContext;
 
 public interface MultispeakCustomerInfoService {

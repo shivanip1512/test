@@ -83,5 +83,5 @@ public interface MspRawPointHistoryDao {
      * user must have LM_VISIBLE permission for the program to be included in the return
      * @return A list of SCADAAnalog data representing all analog point values for LM program paos. 
      */
-    public MspScadaAnalogReturnList retrieveLatestScadaAnalogs(LiteYukonUser user);
+    public MspScadaAnalogReturnList retrieveLatestScadaAnalogs(LiteYukonUser user) ;
 }

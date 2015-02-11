@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings version="2.0" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance">
+
+	<!-- Use below jaxb:bindings for CXF -->
+	<jaxb:bindings schemaLocation="../src/com/cannontech/multispeak/wsdl/CD_Server.wsdl#types?schema2">
+		<jaxb:bindings>
+			<jaxb:globalBindings typesafeEnumMaxMembers="2000"
+				typesafeEnumMemberName="generateName" />
+		</jaxb:bindings>
+
+		<jaxb:bindings
+			node="//xs:complexType[@name='meterEvent']//xs:simpleContent//xs:extension//xs:attribute[@name='value']">
+			<jaxb:property name="meterEventValue">
+				<jaxb:javadoc><![CDATA[Variable-level Javadoc comment added by JAXB binding file.]]></jaxb:javadoc>
+			</jaxb:property>
+		</jaxb:bindings>
+
+		<jaxb:bindings node="//xs:complexType[@name='ArrayOfString2']">
+			<jaxb:class name="CDArrayOfString2">
+				<jaxb:javadoc><![CDATA[Variable-level Javadoc comment added by JAXB binding file.]]></jaxb:javadoc>
+			</jaxb:class>
+		</jaxb:bindings>
+
+		<jaxb:bindings
+			node="//xs:complexType[@name='extensionsItem']//xs:sequence//xs:element[@name='extType']//xs:simpleType">
+			<jaxb:typesafeEnumClass name="extensionsItemExtType" />
+		</jaxb:bindings>
+
+	</jaxb:bindings>
+</jaxb:bindings>

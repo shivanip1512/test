@@ -31,7 +31,10 @@ public class WebSecurityInterceptor extends HandlerInterceptorAdapter {
             annotationProcessor.processClass(getClass(handler));
             ignoreCsrf = AnnotationUtils.findAnnotation(getClass(handler), IgnoreCsrfCheck.class) != null;
         }
-
+        
+        if(request.getRequestURI().contains("/soap") || request.getRequestURI().contains("/multispeak")) {
+            ignoreCsrf = true;
+        }
         if (!ignoreCsrf) {
             csrfTokenService.validateToken(request);
         }

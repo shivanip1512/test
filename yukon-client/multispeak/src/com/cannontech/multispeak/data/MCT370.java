@@ -5,12 +5,14 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import com.cannontech.common.pao.definition.model.PointIdentifier;
+import com.cannontech.multispeak.client.MultispeakFuncs;
 
 /**
  * Class which represents billing data for an MCT370
  */
 public class MCT370 extends MeterReadBase {
 
+    @Override
     public void populate(PointIdentifier pointIdentifier, Date dateTime, Double value) {
 
         GregorianCalendar calendar = new GregorianCalendar();
@@ -20,7 +22,7 @@ public class MCT370 extends MeterReadBase {
             case PulseAccumulator:
                 switch (pointIdentifier.getOffset()) {
                     case 1: // KWh - Total Consumption - channel 1
-                        getMeterRead().setReadingDate(calendar);
+                        getMeterRead().setReadingDate(MultispeakFuncs.toXMLGregorianCalendar(calendar));
                         getMeterRead().setPosKWh(new BigInteger(String.valueOf(value.intValue())));
                         setPopulated(true);
                         break;
@@ -33,7 +35,7 @@ public class MCT370 extends MeterReadBase {
     
                     case 11: // On Peak KW - Pulse Input 1
                         getMeterRead().setKW(new Float(value.floatValue()));
-                        getMeterRead().setKWDateTime(calendar);
+                        getMeterRead().setKWDateTime(MultispeakFuncs.toXMLGregorianCalendar(calendar));
                         setPopulated(true);
                         break;
                     case 10: // Off Peak KW - Pulse Input 1

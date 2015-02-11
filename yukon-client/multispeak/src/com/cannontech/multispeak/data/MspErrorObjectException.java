@@ -1,6 +1,6 @@
 package com.cannontech.multispeak.data;
 
-import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.msp.beans.v3.ErrorObject;
 
 public class MspErrorObjectException extends RuntimeException {
     

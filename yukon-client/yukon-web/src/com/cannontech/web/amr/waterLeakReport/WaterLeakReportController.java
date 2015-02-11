@@ -146,9 +146,9 @@ public class WaterLeakReportController {
         .concurrencyLevel(1).expireAfterWrite(1, TimeUnit.HOURS).build();
 
     private class MspMeterAccountInfo {
-        com.cannontech.multispeak.deploy.service.Customer mspCustomer;
-        com.cannontech.multispeak.deploy.service.ServiceLocation mspServLoc;
-        com.cannontech.multispeak.deploy.service.Meter mspMeter;
+        com.cannontech.msp.beans.v3.Customer mspCustomer;
+        com.cannontech.msp.beans.v3.ServiceLocation mspServLoc;
+        com.cannontech.msp.beans.v3.Meter mspMeter;
         List<String> phoneNumbers;
         List<String> emailAddresses;
     }

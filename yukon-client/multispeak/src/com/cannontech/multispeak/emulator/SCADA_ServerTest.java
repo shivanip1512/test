@@ -1,80 +1,89 @@
 package com.cannontech.multispeak.emulator;
 
-import java.rmi.RemoteException;
+import java.util.List;
 
-import org.apache.axis.message.SOAPHeaderElement;
-
-import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.SCADA_Server;
-import com.cannontech.multispeak.deploy.service.SCADA_ServerLocator;
-import com.cannontech.multispeak.deploy.service.SCADA_ServerSoap_BindingStub;
-import com.cannontech.multispeak.deploy.service.SCADA_ServerSoap_PortType;
-import com.cannontech.multispeak.deploy.service.ScadaAnalog;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.GetAllSCADAAnalogs;
+import com.cannontech.msp.beans.v3.GetAllSCADAAnalogsResponse;
+import com.cannontech.msp.beans.v3.GetMethods;
+import com.cannontech.msp.beans.v3.GetMethodsResponse;
+import com.cannontech.msp.beans.v3.ObjectFactory;
+import com.cannontech.msp.beans.v3.PingURL;
+import com.cannontech.msp.beans.v3.PingURLResponse;
+import com.cannontech.msp.beans.v3.ScadaAnalog;
+import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.core.SCADAClient;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
+import com.cannontech.spring.YukonSpringHook;
 
 public class SCADA_ServerTest {
 
-    private SCADA_ServerSoap_PortType port = null;
-    private String endpointURL = "http://127.0.0.1:8080/yukon/soap/SCADA_ServerSoap";
-    private SOAPHeaderElement header;
+    private static String endpointURL = "http://127.0.0.1:8088/mockSCADA_ServerSoap";
+    static {
+        YukonSpringHook.setDefaultContext("com.cannontech.context.multispeak");
+    }
+    static SCADAClient port = YukonSpringHook.getBean(SCADAClient.class);
+    static ObjectFactory objectFactory = YukonSpringHook.getBean(ObjectFactory.class);
+
+    static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "yukon", "yukon", "", "", 100,
+        120, 12, null, endpointURL);
 
     public static void main(String[] args) {
         SCADA_ServerTest test = new SCADA_ServerTest();
-        YukonMultispeakMsgHeader testHeader = new YukonMultispeakMsgHeader();
-        testHeader.setCompany("Cannon");
-        testHeader.setUserID("yukon");
-        testHeader.setPwd("yukon");
-        test.header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", testHeader);
 
         try {
             if (args != null && args.length > 0) {
-                test.endpointURL = args[0];
+                endpointURL = args[0];
             }
-            SCADA_Server service = new SCADA_ServerLocator();
-            ((SCADA_ServerLocator) service).setSCADA_ServerSoapEndpointAddress(test.endpointURL);
-
-            test.port = service.getSCADA_ServerSoap();
-            ((SCADA_ServerSoap_BindingStub) test.port).setHeader(test.header);
-
             test.getAll();
-
+          //test.getMethodsTest();
+          //test.pingURLTest();
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
-    public void getMethodsTest() throws RemoteException {
-        String[] strings = port.getMethods();
-        print_String(strings);
-    }
-
-    public void pingURLTest() throws RemoteException {
-        ErrorObject[] objects = port.pingURL();
-        print_ErrorObjects(objects);
-    }
-
-    public void getAll() throws RemoteException {
-        ScadaAnalog[] scadaAnalogs = port.getAllSCADAAnalogs("0");
-
-        for (ScadaAnalog scadaAnalog : scadaAnalogs) {
-            System.out.println(scadaAnalog.getTimeStamp().getTime() + " " + scadaAnalog.getValue());
+    public void getMethodsTest() throws MultispeakWebServiceClientException {
+        GetMethods getMethods = objectFactory.createGetMethods();
+        GetMethodsResponse response = port.getMethods(mspVendor, endpointURL, getMethods);
+        if (response.getGetMethodsResult() != null && response.getGetMethodsResult().getString() != null) {
+            print_String(response.getGetMethodsResult().getString());
         }
     }
 
-    public void print_String(String[] strings) {
-        if (strings != null && strings != null) {
-            for (int i = 0; i < strings.length; i++) {
-                String obj = strings[i];
-                System.out.println("Method" + i + ": " + obj);
+    public void pingURLTest() throws MultispeakWebServiceClientException {
+        PingURL pingURL = objectFactory.createPingURL();
+        PingURLResponse response = port.pingURL(mspVendor, endpointURL, pingURL);
+        if (response.getPingURLResult() != null && response.getPingURLResult().getErrorObject() != null)
+            print_ErrorObjects(response.getPingURLResult().getErrorObject());
+    }
+
+    public void getAll() throws MultispeakWebServiceClientException {
+        GetAllSCADAAnalogs getAllSCADAAnalogs = objectFactory.createGetAllSCADAAnalogs();
+        getAllSCADAAnalogs.setLastReceived("0");
+        GetAllSCADAAnalogsResponse response = port.getAllSCADAAnalogs(mspVendor, endpointURL, getAllSCADAAnalogs);
+        if (response.getGetAllSCADAAnalogsResult() != null
+            && response.getGetAllSCADAAnalogsResult().getScadaAnalog() != null) {
+            for (ScadaAnalog scadaAnalog : response.getGetAllSCADAAnalogsResult().getScadaAnalog()) {
+                System.out.println(scadaAnalog.getTimeStamp() + " " + scadaAnalog.getValue());
             }
         }
     }
 
-    public void print_ErrorObjects(ErrorObject[] objects) {
-        if (objects != null && objects != null) {
-            for (int i = 0; i < objects.length; i++) {
-                ErrorObject obj = objects[i];
-                System.out.println(i + ": " + obj == null ? "Null" : obj.getErrorString());
+    public void print_String(List<String> list) {
+        if (list != null) {
+            int i = 0;
+            for (String obj : list) {
+                System.out.println(i++ + ": " + obj == null ? "Null" : obj);
+            }
+        }
+    }
+
+    public void print_ErrorObjects(List<ErrorObject> list) {
+        if (list != null) {
+            int i = 0;
+            for (ErrorObject obj : list) {
+                System.out.println(i++ + ": " + obj == null ? "Null" : obj.getErrorString());
             }
         }
     }

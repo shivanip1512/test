@@ -1,14 +1,14 @@
 package com.cannontech.multispeak.dao;
 
-import java.rmi.RemoteException;
 import java.util.List;
 
 import com.cannontech.amr.meter.model.SimpleMeter;
+import com.cannontech.msp.beans.v3.Customer;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.Meter;
+import com.cannontech.msp.beans.v3.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.deploy.service.Customer;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.Meter;
-import com.cannontech.multispeak.deploy.service.ServiceLocation;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 
 public interface MspObjectDao {
 
@@ -77,7 +77,7 @@ public interface MspObjectDao {
      * Retrieves msp ServiceLocation objects from the mspVendor.
      * Lists of msp ServiceLocation objects are given to the callback as they are retrieved in chunks from the vendor.
      */
-    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback) throws RemoteException;
+    public void getAllMspServiceLocations(MultispeakVendor mspVendor, MultispeakGetAllServiceLocationsCallback callback) throws MultispeakWebServiceClientException;
     
     /**
      * Returns a list of the MeterNumber(s) for the mspServiceLocation.
@@ -87,7 +87,7 @@ public interface MspObjectDao {
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
      * @return
      */
-    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor mspVendor);
+    public List<Meter> getMspMetersByServiceLocation(ServiceLocation mspServiceLocation, MultispeakVendor mspVendor);
     
     /**
      * Returns a list of the MeterNumber(s) for the serviceLocation .
@@ -97,17 +97,8 @@ public interface MspObjectDao {
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
      * @return
      */
-    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByServiceLocation(String serviceLocation, MultispeakVendor mspVendor);
+    public List<Meter> getMspMetersByServiceLocation(String serviceLocation, MultispeakVendor mspVendor);
 
-    /**
-     * Returns a list of the MeterNumber(s) for the give search String .
-     * If the interface/method is not supported by mspVendor, or if no object is found,
-     * an empty List<Meter> object is returned.
-     * @param searchString The searchString to get the Meter information for.
-     * @param mspVendor The MultiSpeak Vendor to ask for the information from.
-     * @return
-     */
-    public List<Meter> getMetersBySearchString(String searchString, MultispeakVendor mspVendor);
     	
     /**
      * Creates a new (MSP) ErrorObject 
@@ -159,7 +150,7 @@ public interface MspObjectDao {
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
      * @return
      */
-    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByEALocation(String eaLocation, MultispeakVendor mspVendor);
+    public List<com.cannontech.msp.beans.v3.Meter> getMspMetersByEALocation(String eaLocation, MultispeakVendor mspVendor);
 
     /**
      * Returns a list of the MeterNumber(s) for the facilityId.
@@ -169,7 +160,7 @@ public interface MspObjectDao {
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
      * @return
      */
-    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByFacilityId(String facilityId, MultispeakVendor mspVendor);
+    public List<com.cannontech.msp.beans.v3.Meter> getMspMetersByFacilityId(String facilityId, MultispeakVendor mspVendor);
 
     /**
      * Returns a list of the MeterNumber(s) for the accountNumber.
@@ -179,7 +170,7 @@ public interface MspObjectDao {
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
      * @return
      */
-    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByAccountNumber(String accountNumber, MultispeakVendor mspVendor);
+    public List<com.cannontech.msp.beans.v3.Meter> getMspMetersByAccountNumber(String accountNumber, MultispeakVendor mspVendor);
 
     /**
      * Returns a list of the MeterNumber(s) for the custId.
@@ -189,21 +180,21 @@ public interface MspObjectDao {
      * @param mspVendor The MultiSpeak Vendor to ask for the information from.
      * @return
      */
-    public List<com.cannontech.multispeak.deploy.service.Meter> getMspMetersByCustId(String custId, MultispeakVendor mspVendor);
+    public List<com.cannontech.msp.beans.v3.Meter> getMspMetersByCustId(String custId, MultispeakVendor mspVendor);
 
     /**
      * Utility to implement the pingURL method for the service.
      * @param mspVendor The multispeak vendor to invoke. 
      * @param service The string representation of the webservice to run. 
      * @return Returns an ArrayOfErrorObjects
-     * @throws RemoteException 
+     * @throws MultispeakWebServiceClientException 
      */
-    public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service) throws RemoteException;
+    public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service) throws MultispeakWebServiceClientException;
     
 
     /**
      * Returns a list of supported method names for mspVendor
-     * Catches any RemoteExceptions and returns emptyList.
+     * Catches any MultispeakWebServiceClientException and returns emptyList.
      * @param mspVendor
      * @return
      */
@@ -214,7 +205,7 @@ public interface MspObjectDao {
      * @param mspVendor The multispeak vendor to invoke. 
      * @param service The string representation of the webservice to run. 
      * @return Returns an ArrayOfErrorObjects
-     * @throws RemoteException
+     * @throws MultispeakWebServiceClientException
      */
-    public List<String> getMethods(MultispeakVendor mspVendor, String service) throws RemoteException;
+    public List<String> getMethods(MultispeakVendor mspVendor, String service) throws MultispeakWebServiceClientException;
 }

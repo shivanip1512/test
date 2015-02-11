@@ -6,8 +6,9 @@ import java.util.List;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.msp.beans.v3.FormattedBlock;
 import com.cannontech.multispeak.block.Block;
-import com.cannontech.multispeak.deploy.service.FormattedBlock;
+
 
 /**
  * This is basically a copy of MeterReadProcessingService. 

@@ -32,6 +32,8 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.msp.beans.v3.MeterRead;
+import com.cannontech.msp.beans.v3.ScadaAnalog;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.MeterReadProcessingService;
@@ -39,8 +41,6 @@ import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.MspBlockReturnList;
 import com.cannontech.multispeak.data.MspMeterReadReturnList;
 import com.cannontech.multispeak.data.MspScadaAnalogReturnList;
-import com.cannontech.multispeak.deploy.service.MeterRead;
-import com.cannontech.multispeak.deploy.service.ScadaAnalog;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -325,7 +325,6 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         
         return mspScadaAnalogs;
     }
-
     /**
      * Returns a list of paObjects for PaoTag.LM_PROGRAM that user has permission to access.
      * @return

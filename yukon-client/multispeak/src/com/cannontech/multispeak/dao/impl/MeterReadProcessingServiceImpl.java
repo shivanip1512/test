@@ -12,16 +12,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.msp.beans.v3.MeterRead;
 import com.cannontech.multispeak.client.MultispeakDefines;
+import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MeterReadProcessingService;
 import com.cannontech.multispeak.dao.MeterReadUpdater;
-import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.ImmutableMap;
 
 public class MeterReadProcessingServiceImpl implements MeterReadProcessingService {
-
     @Autowired private GlobalSettingDao globalSettingDao;
 
     private Map<BuiltInAttribute, ReadingProcessor> attributesToLoad;
@@ -39,10 +39,10 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
             public void apply(PointValueHolder value, MeterRead reading) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
-                reading.setReadingDate(calendar);
-                // create a nice BigDecimal with unlimited precision 
+                reading.setReadingDate(MultispeakFuncs.toXMLGregorianCalendar(null));
+                // create a nice BigDecimal with unlimited precision
                 BigDecimal exactValue = new BigDecimal(value.getValue());
-                BigDecimal noFractionValue = exactValue.setScale(0 , roundingMode);
+                BigDecimal noFractionValue = exactValue.setScale(0, roundingMode);
                 reading.setPosKWh(noFractionValue.toBigIntegerExact());
             }
         };
@@ -52,8 +52,8 @@ public class MeterReadProcessingServiceImpl implements MeterReadProcessingServic
             public void apply(PointValueHolder value, MeterRead reading) {
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(value.getPointDataTimeStamp());
-                reading.setKWDateTime(calendar);
-                reading.setKW((float)value.getValue());
+                reading.setKWDateTime(MultispeakFuncs.toXMLGregorianCalendar(calendar));
+                reading.setKW((float) value.getValue());
             }
         };
 

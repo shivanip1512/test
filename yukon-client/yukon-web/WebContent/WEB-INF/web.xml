@@ -588,27 +588,6 @@
         <servlet-class>com.cannontech.servlet.HttpCallback</servlet-class>
     </servlet>
 
-    <!-- AXIS servlets -->
-    <servlet>
-        <servlet-name>AxisServlet</servlet-name>
-        <servlet-class>org.apache.axis.transport.http.AxisServlet</servlet-class>
-    </servlet>
-    <servlet>
-        <servlet-name>AdminServlet</servlet-name>
-        <servlet-class>org.apache.axis.transport.http.AdminServlet</servlet-class>
-        <load-on-startup>100</load-on-startup>
-    </servlet>
-    <servlet>
-        <servlet-name>SOAPMonitorService</servlet-name>
-        <servlet-class>org.apache.axis.monitor.SOAPMonitorService</servlet-class>
-        <init-param>
-            <param-name>SOAPMonitorPort</param-name>
-            <param-value>5001</param-value>
-        </init-param>
-        <load-on-startup>100</load-on-startup>
-    </servlet>
-    <!-- END AXIS servlets -->
-
     <!-- [INSERT GENERATED WEB.XML FRAGMENT HERE] -->
 
     <servlet-mapping>
@@ -625,34 +604,6 @@
         <servlet-name>svgGenerator</servlet-name>
         <url-pattern>/esub/svgGenerator/*</url-pattern>
     </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>AxisServlet</servlet-name>
-        <url-pattern>/servlet/AxisServlet</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>AxisServlet</servlet-name>
-        <url-pattern>*.jws</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>AxisServlet</servlet-name>
-        <url-pattern>/soap/*</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>SOAPMonitorService</servlet-name>
-        <url-pattern>/multispeak/monitor/SOAPMonitor</url-pattern>
-    </servlet-mapping>
-    <!-- uncomment this if you want the admin servlet -->
-    <!--
-        <servlet-mapping>
-        <servlet-name>AdminServlet</servlet-name>
-        <url-pattern>/servlet/AdminServlet</url-pattern>
-        </servlet-mapping>
-    -->
-    <!-- END AXIS Servlet mappings-->
 
     <!-- Faces extension mapping -->
     <servlet-mapping>
@@ -831,6 +782,11 @@
         <servlet-name>multispeak</servlet-name>
         <url-pattern>/multispeak/*</url-pattern>
     </servlet-mapping>
+    
+    <servlet-mapping>
+        <servlet-name>multispeak</servlet-name>
+        <url-pattern>/soap/*</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>debug</servlet-name>
@@ -963,11 +919,6 @@
     <servlet-mapping>
         <servlet-name>CallbackServlet</servlet-name>
         <url-pattern>/servlet/CallbackServlet</url-pattern>
-    </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>SOAPMonitorService</servlet-name>
-        <url-pattern>/servlet/SOAPMonitorService</url-pattern>
     </servlet-mapping>
 
     <servlet-mapping>

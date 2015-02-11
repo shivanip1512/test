@@ -3,7 +3,7 @@ package com.cannontech.multispeak.data;
 import java.util.Date;
 
 import com.cannontech.common.pao.definition.model.PointIdentifier;
-import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.cannontech.msp.beans.v3.MeterRead;
 
 /**
  * Interface to be implemented for each type of billable device

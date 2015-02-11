@@ -12,13 +12,14 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.TimeoutException;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.LoadManagementEvent;
+import com.cannontech.msp.beans.v3.QualityDescription;
+import com.cannontech.msp.beans.v3.ScadaAnalog;
+import com.cannontech.msp.beans.v3.SubstationLoadControlStatus;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.db.MspLoadControl;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
-import com.cannontech.multispeak.deploy.service.QualityDescription;
-import com.cannontech.multispeak.deploy.service.ScadaAnalog;
-import com.cannontech.multispeak.deploy.service.SubstationLoadControlStatus;
+
 
 public interface MultispeakLMService {
 

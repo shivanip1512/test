@@ -26,13 +26,14 @@ import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.msp.beans.v3.Meter;
+import com.cannontech.msp.beans.v3.Module;
+import com.cannontech.msp.beans.v3.ModuleList;
+import com.cannontech.msp.beans.v3.Nameplate;
+import com.cannontech.msp.beans.v3.UtilityInfo;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.data.MspMeterReturnList;
-import com.cannontech.multispeak.deploy.service.Meter;
-import com.cannontech.multispeak.deploy.service.Module;
-import com.cannontech.multispeak.deploy.service.Nameplate;
-import com.cannontech.multispeak.deploy.service.UtilityInfo;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.base.Function;
@@ -202,11 +203,11 @@ public final class MspMeterDaoImpl implements MspMeterDao
         Meter meter = new Meter();
         meter.setObjectID(meterNumber);
         meter.setComments("Device Name: " + paoName);
-//      MessageElement element = new MessageElement(QName.valueOf("AMRMeterType"), paoType);
-//        MessageElement element2 = new MessageElement(QName.valueOf("AMRRdgGrp"), collectionGroup);
-//        Extensions ext = new Extensions();
-//        ext.set_any(new MessageElement[]{element2});
-//        meter.setExtensions(ext);
+        // MessageElement element = new MessageElement(QName.valueOf("AMRMeterType"), paoType);
+        // MessageElement element2 = new MessageElement(QName.valueOf("AMRRdgGrp"), collectionGroup);
+        // Extensions ext = new Extensions();
+        // ext.set_any(new MessageElement[]{element2});
+        // meter.setExtensions(ext);
         meter.setMeterNo(meterNumber);
         
         meter.setMeterType(paoIdentifier.getPaoType().getPaoTypeName());  //Meter type/model. Always use paoType
@@ -234,10 +235,13 @@ public final class MspMeterDaoImpl implements MspMeterDao
         
         //Add Module for Disconnect information
         if( discCollarAddress != null) {
-	        Module discModule = new Module();
-	        discModule.setObjectID(discCollarAddress);
-	        discModule.setModuleType("Disconnect Collar");
-	        meter.setModuleList(new Module[]{discModule}); 
+            Module discModule = new Module();
+            ModuleList moduleList = new ModuleList();
+            List<Module> listOfModules = moduleList.getModule();
+            discModule.setObjectID(discCollarAddress);
+            discModule.setModuleType("Disconnect Collar");
+            listOfModules.add(discModule);
+            meter.setModuleList(moduleList); 
         }
         
         //MSPDevice

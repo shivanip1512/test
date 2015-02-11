@@ -2,7 +2,9 @@ package com.cannontech.multispeak.dao;
 
 import java.util.List;
 
-import com.cannontech.multispeak.deploy.service.ServiceLocation;
+import com.cannontech.msp.beans.v3.ServiceLocation;
+
+
 
 public interface MultispeakGetAllServiceLocationsCallback {
 

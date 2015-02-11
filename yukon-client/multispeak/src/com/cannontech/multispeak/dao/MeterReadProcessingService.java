@@ -3,7 +3,8 @@ package com.cannontech.multispeak.dao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.cannontech.msp.beans.v3.MeterRead;
+
 
 public interface MeterReadProcessingService {
     /**

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.cannontech.amr.meter.search.model.MspSearchField;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.deploy.service.Meter;
+import com.cannontech.msp.beans.v3.Meter;
 
 public class FacilityIdMspMeterSearchMethodResultProvider extends MspMeterSearchMethodResultProviderBase {
 

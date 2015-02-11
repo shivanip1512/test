@@ -2,7 +2,7 @@ package com.cannontech.multispeak.dao;
 
 import java.util.List;
 
-import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.cannontech.msp.beans.v3.MeterRead;
 import com.google.common.collect.ImmutableList;
 
 /**

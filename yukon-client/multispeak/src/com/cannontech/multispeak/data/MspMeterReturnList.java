@@ -2,7 +2,7 @@ package com.cannontech.multispeak.data;
 
 import java.util.List;
 
-import com.cannontech.multispeak.deploy.service.Meter;
+import com.cannontech.msp.beans.v3.Meter;
 
 public class MspMeterReturnList extends MspReturnList {
 

@@ -1,28 +1,29 @@
 package com.cannontech.multispeak.service;
 
-import java.rmi.RemoteException;
 import java.util.Map;
 
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.LoadManagementEvent;
+import com.cannontech.msp.beans.v3.ScadaAnalog;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.LoadManagementEvent;
-import com.cannontech.multispeak.deploy.service.ScadaAnalog;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
+
 
 public interface MspValidationService {
 
     /**
      * Returns the processingService for the readingTypesMap for readingType.
-     * Throws a RemoteException if the readingType is not valid.
+     * Throws a MultispeakWebServiceException if the readingType is not valid.
      */
     public FormattedBlockProcessingService<Block> getProcessingServiceByReadingType(Map<String, FormattedBlockProcessingService<Block>> readingTypesMap,
-                                                                String readingType) throws RemoteException;
+                                                                String readingType) throws MultispeakWebServiceException;
     /**
      * Returns Meter for the meterNumber if MeterNumber is a Yukon MeterNumber.
      * Throws a RemoteException if the meterNumber is not found in Yukon. 
      */
-    public YukonMeter isYukonMeterNumber(String meterNumber) throws RemoteException;
+    public YukonMeter isYukonMeterNumber(String meterNumber) throws MultispeakWebServiceException;
     
     /**
      * Returns an ErrorObject when the scadaAnalog does not have all required information

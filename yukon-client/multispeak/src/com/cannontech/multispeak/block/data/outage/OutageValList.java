@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.cannontech.multispeak.block.data.FormattedBlockBase;
-import com.cannontech.multispeak.block.data.load.LoadBlock;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
 
 public class OutageValList extends FormattedBlockBase{

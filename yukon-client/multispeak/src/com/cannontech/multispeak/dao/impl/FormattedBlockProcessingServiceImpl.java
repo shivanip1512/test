@@ -7,10 +7,11 @@ import java.util.Map;
 
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.msp.beans.v3.FormattedBlock;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.FormattedBlockUpdater;
-import com.cannontech.multispeak.deploy.service.FormattedBlock;
+
 
 public abstract class FormattedBlockProcessingServiceImpl<T extends Block> implements FormattedBlockProcessingService<T> {
 

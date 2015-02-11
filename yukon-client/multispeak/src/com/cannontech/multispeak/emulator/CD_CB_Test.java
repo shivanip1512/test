@@ -1,21 +1,31 @@
-
 package com.cannontech.multispeak.emulator;
 
-import java.net.URL;
-import java.rmi.RemoteException;
-
-import org.apache.axis.client.Service;
-import org.apache.axis.message.SOAPHeaderElement;
+import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
-import com.cannontech.multispeak.deploy.service.CDDevice;
-import com.cannontech.multispeak.deploy.service.CD_ServerSoap_BindingStub;
-import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.LoadActionCode;
-import com.cannontech.multispeak.deploy.service.Meter;
-import com.cannontech.multispeak.deploy.service.Module;
+import com.cannontech.msp.beans.v3.ArrayOfCDDevice;
+import com.cannontech.msp.beans.v3.ArrayOfConnectDisconnectEvent;
+import com.cannontech.msp.beans.v3.ArrayOfErrorObject;
+import com.cannontech.msp.beans.v3.CDDevice;
+import com.cannontech.msp.beans.v3.CDDeviceAddNotification;
+import com.cannontech.msp.beans.v3.CDDeviceAddNotificationResponse;
+import com.cannontech.msp.beans.v3.ConnectDisconnectEvent;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.GetCDMeterState;
+import com.cannontech.msp.beans.v3.GetCDMeterStateResponse;
+import com.cannontech.msp.beans.v3.GetCDSupportedMeters;
+import com.cannontech.msp.beans.v3.GetCDSupportedMetersResponse;
+import com.cannontech.msp.beans.v3.InitiateConnectDisconnect;
+import com.cannontech.msp.beans.v3.InitiateConnectDisconnectResponse;
+import com.cannontech.msp.beans.v3.LoadActionCode;
+import com.cannontech.msp.beans.v3.Meter;
+import com.cannontech.msp.beans.v3.Module;
+import com.cannontech.msp.beans.v3.ModuleList;
+import com.cannontech.msp.beans.v3.ObjectFactory;
+import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.core.CDClient;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This class is used for 'interactive testing'. 
@@ -23,96 +33,114 @@ import com.cannontech.multispeak.deploy.service.Module;
  * This is the "poor man's MultiSpeak testing harness" 
  */
 public class CD_CB_Test {
-	private String endpointURL = "http://localhost:8080/yukon/soap/CD_ServerSoap";
-	private CD_ServerSoap_BindingStub instance;
-	
-	public static void main(String [] args)
-	{
-		try {
-			CD_CB_Test t = new CD_CB_Test();
-//			endpointURL = "http://demo.cannontech.com/soap/CD_CBSoap";
-//			endpointURL = "http://10.100.10.25:80/soap/CD_ServerSoap";
-//			endpointURL = "http://10.106.36.79:8080/soap/CD_ServerSoap";  //Mike's computer
-		  	t.instance = new CD_ServerSoap_BindingStub(new URL(t.endpointURL), new Service());
-			
-            YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
-            msgHeader.setCompany("Cannon MSP1");
-            
-			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
-			t.instance.setHeader(header);
-			
-			//			System.out.println(meterNumber + "- IS CD METER? " + t.isCDMeter(meterNumber));
-			t.initiateConnectDisconnect();
-//			t.cdAddNotification();
-//			t.getCDMeterState();
-//			Meter[] meters = t.getCDSupportedMeters();
-//			printMeters(meters);			
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	private Meter[] getCDSupportedMeters() throws RemoteException {
-		Meter[] meters = instance.getCDSupportedMeters("23453425");
-		return meters;		
-	}
-	
-	private void initiateConnectDisconnect() throws RemoteException {
-		ConnectDisconnectEvent[] cdEvents = new ConnectDisconnectEvent[1];
-	    ConnectDisconnectEvent cdEvent = new ConnectDisconnectEvent();
-//	    cdEvent.setObjectID("50000012");
-	    cdEvent.setObjectID("1016655");
-	    cdEvent.setLoadActionCode(LoadActionCode.Connect);
-	    cdEvents[0] = cdEvent;
-//	    cdEvents[1] = cdEvent;
-//	    cdEvents[2] = cdEvent;
-//	    cdEvents[3] = cdEvent;
-	    ErrorObject[] objects = instance.initiateConnectDisconnect(cdEvents, null, null, Float.MIN_NORMAL);
-	    if (objects != null && objects != null) {
-            for (int i = 0; i < objects.length; i++) {
-                ErrorObject obj = objects[i];
-                CTILogger.info("Ping" + i + ": " + obj.getErrorString());
+    private static String endpointURL = "http://localhost:8088/mockCD_ServerSoap";
+    static {
+        YukonSpringHook.setDefaultContext("com.cannontech.context.multispeak");
+    }
+    CDClient instance = YukonSpringHook.getBean(CDClient.class);
+    ObjectFactory objectFactory = YukonSpringHook.getBean(ObjectFactory.class);
+    MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12,
+        null, endpointURL);
+
+    public static void main(String[] args) {
+        try {
+            CD_CB_Test t = new CD_CB_Test();
+            // endpointURL = "http://demo.cannontech.com/soap/CD_CBSoap";
+            // endpointURL = "http://10.100.10.25:80/soap/CD_ServerSoap";
+            // endpointURL = "http://10.106.36.79:8080/soap/CD_ServerSoap"; //Mike's computer
+
+            // System.out.println(meterNumber + "- IS CD METER? " + t.isCDMeter(meterNumber));
+            t.initiateConnectDisconnect();
+            // t.cdAddNotification();
+            // t.getCDMeterState();
+            /*
+             * GetCDSupportedMetersResponse response = t.getCDSupportedMeters();
+             * ArrayOfMeter arrayOfMeter = response.getGetCDSupportedMetersResult();
+             * printMeters(arrayOfMeter.getMeter());
+             */
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private GetCDSupportedMetersResponse getCDSupportedMeters() throws MultispeakWebServiceClientException {
+        GetCDSupportedMeters getCDSupportedMeters = objectFactory.createGetCDSupportedMeters();
+        getCDSupportedMeters.setLastReceived("23453425");
+        GetCDSupportedMetersResponse response =
+            instance.getCDSupportedMeters(mspVendor, endpointURL, getCDSupportedMeters);
+        return response;
+    }
+
+    private void initiateConnectDisconnect() throws MultispeakWebServiceClientException {
+        ConnectDisconnectEvent cdEvent = new ConnectDisconnectEvent();
+        // cdEvent.setObjectID("50000012");
+        cdEvent.setObjectID("1016655");
+        cdEvent.setLoadActionCode(LoadActionCode.CONNECT);
+        InitiateConnectDisconnect initiateConnectDisconnect = objectFactory.createInitiateConnectDisconnect();
+        ArrayOfConnectDisconnectEvent arrayOfConnectDisconnectEvent =
+            objectFactory.createArrayOfConnectDisconnectEvent();
+        arrayOfConnectDisconnectEvent.getConnectDisconnectEvent().add(cdEvent);
+        initiateConnectDisconnect.setCdEvents(arrayOfConnectDisconnectEvent);
+        InitiateConnectDisconnectResponse response =
+            instance.initiateConnectDisconnect(mspVendor, endpointURL, initiateConnectDisconnect);
+        if (response.getInitiateConnectDisconnectResult() != null
+            && response.getInitiateConnectDisconnectResult().getErrorObject() != null) {
+            int index = 0;
+            for (ErrorObject obj : response.getInitiateConnectDisconnectResult().getErrorObject()) {
+                CTILogger.info("Ping" + index++ + ": " + obj.getErrorString());
             }
         } else {
             CTILogger.info("initiate Successful");
         }
-	}
-	
-	private void cdAddNotification() throws RemoteException {
-		CDDevice cdDevice = new CDDevice();
-		cdDevice.setObjectID("meterNumber");
-		cdDevice.setMeterBaseID("meterNumber");
+    }
+
+    private void cdAddNotification() throws MultispeakWebServiceClientException {
+        CDDevice cdDevice = new CDDevice();
+        cdDevice.setObjectID("meterNumber");
+        cdDevice.setMeterBaseID("meterNumber");
         Module discModule = new Module();
         discModule.setObjectID("disconnectCollarAddress");
-        cdDevice.setModuleList(new Module[]{discModule});
-        
-        ErrorObject[] objects = instance.CDDeviceAddNotification(new CDDevice[]{cdDevice});
-	    if (objects != null && objects != null) {
-            for (int i = 0; i < objects.length; i++) {
-                ErrorObject obj = objects[i];
-                CTILogger.info("CDDeviceAddNotification" + i + ": " + obj.getErrorString());
+        ModuleList moduleList = objectFactory.createModuleList();
+        moduleList.getModule().add(discModule);
+        cdDevice.setModuleList(moduleList);
+        ArrayOfCDDevice arrayOfCDDevice = objectFactory.createArrayOfCDDevice();
+        List<CDDevice> cdDeviceList = arrayOfCDDevice.getCDDevice();
+        cdDeviceList.add(cdDevice);
+        CDDeviceAddNotification cdDeviceAddNotification = objectFactory.createCDDeviceAddNotification();
+        cdDeviceAddNotification.setAddedCDDs(arrayOfCDDevice);
+        CDDeviceAddNotificationResponse response =
+            instance.cdDeviceAddNotification(mspVendor, endpointURL, cdDeviceAddNotification);
+        ArrayOfErrorObject arrOfErrorObj = response.getCDDeviceAddNotificationResult();
+        List<ErrorObject> errorobjects = arrOfErrorObj.getErrorObject();
+        if (errorobjects != null) {
+            for (ErrorObject errorObject : errorobjects) {
+                CTILogger.info("CDDeviceAddNotification" + ": " + errorObject.getErrorString());
             }
         } else {
             CTILogger.info("CDDeviceAddNotification Successful");
         }
-	}
-	
-	private void getCDMeterState() throws RemoteException {
-		LoadActionCode loadActionCode = instance.getCDMeterState("1100100");
-		CTILogger.info("loadActionCode = " + loadActionCode.getValue());
-	}
+    }
 
-/*	private boolean isCDMeter(String meterNumber) throws RemoteException {
-		return isCDSupportedMeter(meterNumber);		
-	}
-	*/
-	private static void printMeters(Meter[] meters) {
-		if (meters != null) {
-			CTILogger.info("METERS RETURNED: " + meters.length);
-			for (Meter meter : meters) {
-				CTILogger.info(meter.getMeterNo());
-			}
-		}
-	}
+    private void getCDMeterState() throws MultispeakWebServiceClientException {
+        GetCDMeterState getCDMeterState = objectFactory.createGetCDMeterState();
+        getCDMeterState.setMeterNo("3243324");
+        GetCDMeterStateResponse response = instance.getCDMeterState(mspVendor, endpointURL, getCDMeterState);
+        LoadActionCode loadActionCode = response.getGetCDMeterStateResult();
+        CTILogger.info("loadActionCode = " + loadActionCode.value());
+    }
+
+    /*
+     * private boolean isCDMeter(String meterNumber) throws MultispeakWebServiceClientException {
+     * return isCDSupportedMeter(meterNumber);
+     * }
+     */
+    private static void printMeters(List<Meter> meters) {
+        if (meters != null) {
+            CTILogger.info("METERS RETURNED: " + meters.size());
+            for (Meter meter : meters) {
+                CTILogger.info(meter.getMeterNo());
+            }
+        }
+    }
 }

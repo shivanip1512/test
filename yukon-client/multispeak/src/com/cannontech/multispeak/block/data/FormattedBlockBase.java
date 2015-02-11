@@ -1,12 +1,14 @@
 package com.cannontech.multispeak.block.data;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.msp.beans.v3.FormattedBlock;
+import com.cannontech.msp.beans.v3.ValSyntax;
+import com.cannontech.msp.beans.v3.ValueList;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
-import com.cannontech.multispeak.deploy.service.FormattedBlock;
+
 
 public abstract class FormattedBlockBase extends FormattedBlock{
 
@@ -25,16 +27,15 @@ public abstract class FormattedBlockBase extends FormattedBlock{
     }
     
     @Override
-    public String[] getValueList() {
-        List<String> stringList = new ArrayList<String>(block.size());
+    public ValueList getValueList() {
+        ValueList valueList = new ValueList();
+        List<String> stringList = valueList.getVal();
         for (Block block : this.block) {
             stringList.add(getValue(block));
         }
-        String[] strings = new String[stringList.size()];
-        stringList.toArray(strings);
-        return strings;
+        return valueList;
     }
-
+    
     /**
      * Returns the valSyntax String. 
      * @param Block
@@ -71,24 +72,25 @@ public abstract class FormattedBlockBase extends FormattedBlock{
      * Loads the (Msp)SyntaxItem array based on the local syntaxItem object.
      */
     private void setMspSyntaxItems(SyntaxItem[] syntaxItem) {
-        com.cannontech.multispeak.deploy.service.SyntaxItem[] mspSyntaxItems = 
-            new com.cannontech.multispeak.deploy.service.SyntaxItem[syntaxItem.length];
+        ValSyntax valSyntax = new ValSyntax();
+        List<com.cannontech.msp.beans.v3.SyntaxItem> mspSyntaxItems = valSyntax.getSyntaxItem();
         for (int i = 0; i < syntaxItem.length; i++)
-            mspSyntaxItems[i] = buildSyntaxItem(syntaxItem[i], i);
-        setValSyntax(mspSyntaxItems);
+            mspSyntaxItems.add(i, buildSyntaxItem(syntaxItem[i], i));
+
+        setValSyntax(valSyntax);
     }
-    
+
     /**
      * Helper method to translate a (Yukon) SyntaxItem into an (Msp) SyntaxItem 
      * @param syntaxItem
      * @param position
      * @return
      */
-    private com.cannontech.multispeak.deploy.service.SyntaxItem buildSyntaxItem (
+    private  com.cannontech.msp.beans.v3.SyntaxItem buildSyntaxItem (
             SyntaxItem syntaxItem, int position) {
         
-        com.cannontech.multispeak.deploy.service.SyntaxItem mspSyntaxItem = 
-            new com.cannontech.multispeak.deploy.service.SyntaxItem();
+        com.cannontech.msp.beans.v3.SyntaxItem mspSyntaxItem = 
+            new  com.cannontech.msp.beans.v3.SyntaxItem();
         
         mspSyntaxItem.setFieldName(syntaxItem.getMspFieldName());
         mspSyntaxItem.setPosition(BigInteger.valueOf(position));

@@ -1,13 +1,5 @@
-/**
- * MR_ServerSoap_BindingImpl.java
- *
- * This file was auto-generated from WSDL
- * by the Apache Axis 1.2 May 03, 2005 (02:20:24 EDT) WSDL2Java emitter.
- */
-
 package com.cannontech.multispeak.deploy.service.impl;
 
-import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -36,7 +28,35 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.msp.beans.v3.Customer;
+import com.cannontech.msp.beans.v3.CustomersAffectedByOutage;
+import com.cannontech.msp.beans.v3.DomainMember;
+import com.cannontech.msp.beans.v3.DomainNameChange;
+import com.cannontech.msp.beans.v3.EndDeviceShipment;
+import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.msp.beans.v3.EventCode;
+import com.cannontech.msp.beans.v3.FormattedBlock;
+import com.cannontech.msp.beans.v3.FormattedBlockTemplate;
+import com.cannontech.msp.beans.v3.HistoryLog;
+import com.cannontech.msp.beans.v3.InHomeDisplay;
+import com.cannontech.msp.beans.v3.InHomeDisplayExchange;
+import com.cannontech.msp.beans.v3.Meter;
+import com.cannontech.msp.beans.v3.MeterBase;
+import com.cannontech.msp.beans.v3.MeterBaseExchange;
+import com.cannontech.msp.beans.v3.MeterConnectivity;
+import com.cannontech.msp.beans.v3.MeterExchange;
+import com.cannontech.msp.beans.v3.MeterGroup;
+import com.cannontech.msp.beans.v3.MeterIdentifier;
+import com.cannontech.msp.beans.v3.MeterList;
+import com.cannontech.msp.beans.v3.MeterRead;
+import com.cannontech.msp.beans.v3.PhaseCd;
+import com.cannontech.msp.beans.v3.ReadingSchedule;
+import com.cannontech.msp.beans.v3.RegistrationInfo;
+import com.cannontech.msp.beans.v3.Schedule;
+import com.cannontech.msp.beans.v3.ServiceLocation;
+import com.cannontech.msp.beans.v3.ServiceType;
 import com.cannontech.multispeak.block.Block;
+import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -49,33 +69,8 @@ import com.cannontech.multispeak.dao.MspRawPointHistoryDao.ReadBy;
 import com.cannontech.multispeak.data.MspBlockReturnList;
 import com.cannontech.multispeak.data.MspMeterReadReturnList;
 import com.cannontech.multispeak.data.MspMeterReturnList;
-import com.cannontech.multispeak.deploy.service.Customer;
-import com.cannontech.multispeak.deploy.service.CustomersAffectedByOutage;
-import com.cannontech.multispeak.deploy.service.DomainMember;
-import com.cannontech.multispeak.deploy.service.DomainNameChange;
-import com.cannontech.multispeak.deploy.service.EndDeviceShipment;
-import com.cannontech.multispeak.deploy.service.ErrorObject;
-import com.cannontech.multispeak.deploy.service.EventCode;
-import com.cannontech.multispeak.deploy.service.FormattedBlock;
-import com.cannontech.multispeak.deploy.service.FormattedBlockTemplate;
-import com.cannontech.multispeak.deploy.service.HistoryLog;
-import com.cannontech.multispeak.deploy.service.InHomeDisplay;
-import com.cannontech.multispeak.deploy.service.InHomeDisplayExchange;
-import com.cannontech.multispeak.deploy.service.MR_ServerSoap_PortType;
-import com.cannontech.multispeak.deploy.service.Meter;
-import com.cannontech.multispeak.deploy.service.MeterBase;
-import com.cannontech.multispeak.deploy.service.MeterBaseExchange;
-import com.cannontech.multispeak.deploy.service.MeterConnectivity;
-import com.cannontech.multispeak.deploy.service.MeterExchange;
-import com.cannontech.multispeak.deploy.service.MeterGroup;
-import com.cannontech.multispeak.deploy.service.MeterIdentifier;
-import com.cannontech.multispeak.deploy.service.MeterRead;
-import com.cannontech.multispeak.deploy.service.PhaseCd;
-import com.cannontech.multispeak.deploy.service.ReadingSchedule;
-import com.cannontech.multispeak.deploy.service.RegistrationInfo;
-import com.cannontech.multispeak.deploy.service.Schedule;
-import com.cannontech.multispeak.deploy.service.ServiceLocation;
-import com.cannontech.multispeak.deploy.service.ServiceType;
+import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
+import com.cannontech.multispeak.service.MR_Server;
 import com.cannontech.multispeak.service.MspValidationService;
 import com.cannontech.multispeak.service.MultispeakMeterService;
 import com.cannontech.user.UserUtils;
@@ -85,7 +80,8 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class MR_ServerImpl implements MR_ServerSoap_PortType{
+
+public class MR_ServerImpl implements MR_Server{
 
     @Autowired private AttributeService attributeService;
     @Autowired private DemandResetService demandResetService;
@@ -134,42 +130,26 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         "insertMeterInMeterGroup",
         "removeMetersFromMeterGroup" };
 
-    private void init() throws RemoteException {
+    private void init() throws MultispeakWebServiceException {
         multispeakFuncs.init();
     }
 
     @Override
-    public ErrorObject[] pingURL() throws java.rmi.RemoteException {
+    public ErrorObject[] pingURL() throws MultispeakWebServiceException {
         init();
         return new ErrorObject[0];
     }
     
     @Override
-    public String[] getMethods() throws java.rmi.RemoteException {
+    public String[] getMethods() throws MultispeakWebServiceException {
         init();
         return multispeakFuncs.getMethods(MultispeakDefines.MR_Server_STR , methods);
     }
     
-    
     @Override
-    public String[] getDomainNames() throws java.rmi.RemoteException {
+    public Meter[] getAMRSupportedMeters(java.lang.String lastReceived) throws MultispeakWebServiceException {
         init();
-        String [] strings = new String[]{"Method Not Supported"};
-        multispeakFuncs.logStrings(MultispeakDefines.MR_Server_STR, "getDomainNames", strings);
-        return strings;
-    }
-    
-    
-    @Override
-    public DomainMember[] getDomainMembers(java.lang.String domainName) throws java.rmi.RemoteException {
-        init();
-        return new DomainMember[0];
-    }
-    
-    @Override
-    public Meter[] getAMRSupportedMeters(java.lang.String lastReceived) throws java.rmi.RemoteException {
-        init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getAMRSupportedMeters", vendor.getCompanyName());
 
         MspMeterReturnList meterList = null;
@@ -188,13 +168,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
     
     @Override
-    public Meter[] getModifiedAMRMeters(java.lang.String previousSessionID, java.lang.String lastReceived) throws java.rmi.RemoteException {
-        init();
-        return null;
-    }
-    
-    @Override
-    public boolean isAMRMeter(java.lang.String meterNo) throws java.rmi.RemoteException {
+    public boolean isAMRMeter(java.lang.String meterNo) throws MultispeakWebServiceException {
         init();
 //          Commenting out for now, not sure if we want this logged or not, it could be a lot...and doesn't have much impact to the system
 //        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
@@ -204,7 +178,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         try {
             mspValidationService.isYukonMeterNumber(meterNo);
             isAmrMeter = true;
-        }catch (RemoteException e){
+        } catch (MultispeakWebServiceException e){
             isAmrMeter = false;
         }
         log.debug("isAMRMeter " + isAmrMeter + " for " + meterNo + ".");
@@ -212,10 +186,10 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
     
     @Override
-    public MeterRead[] getReadingsByDate(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
+    public MeterRead[] getReadingsByDate(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws MultispeakWebServiceException {
     	init();
         
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getReadingsByDate", vendor.getCompanyName());
         
         MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.NONE, 
@@ -237,10 +211,10 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
 
     @Override
-    public MeterRead[] getReadingsByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
+    public MeterRead[] getReadingsByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws MultispeakWebServiceException {
         init(); //init is already performed on the call to isAMRMeter()
         
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getReadingsByMeterNo", vendor.getCompanyName());
         
         //Validate the meterNo is a Yukon meterNumber
@@ -265,10 +239,10 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
 
     @Override
-    public MeterRead getLatestReadingByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException {
+    public MeterRead getLatestReadingByMeterNo(java.lang.String meterNo) throws MultispeakWebServiceException {
         init(); //init is already performed on the call to isAMRMeter()
 
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getLatestReadingByMeterNo", vendor.getCompanyName());
         
         //Validate the meterNo is a Yukon meterNumber
@@ -307,7 +281,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             } catch (DynamicDataAccessException e) {
                 String message = "Connection to dispatch is invalid";
                 log.error(message);
-                throw new RemoteException(message);
+                throw new MultispeakWebServiceException(message);
             }
         }
     }
@@ -317,7 +291,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             Calendar billingDate, int kWhLookBack, int kWLookBack,
             int kWLookForward, String lastReceived,
             String formattedBlockTemplateName, String[] fieldName)
-            throws RemoteException {
+            throws MultispeakWebServiceException {
         /* TODO
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
@@ -328,76 +302,40 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
         return meterReads;
         */
-        throw new RemoteException("Method getReadingsByBillingCycle is NOT supported.");
+        throw new MultispeakWebServiceException("Method getReadingsByBillingCycle is NOT supported.");
     }
     
     @Override
-    public HistoryLog[] getHistoryLogByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
+    public ErrorObject[] initiateUsageMonitoring(String[] meterNos) throws MultispeakWebServiceException {
         init();
-        return null;
-    }
-    
-    @Override
-    public HistoryLog[] getHistoryLogsByDate(java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
-        init();
-        return null;
-    }
-    
-    @Override
-    public HistoryLog[] getHistoryLogsByMeterNoAndEventCode(java.lang.String meterNo, EventCode eventCode, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
-        init();
-        return null;
-    }
-    
-    @Override
-    public HistoryLog[] getHistoryLogsByDateAndEventCode(EventCode eventCode, java.util.Calendar startDate, java.util.Calendar endDate, java.lang.String lastReceived) throws java.rmi.RemoteException {
-        init();
-        return null;
-    }
-    
-    @Override
-    public ErrorObject[] initiatePlannedOutage(String[] meterNos, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
-        init();
-        return null;
-    }
-    
-    @Override
-    public ErrorObject[] cancelPlannedOutage(String[] meterNos) throws java.rmi.RemoteException {
-        init();
-        return null;
-    }
-    
-    @Override
-    public ErrorObject[] initiateUsageMonitoring(String[] meterNos) throws java.rmi.RemoteException {
-        init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("initiateUsageMonitoring", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.initiateUsageMonitoring(vendor, meterNos);
         return errorObject;
     }
     
     @Override
-    public ErrorObject[] cancelUsageMonitoring(String[] meterNos) throws java.rmi.RemoteException {
+    public ErrorObject[] cancelUsageMonitoring(String[] meterNos) throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("cancelUsageMonitoring", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.cancelUsageMonitoring(vendor, meterNos);
         return errorObject;
     }
     
     @Override
-    public ErrorObject[] initiateDisconnectedStatus(String[] meterNos) throws java.rmi.RemoteException {
+    public ErrorObject[] initiateDisconnectedStatus(String[] meterNos) throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("initiateDisconnectedStatus", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.initiateDisconnectedStatus(vendor, meterNos);
         return errorObject;
     }
     
     @Override
-    public ErrorObject[] cancelDisconnectedStatus(String[] meterNos) throws java.rmi.RemoteException {
+    public ErrorObject[] cancelDisconnectedStatus(String[] meterNos) throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("cancelDisconnectedStatus", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.cancelDisconnectedStatus(vendor, meterNos);
         return errorObject;
@@ -407,11 +345,11 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     @Override
     public ErrorObject[] initiateMeterReadByMeterNumber(String[] meterNos,
             String responseURL, String transactionID, Float expirationTime)
-            throws RemoteException {
+            throws MultispeakWebServiceException {
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("initiateMeterReadByMeterNumber", vendor.getCompanyName());
         
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.CB_Server_STR);
@@ -419,7 +357,7 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         if ( ! porterConnection.isValid() ) {
             String message = "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.";
             log.error(message);
-            throw new RemoteException(message);
+            throw new MultispeakWebServiceException(message);
         }
 
         errorObjects = multispeakMeterService.meterReadEvent(vendor, meterNos, transactionID, actualResponseUrl);
@@ -429,42 +367,36 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
     
     @Override
-    public ErrorObject[] customerChangedNotification(Customer[] changedCustomers) throws java.rmi.RemoteException {
+    public ErrorObject[] serviceLocationChangedNotification(ServiceLocation[] changedServiceLocations) throws MultispeakWebServiceException {
         init();
-        return null;
-    }
-    
-    @Override
-    public ErrorObject[] serviceLocationChangedNotification(ServiceLocation[] changedServiceLocations) throws java.rmi.RemoteException {
-        init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("serviceLocationChangedNotification", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.serviceLocationChanged(vendor, changedServiceLocations);
         return errorObject;
     }
     
     @Override
-    public ErrorObject[] meterChangedNotification(Meter[] changedMeters) throws java.rmi.RemoteException {
+    public ErrorObject[] meterChangedNotification(Meter[] changedMeters) throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("meterChangedNotification", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.meterChanged(vendor, changedMeters);
         return errorObject;
     }
     
     @Override
-    public ErrorObject[] meterRemoveNotification(Meter[] removedMeters) throws java.rmi.RemoteException {
+    public ErrorObject[] meterRemoveNotification(Meter[] removedMeters) throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("meterRemoveNotification", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.meterRemove(vendor, removedMeters);
         return errorObject;
     }
     
     @Override
-    public ErrorObject[] meterAddNotification(Meter[] addedMeters) throws java.rmi.RemoteException {
+    public ErrorObject[] meterAddNotification(Meter[] addedMeters) throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("meterAddNotification", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.meterAdd(vendor, addedMeters);
         return errorObject;
@@ -472,72 +404,47 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
 
     @Override
     public ErrorObject deleteMeterGroup(String meterGroupID)
-            throws RemoteException {
+            throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("deleteMeterGroup", vendor.getCompanyName());
         return multispeakMeterService.deleteGroup(meterGroupID, vendor);
     }
 
     @Override
     public ErrorObject[] establishMeterGroup(MeterGroup meterGroup)
-            throws RemoteException {
+            throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("establishMeterGroup", vendor.getCompanyName());
         ErrorObject[] errorObject = multispeakMeterService.addMetersToGroup(meterGroup, "establishMeterGroup", vendor);
         return errorObject;
     }
 
     @Override
-    public FormattedBlock getLatestMeterReadingsByMeterGroup(
-            String meterGroupID, String formattedBlockTemplateName,
-            String[] fieldName) throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] initiateGroupMeterRead(String meterGroupName,
-            String responseURL, String transactionID, float expirationTime)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
     public ErrorObject[] insertMeterInMeterGroup(String[] meterNumbers,
-            String meterGroupID) throws RemoteException {
+            String meterGroupID) throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("insertMeterInMeterGroup", vendor.getCompanyName());
-        
         MeterGroup meterGroup = new MeterGroup();
-        meterGroup.setMeterList(meterNumbers);
+        MeterList meterList = meterGroup.getMeterList();
+        List<String> meterID = meterList.getMeterID();
+        for (String meterNumber : meterNumbers) {
+            meterID.add(meterNumber);
+        }
+        meterGroup.setMeterList(meterList);
         meterGroup.setGroupName(meterGroupID);
         ErrorObject[] errorObject = multispeakMeterService.addMetersToGroup(meterGroup, "insertMeterInMeterGroup", vendor);
         return errorObject;
     }
 
-    @Override
-    public ErrorObject[] meterExchangeNotification(
-            MeterExchange[] meterChangeout) throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] meterRetireNotification(Meter[] retiredMeters)
-            throws RemoteException {
-        init();
-        return null;
-    }
 
     @Override
     public ErrorObject[] removeMetersFromMeterGroup(String[] meterNumbers,
-            String meterGroupID) throws RemoteException {
+            String meterGroupID) throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("removeMetersFromMeterGroup", vendor.getCompanyName());
         
         ErrorObject[] errorObject = multispeakMeterService.removeMetersFromGroup(meterGroupID, meterNumbers, vendor);
@@ -545,78 +452,10 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
 
     @Override
-    public ErrorObject[] scheduleGroupMeterRead(String meterGroupName,
-            Calendar timeToRead, String responseURL, String transactionID)
-            throws RemoteException {
-        init();
-        return null;
-    }
-    @Override
-    public FormattedBlock[] getReadingByMeterNumberFormattedBlock(
-            String meterNumber, Calendar billingDate, int kWhLookBack,
-            int kWLookBack, int kWLookForward, String lastReceived,
-            String formattedBlockTemplateName, String[] fieldName)
-            throws RemoteException {
-        init();
-        return null;
-    }
-    @Override
-    public FormattedBlock[] getReadingsByDateFormattedBlock(
-            Calendar billingDate, int kWhLookBack, int kWLookBack,
-            int kWLookForward, String lastReceived,
-            String formattedBlockTemplateName, String[] fieldName)
-            throws RemoteException {
-        init();
-        return null;
-    }
-    @Override
-    public ErrorObject[] inHomeDisplayAddNotification(InHomeDisplay[] addedIHDs) throws RemoteException {
-        init();
-        return null;
-    }
-    @Override
-    public ErrorObject[] inHomeDisplayChangedNotification(InHomeDisplay[] changedIHDs) throws RemoteException {
-        init();
-        return null;
-    }
-    @Override
-    public ErrorObject[] inHomeDisplayExchangeNotification(InHomeDisplayExchange[] IHDChangeout) throws RemoteException {
-        init();
-        return null;
-    }
-    @Override
-    public ErrorObject[] inHomeDisplayRemoveNotification(InHomeDisplay[] removedIHDs) throws RemoteException {
-        init();
-        return null;
-    }
-    @Override
-    public ErrorObject[] inHomeDisplayRetireNotification(InHomeDisplay[] retiredIHDs) throws RemoteException {
-        init();
-        return null;
-    }
-    @Override
-    public ErrorObject[] updateServiceLocationDisplays(String servLocID) throws RemoteException {
-        init();
-        return null;
-    }
-    @Override
-    public ErrorObject[] customersAffectedByOutageNotification(
-            CustomersAffectedByOutage[] newOutages) throws RemoteException {
-        init();
-        return null;
-    }
-    @Override
-    public ErrorObject[] endDeviceShipmentNotification(
-            EndDeviceShipment shipment) throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
     public MeterRead[] getLatestReadings(String lastReceived)
-            throws RemoteException {
+            throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getLatestReadings", vendor.getCompanyName());
         
         MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.NONE, null, lastReceived, vendor.getMaxReturnRecords());
@@ -636,9 +475,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     @Override
     public FormattedBlock getLatestReadingByMeterNoAndType(String meterNo,
             String readingType, String formattedBlockTemplateName,
-            String[] fieldName) throws RemoteException {
+            String[] fieldName) throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getLatestReadingByMeterNoAndType", vendor.getCompanyName());
         
         YukonMeter meter = mspValidationService.isYukonMeterNumber(meterNo);
@@ -670,16 +509,16 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         } catch (DynamicDataAccessException e) {
             String message = "Connection to dispatch is invalid";
             log.error(message);
-            throw new RemoteException(message);
+            throw new MultispeakWebServiceException(message);
         }
     }
     
     @Override
     public FormattedBlock[] getLatestReadingByType(String readingType,
             String lastReceived, String formattedBlockTemplateName,
-            String[] fieldName) throws RemoteException {
+            String[] fieldName) throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getLatestReadingByType", vendor.getCompanyName());
 
         FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
@@ -702,9 +541,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public FormattedBlock[] getReadingsByDateAndType(Calendar startDate,
             Calendar endDate, String readingType, String lastReceived,
             String formattedBlockTemplateName, String[] fieldName)
-            throws RemoteException {
+            throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getReadingsByDateAndType", vendor.getCompanyName());
         
         FormattedBlockProcessingService<Block> formattedBlockProcessingService = 
@@ -731,9 +570,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     public FormattedBlock[] getReadingsByMeterNoAndType(String meterNo,
             Calendar startDate, Calendar endDate, String readingType,
             String lastReceived, String formattedBlockTemplateName,
-            String[] fieldName) throws RemoteException {
+            String[] fieldName) throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getReadingsByMeterNoAndType", vendor.getCompanyName());
         
         //Validate the meterNo is in Yukon
@@ -762,9 +601,9 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     }
     
     @Override
-    public String[] getSupportedReadingTypes() throws RemoteException {
+    public String[] getSupportedReadingTypes() throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("getSupportedReadingTypes", vendor.getCompanyName());
         
         Set<String> keys = readingTypesMap.keySet();
@@ -777,18 +616,18 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
     @Override
     public ErrorObject[] initiateMeterReadByMeterNoAndType(String meterNo, String responseURL,
             String readingType, String transactionID,
-            Float expirationTime) throws RemoteException {
+            Float expirationTime) throws MultispeakWebServiceException {
         init();
         ErrorObject[] errorObjects = new ErrorObject[0];
         
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("initiateMeterReadByMeterNoAndType", vendor.getCompanyName());
         
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.CB_Server_STR);
         if ( ! porterConnection.isValid() ) {
             String message = "Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.";
             log.error(message);                
-            throw new RemoteException(message);
+            throw new MultispeakWebServiceException(message);
         }
         
         FormattedBlockProcessingService<Block> formattedBlockServ = 
@@ -799,141 +638,13 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR, "initiateMeterReadByMeterNoAndTypeRequest", errorObjects);
         return errorObjects;
     }
-    @Override
-    public MeterRead[] getReadingsByUOMAndDate(String uomData,
-            Calendar startDate, Calendar endDate, String lastReceived)
-            throws RemoteException {
-        init();
-        return null;
-    }
-    @Override
-    public ErrorObject[] initiateMeterReadByObject(String objectName,
-            String nounType, PhaseCd phaseCode, String responseURL,
-            String transactionID, float expirationTime) throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] meterConnectivityNotification(
-            MeterConnectivity[] newConnectivity) throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] meterBaseExchangeNotification(
-            MeterBaseExchange[] MBChangeout) throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public String requestRegistrationID() throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] registerForService(RegistrationInfo registrationDetails)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] unregisterForService(String registrationID)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public RegistrationInfo getRegistrationInfoByID(String registrationID)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public String[] getPublishMethods() throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] domainMembersChangedNotification(
-            DomainMember[] changedDomainMembers) throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] domainNamesChangedNotification(
-            DomainNameChange[] changedDomainNames) throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public Schedule[] getSchedules(String lastReceived) throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public Schedule getScheduleByID(String scheduleID) throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ReadingSchedule[] getReadingSchedules(String lastReceived)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ReadingSchedule getReadingScheduleByID(String readingScheduleID)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public FormattedBlock[] getLatestReadingsByMeterNoList(String[] meterNo,
-            Calendar startDate, Calendar endDate, String readingType,
-            String lastReceived, ServiceType serviceType,
-            String formattedBlockTemplateName, String[] fieldName)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public FormattedBlockTemplate[] getFormattedBlockTemplates(
-            String lastReceived) throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public FormattedBlock[] getLatestReadingsByMeterNoListFormattedBlock(
-            String[] meterNo, Calendar startDate, Calendar endDate,
-            String formattedBlockTemplateName, String[] fieldName,
-            String lastReceived, ServiceType serviceType)
-            throws RemoteException {
-        init();
-        return null;
-    }
 
     @Override
     public ErrorObject[] initiateDemandReset(MeterIdentifier[] meterIDs,
             String responseURL, String transactionId, Float expirationTime)
-            throws RemoteException {
+            throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         multispeakEventLogService.methodInvoked("initiateDemandReset", vendor.getCompanyName());
         
         List<ErrorObject> errors = Lists.newArrayList();
@@ -998,101 +709,6 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
         return errors.toArray(new ErrorObject[errors.size()]);
     }
 
-    @Override
-    public ErrorObject[] insertMetersInConfigurationGroup(
-            String[] meterNumbers, String meterGroupID, ServiceType serviceType)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] removeMetersFromConfigurationGroup(
-            String[] meterNumbers, String meterGroupID, ServiceType serviceType)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] establishSchedules(Schedule[] schedules)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] deleteSchedule(String scheduleID)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] establishReadingSchedules(
-            ReadingSchedule[] readingSchedules) throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] enableReadingSchedule(String readingScheduleID)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] disableReadingSchedule(String readingScheduleID)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] deleteReadingSchedule(String readingScheduleID)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] initiateMeterReadsByFieldName(String[] meterNumbers,
-            String[] fieldNames, String responseURL, String transactionID,
-            float expirationTime, String formattedBlockTemplateName)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] meterBaseChangedNotification(MeterBase[] changedMBs)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] meterBaseRemoveNotification(MeterBase[] removedMBs)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] meterBaseRetireNotification(MeterBase[] retiredMBs)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
-    @Override
-    public ErrorObject[] meterBaseAddNotification(MeterBase[] addedMBs)
-            throws RemoteException {
-        init();
-        return null;
-    }
-
     @Required
     public void setPorterConnection(BasicServerConnection porterConnection) {
         this.porterConnection = porterConnection;
@@ -1103,4 +719,374 @@ public class MR_ServerImpl implements MR_ServerSoap_PortType{
             Map<String, FormattedBlockProcessingService<Block>> readingTypesMap) {
         this.readingTypesMap = readingTypesMap;
     }
+
+    @Override
+    public ErrorObject[] cancelPlannedOutage(String[] meterNos) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] customerChangedNotification(Customer[] changedCustomers) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] customersAffectedByOutageNotification(CustomersAffectedByOutage[] newOutages)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] deleteReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] deleteSchedule(String scheduleID) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] disableReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] domainMembersChangedNotification(DomainMember[] changedDomainMembers)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] domainNamesChangedNotification(DomainNameChange[] changedDomainNames)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] enableReadingSchedule(String readingScheduleID) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] endDeviceShipmentNotification(EndDeviceShipment shipment) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] establishReadingSchedules(ReadingSchedule[] readingSchedules)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] establishSchedules(Schedule[] schedules) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public String[] getDomainNames() throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public DomainMember[] getDomainMembers(String domainNaString) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public FormattedBlockTemplate[] getFormattedBlockTemplates(String lastReceived)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public HistoryLog[] getHistoryLogByMeterNo(String meterNo, Calendar startDate, Calendar endDate)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public HistoryLog[] getHistoryLogsByDate(Calendar startDate, Calendar endDate, String lastReceived)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public HistoryLog[] getHistoryLogsByMeterNoAndEventCode(String meterNo, EventCode eventCode, Calendar startDate,
+            Calendar endDate) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public HistoryLog[] getHistoryLogsByDateAndEventCode(EventCode eventCode, Calendar startDate, Calendar endDate,
+            String lastReceived) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public FormattedBlock getLatestMeterReadingsByMeterGroup(String meterGroupID, String formattedBlockTemplateName,
+            String[] fieldName) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public FormattedBlock[] getLatestReadingsByMeterNoList(String[] meterNo, Calendar startDate, Calendar endDate,
+            String readingType, String lastReceived, ServiceType serviceType, String formattedBlockTemplateName,
+            String[] fieldName) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public FormattedBlock[] getLatestReadingsByMeterNoListFormattedBlock(String[] meterNo, Calendar startDate,
+            Calendar endDate, String formattedBlockTemplateName, String[] fieldName, String lastReceived,
+            ServiceType serviceType) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public Meter[] getModifiedAMRMeters(String previousSessionID, String lastReceived)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public String[] getPublishMethods() throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public FormattedBlock[] getReadingByMeterNumberFormattedBlock(String meterNumber, Calendar billingDate,
+            int kWhLookBack, int kWLookBack, int kWLookForward, String lastReceived, String formattedBlockTemplateName,
+            String[] fieldName) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public FormattedBlock[] getReadingsByDateFormattedBlock(Calendar billingDate, int kWhLookBack, int kWLookBack,
+            int kWLookForward, String lastReceived, String formattedBlockTemplateName, String[] fieldName)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public MeterRead[] getReadingsByUOMAndDate(String uomData, Calendar startDate, Calendar endDate, String lastReceived)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ReadingSchedule getReadingScheduleByID(String readingScheduleID) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ReadingSchedule[] getReadingSchedules(String lastReceived) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public RegistrationInfo getRegistrationInfoByID(String registrationID) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public Schedule getScheduleByID(String scheduleID) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public Schedule[] getSchedules(String lastReceived) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] inHomeDisplayAddNotification(InHomeDisplay[] addedIHDs) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] inHomeDisplayChangedNotification(InHomeDisplay[] changedIHDs)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] inHomeDisplayExchangeNotification(InHomeDisplayExchange[] IHDChangeout)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] inHomeDisplayRemoveNotification(InHomeDisplay[] removedIHDs)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] inHomeDisplayRetireNotification(InHomeDisplay[] retiredIHDs)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] initiateGroupMeterRead(String meterGroupName, String responseURL, String transactionID,
+            float expirationTime) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] initiateMeterReadByObject(String objectName, String nounType, PhaseCd phaseCode,
+            String responseURL, String transactionID, float expirationTime) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] initiateMeterReadsByFieldName(String[] meterNumbers, String[] fieldNames, String responseURL,
+            String transactionID, float expirationTime, String formattedBlockTemplateName)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] initiatePlannedOutage(String[] meterNos, Calendar startDate, Calendar endDate)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] insertMetersInConfigurationGroup(String[] meterNumbers, String meterGroupID,
+            ServiceType serviceType) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] meterBaseAddNotification(MeterBase[] addedMBs) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] meterBaseChangedNotification(MeterBase[] changedMBs) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] meterBaseExchangeNotification(MeterBaseExchange[] MBChangeout)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] meterBaseRemoveNotification(MeterBase[] removedMBs) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] meterBaseRetireNotification(MeterBase[] retiredMBs) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] meterConnectivityNotification(MeterConnectivity[] newConnectivity)
+            throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] meterExchangeNotification(MeterExchange[] meterChangeout) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] meterRetireNotification(Meter[] retiredMeters) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] registerForService(RegistrationInfo registrationDetails) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] removeMetersFromConfigurationGroup(String[] meterNumbers, String meterGroupID,
+            ServiceType serviceType) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public String requestRegistrationID() throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] scheduleGroupMeterRead(String meterGroupName, Calendar timeToRead, String responseURL,
+            String transactionID) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] unregisterForService(String registrationID) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    }
+
+    @Override
+    public ErrorObject[] updateServiceLocationDisplays(String servLocID) throws MultispeakWebServiceException {
+        init();
+        throw new MultispeakWebServiceException("Method is NOT supported.");
+    } 
 }

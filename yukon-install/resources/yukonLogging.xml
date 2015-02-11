@@ -40,6 +40,10 @@
   <logger name="org.apache.myfaces">
   	<level value="warn"/>
   </logger>
+  
+  <logger name="org.springframework.ws.soap.server.endpoint.interceptor">
+    <level value="DEBUG"/>
+  </logger>
 
   <!-- root logger -->
   <!-- all loggers will inherit these two loggers -->

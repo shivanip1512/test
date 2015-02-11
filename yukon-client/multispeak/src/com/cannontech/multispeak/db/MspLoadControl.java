@@ -3,7 +3,9 @@ package com.cannontech.multispeak.db;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.multispeak.deploy.service.ControlEventType;
+import com.cannontech.msp.beans.v3.ControlEventType;
+
+
 
 public class MspLoadControl {
     private List<MspLmMapping> mspLmInterfaceMappings;

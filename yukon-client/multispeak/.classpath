@@ -1,20 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/axis.jar" sourcepath="/third-party/linked-sources/axis-1_4-with-mods.zip">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/activation.jar"/>
-	<classpathentry kind="lib" path="/third-party/jaxrpc.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/wsdl4j-1.6.3.jar" sourcepath="/third-party/linked-sources/wsdl4j-1.6.3-sources.jar">
-		<attributes>
-			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="/third-party/jaxm-api.jar"/>
-	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="src" path="/common"/>
 	<classpathentry kind="src" path="/yukonappserver"/>
 	<classpathentry kind="src" path="/tools"/>
@@ -23,9 +9,11 @@
 			<attribute name="owner.project.facets" value="jst.utility"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+	<classpathentry exported="true" kind="lib" path="/third-party/spring-ws-core-2.1.4.RELEASE.jar" sourcepath="/third-party/linked-sources/spring-ws-core-2.1.4.RELEASE-sources.jar"/>
+	<classpathentry kind="lib" path="/third-party/org.springframework.oxm-3.1.3.RELEASE.jar" sourcepath="/third-party/linked-sources/org.springframework.oxm-sources-3.1.3.RELEASE.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/msp-beans-v3.jar">
 		<attributes>
-			<attribute name="owner.project.facets" value="java"/>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
