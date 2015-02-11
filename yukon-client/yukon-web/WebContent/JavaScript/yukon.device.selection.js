@@ -257,7 +257,6 @@ yukon.device.selection = (function () {
             /** Adjust the tree max height when dialog is resized or shown to avoid double scrollbars. */
             $(document).on('dialogresize dialogopen', '.js-device-collection-picker-dialog', function (ev, ui) {
                 yukon.dynatree.adjustMaxHeight($(this).find('[data-select-by="group"]'));
-                console.log('hi');
             });
             
             /** Adjust the tree max height when the device group tab is clicked. */
