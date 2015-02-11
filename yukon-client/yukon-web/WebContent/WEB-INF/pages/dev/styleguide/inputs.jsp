@@ -89,5 +89,25 @@
 &lt;/div&gt;
 </pre>
 
+<h2 id="toggle-with-checkbox-example">File Uploads</h2>
+
+<p class="description">
+    The <span class="label label-attr">&lt;tags:file/&gt;</span> tag is used to create a file input that looks and feels
+    the same across all browsers. Always use this tag instead of raw html 
+    <span class="label label-attr">&lt;input type="file"&gt;</span>.
+</p>
+<div class="column-4-20 clearfix style-guide-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <tags:file/>
+        <tags:file name="history.magnaCarta" id="my-input"/>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;tags:file/&gt;
+&lt;tags:file name="history.magnaCarta" id="my-input"/&gt;
+</pre>
+
 </tags:styleguide>
 </cti:standardPage>

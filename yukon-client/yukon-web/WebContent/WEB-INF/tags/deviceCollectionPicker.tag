@@ -136,14 +136,7 @@
                     </select>
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".selectDataFile">
-                    <span class="file-upload">
-                        <div class="button M0">
-                            <cti:icon icon="icon-upload"/>
-                            <span class="b-label">Upload</span>
-                            <input type="file" name="fileUpload.dataFile">
-                        </div>&nbsp;
-                        <span class="file-name form-control">Choose File</span>
-                    </span>
+                    <tags:file name="fileUpload.dataFile"/>
                     <div class="progress dib dn" style="width: 120px;">
                         <div class="progress-bar" style="width: 0%"></div>
                     </div>

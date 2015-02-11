@@ -42,10 +42,6 @@ yukon.device.selection = (function () {
             
             // Dump this massive attribute since we don't need it anymore.
             tab.removeAttr('data-groups').addClass('js-initialized');
-            
-            yukon.dynatree.adjustMaxHeight(tab);
-        } else {
-            yukon.dynatree.adjustMaxHeight(tab);
         }
         
     },
@@ -260,6 +256,11 @@ yukon.device.selection = (function () {
             
             /** Adjust the tree max height when dialog is resized to avoid double scrollbars. */
             $(document).on('dialogresize', '.js-device-collection-picker-dialog', function (ev, ui) {
+                yukon.dynatree.adjustMaxHeight($(this).find('[data-select-by="group"]'));
+            });
+            
+            /** Adjust the tree max height when dialog is shown to avoid double scrollbars. */
+            $(document).on('dialogopen', '.js-device-collection-picker-dialog', function (ev, ui) {
                 yukon.dynatree.adjustMaxHeight($(this).find('[data-select-by="group"]'));
             });
             
