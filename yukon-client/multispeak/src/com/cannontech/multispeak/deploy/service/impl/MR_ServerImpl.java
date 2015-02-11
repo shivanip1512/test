@@ -302,7 +302,7 @@ public class MR_ServerImpl implements MR_Server{
 
         return meterReads;
         */
-        throw new MultispeakWebServiceException("Method getReadingsByBillingCycle is NOT supported.");
+        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
     
     @Override
