@@ -120,12 +120,12 @@ LOG4CXX_DLL     = log4cxx.dll
 MICROSOFT       = $(CPP_LIBRARIES)\microsoft
 !IFDEF DEBUG
 MICROSOFT_VC     = $(MICROSOFT)\vc\12.0\Debug
-MICROSOFT_VC_DLL = msvcr120d.dll
-MICROSOFT_VP_DLL = msvcp120d.dll
+MICROSOFT_VCR_DLL = msvcr120d.dll
+MICROSOFT_VCP_DLL = msvcp120d.dll
 !ELSE
 MICROSOFT_VC     = $(MICROSOFT)\vc\12.0\Release
-MICROSOFT_VC_DLL = msvcr120.dll
-MICROSOFT_VP_DLL = msvcp120.dll
+MICROSOFT_VCR_DLL = msvcr120.dll
+MICROSOFT_VCP_DLL = msvcp120.dll
 !ENDIF
 
 MICROSOFT_SQL     = $(MICROSOFT)\sql-server-client-dll\2000.80.194.0
