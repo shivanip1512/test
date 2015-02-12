@@ -48,9 +48,8 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     
     private Map<Integer, ServiceCompanyDto> serviceCompanyCache = new ConcurrentHashMap<>();
-    //private Map<Set<Integer>, List<ServiceCompanyDto>> serviceCompanyListCache= new ConcurrentHashMap<Set<Integer>, List<ServiceCompanyDto>>();
 
-    private LoadingCache< Set<Integer>, List<ServiceCompanyDto>> serviceCompanyListCache= CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<Set<Integer>, List<ServiceCompanyDto>>(){
+    private LoadingCache< Set<Integer>, List<ServiceCompanyDto>> serviceCompanyListCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<Set<Integer>, List<ServiceCompanyDto>>(){
 
         @Override
         public List<ServiceCompanyDto> load(Set<Integer> arg0) throws Exception {
@@ -145,7 +144,7 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         serviceCompanyTemplate.setFieldMapper(serviceCompanyDtoFieldMapper);
         serviceCompanyTemplate.setPrimaryKeyValidOver(0);
         
-        List<ServiceCompanyDto>serviceCompanyList =getAllServiceCompanies();
+        List<ServiceCompanyDto> serviceCompanyList = getAllServiceCompanies();
         for(ServiceCompanyDto serviceCompanyDto: serviceCompanyList){
             serviceCompanyCache.put(serviceCompanyDto.getCompanyId(), serviceCompanyDto);
         }
@@ -158,7 +157,7 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
             
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
-                ServiceCompanyDto companyDto=getCompanyById(event.getPrimaryKey());
+                ServiceCompanyDto companyDto = getCompanyById(event.getPrimaryKey());
                 serviceCompanyCache.put(companyDto.getCompanyId(), companyDto);
                 
             }
