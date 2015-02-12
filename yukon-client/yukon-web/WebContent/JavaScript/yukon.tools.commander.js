@@ -163,13 +163,15 @@ yukon.tools.commander = (function () {
         var timestamp = moment(req.timezone).tz(_tz).format(_timeFormat),
             result = $('<div>'), 
             resultReq = $('<div>'),
-            pending = $('#cmdr-templates .cmd-pending').clone(),
             console = $('#commander-results');
         
         result.addClass('cmd-req-resp').data('requestId', req.id).attr('data-request-id', req.id);
         resultReq.addClass('cmd-req').text('[' + timestamp + '] - ' + req.requestText).appendTo(result);
-        result.append(pending);
-        _pending[req.id] = [];
+        
+        if (!req.complete) {
+            result.append($('#cmdr-templates .cmd-pending').clone());
+            _pending[req.id] = [];
+        }
         
         console.append(result);
         if (!_scrollLock) console.scrollTo(result); 
