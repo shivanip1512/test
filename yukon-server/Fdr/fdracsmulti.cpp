@@ -555,12 +555,12 @@ bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection* connec
                 if (timestamp.seconds() > (now.seconds()))
                 {
                     timeNow.QuadPart +=
-                        ( __int64)((timestamp.seconds() - now.seconds()) * 10000000);
+                        ( long long)((timestamp.seconds() - now.seconds()) * 10000000);
                 }
                 else
                 {
                     timeNow.QuadPart -=
-                        ( __int64)((now.seconds() - timestamp.seconds()) * 10000000);
+                        ( long long)((now.seconds() - timestamp.seconds()) * 10000000);
                 }
 
                 fileTime.dwLowDateTime = timeNow.LowPart;

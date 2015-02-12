@@ -45,7 +45,7 @@ namespace Cti {
 IM_EX_CTIBASE char toAscii   (char dec);
 IM_EX_CTIBASE char toAsciiHex(char nibble);
 IM_EX_CTIBASE std::string formatSystemTime(SYSTEMTIME systime);
-IM_EX_CTIBASE std::string commaFormatted(__int64 value);
+IM_EX_CTIBASE std::string commaFormatted(long long value);
 IM_EX_CTIBASE std::string matchRegex  (const std::string &src, const boost::regex &pattern);
 IM_EX_CTIBASE std::string matchRegex  (const std::string &src, const std::string  &pattern);
 IM_EX_CTIBASE size_t      locateRegex (const std::string &src, const boost::regex &pattern, size_t *matchLength, size_t substrIndex);

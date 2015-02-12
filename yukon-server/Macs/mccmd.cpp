@@ -1892,7 +1892,7 @@ unsigned int GenMsgID()
 {
     CtiLockGuard<CtiCriticalSection> guard(_queue_mux);
 
-    //  This can break - we need to be using an __int64 here instead
+    //  This can break - we need to be using a long long here instead
     return (GetCurrentThreadId() << 16) + gUserMessageID++;
 }
 

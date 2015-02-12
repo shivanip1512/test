@@ -23,9 +23,9 @@ using log4cxx::helpers::LogLog;
 
 namespace {
 
-__int64 makeMicroseconds(const CtiTime &t)
+long long makeMicroseconds(const CtiTime &t)
 {
-    __int64 result = t.seconds();
+    long long result = t.seconds();
 
     result *= 1000;
     result *= 1000;
@@ -211,7 +211,7 @@ void LogFileAppender::setFile(
 }
 
 
-bool LogFileAppender::tryResumeWriting(const __int64 timestamp, log4cxx::helpers::Pool &p)
+bool LogFileAppender::tryResumeWriting(const long long timestamp, log4cxx::helpers::Pool &p)
 {
     if( timestamp < _nextResumeAttempt )
     {
@@ -255,7 +255,7 @@ void LogFileAppender::subAppend(
     {
         log4cxx::helpers::synchronized sync(mutex);
 
-        const __int64 timestamp = event->getTimeStamp();
+        const long long timestamp = event->getTimeStamp();
 
         if( ! rollover(timestamp, p) )
         {
@@ -294,7 +294,7 @@ void LogFileAppender::subAppend(
     }
 }
 
-bool LogFileAppender::rollover(const __int64 eventTimestamp, log4cxx::helpers::Pool &p)
+bool LogFileAppender::rollover(const long long eventTimestamp, log4cxx::helpers::Pool &p)
 {
     log4cxx::helpers::synchronized sync(mutex);
 

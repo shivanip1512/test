@@ -837,7 +837,7 @@ Mct470Device::point_info Mct470Device::getData(const unsigned char *buf, const u
     const error_map *errors = &error_codes;
 
     string description;
-    __int64 value = 0;
+    long long value = 0;
     point_info  retval;
 
     for( int i = 0; i < len; i++ )

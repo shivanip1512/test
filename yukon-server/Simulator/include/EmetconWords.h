@@ -36,9 +36,9 @@ struct EmetconWord
     static EmetconWord *restore(const bytes &buf);
 
     static unsigned extract_bits(const bytes &buf, unsigned bit_offset, unsigned length);
-    static void     append_bits(__int64 &destination, unsigned bits, unsigned value);
-    static void     write_bits (__int64 source, const unsigned bits, byte_appender output);
-    static unsigned bch_calc   (__int64 source, const unsigned bits);
+    static void     append_bits(long long &destination, unsigned bits, unsigned value);
+    static void     write_bits (long long source, const unsigned bits, byte_appender output);
+    static unsigned bch_calc   (long long source, const unsigned bits);
 
     struct serializer : public std::_Outit
     {
@@ -160,9 +160,9 @@ struct EmetconWordD : public EmetconWord, public EmetconWordDescriptor<0x0d, 52>
 template<unsigned payload_length=0>
 struct EmetconWordDPayload
 {
-    EmetconWordDPayload()  
-    { 
-        memset(data, 0, sizeof(data)); 
+    EmetconWordDPayload()
+    {
+        memset(data, 0, sizeof(data));
     };
 
     enum { PayloadLength = payload_length };
@@ -204,7 +204,7 @@ struct EmetconWordD2 : public EmetconWordD, public EmetconWordDPayload<5>
         time_sync_loss(false),
         spare(false)
     {};
-    
+
     EmetconWordD2(unsigned char data0,
                   unsigned char data1,
                   unsigned char data2,
@@ -228,7 +228,7 @@ struct EmetconWordD3 : public EmetconWordD, public EmetconWordDPayload<5>
         spare1(false),
         spare2(false)
     {};
-    
+
     EmetconWordD3(unsigned char data0,
                   unsigned char data1,
                   unsigned char data2,
@@ -253,10 +253,10 @@ struct EmetconWordE : public EmetconWord, public EmetconWordDescriptor<0x0e, 52>
         echo_address(0),
         power_fail(false),
         alarm(false)
-    { 
-        memset(diagnostic_data, 0, sizeof(diagnostic_data)); 
+    {
+        memset(diagnostic_data, 0, sizeof(diagnostic_data));
     };
-    
+
     unsigned repeater_variable;
     unsigned echo_address;
 

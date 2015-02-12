@@ -119,7 +119,7 @@ std::string formatSystemTime(SYSTEMTIME systime)
     return timeStr;
 }
 
-std::string commaFormatted(__int64 value)
+std::string commaFormatted(long long value)
 {
     std::string plain = boost::lexical_cast<std::string>(value);
     size_t digits = plain.size();

@@ -14,7 +14,7 @@ namespace Protocols {
 
 const KlondikeProtocol::command_state_map_t KlondikeProtocol::_command_states;
 
-__int64 KlondikeProtocol::queue_entry_t::global_id;
+long long KlondikeProtocol::queue_entry_t::global_id;
 
 
 KlondikeProtocol::KlondikeProtocol() :

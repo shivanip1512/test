@@ -65,7 +65,7 @@ bool DatabaseReader::executeWithRetries()
         {
             executeCommand();
             return true;
-        }        
+        }
         catch(SAException &x)
         {
             retries--;
@@ -83,7 +83,7 @@ bool DatabaseReader::executeWithRetries()
         Sleep(waitTimer);
     };
 
-    return execute(); 
+    return execute();
 
 }
 
@@ -215,7 +215,7 @@ RowReader &DatabaseReader::operator>>(unsigned long &operand)
     return *this;
 }
 
-RowReader &DatabaseReader::operator>>(__int64 &operand)
+RowReader &DatabaseReader::operator>>(long long &operand)
 {
     operand = _command[_currentIndex++].asNumeric();
     return *this;
@@ -314,7 +314,7 @@ RowReader &DatabaseReader::operator<<(const unsigned long operand)
     return *this;
 }
 
-RowReader &DatabaseReader::operator<<(const __int64 operand)
+RowReader &DatabaseReader::operator<<(const long long operand)
 {
     _command << SANumeric(operand);
     return *this;

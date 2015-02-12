@@ -619,9 +619,9 @@ bool CtiFDR_ValmetMulti::processTimeSyncMessage(Cti::Fdr::ServerConnection& conn
 
                     // which way to move converted to 100 nanosecond parts
                     if (timestamp.seconds() > (now.seconds()))
-                        timeNow.QuadPart += ( __int64)((timestamp.seconds() - now.seconds()) * 10000000);
+                        timeNow.QuadPart += ( long long)((timestamp.seconds() - now.seconds()) * 10000000);
                     else
-                        timeNow.QuadPart -= ( __int64)((now.seconds() - timestamp.seconds()) * 10000000);
+                        timeNow.QuadPart -= ( long long)((now.seconds() - timestamp.seconds()) * 10000000);
 
                     fileTime.dwLowDateTime = timeNow.LowPart;
                     fileTime.dwHighDateTime = timeNow.HighPart;

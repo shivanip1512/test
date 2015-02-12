@@ -41,13 +41,13 @@ unsigned EmetconWord::extract_bits(const bytes &buf, unsigned bit_offset, unsign
     return value;
 }
 
-void EmetconWord::append_bits(__int64 &destination, unsigned bits, unsigned value)
+void EmetconWord::append_bits(long long &destination, unsigned bits, unsigned value)
 {
     destination <<= bits;
     destination  |= value & ((0x1 << bits) - 1);
 }
 
-void EmetconWord::write_bits(__int64 source, const unsigned bits, byte_appender output)
+void EmetconWord::write_bits(long long source, const unsigned bits, byte_appender output)
 {
     //  if it needs to be zero-padded
     if( bits % 8 )
@@ -63,7 +63,7 @@ void EmetconWord::write_bits(__int64 source, const unsigned bits, byte_appender 
     reverse_copy(begin, begin + byte_length, output);
 }
 
-unsigned EmetconWord::bch_calc(__int64 source, const unsigned bits)
+unsigned EmetconWord::bch_calc(long long source, const unsigned bits)
 {
     //  if it needs to be zero-padded
     if( bits % 8 )
@@ -184,7 +184,7 @@ const EmetconWord *EmetconWordA::restore(const bytes &buf)
 
 bool EmetconWordA::serialize(byte_appender output) const
 {
-    __int64 serialized = 0;
+    long long serialized = 0;
 
     append_bits(serialized, 4, TypeCode);
     append_bits(serialized, 5, repeater_fixed);
@@ -257,7 +257,7 @@ const EmetconWord *EmetconWordB::restore(const bytes &buf)
 
 bool EmetconWordB::serialize(byte_appender output) const
 {
-    __int64 serialized = 0;
+    long long serialized = 0;
 
     append_bits(serialized,  4, TypeCode);
     append_bits(serialized,  5, repeater_fixed);
@@ -325,7 +325,7 @@ const EmetconWord *EmetconWordC::restore(const bytes &buf)
 
 bool EmetconWordC::serialize(byte_appender output) const
 {
-    __int64 serialized = 0;
+    long long serialized = 0;
 
     append_bits(serialized, 4, TypeCode);
 
@@ -431,7 +431,7 @@ const EmetconWord *EmetconWordD1::restore(const bytes &buf)
 
 bool EmetconWordD1::serialize(byte_appender output) const
 {
-    __int64 serialized = 0;
+    long long serialized = 0;
 
     append_bits(serialized,  4, TypeCode);
     append_bits(serialized,  3, repeater_variable);
@@ -495,7 +495,7 @@ const EmetconWord *EmetconWordD2::restore(const bytes &buf)
 
 bool EmetconWordD2::serialize(byte_appender output) const
 {
-    __int64 serialized = 0;
+    long long serialized = 0;
 
     append_bits(serialized,  4, TypeCode);
     append_bits(serialized,  8, data[0]);
@@ -559,7 +559,7 @@ const EmetconWord *EmetconWordD3::restore(const bytes &buf)
 
 bool EmetconWordD3::serialize(byte_appender output) const
 {
-    __int64 serialized = 0;
+    long long serialized = 0;
 
     append_bits(serialized,  4, TypeCode);
     append_bits(serialized,  8, data[0]);
@@ -608,7 +608,7 @@ const EmetconWord *EmetconWordE::restore(const bytes &buf)
 
 bool EmetconWordE::serialize(byte_appender output) const
 {
-    __int64 serialized = 0;
+    long long serialized = 0;
 
     append_bits(serialized,  4, TypeCode);
     append_bits(serialized,  3, repeater_variable);

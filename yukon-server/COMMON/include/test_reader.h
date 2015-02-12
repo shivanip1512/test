@@ -140,7 +140,7 @@ public:
     RowReader &operator>>(UINT &operand)           { operand = getNextIntegerValue(); return *this;  }
     RowReader &operator>>(UCHAR &operand)          { operand = getNextIntegerValue(); return *this;  }
     RowReader &operator>>(unsigned long &operand)  { operand = getNextIntegerValue(); return *this;  }
-    RowReader &operator>>(__int64 &operand)        { operand = getNextIntegerValue(); return *this;  }
+    RowReader &operator>>(long long &operand)        { operand = getNextIntegerValue(); return *this;  }
 
     RowReader &operator>>(double &operand)         { operand = getNextFloatValue();   return *this;  }
     RowReader &operator>>(float &operand)          { operand = getNextFloatValue();   return *this;  }
@@ -220,7 +220,7 @@ public:
     RowReader &operator<<(const INT operand) { return *this; }
     RowReader &operator<<(const UINT operand) { return *this; }
     RowReader &operator<<(const unsigned long operand) { return *this; }
-    RowReader &operator<<(const __int64 operand) { return *this; }
+    RowReader &operator<<(const long long operand) { return *this; }
     RowReader &operator<<(const double operand) { return *this; }
     RowReader &operator<<(const float operand) { return *this; }
     RowReader &operator<<(const CtiTime &operand) { return *this; }

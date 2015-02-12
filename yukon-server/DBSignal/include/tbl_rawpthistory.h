@@ -19,5 +19,5 @@ public:
 
    static std::string getInsertSql();
 
-   void fillInserter(Cti::RowWriter &inserter, const __int64 changeid);
+   void fillInserter(Cti::RowWriter &inserter, const long long changeid);
 };

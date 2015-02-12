@@ -19,7 +19,7 @@ std::string CtiTableRawPointHistory::getInsertSql()
     return "INSERT INTO RawPointHistory VALUES (?,?,?,?,?,?)";
 }
 
-void CtiTableRawPointHistory::fillInserter(Cti::RowWriter &inserter, const __int64 changeId)
+void CtiTableRawPointHistory::fillInserter(Cti::RowWriter &inserter, const long long changeId)
 {
     inserter
         << changeId

@@ -40,7 +40,7 @@ public:
     virtual RowReader &operator>>(UINT &operand) = 0;
     virtual RowReader &operator>>(UCHAR &operand) = 0;
     virtual RowReader &operator>>(unsigned long &operand) = 0;
-    virtual RowReader &operator>>(__int64 &operand) = 0;
+    virtual RowReader &operator>>(long long &operand) = 0;
     virtual RowReader &operator>>(double &operand) = 0;
     virtual RowReader &operator>>(float &operand) = 0;
     virtual RowReader &operator>>(CtiTime &operand) = 0;
@@ -61,7 +61,7 @@ public:
     virtual RowReader &operator<<(const INT operand) = 0;
     virtual RowReader &operator<<(const UINT operand) = 0;
     virtual RowReader &operator<<(const unsigned long operand) = 0;
-    virtual RowReader &operator<<(const __int64 operand) = 0;
+    virtual RowReader &operator<<(const long long operand) = 0;
     virtual RowReader &operator<<(const double operand) = 0;
     virtual RowReader &operator<<(const float operand) = 0;
     virtual RowReader &operator<<(const CtiTime &operand) = 0;

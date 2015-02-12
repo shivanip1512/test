@@ -102,7 +102,7 @@ std::string reportPrivateBytes(const compileinfo_t &info)
 {
     Cti::StreamBuffer buf;
 
-    __int64 privateBytes = getPrivateBytes();
+    long long privateBytes = getPrivateBytes();
 
     buf << info.project << " memory use: " << CtiNumStr(privateBytes / 1048576.0, 1) << " MB (" << commaFormatted(privateBytes) << ")";
 

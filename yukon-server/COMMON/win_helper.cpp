@@ -7,7 +7,7 @@
 
 namespace Cti {
 
-__int64 getPrivateBytes()
+long long getPrivateBytes()
 {
     PROCESS_MEMORY_COUNTERS_EX memoryCounters;
 

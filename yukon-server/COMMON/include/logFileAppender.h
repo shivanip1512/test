@@ -17,15 +17,15 @@ class IM_EX_CTIBASE LogFileAppender : public log4cxx::WriterAppender
 
     const FileInfo  _fileInfo;
     CtiDate         _today;
-    __int64         _tomorrow;
-    __int64         _nextResumeAttempt;
+    long long         _tomorrow;
+    long long         _nextResumeAttempt;
     bool            _maxFileSizeLogged;
     bool            _lastRolloverFailed;
     size_t          _fileSize;
 
     log4cxx::helpers::WriterPtr _writer;
-    __int64         _nextFlush;
-    __int64         _flushInterval;
+    long long         _nextFlush;
+    long long         _flushInterval;
 
     void activateOptions(
             log4cxx::helpers::Pool& p);
@@ -42,11 +42,11 @@ class IM_EX_CTIBASE LogFileAppender : public log4cxx::WriterAppender
             log4cxx::helpers::Pool &p) override;
 
     bool tryResumeWriting(
-            const __int64 timestamp,
+            const long long timestamp,
             log4cxx::helpers::Pool &p);
 
     bool rollover(
-            const __int64 eventTimestamp,
+            const long long eventTimestamp,
             log4cxx::helpers::Pool &p);
 
     void cleanupOldFiles() const;

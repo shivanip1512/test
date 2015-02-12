@@ -4,7 +4,7 @@
 #include "types.h"
 #include "std_ansi_tbl_base.h"
 
-#define UINT64             __int64 //FIXME - figure out how to get a uint64
+#define UINT64             unsigned long long
 #define BCD                unsigned char
 
 #pragma pack( push, 1)

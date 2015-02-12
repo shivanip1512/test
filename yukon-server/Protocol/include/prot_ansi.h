@@ -34,7 +34,7 @@
 #include "std_ansi_tbl_64.h"
 
 
-#define UINT64             __int64 //FIXME - figure out how to get a uint64
+#define UINT64             unsigned long long
 #define BCD                unsigned char
 
 #define FLOAT64

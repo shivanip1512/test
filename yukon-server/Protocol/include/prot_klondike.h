@@ -82,7 +82,7 @@ private:
 
     struct id_priority
     {
-        __int64 id;
+        long long id;
         unsigned priority;
 
         bool operator<(const id_priority &rhs) const
@@ -97,8 +97,8 @@ private:
 
     struct queue_entry_t
     {
-        static __int64 global_id;
-        __int64 id;
+        static long long global_id;
+        long long id;
         unsigned priority;
         PLCProtocols protocol;
         unsigned char dlc_parms;

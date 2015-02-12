@@ -15,7 +15,7 @@ namespace Timing {
 union filetime_converter
 {
     FILETIME filetime;
-    __int64  raw;
+    long long  raw;
 
 };
 
