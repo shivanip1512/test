@@ -29,6 +29,7 @@
     <entry key="yukon.common.point.pointFormatting.formats.VALUE_UNIT">{default} {status||{unit}}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.UNIT">{unit}</entry>
     <entry key="yukon.common.point.pointFormatting.formats.QUALITY">{quality}</entry>
+    <entry key="yukon.common.point.pointFormatting.formats.SHORT_QUALITY">{shortQuality}</entry>
 
     <entry key="yukon.common.point.pointFormatting.shortQuality.Questionable">?</entry>
     <entry key="yukon.common.point.pointFormatting.shortQuality.Normal"></entry>

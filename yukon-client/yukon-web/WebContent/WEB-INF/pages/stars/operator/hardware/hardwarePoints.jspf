@@ -45,6 +45,7 @@ $(function() {
                             <td class="wsnw">
                                 <cti:pointValue pointId="${point.liteID}" colorForStatus="true" format="VALUE"/>
                                 <cti:pointValue pointId="${point.liteID}" format="UNIT"/>
+                                <cti:pointValue pointId="${point.liteID}" format="SHORT_QUALITY"/>
                             </td>
                         </tr>
                     </c:forEach>
