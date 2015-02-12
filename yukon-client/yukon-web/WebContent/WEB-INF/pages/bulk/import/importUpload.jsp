@@ -26,6 +26,10 @@ function updateImportTypeSelection() {
     //show sample files for the selected interface
     $(".sample_import_files_" + itemSelected).show();
 }
+
+window.pressed = function(){
+	$('#fileErr').hide();
+};
 </script>
     
     <cti:msg var="headerTitle" key="yukon.common.device.bulk.importUpload.header"/>
@@ -47,7 +51,7 @@ function updateImportTypeSelection() {
                 
                 <%-- file errors --%>
                 <c:if test="${not empty fileErrorKeysList}">
-                    <div>
+                    <div id="fileErr">
                         <c:forEach var="fileErrorKey" items="${fileErrorKeysList}">
                             <div class="error">
                                 <i:inline key="${fileErrorKey}"/>
@@ -70,7 +74,7 @@ function updateImportTypeSelection() {
                 <%-- file select --%>
                 <div>
                     <strong><i:inline key="yukon.common.device.bulk.importUpload.importFileLabel"/></strong>
-                    <input type="file" name="dataFile">
+                    <input type="file" name="dataFile" onchange="pressed()">
                 </div>
                 <div class="action-area"><cti:button nameKey="load" classes="primary action" busy="true" type="submit"/></div>
             </div>
