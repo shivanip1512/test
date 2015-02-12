@@ -1,11 +1,12 @@
 package com.cannontech.loadcontrol.loadgroup.dao.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -28,27 +29,37 @@ import com.cannontech.database.RowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
 import com.cannontech.loadcontrol.loadgroup.model.LoadGroup;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 
 public class LoadGroupDaoImpl implements LoadGroupDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    private LoadingCache<String, LoadGroup> loadGroupCache=CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<String, LoadGroup>(){
+    @Autowired private IDatabaseCache cache;
+    private Map<String,LoadGroup>loadGroupCache= new ConcurrentHashMap<String, LoadGroup>();
+    
+    public Map<String, LoadGroup> updatedCacheValues() {
+        List<LiteYukonPAObject> paoObjects = cache.getAllLMGroups();
+        List<Integer> ids = new ArrayList<Integer>();
 
-        @Override
-        public LoadGroup load(String arg0) throws Exception {
-            return null;
+        for (LiteYukonPAObject pao : paoObjects) {
+            ids.add(pao.getLiteID());
         }
-        
-    });
+        List<LoadGroup> group = getByIds(ids);
+
+        for (LoadGroup loadGroup : group) {
+            loadGroup.setProgramIds(getLoadGroupProgramIds(loadGroup));
+            loadGroupCache.put(loadGroup.getName(), loadGroup);
+        }
+        return loadGroupCache;
+
+    }
 
     @Override
     @Transactional(readOnly = true)
@@ -93,13 +104,10 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public LoadGroup getByLoadGroupName(String loadGroupName) {
-        LoadGroup cachedLoadGroup = loadGroupCache.getIfPresent(loadGroupName);
-
-        if (cachedLoadGroup != null) {
-            return cachedLoadGroup;
+        Map<String, LoadGroup> cachedvalue = updatedCacheValues();
+        if (cachedvalue.containsKey(loadGroupName)) {
+            return cachedvalue.get(loadGroupName);
         } else {
-            // Gets all the load group information for the supplied load group
-            // name except for the program ids.
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT PAO.paobjectId AS loadGroupId, PAO.paoName AS loadGroupName, PAO.type");
             sql.append("FROM YukonPAObject PAO");
@@ -116,8 +124,8 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
                 throw new IllegalArgumentException("The load group name supplied returned too many results");
             }
 
+            System.out.println("in load group");
             loadGroup.setProgramIds(getLoadGroupProgramIds(loadGroup));
-            loadGroupCache.put(loadGroupName, loadGroup);
             return loadGroup;
         }
     }

@@ -2,8 +2,12 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
@@ -18,6 +22,8 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.DesignationCodeDao;
 import com.cannontech.core.dao.ServiceCompanyDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -26,6 +32,9 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -36,6 +45,11 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
     @Autowired private DesignationCodeDao designationCodeDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    
+    private Map<Integer, ServiceCompanyDto> serviceCompanyCache = new ConcurrentHashMap<>();
+    //private Map<Set<Integer>, List<ServiceCompanyDto>> serviceCompanyListCache= new ConcurrentHashMap<Set<Integer>, List<ServiceCompanyDto>>();
+
     private LoadingCache< Set<Integer>, List<ServiceCompanyDto>> serviceCompanyListCache= CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<Set<Integer>, List<ServiceCompanyDto>>(){
 
         @Override
@@ -45,14 +59,6 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         
     });
     
-    private LoadingCache<Integer, ServiceCompanyDto> serviceCompanyCache= CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<Integer, ServiceCompanyDto>(){
-
-        @Override
-        public ServiceCompanyDto load(Integer arg0) throws Exception {
-            return null;
-        }
-        
-    });
 
     private SimpleTableAccessTemplate<ServiceCompanyDto> serviceCompanyTemplate;
 
@@ -121,7 +127,6 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
             return serviceCompanyDto;
         }
     }
-
     private void populateServiceCompany(ServiceCompanyDto serviceCompany) {
         serviceCompany.setDesignationCodes(designationCodeDao.getDesignationCodesByServiceCompanyId(serviceCompany.getCompanyId()));
         LiteContactNotification email =
@@ -139,12 +144,38 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         serviceCompanyTemplate.setPrimaryKeyField("CompanyID");
         serviceCompanyTemplate.setFieldMapper(serviceCompanyDtoFieldMapper);
         serviceCompanyTemplate.setPrimaryKeyValidOver(0);
+        
+        List<ServiceCompanyDto>serviceCompanyList =getAllServiceCompanies();
+        for(ServiceCompanyDto serviceCompanyDto: serviceCompanyList){
+            serviceCompanyCache.put(serviceCompanyDto.getCompanyId(), serviceCompanyDto);
+        }
+        createDatabaseChangeListner();
+        
+    }
+
+    private void createDatabaseChangeListner() {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.SERVICE_COMPANY, EnumSet.of(DbChangeType.ADD,DbChangeType.UPDATE), new DatabaseChangeEventListener() {
+            
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                ServiceCompanyDto companyDto=getCompanyById(event.getPrimaryKey());
+                serviceCompanyCache.put(companyDto.getCompanyId(), companyDto);
+                
+            }
+        });
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.SERVICE_COMPANY, EnumSet.of(DbChangeType.DELETE), new DatabaseChangeEventListener() {
+            
+            @Override
+            public void eventReceived(DatabaseChangeEvent event) {
+                serviceCompanyCache.remove(event.getPrimaryKey());
+            }
+        });
     }
 
     // CRUD
     @Override
     public ServiceCompanyDto getCompanyById(int serviceCompanyId) {
-        ServiceCompanyDto cachedServiceCompany = serviceCompanyCache.getIfPresent(serviceCompanyId);
+        ServiceCompanyDto cachedServiceCompany = serviceCompanyCache.get(serviceCompanyId);
         if (cachedServiceCompany != null) {
             return cachedServiceCompany;
         } else {
@@ -154,8 +185,6 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
 
             ServiceCompanyDto serviceCompany = jdbcTemplate.queryForObject(sql, new ServiceCompanyDtoRowMapper());
             populateServiceCompany(serviceCompany);
-
-            serviceCompanyCache.put(serviceCompanyId, serviceCompany);
             return serviceCompany;
         }
     }
@@ -176,9 +205,13 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
 
     @Override
     public List<ServiceCompanyDto> getAllServiceCompaniesForEnergyCompanies(Set<Integer> energyCompanyIds) {
-        List<ServiceCompanyDto> cachedserviceCompanyDto = (List<ServiceCompanyDto>) serviceCompanyListCache.getAllPresent(energyCompanyIds);
-        if (!cachedserviceCompanyDto.isEmpty()) {
-            return cachedserviceCompanyDto;
+        List<ServiceCompanyDto> cachedCompany = new ArrayList<ServiceCompanyDto>();
+        
+        for (Integer ecids : energyCompanyIds) {
+            cachedCompany = serviceCompanyListCache.getIfPresent(ecids);
+        }
+        if (!cachedCompany.isEmpty()) {
+            return cachedCompany;
         } else {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.appendFragment(selectBase);
