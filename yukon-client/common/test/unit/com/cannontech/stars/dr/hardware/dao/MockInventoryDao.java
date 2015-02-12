@@ -205,4 +205,9 @@ public class MockInventoryDao implements InventoryDao {
         throw new MethodNotImplementedException();
     }
 
+    @Override
+    public int getInventoryIDForDevice(int deviceId) {
+        throw new MethodNotImplementedException();
+    }
+
 }
