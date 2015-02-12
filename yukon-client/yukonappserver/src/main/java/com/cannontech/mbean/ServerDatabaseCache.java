@@ -861,7 +861,11 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 allMcts = null;
                 allLoadManagement = null; // PAOGroups are here, oops!
                 
-                if (PaoType.getForDbString(dbChangeMsg.getObjectType()).hasMeterNumber()) {
+                PaoType paoType = PaoType.getForDbString(dbChangeMsg.getObjectType());
+                if(paoType.isPort()){
+                	allPorts = null;
+                }
+                if (paoType.hasMeterNumber()) {
                     handleMeterNumberChange(dbChangeType, id);
                 }
             } else if (dbCategory.equalsIgnoreCase(PaoCategory.LOADMANAGEMENT.getDbString())) {
