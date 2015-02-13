@@ -1,6 +1,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -54,10 +55,10 @@
                     <span class="empty-list"><i:inline key="yukon.common.none"/></span>
                 </c:if>
                 <c:if test="${not empty zone}">
-                    <cti:url var="${zoneUrl}" value="/capcontrol/ivvc/zone/detail">
+                    <cti:url var="zoneUrl" value="/capcontrol/ivvc/zone/detail">
                         <cti:param name="zoneId" value="${zone.id}" />
                     </cti:url>
-                    <a href="${zoneUrl}">${zone.name}</a>
+                    <a href="${zoneUrl}">${fn:escapeXml(zone.name)}</a>
                 </c:if>
             </tags:nameValue2>
             </cti:displayForPageEditModes>
@@ -104,7 +105,7 @@
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="VIEW">
                 <cti:url var="editUrl" value="/capcontrol/regulators/${regulator.id}/edit" />
-                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}" classes="action"/>
+                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="save" type="submit" classes="primary action"/>
@@ -117,7 +118,7 @@
                 <cti:button nameKey="delete" classes="delete js-delete" disabled="${disabled}" data-ok-event="yukon:da:regulator:delete" />
                 <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${regulator.name}"/>
                 <cti:url var="viewUrl" value="/capcontrol/regulators/${regulator.id}" />
-                <cti:button nameKey="cancel" href="${viewUrl}" classes="action"/>
+                <cti:button nameKey="cancel" href="${viewUrl}"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="CREATE">
                 <cti:button nameKey="cancel" href="javascript:window.history.back()"/>

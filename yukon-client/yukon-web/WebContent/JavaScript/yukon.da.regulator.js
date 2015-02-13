@@ -1,7 +1,7 @@
 yukon.namespace('yukon.da.regulator');
 
 /**
- * Singleton that manages the regulator edit page in capcontrol
+ * Module that manages the regulator edit page in capcontrol
  *
  * @requires JQUERY
  * @requires yukon
@@ -9,31 +9,41 @@ yukon.namespace('yukon.da.regulator');
 
 yukon.da.regulator = (function () {
 
+    /**
+     * Different regulator types (LTC, CL7) have different attributes.
+     * this method sets up the attributes table to display only the supported attributes
+     * and hides and disabled all the other inputs.
+     */
     var _showHideMappings = function (mappings) {
-        var table = $(document).find('.js-mappings-table');
-        var i, length;
+
+        var paoType = $('#regulator-type').val(),
+            mappings = _paoTypeMap[paoType],
+            table = $(document).find('.js-mappings-table');
         table.find('[data-mapping]').hide().find('input').prop('disabled', true);
-        for (i = 0, length = mappings.length; i < length; i += 1) {
+
+        for (var i = 0, length = mappings.length; i < length; i += 1) {
             table.find('[data-mapping="' + mappings[i] + '"]').show().find('input').prop('disabled', false);
         }
     },
 
-    _paoTypeMap = [],
-
-    _getMappings = function () {
-        var paoType = $('#regulator-type').val();
-        return _paoTypeMap[paoType];
-    };
+    /**
+     * Object mapping PaoTypes to supported attributes. ex:
+     * 
+     *  { PAO_TYPE_1: ['Attr1', 'Attr2'],
+     *    PAO_TYPE_2: ['Attr2', 'Attr3']
+     *  }
+     */
+    _paoTypeMap = {};
 
     var mod = {
 
             init : function () {
                 _paoTypeMap = $('[data-pao-type-map]').data('paoTypeMap');
 
-                _showHideMappings(_getMappings());
+                _showHideMappings();
 
                 $('#regulator-type').on('change', function () {
-                    _showHideMappings(_getMappings());
+                    _showHideMappings();
                 });
 
                 $(document).on('yukon:da:regulator:delete', function () {

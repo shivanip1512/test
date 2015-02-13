@@ -52,6 +52,14 @@ public class RegulatorController {
     @RequestMapping(value="{id}", method=RequestMethod.GET)
     public String view(ModelMap model, @PathVariable int id, YukonUserContext context) {
 
+        Regulator regulator = getRegulatorById(id);
+
+        model.addAttribute("mode",  PageEditMode.VIEW);
+        return setUpModelMap(model, regulator, context);
+    }
+
+    private Regulator getRegulatorById(int id) {
+
         PaoType type = dbCache.getAllPaosMap().get(id).getPaoType();
         VoltageRegulator voltageRegulator = new VoltageRegulator(type);
         voltageRegulator.setCapControlPAOID(id);
@@ -59,8 +67,7 @@ public class RegulatorController {
 
         Regulator regulator = Regulator.fromDbPersistent(voltageRegulator);
 
-        model.addAttribute("mode",  PageEditMode.VIEW);
-        return setUpModelMap(model, regulator, context);
+        return regulator;
     }
 
     private String setUpModelMap(ModelMap model, Regulator regulator, YukonUserContext context) {
@@ -99,12 +106,7 @@ public class RegulatorController {
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
     public String edit(ModelMap model, @PathVariable int id, YukonUserContext context) {
 
-        PaoType type = dbCache.getAllPaosMap().get(id).getPaoType();
-        VoltageRegulator voltageRegulator = new VoltageRegulator(type);
-        voltageRegulator.setCapControlPAOID(id);
-        voltageRegulator = (VoltageRegulator) dbPersistentDao.retrieveDBPersistent(voltageRegulator);
-
-        Regulator regulator = Regulator.fromDbPersistent(voltageRegulator);
+        Regulator regulator = getRegulatorById(id);
 
         model.addAttribute("mode",  PageEditMode.EDIT);
         return setUpModelMap(model, regulator, context);
