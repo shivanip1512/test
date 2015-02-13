@@ -27,7 +27,7 @@
             <c:set var="clazz" value="${page == 'buttons' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/buttons"/>">Buttons</a></li>
             <c:set var="clazz" value="${page == 'switches' ? 'selected' : ''}"/>
-            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/switches"/>">Switches / Radios</a></li>
+            <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/switches"/>">Switches</a></li>
             <c:set var="clazz" value="${page == 'alerts' ? 'selected' : ''}"/>
             <li class="${clazz}"><a href="<cti:url value="/dev/styleguide/alerts"/>">Alerts</a></li>
         </ul>
