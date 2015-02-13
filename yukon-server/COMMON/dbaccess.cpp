@@ -152,10 +152,9 @@ SAConnection* createDBConnection()
     }
     catch(...)
     {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Database connection unsuccessful");
         delete connection;
     }
-
-    CTILOG_ERROR(dout, "Database connection unsuccessful");
 
     return NULL;
 }
