@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd 
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd"
+	default-lazy-init="true">
+
+	<context:annotation-config/>
+
+	<!-- loadcontrol serializers -->
+
+	<bean id="messaging.thrift.load.CommandSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.CommandSerializer">
+		<constructor-arg value="LMCommand"/>
+		<constructor-arg ref="messaging.thrift.load.LmMessageSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.ControlAreaSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.ControlAreaSerializer">
+		<constructor-arg value="LMControlAreas"/>
+		<constructor-arg ref="messaging.thrift.load.LmMessageSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.CurtailmentAcknowledgeSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.CurtailmentAcknowledgeSerializer">
+		<constructor-arg value="LMCurtailmentAcknowledge"/>
+		<constructor-arg ref="messaging.thrift.load.LmMessageSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.EnergyExchangeAcceptSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.EnergyExchangeAcceptSerializer">
+		<constructor-arg value="LMEnergyExchangeAccept"/>
+		<constructor-arg ref="messaging.thrift.load.LmMessageSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.EnergyExchangeControlSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.EnergyExchangeControlSerializer">
+		<constructor-arg value="LMEnergyExchangeControl"/>
+		<constructor-arg ref="messaging.thrift.load.LmMessageSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.LmMessageSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.LmMessageSerializer">
+		<constructor-arg value="LMMessage"/>
+		<constructor-arg ref="messaging.thrift.BaseMessageSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.ManualControlRequestSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.ManualControlRequestSerializer">
+		<constructor-arg value="LMManualControlRequest"/>
+		<constructor-arg ref="messaging.thrift.load.LmMessageSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.ManualControlResponseSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.ManualControlResponseSerializer">
+		<constructor-arg value="LMManualControlResponse"/>
+		<constructor-arg ref="messaging.thrift.load.LmMessageSerializer"/>
+	</bean>
+
+
+	<!-- Data serializers -->
+
+	<bean id="messaging.thrift.load.CiCustomerBaseSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.CiCustomerBaseSerializer">
+		<constructor-arg value="LMCICustomerBase"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.ConstraintViolationSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.ConstraintViolationSerializer">
+		<constructor-arg value="LMConstraintViolation"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.ControlAreaItemSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.ControlAreaItemSerializer">
+		<constructor-arg value="LMControlAreaItem"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.ControlAreaTriggerItemSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.ControlAreaTriggerItemSerializer">
+		<constructor-arg value="LMControlAreaTrigger"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.CurtailCustomerSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.CurtailCustomerSerializer">
+		<constructor-arg value="LMCurtailCustomer"/>
+		<constructor-arg ref="messaging.thrift.load.CiCustomerBaseSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.DirectGroupBaseSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.DirectGroupBaseSerializer">
+		<constructor-arg value="LMGroupBase"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.EnergyExchangeCustomerReplySerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.EnergyExchangeCustomerReplySerializer">
+		<constructor-arg value="LMEnergyExchangeCustomerReply"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.EnergyExchangeCustomerSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.EnergyExchangeCustomerSerializer">
+		<constructor-arg value="LMEnergyExchangeCustomer"/>
+		<constructor-arg ref="messaging.thrift.load.CiCustomerBaseSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.EnergyExchangeHourlyCustomerSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.EnergyExchangeHourlyCustomerSerializer">
+		<constructor-arg value="LMEnergyExchangeHourlyCustomer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.EnergyExchangeHourlyOfferSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.EnergyExchangeHourlyOfferSerializer">
+		<constructor-arg value="LMEnergyExchangeHourlyOffer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.EnergyExchangeOfferRevisionSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.EnergyExchangeOfferRevisionSerializer">
+		<constructor-arg value="LMEnergyExchangeOfferRevision"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.EnergyExchangeOfferSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.EnergyExchangeOfferSerializer">
+		<constructor-arg value="LMEnergyExchangeOffer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.GroupDigiSepSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupDigiSepSerializer">
+		<constructor-arg value="LMGroupDigiSEP"/>
+		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+	</bean>
+    
+    <bean id="messaging.thrift.load.GroupEcobeeSerializer" parent="messaging.thrift.ISerializer"
+        class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupEcobeeSerializer">
+        <constructor-arg value="LMGroupEcobee"/>
+        <constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+    </bean>
+    
+	<bean id="messaging.thrift.load.GroupEmetconSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupEmetconSerializer">
+		<constructor-arg value="LMGroupEmetcon"/>
+		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.GroupExpresscomSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupExpresscomSerializer">
+		<constructor-arg value="LMGroupExpresscom"/>
+		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.GroupGolaySerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupGolaySerializer">
+		<constructor-arg value="LMGroupGolay"/>
+		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.GroupMCTSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupMCTSerializer">
+		<constructor-arg value="LMGroupMCT"/>
+		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.GroupPointSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupPointSerializer">
+		<constructor-arg value="LMGroupPoint"/>
+		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.GroupRippleSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupRippleSerializer">
+		<constructor-arg value="LMGroupRipple"/>
+		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.GroupSA105Serializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupSA105Serializer">
+		<constructor-arg value="LMGroupSA105"/>
+		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.GroupSA205Serializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupSA205Serializer">
+		<constructor-arg value="LMGroupSA205"/>
+		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.GroupSA305Serializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupSA305Serializer">
+		<constructor-arg value="LMGroupSA305"/>
+		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.GroupSADigitalSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupSADigitalSerializer">
+		<constructor-arg value="LMGroupSADigital"/>
+		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.GroupVersacomSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.GroupVersacomSerializer">
+		<constructor-arg value="LMGroupVersacom"/>
+		<constructor-arg ref="messaging.thrift.load.DirectGroupBaseSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.ProgramControlWindowSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.ProgramControlWindowSerializer">
+		<constructor-arg value="LMProgramControlWindow"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.ProgramCurtailmentSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.ProgramCurtailmentSerializer">
+		<constructor-arg value="LMProgramCurtailment"/>
+		<constructor-arg ref="messaging.thrift.load.ProgramSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.ProgramDirectGearSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.ProgramDirectGearSerializer">
+		<constructor-arg value="LMProgramDirectGear"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.ProgramDirectSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.ProgramDirectSerializer">
+		<constructor-arg value="LMProgramDirect"/>
+		<constructor-arg ref="messaging.thrift.load.ProgramSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.ProgramEnergyExchangeSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.ProgramEnergyExchangeSerializer">
+		<constructor-arg value="LMProgramEnergyExchange"/>
+		<constructor-arg ref="messaging.thrift.load.ProgramSerializer"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.ProgramSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.data.ProgramSerializer">
+		<constructor-arg value="LMProgramBase"/>
+	</bean>
+
+
+	<!-- Dynamic recieve serializers -->
+
+	<bean id="messaging.thrift.load.ControlAreaChangedSerializer"
+		parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.dynamic.receive.ControlAreaChangedSerializer">
+		<constructor-arg value="LMDynamicControlAreaData"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.GroupChangedSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.dynamic.receive.GroupChangedSerializer">
+		<constructor-arg value="LMDynamicGroupData"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.ProgramChangedSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.dynamic.receive.ProgramChangedSerializer">
+		<constructor-arg value="LMDynamicProgramData"/>
+	</bean>
+
+	<bean id="messaging.thrift.load.TriggerChangedSerializer" parent="messaging.thrift.ISerializer"
+		class="com.cannontech.messaging.serialization.thrift.serializer.loadcontrol.dynamic.receive.TriggerChangedSerializer">
+		<constructor-arg value="LMDynamicTriggerData"/>
+	</bean>
+
+
+	<!-- Serializer Lists -->
+
+	<bean id="messaging.thrift.LoadcontrolSerializerList" parent="messaging.thrift.CommonSerializerList"
+		class="org.springframework.beans.factory.config.ListFactoryBean">
+		<property name="sourceList">
+			<list merge="true">
+				<ref local="messaging.thrift.load.CommandSerializer"/>
+				<ref local="messaging.thrift.load.ControlAreaSerializer"/>
+				<ref local="messaging.thrift.load.CurtailmentAcknowledgeSerializer"/>				
+				<ref local="messaging.thrift.load.EnergyExchangeAcceptSerializer"/>
+				<ref local="messaging.thrift.load.EnergyExchangeControlSerializer"/>			
+				<ref local="messaging.thrift.load.LmMessageSerializer"/>
+				<ref local="messaging.thrift.load.ManualControlRequestSerializer"/>	
+				<ref local="messaging.thrift.load.ManualControlResponseSerializer"/>
+				
+				<ref local="messaging.thrift.load.CiCustomerBaseSerializer"/>
+				<ref local="messaging.thrift.load.ConstraintViolationSerializer"/>
+				<ref local="messaging.thrift.load.ControlAreaItemSerializer"/>
+				<ref local="messaging.thrift.load.ControlAreaTriggerItemSerializer"/>
+				<ref local="messaging.thrift.load.CurtailCustomerSerializer"/>
+				<ref local="messaging.thrift.load.DirectGroupBaseSerializer"/>				
+				<ref local="messaging.thrift.load.EnergyExchangeCustomerReplySerializer"/>				
+				<ref local="messaging.thrift.load.EnergyExchangeCustomerSerializer"/>
+				<ref local="messaging.thrift.load.EnergyExchangeHourlyCustomerSerializer"/>
+				<ref local="messaging.thrift.load.EnergyExchangeHourlyOfferSerializer"/>
+				<ref local="messaging.thrift.load.EnergyExchangeOfferRevisionSerializer"/>
+				<ref local="messaging.thrift.load.EnergyExchangeOfferSerializer"/>				
+				<ref local="messaging.thrift.load.GroupDigiSepSerializer"/>
+                <ref local="messaging.thrift.load.GroupEcobeeSerializer"/>
+				<ref local="messaging.thrift.load.GroupEmetconSerializer"/>
+				<ref local="messaging.thrift.load.GroupExpresscomSerializer"/>
+				<ref local="messaging.thrift.load.GroupGolaySerializer"/>
+				<ref local="messaging.thrift.load.GroupMCTSerializer"/>
+				<ref local="messaging.thrift.load.GroupPointSerializer"/>
+				<ref local="messaging.thrift.load.GroupRippleSerializer"/>
+				<ref local="messaging.thrift.load.GroupSA105Serializer"/>
+				<ref local="messaging.thrift.load.GroupSA205Serializer"/>
+				<ref local="messaging.thrift.load.GroupSA305Serializer"/>
+				<ref local="messaging.thrift.load.GroupSADigitalSerializer"/>				
+				<ref local="messaging.thrift.load.GroupVersacomSerializer"/>				
+				<ref local="messaging.thrift.load.ProgramControlWindowSerializer"/>
+				<ref local="messaging.thrift.load.ProgramCurtailmentSerializer"/>
+				<ref local="messaging.thrift.load.ProgramDirectGearSerializer"/>
+				<ref local="messaging.thrift.load.ProgramDirectSerializer"/>
+				<ref local="messaging.thrift.load.ProgramEnergyExchangeSerializer"/>
+				<ref local="messaging.thrift.load.ProgramSerializer"/>								
+				
+				<ref local="messaging.thrift.load.ControlAreaChangedSerializer"/>				
+				<ref local="messaging.thrift.load.GroupChangedSerializer"/>
+				<ref local="messaging.thrift.load.ProgramChangedSerializer"/>
+				<ref local="messaging.thrift.load.TriggerChangedSerializer"/>
+			</list>
+		</property>
+	</bean>
+
+
+	<!-- Message Factories -->
+
+	<bean id="messaging.thrift.LoadcontrolMessageFactory"
+		class="com.cannontech.messaging.serialization.thrift.ThriftMessageFactory">
+		<constructor-arg ref="messaging.thrift.LoadcontrolSerializerList"/>
+	</bean>
+
+	<bean id="messaging.loadcontrolConnectionFactory" parent="messaging.ParentConnectionFactory"
+		class="com.cannontech.messaging.util.impl.AmqConnectionFactory">
+		<constructor-arg ref="messaging.thrift.LoadcontrolMessageFactory"/>
+		<constructor-arg value="loadmanagement"/>
+	</bean>
+
+	<bean lazy-init="false"
+		class="com.cannontech.messaging.util.ConnectionFactoryService.ConnectionFactoryServiceInitializer">
+		<constructor-arg index="0"
+			ref="messaging.ConnectionFactoryService"/>
+		<constructor-arg index="1">
+			<map>
+				<entry key="LC">
+					<idref local="messaging.loadcontrolConnectionFactory"/>
+				</entry>
+			</map>
+		</constructor-arg>
+		<constructor-arg index="2">
+			<null/>
+		</constructor-arg>
+	</bean>
+	
+</beans>
