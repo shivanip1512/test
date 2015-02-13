@@ -32,15 +32,17 @@
 
 <cti:displayForPageEditModes modes="EDIT,CREATE">
     <c:set var="clazz" value="${inverse ? 'inverse' : ''}"/>
-    <label class="switch-btn ${clazz}" <c:if test="${not empty pageScope.classes}">classes="${classes}"</c:if>>
+    <label class="switch-btn ${clazz} ${pageScope.classes}">
         <c:choose>
             <c:when test="${not empty name}">
-                <input type="checkbox" name="${name}" id="${id}" class="switch-btn-checkbox" data-toggle="${pageScope.toggleGroup}" 
+                <input type="checkbox" name="${name}" id="${id}" class="switch-btn-checkbox" 
+                    data-toggle="${pageScope.toggleGroup}" 
                     <c:if test="${checked}">checked</c:if> 
                     <c:if test="${disabled}">disabled</c:if>>
             </c:when>
             <c:otherwise>
-                <form:checkbox path="${path}" id="${id}" cssClass="switch-btn-checkbox" data-toggle="${pageScope.toggleGroup}" 
+                <form:checkbox path="${path}" id="${id}" cssClass="switch-btn-checkbox" 
+                    data-toggle="${pageScope.toggleGroup}" 
                     disabled="${disabled}"/>
             </c:otherwise>
         </c:choose>

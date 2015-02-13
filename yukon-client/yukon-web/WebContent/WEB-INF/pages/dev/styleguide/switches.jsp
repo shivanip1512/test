@@ -213,5 +213,33 @@
     data-toggle-group=&quot;email-address&quot;&gt;
 </pre>
 
+<h2 id="radio-buttons-example">Radio Buttons</h2>
+
+<p class="description">
+    A set of radio buttons built with <span class="label label-attr">&lt;tags:radio&gt;</span>.
+</p>
+<div class="column-4-20 clearfix style-guide-example">
+    <div class="column one"><h4 class="subtle">Example:</h4></div>
+    <div class="column two nogutter">
+        <tags:radio name="pet" value="cats" classes="left" checked="true">Cats</tags:radio>
+        <tags:radio name="pet" value="dogs" classes="right">Dogs</tags:radio>
+        
+        <tags:radio name="vehicle" value="red" classes="left">Train</tags:radio>
+        <tags:radio name="vehicle" value="red" classes="middle" checked="true">Car</tags:radio>
+        <tags:radio name="vehicle" value="red" classes="middle" disabled="true">JetSki</tags:radio>
+        <tags:radio name="vehicle" value="red" classes="right">Airplane</tags:radio>
+    </div>
+</div>
+<h4 class="subtle">Code:</h4>
+<pre class="code prettyprint">
+&lt;tags:radio name=&quot;pet&quot; value=&quot;cats&quot; classes=&quot;left&quot; checked=&quot;true&quot;&gt;Cats&lt;/tags:radio&gt;
+&lt;tags:radio name=&quot;pet&quot; value=&quot;dogs&quot; classes=&quot;right&quot;&gt;Dogs&lt;/tags:radio&gt;
+
+&lt;tags:radio name=&quot;vehicle&quot; value=&quot;red&quot; classes=&quot;left&quot;&gt;Train&lt;/tags:radio&gt;
+&lt;tags:radio name=&quot;vehicle&quot; value=&quot;red&quot; classes=&quot;middle&quot; checked=&quot;true&quot;&gt;Car&lt;/tags:radio&gt;
+&lt;tags:radio name=&quot;vehicle&quot; value=&quot;red&quot; classes=&quot;middle&quot; disabled=&quot;true&quot;&gt;JetSki&lt;/tags:radio&gt;
+&lt;tags:radio name=&quot;vehicle&quot; value=&quot;red&quot; classes=&quot;right&quot;&gt;Airplane&lt;/tags:radio&gt;
+</pre>
+
 </tags:styleguide>
 </cti:standardPage>

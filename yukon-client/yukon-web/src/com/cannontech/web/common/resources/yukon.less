@@ -294,6 +294,26 @@ input[type=radio] {
     opacity: .5;
 }
 
+/** Styles for the custom radio button component **/
+.radio-btn input[type=radio] {
+    border: 0;
+    clip: rect(0 0 0 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
+.radio-btn input:checked ~ .button {
+    border-color: #bbb;
+    box-shadow: inset 0 0 10px #bbb !important;
+}
+.radio-btn input:disabled ~ .button {
+    cursor: default;
+    opacity: .5;
+}
+
 /* VERTICAL MENUS */
 #LeftColumn .info-fragment, #LeftColumn .bumper {border-right: 1px solid #ccc;}
 #LeftColumn .bumper {min-height: 120px;}
