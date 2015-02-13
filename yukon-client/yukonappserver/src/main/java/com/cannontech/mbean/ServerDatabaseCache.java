@@ -862,6 +862,15 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
                 allLoadManagement = null; // PAOGroups are here, oops!
                 
                 PaoType paoType = PaoType.getForDbString(dbChangeMsg.getObjectType());
+                
+				/*
+				 * This is special case for the RF-DA/RFN-1200 device.
+				 * 
+				 * This oddball device-is-a-port scheme will probably be
+				 * replaced with something more akin to the way the RfnAddress
+				 * table is attached to RF meters, so at this point this port check
+				 * can be removed.
+				 */
                 if(paoType.isPort()){
                 	allPorts = null;
                 }
