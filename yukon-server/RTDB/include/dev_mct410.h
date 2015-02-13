@@ -70,7 +70,7 @@ protected:
 
             unsigned channel;
 
-            volatile long in_progress;
+            std::atomic<bool> in_progress = false;
             int multi_day_retries;
 
             int user_id;

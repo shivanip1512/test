@@ -18,7 +18,7 @@ public:
     int                 _attempt_num;          // Number of tries on this particular route. A zero or one have the same effect.
     long                _group_message_id;     // A number which will be echo'd back in any CtiReturnMsg caused by this CtiRequestMsg
     long                _user_message_id;      // A number which will be echo'd back in any CtiReturnMsg caused by this CtiRequestMsg
-    int                 _options_field;        // Options specific to the message.  One such is a "NO STATS' flag telling the bg to not process statistics on the request.
+    long                _options_field;        // Options specific to the message.  One such is a "NO STATS' flag telling the bg to not process statistics on the request.
 
 public:
 
@@ -33,7 +33,7 @@ public:
                   long route_id        = 0L,
                   Cti::MacroOffset macro_offset = Cti::MacroOffset::none,
                   int  attempt_num     = 0,
-                  int  options_field   = 0,
+                  long options_field   = 0,
                   int  priority_base   = 7);
 
     CtiRequestMsg(const CtiRequestMsg &aRef);
@@ -62,8 +62,8 @@ public:
     long UserMessageId() const;
     CtiRequestMsg& setUserMessageId(long user_message_id );
 
-    int OptionsField() const;
-    CtiRequestMsg& setOptionsField(int options_field);
+    long OptionsField() const;
+    void setOptionsField(long options_field);
 
     virtual std::string toString() const override;
 };

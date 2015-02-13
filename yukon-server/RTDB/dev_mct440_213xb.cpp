@@ -587,9 +587,11 @@ YukonError_t Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
                                                                 /* ---------------- DAILY READ RECENT ----------------- */
     else if( parse.isKeyValid("daily_read") )
     {
+        bool existing_request = false;
+
         //  if a request is already in progress and we're not submitting a continuation/retry
-        if( InterlockedCompareExchange( &_daily_read_info.request.in_progress, true, false) &&
-            _daily_read_info.request.user_id != pReq->UserMessageId() )
+        if( ! _daily_read_info.request.in_progress.compare_exchange_strong(existing_request, true)
+            && _daily_read_info.request.user_id != pReq->UserMessageId() )
         {
             string temp = getName() + " / Daily read request already in progress\n";
 
@@ -685,7 +687,7 @@ YukonError_t Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 
             if( !found )
             {
-                InterlockedExchange(&_daily_read_info.request.in_progress, false);
+                _daily_read_info.request.in_progress = false;
             }
             else
             {
@@ -1931,7 +1933,7 @@ YukonError_t Mct440_213xBDevice::decodeGetValueDailyReadRecent(const INMESS    &
                                   TAG_POINT_MUST_ARCHIVE);
         }
 
-        InterlockedExchange(&_daily_read_info.request.in_progress, false);
+        _daily_read_info.request.in_progress = false;
     }
 
     //  this is gross

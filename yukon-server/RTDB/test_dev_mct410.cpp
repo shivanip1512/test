@@ -1041,6 +1041,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
+            BOOST_REQUIRE( om );
+
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
@@ -1077,7 +1079,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             CtiMultiMsg_vec points = retMsg->PointData();
 
             {
-                BOOST_CHECK_EQUAL( points.size(), 6 );
+                BOOST_REQUIRE_EQUAL( points.size(), 6 );
 
                 const CtiDate Midnight(timenow);
 
@@ -1150,6 +1152,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
             BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_REQUIRE( om );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1263,6 +1267,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
+            BOOST_REQUIRE( om );
+
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
@@ -1375,6 +1381,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
+            BOOST_REQUIRE( om );
+
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
@@ -1486,6 +1494,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
+            BOOST_REQUIRE( om );
+
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
@@ -1587,6 +1597,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
             BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_REQUIRE( om );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
@@ -1690,6 +1702,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
+            BOOST_REQUIRE( om );
+
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
@@ -1774,6 +1788,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
+            BOOST_REQUIRE( om );
+
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
@@ -1841,6 +1857,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
 
             BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
 
+            BOOST_REQUIRE( om );
+
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13);
@@ -1905,6 +1923,8 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
             CtiCommandParser parse( "getvalue daily reads" );  //  most recent 6 daily reads
 
             BOOST_CHECK_EQUAL( ClientErrors::None , mct410.executeGetValue(&request, parse, om, vgList, retList, outList) );
+
+            BOOST_REQUIRE( om );
 
             BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Function_Read);
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x20);

@@ -73,7 +73,9 @@ bool Mct4xxDevice::llp_peak_report_interest_t::tryContinueRequest(long &incoming
     //  Existing in-progress request
     if( incoming_request % 2 )
     {
-        if( InterlockedCompareExchange(&request_state, incoming_request + 2, incoming_request) == incoming_request )
+        long potential_request = incoming_request;
+
+        if( request_state.compare_exchange_strong(potential_request, incoming_request + 2) )
         {
             incoming_request += 2;
 
@@ -88,13 +90,13 @@ bool Mct4xxDevice::llp_peak_report_interest_t::tryBeginRequest(long &incoming_re
 {
     if( ! incoming_request )
     {
-        const long original_request = InterlockedCompareExchange(&request_state, 0, 0);
+        long original_request = request_state;
 
         //  The low bit means "locked"
         //  No existing in-progress request
         if( ! (original_request % 2) )
         {
-            if( InterlockedCompareExchange(&request_state, original_request + 1, original_request) == original_request )
+            if( request_state.compare_exchange_strong(original_request, original_request + 1) )
             {
                 incoming_request = original_request + 1;
 
@@ -109,12 +111,12 @@ bool Mct4xxDevice::llp_peak_report_interest_t::tryBeginRequest(long &incoming_re
 }
 
 
-bool Mct4xxDevice::llp_peak_report_interest_t::tryEndRequest(const long request)
+bool Mct4xxDevice::llp_peak_report_interest_t::tryEndRequest(long request)
 {
     //  The low bit means "locked"
     if( request % 2)
     {
-        if( InterlockedCompareExchange(&request_state, request + 1, request) == request )
+        if( request_state.compare_exchange_strong(request, request + 1) )
         {
             end_date = DawnOfTime_Date;
 
@@ -134,14 +136,12 @@ Mct4xxDevice::Mct4xxDevice()
     _llpRequest.begin      = 0;
     _llpRequest.end        = 0;
     _llpRequest.channel    = 0;
-    _llpRequest.request_id = 0;
     _llpRequest.retry      = 0;
     _llpRequest.failed     = false;
 
     _llpPeakInterest.channel  = 0;
     _llpPeakInterest.range    = 0;
     _llpPeakInterest.end_date = DawnOfTime_Date;
-    _llpPeakInterest.request_state = 0;
 
     for( int i = 0; i < LPChannels; i++ )
     {
@@ -337,7 +337,7 @@ Mct4xxDevice::point_info Mct4xxDevice::getData( const unsigned char *buf, const 
 {
     unsigned long error_code = 0xffffffff;  //  filled with 0xff because some data types are less than 32 bits
 
-    __int64 value = 0;
+    long long value = 0;
     point_info  retval;
 
     for( int i = 0; i < len; i++ )
@@ -449,7 +449,7 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
         }
         else if( cmd == "cancel" )
         {
-            bool cancelled = InterlockedExchange(&_llpRequest.request_id, 0);
+            bool cancelled = _llpRequest.request_id.exchange(0);
 
             //  clear out the request times so we don't restart this request on startup
             _llpRequest.end = 0;
@@ -611,15 +611,15 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
 
                         while( !candidate_id )
                         {
-                            candidate_id = InterlockedIncrement(&_llpRequest.candidate_request_id);
+                            candidate_id = ++_llpRequest.candidate_request_id;
                         }
 
-                        const long requestId = InterlockedCompareExchange(&_llpRequest.request_id, candidate_id, pReq->OptionsField());
+                        long existing_id = pReq->OptionsField();
 
                         //  _llpRequest.request_id will be 0 if there is no command in progress, and OptionsField will be 0 if it is the first message
-                        if( requestId != pReq->OptionsField() )
+                        if( ! _llpRequest.request_id.compare_exchange_strong(existing_id, candidate_id) )
                         {
-                            if( requestId )
+                            if( existing_id )
                             {
                                 std::string temp = "Long load profile request already in progress - use \"getvalue lp cancel\" to cancel\n";
                                 temp += "Requested channel: " + CtiNumStr(_llpRequest.channel + 1) + "\n";
@@ -758,11 +758,11 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                                 nRet  = ExecutionComplete;
 
                                 //  reset, we're not executing any more
-                                InterlockedCompareExchange(&_llpRequest.request_id, 0, candidate_id);
+                                _llpRequest.request_id.compare_exchange_strong(candidate_id, 0);
                             }
                             else
                             {
-                                if( ! requestId )
+                                if( ! existing_id )
                                 {
                                     //  reset the failure indicator, this is the initial request
                                     _llpRequest.failed = false;
@@ -860,7 +860,7 @@ YukonError_t Mct4xxDevice::executeGetValue(CtiRequestMsg *pReq,  CtiCommandParse
                                     _llpRequest.failed = true;
 
                                     //  reset, we're not executing any more
-                                    InterlockedCompareExchange(&_llpRequest.request_id, 0, candidate_id);
+                                    _llpRequest.request_id.compare_exchange_strong(candidate_id, 0);
 
                                     nRet = ExecutionComplete;
                                     found = false;
@@ -1609,10 +1609,13 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
 
         const int interval_len = getLoadProfileInterval(request_channel - 1);
 
+        long existing_id = InMessage.Return.OptionsField;
+
         // Only do things if our interval length is valid!
         if( interval_len <= 0 )
         {
-            InterlockedExchange(&_llpRequest.request_id, 0); // Reset this guy, there's no lp request active.
+            //  reset, we're not executing any more
+            _llpRequest.request_id.compare_exchange_strong(existing_id, 0);
 
             string temp =
                 getName() + " / Load profile request status: \n"
@@ -1625,7 +1628,8 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
         }
         else if( ! is_valid_time(interest_time) )
         {
-            InterlockedExchange(&_llpRequest.request_id, 0); // Reset this guy, there's no lp request active.
+            //  reset, we're not executing any more
+            _llpRequest.request_id.compare_exchange_strong(existing_id, 0);
 
             string temp = "Bad start time \"" + parse.getsValue("llp interest date") + " " + parse.getsValue("llp interest time") + "\"";
 
@@ -1635,7 +1639,8 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
         }
         else if( !request_channel || request_channel > LPChannels )
         {
-            InterlockedExchange(&_llpRequest.request_id, 0); // Reset this guy, there's no lp request active.
+            //  reset, we're not executing any more
+            _llpRequest.request_id.compare_exchange_strong(existing_id, 0);
 
             returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList, "Bad channel \"" + CtiNumStr(request_channel) + "\"");
 
@@ -2618,8 +2623,10 @@ YukonError_t Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, co
 
         status = ClientErrors::MissingConfig;
 
+        long existing_id = InMessage.Return.OptionsField;
+
         //  reset, we're not executing any more
-        InterlockedCompareExchange(&_llpRequest.request_id, 0, InMessage.Return.OptionsField);
+        _llpRequest.request_id.compare_exchange_strong(existing_id, 0);
     }
     else if( crc8(interest, 5) == DSt->Message[0] )
     {
@@ -2670,8 +2677,10 @@ YukonError_t Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, co
         {
             resultString = "Load profile request complete\n";
 
+            long existing_id = InMessage.Return.OptionsField;
+
             //  reset, we're not executing any more
-            if( InMessage.Return.OptionsField == InterlockedCompareExchange(&_llpRequest.request_id, 0, InMessage.Return.OptionsField) )
+            if( _llpRequest.request_id.compare_exchange_strong(existing_id, 0) )
             {
                 purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestBegin);
                 purgeDynamicPaoInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_RequestEnd);
@@ -2714,8 +2723,10 @@ YukonError_t Mct4xxDevice::decodeGetValueLoadProfile(const INMESS &InMessage, co
         {
             resultString += " - try message again";
 
+            long existing_id = InMessage.Return.OptionsField;
+
             //  reset, we're not executing any more
-            if( InMessage.Return.OptionsField == InterlockedCompareExchange(&_llpRequest.request_id, 0, InMessage.Return.OptionsField) )
+            if( _llpRequest.request_id.compare_exchange_strong(existing_id, 0) )
             {
                 //  reset our internal time of interest - it didn't match, so we'll have to send it again
                 _llpInterest.time = 0;
@@ -3391,8 +3402,10 @@ YukonError_t Mct4xxDevice::SubmitRetry(const INMESS &InMessage, const CtiTime Ti
             }
             else
             {
+                long existing_id = InMessage.Return.OptionsField;
+
                 //  reset, we're not executing any more
-                if( InMessage.Return.OptionsField == InterlockedCompareExchange(&_llpRequest.request_id, 0, InMessage.Return.OptionsField) )
+                if( _llpRequest.request_id.compare_exchange_strong(existing_id, 0) )
                 {
                     _llpRequest.failed = true;
                 }

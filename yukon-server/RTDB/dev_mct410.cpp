@@ -269,7 +269,7 @@ Mct4xxDevice::point_info Mct410Device::getData(const unsigned char *buf, const u
     unsigned char error_byte, value_byte;
 
     string description;
-    __int64 value = 0;
+    long long value = 0;
     point_info  retval;
 
     for( int i = 0; i < len; i++ )
@@ -963,12 +963,12 @@ YukonError_t Mct410Device::SubmitRetry(const INMESS &InMessage, const CtiTime Ti
                                                               InMessage.Return.UserID,
                                                               InMessage.Return.SOE));
 
-                    InterlockedExchange(&_daily_read_info.request.in_progress, false);
+                    _daily_read_info.request.in_progress = false;
                 }
             }
             else
             {
-                InterlockedExchange(&_daily_read_info.request.in_progress, false);
+                _daily_read_info.request.in_progress = false;
             }
 
             break;
@@ -2072,6 +2072,8 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
     }
     else if( parse.isKeyValid(str_daily_read) )
     {
+        bool existing_request = false;
+
         if( parse.isKeyValid("daily_read_cancel") )
         {
             std::auto_ptr<CtiReturnMsg> ReturnMsg(
@@ -2079,7 +2081,7 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 
             ReturnMsg->setUserMessageId(OutMessage->Request.UserID);
 
-            if( InterlockedExchange( &_daily_read_info.request.in_progress, false) )
+            if( _daily_read_info.request.in_progress.exchange(false) )
             {
                 ReturnMsg->setResultString(getName() + " / Daily read request cancelled\n");
             }
@@ -2096,7 +2098,7 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
             return ClientErrors::None;
         }
         //  if a request is already in progress and we're not submitting a continuation/retry
-        else if( InterlockedCompareExchange( &_daily_read_info.request.in_progress, true, false)
+        else if( ! _daily_read_info.request.in_progress.compare_exchange_strong(existing_request, true)
                  && _daily_read_info.request.user_id != pReq->UserMessageId() )
         {
             string temp = getName() + " / Daily read request already in progress\n";
@@ -2272,7 +2274,7 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 
             if( !found )
             {
-                InterlockedExchange(&_daily_read_info.request.in_progress, false);
+                _daily_read_info.request.in_progress = false;
             }
             else
             {
@@ -3376,8 +3378,7 @@ YukonError_t Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, cons
 
         if( _daily_read_info.request.type == daily_read_info_t::Request_MultiDay )
         {
-            if( ! InterlockedCompareExchange(&_daily_read_info.request.in_progress, false, false)
-                || _daily_read_info.request.user_id != InMessage.Return.UserID )
+            if( ! _daily_read_info.request.in_progress || _daily_read_info.request.user_id != InMessage.Return.UserID )
             {
                 resultString = getName() + " / Daily read request cancelled\n";
             }
@@ -3510,7 +3511,7 @@ YukonError_t Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, cons
                     {
                         resultString += "Multi-day daily read request complete\n";
 
-                        InterlockedExchange(&_daily_read_info.request.in_progress, false);
+                        _daily_read_info.request.in_progress = false;
                     }
                 }
             }
@@ -3661,7 +3662,7 @@ YukonError_t Mct410Device::decodeGetValueDailyRead(const INMESS &InMessage, cons
                                           peak, demand_pointname,  CtiTime(_daily_read_info.request.begin) + (time_peak * 60));
                 }
 
-                InterlockedExchange(&_daily_read_info.request.in_progress, false);
+                _daily_read_info.request.in_progress = false;
             }
         }
     }

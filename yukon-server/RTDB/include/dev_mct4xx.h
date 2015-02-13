@@ -9,6 +9,7 @@
 #include "ctidate.h"
 
 #include <vector>
+#include <atomic>
 
 namespace Cti {
 namespace Devices {
@@ -205,8 +206,8 @@ protected:
 
         unsigned channel;
 
-        volatile long candidate_request_id;
-        volatile long request_id;
+        std::atomic<long> candidate_request_id = 0;
+        std::atomic<long> request_id = 0;
 
         unsigned retry;
         bool failed;
@@ -215,16 +216,16 @@ protected:
 
     struct llp_peak_report_interest_t
     {
-        long request_state;
+        std::atomic<long> request_state = 0;
         CtiDate end_date;
         unsigned short range      : 10;
         unsigned short channel    :  2;
         unsigned short no_overlap :  1;
         unsigned char peak_type;
 
-        bool tryBeginRequest(long &request);
+        bool tryBeginRequest   (long &request);
         bool tryContinueRequest(long &request);
-        bool tryEndRequest(const long request);
+        bool tryEndRequest     (long request);
 
     } _llpPeakInterest;
 

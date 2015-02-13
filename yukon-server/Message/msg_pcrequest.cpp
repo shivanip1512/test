@@ -85,15 +85,14 @@ CtiRequestMsg& CtiRequestMsg::setUserMessageId(long user_message_id )
     return *this;
 }
 
-int CtiRequestMsg::OptionsField() const
+long CtiRequestMsg::OptionsField() const
 {
     return _options_field;
 }
 
-CtiRequestMsg& CtiRequestMsg::setOptionsField(int options_field)
+void CtiRequestMsg::setOptionsField(long options_field)
 {
     _options_field = options_field;
-    return *this;
 }
 
 // Return a new'ed copy of this message!
@@ -140,7 +139,7 @@ CtiRequestMsg::CtiRequestMsg(long device_id,
                long route_id,
                Cti::MacroOffset macro_offset,
                int attempt_num,
-               int options_field,
+               long options_field,
                int priority_base) :
  _device_id(device_id),
  _command_string(command_string),
