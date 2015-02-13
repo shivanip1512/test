@@ -2,7 +2,6 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -204,12 +203,9 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
 
     @Override
     public List<ServiceCompanyDto> getAllServiceCompaniesForEnergyCompanies(Set<Integer> energyCompanyIds) {
-        List<ServiceCompanyDto> cachedCompany = new ArrayList<ServiceCompanyDto>();
+        List<ServiceCompanyDto> cachedCompany = serviceCompanyListCache.getIfPresent(energyCompanyIds);
         
-        for (Integer ecids : energyCompanyIds) {
-            cachedCompany = serviceCompanyListCache.getIfPresent(ecids);
-        }
-        if (!cachedCompany.isEmpty()) {
+        if (cachedCompany != null) {
             return cachedCompany;
         } else {
             SqlStatementBuilder sql = new SqlStatementBuilder();
