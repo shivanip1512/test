@@ -17,8 +17,6 @@ namespace Cti {
 class StreamSocketConnection;
 }
 
-extern LONG gOutMessageCounter;
-
 IM_EX_CTIBASE void incrementCount();
 IM_EX_CTIBASE void decrementCount();
 IM_EX_CTIBASE LONG OutMessageCount();

@@ -4,7 +4,8 @@
 #include "dlldefs.h"
 #include <wininet.h>
 #include "fdrinterface.h"
-#include "atomic.h"
+
+#include <atomic>
 
 
 class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
@@ -95,5 +96,5 @@ class IM_EX_FDRBASE CtiFDRFtpInterface : public CtiFDRInterface
         std::string      iLocalFileName;
         std::string      iFTPDirectory;
 
-        Cti::Atomic<bool>   threadOperationSuccess;
+        std::atomic<bool>   threadOperationSuccess = false;
 };

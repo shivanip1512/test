@@ -4,10 +4,12 @@
 #include "amq_constants.h"
 #include "amq_util.h"
 
+#include <atomic>
+
 using namespace std;
 using namespace Cti::Messaging::ActiveMQ;
 
-volatile long CtiServerConnection::_serverConnectionCount = 0;
+static std::atomic<long> serverConnectionCount = 0;
 
 /**
  * class constructor
@@ -18,7 +20,7 @@ volatile long CtiServerConnection::_serverConnectionCount = 0;
 CtiServerConnection::CtiServerConnection( const CtiListenerConnection &listenerConnection,
                                           Que_t *inQ,
                                           int termSeconds ) :
-    CtiConnection( string( "Server Connection " ) + CtiNumStr( InterlockedIncrement( &_serverConnectionCount )), inQ, termSeconds ),
+    CtiConnection( "Server Connection " + std::to_string(++serverConnectionCount), inQ, termSeconds ),
     _replyDest( listenerConnection.getClientReplyDest() )
 {
     setName( listenerConnection.getServerQueueName() );

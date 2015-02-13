@@ -7,6 +7,7 @@
 #include <cms/StreamMessage.h>
 
 #include <ctime>
+#include <atomic>
 
 using namespace std;
 
@@ -15,7 +16,7 @@ namespace Messaging {
 namespace Rfn {
 
 static unsigned int MessageIdCounter = 0;
-static volatile LONG GlobalMessageId = std::time(0);
+static std::atomic<long> GlobalMessageId = std::time(0);
 
 const string RfnBroadcastMessage::RfnMessageClass::DemandResponse= "DR";
 const string RfnBroadcastMessage::RfnMessageClass::none = "NONE";
@@ -27,7 +28,7 @@ messagePriority(0)
 
 void RfnBroadcastMessage::streamInto(cms::StreamMessage &message) const
 {
-    __int64 milliseconds = (__int64)expirationDuration * 1000;
+    long long milliseconds = (long long)expirationDuration * 1000;
 
     message.writeShort  (messageId);
     message.writeInt    (messagePriority);
@@ -46,7 +47,7 @@ std::auto_ptr<const RfnBroadcastMessage> RfnBroadcastMessage::createMessage( int
 
     // This value is global and shared amongst all RFNBroadcastMessage's. If it needs to be shared with other message types in the future
     // this code will not be sufficient. Currently Java uses all negative values of short and C++ uses all positive values of short
-    retVal->messageId = ((short) InterlockedIncrement(&GlobalMessageId)) & 0x7FFF;
+    retVal->messageId = ++GlobalMessageId & 0x7FFF;
 
     retVal->messagePriority = messagePriority;
     retVal->rfnMessageClass = rfnMessageClass;

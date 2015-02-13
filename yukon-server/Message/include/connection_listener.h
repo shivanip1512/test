@@ -27,8 +27,6 @@ class IM_EX_MSG CtiListenerConnection : public Cti::Messaging::BaseConnection
     bool _closed;
     bool _valid;
 
-    static volatile long _listenerConnectionCount;
-
     const std::string _title;
 
     void releaseResources();

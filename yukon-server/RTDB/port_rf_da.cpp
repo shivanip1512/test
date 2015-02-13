@@ -54,12 +54,12 @@ void RfDaPort::DecodeDatabaseReader(Cti::RowReader &rdr)
 }
 
 
-static long RfDaConcurrentRequests = 0;
+static std::atomic<long> RfDaConcurrentRequests = 0;
 
 
 void RfDaPort::incQueueSubmittal()
 {
-    InterlockedIncrement(&RfDaConcurrentRequests);
+    ++RfDaConcurrentRequests;
 
     CtiPort::incQueueSubmittal();
 }
@@ -67,7 +67,7 @@ void RfDaPort::incQueueSubmittal()
 
 void RfDaPort::incQueueProcessed()
 {
-    InterlockedDecrement(&RfDaConcurrentRequests);
+    --RfDaConcurrentRequests;
 
     CtiPort::incQueueProcessed();
 }
@@ -75,7 +75,7 @@ void RfDaPort::incQueueProcessed()
 
 unsigned RfDaPort::concurrentRequests() const
 {
-    return InterlockedCompareExchange(&RfDaConcurrentRequests, 0, 0);
+    return RfDaConcurrentRequests;
 }
 
 

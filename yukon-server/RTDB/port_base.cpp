@@ -427,7 +427,7 @@ YukonError_t CtiPort::outInMess(CtiXfer& Xfer, CtiDeviceSPtr Dev, list< CtiMessa
 
 namespace {
 
-Cti::Atomic<unsigned> portCount;
+std::atomic<long> portCount = 0;
 
 }
 
@@ -455,7 +455,7 @@ _sharingToggle(false),
 _communicating(false),
 _executing(false),
 _entryMsecTime(0),
-_portLogManager("port" + CtiNumStr(++portCount))
+_portLogManager("port" + std::to_string(++portCount))
 {
     _postEvent = CreateEvent( NULL, TRUE, FALSE, NULL);
 

@@ -6,14 +6,14 @@
 #include "exception_helper.h"
 #include "boostutil.h"
 #include "critical_section.h"
-#include "atomic.h"
 
+#include <boost/scoped_ptr.hpp>
+#include <boost/shared_ptr.hpp>
+#include <boost/preprocessor/variadic/size.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
+
+#include <atomic>
 #include <string>
-
-#include "boost/scoped_ptr.hpp"
-#include "boost/shared_ptr.hpp"
-#include "boost/preprocessor/variadic/size.hpp"
-#include "boost/ptr_container/ptr_vector.hpp"
 
 namespace Cti {
 namespace Logging {
@@ -41,7 +41,7 @@ class IM_EX_CTIBASE Logger : private boost::noncopyable
 
     const char * const _newline;
 
-    Atomic<bool> _ready;
+    std::atomic<bool> _ready = false;
 
     Logger (const std::string &loggerName, const Indents indentStyle);
 

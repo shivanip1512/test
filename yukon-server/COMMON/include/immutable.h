@@ -1,12 +1,13 @@
 #pragma once
 
-#include "atomic.h"
 #include "critical_section.h"
 #include "guard.h"
 
 #include "boost/shared_ptr.hpp"
 #include "boost/scoped_ptr.hpp"
 #include "boost/ptr_container/ptr_deque.hpp"
+
+#include <atomic>
 
 namespace Cti {
 
@@ -15,10 +16,10 @@ class Immutable
 {
     typedef boost::shared_ptr<const T> SharedPtr;
 
-    Atomic<SharedPtr*> _content;
+    std::atomic<SharedPtr*> _content;
 
-    mutable Atomic<unsigned>             _readers;
-    mutable Atomic<bool>                 _needsCleanup;
+    mutable std::atomic<long>            _readers = 0;
+    mutable std::atomic<bool>            _needsCleanup = false;
     mutable boost::ptr_deque<SharedPtr>  _cleanupList;
     mutable CtiCriticalSection           _mux;
 
@@ -134,5 +135,5 @@ void swap(Cti::Immutable<T>& rhs, Cti::Immutable<T>& lhs)
 {
     rhs.swap(lhs);
 }
-    
+
 } // namespace std

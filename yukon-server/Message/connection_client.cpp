@@ -7,6 +7,8 @@
 
 #include <activemq/core/ActiveMQConnection.h>
 
+#include <atomic>
+
 using namespace std;
 using namespace Cti::Messaging::ActiveMQ;
 
@@ -36,7 +38,7 @@ struct InsideScope
 } // anonymous
 
 
-volatile long CtiClientConnection::_clientConnectionCount = 0;
+static std::atomic<long> clientConnectionCount = 0;
 
 /**
  * class constructor
@@ -47,7 +49,7 @@ volatile long CtiClientConnection::_clientConnectionCount = 0;
 CtiClientConnection::CtiClientConnection( const string &serverQueueName,
                                           Que_t *inQ,
                                           int termSeconds ) :
-    CtiConnection( string( "Client Connection " ) + CtiNumStr( InterlockedIncrement( &_clientConnectionCount )), inQ, termSeconds ),
+    CtiConnection( "Client Connection " + std::to_string(++clientConnectionCount), inQ, termSeconds ),
     _serverQueueName( serverQueueName ),
     _canAbortConn( false )
 {

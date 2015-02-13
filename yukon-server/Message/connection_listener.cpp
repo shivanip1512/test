@@ -10,10 +10,12 @@ using namespace std;
 
 #include <activemq/core/ActiveMQConnection.h>
 
+#include <atomic>
+
 using namespace Cti::Messaging::ActiveMQ;
 
 
-volatile long CtiListenerConnection::_listenerConnectionCount = 0;
+static std::atomic<long> listenerConnectionCount = 0;
 
 /**
  * class constructor
@@ -23,7 +25,7 @@ CtiListenerConnection::CtiListenerConnection( const string &serverQueueName ) :
     _closed( false ),
     _valid( false ),
     _serverQueueName( serverQueueName ),
-    _title( "Listener Connection " + CtiNumStr( InterlockedIncrement( &_listenerConnectionCount )))
+    _title( "Listener Connection " + std::to_string(++listenerConnectionCount) )
 {
 }
 

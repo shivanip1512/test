@@ -137,11 +137,11 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
                     msg,
                     log4cxx::spi::LocationInfo(file, methodName, line));
 
-    if( !_ready )
+    if( ! _ready )
     {
         CtiLockGuard<CtiCriticalSection> guard(_preBufferMux);
 
-        if( !_ready )
+        if( ! _ready )
         {
             if( _logger->_logger->getAllAppenders().empty() )
             {

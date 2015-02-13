@@ -35,7 +35,7 @@ namespace Porter {
 
 namespace
 {
-Cti::Atomic<unsigned long> portHandlerCount;
+std::atomic<long> portHandlerCount = 0;
 }
 
 UnsolicitedMessenger UnsolicitedPortsQueue;
@@ -45,7 +45,7 @@ UnsolicitedHandler::UnsolicitedHandler(CtiPortSPtr &port, CtiDeviceManager &devi
     _port(port),
     _deviceManager(deviceManager),
     _shutdown(false),
-    _portLogManager("porthandler" + CtiNumStr(++portHandlerCount))
+    _portLogManager("porthandler" + std::to_string(++portHandlerCount))
 {
     _portLog = _portLogManager.getLogger();
 

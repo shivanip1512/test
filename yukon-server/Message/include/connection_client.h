@@ -25,8 +25,6 @@ class IM_EX_MSG CtiClientConnection : public CtiConnection
 
     void onException ( const cms::CMSException& ex );
 
-    static volatile long _clientConnectionCount;
-
 public:
 
     CtiClientConnection ( const std::string &serverQueueName,

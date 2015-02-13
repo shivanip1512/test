@@ -18,6 +18,8 @@
 
 #include <sys/timeb.h>
 
+#include <atomic>
+
 using namespace std;
 
 using Cti::Database::DatabaseConnection;
@@ -232,14 +234,14 @@ int DynamicPaoStatisticsIdGen()
     return ++(*id);
 }
 
-__int64 ChangeIdGen(bool force)
+long long ChangeIdGen(bool force)
 {
     static CtiCriticalSection   mux;
     CtiLockGuard<CtiCriticalSection> guard(mux);
 
-    __int64 tempid = 0;
+    long long tempid = 0;
     static BOOL init_id = FALSE;
-    volatile static __int64 id = 0;
+    volatile static long long id = 0;
     static const CHAR sql[] = "SELECT MAX(CHANGEID) FROM RAWPOINTHISTORY";
 
     if(!init_id || force)
@@ -541,19 +543,18 @@ INT OverrideOutMessagePriority(OUTMESS *Out, INT priority)
 //#define  NOIME
 
 
-LONG gOutMessageCounter = 0;
+static std::atomic<long> gOutMessageCounter = 0;
 
 void incrementCount()
 {
-    InterlockedIncrement(&gOutMessageCounter);
+    ++gOutMessageCounter;
 }
 void decrementCount()
 {
-    InterlockedDecrement(&gOutMessageCounter);
+    --gOutMessageCounter;
 }
-LONG OutMessageCount()
+long OutMessageCount()
 {
-    //  this is just for reporting - no need to lock down allocations while we print out a report
     return gOutMessageCounter;
 }
 

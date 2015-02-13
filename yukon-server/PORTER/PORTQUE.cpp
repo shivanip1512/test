@@ -961,7 +961,7 @@ YukonError_t CCUResponseDecode (INMESS &InMessage, CtiDeviceSPtr Dev, OUTMESS *O
                 }
 
                 /* Free up the entry in the QueTable */
-                if(pInfo->QueTable[QueTabEnt].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
+                if(pInfo->QueTable[QueTabEnt].InUse) ++pInfo->FreeSlots;
                 if(pInfo->FreeSlots > MAXQUEENTRIES)
                 {
                     CTILOG_ERROR(dout, "Unexpected pInfo->FreeSlots > MAXQUEENTRIES ("<< pInfo->FreeSlots <<" > "<< MAXQUEENTRIES <<")");
@@ -1091,7 +1091,7 @@ struct kick
 
                     /* send a message to the calling process */
                     if(pInfo->QueTable[offset].EventCode & RESULT) ReturnQueuedResult(ccu_device, pInfo, offset);
-                    if(pInfo->QueTable[offset].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
+                    if(pInfo->QueTable[offset].InUse) ++pInfo->FreeSlots;
                     if(pInfo->FreeSlots > MAXQUEENTRIES)
                     {
                         CTILOG_ERROR(dout, "Unexpected pInfo->FreeSlots > MAXQUEENTRIES ("<< pInfo->FreeSlots <<" > "<< MAXQUEENTRIES <<")");
@@ -1124,7 +1124,7 @@ struct kick
                 if(!pInfo->QueTable[offset].InUse) FreeQents++;          // Counting the number of Open slots.
             }
 
-            if( FreeQents != (OldFreeEnts = InterlockedExchange(&(pInfo->FreeSlots), FreeQents)) )
+            if( FreeQents != (OldFreeEnts = pInfo->FreeSlots.exchange(FreeQents)) )
             {
                 CTILOG_WARN(dout, "FREESLOTS CORRECTION (previous "<< OldFreeEnts <<" != new "<< FreeQents <<")");
             }
@@ -1211,7 +1211,7 @@ INT QueueFlush (CtiDeviceSPtr Dev)
                 pInfo->QueTable[QueTabEnt].TimeSent = -1L;
             }
         }
-        InterlockedExchange(&(pInfo->FreeSlots), MAXQUEENTRIES);
+        pInfo->FreeSlots = MAXQUEENTRIES;
         pInfo->clearStatus(INLGRPQ);            // 20050506 CGP on a wh.
     }
     return ClientErrors::None;
@@ -1354,7 +1354,7 @@ INT BuildLGrpQ (CtiDeviceSPtr Dev)
                 SETLPos = Offset++;
 
                 /* tick off free slots available */
-                InterlockedDecrement( &(pInfo->FreeSlots) );
+                --pInfo->FreeSlots;
                 pInfo->QueTable[QueTabEnt].InUse |= INUSE;
                 pInfo->QueTable[QueTabEnt].TimeSent = LongTime();          // Erroneous, but not totally evil.  20020703 CGP.  pInfo->QueTable[i].TimeSent = LongTime();
 
@@ -1701,7 +1701,7 @@ YukonError_t DeQueue (INMESS &InMessage)
                         }
                     }
                     /* Now free up the table entry */
-                    if(pInfo->QueTable[i].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
+                    if(pInfo->QueTable[i].InUse) ++pInfo->FreeSlots;
                     if(pInfo->FreeSlots > MAXQUEENTRIES)
                     {
                         CTILOG_ERROR(dout, "Unexpected pInfo->FreeSlots > MAXQUEENTRIES ("<< pInfo->FreeSlots <<" > "<< MAXQUEENTRIES <<")");

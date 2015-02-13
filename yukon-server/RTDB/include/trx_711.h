@@ -2,6 +2,8 @@
 
 #include "trx_info.h"
 
+#include <atomic>
+
 class CtiTransmitter711Info : public CtiTransmitterInfo
 {
 public:
@@ -15,7 +17,7 @@ public:
     USHORT           ReadyN;
     USHORT           NCsets;
     USHORT           NCOcts;
-    LONG             FreeSlots;
+    std::atomic<long> FreeSlots;
     USHORT           RColQMin;
     QUEENT           QueTable[MAXQUEENTRIES];
     unsigned long    LastColdStartTime;
