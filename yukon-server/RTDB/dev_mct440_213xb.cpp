@@ -590,8 +590,8 @@ YukonError_t Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
         bool existing_request = false;
 
         //  if a request is already in progress and we're not submitting a continuation/retry
-        if( ! _daily_read_info.request.in_progress.compare_exchange_strong(existing_request, true)
-            && _daily_read_info.request.user_id != pReq->UserMessageId() )
+        if( ! _daily_read_info.request.in_progress.compare_exchange_strong(existing_request, true) &&
+            _daily_read_info.request.user_id != pReq->UserMessageId() )
         {
             string temp = getName() + " / Daily read request already in progress\n";
 

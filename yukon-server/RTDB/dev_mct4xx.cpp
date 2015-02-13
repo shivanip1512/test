@@ -1156,8 +1156,8 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
     YukonError_t nRet = ClientErrors::None;
     int sRet, function;
 
-    std::auto_ptr<CtiReturnMsg> errRet(
-        new CtiReturnMsg(
+    auto errRet =
+        std::make_unique<CtiReturnMsg>(
                getID(),
                OutMessage->Request.CommandStr,
                string(),
@@ -1168,7 +1168,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
                OutMessage->Request.GrpMsgID,
                OutMessage->Request.UserID,
                OutMessage->Request.SOE,
-               CtiMultiMsg_vec()));
+               CtiMultiMsg_vec());
 
     if( parse.isKeyValid("install") )
     {
@@ -1609,7 +1609,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
 
         const int interval_len = getLoadProfileInterval(request_channel - 1);
 
-        long existing_id = InMessage.Return.OptionsField;
+        long existing_id = pReq->OptionsField();
 
         // Only do things if our interval length is valid!
         if( interval_len <= 0 )
