@@ -107,11 +107,10 @@
 <entry key="yukon.common.pdf">PDF</entry>
 <entry key="yukon.common.pending">Pending</entry>
 <entry key="yukon.common.phase">Phase</entry>
-<entry key="yukon.common.phase.phase">All</entry>
-<entry key="yukon.common.phase.phase.ALL">All</entry>
-<entry key="yukon.common.phase.phase.A">A</entry>
-<entry key="yukon.common.phase.phase.B">B</entry>
-<entry key="yukon.common.phase.phase.C">C</entry>
+<entry key="yukon.common.phase.ALL">All</entry>
+<entry key="yukon.common.phase.A">A</entry>
+<entry key="yukon.common.phase.B">B</entry>
+<entry key="yukon.common.phase.C">C</entry>
 <entry key="yukon.common.point">Point</entry>
 <entry key="yukon.common.pointName">Point Name</entry>
 <entry key="yukon.common.pointOffset">Point Offset</entry>
