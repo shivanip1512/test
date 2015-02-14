@@ -343,12 +343,17 @@
         <tags:radio name="pet" value="cats" classes="left" checked="true">Cats</tags:radio>
         <tags:radio name="pet" value="dogs" classes="right">Dogs</tags:radio>
         
+        <div class="button-group">
+            <tags:radio name="sex" value="M" checked="true">Male</tags:radio>
+            <tags:radio name="sex" value="F">Female</tags:radio>
+        </div>
+        
         <tags:radio name="vehicle" value="red" classes="left">Train</tags:radio>
         <tags:radio name="vehicle" value="red" classes="middle" checked="true">Car</tags:radio>
         <tags:radio name="vehicle" value="red" classes="middle" disabled="true">JetSki</tags:radio>
         <tags:radio name="vehicle" value="red" classes="right">Airplane</tags:radio>
         
-        <form:form commandName="bean">
+        <form:form commandName="bean" cssClass="buffered">
             <tags:radio path="phase" key=".phase.A" classes="left" checked="true" value="A"/>
             <tags:radio path="phase" key=".phase.B" classes="middle" value="B"/>
             <tags:radio path="phase" key=".phase.C" classes="right" value="C"/>
@@ -360,12 +365,17 @@
 &lt;tags:radio name=&quot;pet&quot; value=&quot;cats&quot; classes=&quot;left&quot; checked=&quot;true&quot;&gt;Cats&lt;/tags:radio&gt;
 &lt;tags:radio name=&quot;pet&quot; value=&quot;dogs&quot; classes=&quot;right&quot;&gt;Dogs&lt;/tags:radio&gt;
 
+&lt;div class=&quot;button-group&quot;&gt;
+    &lt;tags:radio name=&quot;sex&quot; value=&quot;M&quot; checked=&quot;true&quot;&gt;Male&lt;/tags:radio&gt;
+    &lt;tags:radio name=&quot;sex&quot; value=&quot;F&quot;&gt;Female&lt;/tags:radio&gt;
+&lt;/div&gt;
+
 &lt;tags:radio name=&quot;vehicle&quot; value=&quot;red&quot; classes=&quot;left&quot;&gt;Train&lt;/tags:radio&gt;
 &lt;tags:radio name=&quot;vehicle&quot; value=&quot;red&quot; classes=&quot;middle&quot; checked=&quot;true&quot;&gt;Car&lt;/tags:radio&gt;
 &lt;tags:radio name=&quot;vehicle&quot; value=&quot;red&quot; classes=&quot;middle&quot; disabled=&quot;true&quot;&gt;JetSki&lt;/tags:radio&gt;
 &lt;tags:radio name=&quot;vehicle&quot; value=&quot;red&quot; classes=&quot;right&quot;&gt;Airplane&lt;/tags:radio&gt;
 
-&lt;form:form commandName=&quot;bean&quot;&gt;
+&lt;form:form commandName=&quot;bean&quot; cssClass=&quot;buffered&quot;&gt;
     &lt;tags:radio path=&quot;phase&quot; key=&quot;.phase.A&quot; classes=&quot;left&quot; checked=&quot;true&quot; value=&quot;A&quot;/&gt;
     &lt;tags:radio path=&quot;phase&quot; key=&quot;.phase.B&quot; classes=&quot;middle&quot; value=&quot;B&quot;/&gt;
     &lt;tags:radio path=&quot;phase&quot; key=&quot;.phase.C&quot; classes=&quot;right&quot; value=&quot;C&quot;/&gt;

@@ -264,37 +264,8 @@ input[type=radio] {
 .checkbox-input:checked ~ .checkbox-value::before { left: 75%; }
 .with-form-controls .checkbox-value::before { top: 1px; }
 
-/** Styles for a 'toggle button' checkbox **/
-.switch-btn .switch-btn-checkbox {
-    border: 0;
-    clip: rect(0 0 0 0);
-    height: 1px;
-    margin: -1px;
-    overflow: hidden;
-    padding: 0;
-    position: absolute;
-    width: 1px;
-}
-.switch-btn:not(.inverse) .switch-btn-checkbox:checked ~ .yes,
-.switch-btn.inverse .switch-btn-checkbox:not(:checked) ~ .yes {
-    border-color: #bbb;
-    box-shadow: inset 0 0 10px #bbb !important;
-    
-    .b-label { color: @green; }
-}
-.switch-btn:not(.inverse) .switch-btn-checkbox:not(:checked) ~ .no,
-.switch-btn.inverse .switch-btn-checkbox:checked ~ .no  {
-    border-color: #bbb;
-    box-shadow: inset 0 0 10px #bbb !important;
-    
-    .b-label { color: @red; }
-}
-.switch-btn .switch-btn-checkbox:disabled ~ .button {
-    cursor: default;
-    opacity: .5;
-}
-
-/** Styles for the custom radio button component **/
+/** Styles for a 'toggle button' checkbox and radio buttons **/
+.switch-btn .switch-btn-checkbox,
 .radio-btn input[type=radio] {
     border: 0;
     clip: rect(0 0 0 0);
@@ -305,10 +276,26 @@ input[type=radio] {
     position: absolute;
     width: 1px;
 }
+
+.switch-btn:not(.inverse) .switch-btn-checkbox:checked ~ .yes,
+.switch-btn.inverse .switch-btn-checkbox:not(:checked) ~ .yes,
+.switch-btn:not(.inverse) .switch-btn-checkbox:not(:checked) ~ .no,
+.switch-btn.inverse .switch-btn-checkbox:checked ~ .no,
 .radio-btn input:checked ~ .button {
     border-color: #bbb;
-    box-shadow: inset 0 0 10px #bbb !important;
+    box-shadow: inset 0 0 15px #bbb !important;
 }
+
+.switch-btn:not(.inverse) .switch-btn-checkbox:checked ~ .yes .b-label,
+.switch-btn.inverse .switch-btn-checkbox:not(:checked) ~ .yes .b-label {
+    color: @green;
+}
+.switch-btn:not(.inverse) .switch-btn-checkbox:not(:checked) ~ .no .b-label ,
+.switch-btn.inverse .switch-btn-checkbox:checked ~ .no .b-label {
+    color: @red;
+}
+
+.switch-btn .switch-btn-checkbox:disabled ~ .button,
 .radio-btn input:disabled ~ .button {
     cursor: default;
     opacity: .5;
