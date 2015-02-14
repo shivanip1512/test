@@ -45,7 +45,7 @@ yukon.dynatree = (function () {
         if (hits[0]) {
             tree.scrollTo($('.found:eq(0)', tree)[0]);
         } else {
-            if (search_term != '') search.addClass('error');
+            if (search_term !== '') search.addClass('error');
         }
     };
     
@@ -73,7 +73,7 @@ yukon.dynatree = (function () {
                 
                 $(document).on('blur', 'input.tree-search', function (ev) {
                     var search = $(ev.currentTarget);
-                    if (search.val() == '') {
+                    if (search.val() === '') {
                         search.removeClass('error');
                     }
                 });
@@ -126,7 +126,7 @@ yukon.dynatree = (function () {
                 selectMode: options.multi ? 2 : 1,
                 checkbox: false,
                 onClick: function (node, event) {
-                    if (node.getEventTargetType(event) != 'expander') {
+                    if (node.getEventTargetType(event) !== 'expander') {
                         if (!node.data.isFolder) {
                             node.toggleSelect();
                         }
@@ -154,7 +154,7 @@ yukon.dynatree = (function () {
             if (options.selected.length) {
                 // Show the initially selected item(s)
                 tree.visit(function (node) {
-                    if (options.selected.indexOf(node.data.metadata[options.nodeId]) != -1) {
+                    if (options.selected.indexOf(node.data.metadata[options.nodeId]) !== -1) {
                         node.makeVisible();
                         node.select();
                     }
