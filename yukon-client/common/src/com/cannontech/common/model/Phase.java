@@ -11,7 +11,7 @@ public enum Phase implements DisplayableEnum {
     C,
     ALL; // i.e. Gang Operated Regulator
 
-    private final static String baseKey = "yukon.common.phase.phase."; 
+    private final static String baseKey = "yukon.common.phase."; 
     
     public static List<Phase> getRealPhases() {
         return Lists.newArrayList(A, B, C);

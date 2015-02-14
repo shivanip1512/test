@@ -92,8 +92,23 @@ public class StyleGuideController {
         return "styleguide/progressbars.jsp";
     }
     
+    public class ButtonBean {
+        private String phase = "B";
+        
+        public String getPhase() {
+            return phase;
+        }
+        
+        public void setPhase(String phase) {
+            this.phase = phase;
+        }
+    }
+    
     @RequestMapping("/styleguide/buttons")
-    public String buttons() {
+    public String buttons(ModelMap model) {
+        
+        model.addAttribute("bean", new ButtonBean());
+        
         return "styleguide/buttons.jsp";
     }
     

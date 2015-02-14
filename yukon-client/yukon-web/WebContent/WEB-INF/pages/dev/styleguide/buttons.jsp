@@ -1,7 +1,8 @@
-    <%@ page trimDirectiveWhitespaces="true" %>
+<%@ page trimDirectiveWhitespaces="true" %>
 
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="dev" page="buttons">
@@ -346,6 +347,12 @@
         <tags:radio name="vehicle" value="red" classes="middle" checked="true">Car</tags:radio>
         <tags:radio name="vehicle" value="red" classes="middle" disabled="true">JetSki</tags:radio>
         <tags:radio name="vehicle" value="red" classes="right">Airplane</tags:radio>
+        
+        <form:form commandName="bean">
+            <tags:radio path="phase" key=".phase.A" classes="left" checked="true" value="A"/>
+            <tags:radio path="phase" key=".phase.B" classes="middle" value="B"/>
+            <tags:radio path="phase" key=".phase.C" classes="right" value="C"/>
+        </form:form>
     </div>
 </div>
 <h4 class="subtle">Code:</h4>
@@ -357,6 +364,12 @@
 &lt;tags:radio name=&quot;vehicle&quot; value=&quot;red&quot; classes=&quot;middle&quot; checked=&quot;true&quot;&gt;Car&lt;/tags:radio&gt;
 &lt;tags:radio name=&quot;vehicle&quot; value=&quot;red&quot; classes=&quot;middle&quot; disabled=&quot;true&quot;&gt;JetSki&lt;/tags:radio&gt;
 &lt;tags:radio name=&quot;vehicle&quot; value=&quot;red&quot; classes=&quot;right&quot;&gt;Airplane&lt;/tags:radio&gt;
+
+&lt;form:form commandName=&quot;bean&quot;&gt;
+    &lt;tags:radio path=&quot;phase&quot; key=&quot;.phase.A&quot; classes=&quot;left&quot; checked=&quot;true&quot; value=&quot;A&quot;/&gt;
+    &lt;tags:radio path=&quot;phase&quot; key=&quot;.phase.B&quot; classes=&quot;middle&quot; value=&quot;B&quot;/&gt;
+    &lt;tags:radio path=&quot;phase&quot; key=&quot;.phase.C&quot; classes=&quot;right&quot; value=&quot;C&quot;/&gt;
+&lt;/form:form&gt;
 </pre>
 
 <h2 id="primary-buttons-example">Primary Buttons</h2>

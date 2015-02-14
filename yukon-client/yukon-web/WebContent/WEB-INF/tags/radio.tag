@@ -17,7 +17,8 @@
 <%@ attribute name="toggleGroup" description="Used to setup a toggle group." %>
 
 <%@ attribute name="key" description="i18n key object to use for the alert message. Note: key can be an i18n key String, 
-                                      MessageSourceResolvable, Displayable, DisplayableEnum, or ResolvableTemplate." %>
+                                      MessageSourceResolvable, Displayable, DisplayableEnum, or ResolvableTemplate.
+                                      Note: the 'yukon.web.components.button' and 'yukon.common' scopes are added internally." %>
 <%@ attribute name="label" description="Text used for the button. Html escaped internally." %>
 
 <%@ attribute name="classes" description="CSS class names applied to the outer label element." %>
@@ -36,7 +37,7 @@
                 <c:if test="${disabled}">disabled</c:if>>
         </c:when>
         <c:otherwise>
-            <form:checkbox path="${path}" id="${id}" cssClass="switch-btn-checkbox" 
+            <form:radiobutton path="${path}" id="${id}" value="${value}" 
                 data-toggle="${pageScope.toggleGroup}" 
                 disabled="${disabled}"/>
         </c:otherwise>
@@ -45,7 +46,9 @@
         <span class="b-label">
             <c:choose>
                 <c:when test="${not empty pageScope.key}">
-                    <cti:msgScope paths=",yukon.web.components.button"><cti:msg2 key="${key}"/></cti:msgScope>
+                    <cti:msgScope paths=", yukon.web.components.button, yukon.common">
+                        <cti:msg2 key="${key}"/>
+                    </cti:msgScope>
                 </c:when>
                 <c:when test="${not empty pageScope.label}">${fn:escapeXml(label)}</c:when>
                 <c:otherwise><jsp:doBody/></c:otherwise>

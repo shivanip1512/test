@@ -10,7 +10,7 @@
     <%@include file="/capcontrol/capcontrolHeader.jspf"%>
     
     <cti:includeScript link="/JavaScript/yukon.da.voltage.points.edit.js"/>
-
+    
     <tags:boxContainer2 nameKey=".title">
         <form:form id="voltagePointsForm" action="updateVoltagePoints" commandName="zoneVoltagePointsHolder">
             <cti:csrfToken/>
@@ -63,9 +63,9 @@
                                 <c:choose>
                                     <c:when test="${!voltagePoint.regulator}">
                                         <form:select path="points[${status.index}].phase" disabled="${!hasEditingRole}">
-                                            <form:option value="A"><cti:msg2 key="yukon.common.phase.phase.A"/></form:option>
-                                            <form:option value="B"><cti:msg2 key="yukon.common.phase.phase.B"/></form:option>
-                                            <form:option value="C"><cti:msg2 key="yukon.common.phase.phase.C"/></form:option>
+                                            <form:option value="A"><cti:msg2 key="yukon.common.phase.A"/></form:option>
+                                            <form:option value="B"><cti:msg2 key="yukon.common.phase.B"/></form:option>
+                                            <form:option value="C"><cti:msg2 key="yukon.common.phase.C"/></form:option>
                                         </form:select>
                                     </c:when>
                                     <c:otherwise>
