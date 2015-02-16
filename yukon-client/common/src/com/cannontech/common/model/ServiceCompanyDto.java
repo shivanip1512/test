@@ -13,6 +13,7 @@ public class ServiceCompanyDto {
     private String mainPhoneNumber;
     private String mainFaxNumber;
     private String hiType;
+    private int energyCompanyId;
     
     /* RELATIONS */
     //address
@@ -97,5 +98,13 @@ public class ServiceCompanyDto {
 
     public String getEmailContactNotification() {
         return emailContactNotification;
+    }
+    
+    public void setEnergyCompanyId(int energyCompanyId) {
+        this.energyCompanyId = energyCompanyId;
+    }
+    
+    public int getEnergyCompanyId() {
+        return energyCompanyId;
     }
 }

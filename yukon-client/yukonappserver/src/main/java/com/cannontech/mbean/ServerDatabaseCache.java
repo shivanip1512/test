@@ -131,7 +131,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private List<LiteYukonPAObject> allDevices;
     private List<LiteYukonPAObject> allLMPrograms;
     private List<LiteYukonPAObject> allLMControlAreas;
-    private List<LiteYukonPAObject> allLMGroups;
+    private Map<String, LiteYukonPAObject> allLMGroups;
     private List<LiteYukonPAObject> allLoadManagement;
     private List<LiteYukonPAObject> allPorts;
     
@@ -476,14 +476,20 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         return allLMControlAreas;
     }
 
+    
     @Override
-    public List<LiteYukonPAObject> getAllLMGroups() {
+    public synchronized List<LiteYukonPAObject> getAllLMGroups() {
+        return new ArrayList<>(getAllLMGroupsMap().values());
+    }
+
+    @Override
+    public Map<String, LiteYukonPAObject> getAllLMGroupsMap() {
         if (allLMGroups == null) {
-            allLMGroups = new ArrayList<>();
+            allLMGroups = new ConcurrentHashMap<>();
 
             for (LiteYukonPAObject liteYukonPAObject : getAllLoadManagement()) {
                 if (liteYukonPAObject.getPaoType().isLoadGroup()) {
-                    allLMGroups.add(liteYukonPAObject);
+                    allLMGroups.put(liteYukonPAObject.getPaoName(), liteYukonPAObject);
                 }
             }
         }

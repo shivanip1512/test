@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
@@ -35,28 +34,18 @@ import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.energyCompany.EcMappingCategory;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
+
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private ContactNotificationDao contactNotificationDao;
     @Autowired private DesignationCodeDao designationCodeDao;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    
+
     private Map<Integer, ServiceCompanyDto> serviceCompanyCache = new ConcurrentHashMap<>();
-
-    private LoadingCache< Set<Integer>, List<ServiceCompanyDto>> serviceCompanyListCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(new CacheLoader<Set<Integer>, List<ServiceCompanyDto>>(){
-
-        @Override
-        public List<ServiceCompanyDto> load(Set<Integer> arg0) throws Exception {
-            return null;
-        }
-        
-    });
-    
 
     private SimpleTableAccessTemplate<ServiceCompanyDto> serviceCompanyTemplate;
 
@@ -67,7 +56,7 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         sql.append("       SC.MainFaxNumber, SC.PrimaryContactID, SC.HIType, AD.LocationAddress1,");
         sql.append("       AD.LocationAddress2, AD.CityName, AD.StateCode, AD.ZipCode, AD.County,");
         sql.append("       CT.ContFirstName, CT.ContLastName, CT.AddressID, CT.LogInID,");
-        sql.append("       LG.UserName");
+        sql.append("       LG.UserName, EC.EnergyCompanyID");
         sql.append("FROM ServiceCompany SC");
         sql.append("JOIN ECToGenericMapping EC ON EC.ItemID = SC.CompanyID AND EC.MappingCategory");
         sql.eq_k(EcMappingCategory.SERVICE_COMPANY);
@@ -106,11 +95,12 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         public ServiceCompanyDto mapRow(YukonResultSet rs) throws SQLException {
             ServiceCompanyDto serviceCompanyDto = new ServiceCompanyDto();
 
-            serviceCompanyDto.setCompanyId(rs.getNullableInt("CompanyID"));
+            serviceCompanyDto.setCompanyId(rs.getInt("CompanyID"));
             serviceCompanyDto.setCompanyName(rs.getStringSafe("CompanyName"));
             serviceCompanyDto.setMainPhoneNumber(rs.getStringSafe("MainPhoneNumber"));
             serviceCompanyDto.setMainFaxNumber(rs.getStringSafe("MainFaxNumber"));
             serviceCompanyDto.setHiType(rs.getStringSafe("HIType"));
+            serviceCompanyDto.setEnergyCompanyId(rs.getInt("EnergyCompanyId"));
 
             // Set address object.
             ResultSet resultSet = rs.getResultSet();
@@ -143,16 +133,23 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
         serviceCompanyTemplate.setFieldMapper(serviceCompanyDtoFieldMapper);
         serviceCompanyTemplate.setPrimaryKeyValidOver(0);
         
-        List<ServiceCompanyDto> serviceCompanyList = getAllServiceCompanies();
-        for(ServiceCompanyDto serviceCompanyDto: serviceCompanyList){
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(selectBase);
+        List<ServiceCompanyDto> serviceCompanies = jdbcTemplate.query(sql, new ServiceCompanyDtoRowMapper());
+
+        for (ServiceCompanyDto serviceCompany : serviceCompanies) {
+            populateServiceCompany(serviceCompany);
+        }
+        
+        for(ServiceCompanyDto serviceCompanyDto: serviceCompanies){
             serviceCompanyCache.put(serviceCompanyDto.getCompanyId(), serviceCompanyDto);
         }
-        createDatabaseChangeListner();
+        createDatabaseChangeListener();
         
     }
 
-    private void createDatabaseChangeListner() {
-        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.SERVICE_COMPANY, EnumSet.of(DbChangeType.ADD,DbChangeType.UPDATE), new DatabaseChangeEventListener() {
+    private void createDatabaseChangeListener() {
+        asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.SERVICE_COMPANY, EnumSet.of(DbChangeType.ADD, DbChangeType.UPDATE), new DatabaseChangeEventListener() {
             
             @Override
             public void eventReceived(DatabaseChangeEvent event) {
@@ -173,55 +170,25 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
     // CRUD
     @Override
     public ServiceCompanyDto getCompanyById(int serviceCompanyId) {
-        ServiceCompanyDto cachedServiceCompany = serviceCompanyCache.get(serviceCompanyId);
-        if (cachedServiceCompany != null) {
-            return cachedServiceCompany;
-        } else {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.appendFragment(selectBase);
-            sql.append("WHERE CompanyId").eq(serviceCompanyId);
-
-            ServiceCompanyDto serviceCompany = jdbcTemplate.queryForObject(sql, new ServiceCompanyDtoRowMapper());
-            populateServiceCompany(serviceCompany);
-            return serviceCompany;
-        }
+        return serviceCompanyCache.get(serviceCompanyId);
     }
 
     @Override
     public List<ServiceCompanyDto> getAllServiceCompanies() {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.appendFragment(selectBase);
-
-        List<ServiceCompanyDto> serviceCompanies = jdbcTemplate.query(sql, new ServiceCompanyDtoRowMapper());
-
-        for (ServiceCompanyDto serviceCompany : serviceCompanies) {
-            populateServiceCompany(serviceCompany);
-        }
-
-        return serviceCompanies;
+        return Lists.newArrayList(serviceCompanyCache.values());
     }
 
     @Override
     public List<ServiceCompanyDto> getAllServiceCompaniesForEnergyCompanies(Set<Integer> energyCompanyIds) {
-        List<ServiceCompanyDto> cachedCompany = serviceCompanyListCache.getIfPresent(energyCompanyIds);
         
-        if (cachedCompany != null) {
-            return cachedCompany;
-        } else {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.appendFragment(selectBase);
-            sql.append("WHERE ec.energycompanyid").in(energyCompanyIds);
-
-            List<ServiceCompanyDto> serviceCompanies = jdbcTemplate.query(sql, new ServiceCompanyDtoRowMapper());
-
-            for (ServiceCompanyDto serviceCompany : serviceCompanies) {
-                populateServiceCompany(serviceCompany);
+        List<ServiceCompanyDto> serviceCompaniesForEcIds = Lists.newArrayList();
+        
+        for (ServiceCompanyDto serviceCompanyDto : getAllServiceCompanies()) {
+            if (energyCompanyIds.contains(serviceCompanyDto.getEnergyCompanyId())) {
+                serviceCompaniesForEcIds.add(serviceCompanyDto);
             }
-
-            serviceCompanyListCache.put(energyCompanyIds, serviceCompanies);
-            return serviceCompanies;
         }
-
+        return serviceCompaniesForEcIds;
     }
 
     @Override
@@ -281,21 +248,13 @@ public class ServiceCompanyDaoImpl implements ServiceCompanyDao {
 
     @Override
     public List<DisplayableServiceCompany> getAllServiceCompanies(Iterable<Integer> energyCompanyIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select sc.CompanyID companyId, sc.CompanyName companyName from ServiceCompany sc");
-        sql.append("join ECToGenericMapping ecgm on ecgm.ItemID = sc.CompanyID");
-        sql.append("and ecgm.MappingCategory").eq_k(EcMappingCategory.SERVICE_COMPANY);
-        sql.append("where ecgm.EnergyCompanyID").in(energyCompanyIds);
-        List<DisplayableServiceCompany> allServiceCompanies =
-            jdbcTemplate.query(sql, new YukonRowMapper<DisplayableServiceCompany>() {
-                @Override
-                public DisplayableServiceCompany mapRow(YukonResultSet rs) throws SQLException {
-                    int id = rs.getInt("companyId");
-                    String name = rs.getStringSafe("companyName");
-                    DisplayableServiceCompany sc = new DisplayableServiceCompany(id, name);
-                    return sc;
-                }
-            });
-        return allServiceCompanies;
+        
+        List<DisplayableServiceCompany> displayables = Lists.newArrayList();
+        List<ServiceCompanyDto> serviceCompaniesForEcIds = getAllServiceCompaniesForEnergyCompanies(Sets.newHashSet(energyCompanyIds));
+        for (ServiceCompanyDto serviceCompanyDto : serviceCompaniesForEcIds) {
+            DisplayableServiceCompany sc = new DisplayableServiceCompany(serviceCompanyDto.getCompanyId(), serviceCompanyDto.getCompanyName());
+            displayables.add(sc);
+        } 
+        return displayables;
     }
 }

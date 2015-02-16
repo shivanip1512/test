@@ -1,16 +1,12 @@
 package com.cannontech.loadcontrol.loadgroup.dao.impl;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,44 +38,16 @@ import com.google.common.collect.SetMultimap;
 public class LoadGroupDaoImpl implements LoadGroupDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private IDatabaseCache cache;
-    private Map<String,LoadGroup>loadGroupCache= new ConcurrentHashMap<String, LoadGroup>();
-    
-    public Map<String, LoadGroup> updatedCacheValues() {
-        List<LiteYukonPAObject> paoObjects = cache.getAllLMGroups();
-        List<Integer> ids = new ArrayList<Integer>();
-
-        for (LiteYukonPAObject pao : paoObjects) {
-            ids.add(pao.getLiteID());
-        }
-        List<LoadGroup> group = getByIds(ids);
-
-        for (LoadGroup loadGroup : group) {
-            loadGroup.setProgramIds(getLoadGroupProgramIds(loadGroup));
-            loadGroupCache.put(loadGroup.getName(), loadGroup);
-        }
-        return loadGroupCache;
-
-    }
 
     @Override
     @Transactional(readOnly = true)
     public LoadGroup getById(int loadGroupId){
-        // Get all the load group information for the supplied load group name except for the program ids.
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT PAO.paobjectId AS loadGroupId, PAO.paoName AS loadGroupName, PAO.type");
-        sql.append("FROM YukonPAObject PAO");
-        sql.append("WHERE PAO.paobjectId").eq(loadGroupId);
-        sql.append("AND PAO.paoClass").eq(PaoClass.GROUP);
-        sql.append("AND PAO.category").eq(PaoCategory.DEVICE);
-        
-        LoadGroup loadGroup = null;
-        try {
-            loadGroup = jdbcTemplate.queryForObject(sql, loadGroupRowMapper);
-        } catch (EmptyResultDataAccessException ex) {
+        LiteYukonPAObject liteGroup = cache.getAllPaosMap().get(loadGroupId);
+        if (liteGroup == null) {
             throw new NotFoundException("The load group id supplied does not exist.");
         }
-
-        loadGroup.setProgramIds(getLoadGroupProgramIds(loadGroup));
+        List<Integer> programIds = getLoadGroupProgramIds(liteGroup.getPaoIdentifier());   //this still hits db 1 time
+        LoadGroup loadGroup = new LoadGroup(liteGroup.getPaoIdentifier(),  liteGroup.getPaoName(), programIds);
         return loadGroup;
     }
 
@@ -104,30 +72,14 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public LoadGroup getByLoadGroupName(String loadGroupName) {
-        Map<String, LoadGroup> cachedvalue = updatedCacheValues();
-        if (cachedvalue.containsKey(loadGroupName)) {
-            return cachedvalue.get(loadGroupName);
-        } else {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT PAO.paobjectId AS loadGroupId, PAO.paoName AS loadGroupName, PAO.type");
-            sql.append("FROM YukonPAObject PAO");
-            sql.append("WHERE PAO.paoClass").eq(PaoClass.GROUP);
-            sql.append("AND PAO.category").eq(PaoCategory.DEVICE);
-            sql.append("AND PAO.paoName").eq(loadGroupName);
-
-            LoadGroup loadGroup = null;
-            try {
-                loadGroup = jdbcTemplate.queryForObject(sql, loadGroupRowMapper);
-            } catch (EmptyResultDataAccessException ex) {
-                throw new NotFoundException("The load group name supplied does not exist.");
-            } catch (IncorrectResultSizeDataAccessException ex) {
-                throw new IllegalArgumentException("The load group name supplied returned too many results");
-            }
-
-            System.out.println("in load group");
-            loadGroup.setProgramIds(getLoadGroupProgramIds(loadGroup));
-            return loadGroup;
+        LiteYukonPAObject liteGroup = cache.getAllLMGroupsMap().get(loadGroupName);
+        if (liteGroup == null) {
+            throw new NotFoundException("The load group name supplied does not exist.");
         }
+        
+        List<Integer> programIds = getLoadGroupProgramIds(liteGroup.getPaoIdentifier());   //this still hits db 1 time
+        LoadGroup loadGroup = new LoadGroup(liteGroup.getPaoIdentifier(),  liteGroup.getPaoName(), programIds);
+        return loadGroup;
     }
     
     /**
@@ -170,11 +122,11 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
     /**
      * Retrieves all the program ids that are associated with the loadGroup provided.
      */
-    private List<Integer> getLoadGroupProgramIds(LoadGroup loadGroup){
+    private List<Integer> getLoadGroupProgramIds(PaoIdentifier loadGroup){
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT LMPWP.programId");
         sql.append("FROM LMProgramDirectGroup LMPDG, LMProgramWebPublishing LMPWP"); 
-        sql.append("WHERE LMPDG.LMGroupDeviceId").eq(loadGroup.getLoadGroupId());
+        sql.append("WHERE LMPDG.LMGroupDeviceId").eq(loadGroup.getPaoId());
         sql.append("AND LMPDG.deviceId = LMPWP.deviceId");
     
         return jdbcTemplate.query(sql, RowMapper.INTEGER);
@@ -243,7 +195,9 @@ public class LoadGroupDaoImpl implements LoadGroupDao {
         public LoadGroup mapRow(YukonResultSet rs) throws SQLException {
             String loadGroupName = rs.getString("loadGroupName");
             PaoIdentifier paoIdentifier = rs.getPaoIdentifier("loadGroupId", "type");
-            return new LoadGroup(paoIdentifier, loadGroupName, null);
+            
+            List<Integer> programIds = getLoadGroupProgramIds(paoIdentifier);
+            return new LoadGroup(paoIdentifier, loadGroupName, programIds);
         }
     };
 }

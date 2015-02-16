@@ -81,6 +81,9 @@ public interface IDatabaseCache {
     List<LiteYukonPAObject> getAllLMControlAreas();
 
     List<LiteYukonPAObject> getAllLMGroups();
+    
+    /** Returns a map of lmGroup name to yukonPaobject (lmGroup). */
+    Map<String, LiteYukonPAObject> getAllLMGroupsMap();
 
     List<LiteYukonPAObject> getAllLoadManagement();
 
