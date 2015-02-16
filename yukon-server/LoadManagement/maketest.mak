@@ -167,7 +167,7 @@ test_lmobjects.obj:	devicetypes.h lmutility.h CtiTime.h dlldefs.h \
 		boostutil.h utility.h queues.h cticalls.h os2_2w32.h \
 		constants.h numstr.h msg_pcrequest.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h logger.h streamBuffer.h \
+		critical_section.h guard.h logger.h streamBuffer.h \
 		string_util.h exception_helper.h mutex.h dsm2err.h words.h \
 		optional.h macro_offset.h msg_cmd.h row_reader.h \
 		database_connection.h dbaccess.h dllbase.h \
@@ -184,9 +184,9 @@ test_lmprogram.obj:	lmprogramdirect.h boostutil.h utility.h ctitime.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h \
 		pointtypes.h message.h loggable.h lmgroupbase.h \
 		msg_pcrequest.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
-		logger.h streamBuffer.h string_util.h exception_helper.h \
-		mutex.h dsm2err.h words.h optional.h macro_offset.h msg_cmd.h \
+		timing_util.h immutable.h critical_section.h guard.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h msg_cmd.h \
 		row_reader.h database_connection.h dbaccess.h dllbase.h \
 		lmcontrolareatrigger.h ctidate.h lmprogramdirectgear.h \
 		lmcontrolarea.h connection.h msg_ptreg.h msg_reg.h queue.h \
@@ -202,9 +202,9 @@ test_lmthermostatgear.obj:	lmutility.h CtiTime.h dlldefs.h ctidate.h \
 		pointtypes.h message.h loggable.h lmgroupbase.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		msg_pcrequest.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
-		logger.h streamBuffer.h string_util.h exception_helper.h \
-		mutex.h dsm2err.h words.h optional.h macro_offset.h msg_cmd.h \
+		timing_util.h immutable.h critical_section.h guard.h logger.h \
+		streamBuffer.h string_util.h exception_helper.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h msg_cmd.h \
 		row_reader.h database_connection.h dbaccess.h dllbase.h \
 		lmcontrolareatrigger.h lmcontrolarea.h connection.h \
 		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \

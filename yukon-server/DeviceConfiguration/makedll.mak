@@ -112,25 +112,25 @@ id_dcdll.obj:    id_dcdll.cpp include\id_dcdll.h
 #UPDATE#
 config_device.obj:	precompiled.h config_device.h yukon.h types.h \
 		ctidbgmem.h dllbase.h dsm2.h streamConnection.h dlldefs.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h DeviceConfigDescription.h devicetypes.h \
-		pointtypes.h PointAttribute.h std_helper.h
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h \
+		DeviceConfigDescription.h devicetypes.h pointtypes.h \
+		PointAttribute.h std_helper.h
 config_strings.obj:	precompiled.h config_data_mct.h yukon.h types.h \
 		ctidbgmem.h dllbase.h dsm2.h streamConnection.h dlldefs.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h config_data_dnp.h config_data_rfn.h
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h config_data_dnp.h \
+		config_data_rfn.h
 da_lp_deviceconfig.obj:	precompiled.h da_lp_deviceconfig.h yukon.h \
 		types.h ctidbgmem.h da_load_profile.h config_device.h \
 		dllbase.h dsm2.h streamConnection.h dlldefs.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		constants.h numstr.h logger.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h mutex.h \
@@ -139,22 +139,22 @@ id_dcdll.obj:	precompiled.h id_dcdll.h module_util.h dlldefs.h \
 		ctitime.h
 mgr_config.obj:	precompiled.h mgr_config.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h config_device.h devicetypes.h \
-		readers_writer_lock.h dbaccess.h database_connection.h \
-		database_reader.h row_reader.h DeviceConfigDescription.h \
-		pointtypes.h PointAttribute.h debug_timer.h std_helper.h
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h config_device.h \
+		devicetypes.h readers_writer_lock.h dbaccess.h \
+		database_connection.h database_reader.h row_reader.h \
+		DeviceConfigDescription.h pointtypes.h PointAttribute.h \
+		debug_timer.h std_helper.h
 test_device_config.obj:	boostutil.h utility.h ctitime.h dlldefs.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
 		constants.h numstr.h config_device.h dllbase.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h logger.h streamBuffer.h \
-		loggable.h string_util.h exception_helper.h mutex.h dsm2err.h \
-		words.h optional.h macro_offset.h
+		critical_section.h guard.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

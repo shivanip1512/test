@@ -552,7 +552,7 @@ RTP_API.obj : RTP_API.C
 #UPDATE#
 fdr.obj:	precompiled.h ctitime.h dlldefs.h ctibase.h \
 		streamSocketConnection.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h netports.h timing_util.h immutable.h atomic.h \
+		ctidbgmem.h netports.h timing_util.h immutable.h \
 		critical_section.h guard.h utility.h queues.h cticalls.h \
 		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
@@ -566,7 +566,7 @@ fdracs.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
 		message.h loggable.h msg_ptreg.h msg_cmd.h msg_reg.h \
 		msg_signal.h dllbase.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -583,7 +583,7 @@ fdracsmulti.obj:	precompiled.h ctidate.h dlldefs.h ctitime.h cparms.h \
 		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
 		message.h loggable.h msg_ptreg.h msg_cmd.h msg_reg.h \
 		msg_signal.h dllbase.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -601,10 +601,10 @@ fdrasciiimportbase.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h pointdefs.h \
 		pointtypes.h message.h loggable.h dllbase.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h utility.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h boostutil.h \
-		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		critical_section.h guard.h utility.h queues.h cticalls.h \
+		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h \
 		fdrasciiimportbase.h fdrinterface.h msg_dbchg.h \
 		connection_client.h connection.h msg_ptreg.h msg_reg.h \
 		queue.h readers_writer_lock.h connection_base.h \
@@ -616,7 +616,7 @@ fdrbepc.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		configkey.h configval.h msg_cmd.h message.h ctidbgmem.h \
 		collectable.h loggable.h pointtypes.h numstr.h dllbase.h \
 		dsm2.h streamConnection.h yukon.h types.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
@@ -632,7 +632,7 @@ fdrclientconnection.obj:	precompiled.h logger.h dlldefs.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h guard.h fdrinterface.h message.h \
+		critical_section.h guard.h fdrinterface.h message.h \
 		collectable.h msg_dbchg.h connection_client.h connection.h \
 		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
 		msg_reg.h mutex.h queue.h cparms.h configkey.h configval.h \
@@ -648,7 +648,7 @@ fdrclientserverconnection.obj:	precompiled.h logger.h dlldefs.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h guard.h fdrinterface.h message.h \
+		critical_section.h guard.h fdrinterface.h message.h \
 		collectable.h msg_dbchg.h connection_client.h connection.h \
 		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
 		msg_reg.h mutex.h queue.h cparms.h configkey.h configval.h \
@@ -669,8 +669,8 @@ fdrcygnet.obj:	precompiled.h ctitime.h dlldefs.h cparms.h configkey.h \
 		types.h ctidbgmem.h pointdefs.h pointtypes.h message.h \
 		loggable.h msg_ptreg.h msg_cmd.h msg_reg.h msg_signal.h \
 		dllbase.h dsm2.h streamConnection.h netports.h timing_util.h \
-		immutable.h atomic.h critical_section.h guard.h utility.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h logger.h \
+		immutable.h critical_section.h guard.h utility.h queues.h \
+		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		fdrcygnet.h fdrinterface.h msg_dbchg.h connection_client.h \
@@ -683,18 +683,18 @@ fdrdestination.obj:	precompiled.h fdrpoint.h dlldefs.h pointtypes.h \
 		ctitime.h logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
 		yukon.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h dllbase.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
-		guard.h mutex.h dsm2err.h words.h optional.h macro_offset.h
+		critical_section.h dllbase.h dsm2.h streamConnection.h \
+		netports.h timing_util.h immutable.h guard.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h
 fdrdnpslave.obj:	precompiled.h fdrdnpslave.h dlldefs.h queues.h \
 		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
 		fdrpointlist.h mgr_fdrpoint.h smartmap.h boostutil.h \
 		utility.h ctitime.h numstr.h dllbase.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h logger.h streamBuffer.h \
-		loggable.h string_util.h exception_helper.h mutex.h dsm2err.h \
-		words.h optional.h macro_offset.h readers_writer_lock.h \
-		fdrpoint.h pointtypes.h fdrdestination.h fdr.h pointdefs.h \
+		critical_section.h guard.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h readers_writer_lock.h fdrpoint.h \
+		pointtypes.h fdrdestination.h fdr.h pointdefs.h \
 		database_connection.h dbaccess.h database_reader.h \
 		row_reader.h fdrscadaserver.h fdrsocketserver.h \
 		fdrclientserverconnection.h serverconnection.h \
@@ -704,15 +704,15 @@ fdrdnpslave.obj:	precompiled.h fdrdnpslave.h dlldefs.h queues.h \
 		configkey.h configval.h connection_base.h fdrdebuglevel.h \
 		msg_cmd.h socket_helper.h win_helper.h \
 		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
-		dnp_object_time.h prot_dnpSlave.h prot_dnp.h packet_finder.h \
-		dnp_application.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_configuration.h \
-		dnp_object_binaryoutput.h amq_constants.h std_helper.h
+		dnp_object_time.h prot_dnpSlave.h dnp_application.h \
+		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
+		dnp_configuration.h dnp_object_binaryoutput.h prot_dnp.h \
+		packet_finder.h amq_constants.h std_helper.h
 fdrdsm2filein.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h configkey.h configval.h msg_cmd.h message.h \
 		ctidbgmem.h collectable.h loggable.h pointtypes.h dllbase.h \
 		dsm2.h streamConnection.h yukon.h types.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -729,11 +729,11 @@ fdrdsm2import.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h pointdefs.h \
 		pointtypes.h message.h loggable.h msg_ptreg.h msg_cmd.h \
 		msg_reg.h msg_signal.h dllbase.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h utility.h queues.h cticalls.h \
-		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h fdrdsm2import.h \
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h queues.h cticalls.h os2_2w32.h constants.h \
+		numstr.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h fdrdsm2import.h \
 		fdrasciiimportbase.h fdrinterface.h msg_dbchg.h \
 		connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
@@ -745,29 +745,27 @@ fdrftpinterface.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h pointdefs.h \
 		pointtypes.h message.h loggable.h dllbase.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h utility.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h boostutil.h \
-		mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		fdrftpinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h msg_ptreg.h msg_reg.h \
-		queue.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdr.h database_connection.h dbaccess.h \
-		database_reader.h row_reader.h fdrdebuglevel.h fdrpointlist.h \
-		msg_cmd.h
+		critical_section.h guard.h utility.h queues.h cticalls.h \
+		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h fdrftpinterface.h \
+		fdrinterface.h msg_dbchg.h connection_client.h connection.h \
+		msg_ptreg.h msg_reg.h queue.h readers_writer_lock.h \
+		connection_base.h worker_thread.h mgr_fdrpoint.h smartmap.h \
+		fdrpoint.h fdrdestination.h fdr.h database_connection.h \
+		dbaccess.h database_reader.h row_reader.h fdrdebuglevel.h \
+		fdrpointlist.h msg_cmd.h
 fdrinet.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 		queues.h cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h \
 		constants.h numstr.h cparms.h configkey.h configval.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h \
 		pointtypes.h message.h loggable.h msg_ptreg.h msg_cmd.h \
 		msg_reg.h msg_signal.h dllbase.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h \
-		fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h \
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h fdrsocketinterface.h fdrinterface.h \
+		msg_dbchg.h connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		database_connection.h dbaccess.h database_reader.h \
@@ -777,7 +775,7 @@ fdrinet.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 fdrinterface.obj:	precompiled.h row_reader.h ctitime.h dlldefs.h \
 		cparms.h configkey.h configval.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
@@ -795,7 +793,7 @@ fdrlivedata.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
 		message.h loggable.h msg_ptreg.h msg_cmd.h msg_reg.h \
 		msg_signal.h dllbase.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -811,24 +809,24 @@ fdrlodestarimport.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h configkey.h configval.h msg_cmd.h message.h \
 		ctidbgmem.h collectable.h loggable.h msg_signal.h yukon.h \
 		types.h pointtypes.h dllbase.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h utility.h queues.h cticalls.h \
-		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h fdrtextfilebase.h \
-		fdrinterface.h msg_dbchg.h connection_client.h connection.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
-		queue.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdr.h database_connection.h dbaccess.h \
-		database_reader.h row_reader.h fdrdebuglevel.h fdrpointlist.h \
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h queues.h cticalls.h os2_2w32.h constants.h \
+		numstr.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h fdrtextfilebase.h fdrinterface.h \
+		msg_dbchg.h connection_client.h connection.h msg_multi.h \
+		msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h queue.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
+		database_connection.h dbaccess.h database_reader.h \
+		row_reader.h fdrdebuglevel.h fdrpointlist.h \
 		TextFileInterfaceParts.h fdrlodestarimport.h \
 		fdrlodestarinfo.h rtdb.h
 fdrlodestarimport_enh.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h configkey.h configval.h msg_cmd.h message.h \
 		ctidbgmem.h collectable.h loggable.h pointtypes.h dllbase.h \
 		dsm2.h streamConnection.h yukon.h types.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -845,7 +843,7 @@ fdrlodestarimport_std.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h configkey.h configval.h msg_cmd.h message.h \
 		ctidbgmem.h collectable.h loggable.h pointtypes.h dllbase.h \
 		dsm2.h streamConnection.h yukon.h types.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -865,7 +863,7 @@ fdrpibase.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
 		message.h loggable.h msg_ptreg.h msg_cmd.h msg_reg.h \
 		msg_signal.h dllbase.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -885,7 +883,7 @@ fdrpinotify.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		mutex.h queue.h cparms.h configkey.h configval.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h readers_writer_lock.h guard.h \
+		critical_section.h readers_writer_lock.h guard.h \
 		connection_base.h worker_thread.h timing_util.h \
 		mgr_fdrpoint.h smartmap.h dllbase.h dsm2.h streamConnection.h \
 		netports.h immutable.h dsm2err.h words.h optional.h \
@@ -901,7 +899,7 @@ fdrpipoll.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h mutex.h \
 		queue.h cparms.h configkey.h configval.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
-		critical_section.h atomic.h readers_writer_lock.h guard.h \
+		critical_section.h readers_writer_lock.h guard.h \
 		connection_base.h worker_thread.h timing_util.h \
 		mgr_fdrpoint.h smartmap.h dllbase.h dsm2.h streamConnection.h \
 		netports.h immutable.h dsm2err.h words.h optional.h \
@@ -914,19 +912,18 @@ fdrpoint.obj:	precompiled.h ctitime.h dlldefs.h fdrpoint.h \
 		types.h logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
 		yukon.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h
+		critical_section.h
 fdrpointidmap.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h fdrpointidmap.h pointtypes.h fdr.h pointdefs.h \
-		resolvers.h db_entry_defines.h
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h fdrpointidmap.h \
+		pointtypes.h fdr.h pointdefs.h resolvers.h db_entry_defines.h
 fdrpointlist.obj:	precompiled.h dllbase.h dsm2.h streamConnection.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		constants.h numstr.h logger.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h mutex.h \
@@ -941,12 +938,11 @@ fdrrccs.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h \
 		pointtypes.h message.h loggable.h msg_ptreg.h msg_cmd.h \
 		msg_reg.h msg_signal.h dllbase.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h \
-		fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h \
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h fdrsocketinterface.h fdrinterface.h \
+		msg_dbchg.h connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		database_connection.h dbaccess.h database_reader.h \
@@ -959,7 +955,7 @@ fdrrdex.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
 		message.h loggable.h msg_ptreg.h msg_cmd.h msg_reg.h \
 		msg_signal.h dllbase.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -977,7 +973,7 @@ fdrscadahelper.obj:	precompiled.h fdrscadahelper.h dlldefs.h \
 		fdrdebuglevel.h logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
 		yukon.h types.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h fdracsmulti.h fdrpointlist.h \
+		critical_section.h fdracsmulti.h fdrpointlist.h \
 		mgr_fdrpoint.h smartmap.h dllbase.h dsm2.h streamConnection.h \
 		netports.h timing_util.h immutable.h guard.h mutex.h \
 		dsm2err.h words.h optional.h macro_offset.h \
@@ -990,8 +986,8 @@ fdrscadahelper.obj:	precompiled.h fdrscadahelper.h dlldefs.h \
 		configval.h connection_base.h socket_helper.h win_helper.h \
 		fdrdnpslave.h dnp_object_analoginput.h dnp_objects.h \
 		prot_base.h xfer.h dnp_object_time.h prot_dnpSlave.h \
-		prot_dnp.h packet_finder.h dnp_application.h dnp_transport.h \
-		dnp_datalink.h dnp_datalink_packet.h dnp_configuration.h \
+		dnp_application.h dnp_transport.h dnp_datalink.h \
+		dnp_datalink_packet.h dnp_configuration.h \
 		dnp_object_binaryoutput.h fdrvalmetmulti.h
 fdrscadaserver.obj:	precompiled.h fdrscadaserver.h dlldefs.h \
 		fdrsocketserver.h queues.h cticalls.h yukon.h types.h \
@@ -1003,7 +999,7 @@ fdrscadaserver.obj:	precompiled.h fdrscadaserver.h dlldefs.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h mutex.h \
 		queue.h cparms.h configkey.h configval.h logger.h \
 		exception_helper.h boostutil.h utility.h numstr.h \
-		critical_section.h atomic.h readers_writer_lock.h guard.h \
+		critical_section.h readers_writer_lock.h guard.h \
 		connection_base.h mgr_fdrpoint.h smartmap.h dllbase.h dsm2.h \
 		streamConnection.h netports.h immutable.h dsm2err.h words.h \
 		optional.h macro_offset.h fdrpoint.h fdrdestination.h fdr.h \
@@ -1014,7 +1010,7 @@ fdrserverconnection.obj:	precompiled.h logger.h dlldefs.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h guard.h fdrinterface.h message.h \
+		critical_section.h guard.h fdrinterface.h message.h \
 		collectable.h msg_dbchg.h connection_client.h connection.h \
 		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
 		msg_reg.h mutex.h queue.h cparms.h configkey.h configval.h \
@@ -1030,8 +1026,8 @@ fdrservice.obj:	precompiled.h cparms.h dlldefs.h configkey.h \
 		configval.h logger.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
 		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
-		numstr.h critical_section.h atomic.h guard.h fdrservice.h \
-		cservice.h thread_monitor.h smartmap.h dllbase.h dsm2.h \
+		numstr.h critical_section.h guard.h fdrservice.h cservice.h \
+		thread_monitor.h smartmap.h dllbase.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		readers_writer_lock.h queue.h thread.h thread_register_data.h \
@@ -1044,30 +1040,28 @@ fdrsimplebase.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h pointdefs.h \
 		pointtypes.h message.h loggable.h msg_ptreg.h msg_cmd.h \
 		msg_reg.h msg_signal.h dllbase.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h utility.h queues.h cticalls.h \
-		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h dbaccess.h \
-		resolvers.h db_entry_defines.h fdr.h fdrdebuglevel.h \
-		fdrinterface.h msg_dbchg.h connection_client.h connection.h \
-		queue.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h database_connection.h database_reader.h \
-		row_reader.h fdrpointlist.h fdrsimplebase.h \
-		fdrasciiimportbase.h
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h queues.h cticalls.h os2_2w32.h constants.h \
+		numstr.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h dbaccess.h resolvers.h \
+		db_entry_defines.h fdr.h fdrdebuglevel.h fdrinterface.h \
+		msg_dbchg.h connection_client.h connection.h queue.h \
+		readers_writer_lock.h connection_base.h worker_thread.h \
+		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h \
+		database_connection.h database_reader.h row_reader.h \
+		fdrpointlist.h fdrsimplebase.h fdrasciiimportbase.h
 fdrsinglesocket.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h configkey.h configval.h msg_multi.h collectable.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h pointdefs.h \
 		pointtypes.h message.h loggable.h msg_ptreg.h msg_cmd.h \
 		msg_reg.h msg_signal.h dllbase.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h utility.h queues.h cticalls.h \
-		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h \
-		fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h \
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h queues.h cticalls.h os2_2w32.h constants.h \
+		numstr.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h fdrsocketinterface.h fdrinterface.h \
+		msg_dbchg.h connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		database_connection.h dbaccess.h database_reader.h \
@@ -1078,12 +1072,12 @@ fdrsocketconnection.obj:	precompiled.h logger.h dlldefs.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h guard.h fdrsocketlayer.h \
+		critical_section.h guard.h fdrsocketlayer.h \
 		fdrsocketconnection.h socket_helper.h timing_util.h \
 		win_helper.h worker_thread.h
 fdrsocketinterface.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		dllbase.h dsm2.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h netports.h timing_util.h immutable.h atomic.h \
+		ctidbgmem.h netports.h timing_util.h immutable.h \
 		critical_section.h guard.h utility.h queues.h cticalls.h \
 		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
@@ -1102,11 +1096,11 @@ fdrsocketlayer.obj:	precompiled.h logger.h dlldefs.h streamBuffer.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
 		utility.h ctitime.h queues.h cticalls.h yukon.h types.h \
 		ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h guard.h socket_helper.h \
-		timing_util.h win_helper.h fdrinterface.h message.h \
-		collectable.h msg_dbchg.h connection_client.h connection.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h mutex.h queue.h cparms.h configkey.h configval.h \
+		critical_section.h guard.h socket_helper.h timing_util.h \
+		win_helper.h fdrinterface.h message.h collectable.h \
+		msg_dbchg.h connection_client.h connection.h msg_multi.h \
+		msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h \
+		mutex.h queue.h cparms.h configkey.h configval.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h dllbase.h dsm2.h streamConnection.h \
 		netports.h immutable.h dsm2err.h words.h optional.h \
@@ -1120,7 +1114,7 @@ fdrsocketserver.obj:	precompiled.h cparms.h dlldefs.h configkey.h \
 		types.h ctidbgmem.h pointdefs.h pointtypes.h message.h \
 		ctitime.h loggable.h msg_ptreg.h msg_cmd.h msg_reg.h \
 		msg_signal.h dllbase.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -1138,7 +1132,7 @@ fdrstec.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
 		message.h loggable.h msg_ptreg.h msg_cmd.h msg_reg.h \
 		msg_signal.h dllbase.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -1153,7 +1147,7 @@ fdrtelegyr.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
 		message.h loggable.h msg_ptreg.h msg_cmd.h msg_reg.h \
 		msg_signal.h dllbase.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -1169,7 +1163,7 @@ fdrtextexport.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h configkey.h configval.h msg_cmd.h message.h \
 		ctidbgmem.h collectable.h loggable.h pointtypes.h dllbase.h \
 		dsm2.h streamConnection.h yukon.h types.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -1186,22 +1180,21 @@ fdrtextfilebase.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		msg_pdata.h yukon.h types.h ctidbgmem.h pointdefs.h \
 		pointtypes.h message.h loggable.h dllbase.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h utility.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h boostutil.h \
-		mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		fdrtextfilebase.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h msg_ptreg.h msg_reg.h \
-		queue.h readers_writer_lock.h connection_base.h \
-		worker_thread.h mgr_fdrpoint.h smartmap.h fdrpoint.h \
-		fdrdestination.h fdr.h database_connection.h dbaccess.h \
-		database_reader.h row_reader.h fdrdebuglevel.h fdrpointlist.h \
-		msg_cmd.h TextFileInterfaceParts.h
+		critical_section.h guard.h utility.h queues.h cticalls.h \
+		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h fdrtextfilebase.h \
+		fdrinterface.h msg_dbchg.h connection_client.h connection.h \
+		msg_ptreg.h msg_reg.h queue.h readers_writer_lock.h \
+		connection_base.h worker_thread.h mgr_fdrpoint.h smartmap.h \
+		fdrpoint.h fdrdestination.h fdr.h database_connection.h \
+		dbaccess.h database_reader.h row_reader.h fdrdebuglevel.h \
+		fdrpointlist.h msg_cmd.h TextFileInterfaceParts.h
 fdrtextimport.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cparms.h configkey.h configval.h msg_cmd.h message.h \
 		ctidbgmem.h collectable.h loggable.h pointtypes.h dllbase.h \
 		dsm2.h streamConnection.h yukon.h types.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -1218,7 +1211,7 @@ fdrtristate.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
 		message.h loggable.h msg_ptreg.h msg_cmd.h msg_reg.h \
 		msg_signal.h dllbase.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -1230,7 +1223,7 @@ fdrtristate.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		row_reader.h fdrdebuglevel.h fdrpointlist.h
 fdrtristatesub.obj:	precompiled.h dllbase.h dsm2.h streamConnection.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		constants.h numstr.h logger.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h mutex.h \
@@ -1250,12 +1243,11 @@ fdrvalmet.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h utility.h \
 		msg_multi.h collectable.h msg_pdata.h pointdefs.h \
 		pointtypes.h message.h loggable.h msg_ptreg.h msg_cmd.h \
 		msg_reg.h msg_signal.h dllbase.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h \
-		fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h \
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h fdrsocketinterface.h fdrinterface.h \
+		msg_dbchg.h connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		database_connection.h dbaccess.h database_reader.h \
@@ -1268,12 +1260,11 @@ fdrvalmetmulti.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		configval.h msg_multi.h collectable.h msg_pdata.h pointdefs.h \
 		pointtypes.h message.h loggable.h msg_ptreg.h msg_cmd.h \
 		msg_reg.h msg_signal.h dllbase.h dsm2.h streamConnection.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h logger.h streamBuffer.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h \
-		fdrsocketinterface.h fdrinterface.h msg_dbchg.h \
-		connection_client.h connection.h queue.h \
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h logger.h streamBuffer.h string_util.h \
+		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h fdrsocketinterface.h fdrinterface.h \
+		msg_dbchg.h connection_client.h connection.h queue.h \
 		readers_writer_lock.h connection_base.h worker_thread.h \
 		mgr_fdrpoint.h smartmap.h fdrpoint.h fdrdestination.h fdr.h \
 		database_connection.h dbaccess.h database_reader.h \
@@ -1287,7 +1278,7 @@ fdrvalmetutil.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
 		mgr_fdrpoint.h smartmap.h boostutil.h utility.h numstr.h \
 		dllbase.h dsm2.h streamConnection.h netports.h timing_util.h \
-		immutable.h atomic.h critical_section.h guard.h logger.h \
+		immutable.h critical_section.h guard.h logger.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		readers_writer_lock.h fdrpoint.h pointtypes.h \
@@ -1296,7 +1287,7 @@ fdrvalmetutil.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h \
 		configval.h
 fdrwabash.obj:	precompiled.h dllbase.h dsm2.h streamConnection.h \
 		yukon.h types.h ctidbgmem.h dlldefs.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		constants.h numstr.h logger.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h mutex.h \
@@ -1314,7 +1305,7 @@ fdrxa21lm.obj:	precompiled.h ctitime.h dlldefs.h ctidate.h cparms.h \
 		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
 		message.h loggable.h msg_ptreg.h msg_cmd.h msg_reg.h \
 		msg_signal.h dllbase.h dsm2.h streamConnection.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
 		logger.h streamBuffer.h string_util.h exception_helper.h \
 		boostutil.h mutex.h dsm2err.h words.h optional.h \
@@ -1331,21 +1322,21 @@ livedatatypes.obj:	precompiled.h livedatatypes.h pointdefs.h cparms.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
 		utility.h ctitime.h queues.h cticalls.h yukon.h types.h \
 		ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h guard.h
+		critical_section.h guard.h
 livedata_rtp_api.obj:	precompiled.h livedata_rtp_api.h logger.h \
 		dlldefs.h streamBuffer.h loggable.h string_util.h \
 		exception_helper.h boostutil.h utility.h ctitime.h queues.h \
 		cticalls.h yukon.h types.h ctidbgmem.h os2_2w32.h constants.h \
-		numstr.h critical_section.h atomic.h guard.h RTP_APIW.H RTP.H
+		numstr.h critical_section.h guard.h RTP_APIW.H RTP.H
 mgr_fdrpoint.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
-		streamBuffer.h loggable.h string_util.h exception_helper.h \
-		boostutil.h mutex.h dsm2err.h words.h optional.h \
-		macro_offset.h resolvers.h pointtypes.h db_entry_defines.h \
-		fdr.h pointdefs.h fdrdebuglevel.h mgr_fdrpoint.h smartmap.h \
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h resolvers.h \
+		pointtypes.h db_entry_defines.h fdr.h pointdefs.h \
+		fdrdebuglevel.h mgr_fdrpoint.h smartmap.h \
 		readers_writer_lock.h fdrpoint.h fdrdestination.h \
 		database_connection.h database_reader.h row_reader.h \
 		FdrException.h
@@ -1355,7 +1346,7 @@ telegyrcontrolcenter.obj:	precompiled.h telegyrcontrolcenter.h \
 		mutex.h logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
 		yukon.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h
+		critical_section.h
 telegyrgroup.obj:	precompiled.h telegyrgroup.h ctitime.h dlldefs.h \
 		fdr.h pointdefs.h fdrpoint.h pointtypes.h fdrdestination.h \
 		loggable.h types.h
@@ -1364,10 +1355,10 @@ test_fdrdnpslave.obj:	fdrdnpslave.h dlldefs.h queues.h cticalls.h \
 		fdrpointlist.h mgr_fdrpoint.h smartmap.h boostutil.h \
 		utility.h ctitime.h numstr.h dllbase.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h logger.h streamBuffer.h \
-		loggable.h string_util.h exception_helper.h mutex.h dsm2err.h \
-		words.h optional.h macro_offset.h readers_writer_lock.h \
-		fdrpoint.h pointtypes.h fdrdestination.h fdr.h pointdefs.h \
+		critical_section.h guard.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h readers_writer_lock.h fdrpoint.h \
+		pointtypes.h fdrdestination.h fdr.h pointdefs.h \
 		database_connection.h dbaccess.h database_reader.h \
 		row_reader.h fdrscadaserver.h fdrsocketserver.h \
 		fdrclientserverconnection.h serverconnection.h \
@@ -1377,11 +1368,10 @@ test_fdrdnpslave.obj:	fdrdnpslave.h dlldefs.h queues.h cticalls.h \
 		configkey.h configval.h connection_base.h fdrdebuglevel.h \
 		msg_cmd.h socket_helper.h win_helper.h \
 		dnp_object_analoginput.h dnp_objects.h prot_base.h xfer.h \
-		dnp_object_time.h prot_dnpSlave.h prot_dnp.h packet_finder.h \
-		dnp_application.h dnp_transport.h dnp_datalink.h \
-		dnp_datalink_packet.h dnp_configuration.h \
-		dnp_object_binaryoutput.h boost_test_helpers.h \
-		millisecond_timer.h
+		dnp_object_time.h prot_dnpSlave.h dnp_application.h \
+		dnp_transport.h dnp_datalink.h dnp_datalink_packet.h \
+		dnp_configuration.h dnp_object_binaryoutput.h \
+		boost_test_helpers.h millisecond_timer.h
 test_fdrtelegyr.obj:	fdrtelegyr.h dlldefs.h fdrinterface.h message.h \
 		ctitime.h ctidbgmem.h collectable.h loggable.h msg_dbchg.h \
 		yukon.h types.h connection_client.h connection.h msg_multi.h \
@@ -1389,7 +1379,7 @@ test_fdrtelegyr.obj:	fdrtelegyr.h dlldefs.h fdrinterface.h message.h \
 		mutex.h queue.h cparms.h configkey.h configval.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h readers_writer_lock.h guard.h \
+		critical_section.h readers_writer_lock.h guard.h \
 		connection_base.h worker_thread.h timing_util.h \
 		mgr_fdrpoint.h smartmap.h dllbase.h dsm2.h streamConnection.h \
 		netports.h immutable.h dsm2err.h words.h optional.h \
@@ -1405,7 +1395,7 @@ test_fdrtextimport.obj:	fdrtextimport.h dlldefs.h fdrtextfilebase.h \
 		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h configkey.h \
 		configval.h logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
-		os2_2w32.h constants.h numstr.h critical_section.h atomic.h \
+		os2_2w32.h constants.h numstr.h critical_section.h \
 		readers_writer_lock.h guard.h connection_base.h \
 		worker_thread.h timing_util.h mgr_fdrpoint.h smartmap.h \
 		dllbase.h dsm2.h streamConnection.h netports.h immutable.h \
@@ -1420,7 +1410,7 @@ test_fdrtristatesub.obj:	fdrTriStateSub.h dlldefs.h fdrftpinterface.h \
 		msg_ptreg.h msg_reg.h mutex.h queue.h cparms.h configkey.h \
 		configval.h logger.h streamBuffer.h string_util.h \
 		exception_helper.h boostutil.h utility.h queues.h cticalls.h \
-		os2_2w32.h constants.h numstr.h critical_section.h atomic.h \
+		os2_2w32.h constants.h numstr.h critical_section.h \
 		readers_writer_lock.h guard.h connection_base.h \
 		worker_thread.h timing_util.h mgr_fdrpoint.h smartmap.h \
 		dllbase.h dsm2.h streamConnection.h netports.h immutable.h \
@@ -1433,10 +1423,10 @@ textfileinterfaceparts.obj:	precompiled.h cparms.h dlldefs.h \
 		yukon.h types.h ctidbgmem.h pointdefs.h pointtypes.h \
 		message.h ctitime.h loggable.h dllbase.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h utility.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
-		streamBuffer.h string_util.h exception_helper.h boostutil.h \
-		mutex.h dsm2err.h words.h optional.h macro_offset.h \
+		critical_section.h guard.h utility.h queues.h cticalls.h \
+		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h \
 		TextFileInterfaceParts.h
 #ENDUPDATE#
 

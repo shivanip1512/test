@@ -118,7 +118,7 @@ clean:
 test_mgr_ptclients.obj:	mgr_ptclients.h dlldefs.h mgr_point.h \
 		pt_base.h dbmemobject.h tbl_pt_base.h row_reader.h ctitime.h \
 		dllbase.h dsm2.h streamConnection.h yukon.h types.h \
-		ctidbgmem.h netports.h timing_util.h immutable.h atomic.h \
+		ctidbgmem.h netports.h timing_util.h immutable.h \
 		critical_section.h guard.h utility.h queues.h cticalls.h \
 		os2_2w32.h constants.h numstr.h logger.h streamBuffer.h \
 		loggable.h string_util.h exception_helper.h boostutil.h \
@@ -138,7 +138,7 @@ test_mgr_ptclients.obj:	mgr_ptclients.h dlldefs.h mgr_point.h \
 		tbl_pt_analog.h
 test_signalmanager.obj:	tbl_pt_alarm.h dlldefs.h dllbase.h dsm2.h \
 		streamConnection.h yukon.h types.h ctidbgmem.h netports.h \
-		timing_util.h immutable.h atomic.h critical_section.h guard.h \
+		timing_util.h immutable.h critical_section.h guard.h \
 		utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
 		constants.h numstr.h logger.h streamBuffer.h loggable.h \
 		string_util.h exception_helper.h boostutil.h mutex.h \
@@ -153,7 +153,7 @@ test_vangogh.obj:	ctivangogh.h con_mgr.h connection_server.h \
 		mutex.h queue.h cparms.h configkey.h configval.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h readers_writer_lock.h guard.h \
+		critical_section.h readers_writer_lock.h guard.h \
 		connection_base.h worker_thread.h timing_util.h \
 		connection_listener.h ctibase.h streamSocketConnection.h \
 		streamConnection.h netports.h immutable.h socket_helper.h \

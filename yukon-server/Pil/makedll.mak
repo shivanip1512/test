@@ -106,8 +106,8 @@ deps:
 exe_pcreq.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
 		collectable.h loggable.h pilserver.h dsm2.h \
 		streamConnection.h yukon.h types.h netports.h timing_util.h \
-		immutable.h atomic.h critical_section.h guard.h utility.h \
-		queues.h cticalls.h os2_2w32.h constants.h numstr.h logger.h \
+		immutable.h critical_section.h guard.h utility.h queues.h \
+		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		mutex.h dsm2err.h words.h optional.h macro_offset.h \
 		server_b.h con_mgr.h connection_server.h connection.h \
@@ -135,12 +135,12 @@ mgr_rfn_request.obj:	precompiled.h mgr_rfn_request.h dlldefs.h \
 		prot_e2eDataTransfer.h dev_rfn.h rfn_identifier.h \
 		streamBuffer.h loggable.h cmd_rfn.h cmd_device.h dev_single.h \
 		dsm2.h streamConnection.h yukon.h types.h ctidbgmem.h \
-		netports.h timing_util.h immutable.h atomic.h \
-		critical_section.h guard.h utility.h ctitime.h queues.h \
-		cticalls.h os2_2w32.h constants.h numstr.h logger.h \
-		string_util.h exception_helper.h boostutil.h mutex.h \
-		dsm2err.h words.h optional.h macro_offset.h dev_base.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h logger.h string_util.h \
+		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
+		optional.h macro_offset.h dev_base.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h \
 		tbl_paoexclusion.h row_reader.h config_device.h dllbase.h \
 		rte_base.h dbmemobject.h ctibase.h streamSocketConnection.h \
 		socket_helper.h win_helper.h message.h collectable.h \
@@ -161,11 +161,11 @@ pilglob.obj:	precompiled.h os2_2w32.h dlldefs.h types.h
 pilserver.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		yukon.h ctidbgmem.h dev_grp_versacom.h dev_base.h dsm2.h \
 		streamConnection.h netports.h timing_util.h immutable.h \
-		atomic.h critical_section.h guard.h utility.h ctitime.h \
-		queues.h constants.h numstr.h logger.h streamBuffer.h \
-		loggable.h string_util.h exception_helper.h boostutil.h \
-		mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		cmdparse.h ctitokenizer.h parsevalue.h dev_exclusion.h \
+		critical_section.h guard.h utility.h ctitime.h queues.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h cmdparse.h \
+		ctitokenizer.h parsevalue.h dev_exclusion.h \
 		tbl_paoexclusion.h row_reader.h config_device.h dllbase.h \
 		rte_base.h dbmemobject.h ctibase.h streamSocketConnection.h \
 		socket_helper.h win_helper.h message.h collectable.h \
@@ -204,35 +204,35 @@ pil_exefct.obj:	precompiled.h executorfactory.h dlldefs.h pil_exefct.h \
 		ctitime.h collectable.h loggable.h logger.h streamBuffer.h \
 		string_util.h exception_helper.h boostutil.h utility.h \
 		queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h
+		critical_section.h
 test_pilserver.obj:	pilserver.h dsm2.h streamConnection.h yukon.h \
 		types.h ctidbgmem.h dlldefs.h netports.h timing_util.h \
-		immutable.h atomic.h critical_section.h guard.h utility.h \
-		ctitime.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		logger.h streamBuffer.h loggable.h string_util.h \
-		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h server_b.h con_mgr.h \
-		connection_server.h connection.h message.h collectable.h \
-		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
-		msg_reg.h queue.h cparms.h configkey.h configval.h \
-		readers_writer_lock.h connection_base.h worker_thread.h \
-		connection_listener.h ctibase.h streamSocketConnection.h \
-		socket_helper.h win_helper.h dllbase.h smartmap.h \
-		msg_pcrequest.h mgr_device.h rtdb.h dev_base.h cmdparse.h \
-		ctitokenizer.h parsevalue.h dev_exclusion.h \
-		tbl_paoexclusion.h row_reader.h config_device.h rte_base.h \
-		dbmemobject.h tbl_pao_lite.h tbl_rtcomm.h dbaccess.h \
-		resolvers.h db_entry_defines.h msg_signal.h \
-		tbl_static_paoinfo.h encryption.h std_helper.h tbl_base.h \
-		tbl_scanrate.h database_connection.h tbl_dyn_paoinfo.h \
-		pt_base.h tbl_pt_base.h slctdev.h mgr_point.h mgr_route.h \
-		repeaterrole.h mgr_config.h devicetypes.h amq_constants.h \
-		mgr_rfn_request.h prot_e2eDataTransfer.h dev_rfn.h \
-		rfn_identifier.h cmd_rfn.h cmd_device.h dev_single.h \
-		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h xfer.h \
-		exceptions.h rfn_asid.h rfn_e2e_messenger.h \
-		RfnE2eDataIndicationMsg.h RfnE2eMsg.h RfnE2eDataConfirmMsg.h \
-		RfnE2eDataRequestMsg.h cmd_rfn_demandFreeze.h
+		immutable.h critical_section.h guard.h utility.h ctitime.h \
+		queues.h cticalls.h os2_2w32.h constants.h numstr.h logger.h \
+		streamBuffer.h loggable.h string_util.h exception_helper.h \
+		boostutil.h mutex.h dsm2err.h words.h optional.h \
+		macro_offset.h server_b.h con_mgr.h connection_server.h \
+		connection.h message.h collectable.h msg_multi.h msg_pdata.h \
+		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
+		cparms.h configkey.h configval.h readers_writer_lock.h \
+		connection_base.h worker_thread.h connection_listener.h \
+		ctibase.h streamSocketConnection.h socket_helper.h \
+		win_helper.h dllbase.h smartmap.h msg_pcrequest.h \
+		mgr_device.h rtdb.h dev_base.h cmdparse.h ctitokenizer.h \
+		parsevalue.h dev_exclusion.h tbl_paoexclusion.h row_reader.h \
+		config_device.h rte_base.h dbmemobject.h tbl_pao_lite.h \
+		tbl_rtcomm.h dbaccess.h resolvers.h db_entry_defines.h \
+		msg_signal.h tbl_static_paoinfo.h encryption.h std_helper.h \
+		tbl_base.h tbl_scanrate.h database_connection.h \
+		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h slctdev.h \
+		mgr_point.h mgr_route.h repeaterrole.h mgr_config.h \
+		devicetypes.h amq_constants.h mgr_rfn_request.h \
+		prot_e2eDataTransfer.h dev_rfn.h rfn_identifier.h cmd_rfn.h \
+		cmd_device.h dev_single.h msg_pcreturn.h tbl_dv_scandata.h \
+		tbl_dv_wnd.h xfer.h exceptions.h rfn_asid.h \
+		rfn_e2e_messenger.h RfnE2eDataIndicationMsg.h RfnE2eMsg.h \
+		RfnE2eDataConfirmMsg.h RfnE2eDataRequestMsg.h \
+		cmd_rfn_demandFreeze.h
 #ENDUPDATE#
 
 include $(COMPILEBASE)\versioninfo.inc

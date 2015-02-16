@@ -103,20 +103,20 @@ test_gen_reply.obj:	trx_711.h trx_info.h logger.h dlldefs.h \
 		streamBuffer.h loggable.h string_util.h exception_helper.h \
 		boostutil.h utility.h ctitime.h queues.h cticalls.h yukon.h \
 		types.h ctidbgmem.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h porter.h dsm2.h \
-		streamConnection.h netports.h timing_util.h immutable.h \
-		guard.h mutex.h dsm2err.h words.h optional.h macro_offset.h \
-		devicetypes.h portdecl.h rte_base.h dbmemobject.h cmdparse.h \
-		ctitokenizer.h parsevalue.h ctibase.h \
-		streamSocketConnection.h socket_helper.h win_helper.h \
-		dllbase.h message.h collectable.h tbl_pao_lite.h row_reader.h \
-		tbl_rtcomm.h dbaccess.h resolvers.h pointtypes.h \
-		db_entry_defines.h msg_signal.h tbl_static_paoinfo.h \
-		encryption.h std_helper.h port_base.h logManager.h \
-		module_util.h tbl_port_base.h tbl_paoexclusion.h xfer.h \
-		dev_base.h dev_exclusion.h tbl_base.h tbl_scanrate.h \
-		database_connection.h tbl_dyn_paoinfo.h pt_base.h \
-		tbl_pt_base.h pointdefs.h cparms.h configkey.h configval.h
+		critical_section.h porter.h dsm2.h streamConnection.h \
+		netports.h timing_util.h immutable.h guard.h mutex.h \
+		dsm2err.h words.h optional.h macro_offset.h devicetypes.h \
+		portdecl.h rte_base.h dbmemobject.h cmdparse.h ctitokenizer.h \
+		parsevalue.h ctibase.h streamSocketConnection.h \
+		socket_helper.h win_helper.h dllbase.h message.h \
+		collectable.h tbl_pao_lite.h row_reader.h tbl_rtcomm.h \
+		dbaccess.h resolvers.h pointtypes.h db_entry_defines.h \
+		msg_signal.h tbl_static_paoinfo.h encryption.h std_helper.h \
+		port_base.h logManager.h module_util.h tbl_port_base.h \
+		tbl_paoexclusion.h xfer.h dev_base.h dev_exclusion.h \
+		tbl_base.h tbl_scanrate.h database_connection.h \
+		tbl_dyn_paoinfo.h pt_base.h tbl_pt_base.h pointdefs.h \
+		cparms.h configkey.h configval.h
 test_lantronixencryption.obj:	encryption_lantronix.h EncodingFilter.h
 test_paostatisticsrecord.obj:	PaoStatisticsRecord.h ctitime.h \
 		dlldefs.h yukon.h types.h ctidbgmem.h ctidate.h

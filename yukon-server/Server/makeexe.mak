@@ -62,7 +62,7 @@ con_mgr.obj:	precompiled.h dlldefs.h collectable.h con_mgr.h \
 		mutex.h queue.h cparms.h configkey.h configval.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h readers_writer_lock.h guard.h \
+		critical_section.h readers_writer_lock.h guard.h \
 		connection_base.h worker_thread.h timing_util.h \
 		connection_listener.h ctibase.h streamSocketConnection.h \
 		streamConnection.h netports.h immutable.h socket_helper.h \
@@ -77,7 +77,7 @@ executor.obj:	precompiled.h executor.h dlldefs.h yukon.h types.h \
 		mutex.h queue.h cparms.h configkey.h configval.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h readers_writer_lock.h guard.h \
+		critical_section.h readers_writer_lock.h guard.h \
 		connection_base.h worker_thread.h timing_util.h \
 		connection_listener.h ctibase.h streamSocketConnection.h \
 		streamConnection.h netports.h immutable.h socket_helper.h \
@@ -88,7 +88,7 @@ executorfactory.obj:	precompiled.h executorfactory.h dlldefs.h \
 		exe_cmd.h executor.h yukon.h types.h exe_reg.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h
+		critical_section.h
 exe_cmd.obj:	precompiled.h dlldefs.h con_mgr.h connection_server.h \
 		connection.h message.h ctitime.h ctidbgmem.h collectable.h \
 		loggable.h msg_multi.h msg_pdata.h yukon.h types.h \
@@ -96,7 +96,7 @@ exe_cmd.obj:	precompiled.h dlldefs.h con_mgr.h connection_server.h \
 		queue.h cparms.h configkey.h configval.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h readers_writer_lock.h guard.h \
+		critical_section.h readers_writer_lock.h guard.h \
 		connection_base.h worker_thread.h timing_util.h \
 		connection_listener.h ctibase.h streamSocketConnection.h \
 		streamConnection.h netports.h immutable.h socket_helper.h \
@@ -110,7 +110,7 @@ exe_reg.obj:	precompiled.h message.h ctitime.h dlldefs.h ctidbgmem.h \
 		mutex.h queue.h cparms.h configkey.h configval.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h readers_writer_lock.h guard.h \
+		critical_section.h readers_writer_lock.h guard.h \
 		connection_base.h worker_thread.h timing_util.h \
 		connection_listener.h ctibase.h streamSocketConnection.h \
 		streamConnection.h netports.h immutable.h socket_helper.h \
@@ -127,7 +127,7 @@ server_b.obj:	precompiled.h server_b.h con_mgr.h connection_server.h \
 		mutex.h queue.h cparms.h configkey.h configval.h logger.h \
 		streamBuffer.h string_util.h exception_helper.h boostutil.h \
 		utility.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		critical_section.h atomic.h readers_writer_lock.h guard.h \
+		critical_section.h readers_writer_lock.h guard.h \
 		connection_base.h worker_thread.h timing_util.h \
 		connection_listener.h ctibase.h streamSocketConnection.h \
 		streamConnection.h netports.h immutable.h socket_helper.h \
