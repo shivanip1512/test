@@ -34,10 +34,10 @@ public class DeviceGroupCollectionHelperImpl implements DeviceGroupCollectionHel
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired @Qualifier("memory") private DeviceMemoryCollectionProducer memoryProducer;
+    @Autowired private @Qualifier("memory") DeviceMemoryCollectionProducer memoryProducer;
     
     private final String key = "yukon.common.device.bulk.bulkAction.collection.group";
-
+    
     public String getSupportedType() {
         return DeviceCollectionType.group.name();
     }

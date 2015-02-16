@@ -162,7 +162,7 @@ public class DeviceMemoryCollectionProducer implements DeviceCollectionProducer 
             
             @Override
             public DeviceCollectionType getCollectionType() {
-                return DeviceCollectionType.group;
+                return DeviceCollectionType.groups;
             }
             
             @Override
