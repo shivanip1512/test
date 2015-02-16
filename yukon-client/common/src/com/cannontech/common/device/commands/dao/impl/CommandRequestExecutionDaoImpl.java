@@ -84,7 +84,7 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
         sql.append("CommandRequestExecContextId, ExecutionStatus, CommandRequestType");
         sql.append("FROM (SELECT cre.CommandRequestExecId, cre.StartTime, cre.StopTime,  cre.RequestCount, cre.CommandRequestExecType, ");
         sql.append("             cre.Username, cre.CommandRequestExecContextId, cre.ExecutionStatus, cre.CommandRequestType, ");
-        sql.append("             ROW_NUMBER() OVER (ORDER BY cre.StartTime DESC) AS RowNum");
+        sql.append("             ROW_NUMBER() OVER (ORDER BY cre.StartTime DESC) AS counter");
         sql.append("      FROM CommandRequestExec cre");
         if (jobId > 0) {
             sql.append(" JOIN ScheduledGrpCommandRequest sgcr ON sgcr.CommandRequestExecContextId = cre.CommandRequestExecContextId");
@@ -99,8 +99,8 @@ public class CommandRequestExecutionDaoImpl implements CommandRequestExecutionDa
         if (type != null) {
             sql.append("    AND cre.CommandRequestExecType").eq_k(type);
         }
-        sql.append(") AS tbl");
-        sql.append("WHERE tbl.RowNum between").append(paging.getOneBasedStartIndex());
+        sql.append(") tbl");
+        sql.append("WHERE tbl.counter between").append(paging.getOneBasedStartIndex());
         sql.append("AND").append(paging.getOneBasedEndIndex());
               
         List<CommandRequestExecution> executions = yukonJdbcTemplate.query(sql, rowAndFieldMapper);
