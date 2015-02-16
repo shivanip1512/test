@@ -463,6 +463,15 @@ server_client_serialization_test.obj:	precompiled.h message.h \
 		configval.h readers_writer_lock.h connection_base.h \
 		worker_thread.h connection_listener.h logManager.h \
 		module_util.h std_helper.h
+streamamqconnection.obj:	precompiled.h streamAmqConnection.h \
+		streamConnection.h yukon.h types.h ctidbgmem.h dlldefs.h \
+		netports.h timing_util.h immutable.h critical_section.h \
+		guard.h utility.h ctitime.h queues.h cticalls.h os2_2w32.h \
+		constants.h numstr.h logger.h streamBuffer.h loggable.h \
+		string_util.h exception_helper.h boostutil.h amq_connection.h \
+		thread.h mutex.h StreamableMessage.h connection_base.h \
+		RfnBroadcastReplyMessage.h dsm2.h dsm2err.h words.h \
+		optional.h macro_offset.h millisecond_timer.h win_helper.h
 test_message.obj:	message.h ctitime.h dlldefs.h ctidbgmem.h \
 		collectable.h loggable.h queue.h cparms.h configkey.h \
 		configval.h logger.h streamBuffer.h string_util.h \

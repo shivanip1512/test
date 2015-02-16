@@ -211,8 +211,10 @@ scanner.obj:	precompiled.h dbaccess.h dllbase.h dsm2.h \
 		tbl_pt_unit.h tbl_unitmeasure.h dev_welco.h dev_idlc.h \
 		dev_remote.h tbl_dialup.h tbl_direct.h tbl_dv_idlcremote.h \
 		trx_info.h trx_711.h prot_welco.h msg_cmd.h msg_dbchg.h \
-		connection_client.h amq_constants.h module_util.h dllyukon.h \
-		thread_monitor.h thread.h thread_register_data.h boost_time.h \
+		connection_client.h amq_constants.h streamAmqConnection.h \
+		amq_connection.h thread.h StreamableMessage.h \
+		RfnBroadcastReplyMessage.h module_util.h dllyukon.h \
+		thread_monitor.h thread_register_data.h boost_time.h \
 		ThreadStatusKeeper.h database_transaction.h \
 		millisecond_timer.h
 scansvc.obj:	precompiled.h scanglob.h dlldefs.h scansvc.h cservice.h

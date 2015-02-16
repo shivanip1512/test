@@ -385,6 +385,10 @@ void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQ
     gActiveMQConnection->enqueueOutgoingMessage(queue, message, boost::none);
 }
 
+void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message)
+{
+    gActiveMQConnection->enqueueOutgoingMessage(queue, message, boost::none);
+}
 
 template<typename Msg>
 struct DeserializationHelper
@@ -624,12 +628,24 @@ const IM_EX_MSG OutboundQueue
 const IM_EX_MSG OutboundQueue
         OutboundQueue::NetworkManagerE2eDataRequest
                 ("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataRequest");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::ScannerOutMessages
+                ("com.eaton.eas.yukon.scanner.outmessages");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::ScannerInMessages
+                ("com.eaton.eas.yukon.scanner.inmessages");
 
 InboundQueue::InboundQueue(std::string name_) : name(name_) {}
 
 const IM_EX_MSG InboundQueue
         InboundQueue::NetworkManagerE2eDataIndication
                 ("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataIndication");
+const IM_EX_MSG InboundQueue
+        InboundQueue::ScannerOutMessages
+                ("com.eaton.eas.yukon.scanner.outmessages");
+const IM_EX_MSG InboundQueue
+        InboundQueue::ScannerInMessages
+                ("com.eaton.eas.yukon.scanner.inmessages");
 }
 }
 

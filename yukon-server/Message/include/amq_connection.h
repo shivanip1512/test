@@ -48,6 +48,8 @@ struct IM_EX_MSG OutboundQueue
     static const OutboundQueue CapControlOperationMessage;
     static const OutboundQueue RfnBroadcast;
     static const OutboundQueue NetworkManagerE2eDataRequest;
+    static const OutboundQueue ScannerOutMessages;
+    static const OutboundQueue ScannerInMessages;
 
 private:
     OutboundQueue(std::string name);
@@ -59,6 +61,8 @@ struct IM_EX_MSG InboundQueue
     std::string name;
 
     static const InboundQueue NetworkManagerE2eDataIndication;
+    static const InboundQueue ScannerOutMessages;
+    static const InboundQueue ScannerInMessages;
 
 private:
     InboundQueue(std::string name);
@@ -88,6 +92,7 @@ public:
     static void start();
 
     static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message);
+    static void enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message);
     template<class Msg>
     static void enqueueMessageWithCallbackFor(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type message, typename CallbackFor<Msg>::type callback);
     static void enqueueMessageWithCallback(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, SerializedMessageCallback callback);

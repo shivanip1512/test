@@ -31,6 +31,7 @@
 #include "cparms.h"
 #include "connection_client.h"
 #include "amq_constants.h"
+#include "streamAmqConnection.h"
 
 #include "module_util.h"
 #include "dllyukon.h"
@@ -89,6 +90,10 @@ INT     MakePorterRequests(list< OUTMESS* > &outList);
 
 Cti::ScannableDeviceManager ScannerDeviceManager;
 CtiPointManager             ScannerPointManager;
+
+Cti::StreamAmqConnection<CtiOutMessage, INMESS> PorterNexus(
+        Cti::Messaging::ActiveMQ::Queues::OutboundQueue::ScannerOutMessages,
+        Cti::Messaging::ActiveMQ::Queues::InboundQueue ::ScannerInMessages);
 
 extern BOOL ScannerQuit;
 
@@ -357,9 +362,6 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
         }
     }
 
-    /* open the port pipe */
-    PortPipeInit (NOWAIT);
-
     SET_CRT_OUTPUT_MODES;
     if(gConfigParms.isOpt("DEBUG_MEMORY") && gConfigParms.isTrue("DEBUG_MEMORY") )
         ENABLE_CRT_SHUTDOWN_CHECK;
@@ -597,75 +599,6 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
         acquireMutex(__LINE__);
 
-        /* Check if we need to reopen the port pipe */
-        if( ! PorterNexus.isValid() && ! ScannerQuit )
-        {
-            TimeNow = TimeNow.now();
-            int invcnt = TimeNow.second() - TimeNow.second() % 30;
-
-            while( ! PorterNexus.isValid() && ! ScannerQuit )
-            {
-
-                if(!(invcnt++ % 30) )     // Only gripe every 30 seconds.
-                {
-                    CTILOG_WARN(dout, "Port Control connection is not valid");
-                }
-
-                if(!(PortPipeInit(NOWAIT)))
-                {
-                    // Make sure we don't hang up on him again.
-                    LastPorterOutTime = PASTDATE;
-                    LastPorterInTime  = LastPorterInTime.now();
-
-                    CTILOG_INFO(dout, "Reconnected to Port Control");
-
-                    /* now walk through the scannable "Remote" devices */
-                    if(ScannerDeviceManager.entries())
-                    {
-                        ScannerDeviceManager.apply(applyResetScanFlags, NULL);
-                    }
-                }
-
-                // Check for the quit event every interation...
-                DWORD dwWait = WaitForMultipleObjects(2, hScanArray, FALSE, 1000);
-                switch(dwWait)
-                {
-                case WAIT_OBJECT_0: // This is a quit request
-                    {
-                        CTILOG_INFO(dout, "Quit Event Posted");
-                        ScannerQuit = TRUE;
-                        break;
-                    }
-                case WAIT_OBJECT_0 + 1: // scan request posted
-                    {
-                        ResetEvent(hScannerSyncs[ S_SCAN_EVENT ]);
-                        break;
-                    }
-                case WAIT_TIMEOUT:
-                    {
-                        break;
-                    }
-                case WAIT_FAILED:
-                    {
-                        const DWORD err = GetLastError();
-                        CTILOG_ERROR(dout, "Wait failed with error code "<< err <<" / "<< Cti::getSystemErrorMessage(err));
-                        Sleep(1000); // prevent run-away loops
-                        break;
-                    }
-                default:
-                    {
-                        CTILOG_ERROR(dout, "unexpected wait result ("<< dwWait <<")");
-                        Sleep(1000); // prevent run-away loops
-                    }
-                }
-            }
-        }
-
-        if(ScannerQuit)
-        {
-            continue;      // get us out of here!
-        }
-
         if( ! outList.empty() )
         {
             CTILOG_ERROR(dout, "outList should be empty");
@@ -698,18 +631,13 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             NextScan[DLC_LP_SCAN] = TimeOfNextLPScan();
         }
 
-
         TimeNow = TimeNow.now();
 
         if( LastPorterOutTime.seconds() > (LastPorterInTime.seconds() + (3600 * 6)) )
         {
-
             CTILOG_WARN(dout, "LastPorterOutTime > LastPorterInTime + (3600 * 6) seconds ("<<  LastPorterOutTime <<" > "<< LastPorterInTime <<" + (3600 * 6) seconds?");
 
             LastPorterOutTime = PASTDATE;  // Make sure we don't repeat this forever!
-
-            // I haven't heard from porter in a long long time...  Let's make sure he's init ok.
-            PorterNexus.close();
         }
 
         DWORD loop_elapsed_time = loop_timer.elapsed();
@@ -913,46 +841,25 @@ void waitForScannerQuitEvent(const unsigned long millis)
 
 void NexusThread (void *Arg)
 {
-    /* Define the return Pipe handle */
-    IM_EX_CTIBASE extern StreamSocketConnection PorterNexus;
-
     /* Misc. definitions */
     ULONG       i = 0;
 
     /* perform the wait loop forever */
     for(;!ScannerQuit;)
     {
-        /* Wait for the Nexus to come (?back?) up */
-        while( ! PorterNexus.isValid() && ! ScannerQuit )
-        {
-            if(!(i++ % 30))
-            {
-                PortPipeInit(NOWAIT);
-                CTILOG_INFO(dout, "NexusThread - Waiting for reconnection to Port Control");
-            }
+        std::unique_ptr<INMESS> InMessage;
 
-            waitForScannerQuitEvent(1000);
-        }
-
-        if( ScannerQuit )
-        {
-            continue; // get us out of here!
-        }
-
-        auto_ptr<INMESS> InMessage(new INMESS); // Note: INMESS has a memset zero in its constructor
-
-        size_t bytesRead = 0;
         try
         {
             /* get a result off the port pipe */
-            bytesRead = PorterNexus.read(InMessage.get(), sizeof(INMESS), Chrono::infinite, &hScannerSyncs[S_QUIT_EVENT]);
+            InMessage = PorterNexus.read(Chrono::infinite, &hScannerSyncs[S_QUIT_EVENT]);
         }
         catch( const StreamConnectionException &ex )
         {
             CTILOG_EXCEPTION_ERROR(dout, ex, "NexusThread - Could not read InMessage from porterNexus");
         }
 
-        if( bytesRead != sizeof(INMESS) )    // Make sure we have an InMessage worth!
+        if( ! InMessage )    // Make sure we have an InMessage!
         {
             if( ! ScannerQuit )
             {
@@ -980,7 +887,6 @@ void ScannerCleanUp ()
     ScannerQuit = TRUE;
 
     ScannerDeviceManager.deleteList();
-    PortPipeCleanup(0);
 
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15));
     Sleep(2000);
@@ -1509,14 +1415,6 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
 
     OUTMESS *OutMessage = NULL;
 
-    IM_EX_CTIBASE extern StreamSocketConnection PorterNexus;
-
-    /* if pipe shut down return the error */
-    if( ! PorterNexus.isValid() )
-    {
-        status = ClientErrors::PipeBroken;
-    }
-
     for( i = outList.size() ; status == ClientErrors::None && i > 0; i-- )
     {
         OutMessage = outList.front(); outList.pop_front();
@@ -1529,67 +1427,39 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
             OutMessage->ExpirationTime = CtiTime().seconds() + exptime;
         }
 
-        while( ! PorterNexus.isValid() && ! ScannerQuit )
+        /* And send them to porter */
+        if(ScannerDebugLevel & SCANNER_DEBUG_OUTREQUESTS)
         {
-            if(!(j++ % 30))
+            if(const CtiDeviceSPtr device = ScannerDeviceManager.getDeviceByID(OutMessage->TargetID))
             {
-                PortPipeInit(NOWAIT);
-
-                CTILOG_INFO(dout, "Waiting for reconnection to Port Control");
+                CTILOG_DEBUG(dout, "OutMessage to Device: "<< device->getName());
             }
-
-            CTISleep (1000L);
-
-            if(j > 900)
+            else
             {
-                CTILOG_ERROR(dout, "Waited for 900 seconds, considering Pipe Broken");
-
-                status = ClientErrors::PipeBroken;
-                break;              // Did not connect after 15 minutes!
+                CTILOG_DEBUG(dout, "OutMessage to TargetID: "<< OutMessage->TargetID);
             }
         }
 
-        /* And send them to porter */
-        if( PorterNexus.isValid() )
+        bool success = false;
+        boost::optional<std::string> errorCause;
+
+        try
         {
-            if(ScannerDebugLevel & SCANNER_DEBUG_OUTREQUESTS)
-            {
-                if(const CtiDeviceSPtr device = ScannerDeviceManager.getDeviceByID(OutMessage->TargetID))
-                {
-                    CTILOG_DEBUG(dout, "OutMessage to Device: "<< device->getName());
-                }
-                else
-                {
-                    CTILOG_DEBUG(dout, "OutMessage to TargetID: "<< OutMessage->TargetID);
-                }
-            }
+            success = PorterNexus.write(OutMessage, Chrono::seconds(30));
+        }
+        catch( const StreamConnectionException& ex )
+        {
+            errorCause = ex.what();
+        }
 
-            size_t bytesWritten = 0;
-            boost::optional<std::string> errorCause;
-
-            try
-            {
-                bytesWritten = PorterNexus.write(OutMessage, sizeof(OUTMESS), Chrono::seconds(30));
-            }
-            catch( const StreamConnectionException& ex )
-            {
-                errorCause = ex.what();
-            }
-
-            if( ! bytesWritten )
-            {
-                CTILOG_ERROR(dout, "Could not write to porter, closing connection"<<
-                        endl << "Reason: "<< (errorCause ? errorCause->c_str() : "Timeout"));
-
-                PorterNexus.close();
-            }
-            else if( bytesWritten != sizeof(OUTMESS) )
-            {
-                CTILOG_ERROR(dout, "Porter has been shorted by a few bytes (Wrote "<< bytesWritten <<"/"<< sizeof(OUTMESS) <<" bytes)"<<
-                        endl <<"Scannable ID "<< OutMessage->DeviceID <<" may be out-of-sync until 5 minutes past the next legitimate scan time");
-
-                LastPorterOutTime = LastPorterOutTime.now();
-            }
+        if( ! success )
+        {
+            CTILOG_ERROR(dout, "Could not write to porter, "
+                               "reason: "<< (errorCause ? errorCause->c_str() : "Timeout"));
+        }
+        else
+        {
+            LastPorterOutTime = CtiTime();
         }
 
         // Message is re-built on the other side, so clean it up!

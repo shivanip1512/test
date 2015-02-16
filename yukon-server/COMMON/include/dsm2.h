@@ -547,7 +547,3 @@ IM_EX_CTIBASE time_t         MidNightWas (time_t, USHORT);
 #define DSTACTIVE           0x8000
 #define DSTSET(q)  ((DSTFlag ()) ? (q | DSTACTIVE) : (q & ~DSTACTIVE))
 
-/* Prototypes from PEXEC.C */
-int   IM_EX_CTIBASE PortPipeInit (USHORT);
-void  IM_EX_CTIBASE PortPipeCleanup (ULONG Reason);
-

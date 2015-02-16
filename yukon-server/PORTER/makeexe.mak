@@ -407,20 +407,21 @@ porter.obj:	precompiled.h os2_2w32.h dlldefs.h types.h cticalls.h \
 		thread.h verification_objects.h boost_time.h \
 		StatisticsThread.h master.h elogger.h thread_monitor.h \
 		smartmap.h readers_writer_lock.h thread_register_data.h \
-		streamLocalConnection.h systemmsgthread.h connection.h \
-		msg_multi.h msg_pdata.h msg_ptreg.h msg_reg.h \
-		connection_base.h worker_thread.h mgr_device.h rtdb.h \
-		slctdev.h mgr_port.h portglob.h streamSocketListener.h \
-		c_port_interface.h mgr_route.h repeaterrole.h mgr_config.h \
-		mgr_point.h mgr_dyn_paoinfo.h port_thread_udp.h \
-		unsolicited_handler.h dev_single.h msg_pcrequest.h \
-		msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h exceptions.h \
-		msg_dbchg.h millisecond_timer.h port_udp.h port_serial.h \
-		tbl_port_settings.h tbl_port_timing.h tbl_port_tcpip.h \
-		EncodingFilterFactory.h EncodingFilter.h port_thread_tcp.h \
-		packet_finder.h port_tcp.h tcp_connection_manager.h \
-		tcp_connection.h port_thread_rf_da.h port_rf_da.h \
-		rfn_identifier.h rfn_e2e_messenger.h rfn_asid.h \
+		streamLocalConnection.h streamAmqConnection.h \
+		amq_connection.h StreamableMessage.h connection_base.h \
+		RfnBroadcastReplyMessage.h systemmsgthread.h connection.h \
+		msg_multi.h msg_pdata.h msg_ptreg.h msg_reg.h worker_thread.h \
+		mgr_device.h rtdb.h slctdev.h mgr_port.h portglob.h \
+		streamSocketListener.h c_port_interface.h mgr_route.h \
+		repeaterrole.h mgr_config.h mgr_point.h mgr_dyn_paoinfo.h \
+		port_thread_udp.h unsolicited_handler.h dev_single.h \
+		msg_pcrequest.h msg_pcreturn.h tbl_dv_scandata.h tbl_dv_wnd.h \
+		exceptions.h msg_dbchg.h millisecond_timer.h port_udp.h \
+		port_serial.h tbl_port_settings.h tbl_port_timing.h \
+		tbl_port_tcpip.h EncodingFilterFactory.h EncodingFilter.h \
+		port_thread_tcp.h packet_finder.h port_tcp.h \
+		tcp_connection_manager.h tcp_connection.h port_thread_rf_da.h \
+		port_rf_da.h rfn_identifier.h rfn_e2e_messenger.h rfn_asid.h \
 		RfnE2eDataIndicationMsg.h RfnE2eMsg.h RfnE2eDataConfirmMsg.h \
 		RfnE2eDataRequestMsg.h port_shr.h port_shr_ip.h msg_trace.h \
 		rte_macro.h tbl_rtmacro.h rte_xcu.h eventlog.h trx_711.h \

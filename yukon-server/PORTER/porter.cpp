@@ -28,6 +28,7 @@
 #include "elogger.h"
 #include "thread_monitor.h"
 #include "streamLocalConnection.h"
+#include "streamAmqConnection.h"
 #include "systemmsgthread.h"
 
 #include "logger.h"
@@ -131,7 +132,6 @@ Cti::Porter::SystemMsgThread _sysMsgThread(PorterSystemMessageQueue, DeviceManag
 
 using Cti::WorkerThread;
 
-WorkerThread _connThread (WorkerThread::Function(PorterConnectionThread)  .name("_connThread"));
 WorkerThread _dispThread (WorkerThread::Function(DispatchMsgHandlerThread).name("_dispThread"));
 WorkerThread _pilThread  (WorkerThread::Function(PorterInterfaceThread)   .name("_pilThread"));
 WorkerThread _tsyncThread(WorkerThread::Function(TimeSyncThread)          .name("_tsyncThread"));
@@ -805,9 +805,15 @@ INT PorterMainFunction (INT argc, CHAR **argv)
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 
+    extern void ConnectionThread(Cti::StreamConnection *MyNexus);
 
-    /* all of the port threads are started so now start first socket connection handler */
-    _connThread.start();
+    boost::thread porterToPilConnection    (ConnectionThread, &PorterToPil);
+
+    Cti::StreamAmqConnection<INMESS, CtiOutMessage> PorterToScanner(
+            Cti::Messaging::ActiveMQ::Queues::OutboundQueue::ScannerInMessages,
+            Cti::Messaging::ActiveMQ::Queues::InboundQueue ::ScannerOutMessages);
+
+    boost::thread porterToScannerConnection(ConnectionThread, &PorterToScanner);
 
 
     /* Check if we need to start the filler thread */
@@ -957,7 +963,6 @@ void APIENTRY PorterCleanUp (ULONG Reason)
 {
     PorterQuit = TRUE;
     SetEvent( hPorterEvents[P_QUIT_EVENT] );
-    PorterListenNexus.close();
 
     //  delete/stop the shared ports
     map<long, CtiPortShare *>::iterator itr;
@@ -972,7 +977,6 @@ void APIENTRY PorterCleanUp (ULONG Reason)
 
     if(_pilThread         .isRunning())    _pilThread         .interrupt();
     if(_dispThread        .isRunning())    _dispThread        .interrupt();
-    if(_connThread        .isRunning())    _connThread        .interrupt();
     if(_tsyncThread       .isRunning())    _tsyncThread       .interrupt();
     if(_statisticsThread  .isRunning())    _statisticsThread  .interrupt();
     if(_fillerThread      .isRunning())    _fillerThread      .interrupt();
@@ -984,18 +988,6 @@ void APIENTRY PorterCleanUp (ULONG Reason)
 
     ThreadMonitor.join();
     _sysMsgThread.join();
-
-    if( _connThread.isRunning() )
-    {
-        if( ! _connThread.tryJoinFor(Cti::Timing::Chrono::seconds(2)) )
-        {
-            CTILOG_ERROR(dout, "_connThread did not shutdown");
-        }
-        else
-        {
-            CTILOG_INFO(dout, "_connThread shutdown");
-        }
-    }
 
     if( _tsyncThread.isRunning() )
     {

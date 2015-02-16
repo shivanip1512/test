@@ -29,8 +29,6 @@ YukonError_t SendError(OUTMESS *&, YukonError_t, INMESS *InMessage = NULL);
 void FillerThread();
 
 /* Prototypes from PORTPIPE.C */
-void PorterConnectionThread();
-
 void PorterInterfaceThread();
 
 /*  */

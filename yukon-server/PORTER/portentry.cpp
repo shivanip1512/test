@@ -28,7 +28,6 @@ using Cti::StreamSocketConnection;
 using Cti::StreamConnectionException;
 
 extern HCTIQUEUE*   QueueHandle(LONG pid);
-extern StreamLocalConnection<INMESS, OUTMESS> PorterToPil;
 
 INT PorterEntryPoint(OUTMESS *&OutMessage);
 INT RemoteComm(OUTMESS *&OutMessage);
@@ -45,64 +44,6 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS &OutTemplate);
 INT ValidateOutMessage(OUTMESS *&OutMessage);
 void ConnectionThread(StreamConnection *Nexus);
 bool realignNexus(OUTMESS *&OutMessage);
-
-/* Threads to field incoming messages from the pipes */
-void PorterConnectionThread()
-{
-    CTILOG_INFO(dout, "PorterConnectionThread started");
-
-    SetThreadName(-1, "PrtrConn ");
-
-    PorterListenNexus.Name = "PorterConnectionThread: Listener";
-
-    //Initiate a thread for the porter pil connection
-    boost::thread porterToPilConnection(ConnectionThread, &PorterToPil);
-
-    /*
-     *  4/7/99 This is the server side of a new Port Control Nexus
-     *  This thread rolls off new instances of this connection on an as needed basis.
-     *
-     *  1. Create a listener on PORTCONTROLNEXUS for incoming connections
-     *  2. Pop off a new thread to manage the returned connection.
-     *       NOTE: This deviates in implementation from DSM/2 which spwned a new listener thread
-     *             sockets don't care for new listener sockets.
-     */
-
-    while( ! PorterQuit && ! PorterListenNexus.create(PORTCONTROLNEXUS) )
-    {
-        CTILOG_WARN(dout, "Unable to create listener. Will attempt again.");
-        Sleep(2500);
-    }
-
-    int iNexus = 0;
-
-    for(; !PorterQuit ;)
-    {
-        /*
-         *  Blocking wait on the listening nexus.
-         */
-        auto_ptr<StreamSocketConnection> newNexus = PorterListenNexus.accept(StreamSocketConnection::ReadExactly, Chrono::infinite, &hPorterEvents[P_QUIT_EVENT]);
-
-        if( WAIT_OBJECT_0 == WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 0L) )
-        {
-            break;         // FIX FIX FIX...??? Should this stop porter dead?? CGP
-        }
-        else if( newNexus.get() )
-        {
-            newNexus->Name = "PortControl Nexus " + CtiNumStr(iNexus++);
-
-            /* Someone has connected to us.. */
-            boost::thread newConnection(ConnectionThread, newNexus.release());
-        }
-        else
-        {
-            CTILOG_ERROR(dout, "Unable to create listener nexus");
-
-            break;         // FIX FIX FIX...??? Should this stop porter dead?? CGP
-        }
-    }
-}
-
 
 /*
  *  This is the guy who deals with incoming data from any one else in the system.

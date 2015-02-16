@@ -60,7 +60,6 @@ master.obj \
 millisecond_timer.obj \
 mutex.obj \
 observe.obj \
-pexec.obj \
 queue.obj \
 queues.obj \
 readers_writer_lock.obj \
@@ -422,14 +421,6 @@ observe.obj:	precompiled.h observe.h types.h dlldefs.h utility.h \
 		ctitime.h queues.h cticalls.h yukon.h ctidbgmem.h os2_2w32.h \
 		constants.h numstr.h
 parse.obj:	precompiled.h
-pexec.obj:	precompiled.h porter.h dsm2.h streamConnection.h yukon.h \
-		types.h ctidbgmem.h dlldefs.h netports.h timing_util.h \
-		immutable.h critical_section.h guard.h utility.h \
-		ctitime.h queues.h cticalls.h os2_2w32.h constants.h numstr.h \
-		logger.h streamBuffer.h loggable.h string_util.h \
-		exception_helper.h boostutil.h mutex.h dsm2err.h words.h \
-		optional.h macro_offset.h devicetypes.h \
-		streamSocketConnection.h socket_helper.h win_helper.h
 pointattribute.obj:	precompiled.h PointAttribute.h yukon.h types.h \
 		ctidbgmem.h dlldefs.h
 queue.obj:	precompiled.h queue.h cparms.h dlldefs.h configkey.h \

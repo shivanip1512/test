@@ -44,7 +44,6 @@ typedef boost::tokenizer<boost::char_separator<char> > Boost_char_tokenizer;
 typedef boost::tokenizer<boost::char_separator<char> > Tokenizer;
 typedef boost::char_separator<char> Separator;
 
-IM_EX_CTIBASE extern Cti::StreamSocketConnection PorterNexus;
 IM_EX_CTIBASE extern CtiCriticalSection          coutMux;
 
 IM_EX_CTIBASE extern std::string      gLogDirectory;

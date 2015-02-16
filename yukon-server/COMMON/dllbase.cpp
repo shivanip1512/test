@@ -22,11 +22,9 @@
 
 using namespace std;
 
-extern void PortPipeCleanup (ULONG Reason);
 extern void freeUCTMemory(void);
 
 // Global Exports....
-IM_EX_CTIBASE Cti::StreamSocketConnection PorterNexus;
 IM_EX_CTIBASE CtiCriticalSection          coutMux;
 IM_EX_CTIBASE CtiThreadMonitor            ThreadMonitor;
 
@@ -102,7 +100,6 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
         }
         case DLL_PROCESS_DETACH:
         {
-            PortPipeCleanup(0);                                // Get that connection closed (if open)!
             freeUCTMemory();
 
             break;

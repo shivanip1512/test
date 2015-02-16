@@ -30,7 +30,6 @@ IM_EX_PORTGLOB LONG            TracePort   = 0L;
 IM_EX_PORTGLOB LONG            TraceRemote = 0L;
 
 /* Porter only globals... */
-IM_EX_PORTGLOB Cti::StreamSocketListener PorterListenNexus;
 IM_EX_PORTGLOB INT                       PorterRefreshRate = 86400;
 
 IM_EX_PORTGLOB BOOL           cParmPorterServiceLog = FALSE;
