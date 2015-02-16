@@ -3,6 +3,7 @@
 #include "config_data_mct.h"
 #include "config_data_dnp.h"
 #include "config_data_rfn.h"
+#include "config_data_regulator.h"
 
 using std::string;
 
@@ -319,4 +320,10 @@ const string RfnStrings::ChannelConfiguration::EnabledChannels::Attribute = "att
 const string RfnStrings::ChannelConfiguration::EnabledChannels::Read    = "read";
 const string RfnStrings::ChannelConfiguration::RecordingIntervalMinutes = "recordingIntervalMinutes";
 const string RfnStrings::ChannelConfiguration::ReportingIntervalMinutes = "reportingIntervalMinutes";
+
+// Regulators
+const string RegulatorStrings::voltageControlMode  = "voltageControlMode";
+const string RegulatorStrings::voltageChangePerTap = "voltageChangePerTap";
+const string RegulatorStrings::heartbeatPeriod     = "heartbeatPeriod";
+const string RegulatorStrings::heartbeatValue      = "heartbeatValue";
 
