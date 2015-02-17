@@ -2404,4 +2404,190 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_not_supported)
         delete_container(string_list);
     }
 }
+
+BOOST_AUTO_TEST_CASE(test_prot_dnp_control_sbo)
+{
+    DnpProtocol dnp;
+
+    BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+    dnp.setAddresses(502, 1000);
+    dnp.setName("Test DNP device");
+
+    DnpProtocol::output_point op;
+
+    op.dout.control    = DNP::BinaryOutputControl::PulseOn;
+    op.dout.trip_close = DNP::BinaryOutputControl::Close;
+    op.dout.on_time = 0;
+    op.dout.off_time = 0;
+    op.dout.queue = false;
+    op.dout.clear = false;
+    op.dout.count = 1;
+
+    op.control_offset = 1;
+    op.type = DnpProtocol::DigitalOutputPointType;
+    op.expiration = ~0;
+
+    dnp.setCommand(DnpProtocol::Command_SetDigitalOut_SBO_Select, op);
+
+    CtiXfer xfer;
+
+    //  Select
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        const byte_str expected(
+                "05 64 18 C4 F6 01 E8 03 36 79 "
+                "C0 C1 03 0C 01 17 01 00 41 01 00 00 00 00 00 00 A4 2F "
+                "00 00 00 FF FF");
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+        BOOST_CHECK_EQUAL_RANGES(expected, output);
+    }
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+    }
+    {
+        {
+            const byte_str response(
+                    "05 64 1A 44 E8 03 F6 01 20 BB");
+
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        BOOST_CHECK_EQUAL(25, xfer.getInCountExpected());
+    }
+    {
+        {
+            const byte_str response(
+                    "DE C3 81 00 00 0C 01 17 01 00 41 01 00 00 00 00 09 D9 "
+                    "00 00 00 00 00 FF FF");
+
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+
+        stringlist_t string_list;
+
+        dnp.getInboundStrings(string_list);
+
+        BOOST_CHECK_EQUAL(2, string_list.size());
+
+        BOOST_CHECK_EQUAL(*string_list[0],
+            "Select successful, sending operate");
+        BOOST_CHECK_EQUAL(*string_list[1],
+            "Request accepted, initiated, or queued.");
+
+        delete_container(string_list);
+    }
+    //  Operate
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
+
+        const byte_str expected(
+                "05 64 18 C4 F6 01 E8 03 36 79 "
+                "C0 C2 04 0C 01 17 01 00 41 01 00 00 00 00 00 00 5C 25 "
+                "00 00 00 FF FF");
+
+        //  copy them into int vectors so they display nicely
+        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
+
+        BOOST_CHECK_EQUAL_RANGES(expected, output);
+    }
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+    }
+    {
+        {
+            const byte_str response(
+                    "05 64 1A 44 E8 03 F6 01 20 BB");
+
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    {
+        BOOST_CHECK_EQUAL(ClientErrors::None, dnp.generate(xfer));
+
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        BOOST_CHECK_EQUAL(25, xfer.getInCountExpected());
+    }
+    {
+        {
+            const byte_str response(
+                    "DF C4 81 00 00 0C 01 17 01 00 41 01 00 00 00 00 B4 D3 "
+                    "00 00 00 00 00 FF FF");
+
+            std::copy(response.begin(), response.end(), xfer.getInBuffer());
+
+            xfer.setInCountActual(response.size());
+        }
+
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+
+        BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+        stringlist_t string_list;
+
+        dnp.getInboundStrings(string_list);
+
+        BOOST_CHECK_EQUAL(2, string_list.size());
+
+        BOOST_CHECK_EQUAL(*string_list[0],
+            "Request accepted, initiated, or queued.");
+        BOOST_CHECK_EQUAL(*string_list[1],
+            "");
+
+        delete_container(string_list);
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
