@@ -54,15 +54,7 @@ public class StarsYukonUser {
 	
 	private void init() throws InstantiationException {
 	    RolePropertyDao rolePropertyDao = YukonSpringHook.getBean(RolePropertyDao.class);
-	    if (rolePropertyDao.checkRole(YukonRole.OPERATOR_ADMINISTRATOR, this.getYukonUser())) {
-			EnergyCompany energyCompany = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(getYukonUser());
-			if (energyCompany == null) {
-                throw new InstantiationException( "Cannot find the energy company for user id = " + getYukonUser().getUserID() );
-            }
-			
-			energyCompanyID = energyCompany.getId();
-		}
-		else if (rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, this.getYukonUser())) {
+		if (rolePropertyDao.checkRole(YukonRole.RESIDENTIAL_CUSTOMER, this.getYukonUser())) {
 			LiteContact liteContact = YukonSpringHook.getBean(YukonUserDao.class).getLiteContact( getUserID() );
 			if (liteContact == null) {
                 throw new InstantiationException( "Cannot find contact information for user id = " + getYukonUser().getUserID() );
@@ -73,6 +65,13 @@ public class StarsYukonUser {
             }
 			
 			energyCompanyID = customer.getEnergyCompanyID();
+		} else {
+			EnergyCompany energyCompany = YukonSpringHook.getBean(EnergyCompanyDao.class).getEnergyCompany(getYukonUser());
+			if (energyCompany == null) {
+                throw new InstantiationException( "Cannot find the energy company for user id = " + getYukonUser().getUserID() );
+            }
+			
+			energyCompanyID = energyCompany.getId();
 		}
 	}
 
