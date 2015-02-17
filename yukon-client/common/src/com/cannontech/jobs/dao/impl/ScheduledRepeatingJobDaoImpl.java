@@ -98,6 +98,7 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
         sql.append("from JobScheduledRepeating jsr");
         sql.append("join Job on Job.jobId = jsr.jobId");
         sql.append("where Job.beanName").eq(definition.getName());
+        sql.append("AND Disabled").neq_k(JobDisabledStatus.D);
         
         List<ScheduledRepeatingJob> jobList = jdbcTemplate.query(sql, jobRowMapper);
         Set<ScheduledRepeatingJob> jobSet = new HashSet<ScheduledRepeatingJob>(jobList);
@@ -105,6 +106,24 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
         return jobSet;
     }
 
+    @Override
+    public Set<ScheduledRepeatingJob> getJobsStillRunnableByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT *");
+        sql.append("FROM JobScheduledRepeating jsr");
+        sql.append("JOIN Job ON Job.jobId = jsr.jobId");
+        sql.append("LEFT JOIN JobStatus js ON job.JobId = js.JobId");
+        sql.append("WHERE Job.beanName").eq(definition.getName());
+        sql.append("AND Disabled").eq_k(JobDisabledStatus.N);
+        sql.append("AND (JobState IS NULL OR JobState").eq_k(JobState.RESTARTED).append(")");
+        
+        List<ScheduledRepeatingJob> jobList = jdbcTemplate.query(sql, jobRowMapper);
+        Set<ScheduledRepeatingJob> jobSet = new HashSet<ScheduledRepeatingJob>(jobList);
+        
+        return jobSet;
+    }
+
+    
     @Override
     public Set<JobStatus<ScheduledRepeatingJob>> getAllUnfinished() {
         String jobState = JobState.STARTED.name();

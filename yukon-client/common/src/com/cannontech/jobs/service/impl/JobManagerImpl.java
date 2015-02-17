@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -170,53 +169,22 @@ public class JobManagerImpl implements JobManager {
 
     @Override
     public Set<ScheduledOneTimeJob> getUnRunOneTimeJobsByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
-        Set<ScheduledOneTimeJob> defJobs = scheduledOneTimeJobDao.getJobsByDefinition(definition);
-
-        Set<ScheduledOneTimeJob> unrunJobs = new HashSet<ScheduledOneTimeJob>();
-        for (ScheduledOneTimeJob job : defJobs) {
-            if (isJobStillRunnable(job)) {
-                unrunJobs.add(job);
-            }
-        }
+        Set<ScheduledOneTimeJob> unrunJobs = scheduledOneTimeJobDao.getJobsStillRunnableByDefinition(definition);
         return unrunJobs;
     }
 
     @Override
     public Set<ScheduledRepeatingJob> getUnRunRepeatingJobsByDefinition(
             YukonJobDefinition<? extends YukonTask> definition) {
-        Set<ScheduledRepeatingJob> defJobs = scheduledRepeatingJobDao.getJobsByDefinition(definition);
-
-        Set<ScheduledRepeatingJob> unrunJobs = new HashSet<ScheduledRepeatingJob>();
-        for (ScheduledRepeatingJob job : defJobs) {
-            if (isJobStillRunnable(job)) {
-                unrunJobs.add(job);
-            }
-        }
+        Set<ScheduledRepeatingJob> unrunJobs = scheduledRepeatingJobDao.getJobsStillRunnableByDefinition(definition);
         return unrunJobs;
     }
 
     @Override
     public List<ScheduledRepeatingJob> getNotDeletedRepeatingJobsByDefinition(
             YukonJobDefinition<? extends YukonTask> definition) {
-        Set<ScheduledRepeatingJob> repeatingJobs = scheduledRepeatingJobDao.getJobsByDefinition(definition);
-        List<ScheduledRepeatingJob> jobsNotDeleted = Lists.newArrayList();
-        for (ScheduledRepeatingJob job : repeatingJobs) {
-            if (!job.isDeleted()) {
-                jobsNotDeleted.add(job);
-            }
-        }
-        return jobsNotDeleted;
-    }
-
-    private boolean isJobStillRunnable(YukonJob job) {
-        if (!job.isDisabled()) {
-            int jobId = job.getId();
-            JobStatus<YukonJob> jobStatus = jobStatusDao.findLatestStatusByJobId(jobId);
-            if (jobStatus == null || jobStatus.getJobState() == JobState.RESTARTED) {
-                return true;
-            }
-        }
-        return false;
+        Set<ScheduledRepeatingJob> jobsNotDeleted= scheduledRepeatingJobDao.getJobsByDefinition(definition);
+        return Lists.newArrayList(jobsNotDeleted);
     }
 
     @Override

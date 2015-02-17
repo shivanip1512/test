@@ -92,6 +92,23 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
         sql.append("from JobScheduledOneTime jsr "); 
         sql.append(  "join Job on Job.jobId = jsr.jobId ");
         sql.append("where Job.beanName").eq(definition.getName());
+        sql.append("AND Disabled").neq_k(JobDisabledStatus.D);
+        List<ScheduledOneTimeJob> jobList = jdbcTemplate.query(sql, jobRowMapper);
+        Set<ScheduledOneTimeJob> jobSet = new HashSet<ScheduledOneTimeJob>(jobList);
+        
+        return jobSet;
+    }
+
+    @Override
+    public Set<ScheduledOneTimeJob> getJobsStillRunnableByDefinition(YukonJobDefinition<? extends YukonTask> definition) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT * ");
+        sql.append("FROM JobScheduledOneTime jsr "); 
+        sql.append(  "JOIN Job ON Job.jobId = jsr.jobId ");
+        sql.append(  "LEFT JOIN JobStatus js ON job.JobId = js.JobId");
+        sql.append("WHERE Job.beanName").eq(definition.getName());
+        sql.append("AND Disabled").eq_k(JobDisabledStatus.N);
+        sql.append("AND (JobState IS NULL OR JobState").eq_k(JobState.RESTARTED).append(")");
 
         List<ScheduledOneTimeJob> jobList = jdbcTemplate.query(sql, jobRowMapper);
         Set<ScheduledOneTimeJob> jobSet = new HashSet<ScheduledOneTimeJob>(jobList);
@@ -99,6 +116,7 @@ public class ScheduledOneTimeJobDaoImpl extends JobDaoBase implements ScheduledO
         return jobSet;
     }
 
+    
     @Override
     public Set<JobStatus<ScheduledOneTimeJob>> getAllUnfinished() {
         String jobState = JobState.STARTED.name();
