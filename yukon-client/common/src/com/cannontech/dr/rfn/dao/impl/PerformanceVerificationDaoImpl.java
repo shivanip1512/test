@@ -119,8 +119,8 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceId, Type, PaoName, UnknownStatus FROM (");
         addSelectDevicesWithUnknownStatus(sql, messageId, true);
-        sql.append(") AS tbl");
-        sql.append("WHERE tbl.RowNum BETWEEN").append(pagingParameters.getOneBasedStartIndex());
+        sql.append(") tbl");
+        sql.append("WHERE tbl.RowNumber BETWEEN").append(pagingParameters.getOneBasedStartIndex());
         sql.append("  AND").append(pagingParameters.getOneBasedEndIndex());
 
         final UnknownDevices.Builder unknownDeviceBuilder = new UnknownDevices.Builder();
@@ -170,7 +170,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Count(*) as count, UnknownStatus FROM (");
         addSelectDevicesWithUnknownStatus(sql, messageId, false);
-        sql.append(") AS tbl");
+        sql.append(") tbl");
         sql.append("Group By UnknownStatus");
 
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
@@ -201,8 +201,8 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DeviceId, Type FROM (");
         addSelectDevices(sql, messageId, status, true);
-        sql.append(") AS tbl");
-        sql.append("WHERE tbl.RowNum BETWEEN").append(pagingParameters.getOneBasedStartIndex());
+        sql.append(") tbl");
+        sql.append("WHERE tbl.RowNumber BETWEEN").append(pagingParameters.getOneBasedStartIndex());
         sql.append("  AND").append(pagingParameters.getOneBasedEndIndex());
         return jdbcTemplate.query(sql, new YukonRowMapper<PaoIdentifier>() {
             @Override
@@ -221,7 +221,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
     
           sql.append("SELECT RBED.DeviceId, YPO.Type, YPO.PaoName");
           if (isPaged) {
-              sql.append(",ROW_NUMBER() OVER (ORDER BY PaoName) AS RowNum");
+              sql.append(",ROW_NUMBER() OVER (ORDER BY PaoName) AS RowNumber");
           }
           sql.append(",CASE");
           sql.append("    WHEN LastCommunication IS NOT NULL THEN");
@@ -256,7 +256,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
             PerformanceVerificationMessageStatus messageStatus, boolean isPaged) {
         sql.append("SELECT RBED.DeviceId, YPO.Type, YPO.PaoName");
         if (isPaged) {
-            sql.append(",ROW_NUMBER() OVER (ORDER BY PaoName) AS RowNum");
+            sql.append(",ROW_NUMBER() OVER (ORDER BY PaoName) AS RowNumber");
         }
         sql.append("FROM RfnBroadcastEventDeviceStatus RBED");
         sql.append("JOIN YukonPAObject YPO on YPO.PAObjectId = RBED.DeviceId");
