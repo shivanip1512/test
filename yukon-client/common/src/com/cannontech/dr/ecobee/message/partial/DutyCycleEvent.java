@@ -17,7 +17,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class DutyCycleEvent {
     private final String type = "demandResponse";
     private final String name;
-    private final boolean isOptional = false;
+    private final boolean isOptional = true;
 
     private final Instant startDate;
     private final Instant endDate;
