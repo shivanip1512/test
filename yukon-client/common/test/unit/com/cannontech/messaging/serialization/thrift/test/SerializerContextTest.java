@@ -14,7 +14,7 @@ public class SerializerContextTest extends ContextAwareTestBase{
     
     @Override
     protected String[] getContextUri() {        
-        return new String[]{"com/cannontech/messaging/thriftConnectionContext.xml"};
+        return new String[]{"com/cannontech/messaging/testThriftConnectionContext.xml"};
     }
     
     @Test

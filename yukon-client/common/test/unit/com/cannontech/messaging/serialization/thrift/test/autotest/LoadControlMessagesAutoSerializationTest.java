@@ -8,8 +8,7 @@ public class LoadControlMessagesAutoSerializationTest extends MessageAutoSeriali
 
     @Override
     protected String[] getContextUri() {
-        return new String[] { "com/cannontech/messaging/thriftConnectionContext.xml",
-                             "com/cannontech/messaging/thriftLoadControlConnectionContext.xml",
+        return new String[] {"com/cannontech/messaging/testThriftContext.xml",
                              "com/cannontech/messaging/serialization/thrift/test/messagevalidator/messageValidatorContext.xml" };
     }
 

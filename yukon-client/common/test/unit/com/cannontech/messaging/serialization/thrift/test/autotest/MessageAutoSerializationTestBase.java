@@ -19,7 +19,7 @@ public abstract class MessageAutoSerializationTestBase extends MessageSerializat
 
     @Override
     protected String[] getContextUri() {
-        return new String[] { "com/cannontech/messaging/thriftConnectionContext.xml",
+        return new String[] { "com/cannontech/messaging/testThriftConnectionContext.xml",
                              "com/cannontech/messaging/serialization/thrift/test/messagevalidator/messageValidatorContext.xml" };
     }    
     
