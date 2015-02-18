@@ -187,12 +187,11 @@ public class DBUpdater extends MessageFrameAdaptor {
     private synchronized boolean executeCommands() {
         // get all the files in the log DIR
         FileVersion[] fileVers = updateDB.getDBUpdateFiles(CtiUtilities.getClientLogDir());
-        final String nightlyParam = System.getProperty(CMD_LINE_PARAM_NAMES[2]);
-        boolean isNightlyCheck = false;
+        
+		final boolean isNightlyCheck = (System.getProperty(CMD_LINE_PARAM_NAMES[2]) != null) ? Boolean
+				.parseBoolean(System.getProperty(CMD_LINE_PARAM_NAMES[2]).trim()) : false;
+
         Connection conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-        if (nightlyParam != null) {
-            isNightlyCheck = Boolean.parseBoolean(nightlyParam.trim());
-        }
         String cmd = null;
         File sqlFile = null;
         UpdateLine[] validLines = null;
