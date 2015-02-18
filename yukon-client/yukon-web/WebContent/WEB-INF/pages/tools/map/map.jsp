@@ -9,15 +9,15 @@
 
 <style>
 .map {
-  height: 600px;
+  height: 100%;
   width: 100%;
   border: 1px solid #bbb;
   box-shadow: 0px 0px 5px #ddd;
   outline: none;
 }
-.map.fullscreen {
-  height: 100%;
-}
+
+.map .ol-viewport canvas { vertical-align: middle; }
+
 .ol-scale-line,.ol-mouse-position {
   background: rgba(0, 60, 136, 0.3);
   border-radius: 2px;
@@ -130,7 +130,7 @@
             </div>
         </div>
     </div>
-    <div id="map" class="map clearfix js-focus" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
+    <div id="map" class="map js-focus" <c:if test="${dynamic}">data-dynamic</c:if> tabindex="0"></div>
     <div class="buffered">
         <div id="mouse-position" class="fl detail"></div>
         <div id="scale-line" class="fl"></div>

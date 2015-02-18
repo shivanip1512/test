@@ -226,15 +226,6 @@ yukon.tools.map = (function() {
                 }
             });
             
-            /** Add class to fix height when fullscreen */
-            _map.on('propertychange', function(ev) {
-                var isFullscreen = $('.ol-full-screen-true').length === 1;
-                
-                if (ev.key === 'size') {
-                    $('#map').toggleClass('fullscreen', isFullscreen);
-                }
-            });
-            
             /** Initilize the attribute select and handle change events. */
             $('#attribute-select').chosen({width: '100%'}).on('change', function(ev) {
                 $('#filter-states').empty();
