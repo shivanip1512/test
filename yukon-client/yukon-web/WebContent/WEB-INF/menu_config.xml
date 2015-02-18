@@ -143,7 +143,12 @@
       </option>
       <option name="gateways">
         <permissions>
-          <role name="INVENTORY" />
+          <or>
+            <roleProperty name="INFRASTRUCTURE_CREATE_AND_UPDATE"/>
+            <roleProperty name="INFRASTRUCTURE_DELETE"/>
+            <roleProperty name="INFRASTRUCTURE_ADMIN"/>
+            <roleProperty name="INFRASTRUCTURE_VIEW"/>
+          </or>
         </permissions>
         <link>/stars/gateways</link>
       </option>

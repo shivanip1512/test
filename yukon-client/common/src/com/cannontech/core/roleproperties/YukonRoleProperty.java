@@ -291,6 +291,7 @@ public enum YukonRoleProperty {
     INFRASTRUCTURE_CREATE_AND_UPDATE(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId(), booleanType()),
     INFRASTRUCTURE_DELETE(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 1, booleanType()),
     INFRASTRUCTURE_ADMIN(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 2, booleanType()),
+    INFRASTRUCTURE_VIEW(DEVICE_MANAGEMENT, DEVICE_MANAGEMENT.getBasePropertyId() - 3, booleanType()),
     ;
     
     private final YukonRole role;
