@@ -686,16 +686,6 @@ public class InventoryDaoImpl implements InventoryDao {
     }
 
     @Override
-    public int getInventoryIDForDevice(int deviceId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT InventoryId");
-        sql.append("FROM InventoryBase");
-        sql.append("WHERE DeviceId").eq(deviceId);
-
-        return jdbcTemplate.queryForInt(sql);
-    }
-
-    @Override
     public Map<Integer, Integer> getDeviceIds(Iterable<Integer> inventoryIds) {
         SqlFragmentGenerator<Integer> sqlFragmentGenerator = new SqlFragmentGenerator<Integer>() {
             @Override

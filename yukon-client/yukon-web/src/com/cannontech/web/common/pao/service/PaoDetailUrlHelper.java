@@ -102,7 +102,7 @@ public class PaoDetailUrlHelper {
             if (paoDefinitionDao.isTagSupported(type, entry.getKey())) {
                 if (type == PaoType.LCR6200_RFN || type == PaoType.LCR6600_RFN) {
                     try {
-                        inventoryDao.getInventoryIDForDevice(pao.getPaoIdentifier().getPaoId());
+                        inventoryDao.getYukonInventoryForDeviceId(pao.getPaoIdentifier().getPaoId());
                     } catch (EmptyResultDataAccessException e) {
                         return null;
                     }

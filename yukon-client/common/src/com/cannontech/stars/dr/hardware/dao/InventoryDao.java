@@ -113,12 +113,7 @@ public interface InventoryDao {
     public boolean checkdeviceType(int inventoryId, String deviceType);
 
     public int getDeviceId(int inventoryId);
-    
-    /**
-     * Method to get a inventory id from InventoryBase table based on deviceId
-     */
-    public int getInventoryIDForDevice(int deviceId);
-    
+     
     public Map<Integer, Integer> getDeviceIds(Iterable<Integer> inventoryIds);
 
     /**
