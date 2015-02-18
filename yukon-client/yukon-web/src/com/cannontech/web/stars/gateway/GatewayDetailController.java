@@ -37,7 +37,10 @@ import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.Lists;
 
 @Controller
-@CheckRole(YukonRole.INVENTORY)
+@CheckRoleProperty({YukonRoleProperty.INFRASTRUCTURE_ADMIN, 
+    YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE, 
+    YukonRoleProperty.INFRASTRUCTURE_DELETE, 
+    YukonRoleProperty.INFRASTRUCTURE_VIEW})
 public class GatewayDetailController {
     
     private static final Logger log = YukonLogManager.getLogger(GatewayDetailController.class);
